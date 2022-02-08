@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ProductPowerShowMstMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ProductPowerShowMst">
+    <id column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
+    <id column="company_cd" jdbcType="VARCHAR" property="conpanyCd" />
+    <id column="market_pos_flag" jdbcType="INTEGER" property="marketPosFlag" />
+    <id column="data_cd" jdbcType="VARCHAR" property="dataCd" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    product_power_cd, company_cd, market_pos_flag, data_cd
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from planocycle.product_power_show_mst
+    where product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+      and company_cd = #{conpanyCd,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" >
+    delete from planocycle.product_power_show_mst
+    where product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+      and company_cd = #{conpanyCd,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerShowMst">
+    insert into planocycle.product_power_show_mst (product_power_cd, company_cd, market_pos_flag,
+      data_cd)
+    values
+    <foreach collection="lists" item="list" separator=",">
+      (#{list.productPowerCd,jdbcType=INTEGER}, #{list.conpanyCd,jdbcType=VARCHAR}, #{list.marketPosFlag,jdbcType=INTEGER},
+      #{list.dataCd,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+
+</mapper>

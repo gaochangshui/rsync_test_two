@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderDataMapper">
+    <update id="dropTempData">
+    DROP TABLE IF EXISTS ${tablename};
+    </update>
+    <update id="updateTempData">
+    create table ${tablename} (
+    <foreach collection="lists" separator="," item="list">
+        <choose>
+            <when test="list.name == 'pos_amount' || list.name == 'branch_num' || list.name == 'rank' || list.name == 'rank_prop' || list.name == 'rank_upd'">
+                ${list.name} integer
+            </when>
+            <otherwise>
+                ${list.name} character varying
+            </otherwise>
+        </choose>
+    </foreach>
+    );
+  </update>
+    <update id="updatePriorityOrderDataForCard">
+        update ${tablename}
+        set rank_prop = 99999999,rank_upd = 99999999
+        from(
+            select card.jan_old ,card.company_cd,card.priority_order_cd
+            from ${tablename} tmp
+            inner join planocycle.priority_order_jan_card card
+            on tmp.jan_old = card.jan_old
+        )as reptable
+        where  reptable.company_cd = #{companyCd,jdbcType=VARCHAR}
+          and reptable.priority_order_cd = #{priorityOrderCd}
+        and ${tablename}.jan_old = reptable.jan_old
+    </update>
+    <update id="updatePriorityOrderDataForJanNew">
+        update ${tablename}
+        set jan_new = reptable.jan_new
+        from (
+            select rep.jan_old,rep.jan_new,rep.company_cd,rep.priority_order_cd
+             from ${tablename} tmp
+            inner join planocycle.priority_order_jan_replace rep
+            on tmp.jan_old = rep.jan_old
+            ) as reptable
+        where reptable.company_cd = #{companyCd,jdbcType=VARCHAR}
+          and reptable.priority_order_cd = #{priorityOrderCd}
+          and ${tablename}.jan_old = reptable.jan_old
+    </update>
+    <update id="updatePriorityOrderDataForProp">
+        update ${tablename}
+        set jan_new = reptable.jan_new
+        from(
+            select pro.jan_old,pro.jan_new,pro.company_cd,pro.priority_order_cd,pro.flag
+            from ${tablename} tmp
+            inner join planocycle.priority_order_jan_proposal pro
+            on tmp.jan_old = pro.jan_old
+            ) as reptable
+        where not exists (select jan_old from planocycle.priority_order_jan_replace as rep
+                            where rep.jan_old = reptable.jan_old
+                        )
+          and reptable.company_cd = #{companyCd,jdbcType=VARCHAR}
+          and reptable.priority_order_cd = #{priorityOrderCd}
+          and ${tablename}.jan_old =reptable.jan_old
+          and reptable.flag = 1
+    </update>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from priority_order_data
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <select id="selectTempDataCol" resultType="java.util.Map">
+        select pub.*,COALESCE(num.branch_nums,0) as branch_num_upd
+        from ${tablename} pub
+        left join planocycle.priority_order_branch_num num
+        on pub.jan_new = num.jan_news
+        and num.priority_order_cd = #{priorityOrderCd}
+        <if test="lists!=null">
+            order by
+            <foreach collection="lists" item="list" separator=",">
+                ${list}
+            </foreach>
+        </if>
+    </select>
+  <select id="selectTempData" resultType="java.util.Map">
+    select * from ${tablename}
+    <if test="lists!=null">
+    order by
+        <foreach collection="lists" item="list" separator=",">
+            ${list}
+        </foreach>
+    </if>
+  </select>
+    <select id="selectTempDataAndMst" resultType="java.util.Map">
+      select
+            <foreach collection="colName" item="item" separator=",">
+             <choose>
+                 <when test="item == 'rank'">
+                     <if test="orderCol!=null">
+                     case mst.rank when -1 then  mst.rank else
+                      ROW_NUMBER () OVER (partition by
+                         <foreach collection="orderCol" item="list" separator=",">
+                             ${list}
+                        </foreach>
+                         ORDER BY
+                         <foreach collection="orderCol" item="list" separator=",">
+                             ${list}
+                         </foreach>
+                         ,mst.branch_num,pos_amount desc ) end AS  rank
+                     </if>
+                 </when>
+                 <when test="item == 'rank_prop'">
+                     <if test="orderCol!=null">
+                         case mst.rank_prop when 99999999 then  mst.rank_prop else
+                         ROW_NUMBER () OVER (partition by
+                         <foreach collection="orderCol" item="list" separator=",">
+                             ${list}
+                         </foreach>
+                         ORDER BY
+                         <foreach collection="orderCol" item="list" separator=",">
+                             ${list}
+                         </foreach>
+                         ,mst.rank asc ) end AS rank_prop
+                     </if>
+                 </when>
+                <when test="item == 'rank_upd'">
+                    <if test="orderCol!=null">
+                        case mst.rank_upd when 99999999 then  mst.rank_prop else
+                        ROW_NUMBER () OVER (partition by
+                        <foreach collection="orderCol" item="list" separator=",">
+                            ${list}
+                        </foreach>
+                        ORDER BY
+                        <foreach collection="orderCol" item="list" separator=",">
+                            ${list}
+                        </foreach>
+                        ,mst.rank asc ) end AS rank_upd
+                    </if>
+                </when>
+                 <when test="item == 'branch_num' || item == 'pos_amount'">
+                     COALESCE(mst.${item},0)as ${item}
+                 </when>
+                <otherwise>
+                    case COALESCE(mst.${item},'_') when '' then '_' else COALESCE(mst.${item},'_') end as ${item}
+                </otherwise>
+             </choose>
+                ,COALESCE(num.branch_nums,0) as branch_num_upd
+            </foreach>
+        from ${tablename} mst
+        left join (select * from planocycle.priority_order_branch_num  where priority_order_cd = #{priorityOrderCd}) as num
+        on mst.jan_new = num.jan_news
+        left join (select * from  planocycle.priority_order_jan_new  where priority_order_cd = #{priorityOrderCd}) as jans
+        on mst.jan_new = jans.jan_new
+        left join (select * from  planocycle.priority_order_jan_card  where priority_order_cd = #{priorityOrderCd}) as cards
+        on mst.jan_new = cards.jan_old
+        <if test="orderCol!=null">
+            order by
+            <foreach collection="orderCol" item="list" separator=",">
+                ${list}
+            </foreach>
+            ,rank_prop
+        </if>
+
+    </select>
+    <select id="selectTempColName" resultType="java.lang.String">
+        select column_name from information_schema.columns where table_name=#{tablename}
+    </select>
+    <select id="selectPriorityAttrCd" resultType="java.lang.String">
+        select array_to_string(array_agg(attr_cd),',')  as a from planocycle.priority_order_mst orders
+          inner join planocycle.product_power_mst powers
+             on orders.product_power_cd = powers.product_power_cd
+          inner join planocycle.product_power_param_attribute attrs
+             on powers.product_power_cd = attrs.product_power_cd
+        where orders.priority_order_cd =#{priorityNO,jdbcType=INTEGER}
+        and orders.company_cd = #{company,jdbcType=VARCHAR}
+    </select>
+    <select id="selectPriorityAttrName" resultType="java.util.Map">
+        SELECT attr_cd as attrCd,attrname as attrName
+        FROM planocycle.product_power_param_attribute attr
+                 inner join masterdb.attribute mst
+                            on mst.attrcd = attr.attr_value
+        where product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+        order by attr_cd
+    </select>
+    <select id="selectPriorityAttrValue" resultType="java.lang.String">
+        select array_to_string(array_agg(attr_value order by attr_cd),',')  as a from planocycle.priority_order_mst orders
+                                                                      inner join planocycle.product_power_mst powers
+                                                                                 on orders.product_power_cd = powers.product_power_cd
+                                                                      inner join planocycle.product_power_param_attribute attrs
+                                                                                 on powers.product_power_cd = attrs.product_power_cd
+        where orders.priority_order_cd =#{priorityNO,jdbcType=INTEGER}
+          and orders.company_cd = #{company,jdbcType=VARCHAR}
+    </select>
+    <select id="selectJanName" resultType="java.lang.String">
+        select janname from masterdb.jans
+        where jan = #{jan_new}
+    </select>
+
+    <insert id="insert" >
+    insert into ${tablename} (
+            <foreach collection="keyNameList" separator="," item="key">
+              ${key.name}
+            </foreach>
+                                     )
+    values
+           <foreach collection="lists" separator="," item="list">
+           (
+             <foreach collection="keyNameList" separator="," item="keys">
+                 <choose>
+                     <when test="keys.name == 'pos_amount' || keys.name == 'branch_num' || keys.name == 'rank' || keys.name == 'rank_prop' || keys.name == 'rank_upd'">
+                         case #{list.${keys.name}} ::character varying
+                            when '_' then '99999998'::integer
+                             when '' then '0'::integer
+                            when '新規' then '-1'::integer
+                            when 'カット' then '99999999'::integer
+                         else #{list.${keys.name}} :: integer end
+                     </when>
+                     <otherwise>
+                         #{list.${keys.name}}
+                     </otherwise>
+                 </choose>
+             </foreach>
+             )
+           </foreach>
+  </insert>
+</mapper>

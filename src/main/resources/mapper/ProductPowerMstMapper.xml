@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ProductPowerMstMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ProductPowerMst">
+    <id column="company_cd" jdbcType="VARCHAR" property="conpanyCd" />
+    <id column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
+    <result column="product_power_name" jdbcType="VARCHAR" property="productPowerName" />
+    <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="author_name" jdbcType="VARCHAR" property="authorName" />
+    <result column="registered" jdbcType="TIMESTAMP" property="registered" />
+    <result column="maintainer_cd" jdbcType="VARCHAR" property="maintainerCd" />
+    <result column="maintainer_name" jdbcType="VARCHAR" property="maintainerName" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+  </resultMap>
+  <resultMap id="EnterPriseInfo" type="com.trechina.planocycle.entity.vo.EnterPriseInfoVO">
+    <id column="company_cd" jdbcType="VARCHAR" property="conpanyCd" />
+    <result column="product_power_name" jdbcType="VARCHAR" property="productPowerName" />
+  </resultMap>
+  <resultMap id="CommodityListInfo" type="com.trechina.planocycle.entity.vo.CommodityListInfoVO">
+    <id column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
+    <result column="product_power_name" jdbcType="VARCHAR" property="productPowerName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, product_power_cd, product_power_name, author_cd, author_name, registered,
+    maintainer_cd, maintainer_name, modified
+  </sql>
+
+
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerMst">
+    insert into planocycle.product_power_mst (company_cd,product_power_cd, product_power_name,
+      author_cd, author_name, registered,
+      maintainer_cd, maintainer_name, modified
+      )
+    values (#{conpanyCd,jdbcType=VARCHAR}, #{productPowerCd,jdbcType=INTEGER}, #{productPowerName,jdbcType=VARCHAR},
+      #{authorCd,jdbcType=VARCHAR}, #{authorName,jdbcType=VARCHAR}, now(),
+      #{maintainerCd,jdbcType=VARCHAR}, #{maintainerName,jdbcType=VARCHAR}, now()
+      )
+  </insert>
+    <delete id="delete">
+      delete from planocycle.product_power_mst
+        where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+        and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </delete>
+
+    <select id="selectCommodityList" parameterType="map" resultMap="CommodityListInfo">
+    select distinct
+      product_power_cd,product_power_name
+    from planocycle.product_power_mst
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+  </select>
+  <select id="selectExistsName" resultType="java.lang.Integer">
+    SELECT count(1) FROM planocycle.product_power_mst
+    where product_power_name=#{productPowerName,jdbcType=VARCHAR}
+    and company_cd = #{companyCd,jdbcType=VARCHAR}
+    and product_power_cd!=#{productPowerCd,jdbcType=INTEGER}
+  </select>
+</mapper>

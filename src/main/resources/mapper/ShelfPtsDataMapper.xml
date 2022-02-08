@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ShelfPtsDataMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ShelfPtsData">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="company_cd" jdbcType="VARCHAR" property="conpanyCd" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="authorcd" jdbcType="VARCHAR" property="authorcd" />
+    <result column="shelf_pattern_cd" jdbcType="INTEGER" property="shelfPatternCd" />
+    <result column="valid_flg" jdbcType="INTEGER" property="validFlg" />
+    <result column="start_day" javaType="DATE" property="startDay"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, pts.company_cd, file_name, pts.create_time, pts.authorcd,start_day,
+case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_cd
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select distinct
+    <include refid="Base_Column_List" />
+    from planocycle.shelf_pts_data pts
+    left join 	planocycle.shelf_pattern_mst pattern
+    on pts.shelf_pattern_cd = pattern.shelf_pattern_cd
+    and pts.company_cd = pattern.company_cd
+    left join planocycle.shelf_pattern_area area
+    on pts.shelf_pattern_cd = area.shelf_pattern_cd
+    and pattern.company_cd = area.company_cd
+    where pts.company_cd = #{companyCd,jdbcType=VARCHAR}
+    <if test="rangFlag==2">
+      and (pts.valid_flg =0 or pts.valid_flg is null)
+    </if>
+    <if test="lists.size>0">
+      and area.areacd in
+      <foreach collection="lists" index="index" item="item"  open="("  close=")" separator=",">
+        #{item}
+      </foreach>
+        and pts.valid_flg =1
+    </if>
+    order by id desc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from planocycle.shelf_pts_data
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPtsData">
+    <selectKey resultType="int" keyProperty="id" order="AFTER">
+      select  currval('planocycle.shelf_pts_data_id_seq'::regclass) as id
+    </selectKey>
+    insert into planocycle.shelf_pts_data (company_cd, file_name,
+      create_time, authorcd
+      )
+    values
+     (#{conpanyCd,jdbcType=VARCHAR}, #{fileName,jdbcType=VARCHAR},
+      now(), #{authorcd,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto">
+    <foreach collection="lists" item="list" separator=";">
+    update planocycle.shelf_pts_data
+    set shelf_pattern_cd = #{list.shelfPatternCd,jdbcType=INTEGER}
+      ,start_day = to_date(#{list.startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
+    <if test="list.startDay != null and list.shelfPatternCd != null">
+      ,valid_flg = 1
+    </if>
+    <if test="list.startDay == null and list.shelfPatternCd == null">
+      ,valid_flg = 0
+    </if>
+    where id = #{list.shelfPtsCd,jdbcType=INTEGER}  ;
+
+    </foreach>
+  </update>
+  <update id="updateByValidFlg">
+    update planocycle.shelf_pts_data
+    set valid_flg =0 where company_cd = #{conpanyCd,jdbcType=VARCHAR};
+  </update>
+  <update id="updatePtsHistory">
+    update planocycle.shelf_pts_data_history
+    set valid_flg = 1,start_day=to_date(#{startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
+    where pts_cd = #{shelfPtsCd,jdbcType=INTEGER}
+    and pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+  </update>
+  <insert id="insertPtsHistory">
+    insert into planocycle.shelf_pts_data_history
+    select #{companyCd,jdbcType=VARCHAR},#{shelfPtsCd,jdbcType=INTEGER}, #{shelfPatternCd,jdbcType=INTEGER},1,to_date(#{startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
+    from (select 1,1,1,1,1 ) tmp
+    where not exists (
+        select pts_cd,pattern_cd,valid_flg,start_day from planocycle.shelf_pts_data_history mstt
+        where mstt.pts_cd=#{shelfPtsCd,jdbcType=INTEGER}
+        and mstt.pattern_cd=#{shelfPatternCd,jdbcType=INTEGER}
+        and mstt.valid_flg=1
+        and mstt.start_day=to_date(#{startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
+    )
+  </insert>
+  <select id="selectExistsCount" resultType="java.lang.Integer">
+    select count(1) from planocycle.shelf_pts_data_history
+    where pts_cd = #{shelfPtsCd,jdbcType=INTEGER}
+    and pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+  </select>
+    <select id="selectHistoryData" resultType="com.trechina.planocycle.entity.vo.ShelfPtsDataHistoryVO">
+      SELECT pattern_cd as patternCd,p.shelf_pattern_name as patternName,
+             pts_cd as ptsCd,pts_cd ||'_'|| d.file_name as ptsName, h.start_day as startDay,authorcd,d.create_time as createTime
+      FROM planocycle.shelf_pts_data_history h
+             left join planocycle.shelf_pts_data d
+                       on h.pts_cd = d.id
+             left join planocycle.shelf_pattern_mst p
+                       on h.pattern_cd = p.shelf_pattern_cd
+      where h.company_cd=#{companyCd,jdbcType=VARCHAR}
+      order by pattern_cd,startDay desc
+    </select>
+  <select id="selectPtsName" resultType="com.trechina.planocycle.entity.vo.ShelfPtsNameVO">
+    select id,id||'_'||file_name as fileName
+    from planocycle.shelf_pts_data
+    where company_cd=#{companyCd,jdbcType=VARCHAR}
+    order by id desc
+  </select>
+  <select id="selectPtsInfoOfPattern" resultType="com.trechina.planocycle.entity.po.ShelfPtsData">
+    select distinct
+    pattern.shelf_pattern_cd as id,pattern.shelf_pattern_name as fileName,
+    id as shelfPatternCd,
+    pts.create_time as createTime, pts.authorcd,start_day as startDay
+    from planocycle.shelf_pattern_mst pattern
+    left join planocycle.shelf_pts_data pts
+    on pattern.shelf_pattern_cd = pts.shelf_pattern_cd
+    and pts.company_cd = pattern.company_cd
+    left join planocycle.shelf_pattern_area area
+    on pattern.shelf_pattern_cd = area.shelf_pattern_cd
+    and pattern.company_cd = area.company_cd
+    where pattern.company_cd = #{companyCd,jdbcType=VARCHAR}
+    <if test="rangFlag==2">
+        and not exists (select shelf_pattern_cd from planocycle.shelf_pts_data ptss
+        where pattern.shelf_pattern_cd = ptss.shelf_pattern_cd)
+    </if>
+    <if test="lists.size>0">
+      and area.areacd in
+      <foreach collection="lists" index="index" item="item"  open="("  close=")" separator=",">
+        #{item}
+      </foreach>
+    </if>
+    order by id desc
+  </select>
+  <update id="updatePtsHistoryFlg" parameterType="com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto">
+    <foreach collection="lists" item="list" separator=";">
+        update planocycle.shelf_pts_data_history
+        set valid_flg = 0
+        where pattern_cd = #{list.shelfPatternCd,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <update id="updateByPrimaryKeyOfPattern" parameterType="com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto">
+    <foreach collection="lists" item="list" separator=";">
+      <if test="list.shelfPtsCd == null">
+        update planocycle.shelf_pts_data
+        set
+          shelf_pattern_cd = null
+        ,start_day = to_date(#{list.startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
+        ,valid_flg = 0
+        where shelf_pattern_cd = #{list.shelfPatternCd,jdbcType=INTEGER}
+      </if>
+      <if test="list.shelfPtsCd != null">
+        update planocycle.shelf_pts_data
+        set
+          shelf_pattern_cd = #{list.shelfPatternCd,jdbcType=INTEGER}
+        ,start_day = to_date(#{list.startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
+        ,valid_flg = 1
+        where id = #{list.shelfPtsCd,jdbcType=INTEGER}
+      </if>
+    </foreach>
+  </update>
+  <update id="updateAll" parameterType="com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto">
+    <foreach collection="lists" item="list" separator=";">
+      <if test="list.shelfPtsCd != null">
+        update planocycle.shelf_pts_data
+        set shelf_pattern_cd = null ,start_day = null ,valid_flg = 0
+        where shelf_pattern_cd = #{list.shelfPatternCd,jdbcType=INTEGER}
+      </if>
+    </foreach>
+  </update>
+  <update id="updateShelfPtsOfAutoInner">
+    update planocycle.shelf_pts_data
+    set shelf_pattern_cd = #{patternId,jdbcType=INTEGER} ,start_day = now() ,valid_flg = 1
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateSingle">
+    update planocycle.shelf_pts_data
+    set shelf_pattern_cd = null ,start_day = null ,valid_flg = 0
+    where shelf_pattern_cd = #{patternId,jdbcType=INTEGER}
+  </update>
+  <update id="updatePtsHistoryFlgSingle">
+    update planocycle.shelf_pts_data_history
+    set valid_flg = 0
+    where pattern_cd = #{patternId,jdbcType=INTEGER}
+  </update>
+  <select id="checkPtsData" parameterType="com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto"
+          resultType="java.lang.Integer">
+    select count(1) from planocycle.shelf_pts_data
+    where shelf_pattern_cd in
+    <foreach collection="lists" index="index" item="item"  open="("  close=")" separator=",">
+      <if test="item.shelfPatternCd != null">
+        #{item.shelfPatternCd}
+      </if>
+    </foreach>
+  </select>
+
+  <select id="checkPatternData" parameterType="com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto"
+          resultType="java.lang.Integer">
+      select count(1) from planocycle.shelf_pts_data
+      where shelf_pattern_cd in
+      <foreach collection="lists" index="index" item="item"  open="("  close=")" separator=";">
+        #{item.shelfPatternCd}
+      </foreach>
+  </select>
+</mapper>

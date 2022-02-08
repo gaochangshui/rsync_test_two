@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderJanAttributeMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderJanAttribute">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="jan_new" jdbcType="VARCHAR" property="janNew" />
+    <id column="attr_cd" jdbcType="INTEGER" property="attrCd" />
+    <result column="attr_value" jdbcType="VARCHAR" property="attrValue" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, priority_order_cd, jan_new, attr_cd, attr_value
+  </sql>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from planocycle.priority_order_jan_attribute
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanAttribute">
+    insert into planocycle.priority_order_jan_attribute (company_cd, priority_order_cd, jan_new,
+      attr_cd, attr_value)
+    values
+           <foreach collection="lists" item="list" separator=",">
+           (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janNew,jdbcType=VARCHAR},
+      #{list.attrCd,jdbcType=INTEGER}, #{list.attrValue,jdbcType=VARCHAR})
+           </foreach>
+  </insert>
+</mapper>

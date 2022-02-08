@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderCommodityNotMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderCommodityNot">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="branch" jdbcType="VARCHAR" property="branch" />
+    <id column="jan_new" jdbcType="VARCHAR" property="jan" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from planocycle.priority_order_commodity_not
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <select id="selectNotInfo" resultType="com.trechina.planocycle.entity.vo.PriorityOrderCommodityVO">
+    select nots.branch,branchs.branch_name as branchName,jan_new as jan,jans.janname as janName,'' as errMsg
+    from planocycle.priority_order_commodity_not nots
+    left join masterdb.jans jans
+    on nots.jan_new = jans.jan
+    left join masterdb.branchs branchs
+    on nots.branch = branchs.branch_cd
+    and branchs.company_cd = nots.company_cd
+    where nots.company_cd = #{companyCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
+  <select id="selectBranchCDForCalcLength" resultType="java.lang.String">
+    select branch_cd
+    from masterdb.branchs
+    where company_cd =#{companyCd,jdbcType=VARCHAR}
+    limit 1
+  </select>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderCommodityNot">
+    insert into planocycle.priority_order_commodity_not (company_cd, priority_order_cd, branch,
+      jan_new)
+    values
+     <foreach collection="lists" item="list" separator=",">
+       <if test="list.companyCd!=null and list.priorityOrderCd!=null and list.branch!=null and list.jan!=null">
+           (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.branch,jdbcType=VARCHAR},
+      #{list.jan,jdbcType=VARCHAR})
+       </if>
+     </foreach>
+  </insert>
+
+</mapper>

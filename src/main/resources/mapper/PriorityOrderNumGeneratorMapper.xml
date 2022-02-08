@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderNumGeneratorMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderNumGenerator">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="usercd" jdbcType="INTEGER" property="usercd" />
+    <result column="creattime" jdbcType="TIMESTAMP" property="creattime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, usercd, creattime
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from priority_order_num_generator
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderNumGenerator">
+    <selectKey resultType="int" keyProperty="id" order="AFTER">
+      select  currval('planocycle.priority_order_num_generator_id_seq'::regclass) as id
+    </selectKey>
+    insert into planocycle.priority_order_num_generator ( usercd, creattime)
+    values ( #{usercd,jdbcType=INTEGER}, now())
+  </insert>
+
+</mapper>

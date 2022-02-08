@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderJanCardMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderJanCard">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="jan_old" jdbcType="VARCHAR" property="janOld" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from planocycle.priority_order_jan_card
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <select id="selectJanCard" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanCardVO">
+    select card.jan_old as janOld
+         ,COALESCE(jans.janname,'') as janOldName
+         , case when rep.jan_new is not null then 'JAN変商品リストに登録されている商品です。カットしてよいか確認ください'
+                when news.jan_new is not null then '新規商品リストに登録されている商品です。カットしてよいか確認ください' end as errMsg
+    from planocycle.priority_order_jan_card card
+         left join planocycle.priority_order_jan_replace rep
+               on card.company_cd = rep.company_cd
+                and card.priority_order_cd = rep.priority_order_cd
+                and card.jan_old = rep.jan_new
+        left join planocycle.priority_order_jan_new news
+        on card.company_cd = news.company_cd
+        and card.priority_order_cd = news.priority_order_cd
+        and card.jan_old = news.jan_new
+         left join masterdb.jans as jans
+               on card.jan_old = jans.jan
+    where card.company_cd = #{companyCd,jdbcType=VARCHAR}
+    and card.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanCard">
+    insert into planocycle.priority_order_jan_card (company_cd, priority_order_cd, jan_old
+      )
+    values
+       <foreach collection="lists" separator="," item="list">
+        <if test="list.janOld!=null">
+       (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janOld,jdbcType=VARCHAR})
+        </if>
+       </foreach>
+  </insert>
+
+</mapper>

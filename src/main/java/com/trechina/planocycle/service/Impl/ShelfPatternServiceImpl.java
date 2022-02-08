@@ -1,0 +1,234 @@
+package com.trechina.planocycle.service.Impl;
+
+import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.entity.dto.ShelfPatternDto;
+import com.trechina.planocycle.entity.po.ShelfPatternArea;
+import com.trechina.planocycle.entity.po.ShelfPatternBranch;
+import com.trechina.planocycle.entity.po.ShelfPatternMst;
+import com.trechina.planocycle.entity.vo.ShelfPatternBranchVO;
+import com.trechina.planocycle.entity.vo.ShelfPatternNameVO;
+import com.trechina.planocycle.entity.vo.ShelfPatternTreeVO;
+import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.mapper.ShelfPatternBranchMapper;
+import com.trechina.planocycle.mapper.ShelfPatternMstMapper;
+import com.trechina.planocycle.service.ShelfPatternAreaService;
+import com.trechina.planocycle.service.ShelfPatternService;
+import com.trechina.planocycle.utils.ResultMaps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+@Service
+public class ShelfPatternServiceImpl implements ShelfPatternService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private HttpSession session;
+    @Autowired
+    private ShelfPatternMstMapper shelfPatternMstMapper;
+    @Autowired
+    private ShelfPatternBranchMapper shelfPatternBranchMapper;
+    @Autowired
+    private ShelfPatternAreaService shelfPatternAreaService;
+
+    /**
+     * 获取棚pattern信息
+     * @param companyCd
+     * @return
+     */
+    @Override
+    public Map<String, Object> getShelfPatternInfo(String companyCd) {
+        logger.info("获取棚pattern信息的参数："+companyCd);
+        List<ShelfPatternMst> resultInfo = shelfPatternMstMapper.selectByPrimaryKey(companyCd);
+        logger.info("获取棚pattern信息的返回值："+resultInfo);
+        return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
+    }
+
+    /**
+     * 保存棚pattern信息
+     * @param shelfPatternDto
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Map<String, Object> setShelfPatternInfo(ShelfPatternDto shelfPatternDto) {
+        logger.info("保存棚pattern信息的参数："+shelfPatternDto);
+        // 名称check 同一个棚名称棚パータン名唯一
+        Integer resultNum = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
+        if (resultNum>0){
+            return ResultMaps.result(ResultEnum.NAMEISEXISTS);
+        }
+        List<ShelfPatternArea> list = new ArrayList<>();
+        ShelfPatternMst shelfPatternMst = new ShelfPatternMst();
+        shelfPatternMst.setConpanyCd(shelfPatternDto.getCompanyCd());
+        shelfPatternMst.setShelfNameCd(shelfPatternDto.getShelfNameCD());
+        shelfPatternMst.setShelfPatternName(shelfPatternDto.getShelfPatternName());
+        shelfPatternMst.setPtsRelationID(shelfPatternDto.getPtsRelationID());
+//        shelfPatternMst.setArea(item);
+        shelfPatternMst.setAuthorCd(session.getAttribute("aud").toString());
+        shelfPatternMst.setMaintainerCd(session.getAttribute("aud").toString());
+
+        logger.info("保存pattern信息转换后的参数："+shelfPatternMst);
+        try {
+            Integer resultInfo = shelfPatternMstMapper.insert(shelfPatternMst);
+            logger.info("保存棚名称信息保存后返回的信息：" + resultInfo);
+
+            shelfPatternDto.getArea().forEach(item -> {
+                ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
+                shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());
+                shelfPatternArea.setShelfPatternCd(shelfPatternMst.getShelfPatternCd());
+
+                shelfPatternArea.setAreacd(item);
+                list.add(shelfPatternArea);
+            });
+            logger.info("保存pattern信息转换后的area参数："+list);
+            shelfPatternAreaService.setShelfPatternArea(list);
+        } catch (Exception e) {
+            logger.error(e.toString());
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+    /**通过棚名称获取area和棚pattern
+     * @param companyCd
+     * @param shelfNameCd
+     * @return
+     */
+    @Override
+    public Map<String, Object> getShelfPatternArea(String companyCd, Integer shelfNameCd) {
+        return null;
+    }
+
+    /**
+     * 获取棚pattern关联的店cd
+     * @param shelfPatternCd
+     * @return
+     */
+    @Override
+    public Map<String, Object> getShelfPatternBranch(Integer shelfPatternCd) {
+        logger.info("获取棚pattern关联的店cd的参数："+shelfPatternCd);
+        List<ShelfPatternBranch> list = shelfPatternBranchMapper.selectByPrimaryKey(shelfPatternCd);
+        logger.info("获取棚pattern关联的店cd："+list);
+        ShelfPatternBranchVO shelfPatternBranchVO=new ShelfPatternBranchVO();
+        List<String> branchList = new ArrayList<>();
+        if (list.size() > 0) {
+            list.forEach(item -> {
+                branchList.add(String.valueOf(item.getBranch()));
+            });
+            shelfPatternBranchVO.setBranchCd(branchList);
+            shelfPatternBranchVO.setShelfPatternCd(list.get(0).getShelfPattrenCd());
+            shelfPatternBranchVO.setStartTime(list.get(0).getStartTime());
+            logger.info("获取棚pattern关联的店cd转换类型后："+shelfPatternBranchVO);
+            return ResultMaps.result(ResultEnum.SUCCESS,shelfPatternBranchVO);
+        }else {
+            return ResultMaps.result(ResultEnum.SUCCESS,null);
+        }
+    }
+
+    /**
+     * 保存棚pattern关联的店cd
+     * @param shelfPatternBranchVO
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Map<String, Object> setShelfPatternBranch(ShelfPatternBranchVO shelfPatternBranchVO) {
+        logger.info("保存棚pattern关联的店cd的参数："+shelfPatternBranchVO);
+        List<ShelfPatternBranch> list = new ArrayList<>();
+        shelfPatternBranchVO.getBranchCd().forEach(item->{
+            ShelfPatternBranch shelfPatternBranch = new ShelfPatternBranch();
+            shelfPatternBranch.setShelfPattrenCd(shelfPatternBranchVO.getShelfPatternCd());
+            shelfPatternBranch.setBranch(item);
+            shelfPatternBranch.setStartTime(shelfPatternBranchVO.getStartTime());
+            list.add(shelfPatternBranch);
+        });
+        logger.info("保存棚pattern关联的店cd转换类型："+list);
+        try{
+            shelfPatternBranchMapper.deleteByPrimaryKey(shelfPatternBranchVO.getShelfPatternCd());
+            shelfPatternBranchMapper.insert(list);
+        } catch (Exception e) {
+            logger.info("保存棚pattern关联的店cd报错："+e);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    /**
+     * 获取所有pattern的name
+     * @param companyCd
+     * @return
+     */
+    @Override
+    public Map<String, Object> getShelfPatternName(String companyCd) {
+        logger.info("获取所有棚pattern的name的参数："+companyCd);
+        List<ShelfPatternNameVO> shelfPatternNameVO = shelfPatternMstMapper.selectPatternName(companyCd);
+        return ResultMaps.result(ResultEnum.SUCCESS,shelfPatternNameVO);
+    }
+
+    /**
+     * 获取关联了店铺的棚pattern的name（优先顺位表用）
+     * @param companyCd
+     * @return
+     */
+    @Override
+    public Map<String, Object> getShelfPatternNameBranch(String companyCd) {
+        logger.info("获取关联了店铺的棚pattern的name的参数："+companyCd);
+        List<ShelfPatternTreeVO> shelfPatternNameVOS = shelfPatternMstMapper.selectPatternNameBranch(companyCd);
+        return ResultMaps.result(ResultEnum.SUCCESS,shelfPatternNameVOS);
+    }
+
+    /**
+     * 删除棚pattern
+     *
+     * @param jsonObject
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Object> delShelfPatternInfo(JSONObject jsonObject) {
+        logger.info("删除棚pattern的参数："+jsonObject.toString());
+        if (((Map) jsonObject.get("param")).get("id")!=null ){
+            Integer id = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("id")));
+            // 删除棚pattern
+            shelfPatternMstMapper.deleteByShelfName(id);
+            // 删除关联的店
+            shelfPatternBranchMapper.deleteByPrimaryKey(id);
+            // 删除棚pattern关联的area
+            shelfPatternAreaService.delShelfPatternArea(id);
+            // 修改管理那的棚pts
+            shelfPatternMstMapper.updateByPtsForShelfPdCd(id);
+            // 修改履历表的棚pts
+            shelfPatternMstMapper.deleteShelfPdCdHistory(id);
+        }
+
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    /**
+     * 获取shelfPattern 1@棚パータン名称１,2@棚パータン名称2 格式的字符串
+     *
+     * @param shelfPatternNo
+     * @return
+     */
+    @Override
+    public String getShePatternNoNm(String shelfPatternNo) {
+
+        return shelfPatternMstMapper.selectByShePatternNoNm(shelfPatternNo);
+    }
+
+    /**
+     * 根据ptsKey获取patternid
+     *
+     * @param ptsKey
+     * @return
+     */
+    @Override
+    public List<Integer> getpatternIdOfPtsKey(String ptsKey) {
+        return shelfPatternMstMapper.getpatternIdOfPtsKey(ptsKey);
+    }
+}

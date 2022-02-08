@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ShelfPatternBranchMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ShelfPatternBranch">
+    <id column="shelf_pattern_cd" jdbcType="INTEGER" property="shelfPatternCd" />
+    <result column="branch" jdbcType="VARCHAR" property="branch" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    shelf_pattern_cd, branch, start_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from planocycle.shelf_pattern_branch
+    where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from planocycle.shelf_pattern_branch
+    where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternBranch">
+    insert into planocycle.shelf_pattern_branch (shelf_pattern_cd,
+      branch, start_time)
+    values
+    <foreach collection="lists" item="list" separator=",">
+     ( #{list.shelfPatternCd,jdbcType=INTEGER},
+      #{list.branch,jdbcType=VARCHAR}, #{list.startTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ProductPowerReserveMstMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ProductPowerReserveMst">
+    <id column="company_cd" jdbcType="VARCHAR" property="conpanyCd" />
+    <id column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
+    <id column="market_pos_flag" jdbcType="INTEGER" property="marketPosFlag" />
+    <id column="data_cd" jdbcType="INTEGER" property="dataCd" />
+    <result column="data_name" jdbcType="VARCHAR" property="dataName" />
+    <result column="show_flag" jdbcType="INTEGER" property="showFlag" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, product_power_cd, market_pos_flag, data_cd, data_name, show_flag
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from planocycle.product_power_reserve_mst
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" >
+    delete from planocycle.product_power_reserve_mst
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerReserveMst">
+    insert into planocycle.product_power_reserve_mst (company_cd, product_power_cd, market_pos_flag,
+      data_cd, data_name,show_flag)
+    values
+    <foreach collection="lists" separator="," item="list">
+      (#{list.conpanyCd,jdbcType=VARCHAR}, #{list.productPowerCd,jdbcType=INTEGER}, #{list.marketPosFlag,jdbcType=INTEGER},
+      #{list.dataCd,jdbcType=INTEGER}, #{list.dataName,jdbcType=VARCHAR},#{list.showFlag,jdbcType=INTEGER})
+    </foreach>
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.ProductPowerReserveMst">
+    update planocycle.product_power_reserve_mst
+    set data_name = #{dataName,jdbcType=VARCHAR}
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+      and market_pos_flag = #{marketPosFlag,jdbcType=INTEGER}
+      and data_cd = #{dataCd,jdbcType=INTEGER}
+  </update>
+</mapper>

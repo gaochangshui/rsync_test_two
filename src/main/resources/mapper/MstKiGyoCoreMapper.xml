@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.MstKiGyoCoreMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.MstKiGyoCore">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <result column="date_mst" jdbcType="VARCHAR" property="dateMst" />
+    <result column="tenpo_kaisou_mst" jdbcType="VARCHAR" property="tenpoKaisouMst" />
+    <result column="selected_tenpo" jdbcType="VARCHAR" property="selectedTenpo" />
+    <result column="shouhin_kaisou_mst" jdbcType="VARCHAR" property="shouhinKaisouMst" />
+    <result column="selected_shouhin" jdbcType="VARCHAR" property="selectedShouhin" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, date_mst, tenpo_kaisou_mst, selected_tenpo, shouhin_kaisou_mst, selected_shouhin
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from masterdb.mst_kigyocore
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+  </select>
+
+</mapper>

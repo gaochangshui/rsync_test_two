@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.JansMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.Jans">
+    <id column="jan" jdbcType="VARCHAR" property="jan" />
+    <result column="janname" jdbcType="VARCHAR" property="janname" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    jan, janname
+  </sql>
+  <insert id="updateTransfer">
+    insert into masterdb.jans
+    select * from masterdb.jans_wk
+  </insert>
+  <delete id="deleteByPrimaryKey">
+    delete from masterdb.jans
+  </delete>
+</mapper>

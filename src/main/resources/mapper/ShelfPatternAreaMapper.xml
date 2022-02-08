@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ShelfPatternAreaMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ShelfPatternArea">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="shelf_pattern_cd" jdbcType="INTEGER" property="shelfPatternCd" />
+    <id column="areacd" jdbcType="INTEGER" property="areacd" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from planocycle.shelf_pattern_area
+    where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternArea">
+    insert into planocycle.shelf_pattern_area (company_cd, shelf_pattern_cd, areacd
+      )
+    values
+    <foreach collection="lists" separator="," item="list">
+           (#{list.companyCd,jdbcType=VARCHAR}, #{list.shelfPatternCd,jdbcType=INTEGER}, #{list.areacd,jdbcType=INTEGER})
+    </foreach>
+  </insert>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderCatepakAttributeMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderCatepakAttribute">
+    <id column="attr_cd" jdbcType="INTEGER" property="attrCd" />
+    <id column="catepak_cd" jdbcType="INTEGER" property="catepakCd" />
+    <result column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <result column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <result column="attr_value" jdbcType="VARCHAR" property="attrValue" />
+    <result column="flg" jdbcType="INTEGER" property="flg" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    attr_cd, catepak_cd, company_cd, priority_order_cd, attr_value, flg
+  </sql>
+
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from planocycle.priority_order_catepak_attribute
+    where company_cd = #{companyCd,jdbcType=INTEGER}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <select id="selectForTempTable" resultType="java.lang.String">
+    select branch_num from ${tableName}
+    where
+    <foreach collection="lists" separator="and" item="list">
+      ${list}
+    </foreach>
+    limit 1
+  </select>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderCatepakAttribute">
+    insert into planocycle.priority_order_catepak_attribute (attr_cd, catepak_cd, company_cd,
+      priority_order_cd, attr_value, flg)
+    values
+     <foreach collection="lists" item="list" separator=",">
+           (#{list.attrCd,jdbcType=INTEGER}, #{list.catepakCd,jdbcType=INTEGER}, #{list.companyCd,jdbcType=VARCHAR},
+      #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.attrValue,jdbcType=VARCHAR}, #{list.flg,jdbcType=INTEGER})
+     </foreach>
+  </insert>
+
+</mapper>

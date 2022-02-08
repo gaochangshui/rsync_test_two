@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.AttributeMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.Attribute">
+    <id column="attrcd" jdbcType="INTEGER" property="attrcd" />
+    <result column="attrname" jdbcType="VARCHAR" property="attrname" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    attrcd, attrname
+  </sql>
+  <insert id="updateTransfer">
+    insert into masterdb.attribute
+    select * from masterdb.attribute_wk
+  </insert>
+
+  <delete id="deleteByPrimaryKey" >
+    delete from masterdb.attribute
+  </delete>
+
+
+</mapper>

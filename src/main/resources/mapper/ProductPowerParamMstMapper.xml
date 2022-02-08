@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ProductPowerParamMstMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ProductPowerParamMst">
+    <id column="company_cd" jdbcType="VARCHAR" property="conpanyCd" />
+    <id column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
+    <result column="perid_flag" jdbcType="INTEGER" property="peridFlag" />
+    <result column="start_perid" jdbcType="VARCHAR" property="startPerid" />
+    <result column="end_perid" jdbcType="VARCHAR" property="endPerid" />
+    <result column="season_perid_flag" jdbcType="INTEGER" property="seasonPeridFlag" />
+    <result column="season_st_perid" jdbcType="VARCHAR" property="seasonStPerid" />
+    <result column="season_end_perid" jdbcType="VARCHAR" property="seasonEndPerid" />
+    <result column="store_cd" jdbcType="VARCHAR" property="storeCd" />
+    <result column="channel_name" jdbcType="VARCHAR" property="channelName" />
+    <result column="county_name" jdbcType="VARCHAR" property="countyName" />
+    <result column="item_flg" jdbcType="INTEGER" property="itemFlg" />
+    <result column="prod_cd" jdbcType="VARCHAR" property="prdCd" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, product_power_cd, perid_flag, start_perid, end_perid, season_perid_flag, season_st_perid,
+    season_end_perid, store_cd, channel_name, county_name, item_flg,prod_cd
+  </sql>
+  <select id="selectCommodityParam" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from planocycle.product_power_param_mst
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+  </select>
+  <select id="selectAttrAndItem" resultType="com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO">
+    SELECT item_flg as itemFlg,array_to_string(array_agg(attr.attr_cd),',') as attrStr
+    FROM planocycle.product_power_param_mst mst
+           left join planocycle.product_power_param_attribute attr
+                     on mst.company_cd =attr.company_cd
+                       and mst.product_power_cd =attr.product_power_cd
+    where mst.company_cd = #{companyCd,jdbcType=VARCHAR}
+      and mst.product_power_cd = #{productOrderCd,jdbcType=INTEGER}
+    group by item_flg
+  </select>
+  <select id="selectAttrAndValue" resultType="com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO">
+    SELECT item_flg as itemFlg,array_to_string(array_agg(attr.attr_value),',') as attrStr
+    FROM planocycle.product_power_param_mst mst
+           left join planocycle.product_power_param_attribute attr
+                     on mst.company_cd =attr.company_cd
+                       and mst.product_power_cd =attr.product_power_cd
+    where mst.company_cd = #{companyCd,jdbcType=VARCHAR}
+      and mst.product_power_cd = #{productOrderCd,jdbcType=INTEGER}
+    group by item_flg
+  </select>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerParamMst">
+    insert into planocycle.product_power_param_mst (company_cd, product_power_cd, perid_flag,
+      start_perid, end_perid,season_perid_flag, season_st_perid,
+      season_end_perid,  store_cd,
+      channel_name, county_name, item_flg,prod_cd
+      )
+    values (#{conpanyCd,jdbcType=VARCHAR}, #{productPowerCd,jdbcType=INTEGER}, #{peridFlag,jdbcType=INTEGER},
+      #{startPerid,jdbcType=TIMESTAMP}, #{endPerid,jdbcType=TIMESTAMP}, #{seasonPeridFlag,jdbcType=INTEGER}, #{seasonStPerid,jdbcType=TIMESTAMP},
+      #{seasonEndPerid,jdbcType=TIMESTAMP}, #{storeCd,jdbcType=VARCHAR},
+      #{channelName,jdbcType=VARCHAR}, #{countyName,jdbcType=VARCHAR}
+             , #{itemFlg,jdbcType=INTEGER},#{prdCd,jdbcType=VARCHAR}
+      )
+  </insert>
+  <delete id="deleteCommofityParamForChange" parameterType="com.trechina.planocycle.entity.po.ProductPowerParamMst">
+    delete from planocycle.product_power_param_mst
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+      and (perid_flag != #{peridFlag,jdbcType=INTEGER}
+            or start_perid != #{startPerid,jdbcType=TIMESTAMP}
+             or end_perid != #{endPerid,jdbcType=TIMESTAMP}
+             or season_perid_flag != #{seasonPeridFlag,jdbcType=INTEGER}
+             or season_st_perid != #{seasonStPerid,jdbcType=TIMESTAMP}
+             or season_end_perid != #{seasonEndPerid,jdbcType=TIMESTAMP}
+             or store_cd != #{storeCd,jdbcType=VARCHAR}
+             or channel_name != #{channelName,jdbcType=VARCHAR}
+             or county_name != #{countyName,jdbcType=VARCHAR}
+            or prod_cd != #{prdCd,jdbcType=VARCHAR})
+  </delete>
+  <delete id="deleteCommofityParam" >
+    delete from planocycle.product_power_param_mst
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+  </delete>
+</mapper>

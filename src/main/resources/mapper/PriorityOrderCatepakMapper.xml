@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderCatepakMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderCatepak">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <result column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <result column="rank" jdbcType="INTEGER" property="rank" />
+    <result column="branch_num" jdbcType="INTEGER" property="branchNum" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, company_cd, priority_order_cd, rank, branch_num
+  </sql>
+  <update id="updateBranchNum">
+    update planocycle.priority_order_catepak
+    set branch_num = #{branchNum,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey"  resultType="com.trechina.planocycle.entity.vo.PriorityOrderCatePakVO">
+    select sm.id,sm.smalls,sm.rank,sm.branch_num as branchNum,big.bigs
+    from
+      (select
+         pak.id,pak.company_cd,pak.priority_order_cd,
+         string_agg(attrs.attr_cd||':'||coalesce(attrs.attr_value,''),',' order by attrs.attr_cd) as smalls,
+         pak.rank,pak.branch_num
+        from planocycle.priority_order_catepak pak
+          left join planocycle.priority_order_catepak_attribute  attrs
+          on pak.id = attrs.catepak_cd
+          and attrs.flg = 0
+          group by pak.id,pak.rank,pak.branch_num
+      ) sm
+      left join
+      (select
+         pak.id,
+         string_agg(attrm.attr_cd||':'||coalesce(attrm.attr_value,''),',' order by attrm.attr_cd) as bigs
+        from planocycle.priority_order_catepak pak
+          left join planocycle.priority_order_catepak_attribute attrm
+          on pak.id = attrm.catepak_cd
+          and attrm.flg = 1
+          group by pak.id) big
+      on sm.id = big.id
+      where sm.company_cd = #{companyCd,jdbcType=VARCHAR}
+    and sm.priority_order_cd =#{priorityOrderCd,jdbcType=INTEGER}
+  </select>
+  <select id="selectColName" resultType="integer">
+      select count(1) from planocycle.product_power_param_attribute where product_power_cd =#{productPowerNo,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey">
+    delete from planocycle.priority_order_catepak
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderCatepak">
+    <selectKey resultType="int" keyProperty="id" order="AFTER">
+      select  currval('planocycle.priority_order_catepak_id_seq'::regclass) as id
+    </selectKey>
+    insert into planocycle.priority_order_catepak ( company_cd, priority_order_cd,
+      rank, branch_num)
+    values
+    <if test="rank!=null"></if>
+           ( #{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER},
+      #{rank,jdbcType=INTEGER}, #{branchNum,jdbcType=INTEGER})
+  </insert>
+</mapper>
