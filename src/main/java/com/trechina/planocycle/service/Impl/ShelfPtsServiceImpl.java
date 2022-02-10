@@ -83,11 +83,12 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             if (patternIdList.size()>0){
                 Integer patternId = patternIdList.get(0);
                 logger.info("用到的patternid："+patternId);
+                String authorCd = httpSession.getAttribute("aud").toString();
                 // 清空patternid
-                shelfPtsDataMapper.updateSingle(patternId);
-                shelfPtsDataMapper.updatePtsHistoryFlgSingle(patternId);
+                shelfPtsDataMapper.updateSingle(patternId,authorCd);
+                shelfPtsDataMapper.updatePtsHistoryFlgSingle(patternId,authorCd);
                 // 写入patternid
-                shelfPtsDataMapper.updateShelfPtsOfAutoInner(shelfPtsData.getId(),patternId);
+                shelfPtsDataMapper.updateShelfPtsOfAutoInner(shelfPtsData.getId(),patternId,authorCd);
                 // 写入history
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 Calendar calendar = Calendar.getInstance();

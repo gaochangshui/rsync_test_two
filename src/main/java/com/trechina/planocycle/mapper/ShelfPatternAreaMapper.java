@@ -7,8 +7,8 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 @Mapper
 public interface ShelfPatternAreaMapper {
-    int deleteByPrimaryKey( @Param("shelfPatternCd") Integer shelfPatternCd);
+    int deleteByPrimaryKey( @Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd")String authorCd);
 
-    int insert(@Param("lists") List<ShelfPatternArea> record);
+    int insert(@Param("lists") List<ShelfPatternArea> record,@Param("authorCd")String authorCd);
 
 }

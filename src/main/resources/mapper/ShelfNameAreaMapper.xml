@@ -6,16 +6,19 @@
     <id column="areacd" jdbcType="INTEGER" property="areacd" />
     <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
   </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="integer">
-    delete from planocycle.shelf_name_area
+  <update id="deleteByPrimaryKey">
+    update planocycle.shelf_name_area
+    set deleteflg=1,edit_time=now(),editer_cd=#{authorCd}
     where shelf_name_cd = #{shelfNameCd,jdbcType=INTEGER}
-  </delete>
+  </update>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfNameArea">
-    insert into planocycle.shelf_name_area (shelf_name_cd, areacd, company_cd
-      )
+    insert into planocycle.shelf_name_area (shelf_name_cd, areacd, company_cd,create_time,author_cd
+    )
     values
-           <foreach collection="lists" separator="," item="list">
-           (#{list.shelfNameCd,jdbcType=INTEGER}, #{list.areacd,jdbcType=INTEGER}, #{list.companyCd,jdbcType=VARCHAR})
-           </foreach>
+    <foreach collection="lists" separator="," item="list">
+        (#{list.shelfNameCd,jdbcType=INTEGER},#{list.areacd,jdbcType=INTEGER}, #{list.companyCd,jdbcType=VARCHAR},now(),#{authorCd})
+    </foreach>
+
+
   </insert>
 </mapper>

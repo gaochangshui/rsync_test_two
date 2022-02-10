@@ -11,12 +11,12 @@ public interface ShelfNameAreaService {
      * @param shelfNameArea
      * @return
      */
-    Map<String,Object> setShelfNameArea(List<ShelfNameArea> shelfNameArea);
+    Map<String,Object> setShelfNameArea(List<ShelfNameArea> shelfNameArea,String authorCd);
 
     /**
      * 删除shelfName关联的area
      * @param id
      * @return
      */
-    Integer delShelfNameArea(Integer id);
+    Integer delShelfNameArea(Integer id,String authorCd);
 }

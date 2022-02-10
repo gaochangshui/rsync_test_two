@@ -30,7 +30,7 @@ public interface ShelfNameMstMapper {
      */
     List<ShelfNameVO> selectShelfName(@Param("conpanyCd") String conpanyCd);
 
-    int deleteShelfNameInfo(Integer id);
+    int deleteShelfNameInfo(@Param("id") Integer id,@Param("authorCd") String authorCd);
 
     ShelfNameUpdVO selShelfNameInfoById(Integer id);
 

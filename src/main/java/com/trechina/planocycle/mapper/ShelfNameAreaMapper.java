@@ -8,8 +8,8 @@ import java.util.List;
 
 @Mapper
 public interface ShelfNameAreaMapper {
-    int deleteByPrimaryKey(@Param("shelfNameCd") Integer shelfNameCd);
+    int deleteByPrimaryKey(@Param("shelfNameCd") Integer shelfNameCd,@Param("authorCd")String authorCd);
 
-    int insert(@Param("lists") List<ShelfNameArea> record);
+    int insert(@Param("lists") List<ShelfNameArea> record,@Param("authorCd") String authorCd);
 
 }

@@ -21,15 +21,15 @@ public interface ShelfPatternMstMapper {
 
     List<ShelfPatternTreeVO> selectPatternNameBranch(@Param("conpanyCd") String conpanyCd);
 
-    void deleteByShelfName(Integer id);
+    void deleteByShelfName(@Param("shelfPatternCd") Integer id,@Param("authorCd") String authorCd);
 
     String selectByShePatternNoNm(@Param("item") String shelfPatternNo);
 
     Integer selectDistinctName(ShelfPatternDto shelfPatternDto);
 
-    void updateByPtsForShelfPdCd(Integer id);
+    void updateByPtsForShelfPdCd(@Param("id") Integer id,@Param("authorCd") String authorCd);
 
-    void deleteShelfPdCdHistory(Integer id);
+    void deleteShelfPdCdHistory(@Param("id") Integer id,@Param("authorCd") String authorCd);
 
     List<Integer> getpatternIdOfPtsKey(String ptsKey);
 }

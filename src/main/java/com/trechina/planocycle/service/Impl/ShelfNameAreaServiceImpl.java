@@ -23,8 +23,8 @@ public class ShelfNameAreaServiceImpl implements ShelfNameAreaService {
      * @return
      */
     @Override
-    public Map<String, Object> setShelfNameArea(List<ShelfNameArea> shelfNameArea) {
-        shelfNameAreaMapper.insert(shelfNameArea);
+    public Map<String, Object> setShelfNameArea(List<ShelfNameArea> shelfNameArea,String authorCd) {
+        shelfNameAreaMapper.insert(shelfNameArea,authorCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -35,8 +35,7 @@ public class ShelfNameAreaServiceImpl implements ShelfNameAreaService {
      * @return
      */
     @Override
-    public Integer delShelfNameArea(Integer id) {
-        Integer result = shelfNameAreaMapper.deleteByPrimaryKey(id);
-        return result;
+    public Integer delShelfNameArea(Integer id,String authorCd) {
+        return shelfNameAreaMapper.deleteByPrimaryKey(id,authorCd);
     }
 }

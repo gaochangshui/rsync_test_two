@@ -1,6 +1,5 @@
 package com.trechina.planocycle.service.Impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfNameDto;
 import com.trechina.planocycle.entity.po.ShelfNameArea;
@@ -72,7 +71,8 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         shelfNameMst.setAuthorCd(session.getAttribute("aud").toString());
         logger.info("保存棚名称信息转换后的参数："+shelfNameMst);
         Integer resultInfo = shelfNameMstMapper.insert(shelfNameMst);
-
+        //获取用户id
+        String authorCd = session.getAttribute("aud").toString();
         shelfNameDto.getArea().forEach(item -> {
             ShelfNameArea shelfNameArea = new ShelfNameArea();
             shelfNameArea.setCompanyCd(shelfNameDto.getCompanyCd());
@@ -82,7 +82,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         });
         logger.info("保存棚名称信息转换后的area参数："+list);
 
-        shelfNameAreaService.setShelfNameArea(list);
+        shelfNameAreaService.setShelfNameArea(list,authorCd);
         logger.info("保存棚名称信息保存后返回的信息："+resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
@@ -108,9 +108,11 @@ public class ShelfNameServiceImpl implements ShelfNameService {
     @Override
     public Map<String, Object> delShelfNameInfo(JSONObject jsonObject) {
         logger.info("删除棚名称Name的参数："+jsonObject.toString());
+        //获取创建者cd
+        String authorCd = session.getAttribute("aud").toString();
         // 删除棚名称
         Integer id = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("id")));
-        shelfNameMstMapper.deleteShelfNameInfo(id);
+        shelfNameMstMapper.deleteShelfNameInfo(id,authorCd);
         // 查询要删掉的棚patternid
         List<Integer> patternId = shelfNameMstMapper.selectPatternCd(id);
         patternId.forEach(item->{
@@ -123,7 +125,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
             shelfPatternService.delShelfPatternInfo((JSONObject) JSONObject.toJSON(paraMap));
             // 删除关联的area
         });
-        shelfNameAreaService.delShelfNameArea(id);
+        shelfNameAreaService.delShelfNameArea(id,authorCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
     /**

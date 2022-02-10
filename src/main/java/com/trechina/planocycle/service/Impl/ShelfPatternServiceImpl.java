@@ -72,7 +72,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
 //        shelfPatternMst.setArea(item);
         shelfPatternMst.setAuthorCd(session.getAttribute("aud").toString());
         shelfPatternMst.setMaintainerCd(session.getAttribute("aud").toString());
-
+        //获取用户id
+        String authorCd = session.getAttribute("aud").toString();
         logger.info("保存pattern信息转换后的参数："+shelfPatternMst);
         try {
             Integer resultInfo = shelfPatternMstMapper.insert(shelfPatternMst);
@@ -87,7 +88,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 list.add(shelfPatternArea);
             });
             logger.info("保存pattern信息转换后的area参数："+list);
-            shelfPatternAreaService.setShelfPatternArea(list);
+            shelfPatternAreaService.setShelfPatternArea(list,authorCd);
         } catch (Exception e) {
             logger.error(e.toString());
             return ResultMaps.result(ResultEnum.FAILURE);
@@ -139,6 +140,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     @Override
     public Map<String, Object> setShelfPatternBranch(ShelfPatternBranchVO shelfPatternBranchVO) {
         logger.info("保存棚pattern关联的店cd的参数："+shelfPatternBranchVO);
+        //获取创建者cd
+        String authorCd = session.getAttribute("aud").toString();
         List<ShelfPatternBranch> list = new ArrayList<>();
         shelfPatternBranchVO.getBranchCd().forEach(item->{
             ShelfPatternBranch shelfPatternBranch = new ShelfPatternBranch();
@@ -149,8 +152,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         });
         logger.info("保存棚pattern关联的店cd转换类型："+list);
         try{
-            shelfPatternBranchMapper.deleteByPrimaryKey(shelfPatternBranchVO.getShelfPatternCd());
-            shelfPatternBranchMapper.insert(list);
+            shelfPatternBranchMapper.deleteByPrimaryKey(shelfPatternBranchVO.getShelfPatternCd(),authorCd);
+            shelfPatternBranchMapper.insert(list,authorCd);
         } catch (Exception e) {
             logger.info("保存棚pattern关联的店cd报错："+e);
             return ResultMaps.result(ResultEnum.FAILURE);
@@ -194,16 +197,18 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         logger.info("删除棚pattern的参数："+jsonObject.toString());
         if (((Map) jsonObject.get("param")).get("id")!=null ){
             Integer id = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("id")));
+            //获取创建者cd
+            String authorCd = session.getAttribute("aud").toString();
             // 删除棚pattern
-            shelfPatternMstMapper.deleteByShelfName(id);
+            shelfPatternMstMapper.deleteByShelfName(id,authorCd);
             // 删除关联的店
-            shelfPatternBranchMapper.deleteByPrimaryKey(id);
+            shelfPatternBranchMapper.deleteByPrimaryKey(id,authorCd);
             // 删除棚pattern关联的area
-            shelfPatternAreaService.delShelfPatternArea(id);
+            shelfPatternAreaService.delShelfPatternArea(id,authorCd);
             // 修改管理那的棚pts
-            shelfPatternMstMapper.updateByPtsForShelfPdCd(id);
+            shelfPatternMstMapper.updateByPtsForShelfPdCd(id,authorCd);
             // 修改履历表的棚pts
-            shelfPatternMstMapper.deleteShelfPdCdHistory(id);
+            shelfPatternMstMapper.deleteShelfPdCdHistory(id,authorCd);
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS);

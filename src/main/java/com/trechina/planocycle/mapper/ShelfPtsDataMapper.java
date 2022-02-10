@@ -23,7 +23,7 @@ public interface ShelfPtsDataMapper {
 
     void updatePtsHistory(ShelfPtsJoinPatternDto item);
 
-    void insertPtsHistory(ShelfPtsJoinPatternDto item);
+    void insertPtsHistory( ShelfPtsJoinPatternDto item);
 
     Integer selectExistsCount(ShelfPtsJoinPatternDto item);
 
@@ -43,9 +43,9 @@ public interface ShelfPtsDataMapper {
 
     void updateAll(@Param("lists") List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto);
 
-    void updateShelfPtsOfAutoInner(Integer id, Integer patternId);
+    void updateShelfPtsOfAutoInner(@Param("id") Integer id, @Param("patternId") Integer patternId,@Param("authorCd") String authorCd);
 
-    void updateSingle(Integer patternId);
+    void updateSingle(@Param("patternId") Integer patternId,@Param("authorCd") String authorCd);
 
-    void updatePtsHistoryFlgSingle(Integer patternId);
+    void updatePtsHistoryFlgSingle(@Param("patternId") Integer patternId,@Param("authorCd") String authorCd);
 }

@@ -11,12 +11,12 @@ public interface ShelfPatternAreaService {
      * @param shelfPatternArea
      * @return
      */
-    Map<String,Object> setShelfPatternArea(List<ShelfPatternArea> shelfPatternArea);
+    Map<String,Object> setShelfPatternArea(List<ShelfPatternArea> shelfPatternArea,String authorCd);
 
     /**
      * 删除shelfPattern关联的area
      * @param id
      * @return
      */
-    Integer delShelfPatternArea(Integer id);
+    Integer delShelfPatternArea(Integer id,String authorCd);
 }

@@ -22,8 +22,8 @@ public class ShelfPatternAreaServiceImpl implements ShelfPatternAreaService {
      * @return
      */
     @Override
-    public Map<String, Object> setShelfPatternArea(List<ShelfPatternArea> shelfPatternArea) {
-        shelfPatternAreaMapper.insert(shelfPatternArea);
+    public Map<String, Object> setShelfPatternArea(List<ShelfPatternArea> shelfPatternArea,String authorCd) {
+        shelfPatternAreaMapper.insert(shelfPatternArea,authorCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -34,8 +34,8 @@ public class ShelfPatternAreaServiceImpl implements ShelfPatternAreaService {
      * @return
      */
     @Override
-    public Integer delShelfPatternArea(Integer id) {
-        Integer result = shelfPatternAreaMapper.deleteByPrimaryKey(id);
-        return result;
+    public Integer delShelfPatternArea(Integer id,String authorCd) {
+        return shelfPatternAreaMapper.deleteByPrimaryKey(id,authorCd);
+
     }
 }

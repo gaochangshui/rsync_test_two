@@ -13,19 +13,20 @@
     select
     <include refid="Base_Column_List" />
     from planocycle.shelf_pattern_branch
-    where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+    where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER} and deleteflg=0
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="map">
-    delete from planocycle.shelf_pattern_branch
+  <update id="deleteByPrimaryKey" parameterType="map">
+    update  planocycle.shelf_pattern_branch
+    set edit_time=now(),editer_cd=#{authorCd},deleteflg=1
     where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
-  </delete>
+  </update>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternBranch">
     insert into planocycle.shelf_pattern_branch (shelf_pattern_cd,
-      branch, start_time)
+      branch, start_time,create_time,author_cd)
     values
     <foreach collection="lists" item="list" separator=",">
      ( #{list.shelfPatternCd,jdbcType=INTEGER},
-      #{list.branch,jdbcType=VARCHAR}, #{list.startTime,jdbcType=TIMESTAMP})
+      #{list.branch,jdbcType=VARCHAR}, #{list.startTime,jdbcType=TIMESTAMP},now(),#{authorCd})
     </foreach>
   </insert>
 

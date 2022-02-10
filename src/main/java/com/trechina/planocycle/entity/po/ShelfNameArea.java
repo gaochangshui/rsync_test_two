@@ -7,6 +7,8 @@ public class ShelfNameArea {
 
     private String companyCd;
 
+
+
     public Integer getShelfNameCd() {
         return shelfNameCd;
     }

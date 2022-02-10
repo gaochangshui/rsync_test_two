@@ -26,6 +26,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     on pts.shelf_pattern_cd = area.shelf_pattern_cd
     and pattern.company_cd = area.company_cd
     where pts.company_cd = #{companyCd,jdbcType=VARCHAR}
+      and deleteflg=0
     <if test="rangFlag==2">
       and (pts.valid_flg =0 or pts.valid_flg is null)
     </if>
@@ -81,7 +82,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
   </update>
   <insert id="insertPtsHistory">
     insert into planocycle.shelf_pts_data_history
-    select #{companyCd,jdbcType=VARCHAR},#{shelfPtsCd,jdbcType=INTEGER}, #{shelfPatternCd,jdbcType=INTEGER},1,to_date(#{startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
+    select #{item.companyCd,jdbcType=VARCHAR},#{item.shelfPtsCd,jdbcType=INTEGER}, #{item.shelfPatternCd,jdbcType=INTEGER},1,to_date(#{item.startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
     from (select 1,1,1,1,1 ) tmp
     where not exists (
         select pts_cd,pattern_cd,valid_flg,start_day from planocycle.shelf_pts_data_history mstt
@@ -176,17 +177,17 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
   </update>
   <update id="updateShelfPtsOfAutoInner">
     update planocycle.shelf_pts_data
-    set shelf_pattern_cd = #{patternId,jdbcType=INTEGER} ,start_day = now() ,valid_flg = 1
+    set shelf_pattern_cd = #{patternId,jdbcType=INTEGER} ,start_day = now() ,valid_flg = 1,edit_time=now(),editer_cd=#{authorCd}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateSingle">
     update planocycle.shelf_pts_data
-    set shelf_pattern_cd = null ,start_day = null ,valid_flg = 0
+    set shelf_pattern_cd = null ,start_day = null ,valid_flg = 0,edit_time=now(),editer_cd=#{authorCd}
     where shelf_pattern_cd = #{patternId,jdbcType=INTEGER}
   </update>
   <update id="updatePtsHistoryFlgSingle">
     update planocycle.shelf_pts_data_history
-    set valid_flg = 0
+    set valid_flg = 0 ,edit_time=now(),editer_cd=#{authorCd}
     where pattern_cd = #{patternId,jdbcType=INTEGER}
   </update>
   <select id="checkPtsData" parameterType="com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto"
