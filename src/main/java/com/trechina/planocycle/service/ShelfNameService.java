@@ -2,9 +2,7 @@ package com.trechina.planocycle.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfNameDto;
-import com.trechina.planocycle.entity.vo.ShelfPatternTreeVO;
 
-import java.util.List;
 import java.util.Map;
 
 public interface ShelfNameService {
@@ -23,6 +21,12 @@ public interface ShelfNameService {
      */
     Map<String,Object> setShelfName(ShelfNameDto shelfNameDto);
 
+    /**
+     * 棚名称修改
+     * @param shelfNameDto
+     * @return
+     */
+    Map<String,Object> updateShelfName(ShelfNameDto shelfNameDto);
     /**
      * 只获取棚名称Name
      * @param companyCd

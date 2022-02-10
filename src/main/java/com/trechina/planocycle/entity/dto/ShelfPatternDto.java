@@ -3,11 +3,20 @@ package com.trechina.planocycle.entity.dto;
 import java.util.List;
 
 public class ShelfPatternDto {
+    private Integer shelfPatternCd;
     private String companyCd;
     private Integer shelfNameCD;
     private List<Integer> area;
     private String shelfPatternName;
     private String ptsRelationID;
+
+    public Integer getShelfPatternCd() {
+        return shelfPatternCd;
+    }
+
+    public void setShelfPatternCd(Integer shelfPatternCd) {
+        this.shelfPatternCd = shelfPatternCd;
+    }
 
     public String getCompanyCd() {
         return companyCd;

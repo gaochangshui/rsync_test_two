@@ -20,6 +20,11 @@
     set deleteflg=1,edit_time=now(),editer_cd=#{authorCd}
     where id=#{id,jdbcType=INTEGER}
   </update>
+  <update id="update">
+    update  planocycle.shelf_name_mst
+    set company_cd=#{conpanyCd},shelf_name=#{shelfName},edit_time=now(),editer_cd=#{authorCd}
+    where id=#{id}
+  </update>
   <select id="selectShelfNameInfo" resultType="com.trechina.planocycle.entity.vo.ShelfNameDataVO">
     select
         shelf.id,shelf.company_cd, array_to_string(array_agg(areas.areaname),',') as areaName, shelf.shelf_name as shelfName,
@@ -65,9 +70,10 @@
     where shelf.id = #{id,jdbcType=INTEGER} and shelf.deleteflg=0
   </select>
   <select id="selectDistinctName" resultType="java.lang.Integer">
-    select count(1) from planocycle.shelf_name_mst
+    select id from planocycle.shelf_name_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR}
     and shelf_name = #{shelfName,jdbcType=VARCHAR}
+    and deleteflg=0
   </select>
 
   <select id="selectShelfPatternTree" resultType="com.trechina.planocycle.entity.vo.ShelfPatternTreeVO">

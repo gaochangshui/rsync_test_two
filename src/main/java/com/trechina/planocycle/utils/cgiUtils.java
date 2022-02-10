@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.trechina.planocycle.enums.ResultEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -74,6 +72,12 @@ public class cgiUtils {
         }
         in.close();
         return builder.toString();
+    }
+
+    public String setPath(String key){
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+        return resourceBundle.getString(key);
+
     }
 
     /**

@@ -30,10 +30,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String tokenInfo =(String) session.getAttribute("MSPACEDGOURDLP");
         cgiUtils cgiUtil = new cgiUtils();
         List arrList = new ArrayList();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String queryPath = resourceBundle.getString("TaskQuery");
         // 带着taskId，再次请求cgi获取运行状态/数据
-        Map<String,Object> Data = cgiUtil.postCgiOfWeb(queryPath,taskID,tokenInfo);
+        Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
         logger.info("商品力点数表web版cgi返回数据："+Data);
         // 返回的数据是字符串，处理成二维数组
         if (Data.get("data") !=null) {
@@ -63,8 +61,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                                                      Integer productPowerNo,String dataNm) {
         // 从cgi获取数据
         String uuid = UUID.randomUUID().toString();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("ProductPowerData");
         ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
         productPowerDataForCgiDto.setCompany(companyCd);
         productPowerDataForCgiDto.setMode("yobi_shori");
@@ -78,11 +74,10 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         logger.info("保存文件的时候调用cgi的参数"+productPowerDataForCgiDto);
         try {
             //递归调用cgi，首先去taskid
-            String result = cgiUtils.postCgi(path,productPowerDataForCgiDto,tokenInfo);
+            String result = cgiUtils.postCgi(cgiUtils.setPath("ProductPowerData"),productPowerDataForCgiDto,tokenInfo);
             logger.info("taskId返回："+result);
-            String queryPath = resourceBundle.getString("TaskQuery");
             //带着taskId，再次请求cgi获取运行状态/数据
-            Map<String,Object> Data =cgiUtils.postCgiLoop(queryPath,result,tokenInfo);
+            Map<String,Object> Data =cgiUtils.postCgiLoop(cgiUtils.setPath("TaskQuery"),result,tokenInfo);
             logger.info("保存文件的时候调用cgi返回的数据："+Data);
         }catch (IOException e) {
             logger.info("保存文件的时候调用cgi报错：" + e);
@@ -100,8 +95,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Override
     public Map<String, Object> getCommodityScoreTaskId(ProductPowerDataForCgiDto productPowerDataForCgiDto) {
         String uuid = UUID.randomUUID().toString();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("ProductPowerData");
         productPowerDataForCgiDto.setGuid(uuid);
         if (productPowerDataForCgiDto.getSeasonFlag().equals("0")) {
             productPowerDataForCgiDto.setSeasonFlag("MONTH");
@@ -117,7 +110,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String tokenInfo =(String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("调用cgi获取data的参数："+productPowerDataForCgiDto);
         try {
-            String result = cgiUtil.postCgi(path,productPowerDataForCgiDto, tokenInfo);
+            String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
             logger.info("taskId返回："+result);
             return ResultMaps.result(ResultEnum.SUCCESS,result);
         } catch (IOException e) {

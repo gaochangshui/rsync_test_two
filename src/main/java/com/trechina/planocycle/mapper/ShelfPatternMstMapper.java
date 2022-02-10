@@ -15,6 +15,8 @@ public interface ShelfPatternMstMapper {
 
     int insert(ShelfPatternMst record);
 
+    int update(ShelfPatternMst record);
+
     List<ShelfPatternMst> selectByPrimaryKey(@Param("conpanyCd") String conpanyCd);
 
     List<ShelfPatternNameVO> selectPatternName(@Param("conpanyCd") String conpanyCd);

@@ -22,7 +22,12 @@ public interface ShelfPatternService {
      * @return
      */
     Map<String,Object> setShelfPatternInfo(ShelfPatternDto shelfPatternDto);
-
+    /**
+     * 修改棚pattren信息
+     * @param shelfPatternDto
+     * @return
+     */
+    Map<String,Object> updateShelfPatternInfo(ShelfPatternDto shelfPatternDto);
     /**
      * 通过棚名称获取area和棚pattern
      * @param companyCd

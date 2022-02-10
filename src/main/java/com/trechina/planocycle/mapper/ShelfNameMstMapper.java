@@ -14,7 +14,19 @@ import java.util.List;
 @Mapper
 public interface ShelfNameMstMapper {
 
+    /**
+     * 保存棚名称信息
+     * @param
+     * @return
+     */
     int insert(ShelfNameMst record);
+
+    /**
+     * 修改棚名称信息
+     * @param
+     * @return
+     */
+    int update( ShelfNameMst record);
 
     /**
      * 获取棚名称信息
@@ -39,4 +51,7 @@ public interface ShelfNameMstMapper {
     List<Integer> selectPatternCd(Integer id);
 
     List<ShelfPatternTreeVO> selectShelfPatternTree(String companyCd);
+
+
+
 }

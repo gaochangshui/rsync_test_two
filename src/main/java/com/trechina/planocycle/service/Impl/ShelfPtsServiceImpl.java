@@ -96,7 +96,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 ShelfPtsJoinPatternDto shelfPtsJoinPatternDto= new ShelfPtsJoinPatternDto();
                 shelfPtsJoinPatternDto.setCompanyCd(shelfPtsDto.getCompanyCd());
                 shelfPtsJoinPatternDto.setShelfPtsCd(shelfPtsData.getId());
-                shelfPtsJoinPatternDto.setShelrPatternCd(patternId);
+                shelfPtsJoinPatternDto.setShelfPatternCd(patternId);
                 shelfPtsJoinPatternDto.setStartDay(simpleDateFormat.format(date));
                 shelfPtsDataMapper.insertPtsHistory(shelfPtsJoinPatternDto);
             }

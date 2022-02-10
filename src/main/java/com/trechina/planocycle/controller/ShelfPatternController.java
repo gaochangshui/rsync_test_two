@@ -34,7 +34,15 @@ public class ShelfPatternController {
     public Map<String,Object> setShelfPatternInfo(@RequestBody ShelfPatternDto shelfPatternDto){
         return shelfPatternService.setShelfPatternInfo(shelfPatternDto);
     }
-
+    /**
+     * 修改棚pattern信息
+     * @param shelfPatternDto
+     * @return
+     */
+    @PostMapping("/updateShelfPatternInfo")
+    public Map<String,Object> updateShelfPatternInfo(@RequestBody ShelfPatternDto shelfPatternDto){
+        return shelfPatternService.updateShelfPatternInfo(shelfPatternDto);
+    }
     /**
      * 获取棚pattern关联的店cd
      * @param shelfPattrenCd

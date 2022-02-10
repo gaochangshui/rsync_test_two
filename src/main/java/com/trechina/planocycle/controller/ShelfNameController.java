@@ -44,6 +44,13 @@ public class ShelfNameController {
         return shelfNameService.setShelfName(shelfNameDto);
     }
     /**
+     * 修改棚名称信息
+     */
+    @PostMapping("/updateShelfNameInfo")
+    public Map<String,Object> updateShelfNameInfo(@RequestBody ShelfNameDto shelfNameDto){
+        return shelfNameService.updateShelfName(shelfNameDto);
+    }
+    /**
      * 删除棚名称
      * @param jsonObject
      * @return

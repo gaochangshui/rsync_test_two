@@ -98,7 +98,7 @@
     </foreach>)
   </select>
   <select id="selectDistinctName" resultType="java.lang.Integer">
-    select count(1)
+    select shelf_pattern_cd
     from planocycle.shelf_pattern_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR}
     and shelf_name_cd = #{shelfNameCD,jdbcType=INTEGER}
@@ -126,7 +126,12 @@
     set edit_time=now(),editer_cd=#{authorCd},deleteflg=1
     where pattern_cd =#{id,jdbcType=INTEGER}
   </update>
-  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternMst">
+    <update id="update">
+      update planocycle.shelf_pattern_mst set company_cd=#{conpanyCd},shelf_name_cd=#{shelfNameCd},shelf_pattern_name=#{shelfPatternName}
+        ,ptskey=#{ptsRelationID},maintainer_cd=#{maintainerCd},modified=#{modified}
+        where shelf_pattern_cd=#{shelfPatternCd}
+    </update>
+    <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternMst">
       <selectKey resultType="int" keyProperty="shelfPatternCd" order="AFTER">
         select  currval('planocycle.shelf_pattern_mst_shelf_pattern_cd_seq'::regclass) as id
       </selectKey>

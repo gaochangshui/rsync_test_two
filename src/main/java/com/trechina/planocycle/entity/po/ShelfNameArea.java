@@ -1,6 +1,7 @@
 package com.trechina.planocycle.entity.po;
 
 public class ShelfNameArea {
+
     private Integer shelfNameCd;
 
     private Integer areacd;

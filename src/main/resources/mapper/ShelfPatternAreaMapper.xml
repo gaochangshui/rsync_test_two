@@ -10,6 +10,7 @@
     update planocycle.shelf_pattern_area
     set edit_time=now(),editer_cd=#{authorCd},deleteflg=1
     where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+        and deleteflg=0
   </update>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternArea">
     insert into planocycle.shelf_pattern_area (company_cd, shelf_pattern_cd, areacd,create_time,author_cd

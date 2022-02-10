@@ -12,4 +12,5 @@ public interface ShelfNameAreaMapper {
 
     int insert(@Param("lists") List<ShelfNameArea> record,@Param("authorCd") String authorCd);
 
+
 }

@@ -14,14 +14,6 @@ public class ShelfPtsJoinPatternDto {
         this.companyCd = companyCd;
     }
 
-    public Integer getShelfPatternCd() {
-        return shelfPatternCd;
-    }
-
-    public void setShelfPatternCd(Integer shelfPatternCd) {
-        this.shelfPatternCd = shelfPatternCd;
-    }
-
     public Integer getShelfPtsCd() {
         return shelfPtsCd;
     }
@@ -30,12 +22,12 @@ public class ShelfPtsJoinPatternDto {
         this.shelfPtsCd = shelfPtsCd;
     }
 
-    public Integer getShelrPatternCd() {
+    public Integer getShelfPatternCd() {
         return shelfPatternCd;
     }
 
-    public void setShelrPatternCd(Integer shelrPatternCd) {
-        this.shelfPatternCd = shelrPatternCd;
+    public void setShelfPatternCd(Integer shelfPatternCd) {
+        this.shelfPatternCd = shelfPatternCd;
     }
 
     public String getStartDay() {

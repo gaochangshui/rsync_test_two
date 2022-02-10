@@ -3,10 +3,18 @@ package com.trechina.planocycle.entity.dto;
 import java.util.List;
 
 public class ShelfNameDto {
+    private Integer id;
     private String companyCd;
     private String shelfName;
     private List<Integer> area;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
     public String getCompanyCd() {
         return companyCd;
     }
@@ -34,7 +42,8 @@ public class ShelfNameDto {
     @Override
     public String toString() {
         return "ShelfNameDto{" +
-                "companyCd='" + companyCd + '\'' +
+                "id='" + id + '\'' +
+                ", companyCd='" + companyCd + '\'' +
                 ", shelfName='" + shelfName + '\'' +
                 ", area=" + area +
                 '}';
