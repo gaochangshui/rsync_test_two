@@ -13,6 +13,7 @@ import com.trechina.planocycle.mapper.ShelfNameMstMapper;
 import com.trechina.planocycle.service.ShelfNameAreaService;
 import com.trechina.planocycle.service.ShelfNameService;
 import com.trechina.planocycle.service.ShelfPatternService;
+import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,32 +98,68 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         logger.info("修改棚名称信息的参数："+shelfNameDto);
         // check名称 同一个企业名称不能重复
         Integer resultNum = shelfNameMstMapper.selectDistinctName(shelfNameDto);
-        if (resultNum!=null && resultNum.equals(shelfNameDto.getId())){
+        if (resultNum!=null && !resultNum.equals(shelfNameDto.getId())){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
-        List<ShelfNameArea> list = new ArrayList<>();
+//获取用户id
+        String authorCd = session.getAttribute("aud").toString();
+        //要删除的集合
+        List<ShelfNameArea> delList = new ArrayList<>();
+        //要添加的集合
+        List<ShelfNameArea> setList = new ArrayList<>();
         ShelfNameMst shelfNameMst = new ShelfNameMst();
         shelfNameMst.setId(shelfNameDto.getId());
         shelfNameMst.setShelfName(shelfNameDto.getShelfName());
         shelfNameMst.setConpanyCd(shelfNameDto.getCompanyCd());
-        shelfNameMst.setAuthorCd(session.getAttribute("aud").toString());
+        shelfNameMst.setAuthorCd(authorCd);
         logger.info("修改棚名称信息转换后的参数："+shelfNameMst);
         int resultInfo = shelfNameMstMapper.update(shelfNameMst);
-        //获取用户id
-        String authorCd = session.getAttribute("aud").toString();
-        shelfNameDto.getArea().forEach(item -> {
-            ShelfNameArea shelfNameArea = new ShelfNameArea();
-            shelfNameArea.setCompanyCd(shelfNameDto.getCompanyCd());
-            shelfNameArea.setAreacd(item);
-            shelfNameArea.setShelfNameCd(shelfNameMst.getId());
-            list.add(shelfNameArea);
+
+        //获取shelfName关联的Area
+        List<Integer> getShelfNameArea = shelfNameAreaService.getShelfNameArea(shelfNameMst.getId(),shelfNameMst.getConpanyCd());
+        //数据库中和修改重复数据
+        shelfNameDto.getArea().forEach(item->{
+            for (Integer area : getShelfNameArea) {
+                if (item.equals(area)){
+                    shelfNameAreaService.setDelFlg(item,shelfNameDto.getId(),authorCd);
+                }
+            }
         });
-        logger.info("修改棚名称信息转换后的area参数："+list);
-        //删除关联的棚pattern
-        shelfNameAreaService.delShelfNameArea(shelfNameDto.getId(),authorCd);
-        //保存棚pattern
-        shelfNameAreaService.setShelfNameArea(list,authorCd);
-        logger.info("修改棚名称信息保存后返回的信息："+resultInfo);
+        //要删除的area集合
+        List<Integer> deleteAreaList = ListDisparityUtils.getListDisparit(getShelfNameArea, shelfNameDto.getArea());
+        //要新增area的集合
+        List<Integer> setAreaList = ListDisparityUtils.getListDisparit( shelfNameDto.getArea(),getShelfNameArea);
+        if (deleteAreaList.size()>0) {
+            deleteAreaList.forEach(item -> {
+
+                ShelfNameArea shelfNameArea = new ShelfNameArea();
+                shelfNameArea.setCompanyCd(shelfNameDto.getCompanyCd());
+                shelfNameArea.setAreacd(item);
+                shelfNameArea.setShelfNameCd(shelfNameMst.getId());
+                delList.add(shelfNameArea);
+            });
+            logger.info("删除棚名称信息转换后的area参数："+delList);
+            //删除关联的area
+            deleteAreaList.forEach(item->{
+                shelfNameAreaService.delAreaCd(item,shelfNameDto.getId(),authorCd);
+            });
+        }
+        logger.info("删除棚名称信息转换后的area参数："+delList);
+        if (setAreaList.size()>0) {
+            setAreaList.forEach(item -> {
+                ShelfNameArea shelfNameArea = new ShelfNameArea();
+                shelfNameArea.setCompanyCd(shelfNameDto.getCompanyCd());
+                shelfNameArea.setAreacd(item);
+                shelfNameArea.setShelfNameCd(shelfNameMst.getId());
+                setList.add(shelfNameArea);
+            });
+            logger.info("添加棚名称信息转换后的area参数：" + setList);
+            //添加关联的area
+            Map<String, Object> setAreaInfo = shelfNameAreaService.setShelfNameArea(setList, authorCd);
+            logger.info("添加棚名称信息保存后返回的信息："+setAreaInfo);
+        }
+
+
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

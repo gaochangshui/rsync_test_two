@@ -124,6 +124,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         shelfPtsDataMapper.updateByPrimaryKey(shelfPtsJoinPatternDto);
         shelfPtsDataMapper.updatePtsHistoryFlg(shelfPtsJoinPatternDto);
         shelfPtsJoinPatternDto.forEach(item->{
+
             if (item.getShelfPatternCd() != null) {
                 Integer existsCount = shelfPtsDataMapper.selectExistsCount(item);
                 if (existsCount == 0) {

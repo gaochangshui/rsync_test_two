@@ -38,4 +38,21 @@ public class ShelfPatternAreaServiceImpl implements ShelfPatternAreaService {
         return shelfPatternAreaMapper.deleteByPrimaryKey(id,authorCd);
 
     }
+
+    @Override
+    public List<Integer> getShelfPatternArea(Integer id,String companyCd) {
+        return shelfPatternAreaMapper.getShelfPatternArea(id,companyCd);
+    }
+
+    @Override
+    public int deleteAreaCd(Integer areaCd, Integer shelfPatternCd, String authorCd) {
+        return shelfPatternAreaMapper.deleteAreaCd(areaCd,shelfPatternCd,authorCd);
+    }
+
+    @Override
+    public Integer setDelFlg(Integer areaCd, Integer shelfPatternCd, String authorCd) {
+        return shelfPatternAreaMapper.setDelFlg(areaCd,shelfPatternCd,authorCd);
+    }
+
+
 }

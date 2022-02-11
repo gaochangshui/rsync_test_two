@@ -79,9 +79,9 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     where pts_cd = #{shelfPtsCd,jdbcType=INTEGER}
     and pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
   </update>
-  <insert id="insertPtsHistory">
+  <insert id="insertPtsHistory" parameterType="com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto">
     insert into planocycle.shelf_pts_data_history
-    select #{item.companyCd,jdbcType=VARCHAR},#{item.shelfPtsCd,jdbcType=INTEGER}, #{item.shelfPatternCd,jdbcType=INTEGER},1,to_date(#{item.startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
+    select #{companyCd,jdbcType=VARCHAR},#{shelfPtsCd,jdbcType=INTEGER}, #{shelfPatternCd,jdbcType=INTEGER},1,to_date(#{startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
     from (select 1,1,1,1,1 ) tmp
     where not exists (
         select pts_cd,pattern_cd,valid_flg,start_day from planocycle.shelf_pts_data_history mstt

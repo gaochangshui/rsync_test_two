@@ -44,7 +44,7 @@
     on shelf.shelf_name_cd = name.id
     left join planocycle.shelf_pattern_branch branch
     on branch.shelf_pattern_cd = shelf.shelf_pattern_cd
-    where shelf.company_cd = #{conpanyCd,jdbcType=VARCHAR} and shelf.deleteflg=0
+    where shelf.company_cd = #{conpanyCd,jdbcType=VARCHAR} and shelf.deleteflg=0 and pattarea.deleteflg=0
     group by  <include refid="groups" />
     order by shelf.shelf_pattern_cd desc
   </select>
@@ -128,7 +128,7 @@
   </update>
     <update id="update">
       update planocycle.shelf_pattern_mst set company_cd=#{conpanyCd},shelf_name_cd=#{shelfNameCd},shelf_pattern_name=#{shelfPatternName}
-        ,ptskey=#{ptsRelationID},maintainer_cd=#{maintainerCd},modified=#{modified}
+        ,ptskey=#{ptsRelationID},maintainer_cd=#{maintainerCd},modified=now()
         where shelf_pattern_cd=#{shelfPatternCd}
     </update>
     <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternMst">
