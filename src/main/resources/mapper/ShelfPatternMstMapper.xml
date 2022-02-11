@@ -101,7 +101,7 @@
     select shelf_pattern_cd
     from planocycle.shelf_pattern_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR}
-    and shelf_name_cd = #{shelfNameCD,jdbcType=INTEGER}
+
     and shelf_pattern_name = #{shelfPatternName,jdbcType=VARCHAR}
     and deleteflg=0
   </select>

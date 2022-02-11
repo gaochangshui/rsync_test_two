@@ -60,8 +60,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     public Map<String, Object> setShelfPatternInfo(ShelfPatternDto shelfPatternDto) {
         logger.info("保存棚pattern信息的参数："+shelfPatternDto);
         // 名称check 同一个棚名称棚パータン名唯一
-        Integer resultNum = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
-        if (resultNum!=null){
+        List<Integer> result = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
+        if (result!=null && result.size()>0){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
         List<ShelfPatternArea> list = new ArrayList<>();
@@ -106,8 +106,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     public Map<String, Object> updateShelfPatternInfo(ShelfPatternDto shelfPatternDto) {
         logger.info("修改棚pattern信息的参数："+shelfPatternDto);
         // 名称check 同一个棚名称棚パータン名唯一
-        Integer resultNum = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
-        if (resultNum!=null && !resultNum.equals(shelfPatternDto.getShelfPatternCd())){
+        List<Integer> resultNum = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
+        if (resultNum!=null &&resultNum.size()>1 && !resultNum.equals(shelfPatternDto.getShelfPatternCd())){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
         //要删除的集合
