@@ -42,6 +42,11 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     delete from planocycle.shelf_pts_data
     where id = #{id,jdbcType=INTEGER}
   </delete>
+  <update id="delShelfPtsInfo">
+    update  planocycle.shelf_pts_data
+    set deleteflg=1
+    where id = #{id}
+  </update>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPtsData">
     <selectKey resultType="int" keyProperty="id" order="AFTER">
       select  currval('planocycle.shelf_pts_data_id_seq'::regclass) as id

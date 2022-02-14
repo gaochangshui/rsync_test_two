@@ -48,4 +48,6 @@ public interface ShelfPtsDataMapper {
     void updateSingle(@Param("patternId") Integer patternId,@Param("authorCd") String authorCd);
 
     void updatePtsHistoryFlgSingle(@Param("patternId") Integer patternId,@Param("authorCd") String authorCd);
+
+    Integer delShelfPtsInfo(@Param("id") Integer id);
 }

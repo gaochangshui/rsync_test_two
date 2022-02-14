@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.Impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.po.ShelfPtsData;
@@ -173,6 +174,20 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 }
             }
         });
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+    /**
+     * 删除棚割pts信息
+     * @param id
+     * @return
+     */
+    @Override
+    public Map<String, Object> delShelfPtsInfo(JSONObject jsonObject) {
+        if (((Map) jsonObject.get("param")).get("id")!=null ) {
+            Integer id = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("id")));
+            shelfPtsDataMapper.delShelfPtsInfo(id);
+
+        }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

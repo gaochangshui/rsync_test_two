@@ -1,5 +1,6 @@
 package com.trechina.planocycle.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.service.ShelfPtsService;
@@ -85,4 +86,13 @@ public class ShelfPtsController {
         return shelfPtsService.getPtsInfoOfPattern(companyCd,rangFlag,areaList);
     }
 
+    /**
+     * 删除棚割pts信息
+     * @param
+     * @return
+     */
+    @DeleteMapping("/delShelfPtsInfo")
+    public Map<String,Object> delShelfPtsInfo(@RequestBody JSONObject jsonObject){
+        return shelfPtsService.delShelfPtsInfo(jsonObject);
+    }
 }

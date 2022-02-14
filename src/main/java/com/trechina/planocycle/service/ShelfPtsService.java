@@ -1,8 +1,8 @@
 package com.trechina.planocycle.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
-import com.trechina.planocycle.entity.vo.ShelfPtsNameVO;
 
 import java.util.List;
 import java.util.Map;
@@ -58,4 +58,10 @@ public interface ShelfPtsService {
      * @return
      */
     Map<String, Object> saveShelfPtsOfPattern(List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto);
+    /**
+     * 删除棚割pts信息
+     * @param
+     * @return
+     */
+    public Map<String,Object> delShelfPtsInfo(JSONObject jsonObject);
 }
