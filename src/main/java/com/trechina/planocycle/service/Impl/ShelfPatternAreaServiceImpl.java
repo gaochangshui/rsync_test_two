@@ -45,7 +45,7 @@ public class ShelfPatternAreaServiceImpl implements ShelfPatternAreaService {
     }
 
     @Override
-    public int deleteAreaCd(Integer areaCd, Integer shelfPatternCd, String authorCd) {
+    public int deleteAreaCd(List<Integer> areaCd, Integer shelfPatternCd, String authorCd) {
         return shelfPatternAreaMapper.deleteAreaCd(areaCd,shelfPatternCd,authorCd);
     }
 

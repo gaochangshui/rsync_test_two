@@ -16,7 +16,10 @@
     update planocycle.shelf_pattern_area
     set edit_time=now(),editer_cd=#{authorCd},deleteflg=1
     where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
-      and deleteflg=0 and areacd = #{areaCd,jdbcType=INTEGER}
+      and deleteflg=0 and areacd in
+        <foreach collection="areaCd" item="area" open="(" close=")" separator=",">
+          #{area}
+        </foreach>
   </update>
   <update id="setDelFlg">
     update planocycle.shelf_pattern_area

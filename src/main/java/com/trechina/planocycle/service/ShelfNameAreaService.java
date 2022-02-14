@@ -32,7 +32,7 @@ public interface ShelfNameAreaService {
      * @param areaCd
      * @return
      */
-    Integer delAreaCd(Integer areaCd,Integer id,String authorCd);
+    Integer delAreaCd(List<Integer> areaCd,Integer id,String authorCd);
 
     /**
      * 恢复删除数据

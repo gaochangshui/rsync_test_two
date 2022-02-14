@@ -27,7 +27,7 @@ public interface ShelfPatternAreaService {
      */
     List<Integer> getShelfPatternArea( Integer id,String companyCd);
 
-    int deleteAreaCd (Integer areaCd, Integer shelfPatternCd,String authorCd);
+    int deleteAreaCd (List<Integer> areaCd, Integer shelfPatternCd,String authorCd);
 
     //恢复删除数据
     Integer setDelFlg(Integer areaCd, Integer shelfPatternCd,String authorCd);

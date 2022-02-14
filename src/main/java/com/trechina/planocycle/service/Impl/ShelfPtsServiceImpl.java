@@ -80,7 +80,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             logger.info("手动组合的ptskey："+ptsKey);
             List<Integer> patternIdList = shelfPatternService.getpatternIdOfPtsKey(ptsKey.substring(0,ptsKey.length()-1));
             logger.info("根据组合的ptskey找patternid："+patternIdList.toString());
-            if (patternIdList.size()>0){
+            if (patternIdList.isEmpty()){
                 Integer patternId = patternIdList.get(0);
                 logger.info("用到的patternid："+patternId);
                 String authorCd = httpSession.getAttribute("aud").toString();
@@ -98,7 +98,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 shelfPtsJoinPatternDto.setShelfPtsCd(shelfPtsData.getId());
                 shelfPtsJoinPatternDto.setShelfPatternCd(patternId);
                 shelfPtsJoinPatternDto.setStartDay(simpleDateFormat.format(date));
-                shelfPtsDataMapper.insertPtsHistory(shelfPtsJoinPatternDto);
+                shelfPtsDataMapper.insertPtsHistory(shelfPtsJoinPatternDto,authorCd);
             }
         }
         return ResultMaps.result(ResultEnum.SUCCESS,shelfPtsData.getId());
@@ -121,6 +121,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 //            return ResultMaps.result(ResultEnum.FAILURE);
 //        }
 
+        String authorCd = httpSession.getAttribute("aud").toString();
         shelfPtsDataMapper.updateByPrimaryKey(shelfPtsJoinPatternDto);
         shelfPtsDataMapper.updatePtsHistoryFlg(shelfPtsJoinPatternDto);
         shelfPtsJoinPatternDto.forEach(item->{
@@ -128,10 +129,10 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             if (item.getShelfPatternCd() != null) {
                 Integer existsCount = shelfPtsDataMapper.selectExistsCount(item);
                 if (existsCount == 0) {
-                    shelfPtsDataMapper.insertPtsHistory(item);
+                    shelfPtsDataMapper.insertPtsHistory(item,authorCd);
                 } else {
                     // 更新表
-                    shelfPtsDataMapper.updatePtsHistory(item);
+                    shelfPtsDataMapper.updatePtsHistory(item,authorCd);
                     // 插入表
                 }
             }
@@ -156,7 +157,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 //        if (shelfPtsDataMapper.checkPatternData(shelfPtsJoinPatternDto) == 0) {
 //            return ResultMaps.result(ResultEnum.FAILURE);
 //        }
-
+        String authorCd = httpSession.getAttribute("aud").toString();
         // 修改表数据
         shelfPtsDataMapper.updateByPrimaryKeyOfPattern(shelfPtsJoinPatternDto);
         shelfPtsDataMapper.updatePtsHistoryFlg(shelfPtsJoinPatternDto);
@@ -164,10 +165,10 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             if (item.getShelfPtsCd() != null) {
                 Integer existsCount = shelfPtsDataMapper.selectExistsCount(item);
                 if (existsCount == 0) {
-                    shelfPtsDataMapper.insertPtsHistory(item);
+                    shelfPtsDataMapper.insertPtsHistory(item,authorCd);
                 } else {
                     // 更新表
-                    shelfPtsDataMapper.updatePtsHistory(item);
+                    shelfPtsDataMapper.updatePtsHistory(item,authorCd);
                     // 插入表
                 }
             }

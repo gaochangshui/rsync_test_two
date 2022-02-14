@@ -45,7 +45,7 @@ public class ShelfNameAreaServiceImpl implements ShelfNameAreaService {
     }
 
     @Override
-    public Integer delAreaCd(Integer areaCd, Integer id,String authorCd) {
+    public Integer delAreaCd(List<Integer> areaCd, Integer id,String authorCd) {
         return shelfNameAreaMapper.deleteAreaCd(areaCd,id,authorCd);
     }
 

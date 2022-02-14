@@ -107,7 +107,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         logger.info("修改棚pattern信息的参数："+shelfPatternDto);
         // 名称check 同一个棚名称棚パータン名唯一
         List<Integer> resultNum = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
-        if (resultNum!=null &&resultNum.size()>1 && !resultNum.equals(shelfPatternDto.getShelfPatternCd())){
+        if (resultNum!=null &&resultNum.size()>1){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
         //要删除的集合
@@ -153,9 +153,9 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 logger.info("删除棚pattern信息转换后的area参数："+delList);
 
                 // 删除棚pattern关联的area
-                deleteAreaList.forEach(item->{
-                    shelfPatternAreaService.deleteAreaCd(item,shelfPatternDto.getShelfPatternCd(),authorCd);
-                });
+
+                    shelfPatternAreaService.deleteAreaCd(deleteAreaList,shelfPatternDto.getShelfPatternCd(),authorCd);
+
             }
             if (setAreaList.size()>0) {
                 setAreaList.forEach(item -> {

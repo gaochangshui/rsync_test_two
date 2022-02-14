@@ -140,9 +140,9 @@ public class ShelfNameServiceImpl implements ShelfNameService {
             });
             logger.info("删除棚名称信息转换后的area参数："+delList);
             //删除关联的area
-            deleteAreaList.forEach(item->{
-                shelfNameAreaService.delAreaCd(item,shelfNameDto.getId(),authorCd);
-            });
+
+                shelfNameAreaService.delAreaCd(deleteAreaList,shelfNameDto.getId(),authorCd);
+
         }
         logger.info("删除棚名称信息转换后的area参数："+delList);
         if (setAreaList.size()>0) {

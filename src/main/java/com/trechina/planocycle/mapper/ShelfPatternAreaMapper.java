@@ -13,7 +13,7 @@ public interface ShelfPatternAreaMapper {
 
     List<Integer> getShelfPatternArea(@Param("id") Integer id,@Param("companyCd")String companyCd);
 
-    int deleteAreaCd (@Param("areaCd")Integer areaCd,@Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd")String authorCd);
+    int deleteAreaCd (@Param("areaCd")List<Integer> areaCd,@Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd")String authorCd);
 
     //恢复删除数据
     Integer setDelFlg(@Param("areaCd")Integer areaCd,@Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd")String authorCd);
