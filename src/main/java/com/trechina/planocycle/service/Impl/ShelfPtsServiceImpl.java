@@ -178,7 +178,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
     /**
      * 删除棚割pts信息
-     * @param id
+     * @param
      * @return
      */
     @Override
@@ -186,6 +186,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         if (((Map) jsonObject.get("param")).get("id")!=null ) {
             Integer id = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("id")));
             shelfPtsDataMapper.delShelfPtsInfo(id);
+            shelfPtsDataMapper.delShelfHistoryInfo(id);
 
         }
         return ResultMaps.result(ResultEnum.SUCCESS);

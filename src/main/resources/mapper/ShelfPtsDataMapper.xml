@@ -42,9 +42,14 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     delete from planocycle.shelf_pts_data
     where id = #{id,jdbcType=INTEGER}
   </delete>
+  <update id="delShelfHistoryInfo">
+    update  planocycle.shelf_pts_data_history
+    set deleteflg=1
+    where pts_cd = #{id}
+  </update>
   <update id="delShelfPtsInfo">
     update  planocycle.shelf_pts_data
-    set deleteflg=1
+    set deleteflg=1 ,shelf_pattern_cd=null
     where id = #{id}
   </update>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPtsData">
@@ -109,7 +114,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
                        on h.pts_cd = d.id
              left join planocycle.shelf_pattern_mst p
                        on h.pattern_cd = p.shelf_pattern_cd
-      where h.company_cd=#{companyCd,jdbcType=VARCHAR}
+      where h.company_cd=#{companyCd,jdbcType=VARCHAR} and h.deleteflg=0
       order by pattern_cd,startDay desc
     </select>
   <select id="selectPtsName" resultType="com.trechina.planocycle.entity.vo.ShelfPtsNameVO">

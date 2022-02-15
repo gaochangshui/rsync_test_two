@@ -50,7 +50,7 @@ public interface ShelfNameMstMapper {
 
     List<Integer> selectPatternCd(Integer id);
 
-    List<ShelfPatternTreeVO> selectShelfPatternTree(String companyCd);
+    List<ShelfPatternTreeVO> selectShelfPatternTree(@Param("companyCd") String companyCd);
 
 
 

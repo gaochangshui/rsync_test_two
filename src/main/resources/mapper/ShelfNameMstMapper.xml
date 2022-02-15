@@ -77,12 +77,19 @@
   </select>
 
   <select id="selectShelfPatternTree" resultType="com.trechina.planocycle.entity.vo.ShelfPatternTreeVO">
-    SELECT id+1000000 as id,0 as pId,cast(id as text)||'_0' as value,shelf_name as title FROM planocycle.shelf_name_mst as name
-    where company_cd = #{companyCd,jdbcType=VARCHAR}
-    and exists (select shelf_name_cd from planocycle.shelf_pattern_mst as pat where name.id = pat.shelf_name_cd )
+    SELECT
+      id+1000000 as id,0 as pId,cast(id as text)||'_0' as value,shelf_name as title
+    FROM planocycle.shelf_name_mst as name
+    where company_cd = #{companyCd}
+      and exists (select shelf_name_cd from planocycle.shelf_pattern_mst as pat where name.id = pat.shelf_name_cd and exists (select deleteflg from planocycle.shelf_pts_data_history as hst where pat.shelf_pattern_cd = hst.pattern_cd and hst.deleteflg = 0) )
+
     union all
-    SELECT shelf_pattern_cd as id,shelf_name_cd+1000000 as pId,cast(shelf_pattern_cd as text) as value,shelf_pattern_name as title FROM planocycle.shelf_pattern_mst
-    where company_cd = #{companyCd,jdbcType=VARCHAR}
+
+    SELECT
+      shelf_pattern_cd as id,shelf_name_cd+1000000 as pId,cast(shelf_pattern_cd as text) as value,shelf_pattern_name as title
+    FROM planocycle.shelf_pattern_mst pat
+    where company_cd = #{companyCd}
+      and exists (select deleteflg from planocycle.shelf_pts_data_history as hst where pat.shelf_pattern_cd = hst.pattern_cd and hst.deleteflg = 0)
     order by pId
   </select>
   <select id="selectPatternCd" resultType="java.lang.Integer">
