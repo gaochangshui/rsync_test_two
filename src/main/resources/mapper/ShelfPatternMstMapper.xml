@@ -27,7 +27,7 @@
   </sql>
   <update id="updateByPtsForShelfPdCd">
     update planocycle.shelf_pts_data
-    set shelf_pattern_cd = null,valid_flg = 0,start_day = null,edit_time=now() ,editer_cd=#{authorCd}
+    set shelf_pattern_cd = null,valid_flg = 0,edit_time=now() ,editer_cd=#{authorCd}
     where shelf_pattern_cd =#{id,jdbcType=INTEGER}
   </update>
 
