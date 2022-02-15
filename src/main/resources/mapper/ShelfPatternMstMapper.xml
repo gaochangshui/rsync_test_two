@@ -36,7 +36,7 @@
     <include refid="Base_Column_List" />
     from planocycle.shelf_pattern_mst shelf
     left join planocycle.shelf_pattern_area pattarea
-    on shelf.company_cd = pattarea.company_cd
+    on shelf.company_cd = pattarea.company_cd and pattarea.deleteflg=0
     and shelf.shelf_pattern_cd = pattarea.shelf_pattern_cd
     left join masterdb.areas areas
     on pattarea.areacd = areas.areacd
@@ -44,7 +44,7 @@
     on shelf.shelf_name_cd = name.id
     left join planocycle.shelf_pattern_branch branch
     on branch.shelf_pattern_cd = shelf.shelf_pattern_cd
-    where shelf.company_cd = #{conpanyCd,jdbcType=VARCHAR} and shelf.deleteflg=0 and pattarea.deleteflg=0 and areas.deleteflg=0 and  name.deleteflg=0 and branch.deleteflg=0
+    where shelf.company_cd = #{conpanyCd,jdbcType=VARCHAR} and shelf.deleteflg=0
     group by  <include refid="groups" />
     order by shelf.shelf_pattern_cd desc
   </select>
