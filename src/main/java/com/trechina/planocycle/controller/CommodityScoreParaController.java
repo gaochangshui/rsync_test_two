@@ -20,6 +20,7 @@ public class CommodityScoreParaController {
      * @param productPowerCd
      * @return
      */
+    //TODO:表示项目设定：需要返回 顧客セグメント
     @GetMapping("/getCommodityScorePara")
     public Map<String,Object> getCommodityScorePara(String conpanyCd, Integer productPowerCd){
         return commodityScoreParaService.getCommodityScorePara(conpanyCd,productPowerCd);
@@ -30,6 +31,7 @@ public class CommodityScoreParaController {
      * @param commodityScorePara
      * @return
      */
+    //TODO:表示项目设定：需要添加 顧客セグメント
     @PostMapping("/setCommodityScorePara")
     public Map<String,Object> setCommodityScorePara(@RequestBody CommodityScorePara commodityScorePara){
         return commodityScoreParaService.setCommodityScorePare(commodityScorePara);

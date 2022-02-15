@@ -177,14 +177,15 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    /**通过棚名称获取area和棚pattern
+    /**通过棚名称棚pattern
      * @param companyCd
      * @param shelfNameCd
      * @return
      */
     @Override
-    public Map<String, Object> getShelfPatternArea(String companyCd, Integer shelfNameCd) {
-        return null;
+    public List<Integer> getShelfPattern(String companyCd, Integer shelfNameCd) {
+        return  shelfPatternMstMapper.getShelfPattern(companyCd,shelfNameCd);
+
     }
 
     /**

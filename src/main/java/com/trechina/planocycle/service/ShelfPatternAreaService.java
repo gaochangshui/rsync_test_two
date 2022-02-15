@@ -32,4 +32,5 @@ public interface ShelfPatternAreaService {
     //恢复删除数据
     Integer setDelFlg(Integer areaCd, Integer shelfPatternCd,String authorCd);
 
+
 }

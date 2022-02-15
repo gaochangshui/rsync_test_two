@@ -36,7 +36,7 @@
     left join masterdb.areas areas
     on namearea.areacd = areas.areacd
       and areas.company_cd = namearea.company_cd
-    where shelf.company_cd = #{conpanyCd,jdbcType=VARCHAR} and shelf.deleteflg=0 and namearea.deleteflg=0
+    where shelf.company_cd = #{conpanyCd,jdbcType=VARCHAR} and shelf.deleteflg=0 and namearea.deleteflg=0 and areas.deleteflg=0
     group by shelf.id,shelf.company_cd, shelf.shelf_name ,shelf.create_time, shelf.author_cd
     order by shelf.id desc
   </select>
@@ -67,7 +67,7 @@
     from planocycle.shelf_name_mst shelf
      left join masterdb.areas areas
      on shelf.area = areas.areacd
-    where shelf.id = #{id,jdbcType=INTEGER} and shelf.deleteflg=0
+    where shelf.id = #{id,jdbcType=INTEGER} and shelf.deleteflg=0 and areas.deleteflg=0
   </select>
   <select id="selectDistinctName" resultType="java.lang.Integer">
     select id from planocycle.shelf_name_mst

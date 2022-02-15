@@ -49,7 +49,7 @@ public interface ShelfPtsDataMapper {
 
     void updatePtsHistoryFlgSingle(@Param("patternId") Integer patternId,@Param("authorCd") String authorCd);
 
-    Integer delShelfPtsInfo(@Param("id") Integer id);
+    Integer delShelfPtsInfo(@Param("id") Integer id ,@Param("authorCd")String authorCd);
 
-    Integer delShelfHistoryInfo(@Param("id" ) Integer id);
+    Integer delShelfHistoryInfo(@Param("id" ) Integer id,@Param("authorCd")String authorCd);
 }

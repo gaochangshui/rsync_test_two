@@ -17,4 +17,6 @@ public interface ShelfPatternAreaMapper {
 
     //恢复删除数据
     Integer setDelFlg(@Param("areaCd")Integer areaCd,@Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd")String authorCd);
+
+
 }

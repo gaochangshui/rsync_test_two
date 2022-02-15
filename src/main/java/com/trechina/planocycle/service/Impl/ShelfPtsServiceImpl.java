@@ -185,8 +185,10 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     public Map<String, Object> delShelfPtsInfo(JSONObject jsonObject) {
         if (((Map) jsonObject.get("param")).get("id")!=null ) {
             Integer id = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("id")));
-            shelfPtsDataMapper.delShelfPtsInfo(id);
-            shelfPtsDataMapper.delShelfHistoryInfo(id);
+            //获取用户id
+            String authorCd = httpSession.getAttribute("aud").toString();
+            shelfPtsDataMapper.delShelfPtsInfo(id,authorCd);
+            shelfPtsDataMapper.delShelfHistoryInfo(id,authorCd);
 
         }
         return ResultMaps.result(ResultEnum.SUCCESS);

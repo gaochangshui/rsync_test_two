@@ -26,7 +26,7 @@
   <select id="getShelfPatternBranch" resultType="string">
     select branch
     from planocycle.shelf_pattern_branch
-    where shelf_pattern_cd=#{id}
+    where shelf_pattern_cd=#{id} and deleteflg=0
   </select>
   <update id="deleteByPrimaryKey" parameterType="map">
     update  planocycle.shelf_pattern_branch

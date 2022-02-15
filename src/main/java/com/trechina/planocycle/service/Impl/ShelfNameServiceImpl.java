@@ -12,6 +12,7 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ShelfNameMstMapper;
 import com.trechina.planocycle.service.ShelfNameAreaService;
 import com.trechina.planocycle.service.ShelfNameService;
+import com.trechina.planocycle.service.ShelfPatternAreaService;
 import com.trechina.planocycle.service.ShelfPatternService;
 import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -37,6 +38,8 @@ public class ShelfNameServiceImpl implements ShelfNameService {
     private ShelfPatternService shelfPatternService;
     @Autowired
     private ShelfNameAreaService shelfNameAreaService;
+    @Autowired
+    private ShelfPatternAreaService shelfPatternAreaService;
 
     /**
      * 获取棚名称信息
@@ -140,8 +143,15 @@ public class ShelfNameServiceImpl implements ShelfNameService {
             });
             logger.info("删除棚名称信息转换后的area参数："+delList);
             //删除关联的area
-
-                shelfNameAreaService.delAreaCd(deleteAreaList,shelfNameDto.getId(),authorCd);
+            shelfNameAreaService.delAreaCd(deleteAreaList,shelfNameDto.getId(),authorCd);
+            //查询棚名称下的棚pattern
+            List<Integer> shelfPatternList = shelfPatternService.getShelfPattern(shelfNameDto.getCompanyCd(), shelfNameDto.getId());
+            //删除棚pattern下的area
+            if (shelfPatternList!=null) {
+                shelfPatternList.forEach(item -> {
+                    shelfPatternAreaService.deleteAreaCd(deleteAreaList, item, authorCd);
+                });
+            }
 
         }
         logger.info("删除棚名称信息转换后的area参数："+delList);
@@ -156,6 +166,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
             logger.info("添加棚名称信息转换后的area参数：" + setList);
             //添加关联的area
             Map<String, Object> setAreaInfo = shelfNameAreaService.setShelfNameArea(setList, authorCd);
+
             logger.info("添加棚名称信息保存后返回的信息："+setAreaInfo);
         }
 
@@ -202,6 +213,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
             // 删除关联的area
         });
         shelfNameAreaService.delShelfNameArea(id,authorCd);
+
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
     /**

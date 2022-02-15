@@ -27,7 +27,8 @@
     where areacd = #{areaCd,jdbcType=INTEGER}
       and shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER} and deleteflg=1
   </update>
-  <select id="getShelfPatternArea" resultType="java.lang.Integer">
+
+    <select id="getShelfPatternArea" resultType="java.lang.Integer">
       select
         areacd
       from

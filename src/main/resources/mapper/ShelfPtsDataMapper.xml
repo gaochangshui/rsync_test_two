@@ -44,12 +44,12 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
   </delete>
   <update id="delShelfHistoryInfo">
     update  planocycle.shelf_pts_data_history
-    set deleteflg=1
+    set deleteflg=1 ,edit_time=now(),editer_cd=#{authorCd}
     where pts_cd = #{id}
   </update>
   <update id="delShelfPtsInfo">
     update  planocycle.shelf_pts_data
-    set deleteflg=1 ,shelf_pattern_cd=null
+    set deleteflg=1 , edit_time=now(),editer_cd=#{authorCd}
     where id = #{id}
   </update>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPtsData">

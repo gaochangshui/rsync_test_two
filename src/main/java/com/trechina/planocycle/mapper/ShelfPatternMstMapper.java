@@ -34,4 +34,6 @@ public interface ShelfPatternMstMapper {
     void deleteShelfPdCdHistory(@Param("id") Integer id,@Param("authorCd") String authorCd);
 
     List<Integer> getpatternIdOfPtsKey(String ptsKey);
+
+    List<Integer> getShelfPattern(@Param("companyCd") String companyCd, @Param("shelfNameCd") Integer shelfNameCd);
 }
