@@ -187,7 +187,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             Integer id = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("id")));
             //获取用户id
             String authorCd = httpSession.getAttribute("aud").toString();
+
             shelfPtsDataMapper.delShelfPtsInfo(id,authorCd);
+
             shelfPtsDataMapper.delShelfHistoryInfo(id,authorCd);
 
         }

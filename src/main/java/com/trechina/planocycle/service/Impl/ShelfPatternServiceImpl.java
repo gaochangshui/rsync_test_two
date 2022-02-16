@@ -129,7 +129,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             logger.info("保存棚名称信息保存后返回的信息：" + resultInfo);
             //获取棚pattern关联的Area
             List<Integer> getShelfPatternArea = shelfPatternAreaService.getShelfPatternArea(shelfPatternMst.getShelfPatternCd(),shelfPatternMst.getConpanyCd());
-            //数据库中和修改重复数据
+            logger.info("棚pattern关联的所有Area：" + getShelfPatternArea);
+            //数据库中修改重复数据
             shelfPatternDto.getArea().forEach(item->{
                 for (Integer area : getShelfPatternArea) {
                     if (item.equals(area)){
@@ -153,8 +154,9 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 logger.info("删除棚pattern信息转换后的area参数："+delList);
 
                 // 删除棚pattern关联的area
-
-                    shelfPatternAreaService.deleteAreaCd(deleteAreaList,shelfPatternDto.getShelfPatternCd(),authorCd);
+                logger.info("删除棚pattern信息的area参数：" + deleteAreaList);
+                int deleteAreaCdInfo = shelfPatternAreaService.deleteAreaCd(deleteAreaList, shelfPatternDto.getShelfPatternCd(), authorCd);
+                logger.info("删除棚名称信息保存后返回的信息："+deleteAreaCdInfo);
 
             }
             if (setAreaList.size()>0) {

@@ -68,15 +68,16 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         if (resultNum!=null){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
+        String authorCd = session.getAttribute("aud").toString();
         List<ShelfNameArea> list = new ArrayList<>();
         ShelfNameMst shelfNameMst = new ShelfNameMst();
         shelfNameMst.setShelfName(shelfNameDto.getShelfName());
         shelfNameMst.setConpanyCd(shelfNameDto.getCompanyCd());
-        shelfNameMst.setAuthorCd(session.getAttribute("aud").toString());
+        shelfNameMst.setAuthorCd(authorCd);
         logger.info("保存棚名称信息转换后的参数："+shelfNameMst);
         Integer resultInfo = shelfNameMstMapper.insert(shelfNameMst);
         //获取用户id
-        String authorCd = session.getAttribute("aud").toString();
+
         shelfNameDto.getArea().forEach(item -> {
             ShelfNameArea shelfNameArea = new ShelfNameArea();
             shelfNameArea.setCompanyCd(shelfNameDto.getCompanyCd());
@@ -104,11 +105,11 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         if (resultNum!=null && !resultNum.equals(shelfNameDto.getId())){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
-//获取用户id
+        //获取用户id
         String authorCd = session.getAttribute("aud").toString();
-        //要删除的集合
+        //要删除的ShelfNameArea集合
         List<ShelfNameArea> delList = new ArrayList<>();
-        //要添加的集合
+        //要添加的ShelfNameArea集合
         List<ShelfNameArea> setList = new ArrayList<>();
         ShelfNameMst shelfNameMst = new ShelfNameMst();
         shelfNameMst.setId(shelfNameDto.getId());
@@ -117,9 +118,10 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         shelfNameMst.setAuthorCd(authorCd);
         logger.info("修改棚名称信息转换后的参数："+shelfNameMst);
         int resultInfo = shelfNameMstMapper.update(shelfNameMst);
-
+        logger.info("修改棚名称信息后返回的信息："+resultInfo);
         //获取shelfName关联的Area
         List<Integer> getShelfNameArea = shelfNameAreaService.getShelfNameArea(shelfNameMst.getId(),shelfNameMst.getConpanyCd());
+        logger.info("shelfName关联的所有Area："+getShelfNameArea);
         //数据库中和修改重复数据
         shelfNameDto.getArea().forEach(item->{
             for (Integer area : getShelfNameArea) {
@@ -154,7 +156,6 @@ public class ShelfNameServiceImpl implements ShelfNameService {
             }
 
         }
-        logger.info("删除棚名称信息转换后的area参数："+delList);
         if (setAreaList.size()>0) {
             setAreaList.forEach(item -> {
                 ShelfNameArea shelfNameArea = new ShelfNameArea();
