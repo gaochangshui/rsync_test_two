@@ -41,9 +41,9 @@
     left join masterdb.areas areas
     on pattarea.areacd = areas.areacd
     left join planocycle.shelf_name_mst name
-    on shelf.shelf_name_cd = name.id
+    on shelf.shelf_name_cd = name.id and name.deleteflg=0
     left join planocycle.shelf_pattern_branch branch
-    on branch.shelf_pattern_cd = shelf.shelf_pattern_cd
+    on branch.shelf_pattern_cd = shelf.shelf_pattern_cd and branch.deleteflg=0
     where shelf.company_cd = #{conpanyCd,jdbcType=VARCHAR} and shelf.deleteflg=0
     group by  <include refid="groups" />
     order by shelf.shelf_pattern_cd desc

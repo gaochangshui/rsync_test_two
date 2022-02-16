@@ -130,15 +130,15 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     pts.create_time as createTime, pts.authorcd,start_day as startDay
     from planocycle.shelf_pattern_mst pattern
     left join planocycle.shelf_pts_data pts
-    on pattern.shelf_pattern_cd = pts.shelf_pattern_cd
+    on pattern.shelf_pattern_cd = pts.shelf_pattern_cd and pts.deleteflg=0
     and pts.company_cd = pattern.company_cd
     left join planocycle.shelf_pattern_area area
-    on pattern.shelf_pattern_cd = area.shelf_pattern_cd
+    on pattern.shelf_pattern_cd = area.shelf_pattern_cd and area.deleteflg=0
     and pattern.company_cd = area.company_cd
     where pattern.company_cd = #{companyCd,jdbcType=VARCHAR} and pattern.deleteflg=0
     <if test="rangFlag==2">
         and not exists (select shelf_pattern_cd from planocycle.shelf_pts_data ptss
-        where pattern.shelf_pattern_cd = ptss.shelf_pattern_cd)
+        where pattern.shelf_pattern_cd = ptss.shelf_pattern_cd and ptss.deleteflg=0)
     </if>
     <if test="lists.size>0">
       and area.areacd in
