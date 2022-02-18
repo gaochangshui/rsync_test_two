@@ -39,8 +39,8 @@ logging:
 #    path: /
     path: D:\files
 # 环境变量
-SystemPath: http://10.100.1.163:8102/planocycleweb/
+SystemPath: http://10.100.1.161:8102/planocycleweb/
 projectIds: nothing
 bucketNames: nothing
-ptsDownPath: http://10.100.1.163:8102/planocycleweb/
+ptsDownPath: http://10.100.1.161:8102/planocycleweb/
 productDownPath: D:\files\
