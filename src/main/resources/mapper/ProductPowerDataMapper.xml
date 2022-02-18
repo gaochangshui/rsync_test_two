@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.ProductPowerDataMapper">
+    <insert id="insert">
+        insert into ${tabaleName} ()
+        values
+            <foreach collection="keyNameList" separator="," item="lists">
+                (
+                 <foreach collection="lists" item="item" separator=",">
+                     #{item}
+                 </foreach>
+                )
+            </foreach>
+
+    </insert>
+    <update id="dropTempData">
+        DROP TABLE IF EXISTS ${tablename};
+    </update>
+    <update id="updateTempData">
+        create table ${tablename} (
+            company_cd varchar,product_power_cd integer,jan varchar,sku_name varchar,pos_amount varchar,pos_num integer,branch_amount varchar,branch_num integer,
+            compare_amount varchar,compare_num integer,branch_compare_amount varchar,branch_compare_num integer
+        );
+    </update>
+</mapper>

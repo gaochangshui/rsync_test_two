@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.Impl;
 
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.mapper.ProductPowerDataMapper;
 import com.trechina.planocycle.service.CommodityScoreDataService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
@@ -12,13 +13,18 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class CommodityScoreDataServiceImpl implements CommodityScoreDataService {
     @Autowired
     private HttpSession session;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private ProductPowerDataMapper productPowerDataMapper;
 
     /**
      * 通过smart获取商品力点数表数据
@@ -26,7 +32,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      * @return
      */
     @Override
-    public Map<String, Object> getCommodityScoreData(String taskID) {
+    public Map<String, Object> getCommodityScoreData(String taskID,Integer isPosOrClient) {
         String tokenInfo =(String) session.getAttribute("MSPACEDGOURDLP");
         cgiUtils cgiUtil = new cgiUtils();
         List arrList = new ArrayList();
@@ -44,6 +50,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         } else {
             return Data;
         }
+
 //            logger.info("商品力点数表cgi返回数据："+arrList+"&"+Data);
         return ResultMaps.result(ResultEnum.SUCCESS,arrList);
     }
@@ -117,5 +124,18 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             logger.info("获取商品力点数表taskid数据报错："+e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
+    }
+
+    @Override
+    public Map<String, Object> updateCommodityScoreData(ProductPowerDataForCgiDto productPowerDataForCgiDto) {
+
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> getDBCommodityScoreData(String companyCd, String productPowerNo) {
+        //获取最终表的信息
+
+        return null;
     }
 }

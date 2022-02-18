@@ -19,8 +19,8 @@ public class CommodityScoreDataController {
      * @return
      */
     @GetMapping("/getCommodityScoreData")
-    public Map<String,Object> getCommodityScoreData(String taskID) {
-        return commodityScoreDataService.getCommodityScoreData(taskID);
+    public Map<String,Object> getCommodityScoreData(String taskID,Integer isPosOrClient) {
+        return commodityScoreDataService.getCommodityScoreData(taskID,isPosOrClient);
     }
 
     @PostMapping("/getCommodityScoreTaskId")
@@ -41,6 +41,16 @@ public class CommodityScoreDataController {
     public Map<String,Object> getAttrFileSaveForCgi(String companyCd,String filename,String datacd,
                                                     Integer productPowerNo,String dataNm){
         return commodityScoreDataService.getAttrFileSaveForCgi(companyCd,filename,datacd,productPowerNo,dataNm);
+    }
+
+    /**
+     * 商品力点数表编辑
+     * @param productPowerDataForCgiDto
+     * @return
+     */
+    @GetMapping("/updateCommodityScoreData")
+    public Map<String,Object> updateCommodityScoreData(@RequestBody ProductPowerDataForCgiDto productPowerDataForCgiDto){
+        return commodityScoreDataService.updateCommodityScoreData(productPowerDataForCgiDto);
     }
 
 }

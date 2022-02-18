@@ -79,4 +79,6 @@ public class CommodityScoreParaController {
         return commodityScoreParaService.delYoBi(productPowerReserveMst);
     }
 
+
+
 }
