@@ -21,9 +21,9 @@ public interface ShelfPtsDataMapper {
 
     void updateByValidFlg(String companyCd);
 
-    void updatePtsHistory(ShelfPtsJoinPatternDto item);
+    void updatePtsHistory(@Param("item") ShelfPtsJoinPatternDto item,@Param("authorCd") String authorCd);
 
-    void insertPtsHistory( ShelfPtsJoinPatternDto item);
+    void insertPtsHistory( @Param("item") ShelfPtsJoinPatternDto item,@Param("authorCd") String authorCd);
 
     Integer selectExistsCount(ShelfPtsJoinPatternDto item);
 
@@ -48,4 +48,8 @@ public interface ShelfPtsDataMapper {
     void updateSingle(@Param("patternId") Integer patternId,@Param("authorCd") String authorCd);
 
     void updatePtsHistoryFlgSingle(@Param("patternId") Integer patternId,@Param("authorCd") String authorCd);
+
+    Integer delShelfPtsInfo(@Param("id") Integer id ,@Param("authorCd")String authorCd);
+
+    Integer delShelfHistoryInfo(@Param("id" ) Integer id,@Param("authorCd")String authorCd);
 }

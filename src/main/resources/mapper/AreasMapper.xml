@@ -31,7 +31,7 @@
     and area.company_cd =namearea.company_cd
     inner join planocycle.shelf_name_mst shelf
     on namearea.shelf_name_cd = shelf.id
-    where shelf.id = #{ShelfNameCd,jdbcType=INTEGER}
+    where shelf.id = #{ShelfNameCd,jdbcType=INTEGER} and namearea.deleteflg=0
 
   </select>
 </mapper>

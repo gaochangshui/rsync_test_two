@@ -13,4 +13,12 @@ public interface ShelfPatternBranchMapper {
 
     List<ShelfPatternBranch> selectByPrimaryKey(@Param("shelfPatternCd") Integer shelfPatternCd);
 
+    List<String> getShelfPatternBranch(@Param("id") Integer id);
+
+
+    int deleteBranchCd (@Param("branchList")List<String> branchList, @Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd")String authorCd);
+
+    //恢复删除数据
+    Integer setDelFlg(@Param("branch")String branch,@Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd")String authorCd);
+
 }

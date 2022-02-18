@@ -25,7 +25,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     left join planocycle.shelf_pattern_area area
     on pts.shelf_pattern_cd = area.shelf_pattern_cd
     and pattern.company_cd = area.company_cd
-    where pts.company_cd = #{companyCd,jdbcType=VARCHAR}
+    where pts.company_cd = #{companyCd,jdbcType=VARCHAR} and pts.deleteflg=0
     <if test="rangFlag==2">
       and (pts.valid_flg =0 or pts.valid_flg is null)
     </if>
@@ -42,6 +42,16 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     delete from planocycle.shelf_pts_data
     where id = #{id,jdbcType=INTEGER}
   </delete>
+  <update id="delShelfHistoryInfo">
+    update  planocycle.shelf_pts_data_history
+    set deleteflg=1 ,edit_time=now(),editer_cd=#{authorCd}
+    where pts_cd = #{id}
+  </update>
+  <update id="delShelfPtsInfo">
+    update  planocycle.shelf_pts_data
+    set deleteflg=1 , edit_time=now(),editer_cd=#{authorCd}
+    where id = #{id}
+  </update>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPtsData">
     <selectKey resultType="int" keyProperty="id" order="AFTER">
       select  currval('planocycle.shelf_pts_data_id_seq'::regclass) as id
@@ -75,20 +85,20 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
   </update>
   <update id="updatePtsHistory">
     update planocycle.shelf_pts_data_history
-    set valid_flg = 1,start_day=to_date(#{startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
-    where pts_cd = #{shelfPtsCd,jdbcType=INTEGER}
-    and pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+    set valid_flg = 1,start_day=to_date(#{item.startDay,jdbcType=VARCHAR},'yyyy-MM-dd'),edit_time=now(),editer_cd=#{authorCd}
+    where pts_cd = #{item.shelfPtsCd,jdbcType=INTEGER}
+    and pattern_cd = #{item.shelfPatternCd,jdbcType=INTEGER}
   </update>
-  <insert id="insertPtsHistory">
-    insert into planocycle.shelf_pts_data_history
-    select #{item.companyCd,jdbcType=VARCHAR},#{item.shelfPtsCd,jdbcType=INTEGER}, #{item.shelfPatternCd,jdbcType=INTEGER},1,to_date(#{item.startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
-    from (select 1,1,1,1,1 ) tmp
+  <insert id="insertPtsHistory" parameterType="com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto">
+    insert into planocycle.shelf_pts_data_history (company_cd,pts_cd,pattern_cd,valid_flg,start_day,create_time,author_cd)
+    select #{item.companyCd,jdbcType=VARCHAR},#{item.shelfPtsCd,jdbcType=INTEGER}, #{item.shelfPatternCd,jdbcType=INTEGER},1,to_date(#{item.startDay,jdbcType=VARCHAR},'yyyy-MM-dd'),now(),#{authorCd}
+    from (select 1,1,1,1,1,1,1) tmp
     where not exists (
         select pts_cd,pattern_cd,valid_flg,start_day from planocycle.shelf_pts_data_history mstt
-        where mstt.pts_cd=#{shelfPtsCd,jdbcType=INTEGER}
-        and mstt.pattern_cd=#{shelfPatternCd,jdbcType=INTEGER}
+        where mstt.pts_cd=#{item.shelfPtsCd,jdbcType=INTEGER}
+        and mstt.pattern_cd=#{item.shelfPatternCd,jdbcType=INTEGER}
         and mstt.valid_flg=1
-        and mstt.start_day=to_date(#{startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
+        and mstt.start_day=to_date(#{item.startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
     )
   </insert>
   <select id="selectExistsCount" resultType="java.lang.Integer">
@@ -104,13 +114,13 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
                        on h.pts_cd = d.id
              left join planocycle.shelf_pattern_mst p
                        on h.pattern_cd = p.shelf_pattern_cd
-      where h.company_cd=#{companyCd,jdbcType=VARCHAR}
+      where h.company_cd=#{companyCd,jdbcType=VARCHAR} and h.deleteflg=0
       order by pattern_cd,startDay desc
     </select>
   <select id="selectPtsName" resultType="com.trechina.planocycle.entity.vo.ShelfPtsNameVO">
     select id,id||'_'||file_name as fileName
     from planocycle.shelf_pts_data
-    where company_cd=#{companyCd,jdbcType=VARCHAR}
+    where company_cd=#{companyCd,jdbcType=VARCHAR} and deleteflg=0
     order by id desc
   </select>
   <select id="selectPtsInfoOfPattern" resultType="com.trechina.planocycle.entity.po.ShelfPtsData">
@@ -120,15 +130,15 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     pts.create_time as createTime, pts.authorcd,start_day as startDay
     from planocycle.shelf_pattern_mst pattern
     left join planocycle.shelf_pts_data pts
-    on pattern.shelf_pattern_cd = pts.shelf_pattern_cd
+    on pattern.shelf_pattern_cd = pts.shelf_pattern_cd and pts.deleteflg=0
     and pts.company_cd = pattern.company_cd
     left join planocycle.shelf_pattern_area area
-    on pattern.shelf_pattern_cd = area.shelf_pattern_cd
+    on pattern.shelf_pattern_cd = area.shelf_pattern_cd and area.deleteflg=0
     and pattern.company_cd = area.company_cd
-    where pattern.company_cd = #{companyCd,jdbcType=VARCHAR}
+    where pattern.company_cd = #{companyCd,jdbcType=VARCHAR} and pattern.deleteflg=0
     <if test="rangFlag==2">
         and not exists (select shelf_pattern_cd from planocycle.shelf_pts_data ptss
-        where pattern.shelf_pattern_cd = ptss.shelf_pattern_cd)
+        where pattern.shelf_pattern_cd = ptss.shelf_pattern_cd and ptss.deleteflg=0)
     </if>
     <if test="lists.size>0">
       and area.areacd in

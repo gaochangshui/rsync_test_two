@@ -12,5 +12,10 @@ public interface ShelfNameAreaMapper {
 
     int insert(@Param("lists") List<ShelfNameArea> record,@Param("authorCd") String authorCd);
 
+    List<Integer> getShelfNameArea(@Param("id") Integer id,@Param("companyCd")String companyCd);
 
+    int deleteAreaCd (@Param("areaCd")List<Integer> areaCd,@Param("shelfNameCd") Integer shelfNameCd,@Param("authorCd")String authorCd);
+
+    //恢复删除数据
+    Integer setDelFlg(@Param("areaCd")Integer areaCd,@Param("shelfNameCd") Integer shelfNameCd,@Param("authorCd")String authorCd);
 }

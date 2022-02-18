@@ -27,11 +27,13 @@ public interface ShelfPatternMstMapper {
 
     String selectByShePatternNoNm(@Param("item") String shelfPatternNo);
 
-    Integer selectDistinctName(ShelfPatternDto shelfPatternDto);
+    List<Integer> selectDistinctName(ShelfPatternDto shelfPatternDto);
 
     void updateByPtsForShelfPdCd(@Param("id") Integer id,@Param("authorCd") String authorCd);
 
     void deleteShelfPdCdHistory(@Param("id") Integer id,@Param("authorCd") String authorCd);
 
     List<Integer> getpatternIdOfPtsKey(String ptsKey);
+
+    List<Integer> getShelfPattern(@Param("companyCd") String companyCd, @Param("shelfNameCd") Integer shelfNameCd);
 }

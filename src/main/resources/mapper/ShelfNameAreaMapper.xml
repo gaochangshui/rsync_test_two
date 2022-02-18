@@ -11,7 +11,28 @@
     set deleteflg=1,edit_time=now(),editer_cd=#{authorCd}
     where shelf_name_cd = #{shelfNameCd,jdbcType=INTEGER} and deleteflg=0
   </update>
-
+  <update id="deleteAreaCd">
+    update planocycle.shelf_name_area
+    set deleteflg=1,edit_time=now(),editer_cd=#{authorCd}
+    where
+     shelf_name_cd = #{shelfNameCd,jdbcType=INTEGER} and deleteflg=0 and  areacd in
+        <foreach collection="areaCd" separator="," close=")" open="(" item="area">
+          #{area}
+        </foreach>
+  </update>
+  <update id="setDelFlg">
+    update planocycle.shelf_name_area
+    set deleteflg=0,edit_time=now(),editer_cd=#{authorCd}
+    where areacd = #{areaCd,jdbcType=INTEGER}
+      and shelf_name_cd = #{shelfNameCd,jdbcType=INTEGER} and deleteflg=1
+  </update>
+  <select id="getShelfNameArea" resultType="java.lang.Integer">
+    select
+      areacd
+    from
+      planocycle.shelf_name_area
+    where shelf_name_cd=#{id} and company_cd=#{companyCd}
+  </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfNameArea">
     insert into planocycle.shelf_name_area (shelf_name_cd, areacd, company_cd,create_time,author_cd
     )

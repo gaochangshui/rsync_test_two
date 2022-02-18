@@ -19,4 +19,23 @@ public interface ShelfNameAreaService {
      * @return
      */
     Integer delShelfNameArea(Integer id,String authorCd);
+
+    /**
+     * 查询shelfName关联的area
+     * @param id
+     *  @return
+     */
+    List<Integer> getShelfNameArea(Integer id,String companyCd);
+
+    /**
+     * 根据areaCd
+     * @param areaCd
+     * @return
+     */
+    Integer delAreaCd(List<Integer> areaCd,Integer id,String authorCd);
+
+    /**
+     * 恢复删除数据
+     */
+    Integer setDelFlg(Integer areaCd,Integer id ,String authorCd);
 }

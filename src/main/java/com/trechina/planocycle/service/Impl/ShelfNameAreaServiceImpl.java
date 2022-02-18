@@ -38,4 +38,19 @@ public class ShelfNameAreaServiceImpl implements ShelfNameAreaService {
     public Integer delShelfNameArea(Integer id,String authorCd) {
         return shelfNameAreaMapper.deleteByPrimaryKey(id,authorCd);
     }
+
+    @Override
+    public List<Integer> getShelfNameArea(Integer id,String companyCd) {
+        return shelfNameAreaMapper.getShelfNameArea(id,companyCd);
+    }
+
+    @Override
+    public Integer delAreaCd(List<Integer> areaCd, Integer id,String authorCd) {
+        return shelfNameAreaMapper.deleteAreaCd(areaCd,id,authorCd);
+    }
+
+    @Override
+    public Integer setDelFlg(Integer areaCd, Integer id, String authorCd) {
+        return shelfNameAreaMapper.setDelFlg(areaCd,id,authorCd);
+    }
 }

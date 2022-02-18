@@ -29,12 +29,13 @@ public interface ShelfPatternService {
      */
     Map<String,Object> updateShelfPatternInfo(ShelfPatternDto shelfPatternDto);
     /**
-     * 通过棚名称获取area和棚pattern
+     * 通过棚名称棚pattern
      * @param companyCd
      * @param shelfNameCd
      * @return
      */
-    Map<String,Object> getShelfPatternArea(String companyCd,Integer shelfNameCd);
+    List<Integer> getShelfPattern(String companyCd,Integer shelfNameCd);
+
 
     /**
      * 获取棚pattren关联的店cd

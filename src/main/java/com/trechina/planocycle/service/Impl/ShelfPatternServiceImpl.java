@@ -13,6 +13,7 @@ import com.trechina.planocycle.mapper.ShelfPatternBranchMapper;
 import com.trechina.planocycle.mapper.ShelfPatternMstMapper;
 import com.trechina.planocycle.service.ShelfPatternAreaService;
 import com.trechina.planocycle.service.ShelfPatternService;
+import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +60,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     public Map<String, Object> setShelfPatternInfo(ShelfPatternDto shelfPatternDto) {
         logger.info("保存棚pattern信息的参数："+shelfPatternDto);
         // 名称check 同一个棚名称棚パータン名唯一
-        Integer resultNum = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
-        if (resultNum!=null){
+        List<Integer> result = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
+        if (result!=null && result.size()>0){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
         List<ShelfPatternArea> list = new ArrayList<>();
@@ -105,11 +106,14 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     public Map<String, Object> updateShelfPatternInfo(ShelfPatternDto shelfPatternDto) {
         logger.info("修改棚pattern信息的参数："+shelfPatternDto);
         // 名称check 同一个棚名称棚パータン名唯一
-        Integer resultNum = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
-        if (resultNum!=null && resultNum.equals(shelfPatternDto.getShelfPatternCd())){
+        List<Integer> resultNum = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
+        if (resultNum!=null &&resultNum.size()>1){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
-        List<ShelfPatternArea> list = new ArrayList<>();
+        //要删除的集合
+        List<ShelfPatternArea> delList = new ArrayList<>();
+        //要添加的集合
+        List<ShelfPatternArea> setList = new ArrayList<>();
         ShelfPatternMst shelfPatternMst = new ShelfPatternMst();
         shelfPatternMst.setShelfPatternCd(shelfPatternDto.getShelfPatternCd());
         shelfPatternMst.setConpanyCd(shelfPatternDto.getCompanyCd());
@@ -123,20 +127,51 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         try {
             int resultInfo = shelfPatternMstMapper.update(shelfPatternMst);
             logger.info("保存棚名称信息保存后返回的信息：" + resultInfo);
-
-            shelfPatternDto.getArea().forEach(item -> {
-                ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
-                shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());
-                shelfPatternArea.setShelfPatternCd(shelfPatternMst.getShelfPatternCd());
-
-                shelfPatternArea.setAreacd(item);
-                list.add(shelfPatternArea);
+            //获取棚pattern关联的Area
+            List<Integer> getShelfPatternArea = shelfPatternAreaService.getShelfPatternArea(shelfPatternMst.getShelfPatternCd(),shelfPatternMst.getConpanyCd());
+            logger.info("棚pattern关联的所有Area：" + getShelfPatternArea);
+            //数据库中修改重复数据
+            shelfPatternDto.getArea().forEach(item->{
+                for (Integer area : getShelfPatternArea) {
+                    if (item.equals(area)){
+                        shelfPatternAreaService.setDelFlg(item,shelfPatternDto.getShelfPatternCd(),authorCd);
+                    }
+                }
             });
-            logger.info("保存pattern信息转换后的area参数："+list);
-            // 删除棚pattern关联的area
-            shelfPatternAreaService.delShelfPatternArea(shelfPatternDto.getShelfPatternCd(),authorCd);
-            //添加area
-            shelfPatternAreaService.setShelfPatternArea(list,authorCd);
+            //要删除的area集合
+            List<Integer> deleteAreaList = ListDisparityUtils.getListDisparit(getShelfPatternArea, shelfPatternDto.getArea());
+            //要新增area的集合
+            List<Integer> setAreaList = ListDisparityUtils.getListDisparit( shelfPatternDto.getArea(),getShelfPatternArea);
+            if (deleteAreaList.size()>0){
+                deleteAreaList.forEach(item -> {
+                    ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
+                    shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());
+                    shelfPatternArea.setShelfPatternCd(shelfPatternMst.getShelfPatternCd());
+                    shelfPatternArea.setAreacd(item);
+
+                    delList.add(shelfPatternArea);
+                });
+                logger.info("删除棚pattern信息转换后的area参数："+delList);
+
+                // 删除棚pattern关联的area
+                logger.info("删除棚pattern信息的area参数：" + deleteAreaList);
+                int deleteAreaCdInfo = shelfPatternAreaService.deleteAreaCd(deleteAreaList, shelfPatternDto.getShelfPatternCd(), authorCd);
+                logger.info("删除棚名称信息保存后返回的信息："+deleteAreaCdInfo);
+
+            }
+            if (setAreaList.size()>0) {
+                setAreaList.forEach(item -> {
+                    ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
+                    shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());
+                    shelfPatternArea.setShelfPatternCd(shelfPatternMst.getShelfPatternCd());
+                    shelfPatternArea.setAreacd(item);
+                    setList.add(shelfPatternArea);
+                });
+                logger.info("添加棚pattern信息转换后的area参数：" + setList);
+                Map<String, Object> setAreaInfo = shelfPatternAreaService.setShelfPatternArea(setList, authorCd);
+                logger.info("修改棚名称信息保存后返回的信息："+setAreaInfo);
+            }
+
         }catch (Exception e) {
             logger.error(e.toString());
             return ResultMaps.result(ResultEnum.FAILURE);
@@ -144,14 +179,15 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    /**通过棚名称获取area和棚pattern
+    /**通过棚名称棚pattern
      * @param companyCd
      * @param shelfNameCd
      * @return
      */
     @Override
-    public Map<String, Object> getShelfPatternArea(String companyCd, Integer shelfNameCd) {
-        return null;
+    public List<Integer> getShelfPattern(String companyCd, Integer shelfNameCd) {
+        return  shelfPatternMstMapper.getShelfPattern(companyCd,shelfNameCd);
+
     }
 
     /**
@@ -191,22 +227,51 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         logger.info("保存棚pattern关联的店cd的参数："+shelfPatternBranchVO);
         //获取创建者cd
         String authorCd = session.getAttribute("aud").toString();
-        List<ShelfPatternBranch> list = new ArrayList<>();
+        //要删除的集合
+        List<ShelfPatternBranch> delList = new ArrayList<>();
+        //要添加的集合
+        List<ShelfPatternBranch> setList = new ArrayList<>();
+        //获取棚pattern关联的branch
+        List<String> getShelfPatternBranch = shelfPatternBranchMapper.getShelfPatternBranch(shelfPatternBranchVO.getShelfPatternCd());
+        //数据库中和修改重复数据
         shelfPatternBranchVO.getBranchCd().forEach(item->{
-            ShelfPatternBranch shelfPatternBranch = new ShelfPatternBranch();
-            shelfPatternBranch.setShelfPattrenCd(shelfPatternBranchVO.getShelfPatternCd());
-            shelfPatternBranch.setBranch(item);
-            shelfPatternBranch.setStartTime(shelfPatternBranchVO.getStartTime());
-            list.add(shelfPatternBranch);
+            for (String shelfPatternBranch : getShelfPatternBranch) {
+                if (item.equals(shelfPatternBranch)){
+                    shelfPatternBranchMapper.setDelFlg(item,shelfPatternBranchVO.getShelfPatternCd(),authorCd);
+                }
+            }
+
         });
-        logger.info("保存棚pattern关联的店cd转换类型："+list);
-        try{
-            shelfPatternBranchMapper.deleteByPrimaryKey(shelfPatternBranchVO.getShelfPatternCd(),authorCd);
-            shelfPatternBranchMapper.insert(list,authorCd);
-        } catch (Exception e) {
-            logger.info("保存棚pattern关联的店cd报错："+e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        //要删除的area集合
+        List<String> delBranchList = ListDisparityUtils.getListDisparitStr(getShelfPatternBranch, shelfPatternBranchVO.getBranchCd());
+        //要新增area的集合
+        List<String> setBranchList = ListDisparityUtils.getListDisparitStr( shelfPatternBranchVO.getBranchCd(),getShelfPatternBranch);
+
+      if (delBranchList.size()>0){
+          delBranchList.forEach(item->{
+              ShelfPatternBranch shelfPatternBranch = new ShelfPatternBranch();
+              shelfPatternBranch.setShelfPattrenCd(shelfPatternBranchVO.getShelfPatternCd());
+              shelfPatternBranch.setBranch(item);
+              shelfPatternBranch.setStartTime(shelfPatternBranchVO.getStartTime());
+              delList.add(shelfPatternBranch);
+          });
+          //删除关联的branch
+
+              shelfPatternBranchMapper.deleteBranchCd(delBranchList,shelfPatternBranchVO.getShelfPatternCd(),authorCd);
+
+      }
+
+      if (setBranchList.size()>0){
+          setBranchList.forEach(item->{
+              ShelfPatternBranch shelfPatternBranch = new ShelfPatternBranch();
+              shelfPatternBranch.setShelfPattrenCd(shelfPatternBranchVO.getShelfPatternCd());
+              shelfPatternBranch.setBranch(item);
+              shelfPatternBranch.setStartTime(shelfPatternBranchVO.getStartTime());
+              setList.add(shelfPatternBranch);
+          });
+          shelfPatternBranchMapper.insert(setList,authorCd);
+      }
+
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

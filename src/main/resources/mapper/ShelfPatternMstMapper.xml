@@ -27,7 +27,7 @@
   </sql>
   <update id="updateByPtsForShelfPdCd">
     update planocycle.shelf_pts_data
-    set shelf_pattern_cd = null,valid_flg = 0,start_day = null,edit_time=now() ,editer_cd=#{authorCd}
+    set shelf_pattern_cd = null,valid_flg = 0,edit_time=now() ,editer_cd=#{authorCd},start_day=null
     where shelf_pattern_cd =#{id,jdbcType=INTEGER}
   </update>
 
@@ -36,14 +36,14 @@
     <include refid="Base_Column_List" />
     from planocycle.shelf_pattern_mst shelf
     left join planocycle.shelf_pattern_area pattarea
-    on shelf.company_cd = pattarea.company_cd
+    on shelf.company_cd = pattarea.company_cd and pattarea.deleteflg=0
     and shelf.shelf_pattern_cd = pattarea.shelf_pattern_cd
     left join masterdb.areas areas
     on pattarea.areacd = areas.areacd
     left join planocycle.shelf_name_mst name
-    on shelf.shelf_name_cd = name.id
+    on shelf.shelf_name_cd = name.id and name.deleteflg=0
     left join planocycle.shelf_pattern_branch branch
-    on branch.shelf_pattern_cd = shelf.shelf_pattern_cd
+    on branch.shelf_pattern_cd = shelf.shelf_pattern_cd and branch.deleteflg=0
     where shelf.company_cd = #{conpanyCd,jdbcType=VARCHAR} and shelf.deleteflg=0
     group by  <include refid="groups" />
     order by shelf.shelf_pattern_cd desc
@@ -101,7 +101,7 @@
     select shelf_pattern_cd
     from planocycle.shelf_pattern_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR}
-    and shelf_name_cd = #{shelfNameCD,jdbcType=INTEGER}
+
     and shelf_pattern_name = #{shelfPatternName,jdbcType=VARCHAR}
     and deleteflg=0
   </select>
@@ -110,7 +110,12 @@
       where ptskey = #{ptsKey,jdbcType=VARCHAR} and deleteflg=0
       order by shelf_pattern_cd desc
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="map">
+  <select id="getShelfPattern" resultType="java.lang.Integer">
+    select shelf_pattern_cd
+    from planocycle.shelf_pattern_mst
+    where shelf_name_cd =#{shelfNameCd} and company_cd=#{companyCd} and deleteflg=0
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.shelf_pattern_mst
     where company_cd = #{conpanyCd,jdbcType=VARCHAR}
       and shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
@@ -128,7 +133,7 @@
   </update>
     <update id="update">
       update planocycle.shelf_pattern_mst set company_cd=#{conpanyCd},shelf_name_cd=#{shelfNameCd},shelf_pattern_name=#{shelfPatternName}
-        ,ptskey=#{ptsRelationID},maintainer_cd=#{maintainerCd},modified=#{modified}
+        ,ptskey=#{ptsRelationID},maintainer_cd=#{maintainerCd},modified=now()
         where shelf_pattern_cd=#{shelfPatternCd}
     </update>
     <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternMst">

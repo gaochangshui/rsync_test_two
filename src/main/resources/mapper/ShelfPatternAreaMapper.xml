@@ -10,9 +10,32 @@
     update planocycle.shelf_pattern_area
     set edit_time=now(),editer_cd=#{authorCd},deleteflg=1
     where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
-        and deleteflg=0
+      and deleteflg=0
   </update>
-  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternArea">
+  <update id="deleteAreaCd">
+    update planocycle.shelf_pattern_area
+    set edit_time=now(),editer_cd=#{authorCd},deleteflg=1
+    where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+      and deleteflg=0 and areacd in
+        <foreach collection="areaCd" item="area" open="(" close=")" separator=",">
+          #{area}
+        </foreach>
+  </update>
+  <update id="setDelFlg">
+    update planocycle.shelf_pattern_area
+    set deleteflg=0,edit_time=now(),editer_cd=#{authorCd}
+    where areacd = #{areaCd,jdbcType=INTEGER}
+      and shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER} and deleteflg=1
+  </update>
+
+    <select id="getShelfPatternArea" resultType="java.lang.Integer">
+      select
+        areacd
+      from
+        planocycle.shelf_pattern_area
+      where shelf_pattern_cd=#{id} and company_cd=#{companyCd}
+    </select>
+    <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternArea">
     insert into planocycle.shelf_pattern_area (company_cd, shelf_pattern_cd, areacd,create_time,author_cd
       )
     values
