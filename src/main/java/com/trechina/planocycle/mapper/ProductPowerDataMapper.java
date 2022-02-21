@@ -34,7 +34,7 @@ public interface ProductPowerDataMapper {
     int deleteWKYobiiiternData();
     //smart数据存到临时表
     int insertYobilitem(@Param("companyCd") String companyCd,@Param("authorCd")String authorCd,@Param("itemCd")Integer itemCd,@Param("itemName")String itemName);
-
+    int insertYobilitemData(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd,@Param("itemCd")Integer itemCd);
     //最终表存到临时表
     int insertWkYobiiiternForFinally();
 

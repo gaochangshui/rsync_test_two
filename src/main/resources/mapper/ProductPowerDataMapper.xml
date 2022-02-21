@@ -29,7 +29,7 @@
     </insert>
     <insert id="insertYobilitem">
         insert into planocycle.work_product_power_yobiitem(company_cd,author_cd,item_cd,item_name)
-        values
+        values (#{companyCd},#{authorCd},#{itemCd},#{itemName})
     </insert>
     <insert id="insertWkSyokikaForFinally">
         insert into planocycle.work_product_power_syokika(company_cd,author_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pos_amount,
@@ -48,6 +48,9 @@
             from planocycle.product_power_kokyaku
             where company_cd = #{companyCd,jdbcType=VARCHAR}
             and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </insert>
+    <insert id="insertYobilitemData">
+
     </insert>
 
     <update id="deleteSyokika">

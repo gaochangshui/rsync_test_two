@@ -49,7 +49,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         if (Data.get("data") !=null) {
             String[] strResult = Data.get("data").toString().split("@");
             String[] strSplit = null;
-            productPowerDataMapper.deleteWKSyokika();
+           // productPowerDataMapper.deleteWKSyokika();
             for (int i = 0; i < strResult.length; i++) {
                 strSplit = strResult[i].split(" ");
                 //数据量过大，一次存500条
@@ -154,6 +154,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     public Map<String, Object> getCommodityScoreTaskId(ProductPowerDataForCgiDto productPowerDataForCgiDto) {
         String uuid = UUID.randomUUID().toString();
         productPowerDataForCgiDto.setGuid(uuid);
+        productPowerDataForCgiDto.setMode("shoki_data");
         if (productPowerDataForCgiDto.getSeasonFlag().equals("0")) {
             productPowerDataForCgiDto.setSeasonFlag("MONTH");
         } else {
@@ -186,6 +187,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     public Map<String, Object> getCommodityScoreGroupTaskId(ProductPowerDataForCgiDto productPowerDataForCgiDto) {
         String uuid = UUID.randomUUID().toString();
         productPowerDataForCgiDto.setGuid(uuid);
+        productPowerDataForCgiDto.setMode("kokyaku_data");
         if (productPowerDataForCgiDto.getSeasonFlag().equals("0")) {
             productPowerDataForCgiDto.setSeasonFlag("MONTH");
         } else {

@@ -1,7 +1,6 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.service.FilesOperationService;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,7 +51,7 @@ public class FilesOperationController {
      * @return
      */
     @PostMapping("/csvUploadMulti")
-    public Map<String,Object> CsvUploadShelf(@RequestParam("file") MultipartFile[] multipartFileList ,
+    public Map<String,Object> CsvUploadShelf(@RequestParam("file") MultipartFile[] multipartFileList,
                                              @RequestParam("companyCd") String companyCd) {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("csvPathShelf")+session.getAttribute("aud").toString()+"/";
