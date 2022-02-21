@@ -5,7 +5,6 @@ import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
-import com.trechina.planocycle.entity.vo.ProductPowerShowMstVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreMasterService;
@@ -13,7 +12,6 @@ import com.trechina.planocycle.service.CommodityScoreParaService;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,50 +103,32 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         logger.info("保存期间、表示项目、weight所有参数"+commodityScorePara);
         String conpanyCd = commodityScorePara.getProductPowerParamMst().getConpanyCd();
         Integer productPowerCd = commodityScorePara.getProductPowerParamMst().getProductPowerCd();
+        String authorCd = session.getAttribute("aud").toString();
         //期间参数先删再插
-        delParam(conpanyCd,productPowerCd);
-        productPowerParamMstMapper.insert(commodityScorePara.getProductPowerParamMst());
+        delParam(conpanyCd,productPowerCd,authorCd);
+        productPowerParamMstMapper.insert(commodityScorePara.getProductPowerParamMst(),authorCd);
 
         //表示项目需要先删再插
-        delShowMst(conpanyCd,productPowerCd);
+        delShowMst(conpanyCd,productPowerCd,authorCd);
         if(commodityScorePara.getProductPowerShowMst().size()>0) {
-            productPowerShowMstMapper.insert(commodityScorePara.getProductPowerShowMst());
+            productPowerShowMstMapper.insert(commodityScorePara.getProductPowerShowMst(),authorCd);
         }
         //预备表示项目需要先删再插
-        delPrePara(conpanyCd,productPowerCd);
+        delPrePara(conpanyCd,productPowerCd,authorCd);
         if(commodityScorePara.getProductPowerReserveMst().size()>0) {
-            productPowerReserveMstMapper.insert(commodityScorePara.getProductPowerReserveMst());
+            productPowerReserveMstMapper.insert(commodityScorePara.getProductPowerReserveMst(),authorCd);
         }
-        //属性需要先删再插
-        delAttr(conpanyCd,productPowerCd);
-        List<ProductPowerParamAttribute> productPowerParamAttributeArrayList = new ArrayList<>();
-        String[] attrCds = commodityScorePara.getAttributeCd().split(",");
-        String[] attrs = commodityScorePara.getAttr().split(",");
-
-        for (int i = 0; i < attrCds.length; i++) {
-            ProductPowerParamAttribute productPowerParamAttribute = new ProductPowerParamAttribute();
-            productPowerParamAttribute.setCompanyCd(conpanyCd);
-            productPowerParamAttribute.setProductPowerCd(productPowerCd);
-            productPowerParamAttribute.setAttrCd(Integer.valueOf(attrCds[i]));
-            productPowerParamAttribute.setAttrValue(Integer.valueOf(attrs[i]));
-            productPowerParamAttributeArrayList.add(productPowerParamAttribute);
-        }
-        logger.info("保存属性的参数"+productPowerParamAttributeArrayList);
-        productPowerParamAttributeMapper.insert(productPowerParamAttributeArrayList);
 
         //weight需要先删再插
-        delWeight(conpanyCd,productPowerCd);
-        productPowerWeightMapper.insert(commodityScorePara.getProductPowerWeight());
+        delWeight(conpanyCd,productPowerCd,authorCd);
+        productPowerWeightMapper.insert(commodityScorePara.getProductPowerWeight(),authorCd);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         //cgi保存
         String uuidSave = UUID.randomUUID().toString();
         ProductPowerDataForCgiDto productPowerDataForCgiSave = new ProductPowerDataForCgiDto();
         productPowerDataForCgiSave.setMode("jan_rank");
         productPowerDataForCgiSave.setCompany(commodityScorePara.getProductPowerParamMst().getConpanyCd());
-        productPowerDataForCgiSave.setProductPowerNo(commodityScorePara.getProductPowerParamMst().getProductPowerCd());
-        productPowerDataForCgiSave.setGuid(uuidSave);
-        productPowerDataForCgiSave.setJan(commodityScorePara.getJan());
-        productPowerDataForCgiSave.setRank(commodityScorePara.getRank());
+
         logger.info("保存jan rank"+productPowerDataForCgiSave);
         //递归调用cgi，首先获取taskid
         try {
@@ -235,9 +215,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
             productPowerDataForCgiDto.setMode("yobi_delete");
             productPowerDataForCgiDto.setCompany(productPowerReserveMst.getConpanyCd());
-            productPowerDataForCgiDto.setProductPowerNo(productPowerReserveMst.getProductPowerCd());
-            productPowerDataForCgiDto.setGuid(uuid);
-            productPowerDataForCgiDto.setDataCd(productPowerReserveMst.getDataName());
+
+
+
             String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
             //调用cgi 删除预备表示项目
             //递归调用cgi，首先获取taskid
@@ -264,8 +244,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      * @param productPowerCd
      * @return
      */
-    public Map<String, Object> delParam(String conpanyCd, Integer productPowerCd){
-        productPowerParamMstMapper.deleteCommofityParam(conpanyCd,productPowerCd);
+    public Map<String, Object> delParam(String conpanyCd, Integer productPowerCd,String authorCd){
+        productPowerParamMstMapper.deleteCommofityParam(conpanyCd,productPowerCd, authorCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -275,8 +255,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      * @param productPowerCd
      * @return
      */
-    public Map<String, Object> delShowMst(String conpanyCd, Integer productPowerCd){
-        productPowerShowMstMapper.deleteByPrimaryKey(productPowerCd,conpanyCd);
+    public Map<String, Object> delShowMst(String conpanyCd, Integer productPowerCd,String authorCd){
+        productPowerShowMstMapper.deleteByPrimaryKey(productPowerCd,conpanyCd, authorCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -286,8 +266,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      * @param productPowerCd
      * @return
      */
-    public Map<String,Object> delPrePara(String conpanyCd,Integer productPowerCd) {
-        productPowerReserveMstMapper.deleteByPrimaryKey(conpanyCd,productPowerCd);
+    public Map<String,Object> delPrePara(String conpanyCd,Integer productPowerCd,String authorCd) {
+        productPowerReserveMstMapper.deleteByPrimaryKey(conpanyCd,productPowerCd,authorCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -297,22 +277,11 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      * @param productPowerCd
      * @return
      */
-    public Map<String, Object> delWeight(String conpanyCd, Integer productPowerCd){
-        productPowerWeightMapper.deleteByPrimaryKey(conpanyCd,productPowerCd);
+    public Map<String, Object> delWeight(String conpanyCd, Integer productPowerCd,String authorCd){
+        productPowerWeightMapper.deleteByPrimaryKey(conpanyCd,productPowerCd, authorCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    /**
-     * 删除属性
-     * @param conpanyCd
-     * @param productPowerCd
-     * @return
-     */
-
-    public Map<String,Object> delAttr(String conpanyCd, Integer productPowerCd){
-        productPowerParamAttributeMapper.deleteByPrimaryKey(conpanyCd,productPowerCd);
-        return ResultMaps.result(ResultEnum.SUCCESS);
-    }
 
 
 

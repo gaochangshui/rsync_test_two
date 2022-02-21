@@ -16,20 +16,20 @@
     <include refid="Base_Column_List" />
     from planocycle.product_power_weight
     where company_cd = #{conpanyCd,jdbcType=VARCHAR}
-      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
   </select>
   <delete id="deleteByPrimaryKey" >
-    delete from planocycle.product_power_weight
+    update planocycle.product_power_weight set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
     where company_cd = #{conpanyCd,jdbcType=VARCHAR}
       and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerWeight">
     insert into planocycle.product_power_weight (company_cd, product_power_cd, market_pos_flag,
-      data_cd, data_weight)
+      data_cd, data_weight,author_cd,create_time)
     values
     <foreach collection="lists" item="list" separator=",">
       (#{list.conpanyCd,jdbcType=VARCHAR}, #{list.productPowerCd,jdbcType=INTEGER}, #{list.marketPosFlag,jdbcType=INTEGER},
-      #{list.dataCd,jdbcType=INTEGER}, #{list.dataWeight,jdbcType=NUMERIC})
+      #{list.dataCd,jdbcType=INTEGER}, #{list.dataWeight,jdbcType=NUMERIC},#{authorCd},now())
     </foreach>
   </insert>
 

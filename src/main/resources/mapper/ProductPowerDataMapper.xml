@@ -2,24 +2,95 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.ProductPowerDataMapper">
     <insert id="insert">
-        insert into ${tabaleName} ()
+        insert into planocycle.work_product_power_syokika (company_cd,author_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pos_amount
+        pos_num_branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num
+        )
         values
             <foreach collection="keyNameList" separator="," item="lists">
                 (
-                 <foreach collection="lists" item="item" separator=",">
+                 <foreach collection="lists" item="item" separator="," open="(" close=")">
                      #{item}
                  </foreach>
                 )
             </foreach>
 
     </insert>
-    <update id="dropTempData">
-        DROP TABLE IF EXISTS ${tablename};
+    <insert id="insertGroup">
+        insert into planocycle.work_product_power_kokyaku (company_cd,author_cd,jan,sku_name,pos_amount
+        pos_num_branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num)
+        values
+        <foreach collection="keyNameList" separator="," item="lists">
+            (
+            <foreach collection="lists" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+            )
+        </foreach>
+    </insert>
+    <insert id="insertYobilitem">
+        insert into planocycle.work_product_power_yobiitem(company_cd,author_cd,item_cd,item_name)
+        values
+    </insert>
+    <insert id="insertWkSyokikaForFinally">
+        insert into planocycle.work_product_power_syokika(company_cd,author_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pos_amount,
+            pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num)
+            select (company_cd,author_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pos_amount,
+                pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num)
+            from planocycle.product_power_syokika
+            where company_cd = #{companyCd,jdbcType=VARCHAR}
+              and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </insert>
+    <insert id="insertWkKokyakuForFinally">
+        insert into planocycle.work_product_power_kokyaku(company_cd,author_cd,jan,sku_name,pos_amount,
+            pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num)
+            select (company_cd,author_cd,jan,sku_name,pos_amount,
+                    pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num)
+            from planocycle.product_power_kokyaku
+            where company_cd = #{companyCd,jdbcType=VARCHAR}
+            and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </insert>
+
+    <update id="deleteSyokika">
+        update planocycle.product_power_syokika set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </update>
-    <update id="updateTempData">
-        create table ${tablename} (
-            company_cd varchar,product_power_cd integer,jan varchar,sku_name varchar,pos_amount varchar,pos_num integer,branch_amount varchar,branch_num integer,
-            compare_amount varchar,compare_num integer,branch_compare_amount varchar,branch_compare_num integer
-        );
+    <update id="deleteGroup">
+        update planocycle.product_power_kokyaku set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </update>
+    <update id="deleteYobiiitern">
+        update planocycle.product_power_yobiitem set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </update>
+    <update id="deleteYobiiiternData">
+        update planocycle.product_power_yobiitem_data set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </update>
+    <delete id="deleteWKSyokika">
+        delete from planocycle.work_product_power_syokika
+    </delete>
+    <delete id="deleteWKKokyaku">
+        delete from planocycle.work_product_power_kokyaku
+    </delete>
+    <delete id="deleteWKYobiiitern">
+        delete from planocycle.work_product_power_yobiitem;
+    </delete>
+    <delete id="deleteWKYobiiiternData">
+        delete from planocycle.work_product_power_yobiitem_data;
+    </delete>
+    <select id="selectWKSyokika" resultType="com.trechina.planocycle.entity.po.ProductPowerSyokika">
+        select * from planocycle.work_product_power_syokika where company_cd=#{companyCd}
+    </select>
+    <select id="selectWKKokyaku" resultType="com.trechina.planocycle.entity.po.ProductPowerKokyaku">
+        select * from planocycle.work_product_power_kokyaku where company_cd=#{companyCd}
+    </select>
+    <select id="getProductPowerMstData" resultType="com.trechina.planocycle.entity.po.ProductPowerMstData">
+        select * from planocycle.product_power_mst_data where company_cd=#{companyCd} and product_power_cd=#{productPowerCd} and deleteflg=0
+    </select>
+
+
 </mapper>

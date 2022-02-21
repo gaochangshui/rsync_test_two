@@ -1,9 +1,5 @@
 package com.trechina.planocycle.entity.po;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import java.util.Date;
-
 public class ProductPowerParamMst {
     private String conpanyCd;
 
@@ -54,7 +50,7 @@ public class ProductPowerParamMst {
     public void setPeridFlag(Integer peridFlag) {
         this.peridFlag = peridFlag;
     }
-    @JsonFormat(pattern = "yyyy-MM-dd")
+
     public String getStartPerid() {
         return startPerid;
     }
@@ -62,7 +58,7 @@ public class ProductPowerParamMst {
     public void setStartPerid(String startPerid) {
         this.startPerid = startPerid;
     }
-    @JsonFormat(pattern = "yyyy-MM-dd")
+
     public String getEndPerid() {
         return endPerid;
     }
@@ -78,7 +74,7 @@ public class ProductPowerParamMst {
     public void setSeasonPeridFlag(Integer seasonPeridFlag) {
         this.seasonPeridFlag = seasonPeridFlag;
     }
-    @JsonFormat(pattern = "yyyy-MM-dd")
+
     public String getSeasonStPerid() {
         return seasonStPerid;
     }
@@ -86,7 +82,7 @@ public class ProductPowerParamMst {
     public void setSeasonStPerid(String seasonStPerid) {
         this.seasonStPerid = seasonStPerid;
     }
-    @JsonFormat(pattern = "yyyy-MM-dd")
+
     public String getSeasonEndPerid() {
         return seasonEndPerid;
     }
@@ -116,7 +112,7 @@ public class ProductPowerParamMst {
     }
 
     public void setChannelName(String channelName) {
-        this.channelName = channelName == null ? null : channelName.trim();
+        this.channelName = channelName;
     }
 
     public String getCountyName() {
@@ -124,7 +120,7 @@ public class ProductPowerParamMst {
     }
 
     public void setCountyName(String countyName) {
-        this.countyName = countyName == null ? null : countyName.trim();
+        this.countyName = countyName;
     }
 
     public Integer getItemFlg() {
@@ -147,7 +143,7 @@ public class ProductPowerParamMst {
                 ", seasonStPerid='" + seasonStPerid + '\'' +
                 ", seasonEndPerid='" + seasonEndPerid + '\'' +
                 ", storeCd='" + storeCd + '\'' +
-                ", prodCd='" + prdCd + '\'' +
+                ", prdCd='" + prdCd + '\'' +
                 ", channelName='" + channelName + '\'' +
                 ", countyName='" + countyName + '\'' +
                 ", itemFlg=" + itemFlg +

@@ -17,20 +17,20 @@
     <include refid="Base_Column_List" />
     from planocycle.product_power_reserve_mst
     where company_cd = #{conpanyCd,jdbcType=VARCHAR}
-      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
   </select>
-  <delete id="deleteByPrimaryKey" >
-    delete from planocycle.product_power_reserve_mst
+  <update id="deleteByPrimaryKey" >
+    update planocycle.product_power_reserve_mst set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
     where company_cd = #{conpanyCd,jdbcType=VARCHAR}
       and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
-  </delete>
+  </update>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerReserveMst">
     insert into planocycle.product_power_reserve_mst (company_cd, product_power_cd, market_pos_flag,
-      data_cd, data_name,show_flag)
+      data_cd, data_name,show_flag,author_cd,create_time)
     values
     <foreach collection="lists" separator="," item="list">
       (#{list.conpanyCd,jdbcType=VARCHAR}, #{list.productPowerCd,jdbcType=INTEGER}, #{list.marketPosFlag,jdbcType=INTEGER},
-      #{list.dataCd,jdbcType=INTEGER}, #{list.dataName,jdbcType=VARCHAR},#{list.showFlag,jdbcType=INTEGER})
+      #{list.dataCd,jdbcType=INTEGER}, #{list.dataName,jdbcType=VARCHAR},#{list.showFlag,jdbcType=INTEGER},#{authorCd},now())
     </foreach>
   </insert>
 

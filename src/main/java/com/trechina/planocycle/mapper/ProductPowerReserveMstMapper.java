@@ -8,9 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface ProductPowerReserveMstMapper {
-    int deleteByPrimaryKey(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd);
+    int deleteByPrimaryKey(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);
 
-    int insert(@Param("lists") List<ProductPowerReserveMst> record);
+    int insert(@Param("lists") List<ProductPowerReserveMst> record,@Param("authorCd")String authorCd);
 
     List<ProductPowerReserveMst> selectByPrimaryKey(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd);
 

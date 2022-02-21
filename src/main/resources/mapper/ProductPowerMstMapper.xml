@@ -20,6 +20,12 @@
     <id column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
     <result column="product_power_name" jdbcType="VARCHAR" property="productPowerName" />
   </resultMap>
+  <resultMap id="tableNameList" type="com.trechina.planocycle.entity.dto.TableNameDto">
+    <id column="product_power_cd" jdbcType="INTEGER" property="id" />
+    <result column="product_power_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="registered" jdbcType="VARCHAR" property="createTime"/>
+    <result column="author_name" jdbcType="VARCHAR" property="authorName"/>
+  </resultMap>
   <sql id="Base_Column_List">
     company_cd, product_power_cd, product_power_name, author_cd, author_name, registered,
     maintainer_cd, maintainer_name, modified
@@ -36,11 +42,11 @@
       #{maintainerCd,jdbcType=VARCHAR}, #{maintainerName,jdbcType=VARCHAR}, now()
       )
   </insert>
-    <delete id="delete">
-      delete from planocycle.product_power_mst
+    <update id="delete">
+      update planocycle.product_power_mst set deleteflg=1 ,
         where company_cd = #{conpanyCd,jdbcType=VARCHAR}
         and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
-    </delete>
+    </update>
 
     <select id="selectCommodityList" parameterType="map" resultMap="CommodityListInfo">
     select distinct
@@ -53,5 +59,11 @@
     where product_power_name=#{productPowerName,jdbcType=VARCHAR}
     and company_cd = #{companyCd,jdbcType=VARCHAR}
     and product_power_cd!=#{productPowerCd,jdbcType=INTEGER}
+  </select>
+  <select id="getTableNameByCompanyCd" resultMap="tableNameList">
+    select distinct
+      product_power_cd ,product_power_name ,registered ,author_name
+    from planocycle.product_power_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and deleteflg=0
   </select>
 </mapper>

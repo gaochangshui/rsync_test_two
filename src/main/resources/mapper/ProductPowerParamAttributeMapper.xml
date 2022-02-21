@@ -15,7 +15,7 @@
       company_cd, product_power_cd,string_agg(attr_cd||':'||attr_value,',')  as attr
     from planocycle.product_power_param_attribute
     where company_cd = #{companyCd,jdbcType=VARCHAR}
-      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
     group by company_cd, product_power_cd
   </select>
   <select id="selectAttrName" parameterType="map" resultType="com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO">
@@ -28,11 +28,11 @@
       and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     group by company_cd, product_power_cd
   </select>
-  <delete id="deleteByPrimaryKey" >
-    delete from planocycle.product_power_param_attribute
+  <update id="deleteByPrimaryKey" >
+    update planocycle.product_power_param_attribute set deleteflg=1
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
-  </delete>
+  </update>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerParamAttribute">
     insert into planocycle.product_power_param_attribute (company_cd, product_power_cd, attr_cd,
       attr_value)

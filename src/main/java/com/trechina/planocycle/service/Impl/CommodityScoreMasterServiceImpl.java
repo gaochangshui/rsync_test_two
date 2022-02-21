@@ -1,11 +1,11 @@
 package com.trechina.planocycle.service.Impl;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
-import com.trechina.planocycle.entity.po.ProductPowerParamMst;
 import com.trechina.planocycle.entity.po.ProductPowerMst;
+import com.trechina.planocycle.entity.po.ProductPowerParamMst;
 import com.trechina.planocycle.entity.vo.CommodityListInfoVO;
 import com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO;
 import com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO;
@@ -14,11 +14,12 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreMasterService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.*;
@@ -40,7 +41,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     private ProductPowerWeightMapper productPowerWeightMapper;
     @Autowired
     private ProductPowerReserveMstMapper productPowerReserveMstMapper;
-
+    @Autowired
+    private ProductPowerDataMapper productPowerDataMapper;
     /**
      * 获取企业信息
      * @return
@@ -189,7 +191,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public Map<String, Object> setCommodityParam(ProductPowerParamMst productPowerParamMst) {
         logger.info("商品力点数list模板的参数："+productPowerParamMst);
-        productPowerParamMstMapper.insert(productPowerParamMst);
+        String aud = session.getAttribute("aud").toString();
+        productPowerParamMstMapper.insert(productPowerParamMst,aud);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -255,21 +258,34 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
 
     @Override
     public boolean delSmartData(ProductPowerParamMst productPowerParamMst) {
-        productPowerMstMapper.delete(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd());
+        String authorCd = session.getAttribute("aud").toString();
         String uuid = UUID.randomUUID().toString();
-        productPowerShowMstMapper.deleteByPrimaryKey(productPowerParamMst.getProductPowerCd(), productPowerParamMst.getConpanyCd());
-        productPowerParamMstMapper.deleteCommofityParam(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd());
-        productPowerReserveMstMapper.deleteByPrimaryKey(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd());
-        productPowerWeightMapper.deleteByPrimaryKey(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd());
-        productPowerParamAttributeMapper.deleteByPrimaryKey(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd());
+        //商品力点数mst表删除
+        productPowerMstMapper.delete(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd());
+        //表示项目删除
+        productPowerShowMstMapper.deleteByPrimaryKey(productPowerParamMst.getProductPowerCd(), productPowerParamMst.getConpanyCd(),authorCd);
+        //参数删除
+        productPowerParamMstMapper.deleteCommofityParam(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
+        //预备项目mst删除
+        productPowerReserveMstMapper.deleteByPrimaryKey(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
+        //权重删除
+        productPowerWeightMapper.deleteByPrimaryKey(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
+
+        //基本数据删除
+        productPowerDataMapper.deleteSyokika(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
+        //顾客group删除
+        productPowerDataMapper.deleteGroup(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
+         //预备项目Data删除
+        productPowerDataMapper.deleteYobiiiternData(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
         ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
         productPowerDataForCgiDto.setMode("data_delete");
         productPowerDataForCgiDto.setCompany(productPowerParamMst.getConpanyCd());
         productPowerDataForCgiDto.setProductPowerNo(productPowerParamMst.getProductPowerCd());
-        productPowerDataForCgiDto.setGuid(uuid);
+
         // 新规1 既存0
-        productPowerDataForCgiDto.setChangeFlag(1);
+        //productPowerDataForCgiDto.setChangeFlag(1);////
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
+
         try {
             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
             String path = resourceBundle.getString("ProductPowerData");

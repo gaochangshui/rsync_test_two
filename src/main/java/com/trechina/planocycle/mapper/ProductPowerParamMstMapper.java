@@ -7,13 +7,13 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface ProductPowerParamMstMapper {
 
-    int insert(ProductPowerParamMst record);
+    int insert(@Param("record") ProductPowerParamMst record,@Param("authorCd")String authorCd);
 
     ProductPowerParamMst selectCommodityParam(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd);
 
     int deleteCommofityParamForChange(ProductPowerParamMst record);
 
-    int deleteCommofityParam(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd);
+    int deleteCommofityParam(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);
 
     ProductOrderAttrAndItemVO selectAttrAndItem(String companyCd, Integer productOrderCd);
     ProductOrderAttrAndItemVO selectAttrAndValue(String companyCd, Integer productOrderCd);

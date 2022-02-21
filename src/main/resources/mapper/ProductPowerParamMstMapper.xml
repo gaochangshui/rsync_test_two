@@ -51,13 +51,13 @@
     insert into planocycle.product_power_param_mst (company_cd, product_power_cd, perid_flag,
       start_perid, end_perid,season_perid_flag, season_st_perid,
       season_end_perid,  store_cd,
-      channel_name, county_name, item_flg,prod_cd
+      channel_name, county_name, item_flg,prod_cd,author_cd,create_time
       )
-    values (#{conpanyCd,jdbcType=VARCHAR}, #{productPowerCd,jdbcType=INTEGER}, #{peridFlag,jdbcType=INTEGER},
-      #{startPerid,jdbcType=TIMESTAMP}, #{endPerid,jdbcType=TIMESTAMP}, #{seasonPeridFlag,jdbcType=INTEGER}, #{seasonStPerid,jdbcType=TIMESTAMP},
-      #{seasonEndPerid,jdbcType=TIMESTAMP}, #{storeCd,jdbcType=VARCHAR},
-      #{channelName,jdbcType=VARCHAR}, #{countyName,jdbcType=VARCHAR}
-             , #{itemFlg,jdbcType=INTEGER},#{prdCd,jdbcType=VARCHAR}
+    values (#{record.conpanyCd,jdbcType=VARCHAR}, #{record.productPowerCd,jdbcType=INTEGER}, #{record.peridFlag,jdbcType=INTEGER},
+      #{record.startPerid,jdbcType=TIMESTAMP}, #{record.endPerid,jdbcType=TIMESTAMP}, #{record.seasonPeridFlag,jdbcType=INTEGER},
+      #{record.seasonStPerid,jdbcType=TIMESTAMP},#{record.seasonEndPerid,jdbcType=TIMESTAMP}, #{record.storeCd,jdbcType=VARCHAR},
+      #{record.channelName,jdbcType=VARCHAR}, #{record.countyName,jdbcType=VARCHAR}, #{itemFlg,jdbcType=INTEGER},#{prdCd,jdbcType=VARCHAR},
+      #{authorCd,jdbcType=VARCHAR},now()
       )
   </insert>
   <delete id="deleteCommofityParamForChange" parameterType="com.trechina.planocycle.entity.po.ProductPowerParamMst">
@@ -75,9 +75,9 @@
              or county_name != #{countyName,jdbcType=VARCHAR}
             or prod_cd != #{prdCd,jdbcType=VARCHAR})
   </delete>
-  <delete id="deleteCommofityParam" >
-    delete from planocycle.product_power_param_mst
+  <update id="deleteCommofityParam" >
+    update  planocycle.product_power_param_mst set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
     where company_cd = #{conpanyCd,jdbcType=VARCHAR}
       and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
-  </delete>
+  </update>
 </mapper>

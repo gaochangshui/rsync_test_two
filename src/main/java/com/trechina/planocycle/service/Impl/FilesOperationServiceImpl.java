@@ -13,7 +13,6 @@ import com.trechina.planocycle.service.FilesOperationService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
-import com.trechina.planocycle.utils.sshFtpUtils;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -102,6 +101,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
 
                             InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file1), "Shift_Jis");
                             try(BufferedReader bufferedReader = new BufferedReader(inputStreamReader);){
+                                List arrList = new ArrayList<>();
                                 String line = "";
                                 int lineNum = 1;
                                 int titleNum = 0;
@@ -109,6 +109,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                     if (lineNum ==1){
                                         logger.info("第一行信息"+line);
                                         String[] arr = line.split(",");
+                                        arrList.add(arr);
                                         for (int i = 0; i < arr.length; i++) {
                                             logger.info("分隔后"+arr[i]);
                                         }
@@ -128,6 +129,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                 }
                                 inputStreamReader.close();
                                 logger.info("check完成，开始链接服务器");
+
                             }
 
                             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");

@@ -25,4 +25,6 @@ public class CommonMstServiceImpl implements CommonMstService {
         List<Areas> areasList = areasMapper.selectForShelfName(ShelfNameCd);
         return ResultMaps.result(ResultEnum.SUCCESS,areasList);
     }
+
+
 }

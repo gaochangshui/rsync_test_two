@@ -7,9 +7,9 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 @Mapper
 public interface ProductPowerWeightMapper {
-    int deleteByPrimaryKey(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd);
+    int deleteByPrimaryKey(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);
 
-    int insert(@Param("lists") List<ProductPowerWeight> record);
+    int insert(@Param("lists") List<ProductPowerWeight> record,@Param("authorCd")String authorCd);
 
     List<ProductPowerWeight> selectByPrimaryKey(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd);
 

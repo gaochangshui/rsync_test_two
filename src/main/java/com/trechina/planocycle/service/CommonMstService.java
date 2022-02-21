@@ -16,4 +16,7 @@ public interface CommonMstService {
      * @return
      */
     Map<String,Object> getAreaForShelfName(Integer ShelfNameCd);
+
+
+
 }

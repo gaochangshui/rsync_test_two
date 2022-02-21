@@ -32,4 +32,6 @@ public class CommonMstController {
     public Map<String,Object> getAreaForShelfName(Integer shelfNameCd) {
         return commonMstService.getAreaForShelfName(shelfNameCd);
     }
+
+
 }

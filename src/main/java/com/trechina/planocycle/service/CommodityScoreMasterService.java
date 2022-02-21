@@ -70,5 +70,11 @@ public interface CommodityScoreMasterService {
      */
     ProductOrderAttrAndItemVO getAttrAndItmemInfo(String companyCd, Integer productOrderCd);
 
+    /**
+     * 删除商品力点数表信息
+     * @param productPowerParamMst
+     * @return
+     */
+
     boolean delSmartData(ProductPowerParamMst productPowerParamMst);
 }

@@ -5,6 +5,10 @@ public class CommodityListInfoVO {
 
     private String productPowerName;
 
+
+
+
+
     public Integer getProductPowerCd() {
         return productPowerCd;
     }
@@ -20,6 +24,7 @@ public class CommodityListInfoVO {
     public void setProductPowerName(String productPowerName) {
         this.productPowerName = productPowerName;
     }
+
 
     @Override
     public String toString() {
