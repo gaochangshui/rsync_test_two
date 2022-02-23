@@ -20,8 +20,8 @@ public class CommodityScoreDataController {
      */
     //TODO:获取商品力点数表基本数据
     @GetMapping("/getCommodityScoreData")
-    public Map<String,Object> getCommodityScoreData(String taskID) {
-        return commodityScoreDataService.getCommodityScoreData(taskID);
+    public Map<String,Object> getCommodityScoreData(String taskID,String companyCd) {
+        return commodityScoreDataService.getCommodityScoreData(taskID,companyCd);
     }
 
     /**
@@ -42,8 +42,8 @@ public class CommodityScoreDataController {
      */
     //TODO:获取商品力点数表Group数据
     @GetMapping("/getCommodityScoreGroupData")
-    public Map<String,Object> getCommodityScoreGroupData(String taskID) {
-        return commodityScoreDataService.getCommodityScoreGroupData(taskID);
+    public Map<String,Object> getCommodityScoreGroupData(String taskID,String companyCd) {
+        return commodityScoreDataService.getCommodityScoreGroupData(taskID,companyCd);
     }
 
     /**

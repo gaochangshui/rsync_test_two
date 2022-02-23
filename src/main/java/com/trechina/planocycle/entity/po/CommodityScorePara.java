@@ -7,7 +7,6 @@ public class CommodityScorePara {
     private List<ProductPowerShowMst> productPowerShowMst;
     private List<ProductPowerWeight> productPowerWeight;
     private List<ProductPowerReserveMst> productPowerReserveMst;
-    private List<ProductPowerMstData>productPowerMstData;
     private String deleteDataCd;
     private String jan;
     private String rank;

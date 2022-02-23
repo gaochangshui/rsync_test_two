@@ -1,9 +1,9 @@
 package com.trechina.planocycle.entity.po;
 
 
-public class ProductPowerSyokika {
-    private String companyCd;
-    private String productPowerCd;
+import java.math.BigDecimal;
+
+public class ProductPowerWKSyokika {
     private String jan;
     private String skuName;
     private String classifyBig;
@@ -11,30 +11,16 @@ public class ProductPowerSyokika {
     private String classifySmall;
     private String classifyFine;
     // POS
-    private String posAmount;
-    private Integer posNum;
-    private String branchAmount;
-    private Integer branchNum;
-    private String compareAmount;
-    private Integer compareNum;
-    private String branchCompareAmount;
-    private Integer branchCompareNum;
+    private BigDecimal posAmount;
+    private BigDecimal posNum;
+    private BigDecimal branchAmount;
+    private BigDecimal branchNum;
+    private BigDecimal compareAmount;
+    private BigDecimal compareNum;
+    private BigDecimal branchCompareAmount;
+    private BigDecimal branchCompareNum;
 
-    public String getCompanyCd() {
-        return companyCd;
-    }
 
-    public void setCompanyCd(String companyCd) {
-        this.companyCd = companyCd;
-    }
-
-    public String getProductPowerCd() {
-        return productPowerCd;
-    }
-
-    public void setProductPowerCd(String productPowerCd) {
-        this.productPowerCd = productPowerCd;
-    }
 
     public String getJan() {
         return jan;
@@ -84,88 +70,86 @@ public class ProductPowerSyokika {
         this.classifyFine = classifyFine;
     }
 
-    public String getPosAmount() {
+    public BigDecimal getPosAmount() {
         return posAmount;
     }
 
-    public void setPosAmount(String posAmount) {
+    public void setPosAmount(BigDecimal posAmount) {
         this.posAmount = posAmount;
     }
 
-    public Integer getPosNum() {
+    public BigDecimal getPosNum() {
         return posNum;
     }
 
-    public void setPosNum(Integer posNum) {
+    public void setPosNum(BigDecimal posNum) {
         this.posNum = posNum;
     }
 
-    public String getBranchAmount() {
+    public BigDecimal getBranchAmount() {
         return branchAmount;
     }
 
-    public void setBranchAmount(String branchAmount) {
+    public void setBranchAmount(BigDecimal branchAmount) {
         this.branchAmount = branchAmount;
     }
 
-    public Integer getBranchNum() {
+    public BigDecimal getBranchNum() {
         return branchNum;
     }
 
-    public void setBranchNum(Integer branchNum) {
+    public void setBranchNum(BigDecimal branchNum) {
         this.branchNum = branchNum;
     }
 
-    public String getCompareAmount() {
+    public BigDecimal getCompareAmount() {
         return compareAmount;
     }
 
-    public void setCompareAmount(String compareAmount) {
+    public void setCompareAmount(BigDecimal compareAmount) {
         this.compareAmount = compareAmount;
     }
 
-    public Integer getCompareNum() {
+    public BigDecimal getCompareNum() {
         return compareNum;
     }
 
-    public void setCompareNum(Integer compareNum) {
+    public void setCompareNum(BigDecimal compareNum) {
         this.compareNum = compareNum;
     }
 
-    public String getBranchCompareAmount() {
+    public BigDecimal getBranchCompareAmount() {
         return branchCompareAmount;
     }
 
-    public void setBranchCompareAmount(String branchCompareAmount) {
+    public void setBranchCompareAmount(BigDecimal branchCompareAmount) {
         this.branchCompareAmount = branchCompareAmount;
     }
 
-    public Integer getBranchCompareNum() {
+    public BigDecimal getBranchCompareNum() {
         return branchCompareNum;
     }
 
-    public void setBranchCompareNum(Integer branchCompareNum) {
+    public void setBranchCompareNum(BigDecimal branchCompareNum) {
         this.branchCompareNum = branchCompareNum;
     }
 
     @Override
     public String toString() {
-        return "ProductPowerSyokika{" +
-                "companyCd='" + companyCd + '\'' +
-                ", productPowerCd='" + productPowerCd + '\'' +
+        return "ProductPowerWKSyokika{" +
                 ", jan='" + jan + '\'' +
                 ", skuName='" + skuName + '\'' +
                 ", classifyBig='" + classifyBig + '\'' +
                 ", classifyMiddle='" + classifyMiddle + '\'' +
                 ", classifySmall='" + classifySmall + '\'' +
                 ", classifyFine='" + classifyFine + '\'' +
-                ", posAmount='" + posAmount + '\'' +
+                ", posAmount=" + posAmount +
                 ", posNum=" + posNum +
-                ", branchAmount='" + branchAmount + '\'' +
+                ", branchAmount=" + branchAmount +
                 ", branchNum=" + branchNum +
-                ", compareAmount='" + compareAmount + '\'' +
+                ", compareAmount=" + compareAmount +
                 ", compareNum=" + compareNum +
-                ", branchCompareAmount='" + branchCompareAmount + '\'' +
+                ", branchCompareAmount=" + branchCompareAmount +
                 ", branchCompareNum=" + branchCompareNum +
                 '}';
     }

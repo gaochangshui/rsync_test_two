@@ -14,4 +14,6 @@ public interface ProductPowerWeightMapper {
     List<ProductPowerWeight> selectByPrimaryKey(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd);
 
     int updateByPrimaryKey(ProductPowerWeight record);
+
+    int delete(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd);
 }

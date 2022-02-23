@@ -12,13 +12,13 @@ public interface CommodityScoreDataService {
      * @param taskID
      * @return
      */
-    Map<String,Object> getCommodityScoreData(String taskID);
+    Map<String,Object> getCommodityScoreData(String taskID,String companyCd);
     /**
      * 获取商品力点数表顾客Group数据
      * @param taskID
      * @return
      */
-    Map<String,Object> getCommodityScoreGroupData(String taskID);
+    Map<String,Object> getCommodityScoreGroupData(String taskID,String companyCd);
     /**
      * 保存文件的时候调用cgi
      * @param companyCd

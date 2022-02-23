@@ -15,6 +15,8 @@ public interface ProductPowerParamMstMapper {
 
     int deleteCommofityParam(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);
 
+    int delete(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd);
+
     ProductOrderAttrAndItemVO selectAttrAndItem(String companyCd, Integer productOrderCd);
     ProductOrderAttrAndItemVO selectAttrAndValue(String companyCd, Integer productOrderCd);
 }

@@ -14,7 +14,9 @@ public class ProductPowerDataForCgiDto {
     private String prdCd;
     private String storeCd;
     private String yearflg;
-    private String kokyakugroup;
+    private String customerCondition;
+    private String change_flag;
+    private String usercd;
 
     public String getMode() {
         return mode;
@@ -120,12 +122,28 @@ public class ProductPowerDataForCgiDto {
         this.yearflg = yearflg;
     }
 
-    public String getKokyakugroup() {
-        return kokyakugroup;
+    public String getCustomerCondition() {
+        return customerCondition;
     }
 
-    public void setKokyakugroup(String kokyakugroup) {
-        this.kokyakugroup = kokyakugroup;
+    public void setCustomerCondition(String customerCondition) {
+        this.customerCondition = customerCondition;
+    }
+
+    public String getChange_flag() {
+        return change_flag;
+    }
+
+    public void setChange_flag(String change_flag) {
+        this.change_flag = change_flag;
+    }
+
+    public String getUsercd() {
+        return usercd;
+    }
+
+    public void setUsercd(String usercd) {
+        this.usercd = usercd;
     }
 
     @Override
@@ -144,7 +162,9 @@ public class ProductPowerDataForCgiDto {
                 ", prdCd='" + prdCd + '\'' +
                 ", storeCd='" + storeCd + '\'' +
                 ", yearflg='" + yearflg + '\'' +
-                ", kokyakugroup='" + kokyakugroup + '\'' +
+                ", customerCondition='" + customerCondition + '\'' +
+                ", change_flag='" + change_flag + '\'' +
+                ", usercd='" + usercd + '\'' +
                 '}';
     }
 }
