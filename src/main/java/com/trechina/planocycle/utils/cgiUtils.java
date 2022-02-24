@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.trechina.planocycle.enums.ResultEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -13,10 +15,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
-
+@Component
 public class cgiUtils {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
+    @Value("${smartUrlPath}")
+    public String smartPath;
 
     /**
      * get调用cgi
@@ -25,7 +28,6 @@ public class cgiUtils {
      * @throws IOException
      */
     ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-    String smartPath = resourceBundle.getString("SmartPath");
     public  String getCgi(String path,String tokenInfo) throws IOException {
         URL url =new URL(smartPath+path);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();

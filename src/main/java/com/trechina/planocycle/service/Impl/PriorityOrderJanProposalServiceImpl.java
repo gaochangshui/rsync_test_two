@@ -36,6 +36,8 @@ public class PriorityOrderJanProposalServiceImpl implements PriorityOrderJanProp
     private PriorityOrderDataMapper priorityOrderDataMapper;
     @Autowired
     private PriorityOrderJanProposalService priorityOrderJanProposalService;
+    @Autowired
+    private cgiUtils cgiUtil;
 
     /**
      * 获取jan变提案list
@@ -83,11 +85,10 @@ public class PriorityOrderJanProposalServiceImpl implements PriorityOrderJanProp
             String path = resourceBundle.getString("PriorityOrderData");
             String queryPath = resourceBundle.getString("TaskQuery");
             //递归调用cgi，首先去taskid
-            cgiUtils cgiUtils = new cgiUtils();
-            String resultJan = cgiUtils.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
+            String resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
             logger.info("taskId返回：" + resultJan);
             //带着taskId，再次请求cgi获取运行状态/数据
-            Map<String, Object> DataJan = cgiUtils.postCgiLoop(queryPath, resultJan, tokenInfo);
+            Map<String, Object> DataJan = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
             logger.info("jan变提案list cgi返回数据：" + DataJan);
             if (!DataJan.get("data").equals("[ ]")) {
                 JSONArray datasJan = (JSONArray) JSON.parse(DataJan.get("data").toString());

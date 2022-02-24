@@ -37,11 +37,11 @@ mybatis:
     map-underscore-to-camel-case: true
 logging:
   file:
-    path: /
+    path: ${loggingFilePath}
 # 环境变量
 SystemPath: ${PORTAL_URL}
 projectIds: ${projectIds}
 bucketNames: ${bucketNames}
 ptsDownPath: ${ptsDownPath}
 productDownPath: ${productDownPath}
-smartPath: ${smartPath}
+smartUrlPath: ${smartUrlPath}

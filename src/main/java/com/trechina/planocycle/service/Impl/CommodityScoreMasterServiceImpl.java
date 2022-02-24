@@ -43,6 +43,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     private ProductPowerReserveMstMapper productPowerReserveMstMapper;
     @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
+    private cgiUtils cgiUtil;
     /**
      * 获取企业信息
      * @return
@@ -51,7 +53,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     public Map<String,Object> getEnterpriseInfo() {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("CompanyList");
-        cgiUtils cgiUtil = new cgiUtils();
         Object resultInfo = "";
         try {
             String result = cgiUtil.getCgi(path+session.getAttribute("inCharge")+"&mode=kigyolist",(String) session.getAttribute("MSPACEDGOURDLP"));
@@ -225,7 +226,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         try {
             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
             String pathInfo = resourceBundle.getString("ChannelList");
-            cgiUtils cgiUtil = new cgiUtils();
             String result=cgiUtil.getCgi(pathInfo,(String) session.getAttribute("MSPACEDGOURDLP"));
             return ResultMaps.result(ResultEnum.SUCCESS, JSON.parse(result));
         } catch (IOException e) {
@@ -243,7 +243,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         try {
             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
             String pathInfo = resourceBundle.getString("PlaceList");
-            cgiUtils cgiUtil = new cgiUtils();
             String result=cgiUtil.getCgi(pathInfo,(String) session.getAttribute("MSPACEDGOURDLP"));
             return ResultMaps.result(ResultEnum.SUCCESS, JSON.parse(result));
         } catch (IOException e) {
@@ -313,7 +312,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         try {
             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
             String path = resourceBundle.getString("ProductPowerData");
-            cgiUtils cgiUtil = new cgiUtils();
             String result = null;
             result = cgiUtil.postCgi(path,productPowerDataForCgiDto,tokenInfo);
             logger.info("taskid返回："+result);
