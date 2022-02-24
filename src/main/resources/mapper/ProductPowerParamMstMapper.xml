@@ -75,7 +75,12 @@
              or county_name != #{countyName,jdbcType=VARCHAR}
             or prod_cd != #{prdCd,jdbcType=VARCHAR})
   </delete>
-  <update id="deleteCommofityParam" >
+    <delete id="delete">
+     delete from  planocycle.product_power_param_mst
+      where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+        and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </delete>
+    <update id="deleteCommofityParam" >
     update  planocycle.product_power_param_mst set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
     where company_cd = #{conpanyCd,jdbcType=VARCHAR}
       and product_power_cd = #{productPowerCd,jdbcType=INTEGER}

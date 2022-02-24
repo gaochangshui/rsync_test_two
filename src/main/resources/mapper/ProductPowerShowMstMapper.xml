@@ -10,7 +10,12 @@
   <sql id="Base_Column_List">
     product_power_cd, company_cd, market_pos_flag, data_cd
   </sql>
-  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    <delete id="delete">
+      delete from planocycle.product_power_show_mst
+      where product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+        and company_cd = #{conpanyCd,jdbcType=VARCHAR}
+    </delete>
+    <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from planocycle.product_power_show_mst

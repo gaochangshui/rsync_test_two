@@ -8,6 +8,7 @@ import java.util.List;
 @Mapper
 public interface ProductPowerShowMstMapper {
     int deleteByPrimaryKey(@Param("productPowerCd") Integer productPowerCd, @Param("conpanyCd") String conpanyCd,@Param("authorCd")String authorCd);
+    int delete(@Param("productPowerCd") Integer productPowerCd, @Param("conpanyCd") String conpanyCd);
 
     int insert(@Param("lists") List<ProductPowerShowMst> record,@Param("authorCd")String authorCd);
 

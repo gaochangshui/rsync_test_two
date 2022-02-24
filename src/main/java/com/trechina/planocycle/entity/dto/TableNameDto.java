@@ -1,11 +1,15 @@
 package com.trechina.planocycle.entity.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class TableNameDto {
     private String id;
 
     private String fileName;
 
+    @JsonFormat(pattern="yyyy/MM/dd")
     private String createTime;
+
 
     private String authorName;
 

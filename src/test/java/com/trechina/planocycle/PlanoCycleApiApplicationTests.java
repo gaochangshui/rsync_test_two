@@ -1,49 +1,35 @@
-/*
 package com.trechina.planocycle;
 
+import com.trechina.planocycle.entity.po.ProductPowerSyokika;
+import com.trechina.planocycle.mapper.ProductPowerDataMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
+@SpringBootTest
 class PlanoCycleApiApplicationTests {
+@Autowired
+private ProductPowerDataMapper productPowerDataMapper;
+
+
 
     @Test
-    void contextLoads() {
-
-    String[] str = new String[3];
-    str[0]="zhangsan";
-    str[1]="age";
-    str[2]="addr";
-        System.out.println(str);
-        Student student = new Student();
-        for (int i = 0; i < str.length; i++) {
-            student.setName(str[0]);
-            student.setAge(str[1]);
-            student.setAddr(str[2]);
-        }
-        System.out.println(student);
-
+    public void test1() {
+     //productPowerDataMapper.endYobiiiternDataForWk("0001", 123, "10215814");
+        List<ProductPowerSyokika> productPowerSyokikas = productPowerDataMapper.selectSyokika("0001", 1);
+        productPowerSyokikas.forEach(System.out::println);
+        //productPowerDataMapper.endYobiiiternForWk("0001", 123, "10215814");
+    // productPowerDataMapper.endSyokikaForWK("0001", 123, "10215814");
+        //productPowerDataMapper.endGroupForWK("0001", 123, "10215814");
     }
 
-
-
-
-    public static void main(String[] args) {
-        String[] str = new String[3];
-        str[0]="zhangsan";
-        str[1]="20";
-        str[2]="qd";
-        Student student =(Student) arrayToObject(str, Student.class);
-        System.out.println("name"+student.getName());
-        System.out.println("age"+student.getAge());
-        System.out.println("addr"+student.getAddr());
-        System.out.println(student.toString());
-
-    }
     public static Object arrayToObject(Object[] obj,Class<?> classType){
         Object stu1 = null;
         try {
@@ -66,4 +52,3 @@ class PlanoCycleApiApplicationTests {
     }
 
 }
-*/

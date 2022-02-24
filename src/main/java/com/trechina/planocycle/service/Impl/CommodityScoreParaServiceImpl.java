@@ -41,7 +41,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     private CommodityScoreMasterService commodityScoreMasterService;
     @Autowired
     private PriorityOrderMstService priorityOrderMstService;
-
+    @Autowired
+    private ProductPowerDataMapper productPowerDataMapper;
     /**
      * 获取表示项目所有参数
      * @param conpanyCd
@@ -100,28 +101,60 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setCommodityScorePare(CommodityScorePara commodityScorePara) {
+        String authorCd = session.getAttribute("aud").toString();
+
         logger.info("保存期间、表示项目、weight所有参数"+commodityScorePara);
         String conpanyCd = commodityScorePara.getProductPowerParamMst().getConpanyCd();
         Integer productPowerCd = commodityScorePara.getProductPowerParamMst().getProductPowerCd();
-        String authorCd = session.getAttribute("aud").toString();
-        //期间参数先删再插
-        delParam(conpanyCd,productPowerCd,authorCd);
-        productPowerParamMstMapper.insert(commodityScorePara.getProductPowerParamMst(),authorCd);
-
-        //表示项目需要先删再插
-        delShowMst(conpanyCd,productPowerCd,authorCd);
-        if(commodityScorePara.getProductPowerShowMst().size()>0) {
-            productPowerShowMstMapper.insert(commodityScorePara.getProductPowerShowMst(),authorCd);
-        }
-        //预备表示项目需要先删再插
-        delPrePara(conpanyCd,productPowerCd,authorCd);
-        if(commodityScorePara.getProductPowerReserveMst().size()>0) {
-            productPowerReserveMstMapper.insert(commodityScorePara.getProductPowerReserveMst(),authorCd);
+        Integer syokikapowerCdNum = productPowerDataMapper.syokikaPowerCdNum(conpanyCd,productPowerCd);
+        Integer groupPowerCdNum = productPowerDataMapper.groupPowerCdNum(conpanyCd, productPowerCd);
+        //将临时表里的保存到最终表里
+        //pos基本数据
+        if (syokikapowerCdNum == 0) {
+            //新规保存
+            productPowerDataMapper.endSyokikaForWK(conpanyCd, productPowerCd, authorCd);
+        }else{
+            //修改保存  物理删除插入
+            productPowerDataMapper.phyDeleteSyokika(conpanyCd,productPowerCd,authorCd);
+            productPowerDataMapper.endSyokikaForWK(conpanyCd, productPowerCd, authorCd);
         }
 
-        //weight需要先删再插
-        delWeight(conpanyCd,productPowerCd,authorCd);
-        productPowerWeightMapper.insert(commodityScorePara.getProductPowerWeight(),authorCd);
+        if (groupPowerCdNum == 0){
+            //新规保存
+            productPowerDataMapper.endGroupForWK(conpanyCd, productPowerCd, authorCd);
+        }else {
+            //修改保存  物理删除插入
+            productPowerDataMapper.phyDeleteGroup(conpanyCd,productPowerCd,authorCd);
+            productPowerDataMapper.endGroupForWK(conpanyCd, productPowerCd, authorCd);
+        }
+
+        if (groupPowerCdNum == 0){
+            //新规保存
+            productPowerDataMapper.endYobiiiternForWk(conpanyCd,productPowerCd,authorCd);
+            productPowerDataMapper.endYobiiiternDataForWk(conpanyCd,productPowerCd,authorCd);
+        }else {
+            //修改保存  物理删除插入
+            productPowerDataMapper.phyDeleteYobiiitern(conpanyCd,productPowerCd,authorCd);
+            productPowerDataMapper.phyDeleteYobiiiternData(conpanyCd,productPowerCd,authorCd);
+            productPowerDataMapper.endYobiiiternForWk(conpanyCd,productPowerCd,authorCd);
+            productPowerDataMapper.endYobiiiternDataForWk(conpanyCd,productPowerCd,authorCd);
+        }
+
+            //期间参数插入
+            delParam(conpanyCd,productPowerCd);
+            productPowerParamMstMapper.insert(commodityScorePara.getProductPowerParamMst(), authorCd);
+            //表示项目插入
+            delShowMst(conpanyCd,productPowerCd);
+            if (commodityScorePara.getProductPowerShowMst().size() > 0) {
+                productPowerShowMstMapper.insert(commodityScorePara.getProductPowerShowMst(), authorCd);
+            }
+
+            //weight插入
+            delWeight(conpanyCd,productPowerCd);
+            productPowerWeightMapper.insert(commodityScorePara.getProductPowerWeight(), authorCd);
+
+
+
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         //cgi保存
         String uuidSave = UUID.randomUUID().toString();
@@ -239,50 +272,58 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     }
 
     /**
-     * 删除期间参数
+     * 物理删除期间参数
      * @param conpanyCd
      * @param productPowerCd
      * @return
      */
-    public Map<String, Object> delParam(String conpanyCd, Integer productPowerCd,String authorCd){
-        productPowerParamMstMapper.deleteCommofityParam(conpanyCd,productPowerCd, authorCd);
+    public Map<String, Object> delParam(String conpanyCd, Integer productPowerCd){
+        productPowerParamMstMapper.delete(conpanyCd,productPowerCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
-     * 删除表示项目
+     * 物理删除表示项目
      * @param conpanyCd
      * @param productPowerCd
      * @return
      */
-    public Map<String, Object> delShowMst(String conpanyCd, Integer productPowerCd,String authorCd){
-        productPowerShowMstMapper.deleteByPrimaryKey(productPowerCd,conpanyCd, authorCd);
+    public Map<String, Object> delShowMst(String conpanyCd, Integer productPowerCd){
+        productPowerShowMstMapper.delete(productPowerCd,conpanyCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
-     * 删除预备表示项目
+     * 物理删除预备表示项目
      * @param conpanyCd
      * @param productPowerCd
      * @return
      */
-    public Map<String,Object> delPrePara(String conpanyCd,Integer productPowerCd,String authorCd) {
-        productPowerReserveMstMapper.deleteByPrimaryKey(conpanyCd,productPowerCd,authorCd);
+    public Map<String,Object> delPrePara(String conpanyCd,Integer productPowerCd) {
+        productPowerReserveMstMapper.delete(conpanyCd,productPowerCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
-     * 删除weight
+     * 物理删除weight
      * @param conpanyCd
      * @param productPowerCd
      * @return
      */
-    public Map<String, Object> delWeight(String conpanyCd, Integer productPowerCd,String authorCd){
-        productPowerWeightMapper.deleteByPrimaryKey(conpanyCd,productPowerCd, authorCd);
+    public Map<String, Object> delWeight(String conpanyCd, Integer productPowerCd){
+        productPowerWeightMapper.delete(conpanyCd,productPowerCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
+    /**
+     * Syokika修改保存
+     */
+    public void updateSyokika(String companyCd,String authorCd,Integer productPowerCd){
 
+
+
+        //数据库中修改重复数据
+    }
 
 
 }

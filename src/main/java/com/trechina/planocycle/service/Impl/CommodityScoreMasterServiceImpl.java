@@ -159,13 +159,22 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
 
         Integer resultName = productPowerMstMapper.selectExistsName(productPowerName.getProductPowerName(),
                 productPowerName.getConpanyCd(),productPowerName.getProductPowerCd());
-        if (resultName>0){
-            return ResultMaps.result(ResultEnum.NAMEISEXISTS);
-        }
-        else {
+        Integer resultNum = productPowerMstMapper.selectUpdExistsName(productPowerName.getConpanyCd(), productPowerName.getProductPowerCd());
+        if (resultName == 0 && resultNum < 1){
             insertMasterInfo(productPowerName);
             return ResultMaps.result(ResultEnum.SUCCESS);
+
         }
+
+
+        if (resultNum == 1 && resultName==0){
+            updateMasterInfo(productPowerName);
+            return ResultMaps.result(ResultEnum.SUCCESS);
+        }
+
+
+
+        return ResultMaps.result(ResultEnum.NAMEISEXISTS);
     }
 
     private void insertMasterInfo(ProductCdAndNameDto productPowerName) {
@@ -179,9 +188,20 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerMst.setMaintainerCd((session.getAttribute("aud").toString()));
         productPowerMst.setMaintainerName((String) session.getAttribute("aud"));
         logger.info("商品力点数名保存："+ productPowerMst);
-        productPowerMstMapper.delete(productPowerMst.getConpanyCd(),productPowerMst.getProductPowerCd());
         productPowerMstMapper.insert(productPowerMst);
     }
+    private void updateMasterInfo(ProductCdAndNameDto productPowerName) {
+        ProductPowerMst productPowerMst = new ProductPowerMst();
+        productPowerMst.setConpanyCd(productPowerName.getConpanyCd());
+        productPowerMst.setProductPowerCd(productPowerName.getProductPowerCd());
+        productPowerMst.setProductPowerName(productPowerName.getProductPowerName());
+
+        productPowerMst.setMaintainerCd((session.getAttribute("aud").toString()));
+        productPowerMst.setMaintainerName((String) session.getAttribute("aud"));
+        logger.info("商品力点数名保存："+ productPowerMst);
+        productPowerMstMapper.update(productPowerMst);
+    }
+
 
     /**
      * 保存商品力点数list模板的参数
@@ -277,10 +297,14 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.deleteGroup(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
          //预备项目Data删除
         productPowerDataMapper.deleteYobiiiternData(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
+        //rank总表删除
+        productPowerDataMapper.deleteRankData(productPowerParamMst.getConpanyCd(),productPowerParamMst.getProductPowerCd(),authorCd);
+
         ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
         productPowerDataForCgiDto.setMode("data_delete");
         productPowerDataForCgiDto.setCompany(productPowerParamMst.getConpanyCd());
         productPowerDataForCgiDto.setProductPowerNo(productPowerParamMst.getProductPowerCd());
+        productPowerDataForCgiDto.setGuid(uuid);
 
         // 新规1 既存0
         //productPowerDataForCgiDto.setChangeFlag(1);////

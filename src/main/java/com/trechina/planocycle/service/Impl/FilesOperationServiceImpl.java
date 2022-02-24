@@ -127,6 +127,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                     logger.info("没有三组台番号");
                                     return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
                                 }
+
                                 inputStreamReader.close();
                                 logger.info("check完成，开始链接服务器");
 

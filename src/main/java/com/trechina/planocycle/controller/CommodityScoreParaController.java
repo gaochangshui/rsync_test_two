@@ -27,7 +27,7 @@ public class CommodityScoreParaController {
     }
 
     /**
-     * 保存s1期间、表示项目、预备项目、weight所有参数,删除预备项目
+     * 保存s1期间、表示项目、预备项目、weight所有参数,删除预备项目,基本pos数据
      * @param commodityScorePara
      * @return
      */
@@ -79,6 +79,13 @@ public class CommodityScoreParaController {
         return commodityScoreParaService.delYoBi(productPowerReserveMst);
     }
 
+    /**
+     * 计算rank
+     */
+   // @PostMapping("rankCalculate")
+    /*public Map<String,Object> rankCalculate(@RequestBody){
+        return
+    }*/
 
 
 }
