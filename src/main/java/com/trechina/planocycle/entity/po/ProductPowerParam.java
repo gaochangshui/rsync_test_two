@@ -1,29 +1,25 @@
-package com.trechina.planocycle.entity.dto;
+package com.trechina.planocycle.entity.po;
 
-public class ProductPowerDataForCgiDto {
-    private String mode;
+
+
+
+public class ProductPowerParam {
     private String company;
-    private String guid;
+    private String customerValue;
+    private String kokyakugroup;
+    private String posValue;
+    private String prdCd;
+    private String prepareValue;
     private Integer productPowerNo;
+    private String rangWeight;
     private String recentlyEndTime;
     private String recentlyFlag;
     private String recentlyStTime;
     private String seasonEndTime;
     private String seasonFlag;
     private String seasonStTime;
-    private String prdCd;
     private String storeCd;
-    private String yearflg;
-    private String change_flag;
-    private String usercd;
-
-    public String getMode() {
-        return mode;
-    }
-
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
+    private String yearFlag;
 
     public String getCompany() {
         return company;
@@ -33,12 +29,44 @@ public class ProductPowerDataForCgiDto {
         this.company = company;
     }
 
-    public String getGuid() {
-        return guid;
+    public String getCustomerValue() {
+        return customerValue;
     }
 
-    public void setGuid(String guid) {
-        this.guid = guid;
+    public void setCustomerValue(String customerValue) {
+        this.customerValue = customerValue;
+    }
+
+    public String getKokyakugroup() {
+        return kokyakugroup;
+    }
+
+    public void setKokyakugroup(String kokyakugroup) {
+        this.kokyakugroup = kokyakugroup;
+    }
+
+    public String getPosValue() {
+        return posValue;
+    }
+
+    public void setPosValue(String posValue) {
+        this.posValue = posValue;
+    }
+
+    public String getPrdCd() {
+        return prdCd;
+    }
+
+    public void setPrdCd(String prdCd) {
+        this.prdCd = prdCd;
+    }
+
+    public String getPrepareValue() {
+        return prepareValue;
+    }
+
+    public void setPrepareValue(String prepareValue) {
+        this.prepareValue = prepareValue;
     }
 
     public Integer getProductPowerNo() {
@@ -47,6 +75,14 @@ public class ProductPowerDataForCgiDto {
 
     public void setProductPowerNo(Integer productPowerNo) {
         this.productPowerNo = productPowerNo;
+    }
+
+    public String getRangWeight() {
+        return rangWeight;
+    }
+
+    public void setRangWeight(String rangWeight) {
+        this.rangWeight = rangWeight;
     }
 
     public String getRecentlyEndTime() {
@@ -97,14 +133,6 @@ public class ProductPowerDataForCgiDto {
         this.seasonStTime = seasonStTime;
     }
 
-    public String getPrdCd() {
-        return prdCd;
-    }
-
-    public void setPrdCd(String prdCd) {
-        this.prdCd = prdCd;
-    }
-
     public String getStoreCd() {
         return storeCd;
     }
@@ -113,50 +141,33 @@ public class ProductPowerDataForCgiDto {
         this.storeCd = storeCd;
     }
 
-    public String getYearflg() {
-        return yearflg;
+    public String getYearFlag() {
+        return yearFlag;
     }
 
-    public void setYearflg(String yearflg) {
-        this.yearflg = yearflg;
-    }
-
-
-
-    public String getChange_flag() {
-        return change_flag;
-    }
-
-    public void setChange_flag(String change_flag) {
-        this.change_flag = change_flag;
-    }
-
-    public String getUsercd() {
-        return usercd;
-    }
-
-    public void setUsercd(String usercd) {
-        this.usercd = usercd;
+    public void setYearFlag(String yearFlag) {
+        this.yearFlag = yearFlag;
     }
 
     @Override
     public String toString() {
-        return "ProductPowerDataForCgiDto{" +
-                "mode='" + mode + '\'' +
-                ", company='" + company + '\'' +
-                ", guid='" + guid + '\'' +
+        return "ProductPowerParam{" +
+                "company='" + company + '\'' +
+                ", customerValue='" + customerValue + '\'' +
+                ", kokyakugroup='" + kokyakugroup + '\'' +
+                ", posValue='" + posValue + '\'' +
+                ", prdCd='" + prdCd + '\'' +
+                ", prepareValue='" + prepareValue + '\'' +
                 ", productPowerNo=" + productPowerNo +
+                ", rangWeight='" + rangWeight + '\'' +
                 ", recentlyEndTime='" + recentlyEndTime + '\'' +
                 ", recentlyFlag='" + recentlyFlag + '\'' +
                 ", recentlyStTime='" + recentlyStTime + '\'' +
                 ", seasonEndTime='" + seasonEndTime + '\'' +
                 ", seasonFlag='" + seasonFlag + '\'' +
                 ", seasonStTime='" + seasonStTime + '\'' +
-                ", prdCd='" + prdCd + '\'' +
                 ", storeCd='" + storeCd + '\'' +
-                ", yearflg='" + yearflg + '\'' +
-                ", change_flag='" + change_flag + '\'' +
-                ", usercd='" + usercd + '\'' +
+                ", yearFlag='" + yearFlag + '\'' +
                 '}';
     }
 }

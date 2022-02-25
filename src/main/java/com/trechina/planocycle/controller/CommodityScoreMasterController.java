@@ -86,5 +86,15 @@ public class CommodityScoreMasterController {
         return commodityScoreMasterService.delCommodityParam(productPowerParamMst);
     }
 
+    /**
+     * 编辑返回所有参数
+     * @param companyCd
+     * @param productPowerNo
+     * @return
+     */
 
+    @GetMapping("getAllDataOrParam")
+    public Map<String,Object> getAllDataOrParam(String companyCd,Integer productPowerNo){
+        return commodityScoreMasterService.getAllDataOrParam(companyCd,productPowerNo);
+    }
 }

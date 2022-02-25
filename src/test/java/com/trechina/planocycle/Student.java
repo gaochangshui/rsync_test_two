@@ -4,6 +4,7 @@ public class Student {
     public String name;
     public Integer age;
     public String addr;
+    public  Integer soft;
 
     public String getName() {
         return name;
@@ -27,6 +28,14 @@ public class Student {
 
     public void setAddr(String addr) {
         this.addr = addr;
+    }
+
+    public Integer getSoft() {
+        return soft;
+    }
+
+    public void setSoft(Integer soft) {
+        this.soft = soft;
     }
 
     @Override

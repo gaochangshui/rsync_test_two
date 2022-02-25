@@ -43,7 +43,7 @@
       )
   </insert>
     <update id="delete">
-      update planocycle.product_power_mst set deleteflg=1 ,
+      update planocycle.product_power_mst set deleteflg=1
         where company_cd = #{conpanyCd,jdbcType=VARCHAR}
         and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </update>
@@ -54,7 +54,8 @@
             where company_cd=#{conpanyCd} and product_power_cd=#{productPowerCd} and deleteflg=0
   </update>
 
-  <select id="selectCommodityList" parameterType="map" resultMap="CommodityListInfo">
+
+    <select id="selectCommodityList" parameterType="map" resultMap="CommodityListInfo">
     select distinct
       product_power_cd,product_power_name
     from planocycle.product_power_mst

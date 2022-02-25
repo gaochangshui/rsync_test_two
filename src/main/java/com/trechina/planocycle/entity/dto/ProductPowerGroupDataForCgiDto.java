@@ -1,6 +1,6 @@
 package com.trechina.planocycle.entity.dto;
 
-public class ProductPowerDataForCgiDto {
+public class ProductPowerGroupDataForCgiDto {
     private String mode;
     private String company;
     private String guid;
@@ -14,6 +14,7 @@ public class ProductPowerDataForCgiDto {
     private String prdCd;
     private String storeCd;
     private String yearflg;
+    private String customerCondition;
     private String change_flag;
     private String usercd;
 
@@ -121,7 +122,13 @@ public class ProductPowerDataForCgiDto {
         this.yearflg = yearflg;
     }
 
+    public String getCustomerCondition() {
+        return customerCondition;
+    }
 
+    public void setCustomerCondition(String customerCondition) {
+        this.customerCondition = customerCondition;
+    }
 
     public String getChange_flag() {
         return change_flag;
@@ -155,6 +162,7 @@ public class ProductPowerDataForCgiDto {
                 ", prdCd='" + prdCd + '\'' +
                 ", storeCd='" + storeCd + '\'' +
                 ", yearflg='" + yearflg + '\'' +
+                ", customerCondition='" + customerCondition + '\'' +
                 ", change_flag='" + change_flag + '\'' +
                 ", usercd='" + usercd + '\'' +
                 '}';

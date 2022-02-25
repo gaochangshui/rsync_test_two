@@ -1,8 +1,9 @@
 package com.trechina.planocycle.service;
 
-import com.trechina.planocycle.entity.po.CommodityScorePara;
+import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerReserveMst;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
+import com.trechina.planocycle.entity.vo.RankCalculateVo;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ public interface CommodityScoreParaService {
      * @param commodityScorePara
      * @return
      */
-    Map<String,Object> setCommodityScorePare(CommodityScorePara commodityScorePara);
+    Map<String,Object> setCommodityScorePare(ProductPowerParam productPowerParam);
 
     /**
      * 获取weight参数
@@ -54,4 +55,10 @@ public interface CommodityScoreParaService {
     Map<String, Object> delYoBi(ProductPowerReserveMst productPowerReserveMst);
 
     Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd);
+    /**
+     * rank计算
+     * @param rankCalculateVo
+     * @return
+     */
+    Map<String,Object>  rankCalculate( RankCalculateVo rankCalculateVo);
 }

@@ -8,38 +8,69 @@ public class ProductPowerMstData {
     private String jan;
     private String skuName;
     private String classifyBig;
+
     private String classifyMiddle;
     private String classifySmall;
     private String classifyFine;
     // POS
-    private BigDecimal pPosAmount;
-    private BigDecimal pPosNum;
-    private BigDecimal pBranchAmount;
-    private BigDecimal pBranchNum;
-    private BigDecimal pCompareAmount;
-    private BigDecimal pCompareNum;
-    private BigDecimal pBranchCompareAmount;
-    private BigDecimal pBranchCompareNum;
+    private BigDecimal pPosAmount = new BigDecimal("0.00");
+    private BigDecimal pPosNum= new BigDecimal("0.00");
+    private BigDecimal pBranchAmount= new BigDecimal("0.00");
+    private BigDecimal pBranchNum= new BigDecimal("0.00");
+    private BigDecimal pCompareAmount= new BigDecimal("0.00");
+    private BigDecimal pCompareNum= new BigDecimal("0.00");
+    private BigDecimal pBranchCompareAmount= new BigDecimal("0.00");
+    private BigDecimal pBranchCompareNum= new BigDecimal("0.00");
     // 顾客group
-    private BigDecimal gPosAmount;
-    private BigDecimal gPosNum;
-    private BigDecimal gBranchAmount;
-    private BigDecimal gBranchNum;
-    private BigDecimal gCompareAmount;
-    private BigDecimal gCompareNum;
-    private BigDecimal gBranchCompareAmount;
-    private BigDecimal gBranchCompareNum;
+    private BigDecimal gPosAmount= new BigDecimal("0.00");
+    private BigDecimal gPosNum= new BigDecimal("0.00");
+    private BigDecimal gBranchAmount= new BigDecimal("0.00");
+    private BigDecimal gBranchNum= new BigDecimal("0.00");
+    private BigDecimal gCompareAmount= new BigDecimal("0.00");
+    private BigDecimal gCompareNum= new BigDecimal("0.00");
+    private BigDecimal gBranchCompareAmount= new BigDecimal("0.00");
+    private BigDecimal gBranchCompareNum= new BigDecimal("0.00");
     // 项目
-    private BigDecimal item1;
-    private BigDecimal item2;
-    private BigDecimal item3;
-    private BigDecimal item4;
-    private BigDecimal item5;
-    private BigDecimal item6;
-    private BigDecimal item7;
-    private BigDecimal item8;
-    private BigDecimal item9;
-    private BigDecimal item10;
+    private BigDecimal item1= new BigDecimal("0.00");
+    private BigDecimal item2= new BigDecimal("0.00");
+    private BigDecimal item3= new BigDecimal("0.00");
+    private BigDecimal item4= new BigDecimal("0.00");
+    private BigDecimal item5= new BigDecimal("0.00");
+    private BigDecimal item6= new BigDecimal("0.00");
+    private BigDecimal item7= new BigDecimal("0.00");
+    private BigDecimal item8= new BigDecimal("0.00");
+    private BigDecimal item9= new BigDecimal("0.00");
+    private BigDecimal item10= new BigDecimal("0.00");
+    private BigDecimal rankNum;
+    //rank
+
+    private Integer pPosAmountRank;
+    private Integer pPosNumRank;
+    private Integer pBranchAmountRank;
+    private Integer pBranchNumRank;
+    private Integer pCompareAmountRank;
+    private Integer pCompareNumRank;
+    private Integer pBranchCompareAmountRank;
+    private Integer pBranchCompareNumRank;
+    private Integer gPosAmountRank;
+    private Integer gPosNumRank;
+    private Integer gBranchAmountRank;
+    private Integer gBranchNumRank;
+    private Integer gCompareAmountRank;
+    private Integer gCompareNumRank;
+    private Integer gBranchCompareAmountRank;
+    private Integer gBranchCompareNumRank;
+    private Integer item1Rank;
+    private Integer item2Rank;
+    private Integer item3Rank;
+    private Integer item4Rank;
+    private Integer item5Rank;
+    private Integer item6Rank;
+    private Integer item7Rank;
+    private Integer item8Rank;
+    private Integer item9Rank;
+    private Integer item10Rank;
+
     private Integer rankResult;
 
     public String getCompanyCd() {
@@ -320,5 +351,222 @@ public class ProductPowerMstData {
 
     public void setRankResult(Integer rankResult) {
         this.rankResult = rankResult;
+    }
+
+    public Integer getpPosAmountRank() {
+        return pPosAmountRank;
+    }
+
+    public void setpPosAmountRank(Integer pPosAmountRank) {
+        this.pPosAmountRank = pPosAmountRank;
+    }
+
+    public Integer getpPosNumRank() {
+        return pPosNumRank;
+    }
+
+    public void setpPosNumRank(Integer pPosNumRank) {
+        this.pPosNumRank = pPosNumRank;
+    }
+
+    public Integer getpBranchAmountRank() {
+        return pBranchAmountRank;
+    }
+
+    public void setpBranchAmountRank(Integer pBranchAmountRank) {
+        this.pBranchAmountRank = pBranchAmountRank;
+    }
+
+    public Integer getpBranchNumRank() {
+        return pBranchNumRank;
+    }
+
+    public void setpBranchNumRank(Integer pBranchNumRank) {
+        this.pBranchNumRank = pBranchNumRank;
+    }
+
+    public Integer getpCompareAmountRank() {
+        return pCompareAmountRank;
+    }
+
+    public void setpCompareAmountRank(Integer pCompareAmountRank) {
+        this.pCompareAmountRank = pCompareAmountRank;
+    }
+
+    public Integer getpCompareNumRank() {
+        return pCompareNumRank;
+    }
+
+    public void setpCompareNumRank(Integer pCompareNumRank) {
+        this.pCompareNumRank = pCompareNumRank;
+    }
+
+    public Integer getpBranchCompareAmountRank() {
+        return pBranchCompareAmountRank;
+    }
+
+    public void setpBranchCompareAmountRank(Integer pBranchCompareAmountRank) {
+        this.pBranchCompareAmountRank = pBranchCompareAmountRank;
+    }
+
+    public Integer getpBranchCompareNumRank() {
+        return pBranchCompareNumRank;
+    }
+
+    public void setpBranchCompareNumRank(Integer pBranchCompareNumRank) {
+        this.pBranchCompareNumRank = pBranchCompareNumRank;
+    }
+
+    public Integer getgPosAmountRank() {
+        return gPosAmountRank;
+    }
+
+    public void setgPosAmountRank(Integer gPosAmountRank) {
+        this.gPosAmountRank = gPosAmountRank;
+    }
+
+    public Integer getgPosNumRank() {
+        return gPosNumRank;
+    }
+
+    public void setgPosNumRank(Integer gPosNumRank) {
+        this.gPosNumRank = gPosNumRank;
+    }
+
+    public Integer getgBranchAmountRank() {
+        return gBranchAmountRank;
+    }
+
+    public void setgBranchAmountRank(Integer gBranchAmountRank) {
+        this.gBranchAmountRank = gBranchAmountRank;
+    }
+
+    public Integer getgBranchNumRank() {
+        return gBranchNumRank;
+    }
+
+    public void setgBranchNumRank(Integer gBranchNumRank) {
+        this.gBranchNumRank = gBranchNumRank;
+    }
+
+    public Integer getgCompareAmountRank() {
+        return gCompareAmountRank;
+    }
+
+    public void setgCompareAmountRank(Integer gCompareAmountRank) {
+        this.gCompareAmountRank = gCompareAmountRank;
+    }
+
+    public Integer getgCompareNumRank() {
+        return gCompareNumRank;
+    }
+
+    public void setgCompareNumRank(Integer gCompareNumRank) {
+        this.gCompareNumRank = gCompareNumRank;
+    }
+
+    public Integer getgBranchCompareAmountRank() {
+        return gBranchCompareAmountRank;
+    }
+
+    public void setgBranchCompareAmountRank(Integer gBranchCompareAmountRank) {
+        this.gBranchCompareAmountRank = gBranchCompareAmountRank;
+    }
+
+    public Integer getgBranchCompareNumRank() {
+        return gBranchCompareNumRank;
+    }
+
+    public void setgBranchCompareNumRank(Integer gBranchCompareNumRank) {
+        this.gBranchCompareNumRank = gBranchCompareNumRank;
+    }
+
+    public Integer getItem1Rank() {
+        return item1Rank;
+    }
+
+    public void setItem1Rank(Integer item1Rank) {
+        this.item1Rank = item1Rank;
+    }
+
+    public Integer getItem2Rank() {
+        return item2Rank;
+    }
+
+    public void setItem2Rank(Integer item2Rank) {
+        this.item2Rank = item2Rank;
+    }
+
+    public Integer getItem3Rank() {
+        return item3Rank;
+    }
+
+    public void setItem3Rank(Integer item3Rank) {
+        this.item3Rank = item3Rank;
+    }
+
+    public Integer getItem4Rank() {
+        return item4Rank;
+    }
+
+    public void setItem4Rank(Integer item4Rank) {
+        this.item4Rank = item4Rank;
+    }
+
+    public Integer getItem5Rank() {
+        return item5Rank;
+    }
+
+    public void setItem5Rank(Integer item5Rank) {
+        this.item5Rank = item5Rank;
+    }
+
+    public Integer getItem6Rank() {
+        return item6Rank;
+    }
+
+    public void setItem6Rank(Integer item6Rank) {
+        this.item6Rank = item6Rank;
+    }
+
+    public Integer getItem7Rank() {
+        return item7Rank;
+    }
+
+    public void setItem7Rank(Integer item7Rank) {
+        this.item7Rank = item7Rank;
+    }
+
+    public Integer getItem8Rank() {
+        return item8Rank;
+    }
+
+    public void setItem8Rank(Integer item8Rank) {
+        this.item8Rank = item8Rank;
+    }
+
+    public Integer getItem9Rank() {
+        return item9Rank;
+    }
+
+    public void setItem9Rank(Integer item9Rank) {
+        this.item9Rank = item9Rank;
+    }
+
+    public Integer getItem10Rank() {
+        return item10Rank;
+    }
+
+    public BigDecimal getRankNum() {
+        return rankNum;
+    }
+
+    public void setRankNum(BigDecimal rankNum) {
+        this.rankNum = rankNum;
+    }
+
+    public void setItem10Rank(Integer item10Rank) {
+
+        this.item10Rank = item10Rank;
     }
 }

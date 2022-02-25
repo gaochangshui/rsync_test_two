@@ -1,6 +1,88 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.ProductPowerDataMapper">
+    <resultMap id="syokikaMap" type="com.trechina.planocycle.entity.po.ProductPowerMstData">
+        <result property="jan" jdbcType="VARCHAR" column="jan"/>
+        <result property="skuName" jdbcType="VARCHAR" column="sku_name"/>
+        <result property="classifyBig" jdbcType="VARCHAR" column="classify_big"/>
+        <result property="classifyMiddle" jdbcType="VARCHAR" column="classify_middle"/>
+        <result property="classifySmall" jdbcType="VARCHAR" column="classify_small"/>
+        <result property="classifyFine" jdbcType="VARCHAR" column="classify_fine"/>
+        <result property="pPosAmount" jdbcType="VARCHAR" column="pos_amount"/>
+        <result property="pPosNum" jdbcType="VARCHAR" column="pos_num"/>
+        <result property="pBranchAmount" jdbcType="VARCHAR" column="branch_amount"/>
+        <result property="pBranchNum" jdbcType="VARCHAR" column="branch_num"/>
+        <result property="pCompareAmount" jdbcType="VARCHAR" column="compare_amount"/>
+        <result property="pCompareNum" jdbcType="VARCHAR" column="compare_num"/>
+        <result property="pBranchCompareAmount" jdbcType="VARCHAR" column="branch_compare_amount"/>
+        <result property="pBranchCompareNum" jdbcType="VARCHAR" column="branch_compare_num"/>
+    </resultMap>
+    <resultMap id="allMap" type="com.trechina.planocycle.entity.po.ProductPowerMstData">
+        <result property="jan" jdbcType="VARCHAR" column="jan"/>
+        <result property="skuName" jdbcType="VARCHAR" column="skuName"/>
+        <result property="classifyBig" jdbcType="VARCHAR" column="classifyBig"/>
+        <result property="classifyMiddle" jdbcType="VARCHAR" column="classifyMiddle"/>
+        <result property="classifySmall" jdbcType="VARCHAR" column="classifySmall"/>
+        <result property="classifyFine" jdbcType="VARCHAR" column="classifyFine"/>
+        <result property="pPosAmount" jdbcType="VARCHAR" column="pPosAmount"/>
+        <result property="pPosNum" jdbcType="VARCHAR" column="pPosNum"/>
+        <result property="pBranchAmount" jdbcType="VARCHAR" column="pBranchAmount"/>
+        <result property="pBranchNum" jdbcType="VARCHAR" column="pBranchNum"/>
+        <result property="pCompareAmount" jdbcType="VARCHAR" column="pCompareAmount"/>
+        <result property="pCompareNum" jdbcType="VARCHAR" column="pCompareNum"/>
+        <result property="pBranchCompareAmount" jdbcType="VARCHAR" column="pBranchCompareAmount"/>
+        <result property="pBranchCompareNum" jdbcType="VARCHAR" column="pBranchCompareNum"/>
+        <result property="gPosAmount" jdbcType="VARCHAR" column="gPosAmount"/>
+        <result property="gPosNum" jdbcType="VARCHAR" column="gPosNum"/>
+        <result property="gBranchAmount" jdbcType="VARCHAR" column="gBranchAmount"/>
+        <result property="gBranchNum" jdbcType="VARCHAR" column="gBranchNum"/>
+        <result property="gCompareAmount" jdbcType="VARCHAR" column="gCompareAmount"/>
+        <result property="gCompareNum" jdbcType="VARCHAR" column="gCompareNum"/>
+        <result property="gBranchCompareAmount" jdbcType="VARCHAR" column="gBranchCompareAmount"/>
+        <result property="gBranchCompareNum" jdbcType="VARCHAR" column="gBranchCompareNum"/>
+    </resultMap>
+    <resultMap id="wKSyokikaMap" type="com.trechina.planocycle.entity.po.WKYobiiiternData">
+        <result property="dataCd" column="dataCd"/>
+        <result property="dataName" column="dataName"/>
+        <result property="dataSort" column="dataSort"/>
+        <result property="dataValue" column="dataValue"/>
+        <result property="jan" column="jan"/>
+    </resultMap>
+
+    <resultMap id="rankMap" type="com.trechina.planocycle.entity.po.ProductPowerMstData">
+        <result property="jan" jdbcType="VARCHAR" column="jan"/>
+        <result property="skuName" jdbcType="VARCHAR" column="skuName"/>
+        <result property="classifyBig" jdbcType="VARCHAR" column="classifyBig"/>
+        <result property="classifyMiddle" jdbcType="VARCHAR" column="classifyMiddle"/>
+        <result property="classifySmall" jdbcType="VARCHAR" column="classifySmall"/>
+        <result property="classifyFine" jdbcType="VARCHAR" column="classifyFine"/>
+        <result property="pPosAmount" jdbcType="VARCHAR" column="pPosAmount"/>
+        <result property="pPosNum" jdbcType="VARCHAR" column="pPosNum"/>
+        <result property="pBranchAmount" jdbcType="VARCHAR" column="pBranchAmount"/>
+        <result property="pBranchNum" jdbcType="VARCHAR" column="pBranchNum"/>
+        <result property="pCompareAmount" jdbcType="VARCHAR" column="pCompareAmount"/>
+        <result property="pCompareNum" jdbcType="VARCHAR" column="pCompareNum"/>
+        <result property="pBranchCompareAmount" jdbcType="VARCHAR" column="pBranchCompareAmount"/>
+        <result property="pBranchCompareNum" jdbcType="VARCHAR" column="pBranchCompareNum"/>
+        <result property="gPosAmount" jdbcType="VARCHAR" column="gPosAmount"/>
+        <result property="gPosNum" jdbcType="VARCHAR" column="gPosNum"/>
+        <result property="gBranchAmount" jdbcType="VARCHAR" column="gBranchAmount"/>
+        <result property="gBranchNum" jdbcType="VARCHAR" column="gBranchNum"/>
+        <result property="gCompareAmount" jdbcType="VARCHAR" column="gCompareAmount"/>
+        <result property="gCompareNum" jdbcType="VARCHAR" column="gCompareNum"/>
+        <result property="gBranchCompareAmount" jdbcType="VARCHAR" column="gBranchCompareAmount"/>
+        <result property="gBranchCompareNum" jdbcType="VARCHAR" column="gBranchCompareNum"/>
+        <result property="item1" jdbcType="DECIMAL" column="item1"/>
+        <result property="item2" jdbcType="DECIMAL" column="item2"/>
+        <result property="item3" jdbcType="DECIMAL" column="item3"/>
+        <result property="item4" jdbcType="DECIMAL" column="item4"/>
+        <result property="item5" jdbcType="DECIMAL" column="item5"/>
+        <result property="item6" jdbcType="DECIMAL" column="item6"/>
+        <result property="item7" jdbcType="DECIMAL" column="item7"/>
+        <result property="item8" jdbcType="DECIMAL" column="item8"/>
+        <result property="item9" jdbcType="DECIMAL" column="item9"/>
+        <result property="item10" jdbcType="DECIMAL" column="item10"/>
+    </resultMap>
     <insert id="insert">
         insert into planocycle.work_product_power_syokika (company_cd,author_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pos_amount,
         pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num
@@ -100,9 +182,34 @@
         from planocycle.work_product_power_reserve_mst
     </insert>
     <insert id="endYobiiiternDataForWk">
-        insert into planocycle.product_power_reserve_data(company_cd,product_power_cd,item_cd,jan,data_value,author_cd,create_time)
-        select company_cd,#{productPowerCd},item_cd,jan,data_value,#{authorCd},now()
+        insert into planocycle.product_power_reserve_data(company_cd,product_power_cd,data_cd,jan,data_value,author_cd,create_time)
+        select company_cd,#{productPowerCd},data_cd,jan,data_value,#{authorCd},now()
         from planocycle.work_product_power_reserve_data
+    </insert>
+    <insert id="setWKData" >
+        insert into planocycle.work_product_power_mst_data(company_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,p_pos_amount,p_pos_num,
+                                                          p_branch_amount,p_branch_num,p_compare_amount,p_compare_num,p_branch_compare_amount,p_branch_compare_num,
+                                                          g_pos_amount,g_pos_num,g_branch_amount,g_branch_num,g_compare_amount,g_compare_num,g_branch_compare_amount,
+                                                          g_branch_compare_num,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,rank_result,author_cd,
+                                                          create_time,p_pos_amount_rank,p_pos_num_rank,p_branch_amount_rank,p_branch_num_rank,p_compare_amount_rank,
+                                                          p_compare_num_rank,p_branch_compare_amount_rank,p_branch_compare_num_rank,g_pos_amount_rank,g_pos_num_rank,
+                                                          g_branch_amount_rank,g_branch_num_rank ,g_compare_amount_rank,g_compare_num_rank,g_branch_compare_amount_rank,
+                                                          g_branch_compare_num_rank,item1_rank,item2_rank,item3_rank,item4_rank,item5_rank,item6_rank,item7_rank,item8_rank,
+                                                          item9_rank,item10_rank)
+
+        values
+               <foreach collection="list" separator="," item="item" >
+                   (#{companyCd},#{item.jan},#{item.skuName},#{item.classifyBig},#{item.classifyMiddle},#{item.classifySmall},#{item.classifyFine},#{item.pPosAmount},
+                    #{item.pPosNum},#{item.pBranchAmount},#{item.pBranchNum},#{item.pCompareAmount},#{item.pCompareNum},#{item.pBranchCompareAmount},#{item.pBranchCompareNum},
+                    #{item.gPosAmount},#{item.gPosNum},#{item.gBranchAmount},#{item.gBranchNum},#{item.gCompareAmount},#{item.gCompareNum},#{item.gBranchCompareAmount},
+                    #{item.gBranchCompareNum},#{item.item1},#{item.item2},#{item.item3},#{item.item4},#{item.item5},#{item.item6},#{item.item7},#{item.item8},#{item.item9},
+                    #{item.item10},#{item.rankResult},#{authorCd},now(),#{item.pPosAmountRank},#{item.pPosNumRank},#{item.pBranchAmountRank},#{item.pBranchNumRank},
+                    #{item.pCompareAmount},#{item.pCompareNum},#{item.pBranchCompareAmountRank},#{item.pBranchCompareNumRank},#{item.gPosAmountRank},#{item.gPosNumRank},
+                    #{item.gBranchAmountRank},#{item.gBranchNumRank},#{item.gCompareAmountRank},#{item.gCompareNumRank},#{item.gBranchCompareAmount},#{item.gBranchCompareNumRank},
+                    #{item.item1Rank},#{item.item2Rank},#{item.item3Rank},#{item.item4Rank},#{item.item5Rank},#{item.item6Rank},#{item.item7Rank},#{item.item8Rank},#{item.item9Rank},
+                    #{item.item10Rank})
+               </foreach>
+
     </insert>
 
     <update id="deleteSyokika">
@@ -116,12 +223,12 @@
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </update>
     <update id="deleteYobiiitern">
-        update planocycle.product_power_yobiitem set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
+        update planocycle.product_power_reserve_data set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </update>
     <update id="deleteYobiiiternData">
-        update planocycle.product_power_yobiitem_data set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
+        update planocycle.product_power_reserve_data set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </update>
@@ -153,20 +260,68 @@
         delete from planocycle.product_power_yobiitem_data where company_cd = #{companyCd,jdbcType=VARCHAR}
         and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </delete>
+    <delete id="deleteWKData">
+        delete from planocycle.work_product_power_mst_data where company_cd =#{companyCd} and author_cd = #{authorCd}
+    </delete>
+    <delete id="deleteData">
+        delete  from planocycle.product_power_mst_data
+        where company_cd =#{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
+    </delete>
     <update id="deleteRankData">
         update planocycle.product_power_mst_data set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </update>
-    <select id="selectWKSyokika" resultType="com.trechina.planocycle.entity.po.ProductPowerWKSyokika">
+    <update id="setPowerMstData">
+        insert into planocycle.work_product_power_mst_data(company_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,p_pos_amount,
+                                                           p_pos_num,p_branch_amount,p_branch_num,p_compare_amount,p_compare_num,p_branch_compare_amount,p_branch_compare_num,g_pos_amount,g_pos_num,g_branch_amount,
+                                                           g_branch_num,g_compare_amount,g_compare_num,g_branch_compare_amount,g_branch_compare_num
+        )
+        select s.company_cd,s.jan,s.sku_name,s.classify_big,s.classify_middle,s.classify_small,s.classify_fine,s.pos_amount,s.pos_num,s.branch_amount,s.branch_num,
+               s.compare_amount,s.compare_num,s.branch_compare_amount,s.branch_compare_num,kk.pos_amount,kk.pos_num,kk.branch_amount,kk.branch_num,kk.compare_amount,
+               kk.compare_num,kk.branch_compare_amount,kk.branch_compare_num
+
+        from planocycle.work_product_power_syokika s, planocycle.work_product_power_kokyaku kk
+
+    </update>
+    <update id="setData">
+        insert into planocycle.product_power_mst_data (company_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,p_pos_amount,p_pos_num,
+                                                       p_branch_amount,p_branch_num,p_compare_amount,p_compare_num,p_branch_compare_amount,p_branch_compare_num,
+                                                       g_pos_amount,g_pos_num,g_branch_amount,g_branch_num,g_compare_amount,g_compare_num,g_branch_compare_amount,
+                                                       g_branch_compare_num,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,rank_result,author_cd,
+                                                       create_time,p_pos_amount_rank,p_pos_num_rank,p_branch_amount_rank,p_branch_num_rank,p_compare_amount_rank,
+                                                       p_compare_num_rank,p_branch_compare_amount_rank,p_branch_compare_num_rank,g_pos_amount_rank,g_pos_num_rank,
+                                                       g_branch_amount_rank,g_branch_num_rank ,g_compare_amount_rank,g_compare_num_rank,g_branch_compare_amount_rank,
+                                                       g_branch_compare_num_rank,item1_rank,item2_rank,item3_rank,item4_rank,item5_rank,item6_rank,item7_rank,item8_rank,
+                                                       item9_rank,item10_rank,product_power_cd)
+        select  company_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,p_pos_amount,p_pos_num,
+                                                        p_branch_amount,p_branch_num,p_compare_amount,p_compare_num,p_branch_compare_amount,p_branch_compare_num,
+                                                        g_pos_amount,g_pos_num,g_branch_amount,g_branch_num,g_compare_amount,g_compare_num,g_branch_compare_amount,
+                                                        g_branch_compare_num,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,rank_result,author_cd,
+                                                        create_time,p_pos_amount_rank,p_pos_num_rank,p_branch_amount_rank,p_branch_num_rank,p_compare_amount_rank,
+                                                        p_compare_num_rank,p_branch_compare_amount_rank,p_branch_compare_num_rank,g_pos_amount_rank,g_pos_num_rank,
+                                                        g_branch_amount_rank,g_branch_num_rank ,g_compare_amount_rank,g_compare_num_rank,g_branch_compare_amount_rank,
+                                                        g_branch_compare_num_rank,item1_rank,item2_rank,item3_rank,item4_rank,item5_rank,item6_rank,item7_rank,item8_rank,
+                                                        item9_rank,item10_rank,#{productPowerCd}
+        from planocycle.work_product_power_mst_data
+
+    </update>
+    <select id="selectWKSyokika" resultMap="syokikaMap">
         select jan,sku_name,pos_amount,classify_big,classify_middle,classify_small,classify_fine,
                pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num
         from planocycle.work_product_power_syokika where company_cd=#{companyCd} and author_cd=#{authorCd}
     </select>
-    <select id="selectWKKokyaku" resultType="com.trechina.planocycle.entity.po.ProductPowerWKKokyaku">
-        select jan,sku_name,pos_amount,
-               pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num
-        from planocycle.work_product_power_kokyaku where company_cd=#{companyCd} and author_cd=#{authorCd}
+    <select id="selectWKKokyaku" resultMap="allMap">
+        select k.jan as jan,k.sku_name as skuName,k.pos_amount as gPosAmount,k.pos_num as gPosNum,k.branch_amount as gBranchAmount,
+               k.branch_num as gBranchNum,k.compare_amount as gCompareAmount,k.compare_num as gCompareNum,k.branch_compare_amount as gBranchCompareAmount,
+               k.branch_compare_num as gBranchCompareNum,s.classify_big as classifyBig,s.classify_middle as classifyMiddle,s.classify_small as classifySmall,
+               s.classify_fine as classifyFine,s.pos_amount as pPosAmount,s.pos_num as pPosNum,s.branch_amount as pBranchAmount,s.branch_num as pBranchNum,
+               s.compare_amount as pCompareAmount,s.compare_num as pCompareNum,
+               s.branch_compare_amount as pBranchCompareAmount,s.branch_compare_num as pBranchCompareNum
+
+        from  planocycle.work_product_power_syokika s left join planocycle.work_product_power_kokyaku k
+                on k.jan = s.jan
+        where  s.author_cd=#{authorCd} and s.company_cd = #{companyCd}
     </select>
     <select id="getProductPowerMstData" resultType="com.trechina.planocycle.entity.po.ProductPowerMstData">
         select * from planocycle.product_power_mst_data where company_cd=#{companyCd} and product_power_cd=#{productPowerCd} and deleteflg=0
@@ -190,6 +345,43 @@
         select count(1) from planocycle.product_power_yobiitem
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectWKYobiiiternData" resultMap="wKSyokikaMap" >
+        select
+            dd.data_value as dataValue,dd.jan as jan,mm.data_name as dataName,mm.data_cd as dataCd,mm.data_sort as dataSort
+        from  planocycle.work_product_power_reserve_mst mm
+        left join planocycle.work_product_power_reserve_data dd
+            on mm.data_cd = dd.data_cd
+        where  dd.author_cd = #{authorCd} and dd.company_cd=#{companyCd}
+    </select>
+    <select id="rankCalculates" resultMap="rankMap">
+        select mst.company_cd as companyCd,mst.jan as jan,mst.sku_name as skuName,mst.classify_big as classifyBig,mst.classify_middle as classifyMiddle,mst.classify_small as classifySmall,mst.classify_fine as classifyFine,
+               mst.p_pos_amount as pPosAmount,mst.p_pos_num as pPosNum,
+               mst.p_branch_amount as pBranchAmount,mst.p_branch_num as pBranchNum,mst.p_compare_amount as pCompareAmount,mst.p_compare_num as pCompareNum,mst.p_branch_compare_amount as pBranchCompareAmount,
+               mst.p_branch_compare_num as pBranchCompareNum,
+               mst.g_pos_amount gPosAmount,mst.g_pos_num as gPosNum,mst.g_branch_amount as gBranchAmount,mst.g_branch_num as gBranchNum,mst.g_compare_amount as gCompareAmount,mst.g_compare_num as gCompareNum,
+               mst.g_branch_compare_amount as  gBranchCompareAmount,
+               mst.g_branch_compare_num as gBranchCompareNum,mst.item1 as item1,mst.item2 as item2,mst.item3 as item3,mst.item4 as item4,mst.item5 as item5,mst.item6 as item6,mst.item7 as item7,mst.item8 as item8,mst.item9 as item9, mst.item10 as item10
+        from planocycle.work_product_power_mst_data mst
+    </select>
+    <select id="getAllData" resultMap="rankMap">
+        select mst.company_cd as companyCd,mst.jan as jan,mst.sku_name as skuName,mst.classify_big as classifyBig,mst.classify_middle as classifyMiddle,mst.classify_small as classifySmall,mst.classify_fine as classifyFine,
+               mst.p_pos_amount as pPosAmount,mst.p_pos_num as pPosNum,
+               mst.p_branch_amount as pBranchAmount,mst.p_branch_num as pBranchNum,mst.p_compare_amount as pCompareAmount,mst.p_compare_num as pCompareNum,mst.p_branch_compare_amount as pBranchCompareAmount,
+               mst.p_branch_compare_num as pBranchCompareNum,
+               mst.g_pos_amount gPosAmount,mst.g_pos_num as gPosNum,mst.g_branch_amount as gBranchAmount,mst.g_branch_num as gBranchNum,mst.g_compare_amount as gCompareAmount,mst.g_compare_num as gCompareNum,
+               mst.g_branch_compare_amount as  gBranchCompareAmount,
+               mst.g_branch_compare_num as gBranchCompareNum,mst.item1 as item1,mst.item2 as item2,mst.item3 as item3,mst.item4 as item4,mst.item5 as item5,mst.item6 as item6,mst.item7 as item7,mst.item8 as item8,mst.item9 as item9, mst.item10 as item10
+        from planocycle.product_power_mst_data mst
+        where mst.product_power_cd = #{productPowerCd} and mst.company_cd = #{companyCd}
+    </select>
+    <select id="getParam" resultType="com.trechina.planocycle.entity.po.ProductPowerParam">
+        select company_cd,product_power_cd,customer_value,kokyakugroup,pos_value,prd_cd,prepare_value,rang_weight,recently_end_time,recently_flag,recently_st_time,
+               season_end_time,season_flag,season_st_time,store_cd,year_flag
+        from planocycle.product_power_param_mst
+        where company_cd=#{companyCd} and product_power_cd = #{productPowerCd}
+
     </select>
 
 

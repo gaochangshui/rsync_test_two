@@ -47,6 +47,12 @@
       and mst.product_power_cd = #{productOrderCd,jdbcType=INTEGER}
     group by item_flg
   </select>
+  <select id="getParam" resultType="com.trechina.planocycle.entity.po.ProductPowerParam">
+    select company_cd,product_power_cd,customerValue,kokyakugroup,posValue,prdCd,prepareValue,rangWeight,recentlyEndTime,recentlyFlag,recentlyStTime,seasonEndTime
+      seasonFlag,seasonStTime,storeCd,yearFlag
+    FROM planocycle.product_power_param_mst
+    WHERE company_cd = #{companyCd} and product_power_cd = #{productPowerCd}
+  </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerParamMst">
     insert into planocycle.product_power_param_mst (company_cd, product_power_cd, perid_flag,
       start_perid, end_perid,season_perid_flag, season_st_perid,
@@ -59,6 +65,13 @@
       #{record.channelName,jdbcType=VARCHAR}, #{record.countyName,jdbcType=VARCHAR}, #{itemFlg,jdbcType=INTEGER},#{prdCd,jdbcType=VARCHAR},
       #{authorCd,jdbcType=VARCHAR},now()
       )
+  </insert>
+  <insert id="insertParam">
+    insert into product_power_param_mst (company_cd,product_power_cd,customerValue,kokyakugroup,posValue,prdCd,prepareValue,rangWeight,recentlyEndTime,
+                                         recentlyFlag,recentlyStTime,seasonEndTime,seasonFlag,seasonStTime,storeCd,yearFlag,author_cd,create_time)
+    values(#{item.company},#{item.productPowerNo},#{item.customerValue},#{item.kokyakugroup},#{item.posValue},#{item.prdCd},#{item.prepareValue},#{item.rangWeight},
+           #{item.recentlyEndTime},#{item.recentlyFlag},#{item.recentlyStTime},#{item.seasonEndTime},#{item.seasonFlag},#{item.seasonStTime},#{item.storeCd},
+           #{item.yearFlag},#{authorCd},now())
   </insert>
   <delete id="deleteCommofityParamForChange" parameterType="com.trechina.planocycle.entity.po.ProductPowerParamMst">
     delete from planocycle.product_power_param_mst
@@ -85,4 +98,7 @@
     where company_cd = #{conpanyCd,jdbcType=VARCHAR}
       and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
   </update>
+  <delete id="deleteParam">
+    delete from product_power_param_mst where company_cd=#{companyCd} and product_power_cd =#{productPowerCd}
+  </delete>
 </mapper>
