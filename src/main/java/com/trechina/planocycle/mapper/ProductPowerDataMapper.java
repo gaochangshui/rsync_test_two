@@ -1,9 +1,6 @@
 package com.trechina.planocycle.mapper;
 
-import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.po.ProductPowerSyokika;
-import com.trechina.planocycle.entity.po.ProductPowerWKKokyaku;
-import com.trechina.planocycle.entity.po.ProductPowerWKSyokika;
+import com.trechina.planocycle.entity.po.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -35,7 +32,7 @@ public interface ProductPowerDataMapper {
     int deleteWKYobiiiternData();
     //smart数据存到临时表
     int insertYobilitem(@Param("companyCd") String companyCd,@Param("authorCd")String authorCd,@Param("itemCd")Integer itemCd,@Param("itemName")String itemName);
-    int insertYobilitemData(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd,@Param("itemCd")Integer itemCd);
+    int insertYobilitemData(@Param("dataList") List<WorkProductPowerReserveData> dataList);
     //最终表存到临时表
     int insertWkYobiiiternForFinally();
 

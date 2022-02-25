@@ -81,7 +81,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             logger.info("手动组合的ptskey："+ptsKey);
             List<Integer> patternIdList = shelfPatternService.getpatternIdOfPtsKey(ptsKey.substring(0,ptsKey.length()-1));
             logger.info("根据组合的ptskey找patternid："+patternIdList.toString());
-            if (patternIdList.isEmpty()){
+            if (!patternIdList.isEmpty()){
                 Integer patternId = patternIdList.get(0);
                 logger.info("用到的patternid："+patternId);
                 String authorCd = httpSession.getAttribute("aud").toString();

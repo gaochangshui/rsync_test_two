@@ -29,5 +29,5 @@ projectIds=nothing
 bucketNames=nothing
 ptsDownPath=http://10.100.1.161:8102/planocycleweb/
 productDownPath=D:\files\
-smartPath=http://10.100.1.161:12001/cocacolalink/planocycle/CGI/
+smartUrlPath=http://10.100.1.161:12001/cocacolalink/planocycle/CGI/
 ```

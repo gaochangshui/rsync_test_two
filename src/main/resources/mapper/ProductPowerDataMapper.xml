@@ -66,7 +66,17 @@
         and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </insert>
     <insert id="insertYobilitemData">
-
+        insert into planocycle.work_product_power_reserve_data(company_cd,author_cd,data_cd,jan,data_value)
+        values
+        <foreach collection="dataList" separator="," item="item">
+            (
+                #{item.companyCd},
+                #{item.authorCd},
+                #{item.dataCd},
+                #{item.jan},
+                #{item.dataValue}
+            )
+        </foreach>
     </insert>
     <insert id="endSyokikaForWK">
         insert into planocycle.product_power_syokika(company_cd,product_power_cd,jan,sku_name,pos_amount,pos_num,branch_amount,branch_num,compare_amount,

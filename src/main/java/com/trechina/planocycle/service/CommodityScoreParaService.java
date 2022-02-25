@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.po.CommodityScorePara;
 import com.trechina.planocycle.entity.po.ProductPowerReserveMst;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
 
+import java.util.List;
 import java.util.Map;
 
 public interface CommodityScoreParaService {
@@ -51,4 +52,6 @@ public interface CommodityScoreParaService {
      * @return
      */
     Map<String, Object> delYoBi(ProductPowerReserveMst productPowerReserveMst);
+
+    Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd);
 }
