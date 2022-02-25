@@ -38,6 +38,8 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
     private PriorityOrderMstService priorityOrderMstService;
     @Autowired
     private ProductPowerParamMstMapper productPowerParamMstMapper;
+    @Autowired
+    private cgiUtils cgiUtil;
     /**
      * 优先顺位表初期设定数据
      *
@@ -81,16 +83,15 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
             priorityOrderDataForCgiDto.setProductNmFlag(productOrderAttrAndItemVO.getItemFlg());
             priorityOrderDataForCgiDto.setWriteReadFlag("read");
             priorityOrderDataForCgiDto.setMode("priority_shoki");
-            cgiUtils cgiUtils = new cgiUtils();
             String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
             logger.info("调用cgi获取优先顺位表的参数："+priorityOrderDataForCgiDto);
             try {
                 //递归调用cgi，首先去taskid
-                String result = cgiUtils.postCgi(path,priorityOrderDataForCgiDto,tokenInfo);
+                String result = cgiUtil.postCgi(path,priorityOrderDataForCgiDto,tokenInfo);
                 logger.info("taskId返回："+result);
                 String queryPath = resourceBundle.getString("TaskQuery");
                 //带着taskId，再次请求cgi获取运行状态/数据
-                Data =cgiUtils.postCgiLoop(queryPath,result,tokenInfo);
+                Data =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
                 logger.info("优先顺位表cgi返回数据："+Data);
 
             } catch (IOException e) {

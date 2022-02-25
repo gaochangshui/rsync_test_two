@@ -20,6 +20,8 @@ public class SalesReportServiceImpl implements SalesReportService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private HttpSession session;
+    @Autowired
+    private cgiUtils cgiUtil;
 
     /**
      * 获取棚别实际数据
@@ -32,8 +34,7 @@ public class SalesReportServiceImpl implements SalesReportService {
         String tokenInfo = String.valueOf(session.getAttribute("MSPACEDGOURDLP"));
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("TaskQuery").toString();
-        cgiUtils cgi = new cgiUtils();
-        Map<String,Object> result = cgi.postCgiOfWeb(path,taskID,tokenInfo);
+        Map<String,Object> result = cgiUtil.postCgiOfWeb(path,taskID,tokenInfo);
         if(!"9".equals(result.get("data"))){
             result.put("data",JSON.parseArray(String.valueOf(result.get("data").toString().replaceAll(" ",""))));
         }
@@ -55,8 +56,7 @@ public class SalesReportServiceImpl implements SalesReportService {
         String tokenInfo = String.valueOf(session.getAttribute("MSPACEDGOURDLP"));
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("TaskQuery").toString();
-        cgiUtils cgi = new cgiUtils();
-        Map<String,Object> result = cgi.postCgiOfWeb(path,taskID,tokenInfo);
+        Map<String,Object> result = cgiUtil.postCgiOfWeb(path,taskID,tokenInfo);
         logger.info("获取棚别实际数据参数cgi返回数据："+result.toString());
         if(!"9".equals(result.get("data"))){
             result.put("data",JSON.parseArray(String.valueOf(result.get("data").toString().replaceAll(" ",""))));
@@ -76,8 +76,7 @@ public class SalesReportServiceImpl implements SalesReportService {
         String tokenInfo = String.valueOf(session.getAttribute("MSPACEDGOURDLP"));
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("TaskQuery").toString();
-        cgiUtils cgi = new cgiUtils();
-        Map<String,Object> result =  cgi.postCgiOfWeb(path,taskID,tokenInfo);
+        Map<String,Object> result =  cgiUtil.postCgiOfWeb(path,taskID,tokenInfo);
         logger.info("获取单jan别实际数据参数cgi返回数据："+result.toString());
         if(!"9".equals(result.get("data"))){
             JSONArray jsonArray = JSON.parseArray(String.valueOf(result.get("data").toString().replaceAll(" ","")));

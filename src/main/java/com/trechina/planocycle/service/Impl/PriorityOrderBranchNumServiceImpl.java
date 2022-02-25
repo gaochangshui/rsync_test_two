@@ -43,6 +43,8 @@ public class PriorityOrderBranchNumServiceImpl implements PriorityOrderBranchNum
     private PriorityOrderJanReplaceService priorityOrderJanReplaceService;
     @Autowired
     private PriorityOrderBranchNumMapper priorityOrderBranchNumMapper;
+    @Autowired
+    private cgiUtils cgiUtil;
     /**
      * 获取smart处理之后的必须+不可商品的结果集，并保存
      *
@@ -64,7 +66,6 @@ public class PriorityOrderBranchNumServiceImpl implements PriorityOrderBranchNum
         priorityOrderDataForCgiDto.setMode("priority_jan_storecnt");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("调用priority_jan_storecnt的参数" + priorityOrderDataForCgiDto);
-        cgiUtils cgiUtil = new cgiUtils();
         try {
             String result = cgiUtil.postCgi(pathInfo, priorityOrderDataForCgiDto, tokenInfo);
             logger.info("返回priority_jan_storecnt处理结果"+result);

@@ -63,6 +63,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private PriorityOrderBranchNumService priorityOrderBranchNumService;
     @Autowired
     private PriorityOrderJanAttributeMapper priorityOrderJanAttributeMapper;
+    @Autowired
+    private cgiUtils cgiUtil;
     /**
      * 获取优先顺位表list
      *
@@ -231,12 +233,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         try{
             Map<String,Object> resultCgi = new HashMap<>();
             //递归调用cgi，首先去taskid
-            cgiUtils cgiUtils = new cgiUtils();
-            String result = cgiUtils.postCgi(path,priorityOrderDataForCgiDto,tokenInfo);
+            String result = cgiUtil.postCgi(path,priorityOrderDataForCgiDto,tokenInfo);
             logger.info("taskId返回："+result);
             String queryPath = resourceBundle.getString("TaskQuery");
             //带着taskId，再次请求cgi获取运行状态/数据
-            resultCgi =cgiUtils.postCgiLoop(queryPath,result,tokenInfo);
+            resultCgi =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
             logger.info("保存优先顺位表结果："+resultCgi);
             return resultCgi;
 
@@ -333,12 +334,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         Map<String,Object> ptsPath = new HashMap<>();
         try{
             //递归调用cgi，首先去taskid
-            cgiUtils cgiUtils = new cgiUtils();
-            String result = cgiUtils.postCgi(path,priorityOrderPtsDownDto,tokenInfo);
+            String result = cgiUtil.postCgi(path,priorityOrderPtsDownDto,tokenInfo);
             logger.info("taskId返回："+result);
             String queryPath = resourceBundle.getString("TaskQuery");
             //带着taskId，再次请求cgi获取运行状态/数据
-            ptsPath =cgiUtils.postCgiLoop(queryPath,result,tokenInfo);
+            ptsPath =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
             logger.info("pts路径返回数据："+ptsPath);
 
         } catch (IOException e) {
@@ -498,13 +498,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         priorityOrderDataForCgiDto.setPriorityNO(priorityOrderCd);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         //递归调用cgi，首先去taskid
-        cgiUtils cgiUtils = new cgiUtils();
         String resultJan = null;
         try {
-            resultJan = cgiUtils.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
+            resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
             logger.info("taskId返回：" + resultJan);
             //带着taskId，再次请求cgi获取运行状态/数据
-            Map<String, Object> result = cgiUtils.postCgiLoop(queryPath, resultJan, tokenInfo);
+            Map<String, Object> result = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
             logger.info("删除smart优先顺位表信息："+result);
         } catch (IOException e) {
             logger.info("报错:"+e);

@@ -46,6 +46,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     private PriorityOrderMstService priorityOrderMstService;
     @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
+    private cgiUtils cgiUtil;
     /**
      * 获取表示项目所有参数
      * @param conpanyCd
@@ -147,7 +149,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         try {
             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
             String path = resourceBundle.getString("ProductPowerData");
-            cgiUtils cgiUtil = new cgiUtils();
             String result = null;
             result = cgiUtil.postCgi(path, productPowerDataForCgiSave, tokenInfo);
             logger.info("taskid返回--保存jan rank：" + result);
@@ -238,7 +239,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             try {
                 ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
                 String path = resourceBundle.getString("ProductPowerData");
-                cgiUtils cgiUtil = new cgiUtils();
                 String result = null;
                 result = cgiUtil.postCgi(path, productPowerDataForCgiDto, tokenInfo);
                 logger.info("taskid返回删除 yobi：" + result);

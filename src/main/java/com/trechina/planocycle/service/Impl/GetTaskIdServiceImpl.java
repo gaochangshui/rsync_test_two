@@ -20,6 +20,8 @@ public class GetTaskIdServiceImpl implements GetTaskIdService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private HttpSession session;
+    @Autowired
+    private cgiUtils cgiUtil;
     /**
      * 访问cgi获取taskid
      * @param para
@@ -34,9 +36,8 @@ public class GetTaskIdServiceImpl implements GetTaskIdService {
         String uuid = UUID.randomUUID().toString();
         String tokenInfo = String.valueOf(session.getAttribute("MSPACEDGOURDLP"));
         para.put("guid",uuid);
-        cgiUtils cgi = new cgiUtils();
         try {
-            String result = cgi.postCgi(path,para,tokenInfo);
+            String result = cgiUtil.postCgi(path,para,tokenInfo);
             logger.info("获取taskid共同方法返回："+result);
             return ResultMaps.result(ResultEnum.SUCCESS,result);
         } catch (IOException e) {

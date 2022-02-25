@@ -38,6 +38,8 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     HttpSession session;
     @Autowired
     private ShelfPtsService shelfPtsService;
+    @Autowired
+    private cgiUtils cgiUtil;
     /**
      * 单文件上传
      * @param multipartFile
@@ -156,7 +158,6 @@ public class FilesOperationServiceImpl implements FilesOperationService {
 
                                 ResourceBundle resource = ResourceBundle.getBundle("pathConfig");
                                 String paths = resource.getString("PtsUploadData");
-                                cgiUtils cgiUtil = new cgiUtils();
                                 String result = null;
                                 result = cgiUtil.postCgi(paths, getPtsCsvCgiDto, tokenInfo);
                                 logger.info("taskid返回pts文件处理：" + result);

@@ -26,6 +26,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
+    private cgiUtils cgiUtil;
 
 
     /**
@@ -36,7 +38,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Override
     public Map<String, Object> getCommodityScoreData(String taskID,String companyCd) {
         String tokenInfo =(String) session.getAttribute("MSPACEDGOURDLP");
-        cgiUtils cgiUtil = new cgiUtils();
         List strList = new ArrayList();
         // 带着taskId，再次请求cgi获取运行状态/数据
         Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
@@ -89,7 +90,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Override
     public Map<String, Object> getCommodityScoreGroupData(String taskID,String companyCd) {
         String tokenInfo =(String) session.getAttribute("MSPACEDGOURDLP");
-        cgiUtils cgiUtil = new cgiUtils();
         List strList = new ArrayList();
         // 带着taskId，再次请求cgi获取运行状态/数据
         Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
@@ -177,14 +177,13 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerDataForCgiDto.setProductPowerNo(productPowerNo);
        // productPowerDataForCgiDto.setDataNm(dataNm);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        cgiUtils cgiUtils = new cgiUtils();
         logger.info("保存文件的时候调用cgi的参数"+productPowerDataForCgiDto);
         try {
             //递归调用cgi，首先去taskid
-            String result = cgiUtils.postCgi(cgiUtils.setPath("ProductPowerData"),productPowerDataForCgiDto,tokenInfo);
+            String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"),productPowerDataForCgiDto,tokenInfo);
             logger.info("taskId返回："+result);
             //带着taskId，再次请求cgi获取运行状态/数据
-            Map<String,Object> Data =cgiUtils.postCgiLoop(cgiUtils.setPath("TaskQuery"),result,tokenInfo);
+            Map<String,Object> Data =cgiUtil.postCgiLoop(cgiUtil.setPath("TaskQuery"),result,tokenInfo);
             logger.info("保存文件的时候调用cgi返回的数据："+Data);
         }catch (IOException e) {
             logger.info("保存文件的时候调用cgi报错：" + e);
@@ -214,7 +213,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         } else {
             productPowerDataForCgiDto.setRecentlyFlag("WEEK");
         }
-        cgiUtils cgiUtil = new cgiUtils();
         String tokenInfo =(String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("调用cgi获取data的参数："+productPowerDataForCgiDto);
         try {
@@ -247,7 +245,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         } else {
             productPowerDataForCgiDto.setRecentlyFlag("WEEK");
         }
-        cgiUtils cgiUtil = new cgiUtils();
         String tokenInfo =(String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("调用cgi获取data的参数："+productPowerDataForCgiDto);
         try {
