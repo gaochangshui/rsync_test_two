@@ -1,8 +1,9 @@
 package com.trechina.planocycle.controller;
 
-import com.trechina.planocycle.entity.po.CommodityScorePara;
+import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerReserveMst;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
+import com.trechina.planocycle.entity.vo.RankCalculateVo;
 import com.trechina.planocycle.service.CommodityScoreParaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +34,8 @@ public class CommodityScoreParaController {
      */
     //TODO:表示项目设定：需要添加 顧客セグメント
     @PostMapping("/setCommodityScorePara")
-    public Map<String,Object> setCommodityScorePara(@RequestBody CommodityScorePara commodityScorePara){
-        return commodityScoreParaService.setCommodityScorePare(commodityScorePara);
+    public Map<String,Object> setCommodityScorePara(@RequestBody ProductPowerParam productPowerParam){
+        return commodityScoreParaService.setCommodityScorePare(productPowerParam);
     }
 
     /**
@@ -82,10 +83,13 @@ public class CommodityScoreParaController {
     /**
      * 计算rank
      */
-   // @PostMapping("rankCalculate")
-    /*public Map<String,Object> rankCalculate(@RequestBody){
-        return
-    }*/
+    @PostMapping("rankCalculate")
+    public Map<String,Object> rankCalculate(@RequestBody RankCalculateVo rankCalculateVo){
+
+        return commodityScoreParaService.rankCalculate(rankCalculateVo);
+    }
+
+
 
 
 }

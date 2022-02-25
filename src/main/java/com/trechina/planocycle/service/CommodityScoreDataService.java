@@ -1,7 +1,7 @@
 package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
-
+import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 
 import java.util.Map;
 
@@ -40,7 +40,7 @@ public interface CommodityScoreDataService {
      * @param productPowerDataForCgiDto
      * @return
      */
-    Map<String, Object> getCommodityScoreGroupTaskId(ProductPowerDataForCgiDto productPowerDataForCgiDto);
+    Map<String, Object> getCommodityScoreGroupTaskId(ProductPowerGroupDataForCgiDto productPowerDataForCgiDto);
     /**
      * 商品力点数表编辑
      * @param productPowerDataForCgiDto

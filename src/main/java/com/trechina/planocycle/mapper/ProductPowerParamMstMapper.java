@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerParamMst;
 import com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -19,4 +20,10 @@ public interface ProductPowerParamMstMapper {
 
     ProductOrderAttrAndItemVO selectAttrAndItem(String companyCd, Integer productOrderCd);
     ProductOrderAttrAndItemVO selectAttrAndValue(String companyCd, Integer productOrderCd);
+
+    int deleteParam(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
+
+    int insertParam(@Param("item")ProductPowerParam productPowerParam,@Param("authorCd")String authorCd);
+
+    ProductPowerParam getParam(@Param("companyCd")String companyCd,@Param("productPowerCd")Integer productPowerCd);
 }

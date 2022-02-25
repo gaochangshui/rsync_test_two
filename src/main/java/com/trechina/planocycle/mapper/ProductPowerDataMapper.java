@@ -1,9 +1,9 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
+import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerSyokika;
-import com.trechina.planocycle.entity.po.ProductPowerWKKokyaku;
-import com.trechina.planocycle.entity.po.ProductPowerWKSyokika;
+import com.trechina.planocycle.entity.po.WKYobiiiternData;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,9 +18,9 @@ public interface ProductPowerDataMapper {
     //最终表存到临时表
     int insertWkSyokikaForFinally(@Param("companyCd")String companyCd, @Param("productPowerCd") Integer productPowerCd);
     //临时表数据返回页面
-    List<ProductPowerWKSyokika> selectWKSyokika(@Param("companyCd")String companyCd, @Param("authorCd") String authorCd);
+    List<ProductPowerMstData> selectWKSyokika(@Param("companyCd")String companyCd, @Param("authorCd") String authorCd);
 
-    //临时表group
+    //临时表所有
 
     int deleteWKKokyaku(@Param("companyCd") String companyCd,@Param("authorCd") String authorCd);
     //smart数据存到临时表
@@ -28,11 +28,13 @@ public interface ProductPowerDataMapper {
     //最终表存到临时表
     int insertWkKokyakuForFinally(@Param("companyCd")String companyCd, @Param("productPowerCd") Integer productPowerCd);
     //临时表数据返回页面
-    List<ProductPowerWKKokyaku> selectWKKokyaku(@Param("companyCd")String companyCd, @Param("authorCd") String authorCd);
+    List<ProductPowerMstData> selectWKKokyaku( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd);
+
 
     //临时表yobilitem和data
     int deleteWKYobiiitern();
     int deleteWKYobiiiternData();
+    List<WKYobiiiternData> selectWKYobiiiternData( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd);
     //smart数据存到临时表
     int insertYobilitem(@Param("companyCd") String companyCd,@Param("authorCd")String authorCd,@Param("itemCd")Integer itemCd,@Param("itemName")String itemName);
     int insertYobilitemData(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd,@Param("itemCd")Integer itemCd);
@@ -66,5 +68,25 @@ public interface ProductPowerDataMapper {
      Integer syokikaPowerCdNum(@Param("companyCd")String companyCd, @Param("productPowerCd") Integer productPowerCd);
      Integer groupPowerCdNum(@Param("companyCd")String companyCd, @Param("productPowerCd") Integer productPowerCd);
      Integer yobiiiternPowerCdNum(@Param("companyCd")String companyCd, @Param("productPowerCd") Integer productPowerCd);
+
+
+
+     //rank计算
+     //三表汇合一表
+
+
+ int deleteWKData(@Param("companyCd")String  companyCd,@Param("authorCd")String authorCd);
+
+
+
+ List<ProductPowerMstData> rankCalculates();
+
+  int setWKData(@Param("list") List<ProductPowerMstData> productPowerMstData,@Param("authorCd")String authorCd,@Param("companyCd")String companyCd);
+  int deleteData(@Param("companyCd")String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd")String authorCd);
+  int setData(@Param("productPowerCd")Integer productPowerCd,@Param("authorCd")String authorCd,@Param("companyCd")String companyCd);
+
+  List<ProductPowerMstData> getAllData(@Param("companyCd")String companyCd,@Param("productPowerCd")Integer productPowerCd);
+
+  ProductPowerParam getParam(@Param("companyCd") String companyCd,@Param("productPowerCd")Integer productPowerCd);
 
 }

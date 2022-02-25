@@ -1,6 +1,7 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
+import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.service.CommodityScoreDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +54,7 @@ public class CommodityScoreDataController {
      */
     //TODO:获取商品力点数表Group数据
     @PostMapping("/getCommodityScoreGroupTaskId")
-    public Map<String,Object> getCommodityScoreGroupTaskId(@RequestBody ProductPowerDataForCgiDto productPowerDataForCgiDto){
+    public Map<String,Object> getCommodityScoreGroupTaskId(@RequestBody ProductPowerGroupDataForCgiDto productPowerDataForCgiDto){
         return commodityScoreDataService.getCommodityScoreGroupTaskId(productPowerDataForCgiDto);
     }
 

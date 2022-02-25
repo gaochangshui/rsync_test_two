@@ -1,6 +1,7 @@
 package com.trechina.planocycle;
 
-import com.trechina.planocycle.entity.po.ProductPowerSyokika;
+import com.trechina.planocycle.entity.po.ProductPowerMstData;
+import com.trechina.planocycle.entity.vo.RankCalculateVo;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -8,8 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -22,12 +27,43 @@ private ProductPowerDataMapper productPowerDataMapper;
 
     @Test
     public void test1() {
-     //productPowerDataMapper.endYobiiiternDataForWk("0001", 123, "10215814");
-        List<ProductPowerSyokika> productPowerSyokikas = productPowerDataMapper.selectSyokika("0001", 1);
-        productPowerSyokikas.forEach(System.out::println);
+        //productPowerDataMapper.endYobiiiternDataForWk("0001", 123, "10215814");
+       // productPowerDataMapper.endSyokikaForWK("0001",1,"10215814");
+       // productPowerDataMapper.endGroupForWK("0001",1,"10215814");       // StringBuilder strs = new StringBuilder();
+       // productPowerDataMapper.endYobiiiternForWk("0001",1,"10215814");
+        //productPowerDataMapper.endYobiiiternDataForWk("0001",1,"10215814");
+        //productPowerDataMapper.deleteData("0001",1,"10212159");
+       // productPowerDataMapper.setData(1,"0001","10212159");
+        //productPowerDataMapper.getAllData("0001",1).stream().forEach(System.out::println);
+       /* for (int i=0;i<=1000;i++){
+            String str="0001 "+(i)+" 1 1 1 1 1 1 1 1 1@";
+            s
+            System.out.println(str);
+        }*/
+        //List<ProductPowerMstData> productPowerMstData = productPowerDataMapper.selectWKKokyaku("0001", "10215814");
+        //List<ProductPowerSyokika> productPowerSyokikas = productPowerDataMapper.selectSyokika("0001", 1);
+        // productPowerMstData.forEach(System.out::println);
         //productPowerDataMapper.endYobiiiternForWk("0001", 123, "10215814");
-    // productPowerDataMapper.endSyokikaForWK("0001", 123, "10215814");
+        // productPowerDataMapper.endSyokikaForWK("0001", 123, "10215814");
         //productPowerDataMapper.endGroupForWK("0001", 123, "10215814");
+        //  productPowerDataMapper.deleteYobiiitern("0001", 1,"10215814");
+     /*   List<WKYobiiiternData> wkYobiiiternData = productPowerDataMapper.selectWKYobiiiternData("0001", "10215814");
+        //wkYobiiiternData.forEach(System.out::println);
+        for (WKYobiiiternData wkYobiiiternDatum : wkYobiiiternData) {
+            if (wkYobiiiternDatum.getDataSort()==3){
+                System.out.println(wkYobiiiternDatum);
+                System.out.println("刘新宇");
+            }
+        }
+    }*/
+        /*List<ProductPowerMstData> productPowerMstDataList = productPowerDataMapper.rankCalculates();
+        Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
+            @Override
+            public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
+            return (o2.getgCompareAmount()).compareTo(o1.getgCompareAmount());
+            }
+        });*/
+
     }
 
     public static Object arrayToObject(Object[] obj,Class<?> classType){
@@ -50,5 +86,60 @@ private ProductPowerDataMapper productPowerDataMapper;
         }
         return stu1;
     }
+@Test
+    public void test4(){
+        List<Student> list = new ArrayList();
+        Student student = new Student();
+        student.setAge(10);
+    Student s1 = new Student();
+        s1.setAge(140);
+    Student s2 = new Student();
+        s2.setAge(1);
+    Student s3 = new Student();
+        s3.setAge(10355);
+    Student s4 = new Student();
+        s4.setAge(1001);
+        list.add(s2);
+        list.add(s1);
+        list.add(student);
+        list.add(s3);
+        list.add(s4);
 
+
+
+
+    }
+
+    @Test
+    public void  test6() throws NoSuchFieldException, IllegalAccessException {
+        RankCalculateVo vo = new RankCalculateVo();
+        vo.setgBranchAmount(1);
+        Class c = vo.getClass();
+        Field field = c.getDeclaredField("pPosAmount");
+
+        field.setAccessible(true);
+        field.set(vo,1);
+
+        System.out.println(field.get(vo));
+        System.out.println(vo.getpPosAmount());
+    }
+
+
+    public void getpCompareAmount(List<ProductPowerMstData> productPowerMstDataList, RankCalculateVo rankCalculateVo,String fieldName,String filedName1){
+        if (rankCalculateVo.getpCompareAmount()!=0) {
+            Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
+                @Override
+                public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
+
+                    return o2.getpCompareAmount().compareTo(o1.getpCompareAmount());
+                }
+            });
+
+
+            int i = 1;
+            for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
+                productPowerMstData.setpCompareAmountRank(i++);
+            }
+        }
+    }
 }

@@ -25,4 +25,6 @@ public interface ProductPowerMstMapper {
     Integer selectUpdExistsName(@Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd);
 
     Integer update(ProductPowerMst record);
+
+
 }

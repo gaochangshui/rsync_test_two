@@ -77,4 +77,9 @@ public interface CommodityScoreMasterService {
      */
 
     boolean delSmartData(ProductPowerParamMst productPowerParamMst);
+
+    /**
+     * 编辑时，获取商品里点数表参数
+     */
+    public Map<String,Object> getAllDataOrParam(String companyCd,Integer productPowerNo);
 }

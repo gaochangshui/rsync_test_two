@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.po.ProductPowerMst;
+import com.trechina.planocycle.entity.po.ProductPowerMstData;
+import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerParamMst;
 import com.trechina.planocycle.entity.vo.CommodityListInfoVO;
 import com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO;
@@ -279,6 +281,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public boolean delSmartData(ProductPowerParamMst productPowerParamMst) {
         String authorCd = session.getAttribute("aud").toString();
+        logger.info("参数为:"+productPowerParamMst);
         String uuid = UUID.randomUUID().toString();
         //商品力点数mst表删除
         productPowerMstMapper.delete(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd());
@@ -296,6 +299,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         //顾客group删除
         productPowerDataMapper.deleteGroup(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
          //预备项目Data删除
+        productPowerDataMapper.deleteYobiiitern(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
         productPowerDataMapper.deleteYobiiiternData(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
         //rank总表删除
         productPowerDataMapper.deleteRankData(productPowerParamMst.getConpanyCd(),productPowerParamMst.getProductPowerCd(),authorCd);
@@ -307,7 +311,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataForCgiDto.setGuid(uuid);
 
         // 新规1 既存0
-        //productPowerDataForCgiDto.setChangeFlag(1);////
+
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
 
         try {
@@ -325,6 +329,17 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
             logger.info("报错:"+e);
             return false;
         }
+
+    }
+
+    @Override
+    public Map<String, Object> getAllDataOrParam(String companyCd, Integer productPowerNo) {
+        List<ProductPowerMstData> allData = productPowerDataMapper.getAllData(companyCd, productPowerNo);
+        ProductPowerParam param = productPowerDataMapper.getParam(companyCd, productPowerNo);
+        List list = new ArrayList();
+        list.add(allData);
+        list.add(param);
+        return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 
 }

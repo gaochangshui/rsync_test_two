@@ -2,13 +2,15 @@ package com.trechina.planocycle.entity.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.util.Date;
+
 public class TableNameDto {
     private String id;
 
     private String fileName;
 
-    @JsonFormat(pattern="yyyy/MM/dd")
-    private String createTime;
+    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy/MM/dd")
+    private Date createTime;
 
 
     private String authorName;
@@ -39,11 +41,11 @@ public class TableNameDto {
         this.authorName = authorName;
     }
 
-    public String getCreateTime() {
+    public Date getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(String createTime) {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
 
