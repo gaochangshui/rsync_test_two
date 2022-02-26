@@ -3,6 +3,7 @@ package com.trechina.planocycle.service.Impl;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
+import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.WKYobiiiternData;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
@@ -40,14 +41,14 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String tokenInfo =(String) session.getAttribute("MSPACEDGOURDLP");
         List strList = new ArrayList();
         // 带着taskId，再次请求cgi获取运行状态/数据
-        Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
-        /*Map<String,Object> Data =new HashMap<>();
+        //Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
+        Map<String,Object> Data =new HashMap<>();
 
        StringBuilder strs =new StringBuilder();
         for (int i=0;i<=1000;i++){
             strs.append("0001 "+(i)+" 啤酒 酒类 水类 扎啤 黑啤 10.21 10.45 1.14 124.0 14 145 14 70@");
         }
-        Data.put("data",strs);*/
+        Data.put("data",strs);
         logger.info("商品力点数表web版cgi返回数据："+Data);
         String authorCd = session.getAttribute("aud").toString();
         // 返回的数据是字符串，处理成二维数组
@@ -66,13 +67,15 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 arr[a]=session.getAttribute("aud").toString();
                 System.arraycopy(strSplit,0,arr,0,a);
                 //数据量过大，一次存500条
-                 if (i%500==0 &&i>=500){
+                 if (i%1000==0 &&i>=1000){
                     productPowerDataMapper.insert(strList);
                     strList.clear();
                 }
                 strList.add(arr);
             }
-            productPowerDataMapper.insert(strList);
+            if (strList.size()>0) {
+                productPowerDataMapper.insert(strList);
+            }
         } else {
             return Data;
         }
@@ -89,41 +92,53 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      */
     @Override
     public Map<String, Object> getCommodityScoreGroupData(String taskID,String companyCd) {
-        String tokenInfo =(String) session.getAttribute("MSPACEDGOURDLP");
-        List strList = new ArrayList();
-        // 带着taskId，再次请求cgi获取运行状态/数据
-        Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
-
-
-
-        logger.info("商品力点数表web版cgi返回数据："+Data);
+        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         //获取用户id
-        String authorCd =session.getAttribute("aud").toString();
-        // 返回的数据是字符串，处理成二维数组
-        if (Data.get("data") !=null) {
-            String[] strResult = Data.get("data").toString().split("@");
-            String[] strSplit = null;
-            String[] arr ;
-            int a = 1;
-            productPowerDataMapper.deleteWKKokyaku(companyCd,authorCd);
-            for (int i = 0; i < strResult.length; i++) {
-                strSplit = strResult[i].split(" ");
-                arr = new String[strSplit.length+1];
-                for (int j = strSplit.length-1;j>=a ;j--){
-                    arr[j+1] = strSplit[j];
-                }
-                arr[a]=session.getAttribute("aud").toString();
-                System.arraycopy(strSplit,0,arr,0,a);
-                //数据过大500存一次
-                if (i%500==0 &&i>=500){
-                    productPowerDataMapper.insertGroup(strList);
-                    strList.clear();
-                }
-                strList.add(arr);
+        String authorCd = session.getAttribute("aud").toString();
+        if (!taskID.equals("1")) {
+
+            List strList = new ArrayList();
+            // 带着taskId，再次请求cgi获取运行状态/数据
+         //   Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
+            Map<String, Object> Data = new HashMap<>();
+
+            StringBuilder strs = new StringBuilder();
+            for (int i = 0; i <= 1000; i++) {
+                strs.append("0001 " + (i) + " 啤酒 10.21 10.45 1.14 124.0 14 145 14 70@");
             }
-            productPowerDataMapper.insertGroup(strList);
-        } else {
-            return Data;
+            Data.put("data", strs);
+
+
+            logger.info("商品力点数表web版cgi返回数据：" + Data);
+
+            // 返回的数据是字符串，处理成二维数组
+            if (Data.get("data") != null) {
+                String[] strResult = Data.get("data").toString().split("@");
+                String[] strSplit = null;
+                String[] arr;
+                int a = 1;
+                productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
+                for (int i = 0; i < strResult.length; i++) {
+                    strSplit = strResult[i].split(" ");
+                    arr = new String[strSplit.length + 1];
+                    for (int j = strSplit.length - 1; j >= a; j--) {
+                        arr[j + 1] = strSplit[j];
+                    }
+                    arr[a] = session.getAttribute("aud").toString();
+                    System.arraycopy(strSplit, 0, arr, 0, a);
+                    //数据过大500存一次
+                    if (i % 1000 == 0 && i >= 1000) {
+                        productPowerDataMapper.insertGroup(strList);
+                        strList.clear();
+                    }
+                    strList.add(arr);
+                }
+                if (strList.size() > 0) {
+                    productPowerDataMapper.insertGroup(strList);
+                }
+            } else {
+                return Data;
+            }
         }
         List<ProductPowerMstData> kokyakuList = productPowerDataMapper.selectWKKokyaku(authorCd,companyCd);
         List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData( authorCd, companyCd);
@@ -132,7 +147,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             for (WKYobiiiternData wkYobiiiternData : wkYobiiiternDataList) {
                 Class w =item.getClass();
                 for(int i=1;i<=10;i++){
-                    if (wkYobiiiternData.getJan().equals(item.getJan()) && wkYobiiiternData.getDataSort()==i){
+                    if (item.getJan().equals(wkYobiiiternData.getJan())  && wkYobiiiternData.getDataSort()==i){
                         try {
                             Field field = w.getDeclaredField("item"+i);
                             field.setAccessible(true);
@@ -203,6 +218,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String uuid = UUID.randomUUID().toString();
         productPowerDataForCgiDto.setGuid(uuid);
         productPowerDataForCgiDto.setMode("shoki_data");
+        productPowerDataForCgiDto.setUsercd(session.getAttribute("aud").toString());
         if ("0".equals(productPowerDataForCgiDto.getSeasonFlag())) {
             productPowerDataForCgiDto.setSeasonFlag("MONTH");
         } else {
@@ -232,9 +248,17 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      */
     @Override
     public Map<String, Object> getCommodityScoreGroupTaskId(ProductPowerGroupDataForCgiDto productPowerDataForCgiDto) {
+        String aud = session.getAttribute("aud").toString();
+        ProductPowerParam param = productPowerDataMapper.getParam(productPowerDataForCgiDto.getCompany(), productPowerDataForCgiDto.getProductPowerNo());
+        boolean b = changeFlg(productPowerDataForCgiDto,param);
+        if (b){
+            productPowerDataForCgiDto.setChange_flag("1");
+        }else {
+            productPowerDataForCgiDto.setChange_flag("0");
+        }
         String uuid = UUID.randomUUID().toString();
         productPowerDataForCgiDto.setGuid(uuid);
-        productPowerDataForCgiDto.setMode("kokyaku_data");
+        productPowerDataForCgiDto.setMode("shoki_data");
         if (productPowerDataForCgiDto.getSeasonFlag().equals("0")) {
             productPowerDataForCgiDto.setSeasonFlag("MONTH");
         } else {
@@ -245,6 +269,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         } else {
             productPowerDataForCgiDto.setRecentlyFlag("WEEK");
         }
+        productPowerDataForCgiDto.setUsercd(aud);
         String tokenInfo =(String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("调用cgi获取data的参数："+productPowerDataForCgiDto);
         try {
@@ -272,5 +297,15 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         List<ProductPowerMstData> productPowerMstData = productPowerDataMapper.getProductPowerMstData(companyCd, productPowerCd);
 
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerMstData);
+    }
+    /**
+     * 判断寄存还是新规
+     */
+    boolean changeFlg(ProductPowerGroupDataForCgiDto productPowerDataForCgiDto,ProductPowerParam param){
+        boolean b =( param != null && param.getRecentlyFlag().equals(productPowerDataForCgiDto.getRecentlyFlag()) && param.getRecentlyEndTime().equals(productPowerDataForCgiDto.getRecentlyStTime())
+                && param.getRecentlyStTime().equals(productPowerDataForCgiDto.getRecentlyStTime()) && param.getSeasonEndTime().equals(productPowerDataForCgiDto.getSeasonEndTime())
+                && param.getSeasonFlag().equals(productPowerDataForCgiDto.getSeasonFlag()) && param.getSeasonStTime().equals(productPowerDataForCgiDto.getSeasonStTime())
+                && param.getPrdCd().equals(productPowerDataForCgiDto.getPrdCd()) && param.getYearFlag().equals(productPowerDataForCgiDto.getYearFlag()));
+        return b;
     }
 }

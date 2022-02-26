@@ -1,7 +1,6 @@
 package com.trechina.planocycle;
 
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.vo.RankCalculateVo;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -9,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,7 +26,19 @@ private ProductPowerDataMapper productPowerDataMapper;
 
     @Test
     public void test1() {
-        //productPowerDataMapper.endYobiiiternDataForWk("0001", 123, "10215814");
+     //   productPowerDataMapper.endYobiiiternDataForWk("0001", 123, "10215814");
+       // productPowerDataMapper.setWkSyokikaForFinally("0001",1,"10215814");
+       // productPowerDataMapper.setWkGroupForFinally("0001",1,"10215814");
+       // productPowerDataMapper.setWkYobilitemForFinally("0001",1,"10215814");
+       // productPowerDataMapper.setWkDataForFinally("0001",1,"10215814");
+        //productPowerDataMapper.setWKData("0001",1,"10215814");
+        //productPowerDataMapper.setWkYobilitemDataForFinally("0001",1,"10215814");
+
+       // List<ProductPowerMstData> productPowerMstDataList = productPowerDataMapper.selectWKKokyaku("10215814","0001");
+        //productPowerMstDataList.stream().forEach(System.out::println);
+
+
+
        // productPowerDataMapper.endSyokikaForWK("0001",1,"10215814");
        // productPowerDataMapper.endGroupForWK("0001",1,"10215814");       // StringBuilder strs = new StringBuilder();
        // productPowerDataMapper.endYobiiiternForWk("0001",1,"10215814");
@@ -109,7 +120,7 @@ private ProductPowerDataMapper productPowerDataMapper;
 
 
     }
-
+/*
     @Test
     public void  test6() throws NoSuchFieldException, IllegalAccessException {
         RankCalculateVo vo = new RankCalculateVo();
@@ -141,5 +152,57 @@ private ProductPowerDataMapper productPowerDataMapper;
                 productPowerMstData.setpCompareAmountRank(i++);
             }
         }
+    }*/
+
+    @Test
+    public void test() throws NoSuchFieldException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        List<ProductPowerMstData> dataList = new ArrayList<>();
+        ProductPowerMstData data = null;
+        for (int i = 0; i < 10; i++) {
+            data = new ProductPowerMstData();
+            data.setCompanyCd("001");
+            data.setProductPowerCd((long) 12);
+            data.setJan("JAN" + i);
+            data.setSkuName("sku");
+            data.setPdPosAmount(new BigDecimal(Math.random() * 10));
+            data.setPdPosNum(new BigDecimal(Math.random() * 10));
+            data.setPdBranchAmount(new BigDecimal(Math.random() * 10));
+
+            data.setGdPosAmount(new BigDecimal(Math.random() * 10));
+            data.setGdPosNum(new BigDecimal(Math.random() * 10));
+            data.setGdBranchAmount(new BigDecimal(Math.random() * 10));
+            dataList.add(data);
+        }
+        String[] columns = {"pPosAmount", "pPosNum", "pBranchAmount", "gPosAmount", "gPosNum", "gBranchAmount"};
+        String column = "pPosAmount";
+
+
+
+        Class clazz = ProductPowerMstData.class;
+        Method getMethod = clazz.getMethod("get" + column);
+        Method setMethod = clazz.getMethod("set" + column + "Rank");
+
+
+        Collections.sort(dataList, new Comparator<ProductPowerMstData>() {
+            @Override
+            public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
+                try {
+                    return new BigDecimal(String.valueOf(getMethod.invoke(o1))).compareTo(new BigDecimal(String.valueOf(getMethod.invoke(o2))));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                    return 0;
+                } catch (InvocationTargetException e) {
+                    return 0;
+                }
+            }
+        });
+
+
+        int i = 1;
+        for (ProductPowerMstData productPowerMstData : dataList) {
+            setMethod.invoke(productPowerMstData, i + 1);
+        }
+        System.out.println();
     }
+
 }

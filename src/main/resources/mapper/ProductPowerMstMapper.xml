@@ -43,7 +43,7 @@
       )
   </insert>
     <update id="delete">
-      update planocycle.product_power_mst set deleteflg=1
+      update planocycle.product_power_mst set deleteflg=1 and maintainer_name =#{authorName} and maintainer_cd = #{authorCd} and modified=now()
         where company_cd = #{conpanyCd,jdbcType=VARCHAR}
         and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </update>

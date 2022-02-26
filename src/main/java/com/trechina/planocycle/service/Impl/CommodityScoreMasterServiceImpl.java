@@ -280,19 +280,21 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public boolean delSmartData(ProductPowerParamMst productPowerParamMst) {
         String authorCd = session.getAttribute("aud").toString();
+        String authorName = (String) session.getAttribute("aud");
         logger.info("参数为:"+productPowerParamMst);
         String uuid = UUID.randomUUID().toString();
         //商品力点数mst表删除
-        productPowerMstMapper.delete(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd());
-        //表示项目删除
+        productPowerMstMapper.delete(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd,authorName);
+        /*//表示项目删除
         productPowerShowMstMapper.deleteByPrimaryKey(productPowerParamMst.getProductPowerCd(), productPowerParamMst.getConpanyCd(),authorCd);
         //参数删除
+
         productPowerParamMstMapper.deleteCommofityParam(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
         //预备项目mst删除
         productPowerReserveMstMapper.deleteByPrimaryKey(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
         //权重删除
         productPowerWeightMapper.deleteByPrimaryKey(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
-
+*/      productPowerParamMstMapper.deleteCommofityParam(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
         //基本数据删除
         productPowerDataMapper.deleteSyokika(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
         //顾客group删除
@@ -302,6 +304,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.deleteYobiiiternData(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
         //rank总表删除
         productPowerDataMapper.deleteRankData(productPowerParamMst.getConpanyCd(),productPowerParamMst.getProductPowerCd(),authorCd);
+
 
         ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
         productPowerDataForCgiDto.setMode("data_delete");
@@ -329,9 +332,20 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         }
 
     }
-
+//TODO:
     @Override
     public Map<String, Object> getAllDataOrParam(String companyCd, Integer productPowerNo) {
+        String aud = session.getAttribute("aud").toString();
+        productPowerDataMapper.deleteWKSyokika(companyCd,aud);
+        productPowerDataMapper.deleteWKKokyaku(companyCd,aud);
+        productPowerDataMapper.deleteWKYobiiitern();
+        productPowerDataMapper.deleteWKYobiiiternData();
+        productPowerDataMapper.deleteWKData(companyCd,aud);
+        productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud);
+         productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud);
+         productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud);
+        productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud);
+        productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud);
         List<ProductPowerMstData> allData = productPowerDataMapper.getAllData(companyCd, productPowerNo);
         ProductPowerParam param = productPowerDataMapper.getParam(companyCd, productPowerNo);
         List list = new ArrayList();

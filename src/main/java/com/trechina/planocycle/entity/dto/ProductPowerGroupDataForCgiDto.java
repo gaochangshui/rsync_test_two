@@ -1,5 +1,7 @@
 package com.trechina.planocycle.entity.dto;
 
+import java.util.Map;
+
 public class ProductPowerGroupDataForCgiDto {
     private String mode;
     private String company;
@@ -13,8 +15,8 @@ public class ProductPowerGroupDataForCgiDto {
     private String seasonStTime;
     private String prdCd;
     private String storeCd;
-    private String yearflg;
-    private String customerCondition;
+    private String yearFlag;
+    private Map<Object,Object> customerCondition;
     private String change_flag;
     private String usercd;
 
@@ -114,19 +116,12 @@ public class ProductPowerGroupDataForCgiDto {
         this.storeCd = storeCd;
     }
 
-    public String getYearflg() {
-        return yearflg;
-    }
 
-    public void setYearflg(String yearflg) {
-        this.yearflg = yearflg;
-    }
-
-    public String getCustomerCondition() {
+    public Map<Object, Object> getCustomerCondition() {
         return customerCondition;
     }
 
-    public void setCustomerCondition(String customerCondition) {
+    public void setCustomerCondition(Map<Object, Object> customerCondition) {
         this.customerCondition = customerCondition;
     }
 
@@ -146,9 +141,17 @@ public class ProductPowerGroupDataForCgiDto {
         this.usercd = usercd;
     }
 
+    public String getYearFlag() {
+        return yearFlag;
+    }
+
+    public void setYearFlag(String yearFlag) {
+        this.yearFlag = yearFlag;
+    }
+
     @Override
     public String toString() {
-        return "ProductPowerDataForCgiDto{" +
+        return "ProductPowerGroupDataForCgiDto{" +
                 "mode='" + mode + '\'' +
                 ", company='" + company + '\'' +
                 ", guid='" + guid + '\'' +
@@ -161,7 +164,7 @@ public class ProductPowerGroupDataForCgiDto {
                 ", seasonStTime='" + seasonStTime + '\'' +
                 ", prdCd='" + prdCd + '\'' +
                 ", storeCd='" + storeCd + '\'' +
-                ", yearflg='" + yearflg + '\'' +
+                ", yearFlag='" + yearFlag + '\'' +
                 ", customerCondition='" + customerCondition + '\'' +
                 ", change_flag='" + change_flag + '\'' +
                 ", usercd='" + usercd + '\'' +

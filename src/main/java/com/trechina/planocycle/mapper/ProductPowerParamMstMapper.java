@@ -26,4 +26,5 @@ public interface ProductPowerParamMstMapper {
     int insertParam(@Param("item")ProductPowerParam productPowerParam,@Param("authorCd")String authorCd);
 
     ProductPowerParam getParam(@Param("companyCd")String companyCd,@Param("productPowerCd")Integer productPowerCd);
+
 }

@@ -115,6 +115,9 @@ public class cgiUtils {
             while ((read = reader.readLine()) !=null){
                 builder.append(read+"@");
             }
+            if (builder.length()==0){
+                return ResultMaps.result(ResultEnum.CGIERROR,null);
+            }
             builder = new StringBuilder(builder.substring(0,builder.length()-1));
             logger.info("postCgiOfWeb statusCode,reqult："+statusCode+","+builder.toString());
             in.close();

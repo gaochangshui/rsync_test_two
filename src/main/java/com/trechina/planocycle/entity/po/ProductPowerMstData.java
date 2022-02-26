@@ -13,23 +13,23 @@ public class ProductPowerMstData {
     private String classifySmall;
     private String classifyFine;
     // POS
-    private BigDecimal pPosAmount = new BigDecimal("0.00");
-    private BigDecimal pPosNum= new BigDecimal("0.00");
-    private BigDecimal pBranchAmount= new BigDecimal("0.00");
-    private BigDecimal pBranchNum= new BigDecimal("0.00");
-    private BigDecimal pCompareAmount= new BigDecimal("0.00");
-    private BigDecimal pCompareNum= new BigDecimal("0.00");
-    private BigDecimal pBranchCompareAmount= new BigDecimal("0.00");
-    private BigDecimal pBranchCompareNum= new BigDecimal("0.00");
+    private BigDecimal pdPosAmount = new BigDecimal("0.00");
+    private BigDecimal pdPosNum= new BigDecimal("0.00");
+    private BigDecimal pdBranchAmount= new BigDecimal("0.00");
+    private BigDecimal pdBranchNum= new BigDecimal("0.00");
+    private BigDecimal pdCompareAmount= new BigDecimal("0.00");
+    private BigDecimal pdCompareNum= new BigDecimal("0.00");
+    private BigDecimal pdBranchCompareAmount= new BigDecimal("0.00");
+    private BigDecimal pdBranchCompareNum= new BigDecimal("0.00");
     // 顾客group
-    private BigDecimal gPosAmount= new BigDecimal("0.00");
-    private BigDecimal gPosNum= new BigDecimal("0.00");
-    private BigDecimal gBranchAmount= new BigDecimal("0.00");
-    private BigDecimal gBranchNum= new BigDecimal("0.00");
-    private BigDecimal gCompareAmount= new BigDecimal("0.00");
-    private BigDecimal gCompareNum= new BigDecimal("0.00");
-    private BigDecimal gBranchCompareAmount= new BigDecimal("0.00");
-    private BigDecimal gBranchCompareNum= new BigDecimal("0.00");
+    private BigDecimal gdPosAmount= new BigDecimal("0.00");
+    private BigDecimal gdPosNum= new BigDecimal("0.00");
+    private BigDecimal gdBranchAmount= new BigDecimal("0.00");
+    private BigDecimal gdBranchNum= new BigDecimal("0.00");
+    private BigDecimal gdCompareAmount= new BigDecimal("0.00");
+    private BigDecimal gdCompareNum= new BigDecimal("0.00");
+    private BigDecimal gdBranchCompareAmount= new BigDecimal("0.00");
+    private BigDecimal gdBranchCompareNum= new BigDecimal("0.00");
     // 项目
     private BigDecimal item1= new BigDecimal("0.00");
     private BigDecimal item2= new BigDecimal("0.00");
@@ -44,22 +44,22 @@ public class ProductPowerMstData {
     private BigDecimal rankNum;
     //rank
 
-    private Integer pPosAmountRank;
-    private Integer pPosNumRank;
-    private Integer pBranchAmountRank;
-    private Integer pBranchNumRank;
-    private Integer pCompareAmountRank;
-    private Integer pCompareNumRank;
-    private Integer pBranchCompareAmountRank;
-    private Integer pBranchCompareNumRank;
-    private Integer gPosAmountRank;
-    private Integer gPosNumRank;
-    private Integer gBranchAmountRank;
-    private Integer gBranchNumRank;
-    private Integer gCompareAmountRank;
-    private Integer gCompareNumRank;
-    private Integer gBranchCompareAmountRank;
-    private Integer gBranchCompareNumRank;
+    private Integer pdPosAmountRank;
+    private Integer pdPosNumRank;
+    private Integer pdBranchAmountRank;
+    private Integer pdBranchNumRank;
+    private Integer pdCompareAmountRank;
+    private Integer pdCompareNumRank;
+    private Integer pdBranchCompareAmountRank;
+    private Integer pdBranchCompareNumRank;
+    private Integer gdPosAmountRank;
+    private Integer gdPosNumRank;
+    private Integer gdBranchAmountRank;
+    private Integer gdBranchNumRank;
+    private Integer gdCompareAmountRank;
+    private Integer gdCompareNumRank;
+    private Integer gdBranchCompareAmountRank;
+    private Integer gdBranchCompareNumRank;
     private Integer item1Rank;
     private Integer item2Rank;
     private Integer item3Rank;
@@ -137,132 +137,132 @@ public class ProductPowerMstData {
         this.classifyFine = classifyFine;
     }
 
-    public BigDecimal getpPosAmount() {
-        return pPosAmount;
+    public BigDecimal getPdPosAmount() {
+        return pdPosAmount;
     }
 
-    public void setpPosAmount(BigDecimal pPosAmount) {
-        this.pPosAmount = pPosAmount;
+    public void setPdPosAmount(BigDecimal pdPosAmount) {
+        this.pdPosAmount = pdPosAmount;
     }
 
-    public BigDecimal getpPosNum() {
-        return pPosNum;
+    public BigDecimal getPdPosNum() {
+        return pdPosNum;
     }
 
-    public void setpPosNum(BigDecimal pPosNum) {
-        this.pPosNum = pPosNum;
+    public void setPdPosNum(BigDecimal pdPosNum) {
+        this.pdPosNum = pdPosNum;
     }
 
-    public BigDecimal getpBranchAmount() {
-        return pBranchAmount;
+    public BigDecimal getPdBranchAmount() {
+        return pdBranchAmount;
     }
 
-    public void setpBranchAmount(BigDecimal pBranchAmount) {
-        this.pBranchAmount = pBranchAmount;
+    public void setPdBranchAmount(BigDecimal pdBranchAmount) {
+        this.pdBranchAmount = pdBranchAmount;
     }
 
-    public BigDecimal getpBranchNum() {
-        return pBranchNum;
+    public BigDecimal getPdBranchNum() {
+        return pdBranchNum;
     }
 
-    public void setpBranchNum(BigDecimal pBranchNum) {
-        this.pBranchNum = pBranchNum;
+    public void setPdBranchNum(BigDecimal pdBranchNum) {
+        this.pdBranchNum = pdBranchNum;
     }
 
-    public BigDecimal getpCompareAmount() {
-        return pCompareAmount;
+    public BigDecimal getPdCompareAmount() {
+        return pdCompareAmount;
     }
 
-    public void setpCompareAmount(BigDecimal pCompareAmount) {
-        this.pCompareAmount = pCompareAmount;
+    public void setPdCompareAmount(BigDecimal pdCompareAmount) {
+        this.pdCompareAmount = pdCompareAmount;
     }
 
-    public BigDecimal getpCompareNum() {
-        return pCompareNum;
+    public BigDecimal getPdCompareNum() {
+        return pdCompareNum;
     }
 
-    public void setpCompareNum(BigDecimal pCompareNum) {
-        this.pCompareNum = pCompareNum;
+    public void setPdCompareNum(BigDecimal pdCompareNum) {
+        this.pdCompareNum = pdCompareNum;
     }
 
-    public BigDecimal getpBranchCompareAmount() {
-        return pBranchCompareAmount;
+    public BigDecimal getPdBranchCompareAmount() {
+        return pdBranchCompareAmount;
     }
 
-    public void setpBranchCompareAmount(BigDecimal pBranchCompareAmount) {
-        this.pBranchCompareAmount = pBranchCompareAmount;
+    public void setPdBranchCompareAmount(BigDecimal pdBranchCompareAmount) {
+        this.pdBranchCompareAmount = pdBranchCompareAmount;
     }
 
-    public BigDecimal getpBranchCompareNum() {
-        return pBranchCompareNum;
+    public BigDecimal getPdBranchCompareNum() {
+        return pdBranchCompareNum;
     }
 
-    public void setpBranchCompareNum(BigDecimal pBranchCompareNum) {
-        this.pBranchCompareNum = pBranchCompareNum;
+    public void setPdBranchCompareNum(BigDecimal pdBranchCompareNum) {
+        this.pdBranchCompareNum = pdBranchCompareNum;
     }
 
-    public BigDecimal getgPosAmount() {
-        return gPosAmount;
+    public BigDecimal getGdPosAmount() {
+        return gdPosAmount;
     }
 
-    public void setgPosAmount(BigDecimal gPosAmount) {
-        this.gPosAmount = gPosAmount;
+    public void setGdPosAmount(BigDecimal gdPosAmount) {
+        this.gdPosAmount = gdPosAmount;
     }
 
-    public BigDecimal getgPosNum() {
-        return gPosNum;
+    public BigDecimal getGdPosNum() {
+        return gdPosNum;
     }
 
-    public void setgPosNum(BigDecimal gPosNum) {
-        this.gPosNum = gPosNum;
+    public void setGdPosNum(BigDecimal gdPosNum) {
+        this.gdPosNum = gdPosNum;
     }
 
-    public BigDecimal getgBranchAmount() {
-        return gBranchAmount;
+    public BigDecimal getGdBranchAmount() {
+        return gdBranchAmount;
     }
 
-    public void setgBranchAmount(BigDecimal gBranchAmount) {
-        this.gBranchAmount = gBranchAmount;
+    public void setGdBranchAmount(BigDecimal gdBranchAmount) {
+        this.gdBranchAmount = gdBranchAmount;
     }
 
-    public BigDecimal getgBranchNum() {
-        return gBranchNum;
+    public BigDecimal getGdBranchNum() {
+        return gdBranchNum;
     }
 
-    public void setgBranchNum(BigDecimal gBranchNum) {
-        this.gBranchNum = gBranchNum;
+    public void setGdBranchNum(BigDecimal gdBranchNum) {
+        this.gdBranchNum = gdBranchNum;
     }
 
-    public BigDecimal getgCompareAmount() {
-        return gCompareAmount;
+    public BigDecimal getGdCompareAmount() {
+        return gdCompareAmount;
     }
 
-    public void setgCompareAmount(BigDecimal gCompareAmount) {
-        this.gCompareAmount = gCompareAmount;
+    public void setGdCompareAmount(BigDecimal gdCompareAmount) {
+        this.gdCompareAmount = gdCompareAmount;
     }
 
-    public BigDecimal getgCompareNum() {
-        return gCompareNum;
+    public BigDecimal getGdCompareNum() {
+        return gdCompareNum;
     }
 
-    public void setgCompareNum(BigDecimal gCompareNum) {
-        this.gCompareNum = gCompareNum;
+    public void setGdCompareNum(BigDecimal gdCompareNum) {
+        this.gdCompareNum = gdCompareNum;
     }
 
-    public BigDecimal getgBranchCompareAmount() {
-        return gBranchCompareAmount;
+    public BigDecimal getGdBranchCompareAmount() {
+        return gdBranchCompareAmount;
     }
 
-    public void setgBranchCompareAmount(BigDecimal gBranchCompareAmount) {
-        this.gBranchCompareAmount = gBranchCompareAmount;
+    public void setGdBranchCompareAmount(BigDecimal gdBranchCompareAmount) {
+        this.gdBranchCompareAmount = gdBranchCompareAmount;
     }
 
-    public BigDecimal getgBranchCompareNum() {
-        return gBranchCompareNum;
+    public BigDecimal getGdBranchCompareNum() {
+        return gdBranchCompareNum;
     }
 
-    public void setgBranchCompareNum(BigDecimal gBranchCompareNum) {
-        this.gBranchCompareNum = gBranchCompareNum;
+    public void setGdBranchCompareNum(BigDecimal gdBranchCompareNum) {
+        this.gdBranchCompareNum = gdBranchCompareNum;
     }
 
     public BigDecimal getItem1() {
@@ -345,140 +345,140 @@ public class ProductPowerMstData {
         this.item10 = item10;
     }
 
-    public Integer getRankResult() {
-        return rankResult;
+    public BigDecimal getRankNum() {
+        return rankNum;
     }
 
-    public void setRankResult(Integer rankResult) {
-        this.rankResult = rankResult;
+    public void setRankNum(BigDecimal rankNum) {
+        this.rankNum = rankNum;
     }
 
-    public Integer getpPosAmountRank() {
-        return pPosAmountRank;
+    public Integer getPdPosAmountRank() {
+        return pdPosAmountRank;
     }
 
-    public void setpPosAmountRank(Integer pPosAmountRank) {
-        this.pPosAmountRank = pPosAmountRank;
+    public void setPdPosAmountRank(Integer pdPosAmountRank) {
+        this.pdPosAmountRank = pdPosAmountRank;
     }
 
-    public Integer getpPosNumRank() {
-        return pPosNumRank;
+    public Integer getPdPosNumRank() {
+        return pdPosNumRank;
     }
 
-    public void setpPosNumRank(Integer pPosNumRank) {
-        this.pPosNumRank = pPosNumRank;
+    public void setPdPosNumRank(Integer pdPosNumRank) {
+        this.pdPosNumRank = pdPosNumRank;
     }
 
-    public Integer getpBranchAmountRank() {
-        return pBranchAmountRank;
+    public Integer getPdBranchAmountRank() {
+        return pdBranchAmountRank;
     }
 
-    public void setpBranchAmountRank(Integer pBranchAmountRank) {
-        this.pBranchAmountRank = pBranchAmountRank;
+    public void setPdBranchAmountRank(Integer pdBranchAmountRank) {
+        this.pdBranchAmountRank = pdBranchAmountRank;
     }
 
-    public Integer getpBranchNumRank() {
-        return pBranchNumRank;
+    public Integer getPdBranchNumRank() {
+        return pdBranchNumRank;
     }
 
-    public void setpBranchNumRank(Integer pBranchNumRank) {
-        this.pBranchNumRank = pBranchNumRank;
+    public void setPdBranchNumRank(Integer pdBranchNumRank) {
+        this.pdBranchNumRank = pdBranchNumRank;
     }
 
-    public Integer getpCompareAmountRank() {
-        return pCompareAmountRank;
+    public Integer getPdCompareAmountRank() {
+        return pdCompareAmountRank;
     }
 
-    public void setpCompareAmountRank(Integer pCompareAmountRank) {
-        this.pCompareAmountRank = pCompareAmountRank;
+    public void setPdCompareAmountRank(Integer pdCompareAmountRank) {
+        this.pdCompareAmountRank = pdCompareAmountRank;
     }
 
-    public Integer getpCompareNumRank() {
-        return pCompareNumRank;
+    public Integer getPdCompareNumRank() {
+        return pdCompareNumRank;
     }
 
-    public void setpCompareNumRank(Integer pCompareNumRank) {
-        this.pCompareNumRank = pCompareNumRank;
+    public void setPdCompareNumRank(Integer pdCompareNumRank) {
+        this.pdCompareNumRank = pdCompareNumRank;
     }
 
-    public Integer getpBranchCompareAmountRank() {
-        return pBranchCompareAmountRank;
+    public Integer getPdBranchCompareAmountRank() {
+        return pdBranchCompareAmountRank;
     }
 
-    public void setpBranchCompareAmountRank(Integer pBranchCompareAmountRank) {
-        this.pBranchCompareAmountRank = pBranchCompareAmountRank;
+    public void setPdBranchCompareAmountRank(Integer pdBranchCompareAmountRank) {
+        this.pdBranchCompareAmountRank = pdBranchCompareAmountRank;
     }
 
-    public Integer getpBranchCompareNumRank() {
-        return pBranchCompareNumRank;
+    public Integer getPdBranchCompareNumRank() {
+        return pdBranchCompareNumRank;
     }
 
-    public void setpBranchCompareNumRank(Integer pBranchCompareNumRank) {
-        this.pBranchCompareNumRank = pBranchCompareNumRank;
+    public void setPdBranchCompareNumRank(Integer pdBranchCompareNumRank) {
+        this.pdBranchCompareNumRank = pdBranchCompareNumRank;
     }
 
-    public Integer getgPosAmountRank() {
-        return gPosAmountRank;
+    public Integer getGdPosAmountRank() {
+        return gdPosAmountRank;
     }
 
-    public void setgPosAmountRank(Integer gPosAmountRank) {
-        this.gPosAmountRank = gPosAmountRank;
+    public void setGdPosAmountRank(Integer gdPosAmountRank) {
+        this.gdPosAmountRank = gdPosAmountRank;
     }
 
-    public Integer getgPosNumRank() {
-        return gPosNumRank;
+    public Integer getGdPosNumRank() {
+        return gdPosNumRank;
     }
 
-    public void setgPosNumRank(Integer gPosNumRank) {
-        this.gPosNumRank = gPosNumRank;
+    public void setGdPosNumRank(Integer gdPosNumRank) {
+        this.gdPosNumRank = gdPosNumRank;
     }
 
-    public Integer getgBranchAmountRank() {
-        return gBranchAmountRank;
+    public Integer getGdBranchAmountRank() {
+        return gdBranchAmountRank;
     }
 
-    public void setgBranchAmountRank(Integer gBranchAmountRank) {
-        this.gBranchAmountRank = gBranchAmountRank;
+    public void setGdBranchAmountRank(Integer gdBranchAmountRank) {
+        this.gdBranchAmountRank = gdBranchAmountRank;
     }
 
-    public Integer getgBranchNumRank() {
-        return gBranchNumRank;
+    public Integer getGdBranchNumRank() {
+        return gdBranchNumRank;
     }
 
-    public void setgBranchNumRank(Integer gBranchNumRank) {
-        this.gBranchNumRank = gBranchNumRank;
+    public void setGdBranchNumRank(Integer gdBranchNumRank) {
+        this.gdBranchNumRank = gdBranchNumRank;
     }
 
-    public Integer getgCompareAmountRank() {
-        return gCompareAmountRank;
+    public Integer getGdCompareAmountRank() {
+        return gdCompareAmountRank;
     }
 
-    public void setgCompareAmountRank(Integer gCompareAmountRank) {
-        this.gCompareAmountRank = gCompareAmountRank;
+    public void setGdCompareAmountRank(Integer gdCompareAmountRank) {
+        this.gdCompareAmountRank = gdCompareAmountRank;
     }
 
-    public Integer getgCompareNumRank() {
-        return gCompareNumRank;
+    public Integer getGdCompareNumRank() {
+        return gdCompareNumRank;
     }
 
-    public void setgCompareNumRank(Integer gCompareNumRank) {
-        this.gCompareNumRank = gCompareNumRank;
+    public void setGdCompareNumRank(Integer gdCompareNumRank) {
+        this.gdCompareNumRank = gdCompareNumRank;
     }
 
-    public Integer getgBranchCompareAmountRank() {
-        return gBranchCompareAmountRank;
+    public Integer getGdBranchCompareAmountRank() {
+        return gdBranchCompareAmountRank;
     }
 
-    public void setgBranchCompareAmountRank(Integer gBranchCompareAmountRank) {
-        this.gBranchCompareAmountRank = gBranchCompareAmountRank;
+    public void setGdBranchCompareAmountRank(Integer gdBranchCompareAmountRank) {
+        this.gdBranchCompareAmountRank = gdBranchCompareAmountRank;
     }
 
-    public Integer getgBranchCompareNumRank() {
-        return gBranchCompareNumRank;
+    public Integer getGdBranchCompareNumRank() {
+        return gdBranchCompareNumRank;
     }
 
-    public void setgBranchCompareNumRank(Integer gBranchCompareNumRank) {
-        this.gBranchCompareNumRank = gBranchCompareNumRank;
+    public void setGdBranchCompareNumRank(Integer gdBranchCompareNumRank) {
+        this.gdBranchCompareNumRank = gdBranchCompareNumRank;
     }
 
     public Integer getItem1Rank() {
@@ -557,16 +557,15 @@ public class ProductPowerMstData {
         return item10Rank;
     }
 
-    public BigDecimal getRankNum() {
-        return rankNum;
-    }
-
-    public void setRankNum(BigDecimal rankNum) {
-        this.rankNum = rankNum;
-    }
-
     public void setItem10Rank(Integer item10Rank) {
-
         this.item10Rank = item10Rank;
+    }
+
+    public Integer getRankResult() {
+        return rankResult;
+    }
+
+    public void setRankResult(Integer rankResult) {
+        this.rankResult = rankResult;
     }
 }

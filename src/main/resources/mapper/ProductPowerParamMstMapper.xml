@@ -99,6 +99,6 @@
       and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
   </update>
   <delete id="deleteParam">
-    delete from product_power_param_mst where company_cd=#{companyCd} and product_power_cd =#{productPowerCd}
+    delete from product_power_param_mst where company_cd=#{companyCd} and product_power_cd =#{productPowerCd} and deleteflg=0
   </delete>
 </mapper>

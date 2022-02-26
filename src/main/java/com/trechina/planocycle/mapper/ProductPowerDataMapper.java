@@ -36,7 +36,11 @@ public interface ProductPowerDataMapper {
     int insertYobilitem(@Param("companyCd") String companyCd,@Param("authorCd")String authorCd,@Param("itemCd")Integer itemCd,@Param("itemName")String itemName);
     int insertYobilitemData(@Param("dataList") List<WorkProductPowerReserveData> dataList);
     //最终表存到临时表
-    int insertWkYobiiiternForFinally();
+    int setWkSyokikaForFinally(@Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);
+    int setWkGroupForFinally(@Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);
+    int setWkYobilitemForFinally(@Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);
+    int setWkYobilitemDataForFinally(@Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);
+    int setWkDataForFinally(@Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);
 
     //最终表删除
     int deleteSyokika(@Param("companyCd")String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd")String authorCd);

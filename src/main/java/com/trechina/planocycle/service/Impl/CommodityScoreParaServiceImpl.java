@@ -22,12 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
 
 @Service
 public class CommodityScoreParaServiceImpl implements CommodityScoreParaService {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger= LoggerFactory.getLogger(this.getClass());
     @Autowired
     private HttpSession session;
     @Autowired
@@ -46,23 +48,19 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     private PriorityOrderMstService priorityOrderMstService;
     @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
-    @Autowired
-    private cgiUtils cgiUtil;
-
     /**
      * 获取表示项目所有参数
-     *
      * @param conpanyCd
      * @param productPowerCd
      * @return
      */
     @Override
     public Map<String, Object> getCommodityScorePara(String conpanyCd, Integer productPowerCd) {
-        List<ProductPowerShowMst> productPowerShowMstList = productPowerShowMstMapper.selectByPrimaryKey(productPowerCd, conpanyCd);
-        logger.info("获取表示项目参数：" + productPowerShowMstList);
+        List<ProductPowerShowMst> productPowerShowMstList = productPowerShowMstMapper.selectByPrimaryKey(productPowerCd,conpanyCd);
+        logger.info("获取表示项目参数："+productPowerShowMstList);
 //        ProductPowerParamMst productPowerParamMst = productPowerParamMstMapper.selectCommodityParam(conpanyCd,productPowerCd);
-        ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd, productPowerCd);
-        logger.info("获取动态列参数：" + productOrderParamAttrVO);
+        ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd,productPowerCd);
+        logger.info("获取动态列参数："+productOrderParamAttrVO);
         //构造前端用的数据格式
         List<String> marketList = new ArrayList<>();
         List<String> posList = new ArrayList<>();
@@ -74,36 +72,35 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 posList.add(item.getDataCd().toString());
             }
         });
-        try {
-            //遍历动态列
-            String[] attrList = productOrderParamAttrVO.getAttr().split(",");
-            String[] attrKey;
-            Map<String, Object> result = new HashMap<>();
-            Map<String, Object> attrMap = new HashMap<>();
-            result.put("conpanyCd", productPowerShowMstList.get(0).getConpanyCd());
-            result.put("productPowerCd", productPowerShowMstList.get(0).getProductPowerCd());
-            result.put("MarketData", marketList);
-            result.put("PosData", posList);
-            JSONArray jsonArray = new JSONArray();
-            for (String s : attrList) {
-                attrKey = s.split(":");
-                attrMap.put("attr" + attrKey[0], attrKey[1]);
-            }
-            jsonArray.add(result);
-            jsonArray.add(attrMap);
-            logger.info("动态列返回：" + jsonArray.toString());
-            //返回
-            return ResultMaps.result(ResultEnum.SUCCESS, jsonArray);
-        } catch (Exception e) {
-            logger.info(e.toString());
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+       try {
+           //遍历动态列
+           String[] attrList= productOrderParamAttrVO.getAttr().split(",");
+           String[] attrKey;
+           Map<String,Object> result = new HashMap<>();
+           Map<String,Object> attrMap = new HashMap<>();
+           result.put("conpanyCd",productPowerShowMstList.get(0).getConpanyCd());
+           result.put("productPowerCd",productPowerShowMstList.get(0).getProductPowerCd());
+           result.put("MarketData",marketList);
+           result.put("PosData",posList);
+           JSONArray jsonArray = new JSONArray();
+           for (String s : attrList) {
+               attrKey=s.split(":");
+               attrMap.put("attr"+attrKey[0],attrKey[1]);
+           }
+           jsonArray.add(result);
+           jsonArray.add(attrMap);
+           logger.info("动态列返回："+jsonArray.toString());
+           //返回
+           return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
+       }catch (Exception e) {
+           logger.info(e.toString());
+           return ResultMaps.result(ResultEnum.FAILURE);
+       }
     }
 
     /**
      * 保存期间、表示项目、weight所有参数
-     *
-     * @param commodityScorePara
+     * @param
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
@@ -118,11 +115,11 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         //将临时表里的保存到最终表里
         //pos基本数据
             //修改保存  物理删除插入
-            productPowerDataMapper.phyDeleteSyokika(conpanyCd, productPowerCd, authorCd);
+            productPowerDataMapper.phyDeleteSyokika(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.endSyokikaForWK(conpanyCd, productPowerCd, authorCd);
 
             //修改保存  物理删除插入
-            productPowerDataMapper.phyDeleteGroup(conpanyCd, productPowerCd, authorCd);
+            productPowerDataMapper.phyDeleteGroup(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.endGroupForWK(conpanyCd, productPowerCd, authorCd);
 
             //修改保存  物理删除插入
@@ -138,27 +135,28 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             productPowerParamMstMapper.insertParam(productPowerParam,authorCd);
 
 
-        String uuid = UUID.randomUUID().toString();
+
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         //cgi保存
+        String uuidSave = UUID.randomUUID().toString();
         ProductPowerDataForCgiDto productPowerDataForCgiSave = new ProductPowerDataForCgiDto();
         productPowerDataForCgiSave.setMode("jan_rank");
         productPowerDataForCgiSave.setCompany(productPowerParam.getCompany());
-        productPowerDataForCgiSave.setGuid(uuid);
-        productPowerDataForCgiSave.setProductPowerNo(productPowerCd);
 
-        logger.info("保存jan rank" + productPowerDataForCgiSave);
+
+        logger.info("保存jan rank"+productPowerDataForCgiSave);
         //递归调用cgi，首先获取taskid
         try {
             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
             String path = resourceBundle.getString("ProductPowerData");
+            cgiUtils cgiUtil = new cgiUtils();
             String result = null;
             result = cgiUtil.postCgi(path, productPowerDataForCgiSave, tokenInfo);
             logger.info("taskid返回--保存jan rank：" + result);
             String queryPath = resourceBundle.getString("TaskQuery");
             // 带着taskid，再次请求cgi获取运行状态/数据
             Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-            logger.info("保存jan rank" + Data);
+            logger.info("保存jan rank"+Data);
         } catch (IOException e) {
             logger.info("保存期间、表示项目、weight所有参数报错--保存jan rank" + e);
             return ResultMaps.result(ResultEnum.FAILURE);
@@ -168,28 +166,26 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
     /**
      * 获取weight参数
-     *
      * @param conpanyCd
      * @param productPowerCd
      * @return
      */
     @Override
     public Map<String, Object> getCommodityScoreWeight(String conpanyCd, Integer productPowerCd) {
-        List<ProductPowerWeight> productPowerWeights = productPowerWeightMapper.selectByPrimaryKey(conpanyCd, productPowerCd);
-        return ResultMaps.result(ResultEnum.SUCCESS, productPowerWeights);
+        List<ProductPowerWeight> productPowerWeights = productPowerWeightMapper.selectByPrimaryKey(conpanyCd,productPowerCd);
+        return ResultMaps.result(ResultEnum.SUCCESS,productPowerWeights);
     }
 
     /**
      * 获取表示项目的预备项目参数
-     *
      * @param conpanyCd
      * @param productPowerCd
      * @return
      */
     @Override
     public Map<String, Object> getCommodityScorePrePara(String conpanyCd, Integer productPowerCd) {
-        List<ProductPowerReserveMst> productPowerReserveMsts = productPowerReserveMstMapper.selectByPrimaryKey(conpanyCd, productPowerCd);
-        return ResultMaps.result(ResultEnum.SUCCESS, productPowerReserveMsts);
+        List<ProductPowerReserveMst> productPowerReserveMsts = productPowerReserveMstMapper.selectByPrimaryKey(conpanyCd,productPowerCd);
+        return ResultMaps.result(ResultEnum.SUCCESS,productPowerReserveMsts);
     }
 
     /**
@@ -231,29 +227,36 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Override
     public Map<String, Object> delYoBi(ProductPowerReserveMst productPowerReserveMst) {
         //处理ProductPowerReserv
-        String uuid = UUID.randomUUID().toString();
-        ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
-        productPowerDataForCgiDto.setMode("yobi_delete");
-        productPowerDataForCgiDto.setCompany(productPowerReserveMst.getConpanyCd());
+            String uuid = UUID.randomUUID().toString();
+            ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
+            productPowerDataForCgiDto.setMode("yobi_delete");
+            productPowerDataForCgiDto.setCompany(productPowerReserveMst.getConpanyCd());
 
 
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        //调用cgi 删除预备表示项目
-        //递归调用cgi，首先获取taskid
-        try {
-            ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-            String path = resourceBundle.getString("ProductPowerData");
-            String result = null;
-            result = cgiUtil.postCgi(path, productPowerDataForCgiDto, tokenInfo);
-            logger.info("taskid返回删除 yobi：" + result);
-            String queryPath = resourceBundle.getString("TaskQuery");
-            // 带着taskid，再次请求cgi获取运行状态/数据
-            Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-        } catch (IOException e) {
-            logger.info("保存期间、表示项目、weight所有参数报错--删除 yobi" + e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+
+            String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
+            //调用cgi 删除预备表示项目
+            //递归调用cgi，首先获取taskid
+            try {
+                ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+                String path = resourceBundle.getString("ProductPowerData");
+                cgiUtils cgiUtil = new cgiUtils();
+                String result = null;
+                result = cgiUtil.postCgi(path, productPowerDataForCgiDto, tokenInfo);
+                logger.info("taskid返回删除 yobi：" + result);
+                String queryPath = resourceBundle.getString("TaskQuery");
+                // 带着taskid，再次请求cgi获取运行状态/数据
+                Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
+            } catch (IOException e) {
+                logger.info("保存期间、表示项目、weight所有参数报错--删除 yobi" + e);
+                return ResultMaps.result(ResultEnum.FAILURE);
+            }
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd) {
+        return null;
     }
 
     /**
@@ -262,11 +265,11 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      * @return
      */
     @Override
-    public Map<String, Object> rankCalculate(RankCalculateVo rankCalculateVo) {
+    public Map<String, Object> rankCalculate(RankCalculateVo rankCalculateVo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String authorCd = session.getAttribute("aud").toString();
         productPowerDataMapper.deleteWKData(rankCalculateVo.getCompanyCd(),authorCd);
 
-
+        System.out.println(rankCalculateVo);
         List<ProductPowerMstData> productPowerMstDataList = productPowerDataMapper.selectWKKokyaku(authorCd,rankCalculateVo.getCompanyCd());
         List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData(authorCd,rankCalculateVo.getCompanyCd());
 
@@ -275,7 +278,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
                 Class w =item.getClass();
                 for(int i=1;i<=10;i++){
-                    if (wkYobiiiternData.getJan().equals(item.getJan()) && wkYobiiiternData.getDataSort()==i){
+                    if (item.getJan().equals(wkYobiiiternData.getJan()) && wkYobiiiternData.getDataSort()==i){
                         try {
                             Field field = w.getDeclaredField("item"+i);
                             field.setAccessible(true);
@@ -290,24 +293,55 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 }
             }
         });
+
+        String[] columns = {"PdPosAmount", "PdPosNum", "PdBranchAmount", "PdBranchNum", "PdCompareAmount", "PdCompareNum","PdBranchCompareAmount"
+        ,"PdBranchCompareNum","GdPosAmount","GdPosNum","GdBranchAmount","GdBranchNum","GdCompareAmount","GdCompareNum","GdBranchCompareAmount","GdBranchCompareNum",
+        "Item1","Item2","Item3","Item4","Item5","Item6","Item7","Item8","Item9","Item10"};
+        //String column = "PdPosAmount";
+        Class clazz = ProductPowerMstData.class;
+        Class rClass = RankCalculateVo.class;
+        for (String column : columns) {
+            Method getMethod = clazz.getMethod("get"+column);
+            Method setMethod = clazz.getMethod("set"+column+"Rank", Integer.class);
+            Method rClassMethod = rClass.getMethod("get"+column);
+            if ( 0!=(Integer) rClassMethod.invoke(rankCalculateVo)) {
+                Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
+                    @Override
+                    public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
+                        try {
+                            return new BigDecimal(String.valueOf(getMethod.invoke(o2))).compareTo(new BigDecimal(String.valueOf(getMethod.invoke(o1))));
+                        } catch (IllegalAccessException e) {
+                            return 0;
+                        } catch (InvocationTargetException e) {
+                            return 0;
+                        }
+                    }
+                });
+                int j = 0;
+                for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
+                    setMethod.invoke(productPowerMstData, ++j);
+                }
+            }
+        }
+
         //
         productPowerMstDataList.stream().forEach(item->{
-            BigDecimal rankNum = item.getpPosAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getpPosAmount()))
-                    .add(item.getpPosNum().multiply(BigDecimal.valueOf(rankCalculateVo.getpPosNum())))
-                    .add(item.getpBranchAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getpBranchAmount())))
-                    .add(item.getpBranchNum().multiply(BigDecimal.valueOf(rankCalculateVo.getpBranchNum())))
-                    .add(item.getpCompareAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getgCompareAmount())))
-                    .add(item.getpCompareNum().multiply(BigDecimal.valueOf(rankCalculateVo.getpCompareNum())))
-                    .add(item.getpBranchCompareAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getpBranchCompareAmount())))
-                    .add(item.getpBranchCompareNum().multiply(BigDecimal.valueOf(rankCalculateVo.getpBranchCompareNum())))
-                    .add(item.getgPosAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getgPosAmount())))
-                    .add(item.getgPosNum().multiply(BigDecimal.valueOf(rankCalculateVo.getgPosNum())))
-                    .add(item.getgBranchAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getgBranchAmount())))
-                    .add(item.getgBranchNum().multiply(BigDecimal.valueOf(rankCalculateVo.getgBranchNum())))
-                    .add(item.getgCompareAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getgCompareAmount())))
-                    .add(item.getgCompareNum().multiply(BigDecimal.valueOf(rankCalculateVo.getgCompareNum())))
-                    .add(item.getgBranchCompareAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getgBranchCompareAmount())))
-                    .add(item.getgBranchCompareNum().multiply(BigDecimal.valueOf(rankCalculateVo.getgBranchCompareNum())))
+            BigDecimal rankNum = item.getPdPosAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getPdPosAmount()))
+                    .add(item.getPdPosNum().multiply(BigDecimal.valueOf(rankCalculateVo.getPdPosNum())))
+                    .add(item.getPdBranchAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getPdBranchAmount())))
+                    .add(item.getPdBranchNum().multiply(BigDecimal.valueOf(rankCalculateVo.getPdBranchNum())))
+                    .add(item.getPdCompareAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getPdCompareAmount())))
+                    .add(item.getPdCompareNum().multiply(BigDecimal.valueOf(rankCalculateVo.getPdCompareNum())))
+                    .add(item.getPdBranchCompareAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getPdBranchCompareAmount())))
+                    .add(item.getPdBranchCompareNum().multiply(BigDecimal.valueOf(rankCalculateVo.getPdBranchCompareNum())))
+                    .add(item.getGdPosAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getGdPosAmount())))
+                    .add(item.getGdPosNum().multiply(BigDecimal.valueOf(rankCalculateVo.getGdPosNum())))
+                    .add(item.getGdBranchAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getGdBranchAmount())))
+                    .add(item.getGdBranchNum().multiply(BigDecimal.valueOf(rankCalculateVo.getGdBranchNum())))
+                    .add(item.getGdCompareAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getGdCompareAmount())))
+                    .add(item.getGdCompareNum().multiply(BigDecimal.valueOf(rankCalculateVo.getGdCompareNum())))
+                    .add(item.getGdBranchCompareAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getGdBranchCompareAmount())))
+                    .add(item.getGdBranchCompareNum().multiply(BigDecimal.valueOf(rankCalculateVo.getGdBranchCompareNum())))
                     .add(item.getItem1().multiply(BigDecimal.valueOf(rankCalculateVo.getItem1())))
                     .add(item.getItem2().multiply(BigDecimal.valueOf(rankCalculateVo.getItem2())))
                     .add(item.getItem3().multiply(BigDecimal.valueOf(rankCalculateVo.getItem3())))
@@ -325,20 +359,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
         });
 
-                Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
-                    @Override
-                    public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
-
-                        return o2.getpPosAmount().compareTo(o1.getpPosAmount());
-                    }
-                });
 
 
-                int i = 1;
-                for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
-                    productPowerMstData.setgPosAmountRank(i++);
-                }
-        for (int j = 0; j < 26; j++) {
             Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
                 @Override
                 public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
@@ -346,21 +368,19 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                     return o2.getRankNum().compareTo(o1.getRankNum());
                 }
             });
-        }
-
-
-
-        i=1;
+        int i=1;
         if (productPowerMstDataList.size()>0) {
             for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
                 productPowerMstData.setRankResult(i++);
             }
+
+
             int o = 0;
             List<ProductPowerMstData> list = new ArrayList<ProductPowerMstData>();
             for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
                 o++;
                 list.add(productPowerMstData);
-                if (o % 200 == 0 && o > 200) {
+                if (o % 200 == 0 && o >= 200) {
                     productPowerDataMapper.setWKData(list, authorCd, rankCalculateVo.getCompanyCd());
                     list.clear();
                 }
@@ -375,278 +395,48 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
     /**
      * 物理删除期间参数
-     *
      * @param conpanyCd
      * @param productPowerCd
      * @return
      */
-    public Map<String, Object> delParam(String conpanyCd, Integer productPowerCd) {
-        productPowerParamMstMapper.delete(conpanyCd, productPowerCd);
+    public Map<String, Object> delParam(String conpanyCd, Integer productPowerCd){
+        productPowerParamMstMapper.delete(conpanyCd,productPowerCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
      * 物理删除表示项目
-     *
      * @param conpanyCd
      * @param productPowerCd
      * @return
      */
-    public Map<String, Object> delShowMst(String conpanyCd, Integer productPowerCd) {
-        productPowerShowMstMapper.delete(productPowerCd, conpanyCd);
+    public Map<String, Object> delShowMst(String conpanyCd, Integer productPowerCd){
+        productPowerShowMstMapper.delete(productPowerCd,conpanyCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
      * 物理删除预备表示项目
-     *
      * @param conpanyCd
      * @param productPowerCd
      * @return
      */
-    public Map<String, Object> delPrePara(String conpanyCd, Integer productPowerCd) {
-        productPowerReserveMstMapper.delete(conpanyCd, productPowerCd);
+    public Map<String,Object> delPrePara(String conpanyCd,Integer productPowerCd) {
+        productPowerReserveMstMapper.delete(conpanyCd,productPowerCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
      * 物理删除weight
-     *
      * @param conpanyCd
      * @param productPowerCd
      * @return
      */
-    public Map<String, Object> delWeight(String conpanyCd, Integer productPowerCd) {
-        productPowerWeightMapper.delete(conpanyCd, productPowerCd);
+    public Map<String, Object> delWeight(String conpanyCd, Integer productPowerCd){
+        productPowerWeightMapper.delete(conpanyCd,productPowerCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
 
-    /**
-     * getpPosNum排序
-     */
-    public void getpPosNum(RankCalculateVo rankCalculateVo,List<ProductPowerMstData> productPowerMstDataList){
-        if (rankCalculateVo.getpPosNum()!=0) {
-            Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
-                @Override
-                public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
 
-                    return o2.getpPosNum().compareTo(o1.getpPosNum());
-                }
-            });
-
-
-            int i = 1;
-            for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
-                productPowerMstData.setpPosNumRank(i++);
-            }
-        }
-    }
-
-    /**
-     * getpBranchAmount排序
-     * @param rankCalculateVo
-     * @param productPowerMstDataList
-     */
-    public void getpBranchAmount(RankCalculateVo rankCalculateVo,List<ProductPowerMstData> productPowerMstDataList){
-        if (rankCalculateVo.getpBranchAmount()!=0) {
-            Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
-                @Override
-                public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
-
-                    return o2.getpBranchAmount().compareTo(o1.getpBranchAmount());
-                }
-            });
-
-
-            int i = 1;
-            for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
-                productPowerMstData.setpBranchAmountRank(i++);
-            }
-        }
-    }
-
-    /**
-     * getpBranchNum排序
-     * @param rankCalculateVo
-     * @param productPowerMstDataList
-     */
-    public void getpBranchNum(RankCalculateVo rankCalculateVo,List<ProductPowerMstData> productPowerMstDataList){
-        if (rankCalculateVo.getpBranchNum()!=0) {
-            Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
-                @Override
-                public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
-
-                    return o2.getpBranchNum().compareTo(o1.getpBranchNum());
-                }
-            });
-
-
-            int i = 1;
-            for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
-                productPowerMstData.setpBranchNumRank(i++);
-            }
-        }
-    }
-
-    /**
-     * getpCompareAmount排序
-     * @param rankCalculateVo
-     * @param productPowerMstDataList
-     */
-    public void getpCompareAmount(RankCalculateVo rankCalculateVo,List<ProductPowerMstData> productPowerMstDataList){
-        if (rankCalculateVo.getpCompareAmount()!=0) {
-            Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
-                @Override
-                public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
-
-                    return o2.getpCompareAmount().compareTo(o1.getpCompareAmount());
-                }
-            });
-
-
-            int i = 1;
-            for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
-                productPowerMstData.setpCompareAmountRank(i++);
-            }
-        }
-    }
-
-    public void getpCompareNum(RankCalculateVo rankCalculateVo,List<ProductPowerMstData> productPowerMstDataList){
-        if (rankCalculateVo.getpCompareNum()!=0) {
-            Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
-                @Override
-                public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
-
-                    return o2.getpCompareNum().compareTo(o1.getpCompareNum());
-                }
-            });
-
-
-            int i = 1;
-            for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
-                productPowerMstData.setpCompareNumRank(i++);
-            }
-        }
-    }
-
-    public void getgPosAmount(RankCalculateVo rankCalculateVo,List<ProductPowerMstData> productPowerMstDataList){
-        if (rankCalculateVo.getgPosAmount()!=0) {
-            Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
-                @Override
-                public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
-
-                    return o2.getgPosAmount().compareTo(o1.getgPosAmount());
-                }
-            });
-
-
-            int i = 1;
-            for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
-                productPowerMstData.setgPosAmountRank(i++);
-            }
-        }
-    }
-
-    public void getgPosNum(RankCalculateVo rankCalculateVo,List<ProductPowerMstData> productPowerMstDataList){
-        if (rankCalculateVo.getgPosNum()!=0) {
-            Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
-                @Override
-                public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
-
-                    return o2.getgPosNum().compareTo(o1.getgPosNum());
-                }
-            });
-
-
-            int i = 1;
-            for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
-                productPowerMstData.setgPosNumRank(i++);
-            }
-        }
-    }
-
-    public void getgBranchNum(RankCalculateVo rankCalculateVo,List<ProductPowerMstData> productPowerMstDataList){
-        if (rankCalculateVo.getgBranchNum()!=0) {
-            Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
-                @Override
-                public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
-
-                    return o2.getgBranchNum().compareTo(o1.getgBranchNum());
-                }
-            });
-
-
-            int i = 1;
-            for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
-                productPowerMstData.setgBranchNumRank(i++);
-            }
-        }
-    }
-
-
-    public void getgBranchAmount(RankCalculateVo rankCalculateVo,List<ProductPowerMstData> productPowerMstDataList){
-        if (rankCalculateVo.getgBranchAmount()!=0) {
-            Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
-                @Override
-                public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
-
-                    return o2.getgBranchAmount().compareTo(o1.getgBranchAmount());
-                }
-            });
-
-
-            int i = 1;
-            for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
-                productPowerMstData.setgBranchAmountRank(i++);
-            }
-        }
-    }
-
-    public void getgCompareNum(RankCalculateVo rankCalculateVo,List<ProductPowerMstData> productPowerMstDataList){
-        if (rankCalculateVo.getgCompareNum()!=0) {
-            Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
-                @Override
-                public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
-
-                    return o2.getgCompareNum().compareTo(o1.getgCompareNum());
-                }
-            });
-
-
-            int i = 1;
-            for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
-                productPowerMstData.setgCompareAmountRank(i++);
-            }
-        }
-    }
-
-    private List<WorkProductPowerReserveData> dataFormat(List<String[]> datas, String companyCd, String dataCd) {
-        String authorCd = session.getAttribute("aud").toString();
-        List<WorkProductPowerReserveData> result = new ArrayList<>();
-        WorkProductPowerReserveData reserveData = null;
-        // 第一行是标题
-        for (int i = 1; i < datas.size(); i++) {
-            String[] data = datas.get(i);
-            reserveData = new WorkProductPowerReserveData();
-            reserveData.setCompanyCd(companyCd);
-            reserveData.setDataCd(Integer.valueOf(dataCd));
-            reserveData.setAuthorCd(authorCd);
-            reserveData.setJan(data[0]);
-            reserveData.setDataValue(new BigDecimal(data[1]));
-            result.add(reserveData);
-        }
-        return result;
-    }
-
-    @Override
-    public Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd) {
-        List<WorkProductPowerReserveData> dataList = dataFormat(data, companyCd, dataCd);
-        if (dataList.isEmpty()) {
-            logger.info("csv文件中没有数据");
-            return ResultMaps.result(ResultEnum.SUCCESS);
-        }
-        productPowerDataMapper.insertYobilitemData(dataList);
-        return ResultMaps.result(ResultEnum.SUCCESS);
-    }
 }

@@ -5,6 +5,7 @@ import com.trechina.planocycle.entity.po.ProductPowerReserveMst;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
 import com.trechina.planocycle.entity.vo.RankCalculateVo;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,6 @@ public interface CommodityScoreParaService {
 
     /**
      * 保存表示项目参数,weight参数，step1期间参数
-     * @param commodityScorePara
      * @return
      */
     Map<String,Object> setCommodityScorePare(ProductPowerParam productPowerParam);
@@ -60,5 +60,5 @@ public interface CommodityScoreParaService {
      * @param rankCalculateVo
      * @return
      */
-    Map<String,Object>  rankCalculate( RankCalculateVo rankCalculateVo);
+    Map<String,Object>  rankCalculate( RankCalculateVo rankCalculateVo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 }

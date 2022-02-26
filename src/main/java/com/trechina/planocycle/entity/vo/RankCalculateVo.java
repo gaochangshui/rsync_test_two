@@ -4,23 +4,23 @@ package com.trechina.planocycle.entity.vo;
 public class RankCalculateVo {
     private String companyCd;
     // POS
-    private Integer pPosAmount =0;
-    private Integer pPosNum =0;
-    private Integer pBranchAmount =0;
-    private Integer pBranchNum =0;
-    private Integer pCompareAmount =0;
-    private Integer pCompareNum =0;
-    private Integer pBranchCompareAmount =0;
-    private Integer pBranchCompareNum =0;
+    private Integer pdPosAmount =0;
+    private Integer pdPosNum =0;
+    private Integer pdBranchAmount =0;
+    private Integer pdBranchNum =0;
+    private Integer pdCompareAmount =0;
+    private Integer pdCompareNum =0;
+    private Integer pdBranchCompareAmount =0;
+    private Integer pdBranchCompareNum =0;
     // 顾客group
-    private Integer gPosAmount =0;
-    private Integer gPosNum =0;
-    private Integer gBranchAmount=0;
-    private Integer gBranchNum=0;
-    private Integer gCompareAmount=0;
-    private Integer gCompareNum=0;
-    private Integer gBranchCompareAmount=0;
-    private Integer gBranchCompareNum=0;
+    private Integer gdPosAmount =0;
+    private Integer gdPosNum =0;
+    private Integer gdBranchAmount=0;
+    private Integer gdBranchNum=0;
+    private Integer gdCompareAmount=0;
+    private Integer gdCompareNum=0;
+    private Integer gdBranchCompareAmount=0;
+    private Integer gdBranchCompareNum=0;
     //
     private Integer item1=0;
     private Integer item2=0;
@@ -33,162 +33,140 @@ public class RankCalculateVo {
     private Integer item9=0;
     private Integer item10=0;
 
-    public Integer getpPosAmount() {
-        return pPosAmount;
-    }
-
-    public void setpPosAmount(Integer pPosAmount) {
-        this.pPosAmount = pPosAmount;
-    }
-
-    public Integer getpPosNum() {
-        return pPosNum;
-    }
-
-    public void setpPosNum(Integer pPosNum) {
-        this.pPosNum = pPosNum;
-    }
-
-    public Integer getpBranchAmount() {
-        return pBranchAmount;
-    }
-
-    public void setpBranchAmount(Integer pBranchAmount) {
-        this.pBranchAmount = pBranchAmount;
-    }
-
-    public Integer getpBranchNum() {
-        return pBranchNum;
-    }
-
-    public void setpBranchNum(Integer pBranchNum) {
-        this.pBranchNum = pBranchNum;
-    }
-
-    public Integer getpCompareAmount() {
-        return pCompareAmount;
-    }
-
-    public void setpCompareAmount(Integer pCompareAmount) {
-        this.pCompareAmount = pCompareAmount;
-    }
-
-    public Integer getpCompareNum() {
-        return pCompareNum;
-    }
-
-    public void setpCompareNum(Integer pCompareNum) {
-        this.pCompareNum = pCompareNum;
-    }
-
-    public Integer getpBranchCompareAmount() {
-        return pBranchCompareAmount;
-    }
-
-    public void setpBranchCompareAmount(Integer pBranchCompareAmount) {
-        this.pBranchCompareAmount = pBranchCompareAmount;
-    }
-
-    public Integer getpBranchCompareNum() {
-        return pBranchCompareNum;
-    }
-
-    public void setpBranchCompareNum(Integer pBranchCompareNum) {
-        this.pBranchCompareNum = pBranchCompareNum;
-    }
-
-    public Integer getgPosAmount() {
-        return gPosAmount;
-    }
-
-    public void setgPosAmount(Integer gPosAmount) {
-        this.gPosAmount = gPosAmount;
-    }
-
-    public Integer getgPosNum() {
-        return gPosNum;
-    }
-
-    public void setgPosNum(Integer gPosNum) {
-        this.gPosNum = gPosNum;
-    }
-
-    public Integer getgBranchAmount() {
-        return gBranchAmount;
-    }
-
-    public void setgBranchAmount(Integer gBranchAmount) {
-        this.gBranchAmount = gBranchAmount;
-    }
-
-    public Integer getgBranchNum() {
-        return gBranchNum;
-    }
-
-    public void setgBranchNum(Integer gBranchNum) {
-        this.gBranchNum = gBranchNum;
-    }
-
-    public Integer getgCompareAmount() {
-        return gCompareAmount;
-    }
-
-    public void setgCompareAmount(Integer gCompareAmount) {
-        this.gCompareAmount = gCompareAmount;
-    }
-
-    public Integer getgCompareNum() {
-        return gCompareNum;
-    }
-
-    public void setgCompareNum(Integer gCompareNum) {
-        this.gCompareNum = gCompareNum;
-    }
-
-    public Integer getgBranchCompareAmount() {
-        return gBranchCompareAmount;
-    }
-
-    public void setgBranchCompareAmount(Integer gBranchCompareAmount) {
-        this.gBranchCompareAmount = gBranchCompareAmount;
-    }
-
-    public Integer getgBranchCompareNum() {
-        return gBranchCompareNum;
-    }
-
-    public void setgBranchCompareNum(Integer gBranchCompareNum) {
-        this.gBranchCompareNum = gBranchCompareNum;
-    }
-
-    @Override
-    public String toString() {
-        return "RankCalculateVo{" +
-                "pPosAmount=" + pPosAmount +
-                ", pPosNum=" + pPosNum +
-                ", pBranchAmount=" + pBranchAmount +
-                ", pBranchNum=" + pBranchNum +
-                ", pCompareAmount=" + pCompareAmount +
-                ", pCompareNum=" + pCompareNum +
-                ", pBranchCompareAmount=" + pBranchCompareAmount +
-                ", pBranchCompareNum=" + pBranchCompareNum +
-                ", gPosAmount=" + gPosAmount +
-                ", gPosNum=" + gPosNum +
-                ", gBranchAmount=" + gBranchAmount +
-                ", gBranchNum=" + gBranchNum +
-                ", gCompareAmount=" + gCompareAmount +
-                ", gCompareNum=" + gCompareNum +
-                ", gBranchCompareAmount=" + gBranchCompareAmount +
-                ", gBranchCompareNum=" + gBranchCompareNum +
-                '}';
-    }
-
     public String getCompanyCd() {
         return companyCd;
     }
 
     public void setCompanyCd(String companyCd) {
         this.companyCd = companyCd;
+    }
+
+    public Integer getPdPosAmount() {
+        return pdPosAmount;
+    }
+
+    public void setPdPosAmount(Integer pdPosAmount) {
+        this.pdPosAmount = pdPosAmount;
+    }
+
+    public Integer getPdPosNum() {
+        return pdPosNum;
+    }
+
+    public void setPdPosNum(Integer pdPosNum) {
+        this.pdPosNum = pdPosNum;
+    }
+
+    public Integer getPdBranchAmount() {
+        return pdBranchAmount;
+    }
+
+    public void setPdBranchAmount(Integer pdBranchAmount) {
+        this.pdBranchAmount = pdBranchAmount;
+    }
+
+    public Integer getPdBranchNum() {
+        return pdBranchNum;
+    }
+
+    public void setPdBranchNum(Integer pdBranchNum) {
+        this.pdBranchNum = pdBranchNum;
+    }
+
+    public Integer getPdCompareAmount() {
+        return pdCompareAmount;
+    }
+
+    public void setPdCompareAmount(Integer pdCompareAmount) {
+        this.pdCompareAmount = pdCompareAmount;
+    }
+
+    public Integer getPdCompareNum() {
+        return pdCompareNum;
+    }
+
+    public void setPdCompareNum(Integer pdCompareNum) {
+        this.pdCompareNum = pdCompareNum;
+    }
+
+    public Integer getPdBranchCompareAmount() {
+        return pdBranchCompareAmount;
+    }
+
+    public void setPdBranchCompareAmount(Integer pdBranchCompareAmount) {
+        this.pdBranchCompareAmount = pdBranchCompareAmount;
+    }
+
+    public Integer getPdBranchCompareNum() {
+        return pdBranchCompareNum;
+    }
+
+    public void setPdBranchCompareNum(Integer pdBranchCompareNum) {
+        this.pdBranchCompareNum = pdBranchCompareNum;
+    }
+
+    public Integer getGdPosAmount() {
+        return gdPosAmount;
+    }
+
+    public void setGdPosAmount(Integer gdPosAmount) {
+        this.gdPosAmount = gdPosAmount;
+    }
+
+    public Integer getGdPosNum() {
+        return gdPosNum;
+    }
+
+    public void setGdPosNum(Integer gdPosNum) {
+        this.gdPosNum = gdPosNum;
+    }
+
+    public Integer getGdBranchAmount() {
+        return gdBranchAmount;
+    }
+
+    public void setGdBranchAmount(Integer gdBranchAmount) {
+        this.gdBranchAmount = gdBranchAmount;
+    }
+
+    public Integer getGdBranchNum() {
+        return gdBranchNum;
+    }
+
+    public void setGdBranchNum(Integer gdBranchNum) {
+        this.gdBranchNum = gdBranchNum;
+    }
+
+    public Integer getGdCompareAmount() {
+        return gdCompareAmount;
+    }
+
+    public void setGdCompareAmount(Integer gdCompareAmount) {
+        this.gdCompareAmount = gdCompareAmount;
+    }
+
+    public Integer getGdCompareNum() {
+        return gdCompareNum;
+    }
+
+    public void setGdCompareNum(Integer gdCompareNum) {
+        this.gdCompareNum = gdCompareNum;
+    }
+
+    public Integer getGdBranchCompareAmount() {
+        return gdBranchCompareAmount;
+    }
+
+    public void setGdBranchCompareAmount(Integer gdBranchCompareAmount) {
+        this.gdBranchCompareAmount = gdBranchCompareAmount;
+    }
+
+    public Integer getGdBranchCompareNum() {
+        return gdBranchCompareNum;
+    }
+
+    public void setGdBranchCompareNum(Integer gdBranchCompareNum) {
+        this.gdBranchCompareNum = gdBranchCompareNum;
     }
 
     public Integer getItem1() {

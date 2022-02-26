@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class CommodityScoreParaController {
     /**
      * 保存s1期间、表示项目、预备项目、weight所有参数,删除预备项目,基本pos数据
      *
-     * @param commodityScorePara
+     * @param
      * @return
      */
     //TODO:表示项目设定：需要添加 顧客セグメント
@@ -102,7 +103,7 @@ public class CommodityScoreParaController {
      * 计算rank
      */
     @PostMapping("rankCalculate")
-    public Map<String,Object> rankCalculate(@RequestBody RankCalculateVo rankCalculateVo){
+    public Map<String,Object> rankCalculate(@RequestBody RankCalculateVo rankCalculateVo) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
         return commodityScoreParaService.rankCalculate(rankCalculateVo);
     }

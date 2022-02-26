@@ -27,6 +27,7 @@
     delete from planocycle.product_power_weight
     where company_cd = #{conpanyCd,jdbcType=VARCHAR}
     and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    and deleteflg=0
   </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerWeight">
     insert into planocycle.product_power_weight (company_cd, product_power_cd, market_pos_flag,
