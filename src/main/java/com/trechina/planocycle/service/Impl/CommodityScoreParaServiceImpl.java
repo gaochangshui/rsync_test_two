@@ -123,10 +123,10 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             productPowerDataMapper.endGroupForWK(conpanyCd, productPowerCd, authorCd);
 
             //修改保存  物理删除插入
-            productPowerDataMapper.phyDeleteYobiiitern(conpanyCd,productPowerCd,authorCd);
+         /*   productPowerDataMapper.phyDeleteYobiiitern(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.phyDeleteYobiiiternData(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.endYobiiiternForWk(conpanyCd,productPowerCd,authorCd);
-            productPowerDataMapper.endYobiiiternDataForWk(conpanyCd,productPowerCd,authorCd);
+            productPowerDataMapper.endYobiiiternDataForWk(conpanyCd,productPowerCd,authorCd);*/
             //修改保存  物理删除插入
             productPowerDataMapper.deleteData(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.setData(productPowerCd,conpanyCd,authorCd);

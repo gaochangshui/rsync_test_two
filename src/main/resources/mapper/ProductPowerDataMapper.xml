@@ -126,7 +126,7 @@
         </foreach>
     </insert>
     <insert id="insertYobilitem">
-        insert into planocycle.work_product_power_yobiitem(company_cd,author_cd,item_cd,item_name)
+        insert into planocycle.work_product_power_yobiitem(company_cd,author_cd,data_cd,item_name)
         values (#{companyCd},#{authorCd},#{itemCd},#{itemName})
     </insert>
     <insert id="insertWkSyokikaForFinally">
