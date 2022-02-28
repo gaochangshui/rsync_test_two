@@ -254,9 +254,34 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
+    private List<WorkProductPowerReserveData> dataFormat(List<String[]> datas, String companyCd, String dataCd) {
+        String authorCd = session.getAttribute("aud").toString();
+        List<WorkProductPowerReserveData> result = new ArrayList<>();
+        WorkProductPowerReserveData reserveData = null;
+        // 第一行是标题
+        for (int i = 1; i < datas.size(); i++) {
+            String[] data = datas.get(i);
+            reserveData = new WorkProductPowerReserveData();
+            reserveData.setCompanyCd(companyCd);
+            reserveData.setDataCd(Integer.valueOf(dataCd));
+            reserveData.setAuthorCd(authorCd);
+            reserveData.setJan(data[0]);
+            reserveData.setDataValue(new BigDecimal(data[1]));
+            result.add(reserveData);
+        }
+        return result;
+    }
+
     @Override
     public Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd) {
-        return null;
+        List<WorkProductPowerReserveData> dataList = dataFormat(data, companyCd, dataCd);
+        if (dataList.isEmpty()) {
+            logger.info("csv文件中没有数据");
+            return ResultMaps.result(ResultEnum.SUCCESS);
+        }
+        productPowerDataMapper.insertYobilitemData(dataList);
+        return ResultMaps.result(ResultEnum.SUCCESS);
+
     }
 
     /**
