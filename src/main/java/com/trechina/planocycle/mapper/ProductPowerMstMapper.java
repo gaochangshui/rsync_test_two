@@ -15,7 +15,7 @@ public interface ProductPowerMstMapper {
 
     List<CommodityListInfoVO> selectCommodityList(@Param("conpanyCd") String conpanyCd);
 
-    int delete(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd,@Param("authorName")String authorName);
+    int delete(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd,@Param("authorName")String authorName);
 
 
     Integer selectExistsName(@Param("productPowerName") String productPowerName,@Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd);

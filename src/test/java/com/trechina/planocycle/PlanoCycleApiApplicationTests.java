@@ -2,6 +2,7 @@ package com.trechina.planocycle;
 
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
+import com.trechina.planocycle.mapper.ProductPowerMstMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ import java.util.List;
 class PlanoCycleApiApplicationTests {
 @Autowired
 private ProductPowerDataMapper productPowerDataMapper;
-
+@Autowired
+    ProductPowerMstMapper productPowerMstMapper;
 
 
     @Test
@@ -36,10 +38,29 @@ private ProductPowerDataMapper productPowerDataMapper;
 
        // List<ProductPowerMstData> productPowerMstDataList = productPowerDataMapper.selectWKKokyaku("10215814","0001");
         //productPowerMstDataList.stream().forEach(System.out::println);
+      //  productPowerMstMapper.delete("0001",735 ,"10215814","10215814");
+        //productPowerDataMapper.endSyokikaForWK("0001",735 ,"10215814");
+      //  productPowerDataMapper.endGroupForWK("0001",735 ,"10215814");
+     /*   productPowerDataMapper.phyDeleteYobiiitern("0001",735 ,"10215814");
+        productPowerDataMapper.phyDeleteYobiiiternData("0001",735 ,"10215814");
+        productPowerDataMapper.endYobiiiternForWk("0001",735 ,"10215814");
+        productPowerDataMapper.endYobiiiternDataForWk("0001",735 ,"10215814");
 
-
-
-       // productPowerDataMapper.endSyokikaForWK("0001",1,"10215814");
+//*///productPowerDataMapper.deleteWKYobiiiternData("10215814","0001");
+//        productPowerDataMapper.setWkYobilitemDataForFinally("0001",735,"10215814");
+    /*    productPowerDataMapper.phyDeleteYobiiitern("0001",735 ,"10215814");
+        productPowerDataMapper.phyDeleteYobiiiternData("0001",735 ,"10215814");
+        productPowerDataMapper.endYobiiiternForWk("0001",735 ,"10215814");
+        productPowerDataMapper.endYobiiiternDataForWk("0001",735 ,"10215814");*/
+      /*  productPowerDataMapper.phyDeleteGroup("0001",735 ,"10215814");
+        productPowerDataMapper.endGroupForWK("0001",735 ,"10215814");*/
+        productPowerDataMapper.phyDeleteYobiiitern("0001",801 ,"10212159");
+        productPowerDataMapper.phyDeleteYobiiiternData("0001",801 ,"10212159");
+        productPowerDataMapper.endYobiiiternForWk("0001",801 ,"10212159");
+        productPowerDataMapper.endYobiiiternDataForWk("0001",801 ,"10212159");
+       /* productPowerDataMapper.deleteData("0001",735 ,"10215814");
+        productPowerDataMapper.setData(735 ,"10215814","0001");*/
+     //   productPowerDataMapper.endSyokikaForWK("0001",2,"10215814");
        // productPowerDataMapper.endGroupForWK("0001",1,"10215814");       // StringBuilder strs = new StringBuilder();
        // productPowerDataMapper.endYobiiiternForWk("0001",1,"10215814");
         //productPowerDataMapper.endYobiiiternDataForWk("0001",1,"10215814");

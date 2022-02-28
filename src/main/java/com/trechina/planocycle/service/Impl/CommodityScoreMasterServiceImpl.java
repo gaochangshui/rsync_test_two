@@ -2,12 +2,10 @@ package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
-import com.trechina.planocycle.entity.po.ProductPowerMst;
-import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.po.ProductPowerParam;
-import com.trechina.planocycle.entity.po.ProductPowerParamMst;
+import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.CommodityListInfoVO;
 import com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO;
 import com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO;
@@ -161,8 +159,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         // 判断名字是否重复
 
         Integer resultName = productPowerMstMapper.selectExistsName(productPowerName.getProductPowerName(),
-                productPowerName.getConpanyCd(),productPowerName.getProductPowerCd());
-        Integer resultNum = productPowerMstMapper.selectUpdExistsName(productPowerName.getConpanyCd(), productPowerName.getProductPowerCd());
+                productPowerName.getConpanyCd(),productPowerName.getProductPowerNo());
+        Integer resultNum = productPowerMstMapper.selectUpdExistsName(productPowerName.getConpanyCd(), productPowerName.getProductPowerNo());
         if (resultName == 0 && resultNum < 1){
             insertMasterInfo(productPowerName);
             return ResultMaps.result(ResultEnum.SUCCESS);
@@ -183,7 +181,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     private void insertMasterInfo(ProductCdAndNameDto productPowerName) {
         ProductPowerMst productPowerMst = new ProductPowerMst();
         productPowerMst.setConpanyCd(productPowerName.getConpanyCd());
-        productPowerMst.setProductPowerCd(productPowerName.getProductPowerCd());
+        productPowerMst.setProductPowerCd(productPowerName.getProductPowerNo());
         productPowerMst.setProductPowerName(productPowerName.getProductPowerName());
 
         productPowerMst.setAuthorCd((session.getAttribute("aud").toString()));
@@ -196,7 +194,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     private void updateMasterInfo(ProductCdAndNameDto productPowerName) {
         ProductPowerMst productPowerMst = new ProductPowerMst();
         productPowerMst.setConpanyCd(productPowerName.getConpanyCd());
-        productPowerMst.setProductPowerCd(productPowerName.getProductPowerCd());
+        productPowerMst.setProductPowerCd(productPowerName.getProductPowerNo());
         productPowerMst.setProductPowerName(productPowerName.getProductPowerName());
 
         productPowerMst.setMaintainerCd((session.getAttribute("aud").toString()));
@@ -338,8 +336,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         String aud = session.getAttribute("aud").toString();
         productPowerDataMapper.deleteWKSyokika(companyCd,aud);
         productPowerDataMapper.deleteWKKokyaku(companyCd,aud);
-        productPowerDataMapper.deleteWKYobiiitern();
-        productPowerDataMapper.deleteWKYobiiiternData();
+        productPowerDataMapper.deleteWKYobiiitern(companyCd,aud);
+        productPowerDataMapper.deleteWKYobiiiternData(companyCd,aud);
         productPowerDataMapper.deleteWKData(companyCd,aud);
         productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud);
          productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud);
@@ -347,10 +345,27 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud);
         productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud);
         List<ProductPowerMstData> allData = productPowerDataMapper.getAllData(companyCd, productPowerNo);
-        ProductPowerParam param = productPowerDataMapper.getParam(companyCd, productPowerNo);
+        ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
+        ProductPowerParam powerParam = new ProductPowerParam();
+        JSONObject jsonObject = JSON.parseObject(param.getCustomerCondition());
+
+        powerParam.setCustomerCondition(jsonObject);
+        powerParam.setPosValue(param.getPosValue());
+        powerParam.setStoreCd(param.getStoreCd());
+        powerParam.setCustomerValue(param.getCustomerValue());
+        powerParam.setPrepareValue(param.getPrepareValue());
+        powerParam.setRangWeight(param.getRangWeight());
+        powerParam.setPrdCd(param.getPrdCd());
+        powerParam.setRecentlyFlag(param.getRecentlyFlag());
+        powerParam.setRecentlyEndTime(param.getRecentlyEndTime());
+        powerParam.setRecentlyStTime(param.getRecentlyStTime());
+        powerParam.setSeasonFlag(param.getSeasonFlag());
+        powerParam.setSeasonEndTime(param.getSeasonEndTime());
+        powerParam.setSeasonStTime(param.getSeasonStTime());
+        powerParam.setYearFlag(param.getYearFlag());
         List list = new ArrayList();
         list.add(allData);
-        list.add(param);
+        list.add(powerParam);
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 

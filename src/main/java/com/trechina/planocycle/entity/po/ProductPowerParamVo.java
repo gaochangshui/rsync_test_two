@@ -1,12 +1,10 @@
 package com.trechina.planocycle.entity.po;
 
 
-import com.alibaba.fastjson.JSONObject;
-
-public class ProductPowerParam {
+public class ProductPowerParamVo {
     private String company;
     private String customerValue;
-    private JSONObject customerCondition;
+    private String customerCondition;
     private String posValue;
     private String prdCd;
     private String prepareValue;
@@ -143,6 +141,14 @@ public class ProductPowerParam {
         this.yearFlag = yearFlag;
     }
 
+    public String getCustomerCondition() {
+        return customerCondition;
+    }
+
+    public void setCustomerCondition(String customerCondition) {
+        this.customerCondition = customerCondition;
+    }
+
     @Override
     public String toString() {
         return "ProductPowerParam{" +
@@ -165,11 +171,5 @@ public class ProductPowerParam {
                 '}';
     }
 
-    public JSONObject getCustomerCondition() {
-        return customerCondition;
-    }
 
-    public void setCustomerCondition(JSONObject customerCondition) {
-        this.customerCondition = customerCondition;
-    }
 }

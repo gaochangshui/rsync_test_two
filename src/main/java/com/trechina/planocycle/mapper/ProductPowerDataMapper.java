@@ -29,8 +29,8 @@ public interface ProductPowerDataMapper {
 
 
     //临时表yobilitem和data
-    int deleteWKYobiiitern();
-    int deleteWKYobiiiternData();
+    int deleteWKYobiiitern( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd);
+    int deleteWKYobiiiternData( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd);
     List<WKYobiiiternData> selectWKYobiiiternData( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd);
     //smart数据存到临时表
     int insertYobilitem(@Param("companyCd") String companyCd,@Param("authorCd")String authorCd,@Param("itemCd")Integer itemCd,@Param("itemName")String itemName);
@@ -88,6 +88,6 @@ public interface ProductPowerDataMapper {
 
   List<ProductPowerMstData> getAllData(@Param("companyCd")String companyCd,@Param("productPowerCd")Integer productPowerCd);
 
-  ProductPowerParam getParam(@Param("companyCd") String companyCd,@Param("productPowerCd")Integer productPowerCd);
+  ProductPowerParamVo getParam(@Param("companyCd") String companyCd,@Param("productPowerCd")Integer productPowerCd);
 
 }

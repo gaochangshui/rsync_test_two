@@ -131,8 +131,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             productPowerDataMapper.deleteData(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.setData(productPowerCd,conpanyCd,authorCd);
             //期间参数删除 插入
-            productPowerParamMstMapper.deleteParam(conpanyCd,productPowerCd);
-            productPowerParamMstMapper.insertParam(productPowerParam,authorCd);
+        String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
+        productPowerParamMstMapper.deleteParam(conpanyCd,productPowerCd);
+            productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd);
 
 
 

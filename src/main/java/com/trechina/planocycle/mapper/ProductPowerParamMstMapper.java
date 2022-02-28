@@ -23,7 +23,7 @@ public interface ProductPowerParamMstMapper {
 
     int deleteParam(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
-    int insertParam(@Param("item")ProductPowerParam productPowerParam,@Param("authorCd")String authorCd);
+    int insertParam(@Param("item")ProductPowerParam productPowerParam,@Param("customerCondition")String customerCondition,@Param("authorCd")String authorCd);
 
     ProductPowerParam getParam(@Param("companyCd")String companyCd,@Param("productPowerCd")Integer productPowerCd);
 
