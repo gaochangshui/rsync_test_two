@@ -20,11 +20,11 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     <include refid="Base_Column_List" />
     from planocycle.shelf_pts_data pts
     left join 	planocycle.shelf_pattern_mst pattern
-    on pts.shelf_pattern_cd = pattern.shelf_pattern_cd
+    on pts.shelf_pattern_cd = pattern.shelf_pattern_cd and pattern.deleteflg=0
     and pts.company_cd = pattern.company_cd
     left join planocycle.shelf_pattern_area area
     on pts.shelf_pattern_cd = area.shelf_pattern_cd
-    and pattern.company_cd = area.company_cd
+    and pattern.company_cd = area.company_cd and area.deleteflg=0
     where pts.company_cd = #{companyCd,jdbcType=VARCHAR} and pts.deleteflg=0
     <if test="rangFlag==2">
       and (pts.valid_flg =0 or pts.valid_flg is null)

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -56,6 +57,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             String[] arr ;
             int a = 1;
             productPowerDataMapper.deleteWKSyokika(companyCd,authorCd);
+            productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
+            productPowerDataMapper.deleteWKYobiiitern(companyCd,authorCd);
+            productPowerDataMapper.deleteWKYobiiiternData(companyCd,authorCd);
             for (int i = 0; i < strResult.length; i++) {
                 strSplit = strResult[i].split(" ");
                 arr = new String[strSplit.length+1];
@@ -69,8 +73,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         } else {
             return Data;
         }
-
-
         try {
             exec(strList);
         } catch (InterruptedException e) {
@@ -309,14 +311,19 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
         @Override
         public void run() {
-
+            StopWatch stopWatch =null;
             try {
+                stopWatch = new StopWatch();
+                stopWatch.start("开始");
+
                 productPowerDataMapper.insert(list);
                 begin.await();
+                stopWatch.stop();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }finally {
                 end.countDown();
+                logger.info("执行时间为：{}",stopWatch.prettyPrint());
             }
 
         }

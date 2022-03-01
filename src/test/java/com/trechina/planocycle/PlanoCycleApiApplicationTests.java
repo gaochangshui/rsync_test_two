@@ -65,10 +65,12 @@ private ProductPowerDataMapper productPowerDataMapper;
         //List<ProductPowerMstData> productPowerMstDataList = productPowerDataMapper.selectWKKokyaku("10212159", "0001");
         //List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData( "10212159", "0001");
        // wkYobiiiternDataList.forEach(System.out::println);
-        Integer integer = Integer.valueOf("3100" + 1);
+/*        Integer integer = Integer.valueOf("3100" + 1);
         Integer integer1 = Integer.valueOf("3100" + 1);
         boolean b = integer.equals(integer1);
-        System.out.println(b);
+        System.out.println(b);*/
+
+
        /* productPowerDataMapper.deleteData("0001",735 ,"10215814");
         productPowerDataMapper.setData(735 ,"10215814","0001");*/
      //   productPowerDataMapper.endSyokikaForWK("0001",2,"10215814");
