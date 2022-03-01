@@ -129,6 +129,8 @@ public class cgiUtils {
             }
             else if (builder.toString().equals("4")) {
                 return ResultMaps.result(ResultEnum.CGIERROR,null);
+            }else if (builder.toString().equals("5")){
+                return ResultMaps.result(ResultEnum.DATAISTOOLARGE,5);
             }
             else{
                 return ResultMaps.result(ResultEnum.SUCCESS,builder.toString());

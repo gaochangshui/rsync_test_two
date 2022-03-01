@@ -109,6 +109,11 @@
         <result property="item9Rank" jdbcType="DECIMAL" column="item9Rank"/>
         <result property="item10Rank" jdbcType="DECIMAL" column="item10Rank"/>
     </resultMap>
+
+    <resultMap id="reserveMap" type="com.trechina.planocycle.entity.vo.ReserveMstVo">
+        <result column="data_cd" jdbcType="VARCHAR" property="valueCd"/>
+        <result column="data_name" jdbcType="VARCHAR" property="dataName"/>
+    </resultMap>
     <insert id="insert">
         insert into planocycle.work_product_power_syokika (company_cd,author_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pos_amount,
         pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num
@@ -152,8 +157,8 @@
         </foreach>
     </insert>
     <insert id="insertYobilitem">
-        insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort,value_cd)
-        values (#{companyCd},#{authorCd},#{itemCd},#{itemName},#{dataSort},#{valueCd})
+        insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort)
+        values (#{companyCd},#{authorCd},#{dataCd},#{itemName},#{dataSort})
     </insert>
     <insert id="insertWkSyokikaForFinally">
         insert into planocycle.work_product_power_syokika(company_cd,author_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pos_amount,
@@ -205,8 +210,8 @@
         where company_cd = #{companyCd} and author_cd = #{authorCd}
     </insert>
     <insert id="endYobiiiternForWk">
-        insert into planocycle.product_power_reserve_mst(company_cd,product_power_cd,data_cd,data_name,author_cd,create_time,data_sort,value_cd)
-        select company_cd,#{productPowerCd},data_cd,data_name,#{authorCd},now(),data_sort,value_cd
+        insert into planocycle.product_power_reserve_mst(company_cd,product_power_cd,data_cd,data_name,author_cd,create_time,data_sort)
+        select company_cd,#{productPowerCd},data_cd,data_name,#{authorCd},now(),data_sort
         from planocycle.work_product_power_reserve_mst
         where company_cd = #{companyCd} and author_cd = #{authorCd}
     </insert>
@@ -298,7 +303,10 @@
         where company_cd =#{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
     </delete>
     <delete id="deleteWKYobiiiternCd">
-        delete from planocycle.work_product_power_reserve_mst where company_cd=#{companyCd} and author_cd=#{authorCd} and value_cd = #{valueCd}
+        delete from planocycle.work_product_power_reserve_mst where company_cd=#{companyCd} and author_cd=#{authorCd} and data_cd = #{valueCd}
+    </delete>
+    <delete id="deleteWKYobiiiternDataCd">
+        delete from planocycle.work_product_power_reserve_data where company_cd=#{companyCd} and author_cd=#{authorCd} and data_cd = #{valueCd}
     </delete>
     <update id="deleteRankData">
         update planocycle.product_power_mst_data set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
@@ -372,8 +380,8 @@
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
     </insert>
     <insert id="setWkYobilitemForFinally">
-        insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort,value_cd)
-        select company_cd,#{authorCd},data_cd,data_name,data_sort,value_cd
+        insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort)
+        select company_cd,#{authorCd},data_cd,data_name,data_sort
         from planocycle.product_power_reserve_mst
          where company_cd = #{companyCd,jdbcType=VARCHAR}
                  and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
@@ -502,8 +510,8 @@
          from  planocycle.work_product_power_reserve_mst
         where company_cd=#{companyCd} and author_cd = #{aud}
     </select>
-    <select id="getReserve" resultType="com.trechina.planocycle.entity.vo.ReserveMstVo">
-        select value_cd,data_name from planocycle.product_power_reserve_mst
+    <select id="getReserve" resultMap="reserveMap">
+        select data_cd,data_name from planocycle.product_power_reserve_mst
         where company_cd=#{companyCd} and product_power_cd = #{productPowerCd}
         order by data_sort asc
     </select>

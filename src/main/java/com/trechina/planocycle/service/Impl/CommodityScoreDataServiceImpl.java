@@ -164,7 +164,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             for (WKYobiiiternData wkYobiiiternData : wkYobiiiternDataList) {
                 Class w =item.getClass();
                 for(int i=1;i<=10;i++){
-                    if (wkYobiiiternData.getJan().equals(item.getJan())  && wkYobiiiternData.getDataSort()==i){
+                    if (wkYobiiiternData.getJan().equals(item.getJan()) && Integer.valueOf("3100" + i).equals(wkYobiiiternData.getDataCd())){
                         try {
                             Field field = w.getDeclaredField("item"+i);
                             field.setAccessible(true);
@@ -310,7 +310,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerDataMapper.deleteWKSyokika(companyCd,authorCd);
         productPowerDataMapper.deleteWKKokyaku(companyCd,authorCd);
        // productPowerDataMapper.deleteWKYobiiitern(companyCd,authorCd);
-        productPowerDataMapper.deleteWKYobiiiternData(companyCd,authorCd);
+       // productPowerDataMapper.deleteWKYobiiiternData(companyCd,authorCd,);
         List<ProductPowerMstData> productPowerMstData = productPowerDataMapper.getProductPowerMstData(companyCd, productPowerCd);
 
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerMstData);

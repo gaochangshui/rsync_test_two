@@ -32,11 +32,12 @@ public interface ProductPowerDataMapper {
     //临时表yobilitem和data
     int deleteWKYobiiiternCd( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd,@Param("valueCd") Integer valueCd);
     int deleteWKYobiiitern( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd);
+    int deleteWKYobiiiternDataCd( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd,@Param("valueCd")Integer valueCd);
     int deleteWKYobiiiternData( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd);
     List<WKYobiiiternData> selectWKYobiiiternData( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd);
     //smart数据存到临时表
     Integer getWKYobiiiternSort(@Param("companyCd") String companyCd,@Param("aud") String aud);
-    int insertYobilitem(@Param("companyCd") String companyCd,@Param("authorCd")String authorCd,@Param("itemCd")Integer itemCd,@Param("itemName")String itemName,@Param("dataSort")Integer dataSort,@Param("valueCd")Integer valueCd);
+    int insertYobilitem(@Param("companyCd") String companyCd,@Param("authorCd")String authorCd,@Param("dataCd")Integer valueCd,@Param("itemName")String itemName,@Param("dataSort")Integer dataSort);
     int insertYobilitemData(@Param("dataList") List<WorkProductPowerReserveData> dataList);
     //最终表存到临时表
     int setWkSyokikaForFinally(@Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);

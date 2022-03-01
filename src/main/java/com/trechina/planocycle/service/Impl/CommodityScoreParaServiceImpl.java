@@ -256,7 +256,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    private List<WorkProductPowerReserveData> dataFormat(List<String[]> datas, String companyCd, String dataCd) {
+    private List<WorkProductPowerReserveData> dataFormat(List<String[]> datas, String companyCd, Integer dataCd) {
         String authorCd = session.getAttribute("aud").toString();
         List<WorkProductPowerReserveData> result = new ArrayList<>();
         WorkProductPowerReserveData reserveData = null;
@@ -265,7 +265,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             String[] data = datas.get(i);
             reserveData = new WorkProductPowerReserveData();
             reserveData.setCompanyCd(companyCd);
-            reserveData.setDataCd(Integer.valueOf(dataCd));
+            reserveData.setDataCd(dataCd);
             reserveData.setAuthorCd(authorCd);
             reserveData.setJan(data[0]);
             reserveData.setDataValue(new BigDecimal(data[1]));
@@ -286,16 +286,16 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         }
 
         productPowerDataMapper.deleteWKYobiiiternCd(aud,companyCd,valueCd);
-        productPowerDataMapper.insertYobilitem(companyCd,aud,Integer.valueOf(dataCd),dataName,sortMax,valueCd);
+        productPowerDataMapper.insertYobilitem(companyCd,aud,valueCd,dataName,sortMax);
         if (data==null){
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
-        List<WorkProductPowerReserveData> dataList = dataFormat(data, companyCd, dataCd);
+        List<WorkProductPowerReserveData> dataList = dataFormat(data, companyCd, valueCd);
         if (dataList.isEmpty()) {
             logger.info("csv文件中没有数据");
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
-        productPowerDataMapper.deleteWKYobiiiternData(aud,companyCd);
+        productPowerDataMapper.deleteWKYobiiiternDataCd(aud,companyCd,valueCd);
         productPowerDataMapper.insertYobilitemData(dataList);
         return ResultMaps.result(ResultEnum.SUCCESS);
 
@@ -339,7 +339,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         String[] columns = {"PdPosAmount", "PdPosNum", "PdBranchAmount", "PdBranchNum", "PdCompareAmount", "PdCompareNum","PdBranchCompareAmount"
         ,"PdBranchCompareNum","GdPosAmount","GdPosNum","GdBranchAmount","GdBranchNum","GdCompareAmount","GdCompareNum","GdBranchCompareAmount","GdBranchCompareNum",
         "Item1","Item2","Item3","Item4","Item5","Item6","Item7","Item8","Item9","Item10"};
-        //String column = "PdPosAmount";
         Class clazz = ProductPowerMstData.class;
         Class rClass = RankCalculateVo.class;
         for (String column : columns) {
@@ -444,6 +443,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         String companyCd = String.valueOf(((Map) jsonObject.get("param")).get("companyCd"));
         Integer valueCd = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("valueCd")));
         productPowerDataMapper.deleteWKYobiiiternCd(aud,companyCd,valueCd);
+        productPowerDataMapper.deleteWKYobiiiternDataCd(aud,companyCd,valueCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
