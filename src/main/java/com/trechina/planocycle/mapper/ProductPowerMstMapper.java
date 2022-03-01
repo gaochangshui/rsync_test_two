@@ -20,7 +20,7 @@ public interface ProductPowerMstMapper {
 
     Integer selectExistsName(@Param("productPowerName") String productPowerName,@Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd);
 
-    List<TableNameDto> getTableNameByCompanyCd(@Param("companyCd")String companyCd);
+    List<TableNameDto> getTableNameByCompanyCd(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 
     Integer selectUpdExistsName(@Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd);
 

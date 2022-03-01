@@ -70,7 +70,7 @@
     select distinct
       product_power_cd ,product_power_name ,registered ,author_name
     from planocycle.product_power_mst
-    where company_cd = #{companyCd,jdbcType=VARCHAR} and deleteflg=0
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and deleteflg=0 and author_cd = #{authorCd}
     order by product_power_cd desc
   </select>
   <select id="selectUpdExistsName" resultType="java.lang.Integer">
