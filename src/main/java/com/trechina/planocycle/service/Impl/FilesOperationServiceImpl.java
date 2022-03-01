@@ -105,6 +105,9 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                             InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file1), "Shift_Jis");
                             try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader);) {
                                 List arrList = new ArrayList<>();
+                                List<String[]> arrList1 = new ArrayList<>();
+                                List<String[]> arrList2 = new ArrayList<>();
+                                List<String[]> arrList3 = new ArrayList<>();
                                 String line = "";
                                 int lineNum = 1;
                                 int titleNum = 0;
@@ -119,8 +122,21 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                         }
                                         lineNum += 1;
                                     }
+                                    // 数据分段
                                     if (line.indexOf("台番号") > -1) {
                                         titleNum += 1;
+                                    }
+                                    if (titleNum == 1) {
+                                        // 数据带表头
+                                        arrList1.add(line.split(","));
+                                    }
+                                    if (titleNum == 2) {
+                                        // 数据带表头
+                                        arrList2.add(line.split(","));
+                                    }
+                                    if (titleNum == 3) {
+                                        // 数据带表头
+                                        arrList3.add(line.split(","));
                                     }
                                 }
                                 if (titleNum != 3) {
