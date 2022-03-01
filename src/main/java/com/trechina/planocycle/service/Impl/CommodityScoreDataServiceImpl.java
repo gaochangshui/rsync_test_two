@@ -47,13 +47,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         List strList = new ArrayList();
         // 带着taskId，再次请求cgi获取运行状态/数据
         Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
-       /* Map<String,Object> Data =new HashMap<>();
-
-       StringBuilder strs =new StringBuilder();
-        for (int i=0;i<=10;i++){
-            strs.append("0001 "+(i)+" 啤酒 酒类 水类 扎啤 黑啤 10.21 10.45 1.14 124.0 14 145 14 70@");
-        }
-        Data.put("data",strs);*/
         logger.info("商品力点数表web版cgi返回数据："+Data);
         String authorCd = session.getAttribute("aud").toString();
         // 返回的数据是字符串，处理成二维数组
@@ -71,16 +64,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 }
                 arr[a]=session.getAttribute("aud").toString();
                 System.arraycopy(strSplit,0,arr,0,a);
-                //数据量过大，一次存500条
-                 /*if (i%1000==0 &&i>=1000){
-                    productPowerDataMapper.insert(strList);
-                    strList.clear();
-                }*/
                 strList.add(arr);
             }
-           /* if (strList.size()>0) {
-                productPowerDataMapper.insert(strList);
-            }*/
         } else {
             return Data;
         }
@@ -112,15 +97,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             List strList = new ArrayList();
             // 带着taskId，再次请求cgi获取运行状态/数据
             Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
-           /* Map<String, Object> Data = new HashMap<>();
-
-            StringBuilder strs = new StringBuilder();
-            for (int i = 0; i <= 10; i++) {
-                strs.append("0001 " + (i) + " 啤酒 10.21 10.45 1.14 124.0 14 145 14 70@");
-            }
-            Data.put("data", strs);
-*/
-
             logger.info("商品力点数表web版cgi返回数据：" + Data);
 
             // 返回的数据是字符串，处理成二维数组
@@ -148,10 +124,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 if (strList.size() > 0) {
                     productPowerDataMapper.insertGroup(strList);
                 }
-            } else if ("2".equals(Data.get("data"))){
-                return ResultMaps.result(ResultEnum.DATAISTOOLARGE);
-            }else {
+            } else {
                 productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
+                return Data;
             }
 
 
