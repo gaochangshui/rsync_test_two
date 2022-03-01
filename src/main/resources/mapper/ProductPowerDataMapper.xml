@@ -308,6 +308,7 @@
     <delete id="deleteWKYobiiiternDataCd">
         delete from planocycle.work_product_power_reserve_data where company_cd=#{companyCd} and author_cd=#{authorCd} and data_cd = #{valueCd}
     </delete>
+
     <update id="deleteRankData">
         update planocycle.product_power_mst_data set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
         where company_cd = #{companyCd,jdbcType=VARCHAR}
@@ -514,6 +515,20 @@
         select data_cd,data_name from planocycle.product_power_reserve_mst
         where company_cd=#{companyCd} and product_power_cd = #{productPowerCd}
         order by data_sort asc
+    </select>
+    <select id="getParamCount" resultType="java.lang.Integer">
+        select count(1)
+        from planocycle.product_power_param_mst
+        where company_cd=#{company} and product_power_cd =#{productPowerNo}  and deleteflg=0
+          and store_cd = #{storeCd}
+          and prd_cd = #{prdCd}
+          and recently_end_time = #{recentlyEndTime}
+          and recently_flag = #{recentlyFlag}
+          and recently_st_time = #{recentlyStTime}
+          and season_flag = #{seasonFlag}
+          and season_end_time = #{seasonEndTime}
+          and season_st_time = #{seasonStTime}
+
     </select>
 
 

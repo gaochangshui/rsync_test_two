@@ -142,9 +142,10 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         //cgi保存
         String uuidSave = UUID.randomUUID().toString();
         ProductPowerDataForCgiDto productPowerDataForCgiSave = new ProductPowerDataForCgiDto();
-        productPowerDataForCgiSave.setMode("jan_rank");
+        productPowerDataForCgiSave.setMode("data_save");
         productPowerDataForCgiSave.setCompany(productPowerParam.getCompany());
-
+        productPowerDataForCgiSave.setGuid(uuidSave);
+        productPowerDataForCgiSave.setProductPowerNo(productPowerParam.getProductPowerNo());
 
         logger.info("保存jan rank"+productPowerDataForCgiSave);
         //递归调用cgi，首先获取taskid
@@ -320,7 +321,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
                 Class w =item.getClass();
                 for(int i=1;i<=10;i++){
-                    if (item.getJan().equals(wkYobiiiternData.getJan()) && wkYobiiiternData.getDataSort()==i){
+                    if (wkYobiiiternData.getJan().equals(item.getJan()) && Integer.valueOf("3100" + i).equals(wkYobiiiternData.getDataCd())){
                         try {
                             Field field = w.getDeclaredField("item"+i);
                             field.setAccessible(true);

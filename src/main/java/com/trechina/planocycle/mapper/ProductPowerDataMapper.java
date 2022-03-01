@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import org.apache.ibatis.annotations.Mapper;
@@ -52,6 +53,7 @@ public interface ProductPowerDataMapper {
     int deleteYobiiitern(@Param("companyCd")String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd")String authorCd);
     int deleteYobiiiternData(@Param("companyCd")String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd")String authorCd);
     int deleteRankData(@Param("companyCd")String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd")String authorCd);
+
     //最终表物理删除
     int phyDeleteSyokika(@Param("companyCd")String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd")String authorCd);
     int phyDeleteGroup(@Param("companyCd")String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd")String authorCd);
@@ -93,6 +95,7 @@ public interface ProductPowerDataMapper {
   List<ProductPowerMstData> getAllData(@Param("companyCd")String companyCd,@Param("productPowerCd")Integer productPowerCd);
 
   ProductPowerParamVo getParam(@Param("companyCd") String companyCd,@Param("productPowerCd")Integer productPowerCd);
+  Integer getParamCount( ProductPowerGroupDataForCgiDto productPowerParamVo);
 
  List<ReserveMstVo> getReserve(@Param("productPowerCd")Integer productPowerCd, @Param("companyCd")String companyCd);
 }

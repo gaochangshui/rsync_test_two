@@ -284,16 +284,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         String uuid = UUID.randomUUID().toString();
         //商品力点数mst表删除
         productPowerMstMapper.delete(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd,authorName);
-        /*//表示项目删除
-        productPowerShowMstMapper.deleteByPrimaryKey(productPowerParamMst.getProductPowerCd(), productPowerParamMst.getConpanyCd(),authorCd);
-        //参数删除
-
-        productPowerParamMstMapper.deleteCommofityParam(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
-        //预备项目mst删除
-        productPowerReserveMstMapper.deleteByPrimaryKey(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
-        //权重删除
-        productPowerWeightMapper.deleteByPrimaryKey(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
-*/      productPowerParamMstMapper.deleteCommofityParam(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
+      //参数删除
+    productPowerParamMstMapper.deleteCommofityParam(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
         //基本数据删除
         productPowerDataMapper.deleteSyokika(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
         //顾客group删除
@@ -311,7 +303,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataForCgiDto.setProductPowerNo(productPowerParamMst.getProductPowerCd());
         productPowerDataForCgiDto.setGuid(uuid);
 
-        // 新规1 既存0
 
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
 

@@ -3,7 +3,6 @@ package com.trechina.planocycle.service.Impl;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.po.ProductPowerParamVo;
 import com.trechina.planocycle.entity.po.WKYobiiiternData;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
@@ -18,7 +17,10 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -266,9 +268,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Override
     public Map<String, Object> getCommodityScoreGroupTaskId(ProductPowerGroupDataForCgiDto productPowerDataForCgiDto) {
         String aud = session.getAttribute("aud").toString();
-        ProductPowerParamVo param = productPowerDataMapper.getParam(productPowerDataForCgiDto.getCompany(), productPowerDataForCgiDto.getProductPowerNo());
-        boolean b = changeFlg(productPowerDataForCgiDto,param);
-        if (b){
+        Integer paramCount = productPowerDataMapper.getParamCount(productPowerDataForCgiDto);
+
+        if (paramCount>0){
             productPowerDataForCgiDto.setChangeFlag("1");
         }else {
             productPowerDataForCgiDto.setChangeFlag("0");
@@ -315,18 +317,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerMstData);
     }
-    /**
-     * 判断寄存还是新规
-     */
-    boolean changeFlg(ProductPowerGroupDataForCgiDto productPowerDataForCgiDto,ProductPowerParamVo param){
-        boolean b =( param != null && param.getRecentlyFlag().equals(productPowerDataForCgiDto.getRecentlyFlag()) && param.getRecentlyEndTime().equals(productPowerDataForCgiDto.getRecentlyEndTime())
-                && param.getRecentlyStTime().equals(productPowerDataForCgiDto.getRecentlyStTime()) && param.getSeasonEndTime().equals(productPowerDataForCgiDto.getSeasonEndTime())
-                && param.getSeasonFlag().equals(productPowerDataForCgiDto.getSeasonFlag()) && param.getSeasonStTime().equals(productPowerDataForCgiDto.getSeasonStTime())
-                && param.getPrdCd().equals(productPowerDataForCgiDto.getPrdCd()) && param.getYearFlag().equals(productPowerDataForCgiDto.getYearFlag())
-                && param.getCustomerCondition().equals(productPowerDataForCgiDto.getCustomerCondition().toJSONString())&&param.getCompany().equals(productPowerDataForCgiDto.getCompany())
-                && param.getPrdCd().equals(productPowerDataForCgiDto.getPrdCd())&& param.getProductPowerNo().equals(productPowerDataForCgiDto.getProductPowerNo()));
-        return b;
-    }
+
 
     /**
      * 多线程插入pos基本数据
