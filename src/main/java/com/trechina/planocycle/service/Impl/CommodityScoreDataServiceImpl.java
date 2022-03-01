@@ -146,18 +146,25 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 if (strList.size() > 0) {
                     productPowerDataMapper.insertGroup(strList);
                 }
-            } else {
-                return Data;
+            } else if ("2".equals(Data.get("data"))){
+                return ResultMaps.result(ResultEnum.DATAISTOOLARGE);
+            }else {
+                productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
             }
+
+
         }
         List<ProductPowerMstData> kokyakuList = productPowerDataMapper.selectWKKokyaku(authorCd,companyCd);
         List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData( authorCd, companyCd);
+        if (wkYobiiiternDataList.isEmpty()){
+            return ResultMaps.result(ResultEnum.SUCCESS,kokyakuList);
+        }
 
         kokyakuList.forEach(item->{
             for (WKYobiiiternData wkYobiiiternData : wkYobiiiternDataList) {
                 Class w =item.getClass();
                 for(int i=1;i<=10;i++){
-                    if (item.getJan().equals(wkYobiiiternData.getJan())  && wkYobiiiternData.getDataSort()==i){
+                    if (wkYobiiiternData.getJan().equals(item.getJan())  && wkYobiiiternData.getDataSort()==i){
                         try {
                             Field field = w.getDeclaredField("item"+i);
                             field.setAccessible(true);
@@ -302,7 +309,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String authorCd =session.getAttribute("aud").toString();
         productPowerDataMapper.deleteWKSyokika(companyCd,authorCd);
         productPowerDataMapper.deleteWKKokyaku(companyCd,authorCd);
-        productPowerDataMapper.deleteWKYobiiitern(companyCd,authorCd);
+       // productPowerDataMapper.deleteWKYobiiitern(companyCd,authorCd);
         productPowerDataMapper.deleteWKYobiiiternData(companyCd,authorCd);
         List<ProductPowerMstData> productPowerMstData = productPowerDataMapper.getProductPowerMstData(companyCd, productPowerCd);
 

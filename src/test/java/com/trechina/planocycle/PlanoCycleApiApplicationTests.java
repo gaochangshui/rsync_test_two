@@ -1,6 +1,7 @@
 package com.trechina.planocycle;
 
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
+import com.trechina.planocycle.entity.po.WKYobiiiternData;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
 import com.trechina.planocycle.mapper.ProductPowerMstMapper;
 import org.junit.jupiter.api.Test;
@@ -54,10 +55,18 @@ private ProductPowerDataMapper productPowerDataMapper;
         productPowerDataMapper.endYobiiiternDataForWk("0001",735 ,"10215814");*/
       /*  productPowerDataMapper.phyDeleteGroup("0001",735 ,"10215814");
         productPowerDataMapper.endGroupForWK("0001",735 ,"10215814");*/
-        productPowerDataMapper.phyDeleteYobiiitern("0001",801 ,"10212159");
+      /*  productPowerDataMapper.phyDeleteYobiiitern("0001",801 ,"10212159");
         productPowerDataMapper.phyDeleteYobiiiternData("0001",801 ,"10212159");
         productPowerDataMapper.endYobiiiternForWk("0001",801 ,"10212159");
-        productPowerDataMapper.endYobiiiternDataForWk("0001",801 ,"10212159");
+        productPowerDataMapper.endYobiiiternDataForWk("0001",801 ,"10212159");*/
+       /* List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(801, "0001");
+        reserve.forEach(System.out::println);
+        System.out.println(reserve);
+*/
+        //List<ProductPowerMstData> productPowerMstDataList = productPowerDataMapper.selectWKKokyaku("10212159", "0001");
+        List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData( "10212159", "0001");
+        wkYobiiiternDataList.forEach(System.out::println);
+
        /* productPowerDataMapper.deleteData("0001",735 ,"10215814");
         productPowerDataMapper.setData(735 ,"10215814","0001");*/
      //   productPowerDataMapper.endSyokikaForWK("0001",2,"10215814");

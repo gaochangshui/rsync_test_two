@@ -9,6 +9,7 @@ import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.CommodityListInfoVO;
 import com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO;
 import com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO;
+import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreMasterService;
@@ -336,9 +337,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         String aud = session.getAttribute("aud").toString();
         productPowerDataMapper.deleteWKSyokika(companyCd,aud);
         productPowerDataMapper.deleteWKKokyaku(companyCd,aud);
-        productPowerDataMapper.deleteWKYobiiitern(companyCd,aud);
-        productPowerDataMapper.deleteWKYobiiiternData(companyCd,aud);
+        productPowerDataMapper.deleteWKYobiiitern(aud,companyCd);
+        productPowerDataMapper.deleteWKYobiiiternData(aud,companyCd);
         productPowerDataMapper.deleteWKData(companyCd,aud);
+
         productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud);
          productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud);
          productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud);
@@ -363,9 +365,12 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setSeasonEndTime(param.getSeasonEndTime());
         powerParam.setSeasonStTime(param.getSeasonStTime());
         powerParam.setYearFlag(param.getYearFlag());
+        List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(productPowerNo, companyCd);
         List list = new ArrayList();
         list.add(allData);
         list.add(powerParam);
+        list.add(reserve);
+
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 

@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerReserveMst;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
@@ -54,11 +55,17 @@ public interface CommodityScoreParaService {
      */
     Map<String, Object> delYoBi(ProductPowerReserveMst productPowerReserveMst);
 
-    Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd);
+    Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd,String dataName,Integer valueCd);
     /**
      * rank计算
      * @param rankCalculateVo
      * @return
      */
     Map<String,Object>  rankCalculate( RankCalculateVo rankCalculateVo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+
+    /**
+     * 删除reserve
+     * @return
+     */
+     Map<String,Object> deleteReserve(JSONObject jsonObject);
 }

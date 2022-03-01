@@ -71,6 +71,7 @@
       product_power_cd ,product_power_name ,registered ,author_name
     from planocycle.product_power_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR} and deleteflg=0
+    order by product_power_cd desc
   </select>
   <select id="selectUpdExistsName" resultType="java.lang.Integer">
     SELECT count(1) FROM planocycle.product_power_mst

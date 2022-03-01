@@ -165,8 +165,8 @@ public class ProductPowerGroupDataForCgiDto {
                 ", prdCd='" + prdCd + '\'' +
                 ", storeCd='" + storeCd + '\'' +
                 ", yearFlag='" + yearFlag + '\'' +
-                ", customerCondition='" + customerCondition + '\'' +
-
+                ", customerCondition=" + customerCondition +
+                ", changeFlag='" + changeFlag + '\'' +
                 ", usercd='" + usercd + '\'' +
                 '}';
     }

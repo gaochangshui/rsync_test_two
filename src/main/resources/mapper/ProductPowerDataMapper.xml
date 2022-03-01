@@ -82,6 +82,32 @@
         <result property="item8" jdbcType="DECIMAL" column="item8"/>
         <result property="item9" jdbcType="DECIMAL" column="item9"/>
         <result property="item10" jdbcType="DECIMAL" column="item10"/>
+        <result property="pdPosAmountRank" jdbcType="DECIMAL" column="pdPosAmountRank"/>
+        <result property="pdPosNumRank" jdbcType="DECIMAL" column="pdPosNumRank"/>
+        <result property="pdBranchAmountRank" jdbcType="DECIMAL" column="pdBranchAmountRank"/>
+        <result property="pdBranchNumRank" jdbcType="DECIMAL" column="pdBranchNumRank"/>
+        <result property="pdCompareAmountRank" jdbcType="DECIMAL" column="pdCompareAmountRank"/>
+        <result property="pdCompareNumRank" jdbcType="DECIMAL" column="pdCompareNumRank"/>
+        <result property="pdBranchCompareAmountRank" jdbcType="DECIMAL" column="pdBranchCompareAmountRank"/>
+        <result property="pdBranchCompareNumRank" jdbcType="DECIMAL" column="pdBranchCompareNumRank"/>
+        <result property="gdPosAmountRank" jdbcType="DECIMAL" column="gdPosAmountRank"/>
+        <result property="gdPosNumRank" jdbcType="DECIMAL" column="gdPosNumRank"/>
+        <result property="gdBranchAmountRank" jdbcType="DECIMAL" column="gdBranchAmountRank"/>
+        <result property="gdBranchNumRank" jdbcType="DECIMAL" column="gdBranchNumRank"/>
+        <result property="gdCompareAmountRank" jdbcType="DECIMAL" column="gdCompareAmountRank"/>
+        <result property="gdCompareNumRank" jdbcType="DECIMAL" column="gdCompareNumRank"/>
+        <result property="gdBranchCompareAmountRank" jdbcType="DECIMAL" column="gdBranchCompareAmountRank"/>
+        <result property="gdBranchCompareNumRank" jdbcType="DECIMAL" column="gdBranchCompareNumRank"/>
+        <result property="item1Rank" jdbcType="DECIMAL" column="item1Rank"/>
+        <result property="item2Rank" jdbcType="DECIMAL" column="item2Rank"/>
+        <result property="item3Rank" jdbcType="DECIMAL" column="item3Rank"/>
+        <result property="item4Rank" jdbcType="DECIMAL" column="item4Rank"/>
+        <result property="item5Rank" jdbcType="DECIMAL" column="item5Rank"/>
+        <result property="item6Rank" jdbcType="DECIMAL" column="item6Rank"/>
+        <result property="item7Rank" jdbcType="DECIMAL" column="item7Rank"/>
+        <result property="item8Rank" jdbcType="DECIMAL" column="item8Rank"/>
+        <result property="item9Rank" jdbcType="DECIMAL" column="item9Rank"/>
+        <result property="item10Rank" jdbcType="DECIMAL" column="item10Rank"/>
     </resultMap>
     <insert id="insert">
         insert into planocycle.work_product_power_syokika (company_cd,author_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pos_amount,
@@ -106,7 +132,7 @@
 
     </insert>
     <insert id="insertGroup">
-        insert into planocycle.work_product_power_kokyaku (company_cd,author_cd,jan,sku_name,pos_amount,
+        insert into planocycle.work_product_power_kokyaku (company_cd,author_cd,jan,pos_amount,
         pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num)
         values
         <foreach collection="keyNameList" separator="," item="lists">
@@ -114,7 +140,7 @@
             <foreach collection="lists" item="item" separator="," open="(" close=")" index="index">
 
                 <choose>
-                    <when test="index == 4 || index==5 || index == 6 || index == 7 || index == 8 || index == 9 || index == 10 || index == 11">
+                    <when test="index == 3 || index == 4 || index==5 || index == 6 || index == 7 || index == 8 || index == 9 || index == 10 ">
                         #{item} ::numeric
                     </when>
                     <otherwise>
@@ -126,8 +152,8 @@
         </foreach>
     </insert>
     <insert id="insertYobilitem">
-        insert into planocycle.work_product_power_yobiitem(company_cd,author_cd,data_cd,item_name)
-        values (#{companyCd},#{authorCd},#{itemCd},#{itemName})
+        insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort,value_cd)
+        values (#{companyCd},#{authorCd},#{itemCd},#{itemName},#{dataSort},#{valueCd})
     </insert>
     <insert id="insertWkSyokikaForFinally">
         insert into planocycle.work_product_power_syokika(company_cd,author_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pos_amount,
@@ -179,8 +205,8 @@
         where company_cd = #{companyCd} and author_cd = #{authorCd}
     </insert>
     <insert id="endYobiiiternForWk">
-        insert into planocycle.product_power_reserve_mst(company_cd,product_power_cd,data_cd,data_name,show_flag,author_cd,create_time)
-        select company_cd,#{productPowerCd},data_cd,data_name,show_flag,#{authorCd},now()
+        insert into planocycle.product_power_reserve_mst(company_cd,product_power_cd,data_cd,data_name,author_cd,create_time,data_sort,value_cd)
+        select company_cd,#{productPowerCd},data_cd,data_name,#{authorCd},now(),data_sort,value_cd
         from planocycle.work_product_power_reserve_mst
         where company_cd = #{companyCd} and author_cd = #{authorCd}
     </insert>
@@ -271,6 +297,9 @@
         delete  from planocycle.product_power_mst_data
         where company_cd =#{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
     </delete>
+    <delete id="deleteWKYobiiiternCd">
+        delete from planocycle.work_product_power_reserve_mst where company_cd=#{companyCd} and author_cd=#{authorCd} and value_cd = #{valueCd}
+    </delete>
     <update id="deleteRankData">
         update planocycle.product_power_mst_data set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
         where company_cd = #{companyCd,jdbcType=VARCHAR}
@@ -343,8 +372,8 @@
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
     </insert>
     <insert id="setWkYobilitemForFinally">
-        insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,show_flag)
-        select company_cd,#{authorCd},data_cd,data_name,show_flag
+        insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort,value_cd)
+        select company_cd,#{authorCd},data_cd,data_name,data_sort,value_cd
         from planocycle.product_power_reserve_mst
          where company_cd = #{companyCd,jdbcType=VARCHAR}
                  and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
@@ -413,9 +442,9 @@
         select
             dd.data_value as dataValue,dd.jan as jan,mm.data_name as dataName,mm.data_cd as dataCd
         from  planocycle.work_product_power_reserve_mst mm
-        left join planocycle.work_product_power_reserve_data dd
+        inner join planocycle.work_product_power_reserve_data dd
             on mm.data_cd = dd.data_cd
-        where  dd.author_cd = #{authorCd} and dd.company_cd=#{companyCd}
+        where  mm.author_cd = #{authorCd} and mm.company_cd=#{companyCd}
     </select>
     <select id="rankCalculates" resultMap="rankMap">
         select mst.company_cd as companyCd,mst.jan as jan,mst.sku_name as skuName,mst.classify_big as classifyBig,mst.classify_middle as classifyMiddle,mst.classify_small as classifySmall,mst.classify_fine as classifyFine,
@@ -434,9 +463,32 @@
                mst.pd_branch_compare_num as pBranchCompareNum,
                mst.gd_pos_amount gPosAmount,mst.gd_pos_num as gPosNum,mst.gd_branch_amount as gBranchAmount,mst.gd_branch_num as gBranchNum,mst.gd_compare_amount as gCompareAmount,mst.gd_compare_num as gCompareNum,
                mst.gd_branch_compare_amount as  gBranchCompareAmount,
-               mst.gd_branch_compare_num as gBranchCompareNum,mst.item1 as item1,mst.item2 as item2,mst.item3 as item3,mst.item4 as item4,mst.item5 as item5,mst.item6 as item6,mst.item7 as item7,mst.item8 as item8,mst.item9 as item9, mst.item10 as item10
+               mst.gd_branch_compare_num as gBranchCompareNum,mst.item1 as item1,mst.item2 as item2,mst.item3 as item3,mst.item4 as item4,mst.item5 as item5,mst.item6 as item6,mst.item7 as item7,mst.item8 as item8,mst.item9 as item9, mst.item10 as item10,
+               mst.rank_result as rankResult,mst.pd_pos_amount_rank as pdPosAmountRank,mst.pd_pos_num_rank as pdPosNumRank,mst.pd_branch_amount_rank as pdBranchAmountRank ,mst.pd_branch_num_rank as pdBranchNumRank ,mst.pd_compare_amount_rank as pdCompareAmountRank
+                                          ,mst.pd_compare_num_rank as pdCompareNumRank
+                                          ,mst.pd_branch_compare_amount_rank as pdBranchCompareAmountRank
+                                          ,mst.pd_branch_compare_num_rank as pdBranchCompareNumRank
+                                          ,mst.gd_pos_amount_rank as gdPosAmountRank
+                                          ,mst.gd_pos_num_rank as gdPosNumRank
+                                          ,mst.gd_branch_amount_rank as gdBranchAmountRank
+                                          ,mst.gd_branch_num_rank as gdBranchNumRank
+                                          ,mst.gd_compare_amount_rank as gdCompareAmountRank
+                                          ,mst.gd_compare_num_rank as gdCompareNumRank
+                                          ,mst.gd_branch_compare_amount_rank as gdBranchCompareAmountRank
+                                          ,mst.gd_branch_compare_num_rank as gdBranchCompareNumRank
+                                          ,mst.item1_rank as item1Rank
+                                          ,mst.item2_rank as item2Rank
+                                          ,mst.item3_rank as item3Rank
+                                          ,mst.item4_rank as item4Rank
+                                          ,mst.item5_rank as item5Rank
+                                          ,mst.item6_rank as item6Rank
+                                          ,mst.item7_rank as item7Rank
+                                          ,mst.item8_rank as item8Rank
+                                          ,mst.item9_rank as item9Rank
+                                          ,mst.item10_rank as item10Rank
         from planocycle.product_power_mst_data mst
         where mst.product_power_cd = #{productPowerCd} and mst.company_cd = #{companyCd} and deleteflg=0
+        order by rank_result asc
     </select>
     <select id="getParam" resultType="com.trechina.planocycle.entity.po.ProductPowerParamVo">
         select company_cd as company,product_power_cd as productPowerNo,customer_value,customer_condition,pos_value,prd_cd,prepare_value,rang_weight,recently_end_time,recently_flag,recently_st_time,
@@ -444,6 +496,16 @@
         from planocycle.product_power_param_mst
         where company_cd=#{companyCd} and product_power_cd = #{productPowerCd} and deleteflg=0
 
+    </select>
+    <select id="getWKYobiiiternSort" resultType="java.lang.Integer">
+        SELECT max(data_sort)
+         from  planocycle.work_product_power_reserve_mst
+        where company_cd=#{companyCd} and author_cd = #{aud}
+    </select>
+    <select id="getReserve" resultType="com.trechina.planocycle.entity.vo.ReserveMstVo">
+        select value_cd,data_name from planocycle.product_power_reserve_mst
+        where company_cd=#{companyCd} and product_power_cd = #{productPowerCd}
+        order by data_sort asc
     </select>
 
 
