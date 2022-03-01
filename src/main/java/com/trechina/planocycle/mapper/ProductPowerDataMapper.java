@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.*;
+import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,11 +30,13 @@ public interface ProductPowerDataMapper {
 
 
     //临时表yobilitem和data
-    int deleteWKYobiiitern();
-    int deleteWKYobiiiternData();
+    int deleteWKYobiiiternCd( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd,@Param("valueCd") Integer valueCd);
+    int deleteWKYobiiitern( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd);
+    int deleteWKYobiiiternData( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd);
     List<WKYobiiiternData> selectWKYobiiiternData( @Param("authorCd") String authorCd,@Param("companyCd")String companyCd);
     //smart数据存到临时表
-    int insertYobilitem(@Param("companyCd") String companyCd,@Param("authorCd")String authorCd,@Param("itemCd")Integer itemCd,@Param("itemName")String itemName);
+    Integer getWKYobiiiternSort(@Param("companyCd") String companyCd,@Param("aud") String aud);
+    int insertYobilitem(@Param("companyCd") String companyCd,@Param("authorCd")String authorCd,@Param("itemCd")Integer itemCd,@Param("itemName")String itemName,@Param("dataSort")Integer dataSort,@Param("valueCd")Integer valueCd);
     int insertYobilitemData(@Param("dataList") List<WorkProductPowerReserveData> dataList);
     //最终表存到临时表
     int setWkSyokikaForFinally(@Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);
@@ -88,6 +91,7 @@ public interface ProductPowerDataMapper {
 
   List<ProductPowerMstData> getAllData(@Param("companyCd")String companyCd,@Param("productPowerCd")Integer productPowerCd);
 
-  ProductPowerParam getParam(@Param("companyCd") String companyCd,@Param("productPowerCd")Integer productPowerCd);
+  ProductPowerParamVo getParam(@Param("companyCd") String companyCd,@Param("productPowerCd")Integer productPowerCd);
 
+ List<ReserveMstVo> getReserve(@Param("productPowerCd")Integer productPowerCd, @Param("companyCd")String companyCd);
 }

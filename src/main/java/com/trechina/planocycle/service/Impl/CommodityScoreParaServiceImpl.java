@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO;
@@ -129,10 +130,11 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             productPowerDataMapper.endYobiiiternDataForWk(conpanyCd,productPowerCd,authorCd);
             //修改保存  物理删除插入
             productPowerDataMapper.deleteData(conpanyCd,productPowerCd,authorCd);
-            productPowerDataMapper.setData(productPowerCd,conpanyCd,authorCd);
+            productPowerDataMapper.setData(productPowerCd,authorCd,conpanyCd);
             //期间参数删除 插入
+            String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
             productPowerParamMstMapper.deleteParam(conpanyCd,productPowerCd);
-            productPowerParamMstMapper.insertParam(productPowerParam,authorCd);
+            productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd);
 
 
 
@@ -273,12 +275,27 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     }
 
     @Override
-    public Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd) {
+    public Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd,String dataName,Integer valueCd) {
+        //
+        String aud = session.getAttribute("aud").toString();
+        Integer sortMax = productPowerDataMapper.getWKYobiiiternSort(companyCd, aud);
+        if (sortMax==null){
+            sortMax = 1;
+        }else {
+            sortMax +=1;
+        }
+
+        productPowerDataMapper.deleteWKYobiiiternCd(aud,companyCd,valueCd);
+        productPowerDataMapper.insertYobilitem(companyCd,aud,Integer.valueOf(dataCd),dataName,sortMax,valueCd);
+        if (data==null){
+            return ResultMaps.result(ResultEnum.SUCCESS);
+        }
         List<WorkProductPowerReserveData> dataList = dataFormat(data, companyCd, dataCd);
         if (dataList.isEmpty()) {
             logger.info("csv文件中没有数据");
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
+        productPowerDataMapper.deleteWKYobiiiternData(aud,companyCd);
         productPowerDataMapper.insertYobilitemData(dataList);
         return ResultMaps.result(ResultEnum.SUCCESS);
 
@@ -406,16 +423,28 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 o++;
                 list.add(productPowerMstData);
                 if (o % 200 == 0 && o >= 200) {
-                    productPowerDataMapper.setWKData(list, authorCd, rankCalculateVo.getCompanyCd());
+                    int z = productPowerDataMapper.setWKData(list, authorCd, rankCalculateVo.getCompanyCd());
+                    logger.info("插入条数"+z);
+
                     list.clear();
                 }
 
             }
             if (list.size()>0) {
-                productPowerDataMapper.setWKData(list, authorCd, rankCalculateVo.getCompanyCd());
+                int z = productPowerDataMapper.setWKData(list, authorCd, rankCalculateVo.getCompanyCd());
+                logger.info("插入条数"+z);
             }
         }
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerMstDataList);
+    }
+
+    @Override
+    public Map<String, Object> deleteReserve(JSONObject jsonObject) {
+        String aud = session.getAttribute("aud").toString();
+        String companyCd = String.valueOf(((Map) jsonObject.get("param")).get("companyCd"));
+        Integer valueCd = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("valueCd")));
+        productPowerDataMapper.deleteWKYobiiiternCd(aud,companyCd,valueCd);
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**

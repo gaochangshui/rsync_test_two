@@ -3,7 +3,7 @@ package com.trechina.planocycle.service.Impl;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.po.ProductPowerParam;
+import com.trechina.planocycle.entity.po.ProductPowerParamVo;
 import com.trechina.planocycle.entity.po.WKYobiiiternData;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
@@ -19,6 +19,9 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class CommodityScoreDataServiceImpl implements CommodityScoreDataService {
@@ -41,14 +44,14 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String tokenInfo =(String) session.getAttribute("MSPACEDGOURDLP");
         List strList = new ArrayList();
         // 带着taskId，再次请求cgi获取运行状态/数据
-        //Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
-        Map<String,Object> Data =new HashMap<>();
+        Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
+       /* Map<String,Object> Data =new HashMap<>();
 
        StringBuilder strs =new StringBuilder();
-        for (int i=0;i<=1000;i++){
+        for (int i=0;i<=10;i++){
             strs.append("0001 "+(i)+" 啤酒 酒类 水类 扎啤 黑啤 10.21 10.45 1.14 124.0 14 145 14 70@");
         }
-        Data.put("data",strs);
+        Data.put("data",strs);*/
         logger.info("商品力点数表web版cgi返回数据："+Data);
         String authorCd = session.getAttribute("aud").toString();
         // 返回的数据是字符串，处理成二维数组
@@ -67,17 +70,24 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 arr[a]=session.getAttribute("aud").toString();
                 System.arraycopy(strSplit,0,arr,0,a);
                 //数据量过大，一次存500条
-                 if (i%1000==0 &&i>=1000){
+                 /*if (i%1000==0 &&i>=1000){
                     productPowerDataMapper.insert(strList);
                     strList.clear();
-                }
+                }*/
                 strList.add(arr);
             }
-            if (strList.size()>0) {
+           /* if (strList.size()>0) {
                 productPowerDataMapper.insert(strList);
-            }
+            }*/
         } else {
             return Data;
+        }
+
+
+        try {
+            exec(strList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         List<ProductPowerMstData> syokikaList = productPowerDataMapper.selectWKSyokika(companyCd,authorCd);
 
@@ -99,15 +109,15 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
             List strList = new ArrayList();
             // 带着taskId，再次请求cgi获取运行状态/数据
-         //   Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
-            Map<String, Object> Data = new HashMap<>();
+            Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
+           /* Map<String, Object> Data = new HashMap<>();
 
             StringBuilder strs = new StringBuilder();
-            for (int i = 0; i <= 1000; i++) {
+            for (int i = 0; i <= 10; i++) {
                 strs.append("0001 " + (i) + " 啤酒 10.21 10.45 1.14 124.0 14 145 14 70@");
             }
             Data.put("data", strs);
-
+*/
 
             logger.info("商品力点数表web版cgi返回数据：" + Data);
 
@@ -136,18 +146,25 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 if (strList.size() > 0) {
                     productPowerDataMapper.insertGroup(strList);
                 }
-            } else {
-                return Data;
+            } else if ("2".equals(Data.get("data"))){
+                return ResultMaps.result(ResultEnum.DATAISTOOLARGE);
+            }else {
+                productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
             }
+
+
         }
         List<ProductPowerMstData> kokyakuList = productPowerDataMapper.selectWKKokyaku(authorCd,companyCd);
         List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData( authorCd, companyCd);
+        if (wkYobiiiternDataList.isEmpty()){
+            return ResultMaps.result(ResultEnum.SUCCESS,kokyakuList);
+        }
 
         kokyakuList.forEach(item->{
             for (WKYobiiiternData wkYobiiiternData : wkYobiiiternDataList) {
                 Class w =item.getClass();
                 for(int i=1;i<=10;i++){
-                    if (item.getJan().equals(wkYobiiiternData.getJan())  && wkYobiiiternData.getDataSort()==i){
+                    if (wkYobiiiternData.getJan().equals(item.getJan())  && wkYobiiiternData.getDataSort()==i){
                         try {
                             Field field = w.getDeclaredField("item"+i);
                             field.setAccessible(true);
@@ -249,12 +266,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Override
     public Map<String, Object> getCommodityScoreGroupTaskId(ProductPowerGroupDataForCgiDto productPowerDataForCgiDto) {
         String aud = session.getAttribute("aud").toString();
-        ProductPowerParam param = productPowerDataMapper.getParam(productPowerDataForCgiDto.getCompany(), productPowerDataForCgiDto.getProductPowerNo());
+        ProductPowerParamVo param = productPowerDataMapper.getParam(productPowerDataForCgiDto.getCompany(), productPowerDataForCgiDto.getProductPowerNo());
         boolean b = changeFlg(productPowerDataForCgiDto,param);
         if (b){
-            productPowerDataForCgiDto.setChange_flag("1");
+            productPowerDataForCgiDto.setChangeFlag("1");
         }else {
-            productPowerDataForCgiDto.setChange_flag("0");
+            productPowerDataForCgiDto.setChangeFlag("0");
         }
         String uuid = UUID.randomUUID().toString();
         productPowerDataForCgiDto.setGuid(uuid);
@@ -292,8 +309,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String authorCd =session.getAttribute("aud").toString();
         productPowerDataMapper.deleteWKSyokika(companyCd,authorCd);
         productPowerDataMapper.deleteWKKokyaku(companyCd,authorCd);
-        productPowerDataMapper.deleteWKYobiiitern();
-        productPowerDataMapper.deleteWKYobiiiternData();
+       // productPowerDataMapper.deleteWKYobiiitern(companyCd,authorCd);
+        productPowerDataMapper.deleteWKYobiiiternData(companyCd,authorCd);
         List<ProductPowerMstData> productPowerMstData = productPowerDataMapper.getProductPowerMstData(companyCd, productPowerCd);
 
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerMstData);
@@ -301,11 +318,72 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     /**
      * 判断寄存还是新规
      */
-    boolean changeFlg(ProductPowerGroupDataForCgiDto productPowerDataForCgiDto,ProductPowerParam param){
-        boolean b =( param != null && param.getRecentlyFlag().equals(productPowerDataForCgiDto.getRecentlyFlag()) && param.getRecentlyEndTime().equals(productPowerDataForCgiDto.getRecentlyStTime())
+    boolean changeFlg(ProductPowerGroupDataForCgiDto productPowerDataForCgiDto,ProductPowerParamVo param){
+        boolean b =( param != null && param.getRecentlyFlag().equals(productPowerDataForCgiDto.getRecentlyFlag()) && param.getRecentlyEndTime().equals(productPowerDataForCgiDto.getRecentlyEndTime())
                 && param.getRecentlyStTime().equals(productPowerDataForCgiDto.getRecentlyStTime()) && param.getSeasonEndTime().equals(productPowerDataForCgiDto.getSeasonEndTime())
                 && param.getSeasonFlag().equals(productPowerDataForCgiDto.getSeasonFlag()) && param.getSeasonStTime().equals(productPowerDataForCgiDto.getSeasonStTime())
-                && param.getPrdCd().equals(productPowerDataForCgiDto.getPrdCd()) && param.getYearFlag().equals(productPowerDataForCgiDto.getYearFlag()));
+                && param.getPrdCd().equals(productPowerDataForCgiDto.getPrdCd()) && param.getYearFlag().equals(productPowerDataForCgiDto.getYearFlag())
+                && param.getCustomerCondition().equals(productPowerDataForCgiDto.getCustomerCondition().toJSONString())&&param.getCompany().equals(productPowerDataForCgiDto.getCompany())
+                && param.getPrdCd().equals(productPowerDataForCgiDto.getPrdCd())&& param.getProductPowerNo().equals(productPowerDataForCgiDto.getProductPowerNo()));
         return b;
     }
+
+    /**
+     * 多线程插入pos基本数据
+     */
+    class MyThread implements Runnable{
+        private List list;
+        private CountDownLatch begin;
+        private CountDownLatch end;
+        public MyThread(List list,CountDownLatch begin,CountDownLatch end){
+            this.list = list;
+            this.begin = begin;
+            this.end = end;
+
+        }
+        @Override
+        public void run() {
+
+            try {
+                productPowerDataMapper.insert(list);
+                begin.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }finally {
+                end.countDown();
+            }
+
+        }
+    }
+    public  void exec(List<String> list) throws InterruptedException {
+        int count = 1000;
+        int listSize = list.size();
+        int runSize = (listSize/count)+1;
+        List<String> newList = null;
+        ExecutorService executor = Executors.newFixedThreadPool(runSize);
+        CountDownLatch begin = new CountDownLatch(1);
+        CountDownLatch end = new CountDownLatch(runSize);
+        //循环线程
+        for (int i = 0; i < runSize; i++) {
+            if ((i+1)==runSize){
+                int startIndex = i*count;
+                int endIndex = list.size();
+                newList=list.subList(startIndex,endIndex);
+
+            }else {
+                int startIndex = i*count;
+                int endIndex = (i+1)*count;
+                newList = list.subList(startIndex,endIndex);
+            }
+
+            MyThread myThread = new MyThread(newList, begin, end);
+
+            executor.execute(myThread);
+
+        }
+        begin.countDown();
+        end.await();
+        executor.shutdown();
+    }
+
 }

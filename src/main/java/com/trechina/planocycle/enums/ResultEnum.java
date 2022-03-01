@@ -12,7 +12,8 @@ public enum ResultEnum {
     NOTDATAS(30002,"没有数据"),
     JANNOTESISTS(30003,"jan不存在"),
     FILEVERSIONFAILURE(40001,"文件版本不对"),
-    FILECONTENTFAILURE(40002,"文件内容不对");
+    FILECONTENTFAILURE(40002,"文件内容不对"),
+    DATAISTOOLARGE(40003,"数据量过大");
 
     private Integer code;
     private String msg;

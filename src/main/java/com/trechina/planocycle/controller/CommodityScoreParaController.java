@@ -1,5 +1,6 @@
 package com.trechina.planocycle.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerReserveMst;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
@@ -83,9 +84,9 @@ public class CommodityScoreParaController {
     }
 
     @PostMapping("/yobi")
-    public Map<String, Object> updateYobi(@RequestParam("file") MultipartFile multipartFile, @RequestParam("companyCd") String companyCd, @RequestParam("dataCd") String dataCd) {
+    public Map<String, Object> updateYobi(@RequestParam(value = "file",required = false) MultipartFile multipartFile, @RequestParam("companyCd") String companyCd, @RequestParam("dataCd") String dataCd,@RequestParam("dataName")String dataName,@RequestParam("valueCd")Integer valueCd) {
         List<String[]> csvData = filesOperationService.uploadCsvToList(multipartFile);
-        return commodityScoreParaService.saveYoBi(csvData, companyCd, dataCd);
+        return commodityScoreParaService.saveYoBi(csvData, companyCd, dataCd,dataName,valueCd);
     }
 
     /**
@@ -108,6 +109,16 @@ public class CommodityScoreParaController {
         return commodityScoreParaService.rankCalculate(rankCalculateVo);
     }
 
+
+    /**
+     * 预备项目删除
+     */
+
+    @DeleteMapping("deleteReserve")
+    public Map<String,Object> deleteReserve(@RequestBody JSONObject jsonObject)  {
+
+        return commodityScoreParaService.deleteReserve(jsonObject);
+    }
 
 
 

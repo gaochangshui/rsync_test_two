@@ -1,6 +1,6 @@
 package com.trechina.planocycle.entity.dto;
 
-import java.util.Map;
+import com.alibaba.fastjson.JSONObject;
 
 public class ProductPowerGroupDataForCgiDto {
     private String mode;
@@ -16,8 +16,8 @@ public class ProductPowerGroupDataForCgiDto {
     private String prdCd;
     private String storeCd;
     private String yearFlag;
-    private Map<Object,Object> customerCondition;
-    private String change_flag;
+    private JSONObject customerCondition;
+    private String changeFlag;
     private String usercd;
 
     public String getMode() {
@@ -117,20 +117,20 @@ public class ProductPowerGroupDataForCgiDto {
     }
 
 
-    public Map<Object, Object> getCustomerCondition() {
+    public JSONObject getCustomerCondition() {
         return customerCondition;
     }
 
-    public void setCustomerCondition(Map<Object, Object> customerCondition) {
+    public void setCustomerCondition(JSONObject customerCondition) {
         this.customerCondition = customerCondition;
     }
 
-    public String getChange_flag() {
-        return change_flag;
+    public String getChangeFlag() {
+        return changeFlag;
     }
 
-    public void setChange_flag(String change_flag) {
-        this.change_flag = change_flag;
+    public void setChangeFlag(String changeFlag) {
+        this.changeFlag = changeFlag;
     }
 
     public String getUsercd() {
@@ -165,8 +165,8 @@ public class ProductPowerGroupDataForCgiDto {
                 ", prdCd='" + prdCd + '\'' +
                 ", storeCd='" + storeCd + '\'' +
                 ", yearFlag='" + yearFlag + '\'' +
-                ", customerCondition='" + customerCondition + '\'' +
-                ", change_flag='" + change_flag + '\'' +
+                ", customerCondition=" + customerCondition +
+                ", changeFlag='" + changeFlag + '\'' +
                 ", usercd='" + usercd + '\'' +
                 '}';
     }

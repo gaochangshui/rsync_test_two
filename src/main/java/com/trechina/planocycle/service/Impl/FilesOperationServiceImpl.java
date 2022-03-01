@@ -345,6 +345,9 @@ public class FilesOperationServiceImpl implements FilesOperationService {
      */
     @Override
     public List<String[]> uploadCsvToList(MultipartFile multipartFile) {
+        if (multipartFile==null){
+            return null;
+        }
         List<String[]> result = new ArrayList<>();
         //起手转成字符流
         InputStream is = null;

@@ -2,7 +2,7 @@ package com.trechina.planocycle.entity.dto;
 
 public class ProductCdAndNameDto {
     private String conpanyCd;
-    private Integer productPowerCd;
+    private Integer productPowerNo;
     private String productPowerName;
 
     public String getConpanyCd() {
@@ -13,12 +13,12 @@ public class ProductCdAndNameDto {
         this.conpanyCd = conpanyCd;
     }
 
-    public Integer getProductPowerCd() {
-        return productPowerCd;
+    public Integer getProductPowerNo() {
+        return productPowerNo;
     }
 
-    public void setProductPowerCd(Integer productPowerCd) {
-        this.productPowerCd = productPowerCd;
+    public void setProductPowerNo(Integer productPowerNo) {
+        this.productPowerNo = productPowerNo;
     }
 
     public String getProductPowerName() {
@@ -33,7 +33,7 @@ public class ProductCdAndNameDto {
     public String toString() {
         return "ProductCdAndNameDto{" +
                 "conpanyCd='" + conpanyCd + '\'' +
-                ", productPowerCd=" + productPowerCd +
+                ", productPowerNo=" + productPowerNo +
                 ", productPowerName='" + productPowerName + '\'' +
                 '}';
     }

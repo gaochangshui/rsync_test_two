@@ -568,4 +568,72 @@ public class ProductPowerMstData {
     public void setRankResult(Integer rankResult) {
         this.rankResult = rankResult;
     }
+
+    @Override
+    public String toString() {
+        return "ProductPowerMstData{" +
+                "companyCd='" + companyCd + '\'' +
+                ", productPowerCd=" + productPowerCd +
+                ", jan='" + jan + '\'' +
+                ", skuName='" + skuName + '\'' +
+                ", classifyBig='" + classifyBig + '\'' +
+                ", classifyMiddle='" + classifyMiddle + '\'' +
+                ", classifySmall='" + classifySmall + '\'' +
+                ", classifyFine='" + classifyFine + '\'' +
+                ", pdPosAmount=" + pdPosAmount +
+                ", pdPosNum=" + pdPosNum +
+                ", pdBranchAmount=" + pdBranchAmount +
+                ", pdBranchNum=" + pdBranchNum +
+                ", pdCompareAmount=" + pdCompareAmount +
+                ", pdCompareNum=" + pdCompareNum +
+                ", pdBranchCompareAmount=" + pdBranchCompareAmount +
+                ", pdBranchCompareNum=" + pdBranchCompareNum +
+                ", gdPosAmount=" + gdPosAmount +
+                ", gdPosNum=" + gdPosNum +
+                ", gdBranchAmount=" + gdBranchAmount +
+                ", gdBranchNum=" + gdBranchNum +
+                ", gdCompareAmount=" + gdCompareAmount +
+                ", gdCompareNum=" + gdCompareNum +
+                ", gdBranchCompareAmount=" + gdBranchCompareAmount +
+                ", gdBranchCompareNum=" + gdBranchCompareNum +
+                ", item1=" + item1 +
+                ", item2=" + item2 +
+                ", item3=" + item3 +
+                ", item4=" + item4 +
+                ", item5=" + item5 +
+                ", item6=" + item6 +
+                ", item7=" + item7 +
+                ", item8=" + item8 +
+                ", item9=" + item9 +
+                ", item10=" + item10 +
+                ", rankNum=" + rankNum +
+                ", pdPosAmountRank=" + pdPosAmountRank +
+                ", pdPosNumRank=" + pdPosNumRank +
+                ", pdBranchAmountRank=" + pdBranchAmountRank +
+                ", pdBranchNumRank=" + pdBranchNumRank +
+                ", pdCompareAmountRank=" + pdCompareAmountRank +
+                ", pdCompareNumRank=" + pdCompareNumRank +
+                ", pdBranchCompareAmountRank=" + pdBranchCompareAmountRank +
+                ", pdBranchCompareNumRank=" + pdBranchCompareNumRank +
+                ", gdPosAmountRank=" + gdPosAmountRank +
+                ", gdPosNumRank=" + gdPosNumRank +
+                ", gdBranchAmountRank=" + gdBranchAmountRank +
+                ", gdBranchNumRank=" + gdBranchNumRank +
+                ", gdCompareAmountRank=" + gdCompareAmountRank +
+                ", gdCompareNumRank=" + gdCompareNumRank +
+                ", gdBranchCompareAmountRank=" + gdBranchCompareAmountRank +
+                ", gdBranchCompareNumRank=" + gdBranchCompareNumRank +
+                ", item1Rank=" + item1Rank +
+                ", item2Rank=" + item2Rank +
+                ", item3Rank=" + item3Rank +
+                ", item4Rank=" + item4Rank +
+                ", item5Rank=" + item5Rank +
+                ", item6Rank=" + item6Rank +
+                ", item7Rank=" + item7Rank +
+                ", item8Rank=" + item8Rank +
+                ", item9Rank=" + item9Rank +
+                ", item10Rank=" + item10Rank +
+                ", rankResult=" + rankResult +
+                '}';
+    }
 }
