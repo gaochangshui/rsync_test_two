@@ -85,5 +85,11 @@ public interface ShelfPatternService {
      */
     List<Integer> getpatternIdOfPtsKey(String ptsKey);
 
-
+    /**
+     * 根据area获取棚名称和棚pattern
+     * @param companyCd
+     * @param areas
+     * @return
+     */
+     Map<String,Object> getShelfPatternForArea(String companyCd,int[] areaCds);
 }

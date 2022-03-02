@@ -5,6 +5,7 @@ import com.trechina.planocycle.entity.dto.ShelfPatternDto;
 import com.trechina.planocycle.entity.po.ShelfPatternArea;
 import com.trechina.planocycle.entity.po.ShelfPatternBranch;
 import com.trechina.planocycle.entity.po.ShelfPatternMst;
+import com.trechina.planocycle.entity.vo.ShelfNamePatternVo;
 import com.trechina.planocycle.entity.vo.ShelfPatternBranchVO;
 import com.trechina.planocycle.entity.vo.ShelfPatternNameVO;
 import com.trechina.planocycle.entity.vo.ShelfPatternTreeVO;
@@ -349,5 +350,11 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     @Override
     public List<Integer> getpatternIdOfPtsKey(String ptsKey) {
         return shelfPatternMstMapper.getpatternIdOfPtsKey(ptsKey);
+    }
+
+    @Override
+    public Map<String, Object> getShelfPatternForArea(String companyCd, int[] areaCds) {
+        List<ShelfNamePatternVo> shelfPatternForArea = shelfPatternMstMapper.getShelfPatternForArea(companyCd, areaCds);
+        return ResultMaps.result(ResultEnum.SUCCESS,shelfPatternForArea);
     }
 }

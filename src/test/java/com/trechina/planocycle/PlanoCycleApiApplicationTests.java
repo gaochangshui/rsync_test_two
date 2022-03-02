@@ -1,8 +1,10 @@
 package com.trechina.planocycle;
 
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
+import com.trechina.planocycle.entity.vo.ShelfNamePatternVo;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
 import com.trechina.planocycle.mapper.ProductPowerMstMapper;
+import com.trechina.planocycle.mapper.ShelfPatternMstMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +26,16 @@ class PlanoCycleApiApplicationTests {
 private ProductPowerDataMapper productPowerDataMapper;
 @Autowired
     ProductPowerMstMapper productPowerMstMapper;
-
+@Autowired
+    ShelfPatternMstMapper shelfPatternMstMapper;
 
     @Test
     public void test1() {
-     //   productPowerDataMapper.endYobiiiternDataForWk("0001", 123, "10215814");
+        int[] a= {1,2};
+
+        List<ShelfNamePatternVo> shelfPatternForArea = shelfPatternMstMapper.getShelfPatternForArea("0001",a);
+        shelfPatternForArea.forEach(System.out::println);
+        //   productPowerDataMapper.endYobiiiternDataForWk("0001", 123, "10215814");
        // productPowerDataMapper.setWkSyokikaForFinally("0001",1,"10215814");
        // productPowerDataMapper.setWkGroupForFinally("0001",1,"10215814");
        // productPowerDataMapper.setWkYobilitemForFinally("0001",1,"10215814");

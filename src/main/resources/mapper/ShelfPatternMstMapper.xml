@@ -17,6 +17,15 @@
     <id column="shelf_pattern_cd" jdbcType="INTEGER" property="shelfPatternCd" />
     <result column="shelf_pattern_name" jdbcType="VARCHAR" property="shelfPatternName" />
   </resultMap>
+  <resultMap id="getNamePatternMap" type="com.trechina.planocycle.entity.vo.ShelfNamePatternVo">
+    <id column="shelfCd" jdbcType="INTEGER" property="value"/>
+    <result column="shelfName" jdbcType="VARCHAR" property="label"/>
+    <collection property="children" ofType="com.trechina.planocycle.entity.vo.ShelfPatternChidrenVo">
+      <id column="patternCd" jdbcType="INTEGER" property="value"/>
+      <result column="patternName" jdbcType="VARCHAR" property="label"/>
+    </collection>
+
+  </resultMap>
   <sql id="Base_Column_List">
       shelf.company_cd,shelf.shelf_name_cd,shelf.ptskey, name.shelf_name as shelfName, shelf.shelf_pattern_cd, array_to_string(array_agg(distinct areas.areaname),',') as areaName, shelf.shelf_pattern_name, shelf.create_time, shelf.author_cd,
       shelf.registered, shelf.maintainer_cd, shelf.modified,shelf.modified,count(branch.branch)  as branch
@@ -114,6 +123,26 @@
     select shelf_pattern_cd
     from planocycle.shelf_pattern_mst
     where shelf_name_cd =#{shelfNameCd} and company_cd=#{companyCd} and deleteflg=0
+  </select>
+  <select id="getShelfPatternForArea" resultMap="getNamePatternMap">
+    SELECT DISTINCT
+      mst.id shelfCd,
+      mst.shelf_name shelfName,
+      pattern.shelf_pattern_cd patternCd,
+      pattern.shelf_pattern_name patternName
+    FROM
+      planocycle.shelf_name_mst mst
+        LEFT JOIN planocycle.shelf_pattern_mst pattern ON mst.id = pattern.shelf_name_cd
+        AND pattern.deleteflg = 0
+        LEFT JOIN planocycle.shelf_pattern_area area ON pattern.shelf_pattern_cd = area.shelf_pattern_cd
+        AND area.deleteflg = 0
+    WHERE
+       mst.deleteflg = 0
+      and area.areacd in
+      <foreach collection="areaCds" item="item" open="(" close=")" separator=",">
+        #{item}
+      </foreach>
+      AND mst.company_cd = #{companyCd,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.shelf_pattern_mst

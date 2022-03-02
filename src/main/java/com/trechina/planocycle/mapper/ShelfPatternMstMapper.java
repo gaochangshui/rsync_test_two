@@ -2,6 +2,7 @@ package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.ShelfPatternDto;
 import com.trechina.planocycle.entity.po.ShelfPatternMst;
+import com.trechina.planocycle.entity.vo.ShelfNamePatternVo;
 import com.trechina.planocycle.entity.vo.ShelfPatternNameVO;
 import com.trechina.planocycle.entity.vo.ShelfPatternTreeVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -36,4 +37,6 @@ public interface ShelfPatternMstMapper {
     List<Integer> getpatternIdOfPtsKey(String ptsKey);
 
     List<Integer> getShelfPattern(@Param("companyCd") String companyCd, @Param("shelfNameCd") Integer shelfNameCd);
+
+    List<ShelfNamePatternVo> getShelfPatternForArea(@Param("companyCd") String companyCd,@Param("areaCds")int[]a);
 }

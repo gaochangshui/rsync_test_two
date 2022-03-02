@@ -91,4 +91,13 @@ public class ShelfPatternController {
     public Map<String,Object> delShelfPatternInfo(@RequestBody JSONObject jsonObject){
         return shelfPatternService.delShelfPatternInfo(jsonObject);
     }
+
+    /**
+     * 根据area获取棚名称和棚pattern
+     */
+    @GetMapping("getShelfPatternForArea")
+    public Map<String,Object> getShelfPatternForArea(String companyCd,int[] areaCds){
+
+        return shelfPatternService.getShelfPatternForArea(companyCd,areaCds);
+    }
 }
