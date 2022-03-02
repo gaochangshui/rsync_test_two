@@ -100,7 +100,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             // 带着taskId，再次请求cgi获取运行状态/数据
             Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
             logger.info("商品力点数表web版cgi返回数据：" + Data);
-
+            if (Data.get("data").equals("")){
+                return Data;
+            }
             // 返回的数据是字符串，处理成二维数组
             if (Data.get("data") != null) {
                 String[] strResult = Data.get("data").toString().split("@");
@@ -126,7 +128,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 if (strList.size() > 0) {
                     productPowerDataMapper.insertGroup(strList);
                 }
-            } else {
+            }
+            else {
                 productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
                 return Data;
             }
