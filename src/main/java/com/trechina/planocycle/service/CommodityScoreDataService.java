@@ -41,12 +41,7 @@ public interface CommodityScoreDataService {
      * @return
      */
     Map<String, Object> getCommodityScoreGroupTaskId(ProductPowerGroupDataForCgiDto productPowerDataForCgiDto);
-    /**
-     * 商品力点数表编辑
-     * @param productPowerDataForCgiDto
-     * @return
-     */
-     Map<String,Object> updateCommodityScoreData( ProductPowerDataForCgiDto productPowerDataForCgiDto);
+
 
     /**
      * 获取DB商品力点数表data

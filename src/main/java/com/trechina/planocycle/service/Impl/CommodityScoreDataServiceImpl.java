@@ -58,8 +58,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             int a = 1;
             productPowerDataMapper.deleteWKSyokika(companyCd,authorCd);
             productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
-            productPowerDataMapper.deleteWKYobiiitern(companyCd,authorCd);
-            productPowerDataMapper.deleteWKYobiiiternData(companyCd,authorCd);
+            productPowerDataMapper.deleteWKYobiiitern(authorCd,companyCd);
+            productPowerDataMapper.deleteWKYobiiiternData(authorCd,companyCd);
             for (int i = 0; i < strResult.length; i++) {
                 strSplit = strResult[i].split(" ");
                 arr = new String[strSplit.length+1];
@@ -80,7 +80,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
         List<ProductPowerMstData> syokikaList = productPowerDataMapper.selectWKSyokika(companyCd,authorCd);
 
-//            logger.info("商品力点数表cgi返回数据："+arrList+"&"+Data);
+        logger.info("返回pos基本信息为",syokikaList);
         return ResultMaps.result(ResultEnum.SUCCESS,syokikaList);
     }
 
@@ -100,11 +100,11 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             // 带着taskId，再次请求cgi获取运行状态/数据
             Map<String,Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID,tokenInfo);
             logger.info("商品力点数表web版cgi返回数据：" + Data);
-            if (Data.get("data").equals("")){
+            if ("5".equals(Data.get("data"))){
                 return Data;
             }
             // 返回的数据是字符串，处理成二维数组
-            if (Data.get("data") != null) {
+            if (Data.get("data") != null && Data.get("data")!="") {
                 String[] strResult = Data.get("data").toString().split("@");
                 String[] strSplit = null;
                 String[] arr;
@@ -118,7 +118,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     }
                     arr[a] = session.getAttribute("aud").toString();
                     System.arraycopy(strSplit, 0, arr, 0, a);
-                    //数据过大500存一次
+                    //数据过大1000存一次
                     if (i % 1000 == 0 && i >= 1000) {
                         productPowerDataMapper.insertGroup(strList);
                         strList.clear();
@@ -128,16 +128,21 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 if (strList.size() > 0) {
                     productPowerDataMapper.insertGroup(strList);
                 }
+            }else if ("".equals(Data.get("data"))){
+                productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
             }
             else {
-                productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
+
                 return Data;
             }
 
 
         }
         List<ProductPowerMstData> kokyakuList = productPowerDataMapper.selectWKKokyaku(authorCd,companyCd);
+        logger.info("pos基本信息和顾客信息：{}",kokyakuList);
         List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData( authorCd, companyCd);
+        logger.info("预备项目：{}",kokyakuList);
+
         if (wkYobiiiternDataList.isEmpty()){
             return ResultMaps.result(ResultEnum.SUCCESS,kokyakuList);
         }
@@ -163,9 +168,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             }
 
         });
-
-//            logger.info("商品力点数表cgi返回数据："+arrList+"&"+
-
 
         return ResultMaps.result(ResultEnum.SUCCESS,kokyakuList);
     }
@@ -279,11 +281,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             logger.info("获取商品力点数表taskid数据报错："+e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
-    }
-    @Override
-    public Map<String, Object> updateCommodityScoreData(ProductPowerDataForCgiDto productPowerDataForCgiDto) {
-
-        return null;
     }
 
     @Override

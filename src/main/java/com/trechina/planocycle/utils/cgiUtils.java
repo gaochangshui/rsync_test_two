@@ -116,7 +116,7 @@ public class cgiUtils {
                 builder.append(read+"@");
             }
             if (builder.length()==0){
-                return ResultMaps.result(ResultEnum.CGIERROR,null);
+                return ResultMaps.result(ResultEnum.SIZEISZERO,"");
             }
             builder = new StringBuilder(builder.substring(0,builder.length()-1));
             logger.info("postCgiOfWeb statusCode,reqult："+statusCode+","+builder.toString());
@@ -130,7 +130,7 @@ public class cgiUtils {
             else if (builder.toString().equals("4")) {
                 return ResultMaps.result(ResultEnum.CGIERROR,null);
             }else if (builder.toString().equals("5")){
-                return ResultMaps.result(ResultEnum.DATAISTOOLARGE,"");
+                return ResultMaps.result(ResultEnum.DATAISTOOLARGE,"5");
             }
             else{
                 return ResultMaps.result(ResultEnum.SUCCESS,builder.toString());

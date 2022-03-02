@@ -8,6 +8,7 @@ public enum ResultEnum {
     CGITIEMOUT(20002,"cgi调用超时"),
     CGICANCEL(20003,"cgi手动取消"),
     CGIERROR(20004,"cgi报错"),
+    SIZEISZERO(20005,"数据为空"),
     NAMEISEXISTS(30001,"名称已经存在"),
     NOTDATAS(30002,"没有数据"),
     JANNOTESISTS(30003,"jan不存在"),

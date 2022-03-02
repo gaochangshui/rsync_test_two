@@ -19,7 +19,7 @@ public class CommodityScoreDataController {
      * @param taskID
      * @return
      */
-    //TODO:获取商品力点数表基本数据
+
     @GetMapping("/getCommodityScoreData")
     public Map<String,Object> getCommodityScoreData(String taskID,String companyCd) {
         return commodityScoreDataService.getCommodityScoreData(taskID,companyCd);
@@ -30,7 +30,7 @@ public class CommodityScoreDataController {
      * @param productPowerDataForCgiDto
      * @return
      */
-    //TODO:获取商品力点数表基本数据
+
     @PostMapping("/getCommodityScoreTaskId")
     public Map<String,Object> getCommodityScoreTaskId(@RequestBody ProductPowerDataForCgiDto productPowerDataForCgiDto){
         return commodityScoreDataService.getCommodityScoreTaskId(productPowerDataForCgiDto);
@@ -41,7 +41,7 @@ public class CommodityScoreDataController {
      * @param taskID
      * @return
      */
-    //TODO:获取商品力点数表Group数据
+
     @GetMapping("/getCommodityScoreGroupData")
     public Map<String,Object> getCommodityScoreGroupData(String taskID,String companyCd) {
         return commodityScoreDataService.getCommodityScoreGroupData(taskID,companyCd);
@@ -52,7 +52,7 @@ public class CommodityScoreDataController {
      * @param productPowerDataForCgiDto
      * @return
      */
-    //TODO:获取商品力点数表Group数据
+
     @PostMapping("/getCommodityScoreGroupTaskId")
     public Map<String,Object> getCommodityScoreGroupTaskId(@RequestBody ProductPowerGroupDataForCgiDto productPowerDataForCgiDto){
         return commodityScoreDataService.getCommodityScoreGroupTaskId(productPowerDataForCgiDto);
@@ -73,15 +73,7 @@ public class CommodityScoreDataController {
         return commodityScoreDataService.getAttrFileSaveForCgi(companyCd,filename,datacd,productPowerNo,dataNm);
     }
 
-    /**
-     * 商品力点数表编辑
-     * @param productPowerDataForCgiDto
-     * @return
-     */
-    @PutMapping("/updateCommodityScoreData")
-    public Map<String,Object> updateCommodityScoreData(@RequestBody ProductPowerDataForCgiDto productPowerDataForCgiDto){
-        return commodityScoreDataService.updateCommodityScoreData(productPowerDataForCgiDto);
-    }
+
 
     /**
      * 编辑时获取最终表里的data
