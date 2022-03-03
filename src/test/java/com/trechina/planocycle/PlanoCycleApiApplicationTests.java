@@ -1,7 +1,6 @@
 package com.trechina.planocycle;
 
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.vo.ShelfNamePatternVo;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
 import com.trechina.planocycle.mapper.ProductPowerMstMapper;
 import com.trechina.planocycle.mapper.ShelfPatternMstMapper;
@@ -33,8 +32,9 @@ private ProductPowerDataMapper productPowerDataMapper;
     public void test1() {
         int[] a= {1,2};
 
-        List<ShelfNamePatternVo> shelfPatternForArea = shelfPatternMstMapper.getShelfPatternForArea("0001",a);
-        shelfPatternForArea.forEach(System.out::println);
+       /* List<ShelfNamePatternVo> shelfPatternForArea = shelfPatternMstMapper.getShelfPatternForArea("0001",a);
+        shelfPatternForArea.forEach(System.out::println);*/
+        productPowerDataMapper.insertYobilitem("0001","10215814",31003,"1",4);
         //   productPowerDataMapper.endYobiiiternDataForWk("0001", 123, "10215814");
        // productPowerDataMapper.setWkSyokikaForFinally("0001",1,"10215814");
        // productPowerDataMapper.setWkGroupForFinally("0001",1,"10215814");
