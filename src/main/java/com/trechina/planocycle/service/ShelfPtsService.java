@@ -64,4 +64,11 @@ public interface ShelfPtsService {
      * @return
      */
     public Map<String,Object> delShelfPtsInfo(JSONObject jsonObject);
+
+    /**
+     * 获取棚pattern关联的pts的棚/段数
+     * @param patternCd
+     * @return
+     */
+      Map<String,Object> getTaiNumTanaNum(Integer patternCd);
 }

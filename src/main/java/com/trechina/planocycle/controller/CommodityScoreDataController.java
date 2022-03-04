@@ -16,50 +16,53 @@ public class CommodityScoreDataController {
 
     /**
      * 获取商品力点数表基本数据
+     *
      * @param taskID
      * @return
      */
 
     @GetMapping("/getCommodityScoreData")
-    public Map<String,Object> getCommodityScoreData(String taskID,String companyCd) {
-        return commodityScoreDataService.getCommodityScoreData(taskID,companyCd);
+    public Map<String, Object> getCommodityScoreData(String taskID, String companyCd) {
+        return commodityScoreDataService.getCommodityScoreData(taskID, companyCd);
     }
 
     /**
      * 获取商品力点数表基本数据
+     *
      * @param productPowerDataForCgiDto
      * @return
      */
 
     @PostMapping("/getCommodityScoreTaskId")
-    public Map<String,Object> getCommodityScoreTaskId(@RequestBody ProductPowerDataForCgiDto productPowerDataForCgiDto){
+    public Map<String, Object> getCommodityScoreTaskId(@RequestBody ProductPowerDataForCgiDto productPowerDataForCgiDto) {
         return commodityScoreDataService.getCommodityScoreTaskId(productPowerDataForCgiDto);
     }
 
     /**
      * 获取商品力点数表Group数据
+     *
      * @param taskID
      * @return
      */
 
     @GetMapping("/getCommodityScoreGroupData")
-    public Map<String,Object> getCommodityScoreGroupData(String taskID,String companyCd) {
-        return commodityScoreDataService.getCommodityScoreGroupData(taskID,companyCd);
+    public Map<String, Object> getCommodityScoreGroupData(String taskID, String companyCd) {
+        return commodityScoreDataService.getCommodityScoreGroupData(taskID, companyCd);
     }
 
     /**
      * 获取商品力点数表Group数据
+     *
      * @param productPowerDataForCgiDto
      * @return
      */
 
     @PostMapping("/getCommodityScoreGroupTaskId")
-    public Map<String,Object> getCommodityScoreGroupTaskId(@RequestBody ProductPowerGroupDataForCgiDto productPowerDataForCgiDto){
+    public Map<String, Object> getCommodityScoreGroupTaskId(@RequestBody ProductPowerGroupDataForCgiDto productPowerDataForCgiDto) {
         return commodityScoreDataService.getCommodityScoreGroupTaskId(productPowerDataForCgiDto);
     }
 
     /**
-     *
      * @param companyCd
      * @param filename
      * @param datacd
@@ -68,32 +71,33 @@ public class CommodityScoreDataController {
      * @return
      */
     @GetMapping("/getAttrFileSaveForCgi")
-    public Map<String,Object> getAttrFileSaveForCgi(String companyCd,String filename,String datacd,
-                                                    Integer productPowerNo,String dataNm){
-        return commodityScoreDataService.getAttrFileSaveForCgi(companyCd,filename,datacd,productPowerNo,dataNm);
+    public Map<String, Object> getAttrFileSaveForCgi(String companyCd, String filename, String datacd,
+                                                     Integer productPowerNo, String dataNm) {
+        return commodityScoreDataService.getAttrFileSaveForCgi(companyCd, filename, datacd, productPowerNo, dataNm);
     }
-
 
 
     /**
      * 编辑时获取最终表里的data
+     *
      * @param companyCd
      * @param productPowerCd
      * @return
      */
     @GetMapping("getDBCommodityScoreData")
-    public Map<String,Object> getDBCommodityScoreData(String companyCd ,Integer productPowerCd){
-        return commodityScoreDataService.getDBCommodityScoreData(companyCd,productPowerCd);
+    public Map<String, Object> getDBCommodityScoreData(String companyCd, Integer productPowerCd) {
+        return commodityScoreDataService.getDBCommodityScoreData(companyCd, productPowerCd);
     }
 
     /**
      * 获取商品力点数表关联的优先顺位表的个数
+     *
      * @param companyCd
      * @param productPowerCd
      * @return
      */
     @GetMapping("")
-    public Map<String,Object> get(String companyCd ,Integer productPowerCd){
+    public Map<String, Object> get(String companyCd, Integer productPowerCd) {
         return null;
     }
 

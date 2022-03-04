@@ -218,4 +218,17 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
         #{item.shelfPatternCd}
       </foreach>
   </select>
+  <select id="getTaiNum" resultType="java.lang.Integer">
+    select count(taiMst.tai_cd) taiNum from planocycle.shelf_pts_data ptsData
+    left join planocycle.shelf_pts_data_taimst taiMst
+    on ptsData.id = taiMst.pts_cd
+    where ptsData.shelf_pattern_cd=#{patternCd}
+  </select>
+  <select id="getTanaNum" resultType="java.lang.Integer">
+    select count(tanaMst.tana_cd) tanaNum from planocycle.shelf_pts_data ptsData
+    left join planocycle.shelf_pts_data_tanamst tanaMst
+    on ptsData.id = tanaMst.pts_cd
+    where ptsData.shelf_pattern_cd=#{patternCd}
+  </select>
+
 </mapper>

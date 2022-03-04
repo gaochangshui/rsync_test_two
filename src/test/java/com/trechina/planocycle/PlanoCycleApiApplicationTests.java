@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
 import com.trechina.planocycle.mapper.ProductPowerMstMapper;
 import com.trechina.planocycle.mapper.ShelfPatternMstMapper;
+import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,33 +22,38 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class PlanoCycleApiApplicationTests {
-@Autowired
-private ProductPowerDataMapper productPowerDataMapper;
-@Autowired
+    @Autowired
+    private ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
     ProductPowerMstMapper productPowerMstMapper;
-@Autowired
+    @Autowired
     ShelfPatternMstMapper shelfPatternMstMapper;
-
+    @Autowired
+    ShelfPtsDataMapper shelfPtsDataMapper;
     @Test
     public void test1() {
-        int[] a= {1,2};
+        int[] a = {1, 2};
 
        /* List<ShelfNamePatternVo> shelfPatternForArea = shelfPatternMstMapper.getShelfPatternForArea("0001",a);
         shelfPatternForArea.forEach(System.out::println);*/
-        productPowerDataMapper.insertYobilitem("0001","10215814",31003,"1",4);
+       // productPowerDataMapper.insertYobilitem("0001", "10215814", 31003, "1", 4);
+        Integer taiNumTanaNum = shelfPtsDataMapper.getTaiNum(42);
+        Integer tanaNumTanaNum = shelfPtsDataMapper.getTanaNum(42);
+        System.out.println(taiNumTanaNum+""+tanaNumTanaNum);
+
         //   productPowerDataMapper.endYobiiiternDataForWk("0001", 123, "10215814");
-       // productPowerDataMapper.setWkSyokikaForFinally("0001",1,"10215814");
-       // productPowerDataMapper.setWkGroupForFinally("0001",1,"10215814");
-       // productPowerDataMapper.setWkYobilitemForFinally("0001",1,"10215814");
-       // productPowerDataMapper.setWkDataForFinally("0001",1,"10215814");
+        // productPowerDataMapper.setWkSyokikaForFinally("0001",1,"10215814");
+        // productPowerDataMapper.setWkGroupForFinally("0001",1,"10215814");
+        // productPowerDataMapper.setWkYobilitemForFinally("0001",1,"10215814");
+        // productPowerDataMapper.setWkDataForFinally("0001",1,"10215814");
         //productPowerDataMapper.setWKData("0001",1,"10215814");
         //productPowerDataMapper.setWkYobilitemDataForFinally("0001",1,"10215814");
 
-       // List<ProductPowerMstData> productPowerMstDataList = productPowerDataMapper.selectWKKokyaku("10215814","0001");
+        // List<ProductPowerMstData> productPowerMstDataList = productPowerDataMapper.selectWKKokyaku("10215814","0001");
         //productPowerMstDataList.stream().forEach(System.out::println);
-      //  productPowerMstMapper.delete("0001",735 ,"10215814","10215814");
+        //  productPowerMstMapper.delete("0001",735 ,"10215814","10215814");
         //productPowerDataMapper.endSyokikaForWK("0001",735 ,"10215814");
-      //  productPowerDataMapper.endGroupForWK("0001",735 ,"10215814");
+        //  productPowerDataMapper.endGroupForWK("0001",735 ,"10215814");
      /*   productPowerDataMapper.phyDeleteYobiiitern("0001",735 ,"10215814");
         productPowerDataMapper.phyDeleteYobiiiternData("0001",735 ,"10215814");
         productPowerDataMapper.endYobiiiternForWk("0001",735 ,"10215814");
@@ -71,7 +77,7 @@ private ProductPowerDataMapper productPowerDataMapper;
 */
         //List<ProductPowerMstData> productPowerMstDataList = productPowerDataMapper.selectWKKokyaku("10212159", "0001");
         //List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData( "10212159", "0001");
-       // wkYobiiiternDataList.forEach(System.out::println);
+        // wkYobiiiternDataList.forEach(System.out::println);
 /*        Integer integer = Integer.valueOf("3100" + 1);
         Integer integer1 = Integer.valueOf("3100" + 1);
         boolean b = integer.equals(integer1);
@@ -80,12 +86,12 @@ private ProductPowerDataMapper productPowerDataMapper;
 
        /* productPowerDataMapper.deleteData("0001",735 ,"10215814");
         productPowerDataMapper.setData(735 ,"10215814","0001");*/
-     //   productPowerDataMapper.endSyokikaForWK("0001",2,"10215814");
-       // productPowerDataMapper.endGroupForWK("0001",1,"10215814");       // StringBuilder strs = new StringBuilder();
-       // productPowerDataMapper.endYobiiiternForWk("0001",1,"10215814");
+        //   productPowerDataMapper.endSyokikaForWK("0001",2,"10215814");
+        // productPowerDataMapper.endGroupForWK("0001",1,"10215814");       // StringBuilder strs = new StringBuilder();
+        // productPowerDataMapper.endYobiiiternForWk("0001",1,"10215814");
         //productPowerDataMapper.endYobiiiternDataForWk("0001",1,"10215814");
         //productPowerDataMapper.deleteData("0001",1,"10212159");
-       // productPowerDataMapper.setData(1,"0001","10212159");
+        // productPowerDataMapper.setData(1,"0001","10212159");
         //productPowerDataMapper.getAllData("0001",1).stream().forEach(System.out::println);
        /* for (int i=0;i<=1000;i++){
             String str="0001 "+(i)+" 1 1 1 1 1 1 1 1 1@";
@@ -118,14 +124,14 @@ private ProductPowerDataMapper productPowerDataMapper;
 
     }
 
-    public static Object arrayToObject(Object[] obj,Class<?> classType){
+    public static Object arrayToObject(Object[] obj, Class<?> classType) {
         Object stu1 = null;
         try {
-            stu1=classType.newInstance();
-            for (int i = 0;i < classType.getDeclaredFields().length;i++){
-                String setMethodName = "set"+classType.getDeclaredFields()[i].getName().substring(0,1).toUpperCase()+classType.getDeclaredFields()[i].getName().substring(1);
+            stu1 = classType.newInstance();
+            for (int i = 0; i < classType.getDeclaredFields().length; i++) {
+                String setMethodName = "set" + classType.getDeclaredFields()[i].getName().substring(0, 1).toUpperCase() + classType.getDeclaredFields()[i].getName().substring(1);
                 Method setMethod = classType.getDeclaredMethod(setMethodName, new Class[]{classType.getDeclaredFields()[i].getType()});
-                setMethod.invoke(stu1,obj[i]);
+                setMethod.invoke(stu1, obj[i]);
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -138,26 +144,25 @@ private ProductPowerDataMapper productPowerDataMapper;
         }
         return stu1;
     }
-@Test
-    public void test4(){
+
+    @Test
+    public void test4() {
         List<Student> list = new ArrayList();
         Student student = new Student();
         student.setAge(10);
-    Student s1 = new Student();
+        Student s1 = new Student();
         s1.setAge(140);
-    Student s2 = new Student();
+        Student s2 = new Student();
         s2.setAge(1);
-    Student s3 = new Student();
+        Student s3 = new Student();
         s3.setAge(10355);
-    Student s4 = new Student();
+        Student s4 = new Student();
         s4.setAge(1001);
         list.add(s2);
         list.add(s1);
         list.add(student);
         list.add(s3);
         list.add(s4);
-
-
 
 
     }
@@ -218,7 +223,6 @@ private ProductPowerDataMapper productPowerDataMapper;
         String column = "pPosAmount";
 
 
-
         Class clazz = ProductPowerMstData.class;
         Method getMethod = clazz.getMethod("get" + column);
         Method setMethod = clazz.getMethod("set" + column + "Rank");
@@ -245,5 +249,14 @@ private ProductPowerDataMapper productPowerDataMapper;
         }
         System.out.println();
     }
+
+
+    @Test
+    void test6() {
+
+    }
+
+    public  void test7(){}
+
 
 }

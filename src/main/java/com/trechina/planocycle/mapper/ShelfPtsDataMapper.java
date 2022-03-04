@@ -15,15 +15,15 @@ public interface ShelfPtsDataMapper {
 
     int insert(ShelfPtsData record);
 
-    List<ShelfPtsData> selectByPrimaryKey(String companyCd,@Param("rangFlag") Integer rangFlag,@Param("lists") List<Integer> areaList);
+    List<ShelfPtsData> selectByPrimaryKey(String companyCd, @Param("rangFlag") Integer rangFlag, @Param("lists") List<Integer> areaList);
 
     int updateByPrimaryKey(@Param("lists") List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto);
 
     void updateByValidFlg(String companyCd);
 
-    void updatePtsHistory(@Param("item") ShelfPtsJoinPatternDto item,@Param("authorCd") String authorCd);
+    void updatePtsHistory(@Param("item") ShelfPtsJoinPatternDto item, @Param("authorCd") String authorCd);
 
-    void insertPtsHistory( @Param("item") ShelfPtsJoinPatternDto item,@Param("authorCd") String authorCd);
+    void insertPtsHistory(@Param("item") ShelfPtsJoinPatternDto item, @Param("authorCd") String authorCd);
 
     Integer selectExistsCount(ShelfPtsJoinPatternDto item);
 
@@ -33,7 +33,7 @@ public interface ShelfPtsDataMapper {
 
     List<ShelfPtsNameVO> selectPtsName(String companyCd);
 
-    List<ShelfPtsData> selectPtsInfoOfPattern(String companyCd, Integer rangFlag,@Param("lists") List<Integer> areaList);
+    List<ShelfPtsData> selectPtsInfoOfPattern(String companyCd, Integer rangFlag, @Param("lists") List<Integer> areaList);
 
     void updateByPrimaryKeyOfPattern(@Param("lists") List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto);
 
@@ -43,13 +43,18 @@ public interface ShelfPtsDataMapper {
 
     void updateAll(@Param("lists") List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto);
 
-    void updateShelfPtsOfAutoInner(@Param("id") Integer id, @Param("patternId") Integer patternId,@Param("authorCd") String authorCd);
+    void updateShelfPtsOfAutoInner(@Param("id") Integer id, @Param("patternId") Integer patternId, @Param("authorCd") String authorCd);
 
-    void updateSingle(@Param("patternId") Integer patternId,@Param("authorCd") String authorCd);
+    void updateSingle(@Param("patternId") Integer patternId, @Param("authorCd") String authorCd);
 
-    void updatePtsHistoryFlgSingle(@Param("patternId") Integer patternId,@Param("authorCd") String authorCd);
+    void updatePtsHistoryFlgSingle(@Param("patternId") Integer patternId, @Param("authorCd") String authorCd);
 
-    Integer delShelfPtsInfo(@Param("id") Integer id ,@Param("authorCd")String authorCd);
+    Integer delShelfPtsInfo(@Param("id") Integer id, @Param("authorCd") String authorCd);
 
-    Integer delShelfHistoryInfo(@Param("id" ) Integer id,@Param("authorCd")String authorCd);
+    Integer delShelfHistoryInfo(@Param("id") Integer id, @Param("authorCd") String authorCd);
+
+    //pts台数
+    Integer getTaiNum(@Param("patternCd")Integer patternCd);
+    //pts总段数
+    Integer getTanaNum(@Param("patternCd")Integer patternCd);
 }

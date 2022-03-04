@@ -83,8 +83,17 @@ public class CommodityScoreParaController {
         return commodityScoreParaService.delCommodityScoreAllInfo(primaryKeyVO);
     }
 
+    /**
+     * 预备项目上传保存到数据库
+     * @param multipartFile
+     * @param companyCd
+     * @param dataCd
+     * @param dataName
+     * @param valueCd
+     * @return
+     */
     @PostMapping("/yobi")
-    public Map<String, Object> updateYobi(@RequestParam(value = "file",required = false) MultipartFile multipartFile, @RequestParam("companyCd") String companyCd, @RequestParam("dataCd") String dataCd,@RequestParam("dataName")String dataName,@RequestParam("valueCd")Integer valueCd) {
+    public Map<String, Object> updateYobi(@RequestParam(value = "file",required = false) MultipartFile multipartFile, @RequestParam("companyCd") String companyCd, @RequestParam("dataCd") String dataCd, @RequestParam("dataName")String dataName, @RequestParam("valueCd")Integer valueCd) {
         List<String[]> csvData = filesOperationService.uploadCsvToList(multipartFile);
         return commodityScoreParaService.saveYoBi(csvData, companyCd, dataCd,dataName,valueCd);
     }
