@@ -159,6 +159,8 @@
     <insert id="insertYobilitem">
         insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort)
         values (#{companyCd},#{authorCd},#{dataCd},#{itemName},#{dataSort})
+        on conflict(company_cd,author_cd,data_cd)
+        do update set data_name=#{itemName},author_cd=#{authorCd}
     </insert>
     <insert id="insertWkSyokikaForFinally">
         insert into planocycle.work_product_power_syokika(company_cd,author_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pos_amount,

@@ -288,7 +288,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             sortMax +=1;
         }
 
-        productPowerDataMapper.deleteWKYobiiiternCd(aud,companyCd,valueCd);
         productPowerDataMapper.insertYobilitem(companyCd,aud,valueCd,dataName,sortMax);
         if (data==null){
             return ResultMaps.result(ResultEnum.SUCCESS);
