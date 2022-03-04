@@ -101,6 +101,8 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
         and mstt.start_day=to_date(#{item.startDay,jdbcType=VARCHAR},'yyyy-MM-dd')
     )
   </insert>
+
+
   <select id="selectExistsCount" resultType="java.lang.Integer">
     select count(1) from planocycle.shelf_pts_data_history
     where pts_cd = #{shelfPtsCd,jdbcType=INTEGER}
@@ -219,16 +221,97 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
       </foreach>
   </select>
   <select id="getTaiNum" resultType="java.lang.Integer">
-    select count(taiMst.tai_cd) taiNum from planocycle.shelf_pts_data ptsData
+    select count(taiMst.tai_cd) taiNum
+    from planocycle.shelf_pts_data ptsData
     left join planocycle.shelf_pts_data_taimst taiMst
     on ptsData.id = taiMst.pts_cd
     where ptsData.shelf_pattern_cd=#{patternCd}
   </select>
   <select id="getTanaNum" resultType="java.lang.Integer">
-    select count(tanaMst.tana_cd) tanaNum from planocycle.shelf_pts_data ptsData
+    select count(tanaMst.tana_cd) tanaNum
+    from planocycle.shelf_pts_data ptsData
     left join planocycle.shelf_pts_data_tanamst tanaMst
     on ptsData.id = tanaMst.pts_cd
     where ptsData.shelf_pattern_cd=#{patternCd}
   </select>
+  <select id="getFaceNum" resultType="java.lang.Integer">
+    select sum(jandataMst.face_count) faceNum
+    from planocycle.shelf_pts_data ptsData
+    left join planocycle.shelf_pts_data_jandata jandataMst
+    on ptsData.id = jandataMst.pts_cd
+    where ptsData.shelf_pattern_cd=#{patternCd}
+  </select>
+  <select id="getSkuNum" resultType="java.lang.Integer">
+    select count(jandataMst.jan) skuNum
+    from planocycle.shelf_pts_data ptsData
+           left join planocycle.shelf_pts_data_jandata jandataMst
+                     on ptsData.id = jandataMst.pts_cd
+    where ptsData.shelf_pattern_cd=#{patternCd}
+  </select>
+  <select id="getPtsDatailData" resultType="com.trechina.planocycle.entity.vo.PtsDetailDataVo">
+    select ptsVersion.tai_header,ptsVersion.tana_header,ptsVersion.jan_header
+    from planocycle.shelf_pts_data ptsData
+    left join planocycle.shelf_pts_data_version ptsVersion
+    on ptsData."id" = ptsVersion.pts_cd
+    where ptsData.shelf_pattern_cd = #{patternCd}
+  </select>
+  <select id="getPtsDetailData" resultType="com.trechina.planocycle.entity.vo.PtsDetailDataVo">
+    select ptsVersion.tai_header,ptsVersion.tana_header,ptsVersion.jan_header,ptsVersion.modename
+    from planocycle.shelf_pts_data ptsData
+           left join planocycle.shelf_pts_data_version ptsVersion
+                     on ptsData."id" = ptsVersion.pts_cd
+    where ptsData.shelf_pattern_cd = #{patternCd}
+  </select>
+
+  <select id="getPengName" resultType="java.lang.String">
+    select
+      mst.shelf_name
+    from
+      planocycle.shelf_pattern_mst pattern
+        left join
+      planocycle.shelf_name_mst mst
+        on mst.id = pattern.shelf_name_cd
+    where pattern.shelf_pattern_cd = #{patternCd}
+  </select>
+  <select id="getPatternName" resultType="java.lang.String">
+    select
+      pattern.shelf_pattern_name
+    from
+      planocycle.shelf_pattern_mst pattern
+
+    where pattern.shelf_pattern_cd = #{patternCd}
+  </select>
+  <select id="getTanaData" resultType="com.trechina.planocycle.entity.vo.PtsTanaVo">
+    select
+      tanaMst.tai_cd,tanaMst.tana_cd,tanaMst.tana_height,tanaMst.tana_width,tanaMst.tana_depth,tanaMst.tana_thickness,tanaMst.tana_type
+    from
+      planocycle.shelf_pts_data ptsData
+        left join
+      planocycle.shelf_pts_data_tanamst tanaMst
+      on ptsData."id" =  tanaMst.pts_cd
+    where ptsData.shelf_pattern_cd = #{patternCd}
+  </select>
+  <select id="getTaiData" resultType="com.trechina.planocycle.entity.vo.PtsTaiVo">
+    select
+      taiMst.tai_cd,taiMst.tai_height,taiMst.tai_width,taiMst.tai_depth,taiMst.tai_name
+    from
+      planocycle.shelf_pts_data ptsData
+        left join
+      planocycle.shelf_pts_data_taimst taiMst
+      on ptsData."id" =  taiMst.pts_cd
+    where ptsData.shelf_pattern_cd = #{patternCd}
+  </select>
+  <select id="getJanData" resultType="com.trechina.planocycle.entity.vo.PtsJanDataVo">
+    select
+      janData.tai_cd,janData.tana_cd,janData.tanaposition_cd,janData.jan,janData.face_count,janData.face_men,janData.face_kaiten,
+      janData.tumiagesu,janData.zaikosu,janData.face_displayflg,janData.face_position,janData.depth_display_num
+    from
+      planocycle.shelf_pts_data ptsData
+        left join
+      planocycle.shelf_pts_data_jandata janData
+      on ptsData."id" =  janData.pts_cd
+    where ptsData.shelf_pattern_cd = #{patternCd}
+  </select>
+
 
 </mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderRestrictSetMapper">
+    <insert id="setPriorityOrderRestrict">
+        insert into planocycle.priority_order_restrict_set(company_cd,priority_order_cd,tai_cd,tana_cd,restrict_type,category,pkg,capacity,author_cd,create_time)
+        values (#{item.companyCd},#{item.priorityOrderCd},#{item.taiCd},#{item.tanaCd},#{item.restrictType},#{item.category},#{item.pkg},#{item.capacity}
+        ,#{authorCd},now())
+        on conflict(company_cd,priority_order_cd,tai_cd,tana_cd,restrict_type)
+        do update set
+            editer_cd = #{authorCd},edit_time = now()
+            <if test="item.pkg != null">
+                ,pkg = #{item.pkg}
+            </if>
+            <if test="item.category != null">
+                ,category = #{item.category}
+            </if>
+            <if test="item.capacity != null">
+                ,capacity=#{item.capacity}
+            </if>
+
+
+
+
+    </insert>
+</mapper>

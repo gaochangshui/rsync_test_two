@@ -115,4 +115,15 @@ public class ShelfPtsController {
         return shelfPtsService.getTaiNumTanaNum(patternCd);
 
     }
+
+    /**
+     * 获取棚pattern 关联pts的详细信息
+     * @param patternCd
+     * @return
+     */
+    @GetMapping("getPtsDetailData")
+    public  Map<String,Object> getPtsDetailData(Integer patternCd){
+        return shelfPtsService.getPtsDetailData(patternCd);
+
+    }
 }

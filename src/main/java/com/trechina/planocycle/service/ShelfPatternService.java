@@ -88,7 +88,7 @@ public interface ShelfPatternService {
     /**
      * 根据area获取棚名称和棚pattern
      * @param companyCd
-     * @param areas
+     * @param areaCds
      * @return
      */
      Map<String,Object> getShelfPatternForArea(String companyCd,int[] areaCds);

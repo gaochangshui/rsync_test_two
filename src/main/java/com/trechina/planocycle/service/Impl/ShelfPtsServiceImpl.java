@@ -4,8 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.po.ShelfPtsData;
-import com.trechina.planocycle.entity.vo.ShelfPtsDataHistoryVO;
-import com.trechina.planocycle.entity.vo.ShelfPtsNameVO;
+import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
 import com.trechina.planocycle.service.ShelfPatternService;
@@ -213,11 +212,38 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Override
     public Map<String, Object> getTaiNumTanaNum(Integer patternCd) {
         Map<String,Object> taiTanaNum = new HashMap<>();
-        Integer taiNum = shelfPtsDataMapper.getTaiNum(42);
-        Integer tanaNum = shelfPtsDataMapper.getTanaNum(42);
+        //台数
+        Integer taiNum = shelfPtsDataMapper.getTaiNum(patternCd);
+        //段数
+        Integer tanaNum = shelfPtsDataMapper.getTanaNum(patternCd);
+        //face数
+        Integer faceNum = shelfPtsDataMapper.getFaceNum(patternCd);
+        //sku数
+        Integer skuNum = shelfPtsDataMapper.getSkuNum(patternCd);
+        //pattern名称
+        String shelfPatternName = shelfPtsDataMapper.getPatternName(patternCd);
+        //棚名称
+        String shelfName = shelfPtsDataMapper.getPengName(patternCd);
         taiTanaNum.put("taiNum",taiNum);
         taiTanaNum.put("tanaNum",tanaNum);
+        taiTanaNum.put("faceNum",faceNum);
+        taiTanaNum.put("skuNum",skuNum);
+        taiTanaNum.put("shelfPatternName",shelfPatternName);
+        taiTanaNum.put("shelfName",shelfName);
+
         return ResultMaps.result(ResultEnum.SUCCESS,taiTanaNum);
+    }
+
+    @Override
+    public Map<String, Object> getPtsDetailData(Integer patternCd) {
+        PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
+        List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
+        List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
+        List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
+        ptsDetailData.setPtsTaiList(taiData);
+        ptsDetailData.setPtsTanaVoList(tanaData);
+        ptsDetailData.setPtsJanDataList(janData);
+        return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
 
     /**

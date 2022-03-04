@@ -2,8 +2,7 @@ package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.po.ShelfPtsData;
-import com.trechina.planocycle.entity.vo.ShelfPtsDataHistoryVO;
-import com.trechina.planocycle.entity.vo.ShelfPtsNameVO;
+import com.trechina.planocycle.entity.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -57,4 +56,22 @@ public interface ShelfPtsDataMapper {
     Integer getTaiNum(@Param("patternCd")Integer patternCd);
     //pts总段数
     Integer getTanaNum(@Param("patternCd")Integer patternCd);
+    //face数
+    Integer getFaceNum(@Param("patternCd")Integer patternCd);
+    //sku数
+    Integer getSkuNum(@Param("patternCd")Integer patternCd);
+    //获取棚名称
+    String getPengName(@Param("patternCd")Integer patternCd);
+    //获取棚pattern名称
+    String getPatternName(@Param("patternCd")Integer patternCd);
+
+    //header/列名
+    PtsDetailDataVo getPtsDetailData(@Param("patternCd")Integer patternCd);
+    //获取tai信息
+    List<PtsTaiVo> getTaiData(@Param("patternCd")Integer patternCd);
+    //获取tana信息
+    List<PtsTanaVo> getTanaData(@Param("patternCd")Integer patternCd);
+    //获取janData信息
+    List<PtsJanDataVo> getJanData(@Param("patternCd")Integer patternCd);
+
 }

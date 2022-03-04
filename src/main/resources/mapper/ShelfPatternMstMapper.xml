@@ -135,6 +135,7 @@
         LEFT JOIN planocycle.shelf_pattern_mst pattern ON mst.id = pattern.shelf_name_cd
         AND pattern.deleteflg = 0
         LEFT JOIN planocycle.shelf_pattern_area area ON pattern.shelf_pattern_cd = area.shelf_pattern_cd
+
         AND area.deleteflg = 0
     WHERE
        mst.deleteflg = 0

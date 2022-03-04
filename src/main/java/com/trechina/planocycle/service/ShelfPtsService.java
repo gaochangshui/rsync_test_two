@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +63,7 @@ public interface ShelfPtsService {
      * @param
      * @return
      */
-    public Map<String,Object> delShelfPtsInfo(JSONObject jsonObject);
+     Map<String,Object> delShelfPtsInfo(JSONObject jsonObject);
 
     /**
      * 获取棚pattern关联的pts的棚/段数
@@ -72,4 +71,6 @@ public interface ShelfPtsService {
      * @return
      */
       Map<String,Object> getTaiNumTanaNum(Integer patternCd);
+
+      Map<String,Object> getPtsDetailData(Integer patternCd);
 }

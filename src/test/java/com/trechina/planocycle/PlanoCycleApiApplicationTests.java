@@ -1,10 +1,8 @@
 package com.trechina.planocycle;
 
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.mapper.ProductPowerDataMapper;
-import com.trechina.planocycle.mapper.ProductPowerMstMapper;
-import com.trechina.planocycle.mapper.ShelfPatternMstMapper;
-import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
+import com.trechina.planocycle.entity.vo.PtsJanDataVo;
+import com.trechina.planocycle.mapper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +28,42 @@ class PlanoCycleApiApplicationTests {
     ShelfPatternMstMapper shelfPatternMstMapper;
     @Autowired
     ShelfPtsDataMapper shelfPtsDataMapper;
+    @Autowired
+    PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
     @Test
     public void test1() {
         int[] a = {1, 2};
+      /*  PtsTanaVo tanaData = shelfPtsDataMapper.getTanaData(43);
+        System.out.println(tanaData);
+*/
+      /*  Integer faceNum = shelfPtsDataMapper.getSkuNum(43);
+        Integer taiNumTanaNum = shelfPtsDataMapper.getTaiNum(43);
+        Integer tanaNumTanaNum = shelfPtsDataMapper.getTanaNum(43);
 
+        System.out.println(faceNum);
+        System.out.println(taiNumTanaNum);*/
+       /* List header = shelfPtsDataMapper.getHeader(43);
+        header.forEach(System.out::println);*/
+        List<PtsJanDataVo> taiData = shelfPtsDataMapper.getJanData(43);
+        taiData.forEach(System.out::println);
+
+        System.out.println(shelfPtsDataMapper.getPtsDetailData(43));
        /* List<ShelfNamePatternVo> shelfPatternForArea = shelfPatternMstMapper.getShelfPatternForArea("0001",a);
         shelfPatternForArea.forEach(System.out::println);*/
        // productPowerDataMapper.insertYobilitem("0001", "10215814", 31003, "1", 4);
-        Integer taiNumTanaNum = shelfPtsDataMapper.getTaiNum(42);
+/*        Integer taiNumTanaNum = shelfPtsDataMapper.getTaiNum(42);
         Integer tanaNumTanaNum = shelfPtsDataMapper.getTanaNum(42);
-        System.out.println(taiNumTanaNum+""+tanaNumTanaNum);
-
+        System.out.println(taiNumTanaNum+""+tanaNumTanaNum);*/
+       /* PriorityOrderRestrictSet priorityOrderRestrictSet = new PriorityOrderRestrictSet();
+        priorityOrderRestrictSet.setCompanyCd("0001");
+        priorityOrderRestrictSet.setPriorityOrderCd(12);
+        priorityOrderRestrictSet.setTaiCd(3);
+        priorityOrderRestrictSet.setTanaCd(4);
+        priorityOrderRestrictSet.setRestrictType(5);
+        priorityOrderRestrictSet.setCapacity(8);
+        //priorityOrderRestrictSet.setPkg(7);
+        priorityOrderRestrictSet.setCategory(5);
+        priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOrderRestrictSet,"10215814");*/
         //   productPowerDataMapper.endYobiiiternDataForWk("0001", 123, "10215814");
         // productPowerDataMapper.setWkSyokikaForFinally("0001",1,"10215814");
         // productPowerDataMapper.setWkGroupForFinally("0001",1,"10215814");
