@@ -8,7 +8,15 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.trechina.planocycle.entity.dto.GetPtsCsvCgiDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
+import com.trechina.planocycle.entity.po.ShelfPtsDataJandata;
+import com.trechina.planocycle.entity.po.ShelfPtsDataTaimst;
+import com.trechina.planocycle.entity.po.ShelfPtsDataTanamst;
+import com.trechina.planocycle.entity.po.ShelfPtsDataVersion;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.mapper.ShelfPtsDataJandataMapper;
+import com.trechina.planocycle.mapper.ShelfPtsDataTaimstMapper;
+import com.trechina.planocycle.mapper.ShelfPtsDataTanamstMapper;
+import com.trechina.planocycle.mapper.ShelfPtsDataVersionMapper;
 import com.trechina.planocycle.service.FilesOperationService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -41,6 +49,14 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     private ShelfPtsService shelfPtsService;
     @Autowired
     private cgiUtils cgiUtil;
+    @Autowired
+    private ShelfPtsDataVersionMapper shelfPtsDataVersionMapper;
+    @Autowired
+    private ShelfPtsDataTaimstMapper shelfPtsDataTaimstMapper;
+    @Autowired
+    private ShelfPtsDataTanamstMapper shelfPtsDataTanamstMapper;
+    @Autowired
+    private ShelfPtsDataJandataMapper shelfPtsDataJandataMapper;
 
     /**
      * 单文件上传
@@ -80,6 +96,87 @@ public class FilesOperationServiceImpl implements FilesOperationService {
         }
     }
 
+//    List<ShelfPtsDataTaimst> dataTaimstList = new ArrayList<>();
+//    ShelfPtsDataTaimst ptsDataTaimst = null;
+//    List<ShelfPtsDataTanamst> dataTanamstList = new ArrayList<>();
+//    ShelfPtsDataTanamst ptsDataTanamst = null;
+//    List<ShelfPtsDataJandata> dataJandataList = new ArrayList<>();
+//    ShelfPtsDataJandata ptsDataJandata = null;
+
+    private List<ShelfPtsDataTaimst> convertArrayToTaimstList(List<String[]> datas, Integer ptsCd, String companyCd, String authorCd, Date createTime) {
+        List<ShelfPtsDataTaimst> result = new ArrayList<>();
+        ShelfPtsDataTaimst ptsDataTaimst = null;
+        for (String[] data : datas) {
+            ptsDataTaimst = new ShelfPtsDataTaimst();
+            ptsDataTaimst.setPtsCd(ptsCd);
+            ptsDataTaimst.setCompanyCd(companyCd);
+
+            ptsDataTaimst.setTaiCd(Integer.valueOf(data[0]));
+            ptsDataTaimst.setTaiHeight(Integer.valueOf(data[1]));
+            ptsDataTaimst.setTaiWidth(Integer.valueOf(data[2]));
+            ptsDataTaimst.setTaiDepth(Integer.valueOf(data[3]));
+            ptsDataTaimst.setTaiName(data[4]);
+
+            ptsDataTaimst.setAuthorCd(authorCd);
+            ptsDataTaimst.setCreateTime(createTime);
+
+            result.add(ptsDataTaimst);
+        }
+        return result;
+    }
+
+    private List<ShelfPtsDataTanamst> convertArrayToTanamstList(List<String[]> datas, Integer ptsCd, String companyCd, String authorCd, Date createTime) {
+        List<ShelfPtsDataTanamst> result = new ArrayList<>();
+        ShelfPtsDataTanamst ptsDataTanamst = null;
+        for (String[] data : datas) {
+            ptsDataTanamst = new ShelfPtsDataTanamst();
+            ptsDataTanamst.setPtsCd(ptsCd);
+            ptsDataTanamst.setCompanyCd(companyCd);
+
+            ptsDataTanamst.setTaiCd(Integer.valueOf(data[0]));
+            ptsDataTanamst.setTanaCd(Integer.valueOf(data[1]));
+            ptsDataTanamst.setTanaHeight(Integer.valueOf(data[2]));
+            ptsDataTanamst.setTanaWidth(Integer.valueOf(data[3]));
+            ptsDataTanamst.setTanaDepth(Integer.valueOf(data[4]));
+            ptsDataTanamst.setTanaThickness(Integer.valueOf(data[5]));
+            ptsDataTanamst.setTanaType(Integer.valueOf(data[6]));
+
+            ptsDataTanamst.setAuthorCd(authorCd);
+            ptsDataTanamst.setCreateTime(createTime);
+
+            result.add(ptsDataTanamst);
+        }
+        return result;
+    }
+
+    private List<ShelfPtsDataJandata> convertArrayToJanList(List<String[]> datas, Integer ptsCd, String companyCd, String authorCd, Date createTime) {
+        List<ShelfPtsDataJandata> result = new ArrayList<>();
+        ShelfPtsDataJandata ptsDataJandata = null;
+        for (String[] data : datas) {
+            ptsDataJandata = new ShelfPtsDataJandata();
+            ptsDataJandata.setPtsCd(ptsCd);
+            ptsDataJandata.setCompanyCd(companyCd);
+
+            ptsDataJandata.setTaiCd(Integer.valueOf(data[0]));
+            ptsDataJandata.setTanaCd(Integer.valueOf(data[1]));
+            ptsDataJandata.setTanapositionCd(Integer.valueOf(data[2]));
+            ptsDataJandata.setJan(data[3]);
+            ptsDataJandata.setFaceCount(Integer.valueOf(data[4]));
+            ptsDataJandata.setFaceMen(Integer.valueOf(data[5]));
+            ptsDataJandata.setFaceKaiten(Integer.valueOf(data[6]));
+            ptsDataJandata.setTumiagesu(Integer.valueOf(data[7]));
+            ptsDataJandata.setZaikosu(Integer.valueOf(data[8]));
+            ptsDataJandata.setFaceDisplayflg(Integer.valueOf(data[9]));
+            ptsDataJandata.setFacePosition(Integer.valueOf(data[10]));
+            ptsDataJandata.setDepthDisplayNum(Integer.valueOf(data[11]));
+
+            ptsDataJandata.setAuthorCd(authorCd);
+            ptsDataJandata.setCreateTime(createTime);
+
+            result.add(ptsDataJandata);
+        }
+        return result;
+    }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -89,6 +186,8 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             if (multipartFileList != null && multipartFileList.length > 0) {
                 // 不存在会创建路径
                 judgeExistsPath(path);
+                String authorCd = session.getAttribute("aud").toString();
+                Date now = Calendar.getInstance().getTime();
                 //存放文件 // 文件内容check
                 for (MultipartFile file : multipartFileList) {
                     String filenames = "";
@@ -103,11 +202,13 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                             }
 
                             InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file1), "Shift_Jis");
+                            //
+                            ShelfPtsDataVersion ptsDataVersion = new ShelfPtsDataVersion();
+                            ptsDataVersion.setCompanyCd(companyCd);
+                            List<String[]> arrList1 = new ArrayList<>();
+                            List<String[]> arrList2 = new ArrayList<>();
+                            List<String[]> arrList3 = new ArrayList<>();
                             try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader);) {
-                                List arrList = new ArrayList<>();
-                                List<String[]> arrList1 = new ArrayList<>();
-                                List<String[]> arrList2 = new ArrayList<>();
-                                List<String[]> arrList3 = new ArrayList<>();
                                 String line = "";
                                 int lineNum = 1;
                                 int titleNum = 0;
@@ -115,28 +216,36 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                     if (lineNum == 1) {
                                         logger.info("第一行信息" + line);
                                         String[] arr = line.split(",");
-                                        arrList.add(arr);
                                         if (arr[1].equals("V3.0") == false && arr[1].equals("V2.0") == false) {
                                             logger.info("不包含3.0和2.0");
                                             return ResultMaps.result(ResultEnum.FILEVERSIONFAILURE);
                                         }
+                                        ptsDataVersion.setCommoninfo(arr[0]);
+                                        ptsDataVersion.setVersioninfo(arr[1]);
+                                        ptsDataVersion.setOutflg(arr[2]);
+                                        lineNum += 1;
+                                    } else if (lineNum == 2) {
+                                        ptsDataVersion.setModename(line);
                                         lineNum += 1;
                                     }
                                     // 数据分段
                                     if (line.indexOf("台番号") > -1) {
                                         titleNum += 1;
-                                    }
-                                    if (titleNum == 1) {
-                                        // 数据带表头
-                                        arrList1.add(line.split(","));
-                                    }
-                                    if (titleNum == 2) {
-                                        // 数据带表头
-                                        arrList2.add(line.split(","));
-                                    }
-                                    if (titleNum == 3) {
-                                        // 数据带表头
-                                        arrList3.add(line.split(","));
+                                        if (titleNum == 1) {
+                                            ptsDataVersion.setTaiHeader(line);
+                                        } else if (titleNum == 2) {
+                                            ptsDataVersion.setTanaHeader(line);
+                                        } else if (titleNum == 3) {
+                                            ptsDataVersion.setJanHeader(line);
+                                        }
+                                    } else {
+                                        if (titleNum == 1) {
+                                            arrList1.add(line.split(","));
+                                        } else if (titleNum == 2) {
+                                            arrList2.add(line.split(","));
+                                        } else if (titleNum == 3) {
+                                            arrList3.add(line.split(","));
+                                        }
                                     }
                                 }
                                 if (titleNum != 3) {
@@ -150,6 +259,9 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                             }
 
                             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+
+                            //
+
                             // :TODO 屏蔽掉了往GCP上传文件的部分
 //                            fileSaveRemote(path, companyCd, filenames, resourceBundle.getString("PtsCsvPath"),
 //                                    projectIds, bucketNames);
@@ -160,6 +272,21 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                 shelfPtsDto.setFileName(filenames);
 
                                 Map<String, Object> res = shelfPtsService.setShelfPtsInfo(shelfPtsDto, 0);
+                                Integer ptsId = (Integer) res.get("data");
+                                ptsDataVersion.setPtsCd(ptsId);
+                                //
+                                shelfPtsDataVersionMapper.insert(ptsDataVersion);
+                                List<ShelfPtsDataTaimst> dataTaimstList = convertArrayToTaimstList(arrList1, ptsId, companyCd, authorCd, now);
+
+                                List<ShelfPtsDataTanamst> dataTanamstList = convertArrayToTanamstList(arrList2, ptsId, companyCd, authorCd, now);
+
+                                List<ShelfPtsDataJandata> dataJandataList = convertArrayToJanList(arrList3, ptsId, companyCd, authorCd, now);
+
+                                shelfPtsDataTaimstMapper.insertAll(dataTaimstList);
+
+                                shelfPtsDataTanamstMapper.insertAll(dataTanamstList);
+
+                                shelfPtsDataJandataMapper.insertAll(dataJandataList);
 
                                 // 返回id
                                 String uuid = UUID.randomUUID().toString();
@@ -167,7 +294,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                 GetPtsCsvCgiDto getPtsCsvCgiDto = new GetPtsCsvCgiDto();
                                 getPtsCsvCgiDto.setCompany(companyCd);
                                 getPtsCsvCgiDto.setMode("pts_shori");
-                                getPtsCsvCgiDto.setPtsIdCsvNm(res.get("data") + "@" + filenames);
+                                getPtsCsvCgiDto.setPtsIdCsvNm(ptsId + "@" + filenames);
                                 getPtsCsvCgiDto.setGuid(uuid);
                                 logger.info("调用pts_shori的参数" + getPtsCsvCgiDto);
 
@@ -345,7 +472,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
      */
     @Override
     public List<String[]> uploadCsvToList(MultipartFile multipartFile) {
-        if (multipartFile==null){
+        if (multipartFile == null) {
             return null;
         }
         List<String[]> result = new ArrayList<>();
