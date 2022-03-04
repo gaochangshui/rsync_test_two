@@ -30,7 +30,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     private ShelfPtsDataMapper shelfPtsDataMapper;
     @Autowired
     private ShelfPatternService shelfPatternService;
-
     /**
      * 获取棚割pts信息
      *
@@ -61,11 +60,13 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      */
     @Override
     public Map<String, Object> setShelfPtsInfo(ShelfPtsDto shelfPtsDto, Integer flg) {
+        String authorCd = httpSession.getAttribute("aud").toString();
+        Date now = Calendar.getInstance().getTime();
         logger.info("保存棚割pts数据的参数：" + shelfPtsDto);
         ShelfPtsData shelfPtsData = new ShelfPtsData();
         shelfPtsData.setConpanyCd(shelfPtsDto.getCompanyCd());
         shelfPtsData.setFileName(shelfPtsDto.getFileName());
-        shelfPtsData.setAuthorcd(httpSession.getAttribute("aud").toString());
+        shelfPtsData.setAuthorcd(authorCd);
         shelfPtsDataMapper.insert(shelfPtsData);
         logger.info("保存后的参数：" + shelfPtsData);
         if (flg == 0) {
@@ -87,7 +88,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             if (!patternIdList.isEmpty()) {
                 Integer patternId = patternIdList.get(0);
                 logger.info("用到的patternid：" + patternId);
-                String authorCd = httpSession.getAttribute("aud").toString();
+                logger.info("用到的patternid：" + patternId);
                 // 清空patternid
                 shelfPtsDataMapper.updateSingle(patternId, authorCd);
                 shelfPtsDataMapper.updatePtsHistoryFlgSingle(patternId, authorCd);
@@ -101,7 +102,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 shelfPtsJoinPatternDto.setCompanyCd(shelfPtsDto.getCompanyCd());
                 shelfPtsJoinPatternDto.setShelfPtsCd(shelfPtsData.getId());
                 shelfPtsJoinPatternDto.setShelfPatternCd(patternId);
-                shelfPtsJoinPatternDto.setStartDay(simpleDateFormat.format(date));
+                shelfPtsJoinPatternDto.setStartDay(simpleDateFormat.format(now));
                 shelfPtsDataMapper.insertPtsHistory(shelfPtsJoinPatternDto, authorCd);
             }
         }

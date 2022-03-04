@@ -21,6 +21,12 @@ public class ShelfPtsData {
     @JsonFormat(pattern = "yyyy/MM/dd")
     private Date startDay;
 
+    private Date editTime;
+
+    private String editerCd;
+
+    private Integer deleteflg;
+
     public Integer getId() {
         return id;
     }
@@ -83,6 +89,30 @@ public class ShelfPtsData {
 
     public void setStartDay(Date startDay) {
         this.startDay = startDay;
+    }
+
+    public Date getEditTime() {
+        return editTime;
+    }
+
+    public void setEditTime(Date editTime) {
+        this.editTime = editTime;
+    }
+
+    public String getEditerCd() {
+        return editerCd;
+    }
+
+    public void setEditerCd(String editerCd) {
+        this.editerCd = editerCd == null ? null : editerCd.trim();
+    }
+
+    public Integer getDeleteflg() {
+        return deleteflg;
+    }
+
+    public void setDeleteflg(Integer deleteflg) {
+        this.deleteflg = deleteflg;
     }
 
     @Override
