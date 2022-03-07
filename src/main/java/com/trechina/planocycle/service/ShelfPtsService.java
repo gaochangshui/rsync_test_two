@@ -73,4 +73,5 @@ public interface ShelfPtsService {
       Map<String,Object> getTaiNumTanaNum(Integer patternCd);
 
       Map<String,Object> getPtsDetailData(Integer patternCd);
+
 }

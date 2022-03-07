@@ -1,6 +1,10 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
+import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
+import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
+import com.trechina.planocycle.entity.vo.PriorityOrderAttrValue;
+import com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,4 +20,27 @@ public interface PriorityOrderMstAttrSortMapper {
 
     List<PriorityOrderMstAttrSort> selectByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
+    //跟据属性获取type值
+    int getAttrType(@Param("attrId")Integer attrId);
+    //跟据属性获取sort
+    int getAttrSort(@Param("attrId")Integer attrId);
+    //跟据属性获取tableName
+    String getAttrTableName(@Param("attrId")Integer attrId);
+    //跟据表名获取属性列表
+    List<PriorityOrderAttrListVo> getAttrValue(@Param("tableName")String tableName);
+    //获取属性列表
+    List<PriorityOrderAttrListVo> getAttribute();
+    //商品一级分类
+    List<PriorityOrderAttrListVo> getAttrValue1(@Param("attr")Integer attr);
+
+
+    List<PriorityOrderAttrVO> getAttrValue5(@Param("attr1")Integer a1cd, @Param("attr2")Integer a2cd);
+    //获取商品分类属性结构
+    List<PriorityOrderAttrValue> getGoodsAttrTree();
+    //商品分類以外の属性数
+    List<PriorityOrderAttrValueVo> getAttr();
+
+    List<PriorityOrderAttrValue> getAttrValues(@Param("tableName")String tableName);
+    //跟据
+    Integer getfeceNum(@Param("attr1")Integer a1cd, @Param("attr2")Integer a2cd,@Param("attrValue1")String attrValue1,@Param("attrValue2")String attrValue2);
 }

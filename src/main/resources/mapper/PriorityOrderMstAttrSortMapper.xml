@@ -8,6 +8,22 @@
     <result column="sort" jdbcType="INTEGER" property="sort" />
     <result column="cd" jdbcType="INTEGER" property="cd" />
   </resultMap>
+  <resultMap id="attrTreeMap" type="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+    <result column="scat1cd" property="attrCd"/>
+    <result column="scat1nm" property="attrName"/>
+    <collection property="children" ofType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+      <result column="scat2cd" property="attrCd"/>
+      <result column="scat2nm" property="attrName"/>
+      <collection property="children" ofType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+        <result column="scat3cd" property="attrCd"/>
+        <result column="scat3nm" property="attrName"/>
+        <collection property="children" ofType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+          <result column="scat4cd" property="attrCd"/>
+          <result column="scat4nm" property="attrName"/>
+        </collection>
+      </collection>
+    </collection>
+  </resultMap>
   <sql id="Base_Column_List">
     company_cd, priority_order_cd, value, sort, cd
   </sql>
@@ -17,6 +33,83 @@
     from planocycle.priority_order_mst_attrsort
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
+    <select id="getAttrType" resultType="java.lang.Integer">
+    select type
+    from masterdb.zokusei_mst
+    where zokusei_id = #{attrId}
+    </select>
+  <select id="getAttribute" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
+    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.zokusei_mst order by zokusei_sort;
+  </select>
+  <select id="getAttrSort" resultType="java.lang.Integer">
+    select zokusei_sort
+    from masterdb.zokusei_mst
+    where zokusei_id = #{attrId}
+  </select>
+  <select id="getAttrTableName" resultType="java.lang.String">
+    select zokusei_tb_nm
+    from masterdb.zokusei_mst
+    where zokusei_id = #{attrId}
+  </select>
+  <select id="getAttrValue" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
+    select id as attrCd,nm as attrName
+    from masterdb.${tableName}
+  </select>
+  <select id="getGoodsAttrTree" resultMap="attrTreeMap">
+    --Tree
+    select cat1.scat1cd as scat1cd,cat1.scat1nm as scat1nm
+         ,cat2.scat2cd as scat2cd,cat2.scat2nm as  scat2nm
+         ,cat3.scat3cd as scat3cd,cat3.scat3nm as  scat3nm
+         ,cat4.scat4cd as scat4cd,cat4.scat4nm as scat4nm
+    from masterdb.pfm_plano_category1_mst cat1
+           left join masterdb.pfm_plano_category2_mst cat2
+                     on cat1.scat1cd=cat2.scat1cd
+           left join masterdb.pfm_plano_category3_mst cat3
+                     on cat2.scat1cd = cat3.scat1cd
+                       and cat2.scat2cd = cat3.scat2cd
+           left join masterdb.pfm_plano_category4_mst cat4
+                     on cat3.scat1cd = cat4.scat1cd
+                       and cat3.scat2cd = cat4.scat2cd
+                       and cat3.scat3cd = cat4.scat3cd;
+  </select>
+  <select id="getAttr" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo">
+    select zokusei_id as attrCd,zokusei_nm as attrName ,zokusei_tb_nm as tableName,jans_col_nm as jansColNm,zokusei_sort as sort from masterdb.zokusei_mst where type  = 0;
+  </select>
+  <select id="getAttrValues" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+    select id as attrCd,nm as attrName,val as val ,type as type
+    from masterdb.${tableName}
+  </select>
+  <select id="getAttrValue1" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
+    select scat${attr}cd as attrCd, scat${attr}nm as attrName
+    from masterdb.pfm_plano_category${attr}_mst
+  </select>
+  <select id="getAttrValue2" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
+    select scat2cd as attrCd, scat2nm as attrName
+    from masterdb.pfm_plano_category2_mst
+  </select>
+  <select id="getAttrValue3" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
+    select scat3cd as attrCd, scat3nm as attrName
+    from masterdb.pfm_plano_category3_mst
+  </select>
+  <select id="getAttrValue4" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
+    select scat4cd as attrCd, scat4nm as attrName
+    from masterdb.pfm_plano_category4_mst
+  </select>
+  <select id="getAttrValue5" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrVO">
+    select mst1.scat${attr1}cd as attrACd , mst1.scat${attr1}nm as attrAName,mst2.scat${attr2}cd as attrBCd,mst2.scat${attr2}nm as attrBName
+    from masterdb.pfm_plano_category${attr1}_mst mst1 left join masterdb.pfm_plano_category${attr2}_mst mst2
+    on mst1.scat${attr1}cd = mst2.scat${attr1}cd
+
+  </select>
+  <select id="getfeceNum" resultType="java.lang.Integer">
+    select sum(t1.face_count) face_count
+-- 根据实际情况拼接对应的列
+    from planocycle.shelf_pts_data_jandata t1
+           left join masterdb.jan_mst t2
+                     on t1.jan=t2.jan_cd
+    where t2.scat${attr1}cd = #{attrValue1} and t2.scat#{attr2}cd = #{attrValue2}
+    group by t2.scat${attr1}cd,t2.scat#{attr2}cd
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.priority_order_mst_attrsort

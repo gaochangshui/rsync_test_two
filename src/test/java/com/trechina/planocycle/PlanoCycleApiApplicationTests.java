@@ -1,7 +1,7 @@
 package com.trechina.planocycle;
 
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.vo.PtsJanDataVo;
+import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
 import com.trechina.planocycle.mapper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +20,8 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class PlanoCycleApiApplicationTests {
-    @Autowired
-    private ProductPowerDataMapper productPowerDataMapper;
+/*    @Autowired
+    private ProductPowerDataMapper productPowerDataMapper;*/
     @Autowired
     ProductPowerMstMapper productPowerMstMapper;
     @Autowired
@@ -30,12 +30,23 @@ class PlanoCycleApiApplicationTests {
     ShelfPtsDataMapper shelfPtsDataMapper;
     @Autowired
     PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
+    @Autowired
+    PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     @Test
     public void test1() {
         int[] a = {1, 2};
       /*  PtsTanaVo tanaData = shelfPtsDataMapper.getTanaData(43);
         System.out.println(tanaData);
 */
+       // int attrType = priorityOrderMstAttrSortMapper.getAttrType(1);
+       //  priorityOrderMstAttrSortMapper.getAttribute().forEach(System.out::println);
+       //  priorityOrderMstAttrSortMapper.getAttrValue2("zokusei1_mst");
+       // List<PriorityOrderAttrTree> goodsAttrTree = priorityOrderMstAttrSortMapper.getGoodsAttrTree();
+       // goodsAttrTree.forEach(System.out::println);
+       // List<PriorityOrderAttrValue> zokusei1_mst = priorityOrderMstAttrSortMapper.getAttrValues("zokusei1_mst");
+       // zokusei1_mst.forEach(System.out::println);
+        List<PriorityOrderAttrVO> attrValue5 = priorityOrderMstAttrSortMapper.getAttrValue5(1, 2);
+        attrValue5.forEach(System.out::println);
       /*  Integer faceNum = shelfPtsDataMapper.getSkuNum(43);
         Integer taiNumTanaNum = shelfPtsDataMapper.getTaiNum(43);
         Integer tanaNumTanaNum = shelfPtsDataMapper.getTanaNum(43);
@@ -44,10 +55,10 @@ class PlanoCycleApiApplicationTests {
         System.out.println(taiNumTanaNum);*/
        /* List header = shelfPtsDataMapper.getHeader(43);
         header.forEach(System.out::println);*/
-        List<PtsJanDataVo> taiData = shelfPtsDataMapper.getJanData(43);
+        /*List<PtsJanDataVo> taiData = shelfPtsDataMapper.getJanData(43);
         taiData.forEach(System.out::println);
 
-        System.out.println(shelfPtsDataMapper.getPtsDetailData(43));
+        System.out.println(shelfPtsDataMapper.getPtsDetailData(43));*/
        /* List<ShelfNamePatternVo> shelfPatternForArea = shelfPatternMstMapper.getShelfPatternForArea("0001",a);
         shelfPatternForArea.forEach(System.out::println);*/
        // productPowerDataMapper.insertYobilitem("0001", "10215814", 31003, "1", 4);

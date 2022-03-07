@@ -17,6 +17,7 @@
         <result property="pdBranchCompareAmount" jdbcType="VARCHAR" column="branch_compare_amount"/>
         <result property="pdBranchCompareNum" jdbcType="VARCHAR" column="branch_compare_num"/>
     </resultMap>
+
     <resultMap id="allMap" type="com.trechina.planocycle.entity.po.ProductPowerMstData">
         <result property="jan" jdbcType="VARCHAR" column="jan"/>
         <result property="skuName" jdbcType="VARCHAR" column="skuName"/>

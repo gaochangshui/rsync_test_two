@@ -10,6 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface ProductPowerDataMapper {
+
     //临时表work_product_power_syokika
     int deleteWKSyokika(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 

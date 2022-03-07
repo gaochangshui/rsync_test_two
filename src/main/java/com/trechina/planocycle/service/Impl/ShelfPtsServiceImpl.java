@@ -6,6 +6,7 @@ import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.po.ShelfPtsData;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.mapper.PriorityOrderMstAttrSortMapper;
 import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
 import com.trechina.planocycle.service.ShelfPatternService;
 import com.trechina.planocycle.service.ShelfPtsService;
@@ -29,6 +30,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     private ShelfPtsDataMapper shelfPtsDataMapper;
     @Autowired
     private ShelfPatternService shelfPatternService;
+    @Autowired
+    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     /**
      * 获取棚割pts信息
      *
@@ -245,6 +248,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         ptsDetailData.setPtsJanDataList(janData);
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
+
 
     /**
      * 获取棚pattern关联过的csv履历数据

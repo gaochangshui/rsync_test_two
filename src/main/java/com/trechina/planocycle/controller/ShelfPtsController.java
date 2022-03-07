@@ -126,4 +126,7 @@ public class ShelfPtsController {
         return shelfPtsService.getPtsDetailData(patternCd);
 
     }
+
+
+
 }

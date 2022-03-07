@@ -1,0 +1,72 @@
+package com.trechina.planocycle.entity.vo;
+
+import java.util.List;
+
+public class PriorityOrderAttrValue {
+    private Integer attrCd;
+    private String val;
+    private String type;
+    private String attrName;
+    private List<PriorityOrderAttrValue> children;
+    private Boolean show = true;
+    public Integer getAttrCd() {
+        return attrCd;
+    }
+
+    public void setAttrCd(Integer attrCd) {
+        this.attrCd = attrCd;
+    }
+
+    public String getVal() {
+        return val;
+    }
+
+    public void setVal(String val) {
+        this.val = val;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getAttrName() {
+        return attrName;
+    }
+
+    public void setAttrName(String attrName) {
+        this.attrName = attrName;
+    }
+
+    public List<PriorityOrderAttrValue> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<PriorityOrderAttrValue> children) {
+        this.children = children;
+
+    }
+
+    public Boolean getShow() {
+        return show;
+    }
+
+    public void setShow(Boolean show) {
+        this.show = show;
+    }
+
+    @Override
+    public String toString() {
+        return "PriorityOrderAttrValue{" +
+                "attrCd=" + attrCd +
+                ", val='" + val + '\'' +
+                ", type='" + type + '\'' +
+                ", attrName='" + attrName + '\'' +
+                ", children=" + children +
+                ", show=" + show +
+                '}';
+    }
+}

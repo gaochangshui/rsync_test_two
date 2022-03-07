@@ -30,4 +30,18 @@ public interface PriorityOrderMstAttrSortService {
      * @return
      */
     Integer delPriorityAttrSortInfo(String companyCd,Integer priorityOrderCd);
+
+    /**
+     *获取属性1和属性2
+     */
+    Map<String,Object> getAttribute();
+    /**
+     * 获取属性的分类及商品分类列表
+     */
+    Map<String,Object> getAttributeList();
+
+    /**
+     *获取属性1属性2组合对应的面积
+     */
+    Map<String,Object> getAttributeArea(Integer patternCd,Integer attr1,Integer attr2);
 }
