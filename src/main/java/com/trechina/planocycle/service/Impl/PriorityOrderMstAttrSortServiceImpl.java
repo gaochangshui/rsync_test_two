@@ -115,6 +115,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         return ResultMaps.result(ResultEnum.SUCCESS,attr);
     }
 
+
     /**
      *获取属性1属性2组合对应的面积
      */
@@ -128,12 +129,13 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
             int attrSort = priorityOrderMstAttrSortMapper.getAttrSort(attr1);
             int attrSort1 = priorityOrderMstAttrSortMapper.getAttrSort(attr2);
-
+            List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort);
+            List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort1);
+          //  priorityOrderMstAttrSortMapper.getfeceNum1()
             PriorityOrderAttrVO priorityOrderAttr =null ;
             if (attrSort>attrSort1){
 
-               List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort);
-                List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort1);
+
                 for (PriorityOrderAttrVO priorityOrderAttrVO : attrList2) {
                     for (PriorityOrderAttrVO orderAttrVO : attrList1) {
                         if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd()+"_")){
@@ -157,12 +159,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                         }
                     }
                 }
-                logger.info("属性所有组合为：{}" ,attrList);
 
             }
             if (attrSort<attrSort1){
-                List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort);
-                List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort1);
+
+
                 for (PriorityOrderAttrVO priorityOrderAttrVO : attrList1) {
                     for (PriorityOrderAttrVO orderAttrVO : attrList2) {
                         if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd()+"_")){
@@ -187,11 +188,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                         }
                     }
                 }
-                logger.info("属性所有组合为：{}" ,attrList);
 
             }
-
-
 
         }
         else {
@@ -232,6 +230,10 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                     return o2.getExistingZoning().compareTo(o1.getExistingZoning());
                 }
             });
+    int i = 1;
+        for (PriorityOrderAttrVO priorityOrderAttrVO : attrList) {
+            priorityOrderAttrVO.setRank(i++);
+        }
             logger.info("属性所有组合为：{}", attrList);
               return ResultMaps.result(ResultEnum.SUCCESS,attrList);
 

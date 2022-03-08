@@ -40,6 +40,9 @@ public interface PriorityOrderMstAttrSortService {
      */
     Map<String,Object> getAttributeList();
 
+
+
+
     /**
      *获取属性1属性2组合对应的面积
      */

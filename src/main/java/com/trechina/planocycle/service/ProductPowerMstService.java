@@ -15,4 +15,6 @@ public interface ProductPowerMstService {
      * @return
      */
     Map<String,Object> getProductPowerTable(String companyCd);
+
+     Map<String,Object> getProductPowerInfo(String companyCd ,Integer productPowerCd);
 }

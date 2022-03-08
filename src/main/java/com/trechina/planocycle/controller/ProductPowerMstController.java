@@ -27,4 +27,9 @@ public class ProductPowerMstController {
     public Map<String,Object> getProductPowerTable(String companyCd){
         return powerMstService.getProductPowerTable(companyCd);
     }
+
+    @GetMapping("getProductPowerInfo")
+    public Map<String,Object> getProductPowerInfo(String companyCd ,Integer productPowerCd){
+        return powerMstService.getProductPowerInfo(companyCd,productPowerCd);
+    }
 }

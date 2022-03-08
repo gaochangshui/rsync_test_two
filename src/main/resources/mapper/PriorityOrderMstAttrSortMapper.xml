@@ -88,23 +88,7 @@
     from masterdb.zokusei_mst_data
     where zokusei_id = #{zokuseiId}
   </select>
-  <select id="getAttrValue1" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select mst1.val as attrACd , mst1.nm as attrAName
-    from masterdb.zokusei_mst_data mst1 left join masterdb.zokusei_mst_data mst2
-    where mst1.zokusei_id = #{attr2}
-  </select>
-  <select id="getAttrValue2" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select scat2cd as attrCd, scat2nm as attrName
-    from masterdb.pfm_plano_category2_mst
-  </select>
-  <select id="getAttrValue3" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select scat3cd as attrCd, scat3nm as attrName
-    from masterdb.pfm_plano_category3_mst
-  </select>
-  <select id="getAttrValue4" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select scat4cd as attrCd, scat4nm as attrName
-    from masterdb.pfm_plano_category4_mst
-  </select>
+
   <select id="getAttrValue5" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrVO">
     select datas.val as attrACd , datas.nm as attrAName, mst.jans_col_nm as jansAColnm
     from masterdb.zokusei_mst_data datas left join masterdb.zokusei_mst mst
@@ -122,9 +106,15 @@
     where cast(t2.${janCol1} as VARCHAR)  = #{attrValue1} and cast(t2.${janCol2} as VARCHAR)= #{attrValue2} and t3.shelf_pattern_cd = #{patternCd}
     group by t2.${janCol1},t2.${janCol2}
   </select>
-  <select id="getGoodsVal" resultType="java.lang.String">
-    select val from masterdb.zokusei_mst_data
-    where zokusei_id = #{zokuseiId}
+  <select id="getfeceNum1" resultType="java.lang.Integer">
+    select sum(t1.face_count) face_count,t2.${janCol1},t2.${janCol2}
+    from planocycle.shelf_pts_data_jandata t1
+           left join masterdb.jan_mst t2
+                     on t1.jan=t2.jan_cd
+           left JOIN planocycle.shelf_pts_data t3
+                     ON t3.id = t1.pts_cd
+    where  t3.shelf_pattern_cd = #{patternCd}
+    group by t2.${janCol1},t2.${janCol2}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.priority_order_mst_attrsort

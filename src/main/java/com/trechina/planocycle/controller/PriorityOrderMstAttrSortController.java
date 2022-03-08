@@ -47,4 +47,5 @@ public class PriorityOrderMstAttrSortController {
     public Map<String,Object> getAttributeList(){
         return priorityOrderMstAttrSortService.getAttributeList();
     }
+
 }

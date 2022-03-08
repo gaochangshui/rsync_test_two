@@ -10,7 +10,7 @@ public class ProductPowerMstVo {
     @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy/MM/dd hh:mm" )
     private Date registered;
     private Integer sku;
-    private Integer noRestrictionNum;
+    private Integer noRestrictionNum = 0;
 
     public String getProductPowerName() {
         return productPowerName;
