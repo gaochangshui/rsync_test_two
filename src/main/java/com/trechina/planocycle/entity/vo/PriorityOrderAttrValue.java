@@ -3,17 +3,18 @@ package com.trechina.planocycle.entity.vo;
 import java.util.List;
 
 public class PriorityOrderAttrValue {
-    private Integer attrCd;
+    private String attrCd;
     private String val;
     private String type;
     private String attrName;
     private List<PriorityOrderAttrValue> children;
     private Boolean show = true;
-    public Integer getAttrCd() {
+
+    public String getAttrCd() {
         return attrCd;
     }
 
-    public void setAttrCd(Integer attrCd) {
+    public void setAttrCd(String attrCd) {
         this.attrCd = attrCd;
     }
 

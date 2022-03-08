@@ -27,14 +27,14 @@ public interface PriorityOrderMstAttrSortMapper {
     //跟据属性获取tableName
     String getAttrTableName(@Param("attrId")Integer attrId);
     //跟据表名获取属性列表
-    List<PriorityOrderAttrListVo> getAttrValue(@Param("tableName")String tableName);
+    //List<PriorityOrderAttrListVo> getAttrValue(@Param("tableName")String tableName);
     //获取属性列表
     List<PriorityOrderAttrListVo> getAttribute();
-    //商品一级分类
-    List<PriorityOrderAttrListVo> getAttrValue1(@Param("attr")Integer attr);
 
+    List<PriorityOrderAttrListVo>  getAttrValue(@Param("zokuseiId")Integer zokuseiId);
+    List<PriorityOrderAttrListVo>  getAttrValue1(@Param("zokuseiId")Integer zokuseiId);
 
-    List<PriorityOrderAttrVO> getAttrValue5(@Param("attr1")Integer a1cd, @Param("attr2")Integer a2cd);
+    List<PriorityOrderAttrVO> getAttrValue5(@Param("attr1")Integer a1cd);
     //获取商品分类属性结构
     List<PriorityOrderAttrValue> getGoodsAttrTree();
     //商品分類以外の属性数
@@ -42,5 +42,8 @@ public interface PriorityOrderMstAttrSortMapper {
 
     List<PriorityOrderAttrValue> getAttrValues(@Param("tableName")String tableName);
     //跟据
-    Integer getfeceNum(@Param("attr1")Integer a1cd, @Param("attr2")Integer a2cd,@Param("attrValue1")String attrValue1,@Param("attrValue2")String attrValue2);
+    Integer getfeceNum(@Param("janCol1")String janCol1, @Param("janCol2")String janCol2,@Param("attrValue1")String attrValue1,@Param("attrValue2")String attrValue2,@Param("patternCd") Integer patternCd);
+
+    String getGoodsVal(@Param("zokuseiId")Integer zokuseiId);
+
 }

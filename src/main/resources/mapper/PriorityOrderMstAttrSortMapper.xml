@@ -53,36 +53,44 @@
     where zokusei_id = #{attrId}
   </select>
   <select id="getAttrValue" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select id as attrCd,nm as attrName
-    from masterdb.${tableName}
+    select datas.val as attrCd,datas.nm as attrName ,datas.type as type, mst.jans_col_nm as jansColNm
+    from masterdb.zokusei_mst_data datas left join masterdb.zokusei_mst mst
+    on mst.zokusei_id = datas.zokusei_id
+    where mst.zokusei_id = #{zokuseiId}
   </select>
   <select id="getGoodsAttrTree" resultMap="attrTreeMap">
     --Tree
-    select cat1.scat1cd as scat1cd,cat1.scat1nm as scat1nm
-         ,cat2.scat2cd as scat2cd,cat2.scat2nm as  scat2nm
-         ,cat3.scat3cd as scat3cd,cat3.scat3nm as  scat3nm
-         ,cat4.scat4cd as scat4cd,cat4.scat4nm as scat4nm
-    from masterdb.pfm_plano_category1_mst cat1
-           left join masterdb.pfm_plano_category2_mst cat2
-                     on cat1.scat1cd=cat2.scat1cd
-           left join masterdb.pfm_plano_category3_mst cat3
-                     on cat2.scat1cd = cat3.scat1cd
-                       and cat2.scat2cd = cat3.scat2cd
-           left join masterdb.pfm_plano_category4_mst cat4
-                     on cat3.scat1cd = cat4.scat1cd
-                       and cat3.scat2cd = cat4.scat2cd
-                       and cat3.scat3cd = cat4.scat3cd;
+    select ct1.val as scat1cd,ct1.nm as scat1nm
+         ,ct2.val as scat2cd,ct2.nm as scat2nm
+         ,ct3.val as scat3cd,ct3.nm as scat3nm
+         ,ct4.val as scat4cd,ct4.nm as scat4nm
+    from masterdb.zokusei_mst_data ct1
+           left join masterdb.zokusei_mst_data ct2
+                     on ct1.val = ct2.val_parent
+                       and ct2.zokusei_id  = 2
+           left join masterdb.zokusei_mst_data ct3
+                     on ct2.val = ct3.val_parent
+                       and ct2.zokusei_id  = 2
+                       and ct3.zokusei_id  = 3
+           left join masterdb.zokusei_mst_data ct4
+                     on ct3.val = ct4.val_parent
+                       and ct3.zokusei_id  = 3
+                       and ct4.zokusei_id  = 4
+    where ct1.zokusei_id = 1
+    order by ct1.val
+
   </select>
   <select id="getAttr" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo">
     select zokusei_id as attrCd,zokusei_nm as attrName ,zokusei_tb_nm as tableName,jans_col_nm as jansColNm,zokusei_sort as sort from masterdb.zokusei_mst where type  = 0;
   </select>
   <select id="getAttrValues" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
-    select id as attrCd,nm as attrName,val as val ,type as type
-    from masterdb.${tableName}
+    select val as attrCd,nm as attrName,type as type
+    from masterdb.zokusei_mst_data
   </select>
   <select id="getAttrValue1" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select scat${attr}cd as attrCd, scat${attr}nm as attrName
-    from masterdb.pfm_plano_category${attr}_mst
+    select mst1.val as attrACd , mst1.nm as attrAName
+    from masterdb.zokusei_mst_data mst1 left join masterdb.zokusei_mst_data mst2
+    where mst1.zokusei_id = #{attr2}
   </select>
   <select id="getAttrValue2" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
     select scat2cd as attrCd, scat2nm as attrName
@@ -97,19 +105,25 @@
     from masterdb.pfm_plano_category4_mst
   </select>
   <select id="getAttrValue5" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrVO">
-    select mst1.scat${attr1}cd as attrACd , mst1.scat${attr1}nm as attrAName,mst2.scat${attr2}cd as attrBCd,mst2.scat${attr2}nm as attrBName
-    from masterdb.pfm_plano_category${attr1}_mst mst1 left join masterdb.pfm_plano_category${attr2}_mst mst2
-    on mst1.scat${attr1}cd = mst2.scat${attr1}cd
+    select datas.val as attrACd , datas.nm as attrAName, mst.jans_col_nm as jansAColnm
+    from masterdb.zokusei_mst_data datas left join masterdb.zokusei_mst mst
+    on datas.zokusei_id = mst.zokusei_id
+    where  datas.zokusei_id = #{attr1}
 
   </select>
   <select id="getfeceNum" resultType="java.lang.Integer">
     select sum(t1.face_count) face_count
--- 根据实际情况拼接对应的列
     from planocycle.shelf_pts_data_jandata t1
            left join masterdb.jan_mst t2
                      on t1.jan=t2.jan_cd
-    where t2.scat${attr1}cd = #{attrValue1} and t2.scat#{attr2}cd = #{attrValue2}
-    group by t2.scat${attr1}cd,t2.scat#{attr2}cd
+    left JOIN planocycle.shelf_pts_data t3
+    ON t3.id = t1.pts_cd
+    where cast(t2.${janCol1} as VARCHAR)  = #{attrValue1} and cast(t2.${janCol2} as VARCHAR)= #{attrValue2} and t3.shelf_pattern_cd = #{patternCd}
+    group by t2.${janCol1},t2.${janCol2}
+  </select>
+  <select id="getGoodsVal" resultType="java.lang.String">
+    select val from masterdb.zokusei_mst_data
+    where zokusei_id = #{zokuseiId}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.priority_order_mst_attrsort

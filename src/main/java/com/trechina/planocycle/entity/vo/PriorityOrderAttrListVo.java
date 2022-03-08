@@ -1,10 +1,12 @@
 package com.trechina.planocycle.entity.vo;
 
 public class PriorityOrderAttrListVo {
-   private String attrCd;
-   private String attrName;
+    private String attrCd;
+    private String attrName;
+    private String type;
+    private String jansColNm;
     private String janColSort;
-   private Boolean disabled =false;
+    private Boolean disabled = false;
 
     public String getAttrCd() {
         return attrCd;
@@ -22,12 +24,20 @@ public class PriorityOrderAttrListVo {
         this.attrName = attrName;
     }
 
-    public Boolean getDisabled() {
-        return disabled;
+    public String getType() {
+        return type;
     }
 
-    public void setDisabled(Boolean disabled) {
-        this.disabled = disabled;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getJansColNm() {
+        return jansColNm;
+    }
+
+    public void setJansColNm(String jansColNm) {
+        this.jansColNm = jansColNm;
     }
 
     public String getJanColSort() {
@@ -38,11 +48,21 @@ public class PriorityOrderAttrListVo {
         this.janColSort = janColSort;
     }
 
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
     @Override
     public String toString() {
         return "PriorityOrderAttrListVo{" +
-                "attrCd=" + attrCd +
+                "attrCd='" + attrCd + '\'' +
                 ", attrName='" + attrName + '\'' +
+                ", type='" + type + '\'' +
+                ", jansColNm='" + jansColNm + '\'' +
                 ", janColSort='" + janColSort + '\'' +
                 ", disabled=" + disabled +
                 '}';

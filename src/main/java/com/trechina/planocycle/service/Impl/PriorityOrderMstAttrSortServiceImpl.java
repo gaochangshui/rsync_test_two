@@ -1,9 +1,13 @@
 package com.trechina.planocycle.service.Impl;
 
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
-import com.trechina.planocycle.entity.vo.*;
+import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
+import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
+import com.trechina.planocycle.entity.vo.PriorityOrderAttrValue;
+import com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.PriorityOrderMstAttrSortMapper;
+import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
 import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
@@ -12,15 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 @Service
 public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttrSortService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+    @Autowired
+    private ShelfPtsDataMapper shelfPtsDataMapper;
     /**
      * 获取既存数据的排序
      *
@@ -101,8 +105,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
         for (PriorityOrderAttrValueVo priorityOrderAttrListVo : attr) {
             if (priorityOrderAttrListVo.getTableName()!=null) {
-                List<PriorityOrderAttrValue> attrValue2 = priorityOrderMstAttrSortMapper.getAttrValues(priorityOrderAttrListVo.getTableName());
-                priorityOrderAttrListVo.setValues(attrValue2);
+               // List<PriorityOrderAttrValue> attrValue2 = priorityOrderMstAttrSortMapper.getAttrValues(priorityOrderAttrListVo.getTableName());
+               // priorityOrderAttrListVo.setValues(attrValue2);
             }
         }
 
@@ -116,82 +120,98 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
      */
     @Override
     public Map<String, Object> getAttributeArea(Integer patternCd, Integer attr1, Integer attr2) {
+        Integer faceNum = shelfPtsDataMapper.getFaceNum(patternCd);
         int attrType1 = priorityOrderMstAttrSortMapper.getAttrType(attr1);
         int attrType2 = priorityOrderMstAttrSortMapper.getAttrType(attr2);
+        List<PriorityOrderAttrVO> attrList = new ArrayList<>();
         if (attrType1 == 1 && attrType2 ==1){
 
             int attrSort = priorityOrderMstAttrSortMapper.getAttrSort(attr1);
             int attrSort1 = priorityOrderMstAttrSortMapper.getAttrSort(attr2);
-            List<PriorityOrderAttrVO> attrList = new ArrayList<>();
+
+            PriorityOrderAttrVO priorityOrderAttr = new PriorityOrderAttrVO();
             if (attrSort>attrSort1){
-                attrList = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort1, attrSort);
-                attrList.forEach(item->{
-                 //   item.setAttrAName(priorityOrderMstAttrSortMapper.getfeceNum(attr1,attr2,item.getAttrACd(),item.getAttrBCd()));
-                });
+
+               List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort);
+                List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort1);
+                for (PriorityOrderAttrVO priorityOrderAttrVO : attrList2) {
+                    for (PriorityOrderAttrVO orderAttrVO : attrList1) {
+                        if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd()+"_")){
+                            priorityOrderAttr.setAttrBCd(priorityOrderAttrVO.getAttrACd());
+                            priorityOrderAttr.setAttrBName(priorityOrderAttrVO.getAttrAName());
+                            priorityOrderAttr.setJansBColnm(priorityOrderAttrVO.getJansAColnm());
+                            priorityOrderAttr.setAttrACd(orderAttrVO.getAttrACd());
+                            priorityOrderAttr.setAttrAName(orderAttrVO.getAttrAName());
+                            priorityOrderAttr.setJansAColnm(orderAttrVO.getJansAColnm());
+                            attrList.add(priorityOrderAttr);
+                        }
+                    }
+                }
+                logger.info("属性所有组合为：{}" ,attrList);
+                return ResultMaps.result(ResultEnum.SUCCESS,attrList);
             }
             if (attrSort<attrSort1){
-                 attrList = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort, attrSort1);
-            }
-
-            logger.info("属性所有组合为：{}" ,attrList);
-            return ResultMaps.result(ResultEnum.SUCCESS,attrList);
-
-        }else if (attrType1 ==1 && attrType2 ==0){
-            String attr2TableName = priorityOrderMstAttrSortMapper.getAttrTableName(attr2);
-            List<PriorityOrderAttrListVo> attrValue2 = priorityOrderMstAttrSortMapper.getAttrValue(attr2TableName);
-            List<PriorityOrderAttrListVo> attrValue1 = priorityOrderMstAttrSortMapper.getAttrValue1(attr1);
-            PriorityOrderAttrVO priorityOrderAttrVO = new PriorityOrderAttrVO();
-            List attrList = new ArrayList();
-            for (PriorityOrderAttrListVo priorityOrderAttrListVo : attrValue2) {
-                for (PriorityOrderAttrListVo orderAttrListVo : attrValue1) {
-                    priorityOrderAttrVO.setAttrBCd(priorityOrderAttrListVo.getAttrCd());
-                    priorityOrderAttrVO.setAttrBName(priorityOrderAttrListVo.getAttrName());
-                    priorityOrderAttrVO.setAttrACd(orderAttrListVo.getAttrCd());
-                    priorityOrderAttrVO.setAttrAName(orderAttrListVo.getAttrName());
-                    attrList.add(priorityOrderAttrVO);
+                List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort);
+                List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort1);
+                for (PriorityOrderAttrVO priorityOrderAttrVO : attrList1) {
+                    for (PriorityOrderAttrVO orderAttrVO : attrList2) {
+                        if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd()+"_")){
+                            priorityOrderAttr.setAttrACd(priorityOrderAttrVO.getAttrACd());
+                            priorityOrderAttr.setAttrAName(priorityOrderAttrVO.getAttrAName());
+                            priorityOrderAttr.setJansAColnm(priorityOrderAttrVO.getJansAColnm());
+                            priorityOrderAttr.setAttrBCd(orderAttrVO.getAttrACd());
+                            priorityOrderAttr.setAttrBName(orderAttrVO.getAttrAName());
+                            priorityOrderAttr.setJansBColnm(orderAttrVO.getJansAColnm());
+                            attrList.add(priorityOrderAttr);
+                        }
+                    }
                 }
+                logger.info("属性所有组合为：{}" ,attrList);
+                return ResultMaps.result(ResultEnum.SUCCESS,attrList);
             }
-            logger.info("属性所有组合为：{}" ,attrList);
-            return ResultMaps.result(ResultEnum.SUCCESS,attrList);
-        }else if (attrType2 ==1 && attrType1 == 0){
-            String attr1TableName = priorityOrderMstAttrSortMapper.getAttrTableName(attr1);
-            List<PriorityOrderAttrListVo> attrValue2 = priorityOrderMstAttrSortMapper.getAttrValue(attr1TableName);
-            List<PriorityOrderAttrListVo> attrValue1 = priorityOrderMstAttrSortMapper.getAttrValue1(attr2);
-            PriorityOrderAttrVO priorityOrderAttrVO = new PriorityOrderAttrVO();
-            List attrList = new ArrayList();
-            for (PriorityOrderAttrListVo priorityOrderAttrListVo : attrValue2) {
-                for (PriorityOrderAttrListVo orderAttrListVo : attrValue1) {
-                    priorityOrderAttrVO.setAttrBCd(priorityOrderAttrListVo.getAttrCd());
-                    priorityOrderAttrVO.setAttrBName(priorityOrderAttrListVo.getAttrName());
-                    priorityOrderAttrVO.setAttrACd(orderAttrListVo.getAttrCd());
-                    priorityOrderAttrVO.setAttrAName(orderAttrListVo.getAttrName());
-                    attrList.add(priorityOrderAttrVO);
-                }
 
-            }
-            logger.info("属性所有组合为：{}" ,attrList);
-            return ResultMaps.result(ResultEnum.SUCCESS,attrList);
-        }else {
-            //跟据分类id获取对应的表名
-            String attr1TableName = priorityOrderMstAttrSortMapper.getAttrTableName(attr1);
-            String attr2TableName = priorityOrderMstAttrSortMapper.getAttrTableName(attr2);
-            List<PriorityOrderAttrListVo> attrValue1 = priorityOrderMstAttrSortMapper.getAttrValue(attr1TableName);
-            List<PriorityOrderAttrListVo> attrValue2 = priorityOrderMstAttrSortMapper.getAttrValue(attr2TableName);
-            PriorityOrderAttrVO priorityOrderAttrVO = new PriorityOrderAttrVO();
-            List attrList = new ArrayList();
-            for (PriorityOrderAttrListVo priorityOrderAttrListVo : attrValue1) {
-                for (PriorityOrderAttrListVo orderAttrListVo : attrValue2) {
+
+
+        }
+        else {
+            List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(attr2);
+            List<PriorityOrderAttrListVo> attrValue1 = priorityOrderMstAttrSortMapper.getAttrValue(attr1);
+
+            PriorityOrderAttrVO priorityOrderAttrVO = null;
+            for (PriorityOrderAttrListVo priorityOrderAttrListVo : attrValue) {
+                for (PriorityOrderAttrListVo orderAttrListVo : attrValue1) {
+                    priorityOrderAttrVO = new PriorityOrderAttrVO();
                     priorityOrderAttrVO.setAttrACd(priorityOrderAttrListVo.getAttrCd());
                     priorityOrderAttrVO.setAttrAName(priorityOrderAttrListVo.getAttrName());
+                    priorityOrderAttrVO.setJansAColnm(priorityOrderAttrListVo.getJansColNm());
                     priorityOrderAttrVO.setAttrBCd(orderAttrListVo.getAttrCd());
+                    priorityOrderAttrVO.setJansBColnm(orderAttrListVo.getJansColNm());
                     priorityOrderAttrVO.setAttrBName(orderAttrListVo.getAttrName());
+                    Integer facenum = priorityOrderMstAttrSortMapper.getfeceNum(priorityOrderAttrListVo.getJansColNm(), orderAttrListVo.getJansColNm(), priorityOrderAttrListVo.getAttrCd(), orderAttrListVo.getAttrCd(),patternCd);
+                    if (facenum != null) {
+                        Integer result = facenum * 100 / faceNum ;
+                        priorityOrderAttrVO.setNewZoning(result);
+                        priorityOrderAttrVO.setExistingZoning(result);
+                    } else {
+                        priorityOrderAttrVO.setNewZoning(0);
+                        priorityOrderAttrVO.setExistingZoning(0);
+                    }
+
                     attrList.add(priorityOrderAttrVO);
                 }
             }
 
-            logger.info("属性所有组合为：{}", attrList);
-            return ResultMaps.result(ResultEnum.SUCCESS,attrList);
         }
+            Collections.sort(attrList, new Comparator<PriorityOrderAttrVO>() {
+                @Override
+                public int compare(PriorityOrderAttrVO o1, PriorityOrderAttrVO o2) {
+
+                    return o2.getExistingZoning().compareTo(o1.getExistingZoning());
+                }
+            });
+            logger.info("属性所有组合为：{}", attrList);
+              return ResultMaps.result(ResultEnum.SUCCESS,attrList);
 
     }
+
 }
