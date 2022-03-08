@@ -131,7 +131,6 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             int attrSort1 = priorityOrderMstAttrSortMapper.getAttrSort(attr2);
             List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort);
             List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort1);
-          //  priorityOrderMstAttrSortMapper.getfeceNum1()
             PriorityOrderAttrVO priorityOrderAttr =null ;
             if (attrSort>attrSort1){
 
@@ -221,7 +220,6 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             }
 
         }
-
 
         Collections.sort(attrList, new Comparator<PriorityOrderAttrVO>() {
                 @Override

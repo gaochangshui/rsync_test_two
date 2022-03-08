@@ -42,6 +42,6 @@ public interface PriorityOrderMstAttrSortMapper {
     Integer getfeceNum(@Param("janCol1")String janCol1, @Param("janCol2")String janCol2,@Param("attrValue1")String attrValue1,@Param("attrValue2")String attrValue2,@Param("patternCd") Integer patternCd);
     Integer getfeceNum1(@Param("janCol1")String janCol1, @Param("janCol2")String janCol2,@Param("patternCd") Integer patternCd);
 
-
+    String getJansColNm(@Param("zokuseiId")Integer zokuseiId);
 
 }

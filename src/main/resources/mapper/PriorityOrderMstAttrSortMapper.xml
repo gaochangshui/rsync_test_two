@@ -116,6 +116,11 @@
     where  t3.shelf_pattern_cd = #{patternCd}
     group by t2.${janCol1},t2.${janCol2}
   </select>
+  <select id="getJansColNm" resultType="java.lang.String">
+    select jans_col_nm
+    from planocycle.zokusei_mst
+    where zokusei_id = #{zokuseiId}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.priority_order_mst_attrsort
     where company_cd = #{companyCd,jdbcType=VARCHAR}
