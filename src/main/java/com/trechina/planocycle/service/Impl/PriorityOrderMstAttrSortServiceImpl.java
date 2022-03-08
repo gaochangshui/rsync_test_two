@@ -104,8 +104,10 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         }
 
         for (PriorityOrderAttrValueVo priorityOrderAttrListVo : attr) {
-            List<PriorityOrderAttrValue> attrValues = priorityOrderMstAttrSortMapper.getAttrValues(priorityOrderAttrListVo.getAttrCd());
-            priorityOrderAttrListVo.setValues(attrValues);
+            if (priorityOrderAttrListVo.getAttrCd()!=0) {
+                List<PriorityOrderAttrValue> attrValues = priorityOrderMstAttrSortMapper.getAttrValues(priorityOrderAttrListVo.getAttrCd());
+                priorityOrderAttrListVo.setValues(attrValues);
+            }
         }
 
 
@@ -221,7 +223,9 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             }
 
         }
-            Collections.sort(attrList, new Comparator<PriorityOrderAttrVO>() {
+
+
+        Collections.sort(attrList, new Comparator<PriorityOrderAttrVO>() {
                 @Override
                 public int compare(PriorityOrderAttrVO o1, PriorityOrderAttrVO o2) {
 

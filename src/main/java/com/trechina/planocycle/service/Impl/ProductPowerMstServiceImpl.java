@@ -31,4 +31,12 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         tableNameMap.put("wholePtsData",wholePtsData);
         return ResultMaps.result(ResultEnum.SUCCESS,tableNameMap);
     }
+
+    @Override
+    public Map<String, Object> getProductPowerTable(String companyCd) {
+        String aud = session.getAttribute("aud").toString();
+        List<TableNameDto> commodityData = productPowerMstMapper.getTableNameByCompanyCd(companyCd,aud);
+        return ResultMaps.result(ResultEnum.SUCCESS,commodityData);
+
+    }
 }
