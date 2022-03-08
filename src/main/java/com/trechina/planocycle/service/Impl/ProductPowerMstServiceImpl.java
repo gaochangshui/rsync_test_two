@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.Impl;
 
 import com.trechina.planocycle.entity.dto.TableNameDto;
+import com.trechina.planocycle.entity.vo.ProductPowerMstVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ProductPowerMstMapper;
 import com.trechina.planocycle.service.ProductPowerMstService;
@@ -30,5 +31,22 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         tableNameMap.put("basicPtsData",basicPtsData);
         tableNameMap.put("wholePtsData",wholePtsData);
         return ResultMaps.result(ResultEnum.SUCCESS,tableNameMap);
+    }
+
+    @Override
+    public Map<String, Object> getProductPowerTable(String companyCd) {
+        String aud = session.getAttribute("aud").toString();
+        List<TableNameDto> commodityData = productPowerMstMapper.getTableNameByCompanyCd(companyCd,aud);
+        return ResultMaps.result(ResultEnum.SUCCESS,commodityData);
+
+    }
+
+    @Override
+    public Map<String, Object> getProductPowerInfo(String companyCd, Integer productPowerCd) {
+        ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, productPowerCd);
+        Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, productPowerCd);
+        productPowerInfo.setSku(skuNum);
+
+        return ResultMaps.result(ResultEnum.SUCCESS,productPowerInfo);
     }
 }

@@ -3,6 +3,7 @@ package com.trechina.planocycle.mapper;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.ProductPowerMst;
 import com.trechina.planocycle.entity.vo.CommodityListInfoVO;
+import com.trechina.planocycle.entity.vo.ProductPowerMstVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -25,6 +26,11 @@ public interface ProductPowerMstMapper {
     Integer selectUpdExistsName(@Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd);
 
     Integer update(ProductPowerMst record);
+
+    ProductPowerMstVo getProductPowerInfo(@Param("companyCd")String companyCd,@Param("productPowerCd")Integer productPowerCd);
+
+    Integer getSkuNum(@Param("companyCd")String companyCd,@Param("productPowerCd")Integer productPowerCd);
+
 
 
 }

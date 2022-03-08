@@ -116,13 +116,16 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         }
 
         for (PriorityOrderAttrValueVo priorityOrderAttrListVo : attr) {
-            List<PriorityOrderAttrValue> attrValues = priorityOrderMstAttrSortMapper.getAttrValues(priorityOrderAttrListVo.getAttrCd());
-            priorityOrderAttrListVo.setValues(attrValues);
+            if (priorityOrderAttrListVo.getAttrCd()!=0) {
+                List<PriorityOrderAttrValue> attrValues = priorityOrderMstAttrSortMapper.getAttrValues(priorityOrderAttrListVo.getAttrCd());
+                priorityOrderAttrListVo.setValues(attrValues);
+            }
         }
 
 
         return ResultMaps.result(ResultEnum.SUCCESS, attr);
     }
+
 
     /**
      * 获取属性1属性2组合对应的面积
@@ -137,12 +140,12 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
             int attrSort = priorityOrderMstAttrSortMapper.getAttrSort(attr1);
             int attrSort1 = priorityOrderMstAttrSortMapper.getAttrSort(attr2);
+            List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort);
+            List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort1);
+            PriorityOrderAttrVO priorityOrderAttr =null ;
+            if (attrSort>attrSort1){
 
-            PriorityOrderAttrVO priorityOrderAttr = null;
-            if (attrSort > attrSort1) {
 
-                List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort);
-                List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort1);
                 for (PriorityOrderAttrVO priorityOrderAttrVO : attrList2) {
                     for (PriorityOrderAttrVO orderAttrVO : attrList1) {
                         if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd() + "_")) {
@@ -166,12 +169,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                         }
                     }
                 }
-                logger.info("属性所有组合为：{}", attrList);
 
             }
-            if (attrSort < attrSort1) {
-                List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort);
-                List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort1);
+            if (attrSort<attrSort1){
+
+
                 for (PriorityOrderAttrVO priorityOrderAttrVO : attrList1) {
                     for (PriorityOrderAttrVO orderAttrVO : attrList2) {
                         if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd() + "_")) {
@@ -196,12 +198,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                         }
                     }
                 }
-                logger.info("属性所有组合为：{}", attrList);
 
             }
 
-
-        } else {
+        }
+        else {
             List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(attr2);
             List<PriorityOrderAttrListVo> attrValue1 = priorityOrderMstAttrSortMapper.getAttrValue(attr1);
 
@@ -230,24 +231,20 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             }
 
         }
+
         Collections.sort(attrList, new Comparator<PriorityOrderAttrVO>() {
-            @Override
-            public int compare(PriorityOrderAttrVO o1, PriorityOrderAttrVO o2) {
+                @Override
+                public int compare(PriorityOrderAttrVO o1, PriorityOrderAttrVO o2) {
 
-                return o2.getExistingZoning().compareTo(o1.getExistingZoning());
-            }
-        });
-        logger.info("属性所有组合为：{}", attrList);
-        return ResultMaps.result(ResultEnum.SUCCESS, attrList);
-
-    }
-
-
-    public void setAttributeArea(List<PriorityOrderAttrVO> dataList) {
-        // 1.保存space
-        // 2.保存制约条件
-//        this.setRestrict(dataList);
-    }
+                    return o2.getExistingZoning().compareTo(o1.getExistingZoning());
+                }
+            });
+    int i = 1;
+        for (PriorityOrderAttrVO priorityOrderAttrVO : attrList) {
+            priorityOrderAttrVO.setRank(i++);
+        }
+            logger.info("属性所有组合为：{}", attrList);
+              return ResultMaps.result(ResultEnum.SUCCESS,attrList);
 
     private List<PriorityOrderRestrictSet> packageRestrict(int begin, int end, Integer taiCd, String attrACd) {
         List<PriorityOrderRestrictSet> restrictSetList = new ArrayList<>();

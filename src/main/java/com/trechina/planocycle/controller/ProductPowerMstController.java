@@ -23,5 +23,13 @@ public class ProductPowerMstController {
         return powerMstService.getTableName(companyCd);
     }
 
+    @GetMapping("/getProductPowerTable")
+    public Map<String,Object> getProductPowerTable(String companyCd){
+        return powerMstService.getProductPowerTable(companyCd);
+    }
 
+    @GetMapping("getProductPowerInfo")
+    public Map<String,Object> getProductPowerInfo(String companyCd ,Integer productPowerCd){
+        return powerMstService.getProductPowerInfo(companyCd,productPowerCd);
+    }
 }

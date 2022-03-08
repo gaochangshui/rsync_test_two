@@ -78,4 +78,16 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and product_power_cd=#{productPowerCd,jdbcType=INTEGER} and deleteflg=0
   </select>
+    <select id="getProductPowerInfo" resultType="com.trechina.planocycle.entity.vo.ProductPowerMstVo">
+      select mst.author_name as authorName,mst.registered as registered,mst.product_power_name as productPowerName
+      from planocycle.product_power_mst mst
+      where mst.product_power_cd = #{productPowerCd} and  mst.company_cd = #{companyCd}
+    </select>
+  <select id="getSkuNum" resultType="java.lang.Integer">
+    select count(datas.jan)
+    from planocycle.product_power_mst mst
+    left join planocycle.product_power_mst_data datas
+    on mst.product_power_cd = datas.product_power_cd and mst.company_cd = datas.company_cd
+    where mst.product_power_cd = #{productPowerCd} and mst.company_cd = #{companyCd}
+  </select>
 </mapper>
