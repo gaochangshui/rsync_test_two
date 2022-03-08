@@ -127,7 +127,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             int attrSort = priorityOrderMstAttrSortMapper.getAttrSort(attr1);
             int attrSort1 = priorityOrderMstAttrSortMapper.getAttrSort(attr2);
 
-            PriorityOrderAttrVO priorityOrderAttr = new PriorityOrderAttrVO();
+            PriorityOrderAttrVO priorityOrderAttr =null ;
             if (attrSort>attrSort1){
 
                List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort);
@@ -135,6 +135,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                 for (PriorityOrderAttrVO priorityOrderAttrVO : attrList2) {
                     for (PriorityOrderAttrVO orderAttrVO : attrList1) {
                         if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd()+"_")){
+                            priorityOrderAttr= new PriorityOrderAttrVO();
                             priorityOrderAttr.setAttrBCd(priorityOrderAttrVO.getAttrACd());
                             priorityOrderAttr.setAttrBName(priorityOrderAttrVO.getAttrAName());
                             priorityOrderAttr.setJansBColnm(priorityOrderAttrVO.getJansAColnm());
@@ -142,11 +143,20 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                             priorityOrderAttr.setAttrAName(orderAttrVO.getAttrAName());
                             priorityOrderAttr.setJansAColnm(orderAttrVO.getJansAColnm());
                             attrList.add(priorityOrderAttr);
+                            Integer facenum = priorityOrderMstAttrSortMapper.getfeceNum(priorityOrderAttrVO.getJansAColnm(), orderAttrVO.getJansAColnm(), priorityOrderAttrVO.getAttrACd(), orderAttrVO.getAttrACd(),patternCd);
+                            if (facenum != null) {
+                                Integer result = facenum * 100 / faceNum ;
+                                priorityOrderAttrVO.setNewZoning(result);
+                                priorityOrderAttrVO.setExistingZoning(result);
+                            } else {
+                                priorityOrderAttrVO.setNewZoning(0);
+                                priorityOrderAttrVO.setExistingZoning(0);
+                            }
                         }
                     }
                 }
                 logger.info("属性所有组合为：{}" ,attrList);
-                return ResultMaps.result(ResultEnum.SUCCESS,attrList);
+
             }
             if (attrSort<attrSort1){
                 List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort);
@@ -154,18 +164,29 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                 for (PriorityOrderAttrVO priorityOrderAttrVO : attrList1) {
                     for (PriorityOrderAttrVO orderAttrVO : attrList2) {
                         if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd()+"_")){
+                            priorityOrderAttr= new PriorityOrderAttrVO();
                             priorityOrderAttr.setAttrACd(priorityOrderAttrVO.getAttrACd());
                             priorityOrderAttr.setAttrAName(priorityOrderAttrVO.getAttrAName());
                             priorityOrderAttr.setJansAColnm(priorityOrderAttrVO.getJansAColnm());
                             priorityOrderAttr.setAttrBCd(orderAttrVO.getAttrACd());
                             priorityOrderAttr.setAttrBName(orderAttrVO.getAttrAName());
                             priorityOrderAttr.setJansBColnm(orderAttrVO.getJansAColnm());
+
+                            Integer facenum = priorityOrderMstAttrSortMapper.getfeceNum(priorityOrderAttrVO.getJansAColnm(), orderAttrVO.getJansAColnm(), priorityOrderAttrVO.getAttrACd(), orderAttrVO.getAttrACd(),patternCd);
+                            if (facenum != null) {
+                                Integer result = facenum * 100 / faceNum ;
+                                priorityOrderAttr.setNewZoning(result);
+                                priorityOrderAttr.setExistingZoning(result);
+                            } else {
+                                priorityOrderAttr.setNewZoning(0);
+                                priorityOrderAttr.setExistingZoning(0);
+                            }
                             attrList.add(priorityOrderAttr);
                         }
                     }
                 }
                 logger.info("属性所有组合为：{}" ,attrList);
-                return ResultMaps.result(ResultEnum.SUCCESS,attrList);
+
             }
 
 
