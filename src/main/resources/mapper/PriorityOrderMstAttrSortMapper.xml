@@ -86,6 +86,7 @@
   <select id="getAttrValues" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
     select val as attrCd,nm as attrName,type as type
     from masterdb.zokusei_mst_data
+    where zokusei_id = #{zokuseiId}
   </select>
   <select id="getAttrValue1" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
     select mst1.val as attrACd , mst1.nm as attrAName

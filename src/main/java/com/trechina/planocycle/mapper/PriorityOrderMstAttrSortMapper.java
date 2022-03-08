@@ -40,7 +40,7 @@ public interface PriorityOrderMstAttrSortMapper {
     //商品分類以外の属性数
     List<PriorityOrderAttrValueVo> getAttr();
 
-    List<PriorityOrderAttrValue> getAttrValues(@Param("tableName")String tableName);
+    List<PriorityOrderAttrValue> getAttrValues(@Param("zokuseiId")Integer zokuseiId);
     //跟据
     Integer getfeceNum(@Param("janCol1")String janCol1, @Param("janCol2")String janCol2,@Param("attrValue1")String attrValue1,@Param("attrValue2")String attrValue2,@Param("patternCd") Integer patternCd);
 

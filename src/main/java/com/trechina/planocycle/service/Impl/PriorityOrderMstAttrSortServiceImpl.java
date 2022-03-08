@@ -104,10 +104,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         }
 
         for (PriorityOrderAttrValueVo priorityOrderAttrListVo : attr) {
-            if (priorityOrderAttrListVo.getTableName()!=null) {
-               // List<PriorityOrderAttrValue> attrValue2 = priorityOrderMstAttrSortMapper.getAttrValues(priorityOrderAttrListVo.getTableName());
-               // priorityOrderAttrListVo.setValues(attrValue2);
-            }
+            List<PriorityOrderAttrValue> attrValues = priorityOrderMstAttrSortMapper.getAttrValues(priorityOrderAttrListVo.getAttrCd());
+            priorityOrderAttrListVo.setValues(attrValues);
         }
 
 
