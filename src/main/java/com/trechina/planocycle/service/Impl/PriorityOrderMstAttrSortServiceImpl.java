@@ -1,6 +1,8 @@
 package com.trechina.planocycle.service.Impl;
 
+import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
+import com.trechina.planocycle.entity.po.PriorityOrderRestrictSet;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrValue;
@@ -8,6 +10,7 @@ import com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.PriorityOrderMstAttrSortMapper;
 import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
+import com.trechina.planocycle.mapper.ShelfPtsDataTanamstMapper;
 import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @Service
@@ -25,6 +29,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     @Autowired
     private ShelfPtsDataMapper shelfPtsDataMapper;
+    @Autowired
+    private HttpSession httpSession;
+    @Autowired
+    private ShelfPtsDataTanamstMapper shelfPtsDataTanamstMapper;
+
     /**
      * 获取既存数据的排序
      *
@@ -34,20 +43,20 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
      */
     @Override
     public Map<String, Object> getPriorityAttrSort(String companyCd, Integer priorityOrderCd) {
-        List<PriorityOrderMstAttrSort> resultInfo = priorityOrderMstAttrSortMapper.selectByPrimaryKey(companyCd,priorityOrderCd);
-        List<Map<String,Object>> result = new ArrayList<>();
-        resultInfo.forEach(item->{
-            Map<String,Object> maps = new HashMap<>();
-            if (item.getCd()==13 && item.getValue() == resultInfo.size()){
-                maps.put("value","mulit_attr");
+        List<PriorityOrderMstAttrSort> resultInfo = priorityOrderMstAttrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
+        List<Map<String, Object>> result = new ArrayList<>();
+        resultInfo.forEach(item -> {
+            Map<String, Object> maps = new HashMap<>();
+            if (item.getCd() == 13 && item.getValue() == resultInfo.size()) {
+                maps.put("value", "mulit_attr");
             } else {
-                maps.put("value",item.getValue().toString());
+                maps.put("value", item.getValue().toString());
             }
-            maps.put("cd",item.getCd().toString());
-            maps.put("sort",item.getSort());
+            maps.put("cd", item.getCd().toString());
+            maps.put("sort", item.getSort());
             result.add(maps);
         });
-        return ResultMaps.result(ResultEnum.SUCCESS,result);
+        return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 
     /**
@@ -59,32 +68,35 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityAttrSort(List<PriorityOrderMstAttrSort> priorityOrderMstAttrSort) {
-        logger.info("保存优先顺位表排序的参数"+priorityOrderMstAttrSort);
-        if (priorityOrderMstAttrSort.size()>0) {
+        logger.info("保存优先顺位表排序的参数" + priorityOrderMstAttrSort);
+        if (priorityOrderMstAttrSort.size() > 0) {
             priorityOrderMstAttrSortMapper.deleteByPrimaryKey(priorityOrderMstAttrSort.get(0).getCompanyCd(), priorityOrderMstAttrSort.get(0).getPriorityOrderCd());
             priorityOrderMstAttrSortMapper.insert(priorityOrderMstAttrSort);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
+
     /**
      * 删除数据的排序
+     *
      * @param companyCd
      * @param priorityOrderCd
      * @return
      */
     @Override
     public Integer delPriorityAttrSortInfo(String companyCd, Integer priorityOrderCd) {
-        return priorityOrderMstAttrSortMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
+        return priorityOrderMstAttrSortMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
     }
 
     /**
-     *获取属性1和属性2
+     * 获取属性1和属性2
      */
     @Override
     public Map<String, Object> getAttribute() {
         List<PriorityOrderAttrListVo> attributeList = priorityOrderMstAttrSortMapper.getAttribute();
-        return ResultMaps.result(ResultEnum.SUCCESS,attributeList);
+        return ResultMaps.result(ResultEnum.SUCCESS, attributeList);
     }
+
     /**
      * 获取属性的分类及商品分类列表
      */
@@ -96,7 +108,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         priorityOrderAttrValueVo.setValues(goodsAttrTree);
         priorityOrderAttrValueVo.setAttrName("商品分類");
         priorityOrderAttrValueVo.setAttrCd(0);
-        List<PriorityOrderAttrValueVo> attr =new ArrayList<>();
+        List<PriorityOrderAttrValueVo> attr = new ArrayList<>();
         attr.add(priorityOrderAttrValueVo);
         List<PriorityOrderAttrValueVo> attr1 = priorityOrderMstAttrSortMapper.getAttr();
         for (PriorityOrderAttrValueVo orderAttrValueVo : attr1) {
@@ -109,12 +121,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         }
 
 
-
-        return ResultMaps.result(ResultEnum.SUCCESS,attr);
+        return ResultMaps.result(ResultEnum.SUCCESS, attr);
     }
 
     /**
-     *获取属性1属性2组合对应的面积
+     * 获取属性1属性2组合对应的面积
      */
     @Override
     public Map<String, Object> getAttributeArea(Integer patternCd, Integer attr1, Integer attr2) {
@@ -122,20 +133,20 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         int attrType1 = priorityOrderMstAttrSortMapper.getAttrType(attr1);
         int attrType2 = priorityOrderMstAttrSortMapper.getAttrType(attr2);
         List<PriorityOrderAttrVO> attrList = new ArrayList<>();
-        if (attrType1 == 1 && attrType2 ==1){
+        if (attrType1 == 1 && attrType2 == 1) {
 
             int attrSort = priorityOrderMstAttrSortMapper.getAttrSort(attr1);
             int attrSort1 = priorityOrderMstAttrSortMapper.getAttrSort(attr2);
 
-            PriorityOrderAttrVO priorityOrderAttr =null ;
-            if (attrSort>attrSort1){
+            PriorityOrderAttrVO priorityOrderAttr = null;
+            if (attrSort > attrSort1) {
 
-               List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort);
-                List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort1);
+                List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort);
+                List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort1);
                 for (PriorityOrderAttrVO priorityOrderAttrVO : attrList2) {
                     for (PriorityOrderAttrVO orderAttrVO : attrList1) {
-                        if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd()+"_")){
-                            priorityOrderAttr= new PriorityOrderAttrVO();
+                        if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd() + "_")) {
+                            priorityOrderAttr = new PriorityOrderAttrVO();
                             priorityOrderAttr.setAttrBCd(priorityOrderAttrVO.getAttrACd());
                             priorityOrderAttr.setAttrBName(priorityOrderAttrVO.getAttrAName());
                             priorityOrderAttr.setJansBColnm(priorityOrderAttrVO.getJansAColnm());
@@ -143,9 +154,9 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                             priorityOrderAttr.setAttrAName(orderAttrVO.getAttrAName());
                             priorityOrderAttr.setJansAColnm(orderAttrVO.getJansAColnm());
                             attrList.add(priorityOrderAttr);
-                            Integer facenum = priorityOrderMstAttrSortMapper.getfeceNum(priorityOrderAttrVO.getJansAColnm(), orderAttrVO.getJansAColnm(), priorityOrderAttrVO.getAttrACd(), orderAttrVO.getAttrACd(),patternCd);
+                            Integer facenum = priorityOrderMstAttrSortMapper.getfeceNum(priorityOrderAttrVO.getJansAColnm(), orderAttrVO.getJansAColnm(), priorityOrderAttrVO.getAttrACd(), orderAttrVO.getAttrACd(), patternCd);
                             if (facenum != null) {
-                                Integer result = facenum * 100 / faceNum ;
+                                Integer result = facenum * 100 / faceNum;
                                 priorityOrderAttrVO.setNewZoning(result);
                                 priorityOrderAttrVO.setExistingZoning(result);
                             } else {
@@ -155,16 +166,16 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                         }
                     }
                 }
-                logger.info("属性所有组合为：{}" ,attrList);
+                logger.info("属性所有组合为：{}", attrList);
 
             }
-            if (attrSort<attrSort1){
+            if (attrSort < attrSort1) {
                 List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort);
                 List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort1);
                 for (PriorityOrderAttrVO priorityOrderAttrVO : attrList1) {
                     for (PriorityOrderAttrVO orderAttrVO : attrList2) {
-                        if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd()+"_")){
-                            priorityOrderAttr= new PriorityOrderAttrVO();
+                        if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd() + "_")) {
+                            priorityOrderAttr = new PriorityOrderAttrVO();
                             priorityOrderAttr.setAttrACd(priorityOrderAttrVO.getAttrACd());
                             priorityOrderAttr.setAttrAName(priorityOrderAttrVO.getAttrAName());
                             priorityOrderAttr.setJansAColnm(priorityOrderAttrVO.getJansAColnm());
@@ -172,9 +183,9 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                             priorityOrderAttr.setAttrBName(orderAttrVO.getAttrAName());
                             priorityOrderAttr.setJansBColnm(orderAttrVO.getJansAColnm());
 
-                            Integer facenum = priorityOrderMstAttrSortMapper.getfeceNum(priorityOrderAttrVO.getJansAColnm(), orderAttrVO.getJansAColnm(), priorityOrderAttrVO.getAttrACd(), orderAttrVO.getAttrACd(),patternCd);
+                            Integer facenum = priorityOrderMstAttrSortMapper.getfeceNum(priorityOrderAttrVO.getJansAColnm(), orderAttrVO.getJansAColnm(), priorityOrderAttrVO.getAttrACd(), orderAttrVO.getAttrACd(), patternCd);
                             if (facenum != null) {
-                                Integer result = facenum * 100 / faceNum ;
+                                Integer result = facenum * 100 / faceNum;
                                 priorityOrderAttr.setNewZoning(result);
                                 priorityOrderAttr.setExistingZoning(result);
                             } else {
@@ -185,14 +196,12 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                         }
                     }
                 }
-                logger.info("属性所有组合为：{}" ,attrList);
+                logger.info("属性所有组合为：{}", attrList);
 
             }
 
 
-
-        }
-        else {
+        } else {
             List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(attr2);
             List<PriorityOrderAttrListVo> attrValue1 = priorityOrderMstAttrSortMapper.getAttrValue(attr1);
 
@@ -206,9 +215,9 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                     priorityOrderAttrVO.setAttrBCd(orderAttrListVo.getAttrCd());
                     priorityOrderAttrVO.setJansBColnm(orderAttrListVo.getJansColNm());
                     priorityOrderAttrVO.setAttrBName(orderAttrListVo.getAttrName());
-                    Integer facenum = priorityOrderMstAttrSortMapper.getfeceNum(priorityOrderAttrListVo.getJansColNm(), orderAttrListVo.getJansColNm(), priorityOrderAttrListVo.getAttrCd(), orderAttrListVo.getAttrCd(),patternCd);
+                    Integer facenum = priorityOrderMstAttrSortMapper.getfeceNum(priorityOrderAttrListVo.getJansColNm(), orderAttrListVo.getJansColNm(), priorityOrderAttrListVo.getAttrCd(), orderAttrListVo.getAttrCd(), patternCd);
                     if (facenum != null) {
-                        Integer result = facenum * 100 / faceNum ;
+                        Integer result = facenum * 100 / faceNum;
                         priorityOrderAttrVO.setNewZoning(result);
                         priorityOrderAttrVO.setExistingZoning(result);
                     } else {
@@ -221,16 +230,126 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             }
 
         }
-            Collections.sort(attrList, new Comparator<PriorityOrderAttrVO>() {
-                @Override
-                public int compare(PriorityOrderAttrVO o1, PriorityOrderAttrVO o2) {
+        Collections.sort(attrList, new Comparator<PriorityOrderAttrVO>() {
+            @Override
+            public int compare(PriorityOrderAttrVO o1, PriorityOrderAttrVO o2) {
 
-                    return o2.getExistingZoning().compareTo(o1.getExistingZoning());
-                }
-            });
-            logger.info("属性所有组合为：{}", attrList);
-              return ResultMaps.result(ResultEnum.SUCCESS,attrList);
+                return o2.getExistingZoning().compareTo(o1.getExistingZoning());
+            }
+        });
+        logger.info("属性所有组合为：{}", attrList);
+        return ResultMaps.result(ResultEnum.SUCCESS, attrList);
 
     }
 
+
+    public void setAttributeArea(List<PriorityOrderAttrVO> dataList) {
+        // 1.保存space
+        // 2.保存制约条件
+//        this.setRestrict(dataList);
+    }
+
+    private List<PriorityOrderRestrictSet> packageRestrict(int begin, int end, Integer taiCd, String attrACd) {
+        List<PriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
+        PriorityOrderRestrictSet restrictSet = null;
+        if (begin < end) {
+            for (int i = begin; i < end; i++) {
+                restrictSet = new PriorityOrderRestrictSet();
+                restrictSet.setAuthorCd(attrACd);
+                restrictSet.setTaiCd(taiCd);
+                restrictSet.setTanaCd(i + 1);
+                restrictSetList.add(restrictSet);
+            }
+        } else {
+            restrictSet = new PriorityOrderRestrictSet();
+            restrictSet.setAuthorCd(attrACd);
+            restrictSet.setTaiCd(taiCd);
+            restrictSet.setTanaCd(0);
+            restrictSetList.add(restrictSet);
+        }
+        return restrictSetList;
+    }
+
+    @Override
+    public List<PriorityOrderRestrictSet> setRestrict(List<PriorityOrderAttrVO> dataList, List<ShelfPtsDataTanaCount> tanaCountList) {
+//        Date now = Calendar.getInstance().getTime();
+//        String authorCd = httpSession.getAttribute("aud").toString();
+//        // 1.保存列表
+//        // 2.将信息进行拆分(将商品放到棚上，通过外循环商品，内循环台的方式)
+//        Integer ptsCd = 48;
+//        List<ShelfPtsDataTanaCount> tanaCountList = shelfPtsDataTanamstMapper.ptsTanaCountByTai(ptsCd);
+        List<PriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
+        Integer pattan = 0;
+        PriorityOrderRestrictSet restrictSet = null;
+        String attrACd = null;
+        for (PriorityOrderAttrVO vo : dataList) {
+            // 商品数
+            pattan = vo.getTanaPattan();
+            attrACd = vo.getAttrACd();
+
+            for (ShelfPtsDataTanaCount tanaCount : tanaCountList) {
+                // 判断台是否有空余
+                if ((tanaCount.getTanaCount() - tanaCount.getTanaUsedCount()) > 0) {
+
+//                    int notUsedCount = 0;
+//                    if (tanaCount.getTanaUsedCount() == 0) {
+//                        notUsedCount = tanaCount.getTanaCount();
+//                    }else{
+//                        notUsedCount = tanaCount.getTanaCount() - tanaCount.getTanaUsedCount();
+//                    }
+                    if (tanaCount.getTanaUsedCount() == 0) {
+                        // 空台
+                        if (pattan >= tanaCount.getTanaCount()) {
+                            // 商品占用的棚数可以占满台
+                            pattan -= tanaCount.getTanaCount();
+                            tanaCount.setTanaUsedCount(tanaCount.getTanaCount());
+                            //## 整台制约条件
+                            restrictSetList.addAll(packageRestrict(0, 0, tanaCount.getTaiCd(), attrACd));
+                            if (pattan > 0) {
+                                // 商品还有，继续下一个台
+                                continue;
+                            } else {
+                                // 商品没有，继续下一个商品
+                                break;
+                            }
+                        } else {
+                            // 商品占用部分台
+                            tanaCount.setTanaUsedCount(pattan);
+                            //## 段制约条件
+                            restrictSetList.addAll(packageRestrict(0, pattan, tanaCount.getTaiCd(), attrACd));
+                            // 跳出循环，继续下一个商品
+                            break;
+                        }
+                    } else {
+                        // 台已经放了部分商品了
+                        if (pattan >= (tanaCount.getTanaCount() - tanaCount.getTanaUsedCount())) {
+                            // 商品占用的棚数可以占满台
+                            //## 段制约条件：从上一次接着放
+                            restrictSetList.addAll(packageRestrict(tanaCount.getTanaUsedCount(), tanaCount.getTanaCount(), tanaCount.getTaiCd(), attrACd));
+                            pattan -= (tanaCount.getTanaCount() - tanaCount.getTanaUsedCount());
+                            tanaCount.setTanaUsedCount(tanaCount.getTanaCount());
+                            if (pattan > 0) {
+                                // 商品还有，继续下一个台
+                                continue;
+                            } else {
+                                // 商品没有，继续下一个商品
+                                break;
+                            }
+                        } else {
+                            // 商品占用部分台
+                            //## 段制约条件：从上一次接着放
+                            restrictSetList.addAll(packageRestrict(tanaCount.getTanaUsedCount(), tanaCount.getTanaUsedCount() + pattan, tanaCount.getTaiCd(), attrACd));
+                            tanaCount.setTanaUsedCount(tanaCount.getTanaUsedCount() + pattan);
+                            // 跳出循环，继续下一个商品
+                            break;
+                        }
+                    }
+                } else {
+                    // 台满了，直接跳过
+                    continue;
+                }
+            }
+        }
+        return restrictSetList;
+    }
 }

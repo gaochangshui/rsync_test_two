@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderSpaceMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderSpace">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <result column="attribute1_value" jdbcType="VARCHAR" property="attribute1Value" />
+    <result column="attribute2_value" jdbcType="VARCHAR" property="attribute2Value" />
+    <result column="old_zoning" jdbcType="INTEGER" property="oldZoning" />
+    <result column="new_zoning" jdbcType="INTEGER" property="newZoning" />
+    <result column="tana_count" jdbcType="INTEGER" property="tanaCount" />
+    <result column="zoning_num" jdbcType="INTEGER" property="zoningNum" />
+    <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="editer_cd" jdbcType="VARCHAR" property="editerCd" />
+    <result column="edit_time" jdbcType="TIMESTAMP" property="editTime" />
+    <result column="deleteflg" jdbcType="SMALLINT" property="deleteflg" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, priority_order_cd, attribute1_value, attribute2_value, old_zoning, new_zoning, 
+    tana_count, zoning_num, author_cd, create_time, editer_cd, edit_time, deleteflg
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from priority_order_space
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from priority_order_space
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderSpace">
+    insert into priority_order_space (company_cd, priority_order_cd, attribute1_value, 
+      attribute2_value, old_zoning, new_zoning, 
+      tana_count, zoning_num, author_cd, 
+      create_time, editer_cd, edit_time, 
+      deleteflg)
+    values (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{attribute1Value,jdbcType=VARCHAR}, 
+      #{attribute2Value,jdbcType=VARCHAR}, #{oldZoning,jdbcType=INTEGER}, #{newZoning,jdbcType=INTEGER}, 
+      #{tanaCount,jdbcType=INTEGER}, #{zoningNum,jdbcType=INTEGER}, #{authorCd,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{editerCd,jdbcType=VARCHAR}, #{editTime,jdbcType=TIMESTAMP}, 
+      #{deleteflg,jdbcType=SMALLINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderSpace">
+    insert into priority_order_space
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        company_cd,
+      </if>
+      <if test="priorityOrderCd != null">
+        priority_order_cd,
+      </if>
+      <if test="attribute1Value != null">
+        attribute1_value,
+      </if>
+      <if test="attribute2Value != null">
+        attribute2_value,
+      </if>
+      <if test="oldZoning != null">
+        old_zoning,
+      </if>
+      <if test="newZoning != null">
+        new_zoning,
+      </if>
+      <if test="tanaCount != null">
+        tana_count,
+      </if>
+      <if test="zoningNum != null">
+        zoning_num,
+      </if>
+      <if test="authorCd != null">
+        author_cd,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="editerCd != null">
+        editer_cd,
+      </if>
+      <if test="editTime != null">
+        edit_time,
+      </if>
+      <if test="deleteflg != null">
+        deleteflg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        #{companyCd,jdbcType=VARCHAR},
+      </if>
+      <if test="priorityOrderCd != null">
+        #{priorityOrderCd,jdbcType=INTEGER},
+      </if>
+      <if test="attribute1Value != null">
+        #{attribute1Value,jdbcType=VARCHAR},
+      </if>
+      <if test="attribute2Value != null">
+        #{attribute2Value,jdbcType=VARCHAR},
+      </if>
+      <if test="oldZoning != null">
+        #{oldZoning,jdbcType=INTEGER},
+      </if>
+      <if test="newZoning != null">
+        #{newZoning,jdbcType=INTEGER},
+      </if>
+      <if test="tanaCount != null">
+        #{tanaCount,jdbcType=INTEGER},
+      </if>
+      <if test="zoningNum != null">
+        #{zoningNum,jdbcType=INTEGER},
+      </if>
+      <if test="authorCd != null">
+        #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editerCd != null">
+        #{editerCd,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null">
+        #{editTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflg != null">
+        #{deleteflg,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderSpace">
+    update priority_order_space
+    <set>
+      <if test="attribute1Value != null">
+        attribute1_value = #{attribute1Value,jdbcType=VARCHAR},
+      </if>
+      <if test="attribute2Value != null">
+        attribute2_value = #{attribute2Value,jdbcType=VARCHAR},
+      </if>
+      <if test="oldZoning != null">
+        old_zoning = #{oldZoning,jdbcType=INTEGER},
+      </if>
+      <if test="newZoning != null">
+        new_zoning = #{newZoning,jdbcType=INTEGER},
+      </if>
+      <if test="tanaCount != null">
+        tana_count = #{tanaCount,jdbcType=INTEGER},
+      </if>
+      <if test="zoningNum != null">
+        zoning_num = #{zoningNum,jdbcType=INTEGER},
+      </if>
+      <if test="authorCd != null">
+        author_cd = #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editerCd != null">
+        editer_cd = #{editerCd,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null">
+        edit_time = #{editTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflg != null">
+        deleteflg = #{deleteflg,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.PriorityOrderSpace">
+    update priority_order_space
+    set attribute1_value = #{attribute1Value,jdbcType=VARCHAR},
+      attribute2_value = #{attribute2Value,jdbcType=VARCHAR},
+      old_zoning = #{oldZoning,jdbcType=INTEGER},
+      new_zoning = #{newZoning,jdbcType=INTEGER},
+      tana_count = #{tanaCount,jdbcType=INTEGER},
+      zoning_num = #{zoningNum,jdbcType=INTEGER},
+      author_cd = #{authorCd,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      editer_cd = #{editerCd,jdbcType=VARCHAR},
+      edit_time = #{editTime,jdbcType=TIMESTAMP},
+      deleteflg = #{deleteflg,jdbcType=SMALLINT}
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </update>
+</mapper>

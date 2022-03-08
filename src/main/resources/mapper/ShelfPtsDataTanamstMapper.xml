@@ -209,4 +209,10 @@
     #{item.createTime,jdbcType=TIMESTAMP}, #{item.authorCd,jdbcType=VARCHAR})
     </foreach>
   </insert>
+  <select id="ptsTanaCountByTai" resultType="com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount">
+    select tai_cd,count(tana_cd) tana_count from planocycle.shelf_pts_data_tanamst
+    where pts_cd =#{ptsCd}
+    group by tai_cd
+    order by tai_cd
+  </select>
 </mapper>

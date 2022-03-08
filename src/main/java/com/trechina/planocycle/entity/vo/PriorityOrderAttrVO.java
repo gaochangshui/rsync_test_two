@@ -9,7 +9,7 @@ public class PriorityOrderAttrVO {
     private String jansBColnm;
     private Integer existingZoning;
     private Integer newZoning;
-    private String tanaPattan;
+    private Integer tanaPattan;
     private Integer rank;
 
     public String getAttrACd() {
@@ -76,11 +76,11 @@ public class PriorityOrderAttrVO {
         this.newZoning = newZoning;
     }
 
-    public String getTanaPattan() {
+    public Integer getTanaPattan() {
         return tanaPattan;
     }
 
-    public void setTanaPattan(String tanaPattan) {
+    public void setTanaPattan(Integer tanaPattan) {
         this.tanaPattan = tanaPattan;
     }
 

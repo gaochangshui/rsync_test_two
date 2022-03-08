@@ -1,6 +1,9 @@
 package com.trechina.planocycle.service;
 
+import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
+import com.trechina.planocycle.entity.po.PriorityOrderRestrictSet;
+import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
 
 import java.util.List;
 import java.util.Map;
@@ -44,4 +47,6 @@ public interface PriorityOrderMstAttrSortService {
      *获取属性1属性2组合对应的面积
      */
     Map<String,Object> getAttributeArea(Integer patternCd,Integer attr1,Integer attr2);
+
+    List<PriorityOrderRestrictSet> setRestrict(List<PriorityOrderAttrVO> dataList, List<ShelfPtsDataTanaCount> tanaCountList);
 }

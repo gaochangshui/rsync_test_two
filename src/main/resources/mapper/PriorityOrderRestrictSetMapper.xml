@@ -1,6 +1,190 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.PriorityOrderRestrictSetMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="tai_cd" jdbcType="INTEGER" property="taiCd" />
+    <id column="tana_cd" jdbcType="INTEGER" property="tanaCd" />
+    <id column="restrict_type" jdbcType="INTEGER" property="restrictType" />
+    <result column="category" jdbcType="INTEGER" property="category" />
+    <result column="pkg" jdbcType="INTEGER" property="pkg" />
+    <result column="capacity" jdbcType="INTEGER" property="capacity" />
+    <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="editer_cd" jdbcType="VARCHAR" property="editerCd" />
+    <result column="edit_time" jdbcType="TIMESTAMP" property="editTime" />
+    <result column="deleteflg" jdbcType="SMALLINT" property="deleteflg" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, priority_order_cd, tai_cd, tana_cd, restrict_type, category, pkg, capacity, 
+    author_cd, create_time, editer_cd, edit_time, deleteflg
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from priority_order_restrict_set
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+      and restrict_type = #{restrictType,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from priority_order_restrict_set
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+      and restrict_type = #{restrictType,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
+    insert into priority_order_restrict_set (company_cd, priority_order_cd, tai_cd, 
+      tana_cd, restrict_type, category, 
+      pkg, capacity, author_cd, 
+      create_time, editer_cd, edit_time, 
+      deleteflg)
+    values (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{taiCd,jdbcType=INTEGER}, 
+      #{tanaCd,jdbcType=INTEGER}, #{restrictType,jdbcType=INTEGER}, #{category,jdbcType=INTEGER}, 
+      #{pkg,jdbcType=INTEGER}, #{capacity,jdbcType=INTEGER}, #{authorCd,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{editerCd,jdbcType=VARCHAR}, #{editTime,jdbcType=TIMESTAMP}, 
+      #{deleteflg,jdbcType=SMALLINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
+    insert into priority_order_restrict_set
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        company_cd,
+      </if>
+      <if test="priorityOrderCd != null">
+        priority_order_cd,
+      </if>
+      <if test="taiCd != null">
+        tai_cd,
+      </if>
+      <if test="tanaCd != null">
+        tana_cd,
+      </if>
+      <if test="restrictType != null">
+        restrict_type,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="pkg != null">
+        pkg,
+      </if>
+      <if test="capacity != null">
+        capacity,
+      </if>
+      <if test="authorCd != null">
+        author_cd,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="editerCd != null">
+        editer_cd,
+      </if>
+      <if test="editTime != null">
+        edit_time,
+      </if>
+      <if test="deleteflg != null">
+        deleteflg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        #{companyCd,jdbcType=VARCHAR},
+      </if>
+      <if test="priorityOrderCd != null">
+        #{priorityOrderCd,jdbcType=INTEGER},
+      </if>
+      <if test="taiCd != null">
+        #{taiCd,jdbcType=INTEGER},
+      </if>
+      <if test="tanaCd != null">
+        #{tanaCd,jdbcType=INTEGER},
+      </if>
+      <if test="restrictType != null">
+        #{restrictType,jdbcType=INTEGER},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=INTEGER},
+      </if>
+      <if test="pkg != null">
+        #{pkg,jdbcType=INTEGER},
+      </if>
+      <if test="capacity != null">
+        #{capacity,jdbcType=INTEGER},
+      </if>
+      <if test="authorCd != null">
+        #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editerCd != null">
+        #{editerCd,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null">
+        #{editTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflg != null">
+        #{deleteflg,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
+    update priority_order_restrict_set
+    <set>
+      <if test="category != null">
+        category = #{category,jdbcType=INTEGER},
+      </if>
+      <if test="pkg != null">
+        pkg = #{pkg,jdbcType=INTEGER},
+      </if>
+      <if test="capacity != null">
+        capacity = #{capacity,jdbcType=INTEGER},
+      </if>
+      <if test="authorCd != null">
+        author_cd = #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editerCd != null">
+        editer_cd = #{editerCd,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null">
+        edit_time = #{editTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflg != null">
+        deleteflg = #{deleteflg,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+      and restrict_type = #{restrictType,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
+    update priority_order_restrict_set
+    set category = #{category,jdbcType=INTEGER},
+      pkg = #{pkg,jdbcType=INTEGER},
+      capacity = #{capacity,jdbcType=INTEGER},
+      author_cd = #{authorCd,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      editer_cd = #{editerCd,jdbcType=VARCHAR},
+      edit_time = #{editTime,jdbcType=TIMESTAMP},
+      deleteflg = #{deleteflg,jdbcType=SMALLINT}
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+      and restrict_type = #{restrictType,jdbcType=INTEGER}
+  </update>
     <insert id="setPriorityOrderRestrict">
         insert into planocycle.priority_order_restrict_set(company_cd,priority_order_cd,tai_cd,tana_cd,restrict_type,category,pkg,capacity,author_cd,create_time)
         values (#{item.companyCd},#{item.priorityOrderCd},#{item.taiCd},#{item.tanaCd},#{item.restrictType},#{item.category},#{item.pkg},#{item.capacity}

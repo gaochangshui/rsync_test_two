@@ -1,5 +1,7 @@
 package com.trechina.planocycle.entity.po;
 
+import java.util.Date;
+
 
 public class PriorityOrderRestrictSet {
     private String companyCd;
@@ -10,6 +12,11 @@ public class PriorityOrderRestrictSet {
     private Integer category;
     private Integer pkg;
     private Integer capacity;
+    private String authorCd;
+    private Date createTime;
+    private String editerCd;
+    private Date editTime;
+    private Short deleteflg;
 
     public PriorityOrderRestrictSet(String companyCd, Integer priorityOrderCd, Integer taiCd, Integer tanaCd, Integer restrictType, Integer category, Integer pkg, Integer capacity) {
         this.companyCd = companyCd;
@@ -87,6 +94,46 @@ public class PriorityOrderRestrictSet {
 
     public void setCapacity(Integer capacity) {
         this.capacity = capacity;
+    }
+
+    public String getAuthorCd() {
+        return authorCd;
+    }
+
+    public void setAuthorCd(String authorCd) {
+        this.authorCd = authorCd == null ? null : authorCd.trim();
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getEditerCd() {
+        return editerCd;
+    }
+
+    public void setEditerCd(String editerCd) {
+        this.editerCd = editerCd == null ? null : editerCd.trim();
+    }
+
+    public Date getEditTime() {
+        return editTime;
+    }
+
+    public void setEditTime(Date editTime) {
+        this.editTime = editTime;
+    }
+
+    public Short getDeleteflg() {
+        return deleteflg;
+    }
+
+    public void setDeleteflg(Short deleteflg) {
+        this.deleteflg = deleteflg;
     }
 
     @Override

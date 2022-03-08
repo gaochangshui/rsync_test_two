@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
 import com.trechina.planocycle.entity.po.ShelfPtsDataTanamst;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -20,4 +21,6 @@ public interface ShelfPtsDataTanamstMapper {
     int updateByPrimaryKey(ShelfPtsDataTanamst record);
 
     int insertAll(List<ShelfPtsDataTanamst> list);
+
+    List<ShelfPtsDataTanaCount> ptsTanaCountByTai(Integer ptsCd);
 }

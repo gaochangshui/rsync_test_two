@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderRestrictResultMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderRestrictResult">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <result column="restrict_cd" jdbcType="BIGINT" property="restrictCd" />
+    <result column="category" jdbcType="INTEGER" property="category" />
+    <result column="pkg" jdbcType="INTEGER" property="pkg" />
+    <result column="capacity" jdbcType="INTEGER" property="capacity" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, priority_order_cd, restrict_cd, category, pkg, capacity
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from priority_order_restrict_result
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from priority_order_restrict_result
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictResult">
+    insert into priority_order_restrict_result (company_cd, priority_order_cd, restrict_cd, 
+      category, pkg, capacity
+      )
+    values (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{restrictCd,jdbcType=BIGINT}, 
+      #{category,jdbcType=INTEGER}, #{pkg,jdbcType=INTEGER}, #{capacity,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictResult">
+    insert into priority_order_restrict_result
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        company_cd,
+      </if>
+      <if test="priorityOrderCd != null">
+        priority_order_cd,
+      </if>
+      <if test="restrictCd != null">
+        restrict_cd,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="pkg != null">
+        pkg,
+      </if>
+      <if test="capacity != null">
+        capacity,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        #{companyCd,jdbcType=VARCHAR},
+      </if>
+      <if test="priorityOrderCd != null">
+        #{priorityOrderCd,jdbcType=INTEGER},
+      </if>
+      <if test="restrictCd != null">
+        #{restrictCd,jdbcType=BIGINT},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=INTEGER},
+      </if>
+      <if test="pkg != null">
+        #{pkg,jdbcType=INTEGER},
+      </if>
+      <if test="capacity != null">
+        #{capacity,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictResult">
+    update priority_order_restrict_result
+    <set>
+      <if test="restrictCd != null">
+        restrict_cd = #{restrictCd,jdbcType=BIGINT},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=INTEGER},
+      </if>
+      <if test="pkg != null">
+        pkg = #{pkg,jdbcType=INTEGER},
+      </if>
+      <if test="capacity != null">
+        capacity = #{capacity,jdbcType=INTEGER},
+      </if>
+    </set>
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictResult">
+    update priority_order_restrict_result
+    set restrict_cd = #{restrictCd,jdbcType=BIGINT},
+      category = #{category,jdbcType=INTEGER},
+      pkg = #{pkg,jdbcType=INTEGER},
+      capacity = #{capacity,jdbcType=INTEGER}
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </update>
+</mapper>

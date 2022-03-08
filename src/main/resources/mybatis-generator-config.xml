@@ -37,35 +37,28 @@
 <!--               enableSelectByExample="false"-->
 <!--               selectByExampleQueryId="false">-->
 <!--        </table>-->
-        <table tableName="shelf_pts_data_history" domainObjectName="ShelfPtsDataHistory"
+        <table tableName="priority_order_space" domainObjectName="PriorityOrderSpace"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
                selectByExampleQueryId="false">
         </table>
-        <table tableName="shelf_pts_data_jandata" domainObjectName="ShelfPtsDataJandata"
+        <table tableName="priority_order_restrict_set" domainObjectName="PriorityOrderRestrictSet"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
                selectByExampleQueryId="false">
         </table>
-        <table tableName="shelf_pts_data_taimst" domainObjectName="ShelfPtsDataTaimst"
+        <table tableName="priority_order_restrict_relation" domainObjectName="PriorityOrderRestrictRelation"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
                selectByExampleQueryId="false">
         </table>
-        <table tableName="shelf_pts_data_tanamst" domainObjectName="ShelfPtsDataTanamst"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false">
-        </table>
-        <table tableName="shelf_pts_data_version" domainObjectName="ShelfPtsDataVersion"
+        <table tableName="priority_order_restrict_result" domainObjectName="PriorityOrderRestrictResult"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
