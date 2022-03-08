@@ -1,7 +1,7 @@
 package com.trechina.planocycle;
 
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
+import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
 import com.trechina.planocycle.mapper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -38,15 +38,18 @@ class PlanoCycleApiApplicationTests {
       /*  PtsTanaVo tanaData = shelfPtsDataMapper.getTanaData(43);
         System.out.println(tanaData);
 */
-       // int attrType = priorityOrderMstAttrSortMapper.getAttrType(1);
+
+        List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(1);
+        attrValue.forEach(System.out::println);
+        // int attrType = priorityOrderMstAttrSortMapper.getAttrType(1);
        //  priorityOrderMstAttrSortMapper.getAttribute().forEach(System.out::println);
        //  priorityOrderMstAttrSortMapper.getAttrValue2("zokusei1_mst");
        // List<PriorityOrderAttrTree> goodsAttrTree = priorityOrderMstAttrSortMapper.getGoodsAttrTree();
        // goodsAttrTree.forEach(System.out::println);
        // List<PriorityOrderAttrValue> zokusei1_mst = priorityOrderMstAttrSortMapper.getAttrValues("zokusei1_mst");
-       // zokusei1_mst.forEach(System.out::println);
-        List<PriorityOrderAttrVO> attrValue5 = priorityOrderMstAttrSortMapper.getAttrValue5(1, 2);
-        attrValue5.forEach(System.out::println);
+    /*   // zokusei1_mst.forEach(System.out::println);
+        List<PriorityOrderAttrListVo> attrValue1 = priorityOrderMstAttrSortMapper.getAttrValue1(2);
+        attrValue1.forEach(System.out::println);*/
       /*  Integer faceNum = shelfPtsDataMapper.getSkuNum(43);
         Integer taiNumTanaNum = shelfPtsDataMapper.getTaiNum(43);
         Integer tanaNumTanaNum = shelfPtsDataMapper.getTanaNum(43);

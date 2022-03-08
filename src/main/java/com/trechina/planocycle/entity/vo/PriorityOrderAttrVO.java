@@ -5,6 +5,8 @@ public class PriorityOrderAttrVO {
     private String attrAName;
     private String attrBCd;
     private String attrBName;
+    private String jansAColnm;
+    private String jansBColnm;
     private Integer existingZoning;
     private Integer newZoning;
     private String tanaPattan;
@@ -42,6 +44,22 @@ public class PriorityOrderAttrVO {
         this.attrBName = attrBName;
     }
 
+    public String getJansAColnm() {
+        return jansAColnm;
+    }
+
+    public void setJansAColnm(String jansAColnm) {
+        this.jansAColnm = jansAColnm;
+    }
+
+    public String getJansBColnm() {
+        return jansBColnm;
+    }
+
+    public void setJansBColnm(String jansBColnm) {
+        this.jansBColnm = jansBColnm;
+    }
+
     public Integer getExistingZoning() {
         return existingZoning;
     }
@@ -72,5 +90,21 @@ public class PriorityOrderAttrVO {
 
     public void setRank(Integer rank) {
         this.rank = rank;
+    }
+
+    @Override
+    public String toString() {
+        return "PriorityOrderAttrVO{" +
+                "attrACd='" + attrACd + '\'' +
+                ", attrAName='" + attrAName + '\'' +
+                ", attrBCd='" + attrBCd + '\'' +
+                ", attrBName='" + attrBName + '\'' +
+                ", jansAColnm='" + jansAColnm + '\'' +
+                ", jansBColnm='" + jansBColnm + '\'' +
+                ", existingZoning=" + existingZoning +
+                ", newZoning=" + newZoning +
+                ", tanaPattan='" + tanaPattan + '\'' +
+                ", rank=" + rank +
+                '}';
     }
 }
