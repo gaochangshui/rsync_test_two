@@ -140,10 +140,10 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
             int attrSort = priorityOrderMstAttrSortMapper.getAttrSort(attr1);
             int attrSort1 = priorityOrderMstAttrSortMapper.getAttrSort(attr2);
-            List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort);
-            List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5( attrSort1);
-            PriorityOrderAttrVO priorityOrderAttr =null ;
-            if (attrSort>attrSort1){
+            List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort);
+            List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort1);
+            PriorityOrderAttrVO priorityOrderAttr = null;
+            if (attrSort > attrSort1) {
 
 
                 for (PriorityOrderAttrVO priorityOrderAttrVO : attrList2) {
@@ -171,7 +171,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                 }
 
             }
-            if (attrSort<attrSort1){
+            if (attrSort < attrSort1) {
 
 
                 for (PriorityOrderAttrVO priorityOrderAttrVO : attrList1) {
@@ -201,8 +201,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
             }
 
-        }
-        else {
+        } else {
             List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(attr2);
             List<PriorityOrderAttrListVo> attrValue1 = priorityOrderMstAttrSortMapper.getAttrValue(attr1);
 
@@ -233,18 +232,19 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         }
 
         Collections.sort(attrList, new Comparator<PriorityOrderAttrVO>() {
-                @Override
-                public int compare(PriorityOrderAttrVO o1, PriorityOrderAttrVO o2) {
+            @Override
+            public int compare(PriorityOrderAttrVO o1, PriorityOrderAttrVO o2) {
 
-                    return o2.getExistingZoning().compareTo(o1.getExistingZoning());
-                }
-            });
-    int i = 1;
+                return o2.getExistingZoning().compareTo(o1.getExistingZoning());
+            }
+        });
+        int i = 1;
         for (PriorityOrderAttrVO priorityOrderAttrVO : attrList) {
             priorityOrderAttrVO.setRank(i++);
         }
-            logger.info("属性所有组合为：{}", attrList);
-              return ResultMaps.result(ResultEnum.SUCCESS,attrList);
+        logger.info("属性所有组合为：{}", attrList);
+        return ResultMaps.result(ResultEnum.SUCCESS, attrList);
+    }
 
     private List<PriorityOrderRestrictSet> packageRestrict(int begin, int end, Integer taiCd, String attrACd) {
         List<PriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
