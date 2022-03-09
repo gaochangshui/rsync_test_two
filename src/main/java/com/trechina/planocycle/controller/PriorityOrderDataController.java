@@ -44,4 +44,6 @@ public class PriorityOrderDataController {
     public List<Map<String,Object>> getAttrName(Integer productPowerCd){
         return priorityOrderDataService.getAttrName(productPowerCd);
     }
+
+
 }

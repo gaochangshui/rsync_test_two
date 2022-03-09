@@ -1,7 +1,7 @@
 package com.trechina.planocycle;
 
+import com.trechina.planocycle.entity.po.PriorityOderAttrSet;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
 import com.trechina.planocycle.mapper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -32,15 +32,29 @@ class PlanoCycleApiApplicationTests {
     PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
     @Autowired
     PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+
     @Test
     public void test1() {
+
         int[] a = {1, 2};
       /*  PtsTanaVo tanaData = shelfPtsDataMapper.getTanaData(43);
         System.out.println(tanaData);
 */
 
-        List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(1);
-        attrValue.forEach(System.out::println);
+
+        //List<PriorityOrderRestrictSet> priorityOrderRestrict = priorityOrderRestrictSetMapper.getPriorityOrderRestrict("0001", "10215814");
+       // priorityOrderRestrict.forEach(System.out::println);
+        PriorityOderAttrSet priorityOderAttrSet = new PriorityOderAttrSet();
+        priorityOderAttrSet.setCompanyCd("0001");
+        priorityOderAttrSet.setTaiCd(1);
+        priorityOderAttrSet.setTanaCd(2);
+        priorityOderAttrSet.setRestrictType(1);
+        priorityOderAttrSet.setZokuseiId(1);
+
+        priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOderAttrSet,"10215814");
+
+      /*  List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(1);
+        attrValue.forEach(System.out::println);*/
         // int attrType = priorityOrderMstAttrSortMapper.getAttrType(1);
        //  priorityOrderMstAttrSortMapper.getAttribute().forEach(System.out::println);
        //  priorityOrderMstAttrSortMapper.getAttrValue2("zokusei1_mst");
