@@ -532,4 +532,22 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return priorityOrderMstMapper.deleteByPrimaryKey(primaryKeyVO.getCompanyCd(),primaryKeyVO.getPriorityOrderCd());
     }
 
+    /**
+     * 自动计算
+     * @return
+     */
+    @Override
+    public Map<String, Object> autoCalculation() {
+        // TODO: 2200866
+        // 1.通过制约条件查找符合条件的商品
+        // 1.1. 制约条件
+        // 1.2. 商品力点数表=>商品
+        // 1.3. 新规&Jan变&cut商品
+
+        // 2.计算商品face数
+        // 2.1 台棚的详细信息
+        // 2.2 使用检索出来的商品计算具体face数
+
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
 }

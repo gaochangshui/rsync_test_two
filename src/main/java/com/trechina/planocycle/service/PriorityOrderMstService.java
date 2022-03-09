@@ -74,4 +74,10 @@ public interface PriorityOrderMstService {
      * @return
      */
     String selPriorityOrderCdForProdCd(String companyCd,Integer productPowerCd);
+
+    /**
+     * 自动计算
+     * @return
+     */
+    Map<String, Object> autoCalculation();
 }
