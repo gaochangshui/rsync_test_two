@@ -93,4 +93,13 @@ public class PriorityOrderMstController {
         return priorityOrderMstService.delPriorityOrderAllInfo(primaryKeyVO);
     }
 
+    /**
+     * 自动计算
+     * @return
+     */
+    // TODO: 2200866
+    @GetMapping("/autoCalculation")
+    public Map<String,Object> autoCalculation(){
+        return priorityOrderMstService.autoCalculation();
+    }
 }
