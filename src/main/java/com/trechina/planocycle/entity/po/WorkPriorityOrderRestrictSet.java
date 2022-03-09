@@ -1,29 +1,35 @@
 package com.trechina.planocycle.entity.po;
 
-import java.util.Date;
-
-
-public class PriorityOrderRestrictSet {
+public class WorkPriorityOrderRestrictSet {
     private String companyCd;
-    private Integer priorityOrderCd;
-    private Integer taiCd;
-    private Integer tanaCd;
-    private Integer restrictType;
-    private String zokusei1;
-    private String zokusei2;
-    private String zokusei3;
-    private String zokusei4;
-    private String zokusei5;
-    private String zokusei6;
-    private String zokusei7;
-    private String zokusei8;
-    private String zokusei9;
-    private String zokusei10;
+
     private String authorCd;
-    private Date createTime;
-    private String editerCd;
-    private Date editTime;
-    private Short deleteflg;
+
+    private Integer taiCd;
+
+    private Integer tanaCd;
+
+    private Integer restrictType;
+
+    private String zokusei1;
+
+    private String zokusei2;
+
+    private String zokusei3;
+
+    private String zokusei4;
+
+    private String zokusei5;
+
+    private String zokusei6;
+
+    private String zokusei7;
+
+    private String zokusei8;
+
+    private String zokusei9;
+
+    private String zokusei10;
 
     public String getCompanyCd() {
         return companyCd;
@@ -33,12 +39,12 @@ public class PriorityOrderRestrictSet {
         this.companyCd = companyCd == null ? null : companyCd.trim();
     }
 
-    public Integer getPriorityOrderCd() {
-        return priorityOrderCd;
+    public String getAuthorCd() {
+        return authorCd;
     }
 
-    public void setPriorityOrderCd(Integer priorityOrderCd) {
-        this.priorityOrderCd = priorityOrderCd;
+    public void setAuthorCd(String authorCd) {
+        this.authorCd = authorCd == null ? null : authorCd.trim();
     }
 
     public Integer getTaiCd() {
@@ -143,56 +149,5 @@ public class PriorityOrderRestrictSet {
 
     public void setZokusei10(String zokusei10) {
         this.zokusei10 = zokusei10 == null ? null : zokusei10.trim();
-    }
-
-    public String getAuthorCd() {
-        return authorCd;
-    }
-
-    public void setAuthorCd(String authorCd) {
-        this.authorCd = authorCd == null ? null : authorCd.trim();
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getEditerCd() {
-        return editerCd;
-    }
-
-    public void setEditerCd(String editerCd) {
-        this.editerCd = editerCd == null ? null : editerCd.trim();
-    }
-
-    public Date getEditTime() {
-        return editTime;
-    }
-
-    public void setEditTime(Date editTime) {
-        this.editTime = editTime;
-    }
-
-    public Short getDeleteflg() {
-        return deleteflg;
-    }
-
-    public void setDeleteflg(Short deleteflg) {
-        this.deleteflg = deleteflg;
-    }
-
-    @Override
-    public String toString() {
-        return "PriorityOrderRestrictSet{" +
-                "companyCd='" + companyCd + '\'' +
-                ", priorityOrderCd=" + priorityOrderCd +
-                ", taiCd=" + taiCd +
-                ", tanaCd=" + tanaCd +
-                ", restrictType=" + restrictType +
-                '}';
     }
 }

@@ -7,9 +7,16 @@
     <id column="tai_cd" jdbcType="INTEGER" property="taiCd" />
     <id column="tana_cd" jdbcType="INTEGER" property="tanaCd" />
     <id column="restrict_type" jdbcType="INTEGER" property="restrictType" />
-    <result column="category" jdbcType="INTEGER" property="category" />
-    <result column="pkg" jdbcType="INTEGER" property="pkg" />
-    <result column="capacity" jdbcType="INTEGER" property="capacity" />
+    <result column="zokusei1" jdbcType="VARCHAR" property="zokusei1" />
+    <result column="zokusei2" jdbcType="VARCHAR" property="zokusei2" />
+    <result column="zokusei3" jdbcType="VARCHAR" property="zokusei3" />
+    <result column="zokusei4" jdbcType="VARCHAR" property="zokusei4" />
+    <result column="zokusei5" jdbcType="VARCHAR" property="zokusei5" />
+    <result column="zokusei6" jdbcType="VARCHAR" property="zokusei6" />
+    <result column="zokusei7" jdbcType="VARCHAR" property="zokusei7" />
+    <result column="zokusei8" jdbcType="VARCHAR" property="zokusei8" />
+    <result column="zokusei9" jdbcType="VARCHAR" property="zokusei9" />
+    <result column="zokusei10" jdbcType="VARCHAR" property="zokusei10" />
     <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="editer_cd" jdbcType="VARCHAR" property="editerCd" />
@@ -17,7 +24,8 @@
     <result column="deleteflg" jdbcType="SMALLINT" property="deleteflg" />
   </resultMap>
   <sql id="Base_Column_List">
-    company_cd, priority_order_cd, tai_cd, tana_cd, restrict_type, category, pkg, capacity, 
+    company_cd, priority_order_cd, tai_cd, tana_cd, restrict_type, zokusei1, zokusei2, 
+    zokusei3, zokusei4, zokusei5, zokusei6, zokusei7, zokusei8, zokusei9, zokusei10, 
     author_cd, create_time, editer_cd, edit_time, deleteflg
   </sql>
   <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
@@ -40,15 +48,19 @@
   </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
     insert into priority_order_restrict_set (company_cd, priority_order_cd, tai_cd, 
-      tana_cd, restrict_type, category, 
-      pkg, capacity, author_cd, 
-      create_time, editer_cd, edit_time, 
-      deleteflg)
+      tana_cd, restrict_type, zokusei1, 
+      zokusei2, zokusei3, zokusei4, 
+      zokusei5, zokusei6, zokusei7, 
+      zokusei8, zokusei9, zokusei10, 
+      author_cd, create_time, editer_cd, 
+      edit_time, deleteflg)
     values (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{taiCd,jdbcType=INTEGER}, 
-      #{tanaCd,jdbcType=INTEGER}, #{restrictType,jdbcType=INTEGER}, #{category,jdbcType=INTEGER}, 
-      #{pkg,jdbcType=INTEGER}, #{capacity,jdbcType=INTEGER}, #{authorCd,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{editerCd,jdbcType=VARCHAR}, #{editTime,jdbcType=TIMESTAMP}, 
-      #{deleteflg,jdbcType=SMALLINT})
+      #{tanaCd,jdbcType=INTEGER}, #{restrictType,jdbcType=INTEGER}, #{zokusei1,jdbcType=VARCHAR}, 
+      #{zokusei2,jdbcType=VARCHAR}, #{zokusei3,jdbcType=VARCHAR}, #{zokusei4,jdbcType=VARCHAR}, 
+      #{zokusei5,jdbcType=VARCHAR}, #{zokusei6,jdbcType=VARCHAR}, #{zokusei7,jdbcType=VARCHAR}, 
+      #{zokusei8,jdbcType=VARCHAR}, #{zokusei9,jdbcType=VARCHAR}, #{zokusei10,jdbcType=VARCHAR}, 
+      #{authorCd,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{editerCd,jdbcType=VARCHAR}, 
+      #{editTime,jdbcType=TIMESTAMP}, #{deleteflg,jdbcType=SMALLINT})
   </insert>
   <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
     insert into priority_order_restrict_set
@@ -68,14 +80,35 @@
       <if test="restrictType != null">
         restrict_type,
       </if>
-      <if test="category != null">
-        category,
+      <if test="zokusei1 != null">
+        zokusei1,
       </if>
-      <if test="pkg != null">
-        pkg,
+      <if test="zokusei2 != null">
+        zokusei2,
       </if>
-      <if test="capacity != null">
-        capacity,
+      <if test="zokusei3 != null">
+        zokusei3,
+      </if>
+      <if test="zokusei4 != null">
+        zokusei4,
+      </if>
+      <if test="zokusei5 != null">
+        zokusei5,
+      </if>
+      <if test="zokusei6 != null">
+        zokusei6,
+      </if>
+      <if test="zokusei7 != null">
+        zokusei7,
+      </if>
+      <if test="zokusei8 != null">
+        zokusei8,
+      </if>
+      <if test="zokusei9 != null">
+        zokusei9,
+      </if>
+      <if test="zokusei10 != null">
+        zokusei10,
       </if>
       <if test="authorCd != null">
         author_cd,
@@ -109,14 +142,35 @@
       <if test="restrictType != null">
         #{restrictType,jdbcType=INTEGER},
       </if>
-      <if test="category != null">
-        #{category,jdbcType=INTEGER},
+      <if test="zokusei1 != null">
+        #{zokusei1,jdbcType=VARCHAR},
       </if>
-      <if test="pkg != null">
-        #{pkg,jdbcType=INTEGER},
+      <if test="zokusei2 != null">
+        #{zokusei2,jdbcType=VARCHAR},
       </if>
-      <if test="capacity != null">
-        #{capacity,jdbcType=INTEGER},
+      <if test="zokusei3 != null">
+        #{zokusei3,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei4 != null">
+        #{zokusei4,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei5 != null">
+        #{zokusei5,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei6 != null">
+        #{zokusei6,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei7 != null">
+        #{zokusei7,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei8 != null">
+        #{zokusei8,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei9 != null">
+        #{zokusei9,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei10 != null">
+        #{zokusei10,jdbcType=VARCHAR},
       </if>
       <if test="authorCd != null">
         #{authorCd,jdbcType=VARCHAR},
@@ -138,14 +192,35 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
     update priority_order_restrict_set
     <set>
-      <if test="category != null">
-        category = #{category,jdbcType=INTEGER},
+      <if test="zokusei1 != null">
+        zokusei1 = #{zokusei1,jdbcType=VARCHAR},
       </if>
-      <if test="pkg != null">
-        pkg = #{pkg,jdbcType=INTEGER},
+      <if test="zokusei2 != null">
+        zokusei2 = #{zokusei2,jdbcType=VARCHAR},
       </if>
-      <if test="capacity != null">
-        capacity = #{capacity,jdbcType=INTEGER},
+      <if test="zokusei3 != null">
+        zokusei3 = #{zokusei3,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei4 != null">
+        zokusei4 = #{zokusei4,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei5 != null">
+        zokusei5 = #{zokusei5,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei6 != null">
+        zokusei6 = #{zokusei6,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei7 != null">
+        zokusei7 = #{zokusei7,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei8 != null">
+        zokusei8 = #{zokusei8,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei9 != null">
+        zokusei9 = #{zokusei9,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei10 != null">
+        zokusei10 = #{zokusei10,jdbcType=VARCHAR},
       </if>
       <if test="authorCd != null">
         author_cd = #{authorCd,jdbcType=VARCHAR},
@@ -171,9 +246,16 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
     update priority_order_restrict_set
-    set category = #{category,jdbcType=INTEGER},
-      pkg = #{pkg,jdbcType=INTEGER},
-      capacity = #{capacity,jdbcType=INTEGER},
+    set zokusei1 = #{zokusei1,jdbcType=VARCHAR},
+      zokusei2 = #{zokusei2,jdbcType=VARCHAR},
+      zokusei3 = #{zokusei3,jdbcType=VARCHAR},
+      zokusei4 = #{zokusei4,jdbcType=VARCHAR},
+      zokusei5 = #{zokusei5,jdbcType=VARCHAR},
+      zokusei6 = #{zokusei6,jdbcType=VARCHAR},
+      zokusei7 = #{zokusei7,jdbcType=VARCHAR},
+      zokusei8 = #{zokusei8,jdbcType=VARCHAR},
+      zokusei9 = #{zokusei9,jdbcType=VARCHAR},
+      zokusei10 = #{zokusei10,jdbcType=VARCHAR},
       author_cd = #{authorCd,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       editer_cd = #{editerCd,jdbcType=VARCHAR},
