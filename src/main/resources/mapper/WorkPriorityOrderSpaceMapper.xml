@@ -98,7 +98,7 @@
     <foreach collection="list" item="item" separator=",">
       (#{item.companyCd,jdbcType=VARCHAR}, #{item.authorCd,jdbcType=VARCHAR}, #{item.attribute1Value,jdbcType=VARCHAR},
       #{item.attribute2Value,jdbcType=VARCHAR}, #{item.oldZoning,jdbcType=INTEGER}, #{item.newZoning,jdbcType=INTEGER},
-      #{item.tanaCount,jdbcType=INTEGER}, #{item.zoningNum,jdbcType=INTEGER}, #{attribute1Name,jdbcType=VARCHAR}, #{attribute2Name,jdbcType=VARCHAR})
+      #{item.tanaCount,jdbcType=INTEGER}, #{item.zoningNum,jdbcType=INTEGER}, #{item.attribute1Name,jdbcType=VARCHAR}, #{item.attribute2Name,jdbcType=VARCHAR})
     </foreach>
   </insert>
     <delete id="deleteByAuthorCd">
