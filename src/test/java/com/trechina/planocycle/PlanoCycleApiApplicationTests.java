@@ -1,7 +1,7 @@
 package com.trechina.planocycle;
 
+import com.trechina.planocycle.entity.dto.PriorityOrderAttrFaceNum;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
 import com.trechina.planocycle.mapper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -52,9 +52,10 @@ class PlanoCycleApiApplicationTests {
        // priorityOderAttrSet.setZokuseiId(1);
        //
        // priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOderAttrSet,"10215814");
-
-        List<PriorityOrderAttrVO> editAttributeArea = priorityOrderMstAttrSortMapper.getEditAttributeArea("0001", "10047515");
-        editAttributeArea.forEach(System.out::println);
+        List<PriorityOrderAttrFaceNum> priorityOrderAttrFaceNums = priorityOrderMstAttrSortMapper.getfeceNum1("scat1cd_val", "scat2cd_val",43);
+        priorityOrderAttrFaceNums.forEach(System.out::println);
+        //List<PriorityOrderAttrVO> editAttributeArea = priorityOrderMstAttrSortMapper.getEditAttributeArea("0001", "10047515");
+        //editAttributeArea.forEach(System.out::println);
       /*  List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(1);
         attrValue.forEach(System.out::println);*/
         // int attrType = priorityOrderMstAttrSortMapper.getAttrType(1);

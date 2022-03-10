@@ -2,10 +2,7 @@ package com.trechina.planocycle.service.Impl;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderSpaceDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
-import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictSet;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderSpace;
+import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrValue;
@@ -25,6 +22,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+
 
 @Service
 public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttrSortService {
@@ -301,9 +299,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    private List<WorkPriorityOrderRestrictSet> packageRestrict(int begin, int end, Integer taiCd, WorkPriorityOrderRestrictSet tmpRestrictSet) {
-        List<WorkPriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
-        WorkPriorityOrderRestrictSet restrictSet = null;
+
     @Override
     public Map<String, Object> getEditAttributeArea(String companyCd) {
         String authorCd = httpSession.getAttribute("aud").toString();
@@ -311,9 +307,9 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         return ResultMaps.result(ResultEnum.SUCCESS,editAttributeArea);
     }
 
-    private List<PriorityOrderRestrictSet> packageRestrict(int begin, int end, Integer taiCd, String attrACd) {
-        List<PriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
-        PriorityOrderRestrictSet restrictSet = null;
+    private List<WorkPriorityOrderRestrictSet> packageRestrict(int begin, int end, Integer taiCd, WorkPriorityOrderRestrictSet tmpRestrictSet) {
+        List<WorkPriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
+        WorkPriorityOrderRestrictSet restrictSet = null;
         if (begin < end) {
             for (int i = begin; i < end; i++) {
                 restrictSet = new WorkPriorityOrderRestrictSet();
@@ -331,6 +327,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         }
         return restrictSetList;
     }
+
 
     @Override
     public List<WorkPriorityOrderRestrictSet> setRestrict(List<PriorityOrderAttrVO> dataList, List<ShelfPtsDataTanaCount> tanaCountList,
