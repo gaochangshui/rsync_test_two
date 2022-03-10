@@ -272,7 +272,9 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             space.setCompanyCd(companyCd);
             space.setAuthorCd(authorCd);
             space.setAttribute1Value(vo.getAttrACd());
+            space.setAttribute1Name(vo.getAttrAName());
             space.setAttribute2Value(vo.getAttrBCd());
+            space.setAttribute2Name(vo.getAttrBName());
             space.setOldZoning(vo.getExistingZoning());
             space.setNewZoning(vo.getNewZoning());
             space.setTanaCount(vo.getTanaPattan());
