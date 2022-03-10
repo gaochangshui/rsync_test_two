@@ -1,8 +1,8 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
 import com.trechina.planocycle.entity.po.PriorityOderAttrSet;
 import com.trechina.planocycle.entity.po.PriorityOrderRestrictSet;
-import com.trechina.planocycle.entity.vo.PriorityOrderAttrValue;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -30,5 +30,5 @@ public interface PriorityOrderRestrictSetMapper {
 
     List<PriorityOrderRestrictSet> getPriorityOrderRestrict(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 
-    List<PriorityOrderAttrValue> getAttrValues();
+    List<PriorityOrderAttrValueDto> getAttrValues();
 }

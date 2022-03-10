@@ -46,9 +46,9 @@
       or zokusei7 is not NULL or zokusei8 is not NULL or zokusei9 is not NULL or zokusei10 is not NULL)
 
   </select>
-  <select id="getAttrValues" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
-    select zokusei_id  as attrCd ,val  as val,nm  as attrName
-           masterdb.zokusei_mst_data
+  <select id="getAttrValues" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto">
+    select zokusei_id,val,nm
+     from      masterdb.zokusei_mst_data
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority_order_restrict_set
