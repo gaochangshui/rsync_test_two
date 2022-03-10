@@ -29,6 +29,10 @@ public class PriorityOrderSpace {
 
     private Short deleteflg;
 
+    private String attribute1Name;
+
+    private String attribute2Name;
+
     public String getCompanyCd() {
         return companyCd;
     }
@@ -131,5 +135,21 @@ public class PriorityOrderSpace {
 
     public void setDeleteflg(Short deleteflg) {
         this.deleteflg = deleteflg;
+    }
+
+    public String getAttribute1Name() {
+        return attribute1Name;
+    }
+
+    public void setAttribute1Name(String attribute1Name) {
+        this.attribute1Name = attribute1Name == null ? null : attribute1Name.trim();
+    }
+
+    public String getAttribute2Name() {
+        return attribute2Name;
+    }
+
+    public void setAttribute2Name(String attribute2Name) {
+        this.attribute2Name = attribute2Name == null ? null : attribute2Name.trim();
     }
 }
