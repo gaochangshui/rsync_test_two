@@ -210,8 +210,11 @@
     </foreach>
   </insert>
   <select id="ptsTanaCountByTai" resultType="com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount">
-    select tai_cd,count(tana_cd) tana_count from planocycle.shelf_pts_data_tanamst
-    where pts_cd =#{ptsCd}
+    select tai_cd,count(tana_cd) tana_count,0 as tana_used_count
+    from planocycle.shelf_pts_data_tanamst t1
+    inner join planocycle.shelf_pts_data t2
+    on t1.pts_cd=t2.id
+    where t2.shelf_pattern_cd =#{shelfPatternCd}
     group by tai_cd
     order by tai_cd
   </select>

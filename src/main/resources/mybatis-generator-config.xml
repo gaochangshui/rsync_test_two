@@ -37,28 +37,14 @@
 <!--               enableSelectByExample="false"-->
 <!--               selectByExampleQueryId="false">-->
 <!--        </table>-->
-        <table tableName="priority_order_space" domainObjectName="PriorityOrderSpace"
+        <table tableName="work_priority_order_space" domainObjectName="WorkPriorityOrderSpace"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
                selectByExampleQueryId="false">
         </table>
-        <table tableName="priority_order_restrict_set" domainObjectName="PriorityOrderRestrictSet"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false">
-        </table>
-        <table tableName="priority_order_restrict_relation" domainObjectName="PriorityOrderRestrictRelation"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false">
-        </table>
-        <table tableName="priority_order_restrict_result" domainObjectName="PriorityOrderRestrictResult"
+        <table tableName="work_priority_order_mst" domainObjectName="WorkPriorityOrderMst"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"

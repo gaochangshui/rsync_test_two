@@ -23,17 +23,17 @@
   <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from priority_order_space
+    from planocycle.priority_order_space
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
-    delete from priority_order_space
+    delete from planocycle.priority_order_space
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderSpace">
-    insert into priority_order_space (company_cd, priority_order_cd, attribute1_value, 
+    insert into planocycle.priority_order_space (company_cd, priority_order_cd, attribute1_value,
       attribute2_value, old_zoning, new_zoning, 
       tana_count, zoning_num, author_cd, 
       create_time, editer_cd, edit_time, 
@@ -45,7 +45,7 @@
       #{deleteflg,jdbcType=SMALLINT})
   </insert>
   <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderSpace">
-    insert into priority_order_space
+    insert into planocycle.priority_order_space
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="companyCd != null">
         company_cd,
@@ -130,7 +130,7 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderSpace">
-    update priority_order_space
+    update planocycle.priority_order_space
     <set>
       <if test="attribute1Value != null">
         attribute1_value = #{attribute1Value,jdbcType=VARCHAR},
@@ -170,7 +170,7 @@
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.PriorityOrderSpace">
-    update priority_order_space
+    update planocycle.priority_order_space
     set attribute1_value = #{attribute1Value,jdbcType=VARCHAR},
       attribute2_value = #{attribute2Value,jdbcType=VARCHAR},
       old_zoning = #{oldZoning,jdbcType=INTEGER},
@@ -185,4 +185,19 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>
+  <insert id="insertAll">
+  insert into planocycle.priority_order_space (company_cd, priority_order_cd, attribute1_value,
+  attribute2_value, old_zoning, new_zoning,
+  tana_count, zoning_num, author_cd,
+  create_time, editer_cd, edit_time,
+  deleteflg)
+  values
+    <foreach collection="list" item="item" separator=",">
+    (#{item.companyCd,jdbcType=VARCHAR}, #{item.priorityOrderCd,jdbcType=INTEGER}, #{item.attribute1Value,jdbcType=VARCHAR},
+    #{item.attribute2Value,jdbcType=VARCHAR}, #{item.oldZoning,jdbcType=INTEGER}, #{item.newZoning,jdbcType=INTEGER},
+    #{item.tanaCount,jdbcType=INTEGER}, #{item.zoningNum,jdbcType=INTEGER}, #{item.authorCd,jdbcType=VARCHAR},
+    #{item.createTime,jdbcType=TIMESTAMP}, #{item.editerCd,jdbcType=VARCHAR}, #{item.editTime,jdbcType=TIMESTAMP},
+    #{item.deleteflg,jdbcType=SMALLINT})
+    </foreach>
+  </insert>
 </mapper>

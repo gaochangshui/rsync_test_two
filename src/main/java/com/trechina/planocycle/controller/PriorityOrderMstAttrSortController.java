@@ -1,10 +1,9 @@
 package com.trechina.planocycle.controller;
 
+import com.trechina.planocycle.entity.dto.PriorityOrderSpaceDto;
 import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -27,7 +26,7 @@ public class PriorityOrderMstAttrSortController {
     /**
      *获取属性1和属性2
      */
-    @GetMapping("getAttribute")
+    @GetMapping("/getAttribute")
     public Map<String,Object> getAttribute(){
         return priorityOrderMstAttrSortService.getAttribute();
     }
@@ -35,7 +34,7 @@ public class PriorityOrderMstAttrSortController {
     /**
      *新规计算属性1属性2组合对应的面积
      */
-    @GetMapping("getAttributeArea")
+    @GetMapping("/getAttributeArea")
     public Map<String,Object> getAttributeArea(Integer patternCd,Integer attr1,Integer attr2){
         return priorityOrderMstAttrSortService.getAttributeArea(patternCd,attr1,attr2);
     }
@@ -52,9 +51,13 @@ public class PriorityOrderMstAttrSortController {
     /**
      * 获取属性的分类及商品分类列表
      */
-    @GetMapping("getAttributeList")
+    @GetMapping("/getAttributeList")
     public Map<String,Object> getAttributeList(){
         return priorityOrderMstAttrSortService.getAttributeList();
     }
 
+    @PostMapping("/setAttribute")
+    public Map<String,Object> setAttribute(@RequestBody PriorityOrderSpaceDto dto){
+        return priorityOrderMstAttrSortService.setAttribute(dto);
+    }
 }
