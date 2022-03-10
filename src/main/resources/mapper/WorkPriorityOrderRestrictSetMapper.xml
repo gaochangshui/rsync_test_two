@@ -19,7 +19,7 @@
     <result column="zokusei10" jdbcType="VARCHAR" property="zokusei10" />
   </resultMap>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictSet">
-    insert into work_priority_order_restrict_set (company_cd, author_cd, tai_cd, 
+    insert into planocycle.work_priority_order_restrict_set (company_cd, author_cd, tai_cd,
       tana_cd, restrict_type, zokusei1, 
       zokusei2, zokusei3, zokusei4, 
       zokusei5, zokusei6, zokusei7, 
@@ -33,7 +33,7 @@
       )
   </insert>
   <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictSet">
-    insert into work_priority_order_restrict_set
+    insert into planocycle.work_priority_order_restrict_set
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="companyCd != null">
         company_cd,
@@ -129,4 +129,25 @@
       </if>
     </trim>
   </insert>
+    <insert id="insertAll">
+      insert into planocycle.work_priority_order_restrict_set (company_cd, author_cd, tai_cd,
+      tana_cd, restrict_type, zokusei1,
+      zokusei2, zokusei3, zokusei4,
+      zokusei5, zokusei6, zokusei7,
+      zokusei8, zokusei9, zokusei10
+      )
+      values
+      <foreach collection="list" item="item" separator=",">
+      (#{item.companyCd,jdbcType=VARCHAR}, #{item.authorCd,jdbcType=VARCHAR}, #{item.taiCd,jdbcType=INTEGER},
+      #{item.tanaCd,jdbcType=INTEGER}, #{item.restrictType,jdbcType=INTEGER}, #{item.zokusei1,jdbcType=VARCHAR},
+      #{item.zokusei2,jdbcType=VARCHAR}, #{item.zokusei3,jdbcType=VARCHAR}, #{item.zokusei4,jdbcType=VARCHAR},
+      #{item.zokusei5,jdbcType=VARCHAR}, #{item.zokusei6,jdbcType=VARCHAR}, #{item.zokusei7,jdbcType=VARCHAR},
+      #{item.zokusei8,jdbcType=VARCHAR}, #{item.zokusei9,jdbcType=VARCHAR}, #{item.zokusei10,jdbcType=VARCHAR}
+      )
+      </foreach>
+    </insert>
+  <delete id="deleteByAuthorCd">
+    delete from planocycle.work_priority_order_restrict_set
+    where company_cd =  #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
+  </delete>
 </mapper>

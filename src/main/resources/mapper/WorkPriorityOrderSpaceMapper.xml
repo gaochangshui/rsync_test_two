@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.WorkPriorityOrderSpaceMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.WorkPriorityOrderSpace">
+    <result column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="attribute1_value" jdbcType="VARCHAR" property="attribute1Value" />
+    <result column="attribute2_value" jdbcType="VARCHAR" property="attribute2Value" />
+    <result column="old_zoning" jdbcType="INTEGER" property="oldZoning" />
+    <result column="new_zoning" jdbcType="INTEGER" property="newZoning" />
+    <result column="tana_count" jdbcType="INTEGER" property="tanaCount" />
+    <result column="zoning_num" jdbcType="INTEGER" property="zoningNum" />
+  </resultMap>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderSpace">
+    insert into planocycle.work_priority_order_space (company_cd, author_cd, attribute1_value,
+      attribute2_value, old_zoning, new_zoning, 
+      tana_count, zoning_num)
+    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{attribute1Value,jdbcType=VARCHAR}, 
+      #{attribute2Value,jdbcType=VARCHAR}, #{oldZoning,jdbcType=INTEGER}, #{newZoning,jdbcType=INTEGER}, 
+      #{tanaCount,jdbcType=INTEGER}, #{zoningNum,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderSpace">
+    insert into planocycle.work_priority_order_space
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        company_cd,
+      </if>
+      <if test="authorCd != null">
+        author_cd,
+      </if>
+      <if test="attribute1Value != null">
+        attribute1_value,
+      </if>
+      <if test="attribute2Value != null">
+        attribute2_value,
+      </if>
+      <if test="oldZoning != null">
+        old_zoning,
+      </if>
+      <if test="newZoning != null">
+        new_zoning,
+      </if>
+      <if test="tanaCount != null">
+        tana_count,
+      </if>
+      <if test="zoningNum != null">
+        zoning_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        #{companyCd,jdbcType=VARCHAR},
+      </if>
+      <if test="authorCd != null">
+        #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="attribute1Value != null">
+        #{attribute1Value,jdbcType=VARCHAR},
+      </if>
+      <if test="attribute2Value != null">
+        #{attribute2Value,jdbcType=VARCHAR},
+      </if>
+      <if test="oldZoning != null">
+        #{oldZoning,jdbcType=INTEGER},
+      </if>
+      <if test="newZoning != null">
+        #{newZoning,jdbcType=INTEGER},
+      </if>
+      <if test="tanaCount != null">
+        #{tanaCount,jdbcType=INTEGER},
+      </if>
+      <if test="zoningNum != null">
+        #{zoningNum,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <insert id="insertAll">
+    insert into planocycle.work_priority_order_space (company_cd, author_cd, attribute1_value,
+    attribute2_value, old_zoning, new_zoning,
+    tana_count, zoning_num)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.companyCd,jdbcType=VARCHAR}, #{item.authorCd,jdbcType=VARCHAR}, #{item.attribute1Value,jdbcType=VARCHAR},
+      #{item.attribute2Value,jdbcType=VARCHAR}, #{item.oldZoning,jdbcType=INTEGER}, #{item.newZoning,jdbcType=INTEGER},
+      #{item.tanaCount,jdbcType=INTEGER}, #{item.zoningNum,jdbcType=INTEGER})
+    </foreach>
+  </insert>
+    <delete id="deleteByAuthorCd">
+      delete from planocycle.work_priority_order_space
+      where company_cd =  #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+</mapper>

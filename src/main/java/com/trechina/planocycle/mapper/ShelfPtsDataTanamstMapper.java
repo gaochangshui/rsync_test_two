@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+
 @Mapper
 public interface ShelfPtsDataTanamstMapper {
     int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("ptsCd") Integer ptsCd, @Param("taiCd") Integer taiCd, @Param("tanaCd") Integer tanaCd);
@@ -22,5 +23,5 @@ public interface ShelfPtsDataTanamstMapper {
 
     int insertAll(List<ShelfPtsDataTanamst> list);
 
-    List<ShelfPtsDataTanaCount> ptsTanaCountByTai(Integer ptsCd);
+    List<ShelfPtsDataTanaCount> ptsTanaCountByTai(Long shelfPatternCd);
 }

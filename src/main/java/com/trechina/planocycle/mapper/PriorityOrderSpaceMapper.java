@@ -1,8 +1,10 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.PriorityOrderSpace;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+@Mapper
 public interface PriorityOrderSpaceMapper {
     int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 

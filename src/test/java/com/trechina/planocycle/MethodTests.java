@@ -3,10 +3,9 @@ package com.trechina.planocycle;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
-import com.trechina.planocycle.entity.po.PriorityOrderRestrictSet;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictSet;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
-import com.trechina.planocycle.service.Impl.PriorityOrderMstAttrSortServiceImpl;
 import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
@@ -73,7 +72,7 @@ public class MethodTests {
     }
 
     @Test
-    public void setRestrict() throws JsonProcessingException {
+    public void setRestrict() throws JsonProcessingException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Integer[] pattens = {12, 4, 4};
         Integer[] tais = {5, 5, 4, 6};
 
@@ -94,7 +93,7 @@ public class MethodTests {
             tanaCount.setTanaUsedCount(0);
             tanaCountList.add(tanaCount);
         }
-        List<PriorityOrderRestrictSet> setList = priorityOrderMstAttrSortService.setRestrict(dataList, tanaCountList);
+        List<WorkPriorityOrderRestrictSet> setList = priorityOrderMstAttrSortService.setRestrict(dataList, tanaCountList, (short) 2, (short) 2,"0001","10047515");
         ObjectMapper objectMapper = new ObjectMapper();
         System.out.println(objectMapper.writeValueAsString(setList));
     }

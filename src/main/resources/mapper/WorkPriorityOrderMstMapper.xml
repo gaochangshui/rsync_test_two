@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.WorkPriorityOrderMstMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.WorkPriorityOrderMst">
+    <result column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
+    <result column="shelf_pattern_cd" jdbcType="BIGINT" property="shelfPatternCd" />
+    <result column="attribute1" jdbcType="SMALLINT" property="attribute1" />
+    <result column="attribute2" jdbcType="SMALLINT" property="attribute2" />
+    <result column="partition_flag" jdbcType="SMALLINT" property="partitionFlag" />
+    <result column="partition_val" jdbcType="SMALLINT" property="partitionVal" />
+  </resultMap>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderMst">
+    insert into planocycle.work_priority_order_mst (company_cd, author_cd, product_power_cd,
+      shelf_pattern_cd, attribute1, attribute2, 
+      partition_flag, partition_val)
+    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{productPowerCd,jdbcType=INTEGER}, 
+      #{shelfPatternCd,jdbcType=BIGINT}, #{attribute1,jdbcType=SMALLINT}, #{attribute2,jdbcType=SMALLINT}, 
+      #{partitionFlag,jdbcType=SMALLINT}, #{partitionVal,jdbcType=SMALLINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderMst">
+    insert into planocycle.work_priority_order_mst
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        company_cd,
+      </if>
+      <if test="authorCd != null">
+        author_cd,
+      </if>
+      <if test="productPowerCd != null">
+        product_power_cd,
+      </if>
+      <if test="shelfPatternCd != null">
+        shelf_pattern_cd,
+      </if>
+      <if test="attribute1 != null">
+        attribute1,
+      </if>
+      <if test="attribute2 != null">
+        attribute2,
+      </if>
+      <if test="partitionFlag != null">
+        partition_flag,
+      </if>
+      <if test="partitionVal != null">
+        partition_val,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        #{companyCd,jdbcType=VARCHAR},
+      </if>
+      <if test="authorCd != null">
+        #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="productPowerCd != null">
+        #{productPowerCd,jdbcType=INTEGER},
+      </if>
+      <if test="shelfPatternCd != null">
+        #{shelfPatternCd,jdbcType=BIGINT},
+      </if>
+      <if test="attribute1 != null">
+        #{attribute1,jdbcType=SMALLINT},
+      </if>
+      <if test="attribute2 != null">
+        #{attribute2,jdbcType=SMALLINT},
+      </if>
+      <if test="partitionFlag != null">
+        #{partitionFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="partitionVal != null">
+        #{partitionVal,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <delete id="deleteByAuthorCd">
+    delete from planocycle.work_priority_order_mst
+    where company_cd =  #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
+  </delete>
+</mapper>
