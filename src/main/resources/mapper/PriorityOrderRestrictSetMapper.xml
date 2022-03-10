@@ -38,6 +38,18 @@
       and tana_cd = #{tanaCd,jdbcType=INTEGER}
       and restrict_type = #{restrictType,jdbcType=INTEGER}
   </select>
+  <select id="getPriorityOrderRestrict" resultType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
+    select tai_cd,tana_cd,restrict_type,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10
+    from planocycle.work_priority_order_restrict_set resSet
+    where company_cd = #{companyCd} and author_cd = #{authorCd}
+    and  (zokusei1 is not NULL or zokusei2 is not NULL or zokusei3 is not NULL or zokusei4 is not NULL or zokusei5 is not NULL or zokusei6 is not NULL
+      or zokusei7 is not NULL or zokusei8 is not NULL or zokusei9 is not NULL or zokusei10 is not NULL)
+
+  </select>
+  <select id="getAttrValues" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+    select zokusei_id  as attrCd ,val  as val,nm  as attrName
+           masterdb.zokusei_mst_data
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority_order_restrict_set
     where company_cd = #{companyCd,jdbcType=VARCHAR}
@@ -268,21 +280,11 @@
       and restrict_type = #{restrictType,jdbcType=INTEGER}
   </update>
     <insert id="setPriorityOrderRestrict">
-        insert into planocycle.priority_order_restrict_set(company_cd,priority_order_cd,tai_cd,tana_cd,restrict_type,category,pkg,capacity,author_cd,create_time)
-        values (#{item.companyCd},#{item.priorityOrderCd},#{item.taiCd},#{item.tanaCd},#{item.restrictType},#{item.category},#{item.pkg},#{item.capacity}
-        ,#{authorCd},now())
-        on conflict(company_cd,priority_order_cd,tai_cd,tana_cd,restrict_type)
+        insert into planocycle.work_priority_order_restrict_set(company_cd,tai_cd,tana_cd,restrict_type,zokusei${item.zokuseiId},author_cd)
+        values (#{item.companyCd},#{item.taiCd},#{item.tanaCd},#{item.restrictType},#{item.val},#{authorCd})
+        on conflict(company_cd,author_cd,tai_cd,tana_cd,restrict_type)
         do update set
-            editer_cd = #{authorCd},edit_time = now()
-            <if test="item.pkg != null">
-                ,pkg = #{item.pkg}
-            </if>
-            <if test="item.category != null">
-                ,category = #{item.category}
-            </if>
-            <if test="item.capacity != null">
-                ,capacity=#{item.capacity}
-            </if>
+          zokusei${item.zokuseiId} = #{item.val}
 
 
 

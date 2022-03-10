@@ -27,4 +27,6 @@ public interface PriorityOrderDataService {
      */
     List<Map<String,Object>> getAttrName(Integer productPowerCd);
 
+
+
 }
