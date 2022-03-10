@@ -48,8 +48,9 @@ public interface PriorityOrderMstAttrSortMapper {
     //根据对应的属性获取对应的face
     Integer getfeceNum(@Param("janCol1") String janCol1, @Param("janCol2") String janCol2, @Param("attrValue1") String attrValue1, @Param("attrValue2") String attrValue2, @Param("patternCd") Integer patternCd);
 
-    //根据企业cd获取每个台段对应的属性
+    //获取work表属性1/2对应的面积
 
+    List<PriorityOrderAttrVO> getEditAttributeArea(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 
 
 

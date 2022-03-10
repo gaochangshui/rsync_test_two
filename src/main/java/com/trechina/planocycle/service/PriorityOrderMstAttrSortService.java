@@ -47,9 +47,14 @@ public interface PriorityOrderMstAttrSortService {
 
 
     /**
-     *获取属性1属性2组合对应的面积
+     *计算属性1属性2组合对应的面积
      */
     Map<String,Object> getAttributeArea(Integer patternCd,Integer attr1,Integer attr2);
+
+    /**
+     *编辑时获取属性1属性2组合对应的面积
+     */
+    Map<String,Object> getEditAttributeArea(String companyCd);
 
     List<PriorityOrderRestrictSet> setRestrict(List<PriorityOrderAttrVO> dataList, List<ShelfPtsDataTanaCount> tanaCountList);
 }

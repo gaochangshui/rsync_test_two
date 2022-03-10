@@ -121,6 +121,13 @@
     from planocycle.zokusei_mst
     where zokusei_id = #{zokuseiId}
   </select>
+  <select id="getEditAttributeArea" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrVO">
+    select attribute1_value as attrACd,attribute2_value as attrBCd,old_zoning as existingZoning,new_zoning as newZoning,tana_count as tanaPattan,
+           zoning_num as rank,attribute1_name as attrAName,attribute2_name as attrBName
+    from planocycle.work_priority_order_space
+    where company_cd = #{companyCd} and author_cd = #{authorCd}
+    order by new_zoning desc
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.priority_order_mst_attrsort
     where company_cd = #{companyCd,jdbcType=VARCHAR}

@@ -246,6 +246,13 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         return ResultMaps.result(ResultEnum.SUCCESS, attrList);
     }
 
+    @Override
+    public Map<String, Object> getEditAttributeArea(String companyCd) {
+        String authorCd = httpSession.getAttribute("aud").toString();
+        List<PriorityOrderAttrVO> editAttributeArea = priorityOrderMstAttrSortMapper.getEditAttributeArea(companyCd, "10047515");
+        return ResultMaps.result(ResultEnum.SUCCESS,editAttributeArea);
+    }
+
     private List<PriorityOrderRestrictSet> packageRestrict(int begin, int end, Integer taiCd, String attrACd) {
         List<PriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
         PriorityOrderRestrictSet restrictSet = null;
