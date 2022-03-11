@@ -1,6 +1,5 @@
 package com.trechina.planocycle.service.Impl;
 
-import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
 import com.trechina.planocycle.entity.po.PriorityOrderJanReplace;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanReplaceVO;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -54,6 +53,7 @@ public class PriorityOrderJanReplaceServiceImpl implements PriorityOrderJanRepla
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderJanInfo(List<PriorityOrderJanReplace> priorityOrderJanReplace) {
+        String authorCd = session.getAttribute("aud").toString();
         logger.info("保存jan变的信息参数："+priorityOrderJanReplace);
         // 拿到的参数只有第一行有企业和顺位表cd，需要遍历参数，给所有行都赋值
         try{

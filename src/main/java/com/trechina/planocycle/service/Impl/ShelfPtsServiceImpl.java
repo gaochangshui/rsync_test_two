@@ -243,9 +243,15 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
         List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
         List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
-        ptsDetailData.setPtsTaiList(taiData);
-        ptsDetailData.setPtsTanaVoList(tanaData);
-        ptsDetailData.setPtsJanDataList(janData);
+        if (janData.size()>0){
+            ptsDetailData.setPtsTaiList(taiData);
+        }
+       if (tanaData.size()>0) {
+           ptsDetailData.setPtsTanaVoList(tanaData);
+       }
+       if (janData.size()>0) {
+           ptsDetailData.setPtsJanDataList(janData);
+       }
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
 

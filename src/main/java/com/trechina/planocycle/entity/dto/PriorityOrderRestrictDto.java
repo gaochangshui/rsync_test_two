@@ -1,14 +1,7 @@
-package com.trechina.planocycle.entity.po;
+package com.trechina.planocycle.entity.dto;
 
-import java.util.Date;
+public class PriorityOrderRestrictDto {
 
-
-public class PriorityOrderRestrictSet {
-    private String companyCd;
-    private Integer priorityOrderCd;
-    private Integer taiCd;
-    private Integer tanaCd;
-    private Integer restrictType;
     private String zokusei1;
     private String zokusei2;
     private String zokusei3;
@@ -29,58 +22,15 @@ public class PriorityOrderRestrictSet {
     private String zokuseiName8;
     private String zokuseiName9;
     private String zokuseiName10;
-    private String authorCd;
-    private Date createTime;
-    private String editerCd;
-    private Date editTime;
-    private Short deleteflg;
-
-    public String getCompanyCd() {
-        return companyCd;
-    }
-
-    public void setCompanyCd(String companyCd) {
-        this.companyCd = companyCd == null ? null : companyCd.trim();
-    }
-
-    public Integer getPriorityOrderCd() {
-        return priorityOrderCd;
-    }
-
-    public void setPriorityOrderCd(Integer priorityOrderCd) {
-        this.priorityOrderCd = priorityOrderCd;
-    }
-
-    public Integer getTaiCd() {
-        return taiCd;
-    }
-
-    public void setTaiCd(Integer taiCd) {
-        this.taiCd = taiCd;
-    }
-
-    public Integer getTanaCd() {
-        return tanaCd;
-    }
-
-    public void setTanaCd(Integer tanaCd) {
-        this.tanaCd = tanaCd;
-    }
-
-    public Integer getRestrictType() {
-        return restrictType;
-    }
-
-    public void setRestrictType(Integer restrictType) {
-        this.restrictType = restrictType;
-    }
+    private Integer skuNum;
+    private Integer faceNum;
 
     public String getZokusei1() {
         return zokusei1;
     }
 
     public void setZokusei1(String zokusei1) {
-        this.zokusei1 = zokusei1 == null ? null : zokusei1.trim();
+        this.zokusei1 = zokusei1;
     }
 
     public String getZokusei2() {
@@ -88,7 +38,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei2(String zokusei2) {
-        this.zokusei2 = zokusei2 == null ? null : zokusei2.trim();
+        this.zokusei2 = zokusei2;
     }
 
     public String getZokusei3() {
@@ -96,7 +46,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei3(String zokusei3) {
-        this.zokusei3 = zokusei3 == null ? null : zokusei3.trim();
+        this.zokusei3 = zokusei3;
     }
 
     public String getZokusei4() {
@@ -104,7 +54,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei4(String zokusei4) {
-        this.zokusei4 = zokusei4 == null ? null : zokusei4.trim();
+        this.zokusei4 = zokusei4;
     }
 
     public String getZokusei5() {
@@ -112,7 +62,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei5(String zokusei5) {
-        this.zokusei5 = zokusei5 == null ? null : zokusei5.trim();
+        this.zokusei5 = zokusei5;
     }
 
     public String getZokusei6() {
@@ -120,7 +70,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei6(String zokusei6) {
-        this.zokusei6 = zokusei6 == null ? null : zokusei6.trim();
+        this.zokusei6 = zokusei6;
     }
 
     public String getZokusei7() {
@@ -128,7 +78,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei7(String zokusei7) {
-        this.zokusei7 = zokusei7 == null ? null : zokusei7.trim();
+        this.zokusei7 = zokusei7;
     }
 
     public String getZokusei8() {
@@ -136,7 +86,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei8(String zokusei8) {
-        this.zokusei8 = zokusei8 == null ? null : zokusei8.trim();
+        this.zokusei8 = zokusei8;
     }
 
     public String getZokusei9() {
@@ -144,7 +94,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei9(String zokusei9) {
-        this.zokusei9 = zokusei9 == null ? null : zokusei9.trim();
+        this.zokusei9 = zokusei9;
     }
 
     public String getZokusei10() {
@@ -152,47 +102,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei10(String zokusei10) {
-        this.zokusei10 = zokusei10 == null ? null : zokusei10.trim();
-    }
-
-    public String getAuthorCd() {
-        return authorCd;
-    }
-
-    public void setAuthorCd(String authorCd) {
-        this.authorCd = authorCd == null ? null : authorCd.trim();
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getEditerCd() {
-        return editerCd;
-    }
-
-    public void setEditerCd(String editerCd) {
-        this.editerCd = editerCd == null ? null : editerCd.trim();
-    }
-
-    public Date getEditTime() {
-        return editTime;
-    }
-
-    public void setEditTime(Date editTime) {
-        this.editTime = editTime;
-    }
-
-    public Short getDeleteflg() {
-        return deleteflg;
-    }
-
-    public void setDeleteflg(Short deleteflg) {
-        this.deleteflg = deleteflg;
+        this.zokusei10 = zokusei10;
     }
 
     public String getZokuseiName1() {
@@ -275,15 +185,26 @@ public class PriorityOrderRestrictSet {
         this.zokuseiName10 = zokuseiName10;
     }
 
+    public Integer getSkuNum() {
+        return skuNum;
+    }
+
+    public void setSkuNum(Integer skuNum) {
+        this.skuNum = skuNum;
+    }
+
+    public Integer getFaceNum() {
+        return faceNum;
+    }
+
+    public void setFaceNum(Integer faceNum) {
+        this.faceNum = faceNum;
+    }
+
     @Override
     public String toString() {
-        return "PriorityOrderRestrictSet{" +
-                "companyCd='" + companyCd + '\'' +
-                ", priorityOrderCd=" + priorityOrderCd +
-                ", taiCd=" + taiCd +
-                ", tanaCd=" + tanaCd +
-                ", restrictType=" + restrictType +
-                ", zokusei1='" + zokusei1 + '\'' +
+        return "PriorityOrderRestrictDto{" +
+                "zokusei1='" + zokusei1 + '\'' +
                 ", zokusei2='" + zokusei2 + '\'' +
                 ", zokusei3='" + zokusei3 + '\'' +
                 ", zokusei4='" + zokusei4 + '\'' +
@@ -303,11 +224,8 @@ public class PriorityOrderRestrictSet {
                 ", zokuseiName8='" + zokuseiName8 + '\'' +
                 ", zokuseiName9='" + zokuseiName9 + '\'' +
                 ", zokuseiName10='" + zokuseiName10 + '\'' +
-                ", authorCd='" + authorCd + '\'' +
-                ", createTime=" + createTime +
-                ", editerCd='" + editerCd + '\'' +
-                ", editTime=" + editTime +
-                ", deleteflg=" + deleteflg +
+                ", skuNum=" + skuNum +
+                ", faceNum=" + faceNum +
                 '}';
     }
 }

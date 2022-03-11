@@ -2,14 +2,12 @@ package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanAttribute;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.PriorityOrderCatepakAttributeMapper;
-import com.trechina.planocycle.mapper.PriorityOrderDataMapper;
-import com.trechina.planocycle.mapper.PriorityOrderJanAttributeMapper;
-import com.trechina.planocycle.mapper.PriorityOrderJanNewMapper;
+import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -20,8 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.*;
 
 @Service
@@ -39,6 +38,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     private PriorityOrderJanReplaceService priorityOrderJanReplaceService;
     @Autowired
     private PriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
+    @Autowired
+    private PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
     /**
      * 获取新规janList
      *
@@ -47,95 +48,60 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      * @return
      */
     @Override
-    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo) {
-        try {
+    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
             logger.info("获取新规商品list参数："+companyCd+","+priorityOrderCd);
             List<PriorityOrderJanNewVO> priorityOrderJanNewVOS = priorityOrderJanNewMapper.selectJanNew(companyCd,priorityOrderCd);
             logger.info("获取新规商品list返回结果集b："+priorityOrderJanNewVOS);
-            JSONArray jsonArray = new JSONArray();
+            List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
+            Class clazz = PriorityOrderJanNewVO.class;
+        for (int i = 1; i <= 4; i++) {
+            Method getMethod = clazz.getMethod("get"+"Scat"+i+"cdVal");
+            Method setMethod = clazz.getMethod("set"+"Scat"+i+"cdVal", String.class);
+            for (PriorityOrderAttrValueDto attrValue : attrValues) {
+                for (PriorityOrderJanNewVO priorityOrderJanNewVO : priorityOrderJanNewVOS) {
+                    if (getMethod.invoke(priorityOrderJanNewVO)!=null && getMethod.invoke(priorityOrderJanNewVO).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
+                        setMethod.invoke(priorityOrderJanNewVO,attrValue.getNm());
+                    }else{
 
-            // 遍历结果集，拆分动态列
-            if (priorityOrderJanNewVOS.size()>0){
-                priorityOrderJanNewVOS.forEach(item->{
-                    Map<String,Object> result = new HashMap<>();
-                    String[] attrList = item.getAttr().split(",");
-                    String[] valList;
-                    result.put("janNew",item.getJanNew());
-                    result.put("janName",item.getJanName());
-                    for (int i = 0; i < attrList.length; i++) {
-                        valList = attrList[i].split(":");
-                        result.put("attr"+valList[0],valList[1]);
                     }
-                    result.put("rank",item.getRank());
-                    result.put("branchNum",item.getBranchNum());
-                    result.put("branchAccount",item.getBranchAccount());
-                    result.put("errMsg",item.getErrMsg());
-                    //写入jsonArray
-                    jsonArray.add(result);
-                });
-                //把动态的列名写到下标0，让前端生成动态列
-                jsonArray.add(0,((HashMap) jsonArray.get(0)).keySet().stream().sorted());
-
-            } else {
-                //获取列头
-                PriorityOrderJanNewVO colResult = priorityOrderJanNewMapper.selectColName(companyCd,productPowerNo);
-                logger.info("获取新规商品list返回结果集e："+colResult);
-                String[] attrList = colResult.getAttr().split(",");
-                String[] valList ;
-                List<String>  results = new ArrayList<>();
-                for (int i = 0; i < attrList.length; i++) {
-                    valList = attrList[i].split(":");
-                    results.add("attr"+valList[0]);
                 }
-                results.add("janNew");
-                results.add("janName");
-                results.add("rank");
-                results.add("branchNum");
-                results.add("branchAccount");
-                results.add("errMsg");
-                jsonArray.add(results);
             }
-            return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
-        } catch (Exception e) {
-            logger.info("获取新规janList失败："+e);
-            return ResultMaps.result(ResultEnum.FAILURE);
         }
+           return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanNewVOS);
     }
 
     /**
      * 保存新规商品list
      *
-     * @param jsonArray
+     * @param
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> setPriorityOrderJanNew(JSONArray jsonArray) {
-        try {
-            logger.info("保存新规商品list参数:"+jsonArray);
-            List<PriorityOrderJanNew> janNewList = new ArrayList<>();
-            List<PriorityOrderJanAttribute> janAttributeList = new ArrayList<>();
-            //获取参数中第一行的企业和优先顺位号
-            String companyCd = String.valueOf(((HashMap) jsonArray.get(0)).get("companyCd"));
-            Integer priorityOrderCd = (Integer) ((HashMap) jsonArray.get(0)).get("priorityOrderCd");
+    public Map<String, Object> setPriorityOrderJanNew(List<PriorityOrderJanNew> priorityOrderJanNew) {
+        String authorCd = session.getAttribute("aud").toString();
+        String companyCd=null;
+        Integer priorityOrderCd = null;
+        for (PriorityOrderJanNew orderJanNew : priorityOrderJanNew) {
+            Integer janMstNum = priorityOrderJanNewMapper.getJanMstNum(orderJanNew);
+            if (janMstNum ==0){
+                Integer janMstPlanocycleNum = priorityOrderJanNewMapper.getJanMstPlanocycleNum(orderJanNew);
+                if (janMstPlanocycleNum == 0){
+                    return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
+                }
+            }
+            companyCd = orderJanNew.getCompanyCd();
+             priorityOrderCd = orderJanNew.getPriorityOrderCd();
+        }
+
+
             // 全删
             priorityOrderJanNewMapper.delete(companyCd,priorityOrderCd);
-            priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-            // 遍历前端给的jsonArray 构筑新规商品list表和关联的动态属性列表的实体类字符串,保存数据
-            String notExistsJan="";
-            notExistsJan = dataSave(jsonArray, janNewList, janAttributeList, companyCd, priorityOrderCd,notExistsJan);
+          //  priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
 
-            //不存在主表的数据查询，保出到主表
-            notExistsData(companyCd, priorityOrderCd);
-            if (notExistsJan.length()>0){
-                return ResultMaps.result(ResultEnum.JANNOTESISTS,notExistsJan.substring(0,notExistsJan.length()-1));
-            } else {
-                return ResultMaps.result(ResultEnum.SUCCESS);
-            }
-        } catch (Exception e) {
-            logger.info("保存新规商品list报错"+e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+            priorityOrderJanNewMapper.insert(priorityOrderJanNew,authorCd);
+            return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
@@ -169,7 +135,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         logger.info("保存新规商品list动态属性列处理完后的参数："+ janAttributeList.toString());
         //全插入
         if (janNewList.size()>0){
-            priorityOrderJanNewMapper.insert(janNewList);
+          //  priorityOrderJanNewMapper.insert(janNewList);
             priorityOrderJanAttributeMapper.insert(janAttributeList);
             //查询所有jannew 修改配荷店铺数
             List<Map<String,Object>> maps = priorityOrderJanNewMapper.selectJanNewOrAttr(companyCd,priorityOrderCd);

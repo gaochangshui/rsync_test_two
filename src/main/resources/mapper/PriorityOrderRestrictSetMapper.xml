@@ -39,7 +39,7 @@
       and restrict_type = #{restrictType,jdbcType=INTEGER}
   </select>
   <select id="getPriorityOrderRestrict" resultType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
-    select tai_cd,tana_cd,restrict_type,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10
+    select tai_cd,tana_cd,tana_type as restrictType,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10
     from planocycle.work_priority_order_restrict_set resSet
     where company_cd = #{companyCd} and author_cd = #{authorCd}
     and  (zokusei1 is not NULL or zokusei2 is not NULL or zokusei3 is not NULL or zokusei4 is not NULL or zokusei5 is not NULL or zokusei6 is not NULL
@@ -47,8 +47,14 @@
 
   </select>
   <select id="getAttrValues" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto">
-    select zokusei_id,val,nm
-     from      masterdb.zokusei_mst_data
+    select datas.zokusei_id as zokuseiId,datas.val as val,mst.zokusei_nm ||'-' || datas.nm as  nm
+    from      masterdb.zokusei_mst_data datas
+                left join masterdb.zokusei_mst mst
+                          on datas.zokusei_id = mst.zokusei_id
+  </select>
+  <select id="getAttrValues1" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto">
+    select zokusei_id,val ,nm
+    from masterdb.zokusei_mst_data
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority_order_restrict_set

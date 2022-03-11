@@ -40,7 +40,7 @@ public class PriorityOrderRestrictSetServiceImpl implements PriorityOrderRestric
         Class clazz = PriorityOrderRestrictSet.class;
         for (int i = 1; i <= 10; i++) {
             Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
-            Method setMethod = clazz.getMethod("set"+"Zokusei"+i, String.class);
+            Method setMethod = clazz.getMethod("set"+"ZokuseiName"+i, String.class);
             for (PriorityOrderRestrictSet priorityOrderRestrictSet : priorityOrderRestrict) {
                 for (PriorityOrderAttrValueDto attrValue : attrValues) {
                     if (getMethod.invoke(priorityOrderRestrictSet)!=null&&getMethod.invoke(priorityOrderRestrictSet).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){

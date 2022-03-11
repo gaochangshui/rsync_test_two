@@ -1,6 +1,5 @@
 package com.trechina.planocycle;
 
-import com.trechina.planocycle.entity.dto.PriorityOrderAttrFaceNum;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.mapper.*;
 import org.junit.jupiter.api.Test;
@@ -32,28 +31,44 @@ class PlanoCycleApiApplicationTests {
     PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
     @Autowired
     PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
-
+    @Autowired
+    PriorityOrderShelfDataMapper priorityOrderShelfDataMapper;
+    @Autowired
+    PriorityOrderJanReplaceMapper priorityOrderJanReplaceMapper;
     @Test
     public void test1() {
-
-        int[] a = {1, 2};
+        priorityOrderJanReplaceMapper.selectJanInfo("0001",122);
+        //PriorityOrderPlatformShedDto priorityOrderPlatformShedDto = new PriorityOrderPlatformShedDto();
+        //priorityOrderPlatformShedDto.setTaiCd(1);
+        //priorityOrderPlatformShedDto.setTanaCd(1);
+        //priorityOrderPlatformShedDto.setRestrictType(1);
+        //List<PriorityOrderRestrictJanDto> platformShedJans = priorityOrderShelfDataMapper.getPlatformShedJans(priorityOrderPlatformShedDto);
+        //platformShedJans.forEach(System.out::println);
+        //List<PriorityOrderRestrictDto> restrictData = priorityOrderShelfDataMapper.getRestrictData("0001", "10215814");
+        //restrictData.forEach(System.out::println);
+        //PriorityOrderRestrictDto priorityOrderRestrictDto = new PriorityOrderRestrictDto();
+        //priorityOrderRestrictDto.setZokusei1("014");
+        //priorityOrderRestrictDto.setZokusei2("014_041");
+        //List<PriorityOrderRestrictJanDto> restrictJans = priorityOrderShelfDataMapper.getRestrictJans(priorityOrderRestrictDto);
+        //restrictJans.forEach(System.out::println);
+        //int[] a = {1, 2};
       /*  PtsTanaVo tanaData = shelfPtsDataMapper.getTanaData(43);
         System.out.println(tanaData);
 */
-
-
+       // priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOderAttrSet, authorCd);
+        System.out.println("get" + "Scat" + 1 + "cdVal" == "getScat1cdVal");
         //List<PriorityOrderRestrictSet> priorityOrderRestrict = priorityOrderRestrictSetMapper.getPriorityOrderRestrict("0001", "10215814");
        // priorityOrderRestrict.forEach(System.out::println);
        // PriorityOderAttrSet priorityOderAttrSet = new PriorityOderAttrSet();
        // priorityOderAttrSet.setCompanyCd("0001");
-       // priorityOderAttrSet.setTaiCd(1);
-       // priorityOderAttrSet.setTanaCd(2);
-       // priorityOderAttrSet.setRestrictType(1);
+       // priorityOderAttrSet.setTaiCd(2);
+       // priorityOderAttrSet.setTanaCd(0);
+       // priorityOderAttrSet.setRestrictType(0);
        // priorityOderAttrSet.setZokuseiId(1);
        //
-       // priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOderAttrSet,"10215814");
-        List<PriorityOrderAttrFaceNum> priorityOrderAttrFaceNums = priorityOrderMstAttrSortMapper.getfeceNum1("scat1cd_val", "scat2cd_val",43);
-        priorityOrderAttrFaceNums.forEach(System.out::println);
+       // priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOderAttrSet,"10212159");
+       // List<PriorityOrderAttrFaceNum> priorityOrderAttrFaceNums = priorityOrderMstAttrSortMapper.getfeceNum1("scat1cd_val", "scat2cd_val",43);
+       // priorityOrderAttrFaceNums.forEach(System.out::println);
         //List<PriorityOrderAttrVO> editAttributeArea = priorityOrderMstAttrSortMapper.getEditAttributeArea("0001", "10047515");
         //editAttributeArea.forEach(System.out::println);
       /*  List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(1);
