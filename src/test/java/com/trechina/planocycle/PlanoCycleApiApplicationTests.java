@@ -64,7 +64,7 @@ class PlanoCycleApiApplicationTests {
         priorityOderAttrSet.setCompanyCd("0001");
         priorityOderAttrSet.setTaiCd(1);
         priorityOderAttrSet.setTanaCd(2);
-        priorityOderAttrSet.setRestrictType(1);
+        priorityOderAttrSet.settanaType(1);
         priorityOderAttrSet.setZokuseiId(1);
 
         priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOderAttrSet,"10215814");

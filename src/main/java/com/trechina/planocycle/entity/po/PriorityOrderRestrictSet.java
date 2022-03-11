@@ -40,7 +40,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setCompanyCd(String companyCd) {
-        this.companyCd = companyCd == null ? null : companyCd.trim();
+        this.companyCd = companyCd;
     }
 
     public Integer getPriorityOrderCd() {
@@ -67,11 +67,11 @@ public class PriorityOrderRestrictSet {
         this.tanaCd = tanaCd;
     }
 
-    public Integer gettanaType() {
+    public Integer getTanaType() {
         return tanaType;
     }
 
-    public void settanaType(Integer tanaType) {
+    public void setTanaType(Integer tanaType) {
         this.tanaType = tanaType;
     }
 
@@ -80,7 +80,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei1(String zokusei1) {
-        this.zokusei1 = zokusei1 == null ? null : zokusei1.trim();
+        this.zokusei1 = zokusei1;
     }
 
     public String getZokusei2() {
@@ -88,7 +88,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei2(String zokusei2) {
-        this.zokusei2 = zokusei2 == null ? null : zokusei2.trim();
+        this.zokusei2 = zokusei2;
     }
 
     public String getZokusei3() {
@@ -96,7 +96,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei3(String zokusei3) {
-        this.zokusei3 = zokusei3 == null ? null : zokusei3.trim();
+        this.zokusei3 = zokusei3;
     }
 
     public String getZokusei4() {
@@ -104,7 +104,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei4(String zokusei4) {
-        this.zokusei4 = zokusei4 == null ? null : zokusei4.trim();
+        this.zokusei4 = zokusei4;
     }
 
     public String getZokusei5() {
@@ -112,7 +112,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei5(String zokusei5) {
-        this.zokusei5 = zokusei5 == null ? null : zokusei5.trim();
+        this.zokusei5 = zokusei5;
     }
 
     public String getZokusei6() {
@@ -120,7 +120,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei6(String zokusei6) {
-        this.zokusei6 = zokusei6 == null ? null : zokusei6.trim();
+        this.zokusei6 = zokusei6;
     }
 
     public String getZokusei7() {
@@ -128,7 +128,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei7(String zokusei7) {
-        this.zokusei7 = zokusei7 == null ? null : zokusei7.trim();
+        this.zokusei7 = zokusei7;
     }
 
     public String getZokusei8() {
@@ -136,7 +136,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei8(String zokusei8) {
-        this.zokusei8 = zokusei8 == null ? null : zokusei8.trim();
+        this.zokusei8 = zokusei8;
     }
 
     public String getZokusei9() {
@@ -144,7 +144,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei9(String zokusei9) {
-        this.zokusei9 = zokusei9 == null ? null : zokusei9.trim();
+        this.zokusei9 = zokusei9;
     }
 
     public String getZokusei10() {
@@ -152,47 +152,7 @@ public class PriorityOrderRestrictSet {
     }
 
     public void setZokusei10(String zokusei10) {
-        this.zokusei10 = zokusei10 == null ? null : zokusei10.trim();
-    }
-
-    public String getAuthorCd() {
-        return authorCd;
-    }
-
-    public void setAuthorCd(String authorCd) {
-        this.authorCd = authorCd == null ? null : authorCd.trim();
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getEditerCd() {
-        return editerCd;
-    }
-
-    public void setEditerCd(String editerCd) {
-        this.editerCd = editerCd == null ? null : editerCd.trim();
-    }
-
-    public Date getEditTime() {
-        return editTime;
-    }
-
-    public void setEditTime(Date editTime) {
-        this.editTime = editTime;
-    }
-
-    public Short getDeleteflg() {
-        return deleteflg;
-    }
-
-    public void setDeleteflg(Short deleteflg) {
-        this.deleteflg = deleteflg;
+        this.zokusei10 = zokusei10;
     }
 
     public String getZokuseiName1() {
@@ -273,6 +233,46 @@ public class PriorityOrderRestrictSet {
 
     public void setZokuseiName10(String zokuseiName10) {
         this.zokuseiName10 = zokuseiName10;
+    }
+
+    public String getAuthorCd() {
+        return authorCd;
+    }
+
+    public void setAuthorCd(String authorCd) {
+        this.authorCd = authorCd;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getEditerCd() {
+        return editerCd;
+    }
+
+    public void setEditerCd(String editerCd) {
+        this.editerCd = editerCd;
+    }
+
+    public Date getEditTime() {
+        return editTime;
+    }
+
+    public void setEditTime(Date editTime) {
+        this.editTime = editTime;
+    }
+
+    public Short getDeleteflg() {
+        return deleteflg;
+    }
+
+    public void setDeleteflg(Short deleteflg) {
+        this.deleteflg = deleteflg;
     }
 
     @Override
