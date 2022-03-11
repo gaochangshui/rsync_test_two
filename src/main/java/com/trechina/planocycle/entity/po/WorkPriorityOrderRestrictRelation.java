@@ -1,6 +1,6 @@
 package com.trechina.planocycle.entity.po;
 
-public class WorkPriorityOrderRestrictSet {
+public class WorkPriorityOrderRestrictRelation {
     private String companyCd;
 
     private String authorCd;
@@ -10,6 +10,8 @@ public class WorkPriorityOrderRestrictSet {
     private Integer tanaCd;
 
     private Short tanaType;
+
+    private Long restrictCd;
 
     private String zokusei1;
 
@@ -63,12 +65,20 @@ public class WorkPriorityOrderRestrictSet {
         this.tanaCd = tanaCd;
     }
 
-    public Short gettanaType() {
+    public Short getTanaType() {
         return tanaType;
     }
 
-    public void settanaType(Short tanaType) {
+    public void setTanaType(Short tanaType) {
         this.tanaType = tanaType;
+    }
+
+    public Long getRestrictCd() {
+        return restrictCd;
+    }
+
+    public void setRestrictCd(Long restrictCd) {
+        this.restrictCd = restrictCd;
     }
 
     public String getZokusei1() {

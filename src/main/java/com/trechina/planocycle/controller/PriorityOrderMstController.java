@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 @RestController
 @RequestMapping("/planoCycle/PriorityOrderMst")
@@ -91,6 +92,11 @@ public class PriorityOrderMstController {
     @DeleteMapping("/delPriorityOrderAllInfo")
     public Map<String,Object> delPriorityOrderAllInfo(@RequestBody PriorityOrderPrimaryKeyVO primaryKeyVO){
         return priorityOrderMstService.delPriorityOrderAllInfo(primaryKeyVO);
+    }
+
+    @GetMapping("/preCalculation")
+    public Map<String, Object> preCalculation(String companyCd, Long patternCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        return priorityOrderMstService.preCalculation(companyCd, patternCd);
     }
 
     /**

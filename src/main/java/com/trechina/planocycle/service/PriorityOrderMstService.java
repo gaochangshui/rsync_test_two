@@ -5,6 +5,7 @@ import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 public interface PriorityOrderMstService {
@@ -75,6 +76,7 @@ public interface PriorityOrderMstService {
      */
     String selPriorityOrderCdForProdCd(String companyCd,Integer productPowerCd);
 
+    Map<String, Object> preCalculation(String companyCd, Long patternCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     /**
      * 自动计算
      * @return

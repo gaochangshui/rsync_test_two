@@ -1,5 +1,6 @@
 package com.trechina.planocycle;
 
+import com.trechina.planocycle.entity.po.PriorityOderAttrSet;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.mapper.*;
 import org.junit.jupiter.api.Test;
@@ -59,18 +60,15 @@ class PlanoCycleApiApplicationTests {
         System.out.println("get" + "Scat" + 1 + "cdVal" == "getScat1cdVal");
         //List<PriorityOrderRestrictSet> priorityOrderRestrict = priorityOrderRestrictSetMapper.getPriorityOrderRestrict("0001", "10215814");
        // priorityOrderRestrict.forEach(System.out::println);
-       // PriorityOderAttrSet priorityOderAttrSet = new PriorityOderAttrSet();
-       // priorityOderAttrSet.setCompanyCd("0001");
-       // priorityOderAttrSet.setTaiCd(2);
-       // priorityOderAttrSet.setTanaCd(0);
-       // priorityOderAttrSet.setRestrictType(0);
-       // priorityOderAttrSet.setZokuseiId(1);
-       //
-       // priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOderAttrSet,"10212159");
-       // List<PriorityOrderAttrFaceNum> priorityOrderAttrFaceNums = priorityOrderMstAttrSortMapper.getfeceNum1("scat1cd_val", "scat2cd_val",43);
-       // priorityOrderAttrFaceNums.forEach(System.out::println);
-        //List<PriorityOrderAttrVO> editAttributeArea = priorityOrderMstAttrSortMapper.getEditAttributeArea("0001", "10047515");
-        //editAttributeArea.forEach(System.out::println);
+        PriorityOderAttrSet priorityOderAttrSet = new PriorityOderAttrSet();
+        priorityOderAttrSet.setCompanyCd("0001");
+        priorityOderAttrSet.setTaiCd(1);
+        priorityOderAttrSet.setTanaCd(2);
+        priorityOderAttrSet.setRestrictType(1);
+        priorityOderAttrSet.setZokuseiId(1);
+
+        priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOderAttrSet,"10215814");
+
       /*  List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(1);
         attrValue.forEach(System.out::println);*/
         // int attrType = priorityOrderMstAttrSortMapper.getAttrType(1);
@@ -105,7 +103,7 @@ class PlanoCycleApiApplicationTests {
         priorityOrderRestrictSet.setPriorityOrderCd(12);
         priorityOrderRestrictSet.setTaiCd(3);
         priorityOrderRestrictSet.setTanaCd(4);
-        priorityOrderRestrictSet.setRestrictType(5);
+        priorityOrderRestrictSet.settanaType(5);
         priorityOrderRestrictSet.setCapacity(8);
         //priorityOrderRestrictSet.setPkg(7);
         priorityOrderRestrictSet.setCategory(5);

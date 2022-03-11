@@ -218,4 +218,13 @@
     group by tai_cd
     order by tai_cd
   </select>
+  <select id="selectByPatternCd" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataTanamst">
+    select
+    t1.company_cd, t1.pts_cd, t1.tai_cd, t1.tana_cd, t1.tana_height, t1.tana_width, t1.tana_depth, t1.tana_thickness,
+    t1.tana_type, t1.create_time, t1.author_cd, t1.edit_time, t1.editer_cd, t1.deleteflg
+    from planocycle.shelf_pts_data_tanamst t1
+    inner join planocycle.shelf_pts_data t2
+    on t1.pts_cd=t2.id
+    where t1.deleteflg=0 and t2.shelf_pattern_cd =#{shelfPatternCd}
+  </select>
 </mapper>

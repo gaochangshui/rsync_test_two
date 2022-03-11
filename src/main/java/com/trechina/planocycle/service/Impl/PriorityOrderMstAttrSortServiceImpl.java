@@ -355,7 +355,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             tmpRestrictSet = new WorkPriorityOrderRestrictSet();
             tmpRestrictSet.setCompanyCd(companyCd);
             tmpRestrictSet.setAuthorCd(authorCd);
-            tmpRestrictSet.setRestrictType(0);
+            tmpRestrictSet.settanaType((short) 0);
             setAttrMethod1.invoke(tmpRestrictSet, vo.getAttrACd());
             setAttrMethod2.invoke(tmpRestrictSet, vo.getAttrBCd());
 

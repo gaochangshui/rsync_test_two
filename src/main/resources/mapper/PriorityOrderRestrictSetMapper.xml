@@ -6,7 +6,7 @@
     <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
     <id column="tai_cd" jdbcType="INTEGER" property="taiCd" />
     <id column="tana_cd" jdbcType="INTEGER" property="tanaCd" />
-    <id column="restrict_type" jdbcType="INTEGER" property="restrictType" />
+    <id column="tana_type" jdbcType="INTEGER" property="tanaType" />
     <result column="zokusei1" jdbcType="VARCHAR" property="zokusei1" />
     <result column="zokusei2" jdbcType="VARCHAR" property="zokusei2" />
     <result column="zokusei3" jdbcType="VARCHAR" property="zokusei3" />
@@ -24,7 +24,7 @@
     <result column="deleteflg" jdbcType="SMALLINT" property="deleteflg" />
   </resultMap>
   <sql id="Base_Column_List">
-    company_cd, priority_order_cd, tai_cd, tana_cd, restrict_type, zokusei1, zokusei2, 
+    company_cd, priority_order_cd, tai_cd, tana_cd, tana_type, zokusei1, zokusei2,
     zokusei3, zokusei4, zokusei5, zokusei6, zokusei7, zokusei8, zokusei9, zokusei10, 
     author_cd, create_time, editer_cd, edit_time, deleteflg
   </sql>
@@ -36,10 +36,10 @@
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
       and tai_cd = #{taiCd,jdbcType=INTEGER}
       and tana_cd = #{tanaCd,jdbcType=INTEGER}
-      and restrict_type = #{restrictType,jdbcType=INTEGER}
+      and tana_type = #{tanaType,jdbcType=INTEGER}
   </select>
   <select id="getPriorityOrderRestrict" resultType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
-    select tai_cd,tana_cd,tana_type as restrictType,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10
+    select tai_cd,tana_cd,tana_type,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10
     from planocycle.work_priority_order_restrict_set resSet
     where company_cd = #{companyCd} and author_cd = #{authorCd}
     and  (zokusei1 is not NULL or zokusei2 is not NULL or zokusei3 is not NULL or zokusei4 is not NULL or zokusei5 is not NULL or zokusei6 is not NULL
@@ -62,18 +62,18 @@
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
       and tai_cd = #{taiCd,jdbcType=INTEGER}
       and tana_cd = #{tanaCd,jdbcType=INTEGER}
-      and restrict_type = #{restrictType,jdbcType=INTEGER}
+      and tana_type = #{tanaType,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
     insert into priority_order_restrict_set (company_cd, priority_order_cd, tai_cd, 
-      tana_cd, restrict_type, zokusei1, 
+      tana_cd, tana_type, zokusei1,
       zokusei2, zokusei3, zokusei4, 
       zokusei5, zokusei6, zokusei7, 
       zokusei8, zokusei9, zokusei10, 
       author_cd, create_time, editer_cd, 
       edit_time, deleteflg)
     values (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{taiCd,jdbcType=INTEGER}, 
-      #{tanaCd,jdbcType=INTEGER}, #{restrictType,jdbcType=INTEGER}, #{zokusei1,jdbcType=VARCHAR}, 
+      #{tanaCd,jdbcType=INTEGER}, #{tanaType,jdbcType=INTEGER}, #{zokusei1,jdbcType=VARCHAR},
       #{zokusei2,jdbcType=VARCHAR}, #{zokusei3,jdbcType=VARCHAR}, #{zokusei4,jdbcType=VARCHAR}, 
       #{zokusei5,jdbcType=VARCHAR}, #{zokusei6,jdbcType=VARCHAR}, #{zokusei7,jdbcType=VARCHAR}, 
       #{zokusei8,jdbcType=VARCHAR}, #{zokusei9,jdbcType=VARCHAR}, #{zokusei10,jdbcType=VARCHAR}, 
@@ -95,8 +95,8 @@
       <if test="tanaCd != null">
         tana_cd,
       </if>
-      <if test="restrictType != null">
-        restrict_type,
+      <if test="tanaType != null">
+        tana_type,
       </if>
       <if test="zokusei1 != null">
         zokusei1,
@@ -157,8 +157,8 @@
       <if test="tanaCd != null">
         #{tanaCd,jdbcType=INTEGER},
       </if>
-      <if test="restrictType != null">
-        #{restrictType,jdbcType=INTEGER},
+      <if test="tanaType != null">
+        #{tanaType,jdbcType=INTEGER},
       </if>
       <if test="zokusei1 != null">
         #{zokusei1,jdbcType=VARCHAR},
@@ -260,7 +260,7 @@
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
       and tai_cd = #{taiCd,jdbcType=INTEGER}
       and tana_cd = #{tanaCd,jdbcType=INTEGER}
-      and restrict_type = #{restrictType,jdbcType=INTEGER}
+      and tana_type = #{tanaType,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
     update priority_order_restrict_set
@@ -283,12 +283,12 @@
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
       and tai_cd = #{taiCd,jdbcType=INTEGER}
       and tana_cd = #{tanaCd,jdbcType=INTEGER}
-      and restrict_type = #{restrictType,jdbcType=INTEGER}
+      and tana_type = #{tanaType,jdbcType=INTEGER}
   </update>
     <insert id="setPriorityOrderRestrict">
-        insert into planocycle.work_priority_order_restrict_set(company_cd,tai_cd,tana_cd,restrict_type,zokusei${item.zokuseiId},author_cd)
-        values (#{item.companyCd},#{item.taiCd},#{item.tanaCd},#{item.restrictType},#{item.val},#{authorCd})
-        on conflict(company_cd,author_cd,tai_cd,tana_cd,restrict_type)
+        insert into planocycle.work_priority_order_restrict_set(company_cd,tai_cd,tana_cd,tana_type,zokusei${item.zokuseiId},author_cd)
+        values (#{item.companyCd},#{item.taiCd},#{item.tanaCd},#{item.tanaType},#{item.val},#{authorCd})
+        on conflict(company_cd,author_cd,tai_cd,tana_cd,tana_type)
         do update set
           zokusei${item.zokuseiId} = #{item.val}
 

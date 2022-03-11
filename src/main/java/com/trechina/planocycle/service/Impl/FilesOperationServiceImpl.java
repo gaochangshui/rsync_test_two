@@ -133,13 +133,13 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             ptsDataTanamst.setPtsCd(ptsCd);
             ptsDataTanamst.setCompanyCd(companyCd);
 
-            ptsDataTanamst.setTaiCd(Integer.valueOf(data[0]));
-            ptsDataTanamst.setTanaCd(Integer.valueOf(data[1]));
-            ptsDataTanamst.setTanaHeight(Integer.valueOf(data[2]));
-            ptsDataTanamst.setTanaWidth(Integer.valueOf(data[3]));
-            ptsDataTanamst.setTanaDepth(Integer.valueOf(data[4]));
-            ptsDataTanamst.setTanaThickness(Integer.valueOf(data[5]));
-            ptsDataTanamst.setTanaType(Integer.valueOf(data[6]));
+            ptsDataTanamst.setTaiCd(data[0] == null ? null : Integer.valueOf(data[0]));
+            ptsDataTanamst.setTanaCd(data[1] == null ? null : Integer.valueOf(data[1]));
+            ptsDataTanamst.setTanaHeight(data[2] == null ? null : Integer.valueOf(data[2]));
+            ptsDataTanamst.setTanaWidth(data[3] == null ? null : Integer.valueOf(data[3]));
+            ptsDataTanamst.setTanaDepth(data[4] == null ? null : Integer.valueOf(data[4]));
+            ptsDataTanamst.setTanaThickness(data[5] == null ? null : Integer.valueOf(data[5]));
+            ptsDataTanamst.setTanaType(data[6] == null ? null : Integer.valueOf(data[6]));
 
             ptsDataTanamst.setAuthorCd(authorCd);
             ptsDataTanamst.setCreateTime(createTime);
@@ -157,18 +157,18 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             ptsDataJandata.setPtsCd(ptsCd);
             ptsDataJandata.setCompanyCd(companyCd);
 
-            ptsDataJandata.setTaiCd(Integer.valueOf(data[0]));
-            ptsDataJandata.setTanaCd(Integer.valueOf(data[1]));
-            ptsDataJandata.setTanapositionCd(Integer.valueOf(data[2]));
+            ptsDataJandata.setTaiCd(data[0] == null ? null : Integer.valueOf(data[0]));
+            ptsDataJandata.setTanaCd(data[1] == null ? null : Integer.valueOf(data[1]));
+            ptsDataJandata.setTanapositionCd(data[2] == null ? null : Integer.valueOf(data[2]));
             ptsDataJandata.setJan(data[3]);
-            ptsDataJandata.setFaceCount(Integer.valueOf(data[4]));
-            ptsDataJandata.setFaceMen(Integer.valueOf(data[5]));
-            ptsDataJandata.setFaceKaiten(Integer.valueOf(data[6]));
-            ptsDataJandata.setTumiagesu(Integer.valueOf(data[7]));
-            ptsDataJandata.setZaikosu(Integer.valueOf(data[8]));
-            ptsDataJandata.setFaceDisplayflg(Integer.valueOf(data[9]));
-            ptsDataJandata.setFacePosition(Integer.valueOf(data[10]));
-            ptsDataJandata.setDepthDisplayNum(Integer.valueOf(data[11]));
+            ptsDataJandata.setFaceCount(data[4] == null ? null : Integer.valueOf(data[4]));
+            ptsDataJandata.setFaceMen(data[5] == null ? null : Integer.valueOf(data[5]));
+            ptsDataJandata.setFaceKaiten(data[6] == null ? null : Integer.valueOf(data[6]));
+            ptsDataJandata.setTumiagesu(data[7] == null ? null : Integer.valueOf(data[7]));
+            ptsDataJandata.setZaikosu(data[8] == null ? null : Integer.valueOf(data[8]));
+            ptsDataJandata.setFaceDisplayflg(data[9] == null ? null : Integer.valueOf(data[9]));
+            ptsDataJandata.setFacePosition(data[10] == null ? null : Integer.valueOf(data[10]));
+            ptsDataJandata.setDepthDisplayNum(data[11] == null ? null : Integer.valueOf(data[11]));
 
             ptsDataJandata.setAuthorCd(authorCd);
             ptsDataJandata.setCreateTime(createTime);
@@ -189,6 +189,10 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 String authorCd = session.getAttribute("aud").toString();
                 Date now = Calendar.getInstance().getTime();
                 //存放文件 // 文件内容check
+                String[] arr1;
+                String[] arr2;
+                String[] arr3;
+
                 for (MultipartFile file : multipartFileList) {
                     String filenames = "";
                     if (file != null && file.getOriginalFilename() != null) {
@@ -239,12 +243,22 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                             ptsDataVersion.setJanHeader(line);
                                         }
                                     } else {
+                                        String[] lineArr = line.split(",");
                                         if (titleNum == 1) {
-                                            arrList1.add(line.split(","));
+                                            arr1 = new String[5];
+                                            Arrays.fill(arr1, null);
+                                            System.arraycopy(lineArr, 0, arr1, 0, lineArr.length);
+                                            arrList1.add(arr1);
                                         } else if (titleNum == 2) {
-                                            arrList2.add(line.split(","));
+                                            arr2 = new String[7];
+                                            Arrays.fill(arr2, null);
+                                            System.arraycopy(lineArr, 0, arr2, 0, lineArr.length);
+                                            arrList2.add(arr2);
                                         } else if (titleNum == 3) {
-                                            arrList3.add(line.split(","));
+                                            arr3 = new String[12];
+                                            Arrays.fill(arr3, null);
+                                            System.arraycopy(lineArr, 0, arr3, 0, lineArr.length);
+                                            arrList3.add(arr3);
                                         }
                                     }
                                 }

@@ -12,7 +12,7 @@ import java.util.List;
 public interface PriorityOrderRestrictSetMapper {
     int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,
             @Param("taiCd") Integer taiCd, @Param("tanaCd") Integer tanaCd,
-            @Param("restrictType") Integer restrictType);
+            @Param("tanaType") Integer tanaType);
 
     int insert(PriorityOrderRestrictSet record);
 
@@ -20,7 +20,7 @@ public interface PriorityOrderRestrictSetMapper {
 
     PriorityOrderRestrictSet selectByPrimaryKey(@Param("companyCd") String companyCd,
             @Param("priorityOrderCd") Integer priorityOrderCd, @Param("taiCd") Integer taiCd,
-            @Param("tanaCd") Integer tanaCd, @Param("restrictType") Integer restrictType);
+            @Param("tanaCd") Integer tanaCd, @Param("tanaType") Integer tanaType);
 
     int updateByPrimaryKeySelective(PriorityOrderRestrictSet record);
 
