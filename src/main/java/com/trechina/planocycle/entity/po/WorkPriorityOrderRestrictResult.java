@@ -1,15 +1,11 @@
 package com.trechina.planocycle.entity.po;
 
-public class WorkPriorityOrderRestrictSet {
+public class WorkPriorityOrderRestrictResult {
     private String companyCd;
 
     private String authorCd;
 
-    private Integer taiCd;
-
-    private Integer tanaCd;
-
-    private Short tanaType;
+    private Long restrictCd;
 
     private String zokusei1;
 
@@ -31,6 +27,10 @@ public class WorkPriorityOrderRestrictSet {
 
     private String zokusei10;
 
+    private Long tanaCnt;
+
+    private Long skuCnt;
+
     public String getCompanyCd() {
         return companyCd;
     }
@@ -47,28 +47,12 @@ public class WorkPriorityOrderRestrictSet {
         this.authorCd = authorCd == null ? null : authorCd.trim();
     }
 
-    public Integer getTaiCd() {
-        return taiCd;
+    public Long getRestrictCd() {
+        return restrictCd;
     }
 
-    public void setTaiCd(Integer taiCd) {
-        this.taiCd = taiCd;
-    }
-
-    public Integer getTanaCd() {
-        return tanaCd;
-    }
-
-    public void setTanaCd(Integer tanaCd) {
-        this.tanaCd = tanaCd;
-    }
-
-    public Short gettanaType() {
-        return tanaType;
-    }
-
-    public void settanaType(Short tanaType) {
-        this.tanaType = tanaType;
+    public void setRestrictCd(Long restrictCd) {
+        this.restrictCd = restrictCd;
     }
 
     public String getZokusei1() {
@@ -149,5 +133,21 @@ public class WorkPriorityOrderRestrictSet {
 
     public void setZokusei10(String zokusei10) {
         this.zokusei10 = zokusei10 == null ? null : zokusei10.trim();
+    }
+
+    public Long getTanaCnt() {
+        return tanaCnt;
+    }
+
+    public void setTanaCnt(Long tanaCnt) {
+        this.tanaCnt = tanaCnt;
+    }
+
+    public Long getSkuCnt() {
+        return skuCnt;
+    }
+
+    public void setSkuCnt(Long skuCnt) {
+        this.skuCnt = skuCnt;
     }
 }

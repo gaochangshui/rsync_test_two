@@ -4,7 +4,7 @@ public class PriorityOderAttrSet {
     private String companyCd;
     private Integer taiCd;
     private Integer tanaCd;
-    private Integer restrictType;
+    private Integer tanaType;
     private Integer zokuseiId;
     private String val;
 
@@ -32,12 +32,12 @@ public class PriorityOderAttrSet {
         this.tanaCd = tanaCd;
     }
 
-    public Integer getRestrictType() {
-        return restrictType;
+    public Integer gettanaType() {
+        return tanaType;
     }
 
-    public void setRestrictType(Integer restrictType) {
-        this.restrictType = restrictType;
+    public void settanaType(Integer tanaType) {
+        this.tanaType = tanaType;
     }
 
     public Integer getZokuseiId() {
@@ -62,7 +62,7 @@ public class PriorityOderAttrSet {
                 "companyCd='" + companyCd + '\'' +
                 ", taiCd=" + taiCd +
                 ", tanaCd=" + tanaCd +
-                ", restrictType=" + restrictType +
+                ", tanaType=" + tanaType +
                 ", zokuseiId=" + zokuseiId +
                 ", val=" + val +
                 '}';

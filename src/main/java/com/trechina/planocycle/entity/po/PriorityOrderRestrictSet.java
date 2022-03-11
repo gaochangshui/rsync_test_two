@@ -8,7 +8,7 @@ public class PriorityOrderRestrictSet {
     private Integer priorityOrderCd;
     private Integer taiCd;
     private Integer tanaCd;
-    private Integer restrictType;
+    private Integer tanaType;
     private String zokusei1;
     private String zokusei2;
     private String zokusei3;
@@ -57,12 +57,12 @@ public class PriorityOrderRestrictSet {
         this.tanaCd = tanaCd;
     }
 
-    public Integer getRestrictType() {
-        return restrictType;
+    public Integer gettanaType() {
+        return tanaType;
     }
 
-    public void setRestrictType(Integer restrictType) {
-        this.restrictType = restrictType;
+    public void settanaType(Integer tanaType) {
+        this.tanaType = tanaType;
     }
 
     public String getZokusei1() {
@@ -192,7 +192,7 @@ public class PriorityOrderRestrictSet {
                 ", priorityOrderCd=" + priorityOrderCd +
                 ", taiCd=" + taiCd +
                 ", tanaCd=" + tanaCd +
-                ", restrictType=" + restrictType +
+                ", tanaType=" + tanaType +
                 '}';
     }
 }

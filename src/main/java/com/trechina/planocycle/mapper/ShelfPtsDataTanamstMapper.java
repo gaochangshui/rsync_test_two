@@ -24,4 +24,6 @@ public interface ShelfPtsDataTanamstMapper {
     int insertAll(List<ShelfPtsDataTanamst> list);
 
     List<ShelfPtsDataTanaCount> ptsTanaCountByTai(Long shelfPatternCd);
+
+    List<ShelfPtsDataTanamst> selectByPatternCd(Long shelfPatternCd);
 }

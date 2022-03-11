@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.WorkPriorityOrderResultDataMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <id column="jan_cd" jdbcType="VARCHAR" property="janCd" />
+    <result column="restrict_cd" jdbcType="BIGINT" property="restrictCd" />
+    <result column="sku_rank" jdbcType="BIGINT" property="skuRank" />
+    <result column="adopt_flag" jdbcType="INTEGER" property="adoptFlag" />
+    <result column="face" jdbcType="BIGINT" property="face" />
+    <result column="face_sku" jdbcType="BIGINT" property="faceSku" />
+    <result column="irisu" jdbcType="BIGINT" property="irisu" />
+    <result column="tai_cd" jdbcType="INTEGER" property="taiCd" />
+    <result column="tana_cd" jdbcType="INTEGER" property="tanaCd" />
+    <result column="restrict_type" jdbcType="INTEGER" property="restrictType" />
+    <result column="face_keisan" jdbcType="BIGINT" property="faceKeisan" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, author_cd, jan_cd, restrict_cd, sku_rank, adopt_flag, face, face_sku, 
+    irisu, tai_cd, tana_cd, restrict_type, face_keisan
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from planocycle.work_priority_order_result_data
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and author_cd = #{authorCd,jdbcType=VARCHAR}
+      and jan_cd = #{janCd,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from planocycle.work_priority_order_result_data
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and author_cd = #{authorCd,jdbcType=VARCHAR}
+      and jan_cd = #{janCd,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    insert into planocycle.work_priority_order_result_data (company_cd, author_cd, jan_cd,
+      restrict_cd, sku_rank, adopt_flag, 
+      face, face_sku, irisu, 
+      tai_cd, tana_cd, restrict_type, 
+      face_keisan)
+    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{janCd,jdbcType=VARCHAR}, 
+      #{restrictCd,jdbcType=BIGINT}, #{skuRank,jdbcType=BIGINT}, #{adoptFlag,jdbcType=INTEGER}, 
+      #{face,jdbcType=BIGINT}, #{faceSku,jdbcType=BIGINT}, #{irisu,jdbcType=BIGINT}, 
+      #{taiCd,jdbcType=INTEGER}, #{tanaCd,jdbcType=INTEGER}, #{restrictType,jdbcType=INTEGER}, 
+      #{faceKeisan,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    insert into planocycle.work_priority_order_result_data
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        company_cd,
+      </if>
+      <if test="authorCd != null">
+        author_cd,
+      </if>
+      <if test="janCd != null">
+        jan_cd,
+      </if>
+      <if test="restrictCd != null">
+        restrict_cd,
+      </if>
+      <if test="skuRank != null">
+        sku_rank,
+      </if>
+      <if test="adoptFlag != null">
+        adopt_flag,
+      </if>
+      <if test="face != null">
+        face,
+      </if>
+      <if test="faceSku != null">
+        face_sku,
+      </if>
+      <if test="irisu != null">
+        irisu,
+      </if>
+      <if test="taiCd != null">
+        tai_cd,
+      </if>
+      <if test="tanaCd != null">
+        tana_cd,
+      </if>
+      <if test="restrictType != null">
+        restrict_type,
+      </if>
+      <if test="faceKeisan != null">
+        face_keisan,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        #{companyCd,jdbcType=VARCHAR},
+      </if>
+      <if test="authorCd != null">
+        #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="janCd != null">
+        #{janCd,jdbcType=VARCHAR},
+      </if>
+      <if test="restrictCd != null">
+        #{restrictCd,jdbcType=BIGINT},
+      </if>
+      <if test="skuRank != null">
+        #{skuRank,jdbcType=BIGINT},
+      </if>
+      <if test="adoptFlag != null">
+        #{adoptFlag,jdbcType=INTEGER},
+      </if>
+      <if test="face != null">
+        #{face,jdbcType=BIGINT},
+      </if>
+      <if test="faceSku != null">
+        #{faceSku,jdbcType=BIGINT},
+      </if>
+      <if test="irisu != null">
+        #{irisu,jdbcType=BIGINT},
+      </if>
+      <if test="taiCd != null">
+        #{taiCd,jdbcType=INTEGER},
+      </if>
+      <if test="tanaCd != null">
+        #{tanaCd,jdbcType=INTEGER},
+      </if>
+      <if test="restrictType != null">
+        #{restrictType,jdbcType=INTEGER},
+      </if>
+      <if test="faceKeisan != null">
+        #{faceKeisan,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    update planocycle.work_priority_order_result_data
+    <set>
+      <if test="restrictCd != null">
+        restrict_cd = #{restrictCd,jdbcType=BIGINT},
+      </if>
+      <if test="skuRank != null">
+        sku_rank = #{skuRank,jdbcType=BIGINT},
+      </if>
+      <if test="adoptFlag != null">
+        adopt_flag = #{adoptFlag,jdbcType=INTEGER},
+      </if>
+      <if test="face != null">
+        face = #{face,jdbcType=BIGINT},
+      </if>
+      <if test="faceSku != null">
+        face_sku = #{faceSku,jdbcType=BIGINT},
+      </if>
+      <if test="irisu != null">
+        irisu = #{irisu,jdbcType=BIGINT},
+      </if>
+      <if test="taiCd != null">
+        tai_cd = #{taiCd,jdbcType=INTEGER},
+      </if>
+      <if test="tanaCd != null">
+        tana_cd = #{tanaCd,jdbcType=INTEGER},
+      </if>
+      <if test="restrictType != null">
+        restrict_type = #{restrictType,jdbcType=INTEGER},
+      </if>
+      <if test="faceKeisan != null">
+        face_keisan = #{faceKeisan,jdbcType=BIGINT},
+      </if>
+    </set>
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and author_cd = #{authorCd,jdbcType=VARCHAR}
+      and jan_cd = #{janCd,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    update planocycle.work_priority_order_result_data
+    set restrict_cd = #{restrictCd,jdbcType=BIGINT},
+      sku_rank = #{skuRank,jdbcType=BIGINT},
+      adopt_flag = #{adoptFlag,jdbcType=INTEGER},
+      face = #{face,jdbcType=BIGINT},
+      face_sku = #{faceSku,jdbcType=BIGINT},
+      irisu = #{irisu,jdbcType=BIGINT},
+      tai_cd = #{taiCd,jdbcType=INTEGER},
+      tana_cd = #{tanaCd,jdbcType=INTEGER},
+      restrict_type = #{restrictType,jdbcType=INTEGER},
+      face_keisan = #{faceKeisan,jdbcType=BIGINT}
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and author_cd = #{authorCd,jdbcType=VARCHAR}
+      and jan_cd = #{janCd,jdbcType=VARCHAR}
+  </update>
+</mapper>
