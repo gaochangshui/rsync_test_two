@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,4 +16,7 @@ public interface WorkPriorityOrderRestrictResultMapper {
     int insertAll(List<WorkPriorityOrderRestrictResult> list);
 
     List<WorkPriorityOrderRestrictResult> getResultList(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+
+    List<ProductPowerDataDto> getProductPowerData(@Param("item")WorkPriorityOrderRestrictResult priorityOrderRestrictResults,@Param("companyCd")String companyCd
+    ,@Param("productPowerCd")Integer productPowerCd);
 }
