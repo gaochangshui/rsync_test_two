@@ -287,7 +287,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
 
         // 3.space转化为制约条件
-        workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd);
+        //TODO:10215814
+      //  workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd);
         List<ShelfPtsDataTanaCount> tanaCountList = shelfPtsDataTanamstMapper.ptsTanaCountByTai(shelfPatternCd);
         List<WorkPriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
         try {

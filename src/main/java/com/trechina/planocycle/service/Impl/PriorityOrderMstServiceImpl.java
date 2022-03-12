@@ -730,6 +730,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     public Map<String, Object> autoCalculation() {
         // TODO: 2200866
         // 1.通过制约条件查找符合条件的商品
+      //  workPriorityOrderRestrictResultMapper.insert()
         // 1.1. 制约条件
         // 1.2. 商品力点数表=>商品
         // 1.3. 新规&Jan变&cut商品
