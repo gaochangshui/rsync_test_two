@@ -26,4 +26,6 @@ public interface WorkPriorityOrderResultDataMapper {
     int delResultData(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 
     String getResultDataList(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+
+    int update(@Param("keyNameList") List<List<String>>keyNameList);
 }

@@ -766,8 +766,27 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String resultDataList = workPriorityOrderResultDataMapper.getResultDataList(companyCd, authorCd);
         String[] array = resultDataList.split(",");
         //调用cgi
-        getFaceKeisanForCgi(array,companyCd,patternCd);
+        Map<String, Object> Data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd);
+        List strList = new ArrayList();
+        if (Data.get("data") != null){
+            String[] strResult = Data.get("data").toString().split("@");
+            String[] strSplit = null;
+            for (int i = 0; i < strResult.length; i++) {
+                strSplit = strResult[i].split(" ");
+                strList.add(strSplit);
+                if (i % 1000==0 && i >1000){
+                    workPriorityOrderResultDataMapper.update(strList);
+                    strList.clear();
+                }
+            }
+            if (strList.size() > 0) {
+                workPriorityOrderResultDataMapper.update(strList);
 
+            }
+        }else {
+            return Data;
+        }
+        logger.info("拆分后的数据为{}",strList);
         //  workPriorityOrderRestrictResultMapper.insert()
         // 1.1. 制约条件
         // 1.2. 商品力点数表=>商品
@@ -781,7 +800,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
     @Override
-    public Map<String, Object> getFaceKeisanForCgi(String[] array, String companyCd, Integer shelfPatternNo) {
+    public Map<String, Object> getFaceKeisanForCgi(String[] array, String companyCd, Integer shelfPatternNo,String authorCd) {
         PriorityOrderJanCgiDto priorityOrderJanCgiDto = new PriorityOrderJanCgiDto();
         priorityOrderJanCgiDto.setDataArray(array);
         String uuid = UUID.randomUUID().toString();
@@ -789,6 +808,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         priorityOrderJanCgiDto.setMode("idposaverage_data");
         priorityOrderJanCgiDto.setCompany(companyCd);
         priorityOrderJanCgiDto.setShelfPatternNo(shelfPatternNo);
+        priorityOrderJanCgiDto.setUsercd(authorCd);
         logger.info("计算给FaceKeisancgi的参数{}",priorityOrderJanCgiDto);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("PriorityOrderData");

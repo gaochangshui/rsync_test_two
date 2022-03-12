@@ -8,7 +8,7 @@ public class PriorityOrderJanCgiDto {
     private String guid;
     private String mode;
     private String[] dataArray;
-
+    private String usercd;
     public String getCompany() {
         return company;
     }
@@ -49,6 +49,14 @@ public class PriorityOrderJanCgiDto {
         this.dataArray = dataArray;
     }
 
+    public String getUsercd() {
+        return usercd;
+    }
+
+    public void setUsercd(String usercd) {
+        this.usercd = usercd;
+    }
+
     @Override
     public String toString() {
         return "PriorityOrderJanCgiDto{" +
@@ -57,6 +65,7 @@ public class PriorityOrderJanCgiDto {
                 ", guid='" + guid + '\'' +
                 ", mode='" + mode + '\'' +
                 ", dataArray=" + Arrays.toString(dataArray) +
+                ", usercd='" + usercd + '\'' +
                 '}';
     }
 }
