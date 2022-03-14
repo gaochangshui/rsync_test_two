@@ -214,8 +214,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             List<PriorityOrderAttrListVo> attrValue1 = priorityOrderMstAttrSortMapper.getAttrValue(attr1);
 
             PriorityOrderAttrVO priorityOrderAttrVO = null;
-            for (PriorityOrderAttrListVo priorityOrderAttrListVo : attrValue) {
-                for (PriorityOrderAttrListVo orderAttrListVo : attrValue1) {
+            for (PriorityOrderAttrListVo priorityOrderAttrListVo : attrValue1) {
+                for (PriorityOrderAttrListVo orderAttrListVo : attrValue) {
                     priorityOrderAttrVO = new PriorityOrderAttrVO();
                     priorityOrderAttrVO.setAttrACd(priorityOrderAttrListVo.getAttrCd());
                     priorityOrderAttrVO.setAttrAName(priorityOrderAttrListVo.getAttrName());
@@ -305,7 +305,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     @Override
     public Map<String, Object> getEditAttributeArea(String companyCd) {
         String authorCd = httpSession.getAttribute("aud").toString();
-        List<PriorityOrderAttrVO> editAttributeArea = priorityOrderMstAttrSortMapper.getEditAttributeArea(companyCd, "10047515");
+        List<PriorityOrderAttrVO> editAttributeArea = priorityOrderMstAttrSortMapper.getEditAttributeArea(companyCd, authorCd);
         return ResultMaps.result(ResultEnum.SUCCESS,editAttributeArea);
     }
 

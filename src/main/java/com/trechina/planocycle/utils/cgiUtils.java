@@ -191,6 +191,9 @@ public class cgiUtils {
                 while ((read = reader.readLine()) !=null){
                     builder.append(read+"@");
                 }
+                if (builder.length()==0){
+                    return ResultMaps.result(ResultEnum.SIZEISZERO,"");
+                }
                 builder = new StringBuilder(builder.substring(0,builder.length()-1));
                 in.close();
                 count+=1;

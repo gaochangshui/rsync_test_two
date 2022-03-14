@@ -769,13 +769,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //调用cgi
         Map<String, Object> Data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd);
         List strList = new ArrayList();
-        if (Data.get("data") != null){
+        if (Data.get("data") != null && Data.get("data")!=""){
             String[] strResult = Data.get("data").toString().split("@");
             String[] strSplit = null;
             List<WorkPriorityOrderResultData> list = new ArrayList<>();
-            WorkPriorityOrderResultData orderResultData = new WorkPriorityOrderResultData();
+            WorkPriorityOrderResultData orderResultData =null;
             for (int i = 0; i < strResult.length; i++) {
-
+                orderResultData=new WorkPriorityOrderResultData();
                 strSplit = strResult[i].split(" ");
                 orderResultData.setSalesCnt(BigDecimal.valueOf(Double.valueOf(strSplit[1])));
                 orderResultData.setJanCd(strSplit[0]);

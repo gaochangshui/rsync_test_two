@@ -197,29 +197,21 @@
       and jan_cd = #{janCd,jdbcType=VARCHAR}
   </update>
 
-
-  <update id="updates">
-    update planocycle.work_priority_order_result_data
-
-      set sales_cnt = #{list[1],javaType=DOUBLE}
-
-     where jan_cd = #{list[0],jdbcType=VARCHAR}
-  </update>
   <update id="update">
     <foreach collection="list" item="item" separator=";" index="index">
       update planocycle.work_priority_order_result_data
       <set>
-        sales_cnt = #{item.salesCnt,jdbcType=NUMERIC}
+        sales_cnt = #{item.salesCnt} ::numeric
       </set>
-      where jan_cd = #{item.janCd,jdbcType=VARCHAR}
+      where jan_cd = #{item.janCd} ::varchar
     </foreach>
   </update>
 
   <insert id="setResultDataList">
-    insert into planocycle.work_priority_order_result_data(company_cd,restrict_cd,jan_cd,sku_rank,author_cd)
+    insert into planocycle.work_priority_order_result_data(company_cd,restrict_cd,jan_cd,sku_rank,adopt_flag,author_cd)
       values
     <foreach collection="list" item="item" separator="," >
-        (#{companyCd},#{restrictCd},#{item.jan},#{item.rankResult},#{authorCd})
+        (#{companyCd},#{restrictCd},#{item.jan},#{item.rankResult},1,#{authorCd})
     </foreach>
   </insert>
 </mapper>

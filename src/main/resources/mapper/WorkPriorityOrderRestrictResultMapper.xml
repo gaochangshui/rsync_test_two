@@ -153,7 +153,7 @@
   </select>
   <select id="getProductPowerData" resultType="com.trechina.planocycle.entity.dto.ProductPowerDataDto">
 
-    select mst.jan,mst.jan_new,rank_result--ROW_NUMBER() Over(order by  rank_result,jan) rankResult
+    select mst.jan,mst.jan_new,rank_result
     from ( select distinct mstData.jan,mstData.sku_name,replaces.jan_new,janMst.brand,
     janMst.kikaku,janMst.pkg,janMst.irisu,janMst.alcohol,janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,mstData.rank_result
     from
