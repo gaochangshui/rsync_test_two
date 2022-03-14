@@ -12,4 +12,6 @@ public interface WorkPriorityOrderRestrictResultMapper {
     int insertSelective(WorkPriorityOrderRestrictResult record);
 
     int insertAll(List<WorkPriorityOrderRestrictResult> list);
+
+    int deleteByAuthorCd(String companyCd, String authorCd);
 }

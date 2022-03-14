@@ -136,4 +136,17 @@
       </if>
     </trim>
   </insert>
+  <insert id="insertAll">
+    insert into planocycle.work_priority_order_restrict_relation (company_cd, author_cd, tai_cd,
+    tana_cd, tana_type, restrict_cd)
+    values
+    <foreach collection="list" item="item" separator=",">
+    (#{item.companyCd,jdbcType=VARCHAR}, #{item.authorCd,jdbcType=VARCHAR}, #{item.taiCd,jdbcType=INTEGER},
+    #{item.tanaCd,jdbcType=INTEGER}, #{item.tanaType,jdbcType=SMALLINT}, #{item.restrictCd,jdbcType=BIGINT})
+    </foreach>
+  </insert>
+    <delete id="deleteByAuthorCd">
+      delete from planocycle.work_priority_order_restrict_relation
+      where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
 </mapper>

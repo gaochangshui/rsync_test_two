@@ -146,4 +146,8 @@
       )
       </foreach>
     </insert>
+    <delete id="deleteByAuthorCd">
+      delete from planocycle.work_priority_order_restrict_result
+      where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
 </mapper>
