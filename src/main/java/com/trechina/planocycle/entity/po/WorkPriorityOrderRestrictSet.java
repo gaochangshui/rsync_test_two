@@ -150,4 +150,13 @@ public class WorkPriorityOrderRestrictSet {
     public void setZokusei10(String zokusei10) {
         this.zokusei10 = zokusei10 == null ? null : zokusei10.trim();
     }
+
+    public String getCondition() {
+        return zokusei1 + zokusei2 + zokusei3 + zokusei4 + zokusei5 + zokusei6 + zokusei7 + zokusei8 + zokusei9 + zokusei10;
+    }
+
+    public Boolean checkCondition() {
+        return zokusei1 == null && zokusei2 == null && zokusei3 == null && zokusei4 == null && zokusei5 == null
+                && zokusei6 == null && zokusei7 == null && zokusei8 == null && zokusei9 == null && zokusei10 == null;
+    }
 }

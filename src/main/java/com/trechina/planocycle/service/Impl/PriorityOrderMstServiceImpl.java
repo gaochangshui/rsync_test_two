@@ -67,6 +67,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Autowired
     private WorkPriorityOrderRestrictResultMapper workPriorityOrderRestrictResultMapper;
     @Autowired
+    private WorkPriorityOrderRestrictRelationMapper workPriorityOrderRestrictRelationMapper;
+    @Autowired
     private ProductPowerMstMapper productPowerMstMapper;
     @Autowired
     private WorkPriorityOrderResultDataMapper workPriorityOrderResultDataMapper;
@@ -545,7 +547,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
     @Override
     public Map<String, Object> preCalculation(String companyCd, Long patternCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        int isUnset = 0;
         String authorCd = (String) session.getAttribute("aud");
+        // 清空work表
+        workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd);
+        workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd);
         // 1.通过patternCd查找pts的台段详情
         List<ShelfPtsDataTanamst> tanamstList = shelfPtsDataTanamstMapper.selectByPatternCd(patternCd);
 
@@ -648,11 +654,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
         // 判断台段是否有没有设定条件的
         List<WorkPriorityOrderRestrictSet> unsetList = resultList.stream()
-                .filter(obj -> obj.getZokusei1() == null && obj.getZokusei2() == null && obj.getZokusei3() == null && obj.getZokusei4() == null && obj.getZokusei5() == null
-                        && obj.getZokusei6() == null && obj.getZokusei7() == null && obj.getZokusei8() == null && obj.getZokusei9() == null && obj.getZokusei10() == null)
+                .filter(obj -> Boolean.TRUE.equals(obj.checkCondition()))
                 .collect(Collectors.toList());
         if (!unsetList.isEmpty()) {
             logger.error("{}台段没有设置制约条件", unsetList.size());
+            isUnset = 1;
         }
 
         // 去重获取唯一条件
@@ -660,50 +666,57 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 , obj.getZokusei5(), obj.getZokusei6(), obj.getZokusei7(), obj.getZokusei8(), obj.getZokusei9(), obj.getZokusei10()).toArray())).collect(Collectors.toList());
         // 去掉未设定的条件
         List<WorkPriorityOrderRestrictSet> distinctNotNullList = distinctList.stream()
-                .filter(obj -> obj.getZokusei1() == null && obj.getZokusei2() == null && obj.getZokusei3() == null && obj.getZokusei4() == null && obj.getZokusei5() == null
-                        && obj.getZokusei6() == null && obj.getZokusei7() == null && obj.getZokusei8() == null && obj.getZokusei9() == null && obj.getZokusei10() == null)
+                .filter(obj -> Boolean.FALSE.equals(obj.checkCondition()))
                 .collect(Collectors.toList());
-        List<WorkPriorityOrderRestrictResult> orderResultDataList = new ArrayList<>();
-        WorkPriorityOrderRestrictResult orderResult = null;
-        WorkPriorityOrderRestrictSet orderRestrictSet = null;
-        for (int i = 0; i < distinctNotNullList.size(); i++) {
-            orderRestrictSet = distinctNotNullList.get(i);
-            orderResult = new WorkPriorityOrderRestrictResult();
-            orderResult.setCompanyCd(companyCd);
-            orderResult.setAuthorCd(authorCd);
-            orderResult.setRestrictCd((long) i + 1);
-            orderResult.setZokusei1(orderRestrictSet.getZokusei1());
-            orderResult.setZokusei2(orderRestrictSet.getZokusei2());
-            orderResult.setZokusei3(orderRestrictSet.getZokusei3());
-            orderResult.setZokusei4(orderRestrictSet.getZokusei4());
-            orderResult.setZokusei5(orderRestrictSet.getZokusei5());
-            orderResult.setZokusei6(orderRestrictSet.getZokusei6());
-            orderResult.setZokusei7(orderRestrictSet.getZokusei7());
-            orderResult.setZokusei8(orderRestrictSet.getZokusei8());
-            orderResult.setZokusei9(orderRestrictSet.getZokusei9());
-            orderResult.setZokusei10(orderRestrictSet.getZokusei10());
+        if (!distinctNotNullList.isEmpty()) {
+            List<WorkPriorityOrderRestrictResult> orderResultDataList = new ArrayList<>();
+            WorkPriorityOrderRestrictResult orderResult = null;
+            WorkPriorityOrderRestrictSet orderRestrictSet = null;
+            for (int i = 0; i < distinctNotNullList.size(); i++) {
+                orderRestrictSet = distinctNotNullList.get(i);
+                orderResult = new WorkPriorityOrderRestrictResult();
+                orderResult.setCompanyCd(companyCd);
+                orderResult.setAuthorCd(authorCd);
+                orderResult.setRestrictCd((long) i + 1);
+                orderResult.setZokusei1(orderRestrictSet.getZokusei1());
+                orderResult.setZokusei2(orderRestrictSet.getZokusei2());
+                orderResult.setZokusei3(orderRestrictSet.getZokusei3());
+                orderResult.setZokusei4(orderRestrictSet.getZokusei4());
+                orderResult.setZokusei5(orderRestrictSet.getZokusei5());
+                orderResult.setZokusei6(orderRestrictSet.getZokusei6());
+                orderResult.setZokusei7(orderRestrictSet.getZokusei7());
+                orderResult.setZokusei8(orderRestrictSet.getZokusei8());
+                orderResult.setZokusei9(orderRestrictSet.getZokusei9());
+                orderResult.setZokusei10(orderRestrictSet.getZokusei10());
 
-            orderResultDataList.add(orderResult);
+                orderResultDataList.add(orderResult);
+            }
+            workPriorityOrderRestrictResultMapper.insertAll(orderResultDataList);
+
+            // 将台段和条件进行关联
+            Optional<WorkPriorityOrderRestrictResult> restrictResultOptional = null;
+            List<WorkPriorityOrderRestrictRelation> orderRestrictRelationList = new ArrayList<>();
+            WorkPriorityOrderRestrictRelation orderRestrictRelation = null;
+            Optional<WorkPriorityOrderRestrictResult> resultOptional = null;
+            for (WorkPriorityOrderRestrictSet set : resultList) {
+                orderRestrictRelation = new WorkPriorityOrderRestrictRelation();
+                orderRestrictRelation.setCompanyCd(companyCd);
+                orderRestrictRelation.setAuthorCd(authorCd);
+                orderRestrictRelation.setTaiCd(set.getTaiCd());
+                orderRestrictRelation.setTanaCd(set.getTanaCd());
+                orderRestrictRelation.setTanaType(set.gettanaType());
+                // 从制约条件列表中检索相符的制约
+                String condition = set.getCondition();
+                resultOptional = orderResultDataList.stream().filter(obj -> condition.equals(obj.getCondition())).findFirst();
+                if (resultOptional.isPresent()) {
+                    orderRestrictRelation.setRestrictCd(resultOptional.get().getRestrictCd());
+                }
+
+                orderRestrictRelationList.add(orderRestrictRelation);
+            }
+            workPriorityOrderRestrictRelationMapper.insertAll(orderRestrictRelationList);
         }
-        workPriorityOrderRestrictResultMapper.insertAll(orderResultDataList);
-
-        // 将台段和条件进行关联
-        Optional<WorkPriorityOrderRestrictResult> restrictResultOptional = null;
-        List<WorkPriorityOrderRestrictRelation> orderRestrictRelationList = new ArrayList<>();
-        WorkPriorityOrderRestrictRelation orderRestrictRelation = null;
-        for (WorkPriorityOrderRestrictSet set : resultList) {
-            orderRestrictRelation = new WorkPriorityOrderRestrictRelation();
-            orderRestrictRelation.setCompanyCd(companyCd);
-            orderRestrictRelation.setAuthorCd(authorCd);
-            orderRestrictRelation.setTaiCd(set.getTaiCd());
-            orderRestrictRelation.setTanaCd(set.getTanaCd());
-            orderRestrictRelation.setTanaType(set.gettanaType());
-            // 从制约条件列表中检索相符的制约
-            // TODO 10047515
-            orderRestrictRelationList.add(orderRestrictRelation);
-        }
-
-        return ResultMaps.result(ResultEnum.SUCCESS);
+        return ResultMaps.result(ResultEnum.SUCCESS, isUnset);
     }
 
     /**
