@@ -15,7 +15,7 @@ public interface PriorityOrderShelfDataMapper {
 
     List<PriorityOrderPlatformShedDto> getPlatformShedData(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd);
 
-    List<PriorityOrderRestrictJanDto> getRestrictJans(@Param("item")PriorityOrderRestrictDto priorityOrderRestrictDto);
+    List<PriorityOrderRestrictJanDto> getRestrictJans(@Param("item")PriorityOrderRestrictDto priorityOrderRestrictDto,@Param("authorCd")String authorCd);
 
     List<PriorityOrderRestrictJanDto> getPlatformShedJans(@Param("item")PriorityOrderPlatformShedDto priorityOrderPlatformShedDto);
 

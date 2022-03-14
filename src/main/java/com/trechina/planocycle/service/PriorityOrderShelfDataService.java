@@ -20,7 +20,7 @@ public interface PriorityOrderShelfDataService {
      * @param priorityOrderRestrictDto
      * @return
      */
-    Map<String,Object> getRestrictJans( PriorityOrderRestrictDto priorityOrderRestrictDto);
+    Map<String,Object> getRestrictJans( PriorityOrderRestrictDto priorityOrderRestrictDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     /**
      * 新规时获取基本パタ台棚别信息
      * @param companyCd
@@ -32,5 +32,5 @@ public interface PriorityOrderShelfDataService {
      * @param priorityOrderPlatformShedDto
      * @return
      */
-    Map<String,Object> getPlatformShedJans( PriorityOrderPlatformShedDto priorityOrderPlatformShedDto);
+    Map<String,Object> getPlatformShedJans( PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 }

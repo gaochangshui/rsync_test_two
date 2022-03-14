@@ -34,7 +34,7 @@ public class PriorityOrderShelfDataController {
      * @return
      */
     @PostMapping("getRestrictJans")
-    public Map<String,Object> getRestrictJans(@RequestBody PriorityOrderRestrictDto priorityOrderRestrictDto){
+    public Map<String,Object> getRestrictJans(@RequestBody PriorityOrderRestrictDto priorityOrderRestrictDto) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return priorityOrderShelfDataService.getRestrictJans(priorityOrderRestrictDto);
 
     }
@@ -54,7 +54,7 @@ public class PriorityOrderShelfDataController {
      * @return
      */
     @PostMapping("getPlatformShedJans")
-    public Map<String,Object> getPlatformShedJans(@RequestBody PriorityOrderPlatformShedDto priorityOrderPlatformShedDto){
+    public Map<String,Object> getPlatformShedJans(@RequestBody PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return  priorityOrderShelfDataService.getPlatformShedJans(priorityOrderPlatformShedDto);
     }
 }

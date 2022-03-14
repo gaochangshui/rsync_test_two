@@ -1,7 +1,7 @@
 package com.trechina.planocycle.entity.dto;
 
 public class PriorityOrderRestrictDto {
-
+    private String companyCd;
     private String zokusei1;
     private String zokusei2;
     private String zokusei3;
@@ -22,6 +22,7 @@ public class PriorityOrderRestrictDto {
     private String zokuseiName8;
     private String zokuseiName9;
     private String zokuseiName10;
+    private Integer restrictCd;
     private Integer skuNum;
     private Integer faceNum;
 
@@ -201,10 +202,27 @@ public class PriorityOrderRestrictDto {
         this.faceNum = faceNum;
     }
 
+    public Integer getRestrictCd() {
+        return restrictCd;
+    }
+
+    public void setRestrictCd(Integer restrictCd) {
+        this.restrictCd = restrictCd;
+    }
+
+    public String getCompanyCd() {
+        return companyCd;
+    }
+
+    public void setCompanyCd(String companyCd) {
+        this.companyCd = companyCd;
+    }
+
     @Override
     public String toString() {
         return "PriorityOrderRestrictDto{" +
-                "zokusei1='" + zokusei1 + '\'' +
+                "companyCd='" + companyCd + '\'' +
+                ", zokusei1='" + zokusei1 + '\'' +
                 ", zokusei2='" + zokusei2 + '\'' +
                 ", zokusei3='" + zokusei3 + '\'' +
                 ", zokusei4='" + zokusei4 + '\'' +
@@ -224,6 +242,7 @@ public class PriorityOrderRestrictDto {
                 ", zokuseiName8='" + zokuseiName8 + '\'' +
                 ", zokuseiName9='" + zokuseiName9 + '\'' +
                 ", zokuseiName10='" + zokuseiName10 + '\'' +
+                ", restrictCd=" + restrictCd +
                 ", skuNum=" + skuNum +
                 ", faceNum=" + faceNum +
                 '}';
