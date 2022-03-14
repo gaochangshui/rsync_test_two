@@ -28,11 +28,22 @@
       and author_cd = #{authorCd,jdbcType=VARCHAR}
       and jan_cd = #{janCd,jdbcType=VARCHAR}
   </select>
+  <select id="getResultDataList" resultType="string">
+    SELECT  array_to_string(array_agg(DISTINCT jan_cd),',')
+    from planocycle.work_priority_order_result_data
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and author_cd = #{authorCd,jdbcType=VARCHAR}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.work_priority_order_result_data
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and author_cd = #{authorCd,jdbcType=VARCHAR}
       and jan_cd = #{janCd,jdbcType=VARCHAR}
+  </delete>
+  <delete id="delResultData">
+    delete from planocycle.work_priority_order_result_data
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and author_cd = #{authorCd,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
     insert into planocycle.work_priority_order_result_data (company_cd, author_cd, jan_cd,
@@ -185,4 +196,22 @@
       and author_cd = #{authorCd,jdbcType=VARCHAR}
       and jan_cd = #{janCd,jdbcType=VARCHAR}
   </update>
+
+  <update id="update">
+    <foreach collection="list" item="item" separator=";" index="index">
+      update planocycle.work_priority_order_result_data
+      <set>
+        sales_cnt = #{item.salesCnt} ::numeric
+      </set>
+      where jan_cd = #{item.janCd} ::varchar
+    </foreach>
+  </update>
+
+  <insert id="setResultDataList">
+    insert into planocycle.work_priority_order_result_data(company_cd,restrict_cd,jan_cd,sku_rank,adopt_flag,author_cd)
+      values
+    <foreach collection="list" item="item" separator="," >
+        (#{companyCd},#{restrictCd},#{item.jan},#{item.rankResult},1,#{authorCd})
+    </foreach>
+  </insert>
 </mapper>

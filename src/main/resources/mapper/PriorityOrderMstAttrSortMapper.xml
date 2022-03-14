@@ -106,20 +106,32 @@
     where cast(t2.${janCol1} as VARCHAR)  = #{attrValue1} and cast(t2.${janCol2} as VARCHAR)= #{attrValue2} and t3.shelf_pattern_cd = #{patternCd}
     group by t2.${janCol1},t2.${janCol2}
   </select>
-  <select id="getfeceNum1" resultType="java.lang.Integer">
-    select sum(t1.face_count) face_count,t2.${janCol1},t2.${janCol2}
+  <select id="getfeceNum1" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrFaceNum">
+    select sum(t1.face_count) faceCount,t2.${janCol1} attr1,t2.${janCol2} attr2
     from planocycle.shelf_pts_data_jandata t1
            left join masterdb.jan_mst t2
                      on t1.jan=t2.jan_cd
            left JOIN planocycle.shelf_pts_data t3
                      ON t3.id = t1.pts_cd
-    where  t3.shelf_pattern_cd = #{patternCd}
+    where t3.shelf_pattern_cd = #{patternCd}
     group by t2.${janCol1},t2.${janCol2}
   </select>
   <select id="getJansColNm" resultType="java.lang.String">
     select jans_col_nm
     from planocycle.zokusei_mst
     where zokusei_id = #{zokuseiId}
+  </select>
+  <select id="getEditAttributeArea" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrVO">
+    select attribute1_value as attrACd,attribute2_value as attrBCd,old_zoning as existingZoning,new_zoning as newZoning,tana_count as tanaPattan,
+           zoning_num as rank,attribute1_name as attrAName,attribute2_name as attrBName
+    from planocycle.work_priority_order_space
+    where company_cd = #{companyCd} and author_cd = #{authorCd}
+    order by new_zoning desc
+  </select>
+  <select id="getAttrCol" resultType="string">
+    select jans_col_nm
+     from masterdb.zokusei_mst
+     where zokusei_id = #{zokuseiId}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.priority_order_mst_attrsort

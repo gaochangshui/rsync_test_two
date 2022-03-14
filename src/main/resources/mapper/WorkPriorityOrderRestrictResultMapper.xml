@@ -150,4 +150,66 @@
       delete from planocycle.work_priority_order_restrict_result
       where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
+  <select id="getResultList" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult">
+    select restrict_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10,sku_cnt
+    from planocycle.work_priority_order_restrict_result
+    where company_cd = #{companyCd} and author_cd = #{authorCd}
+  </select>
+  <select id="getProductPowerData" resultType="com.trechina.planocycle.entity.dto.ProductPowerDataDto">
+
+    select mst.jan,mst.jan_new,rank_result
+    from ( select distinct mstData.jan,mstData.sku_name,replaces.jan_new,janMst.brand,
+    janMst.kikaku,janMst.pkg,janMst.irisu,janMst.alcohol,janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,mstData.rank_result
+    from
+    planocycle.product_power_mst_data  mstData
+    left join masterdb.jan_mst janMst
+    on  janMst.jan_cd = mstData.jan
+    left join planocycle.priority_order_jan_replace replaces
+    on replaces.jan_old = mstData.jan
+    where
+    mstData.company_cd = #{companyCd} and mstData.product_power_cd=#{productPowerCd}
+    and
+    not EXISTS(select * from  planocycle.priority_order_jan_card card where mstData.jan = card.jan_old)
+    union
+    select janNew.jan_new,janMst.jan_nm,null,janMst.brand,
+    janMst.kikaku,janMst.pkg,janMst.irisu,janMst.alcohol,janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janNew.rank
+    from
+    planocycle.priority_order_jan_new janNew
+    left join masterdb.jan_mst janMst
+    on  janMst.jan_cd = janNew.jan_new) mst
+    <where>
+      <if test="item.zokusei1 != null and item.zokusei1!=''">
+        and  mst.scat1cd_val = #{item.zokusei1}
+      </if>
+      <if test="item.zokusei2 != null and item.zokusei2!=''">
+        and  mst.scat2cd_val = #{item.zokusei2}
+      </if>
+      <if test="item.zokusei3 != null and item.zokusei3!=''">
+        and  mst.scat3cd_val = #{item.zokusei3}
+      </if>
+      <if test="item.zokusei4 != null and item.zokusei4!=''" >
+        and  mst.scat4cd_val = #{item.zokusei4}
+      </if>
+      <if test="item.zokusei5 != null and item.zokusei5!=''">
+        and  mst.pkg = #{item.zokusei5}
+      </if>
+      <if test="item.zokusei6 != null and item.zokusei6!=''">
+        and  mst.kikaku = #{item.zokusei6}
+      </if>
+      <if test="item.zokusei7 != null and item.zokusei7!=''">
+        and  mst.irisu = #{item.zokusei7}
+      </if>
+      <if test="item.zokusei8 != null and item.zokusei8!=''">
+        and  mst.alcohol = #{item.zokuse8}
+      </if>
+      <if test="item.zokusei9 != null and item.zokusei9!=''">
+        and  mst.brand = #{item.zokuse9}
+      </if>
+      <if test="item.zokusei10 != null and item.zokusei10!=''">
+        and  mst.brand = #{item.zokuse10}
+      </if>
+    </where>
+    order by rank_result,jan
+    limit #{item.skuCnt}
+  </select>
 </mapper>

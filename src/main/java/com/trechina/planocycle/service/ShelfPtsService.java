@@ -71,7 +71,11 @@ public interface ShelfPtsService {
      * @return
      */
       Map<String,Object> getTaiNumTanaNum(Integer patternCd);
-
+    /**
+     * 获取棚pattern 关联pts的详细信息
+     * @param patternCd
+     * @return
+     */
       Map<String,Object> getPtsDetailData(Integer patternCd);
 
 }

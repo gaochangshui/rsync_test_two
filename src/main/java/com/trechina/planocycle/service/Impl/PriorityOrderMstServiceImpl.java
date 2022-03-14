@@ -2,9 +2,7 @@ package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -25,6 +23,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
@@ -69,6 +68,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private WorkPriorityOrderRestrictResultMapper workPriorityOrderRestrictResultMapper;
     @Autowired
     private WorkPriorityOrderRestrictRelationMapper workPriorityOrderRestrictRelationMapper;
+    @Autowired
+    private ProductPowerMstMapper productPowerMstMapper;
+    @Autowired
+    private WorkPriorityOrderResultDataMapper workPriorityOrderResultDataMapper;
     @Autowired
     private cgiUtils cgiUtil;
 
@@ -740,9 +743,70 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      * @return
      */
     @Override
-    public Map<String, Object> autoCalculation() {
+    public Map<String, Object> autoCalculation(String companyCd) {
         // TODO: 2200866
+
+        String authorCd = session.getAttribute("aud").toString();
+        //获取商品力点数表cd
+        Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, authorCd);
+        Integer patternCd = productPowerMstMapper.getpatternCd(companyCd, authorCd);
+        //先按照社员号删掉work表的数据
+        workPriorityOrderResultDataMapper.delResultData(companyCd,authorCd);
+        //获取制约条件
+        List<WorkPriorityOrderRestrictResult> resultList = workPriorityOrderRestrictResultMapper.getResultList(companyCd, authorCd);
         // 1.通过制约条件查找符合条件的商品
+        for (WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult : resultList) {
+            List<ProductPowerDataDto> newList = new ArrayList<>();
+            List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, companyCd, productPowerCd);
+            for (ProductPowerDataDto productPowerDatum : productPowerData) {
+                if (productPowerDatum.getJanNew()!=null){
+                    productPowerDatum.setJan(productPowerDatum.getJanNew());
+                }
+            }
+            for (ProductPowerDataDto productPowerDatum : productPowerData) {
+                newList.add(productPowerDatum);
+                if (newList.size()%1000==0 && newList.size()>0){
+                    workPriorityOrderResultDataMapper.setResultDataList(newList,workPriorityOrderRestrictResult.getRestrictCd(),companyCd,authorCd);
+                    newList.clear();
+
+                }
+            }
+            if (!newList.isEmpty()) {
+                workPriorityOrderResultDataMapper.setResultDataList(newList, workPriorityOrderRestrictResult.getRestrictCd(), companyCd, authorCd);
+            }
+
+        }
+
+        String resultDataList = workPriorityOrderResultDataMapper.getResultDataList(companyCd, authorCd);
+        String[] array = resultDataList.split(",");
+        //调用cgi
+        Map<String, Object> Data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd);
+        List strList = new ArrayList();
+        if (Data.get("data") != null && Data.get("data")!=""){
+            String[] strResult = Data.get("data").toString().split("@");
+            String[] strSplit = null;
+            List<WorkPriorityOrderResultData> list = new ArrayList<>();
+            WorkPriorityOrderResultData orderResultData =null;
+            for (int i = 0; i < strResult.length; i++) {
+                orderResultData=new WorkPriorityOrderResultData();
+                strSplit = strResult[i].split(" ");
+                orderResultData.setSalesCnt(BigDecimal.valueOf(Double.valueOf(strSplit[1])));
+                orderResultData.setJanCd(strSplit[0]);
+                list.add(orderResultData);
+                if (i % 1000==0 && i >1000){
+                    workPriorityOrderResultDataMapper.update(list);
+
+                }
+            }
+            if (list.size() > 0) {
+                workPriorityOrderResultDataMapper.update(list);
+
+            }
+        }else {
+            return Data;
+        }
+        logger.info("拆分后的数据为{}",strList);
+        //  workPriorityOrderRestrictResultMapper.insert()
         // 1.1. 制约条件
         // 1.2. 商品力点数表=>商品
         // 1.3. 新规&Jan变&cut商品
@@ -752,5 +816,36 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         // 2.2 使用检索出来的商品计算具体face数
 
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public Map<String, Object> getFaceKeisanForCgi(String[] array, String companyCd, Integer shelfPatternNo,String authorCd) {
+        PriorityOrderJanCgiDto priorityOrderJanCgiDto = new PriorityOrderJanCgiDto();
+        priorityOrderJanCgiDto.setDataArray(array);
+        String uuid = UUID.randomUUID().toString();
+        priorityOrderJanCgiDto.setGuid(uuid);
+        priorityOrderJanCgiDto.setMode("idposaverage_data");
+        priorityOrderJanCgiDto.setCompany(companyCd);
+        priorityOrderJanCgiDto.setShelfPatternNo(shelfPatternNo);
+        priorityOrderJanCgiDto.setUsercd(authorCd);
+        logger.info("计算给FaceKeisancgi的参数{}",priorityOrderJanCgiDto);
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+        String path = resourceBundle.getString("PriorityOrderData");
+        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
+        try {
+            Map<String, Object> resultCgi = new HashMap<>();
+            //递归调用cgi，首先去taskid
+            String result = cgiUtil.postCgi(path, priorityOrderJanCgiDto, tokenInfo);
+            logger.info("taskId返回：" + result);
+            String queryPath = resourceBundle.getString("TaskQuery");
+            //带着taskId，再次请求cgi获取运行状态/数据
+            resultCgi = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
+            logger.info("保存优先顺位表结果：" + resultCgi);
+            return resultCgi;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

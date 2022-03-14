@@ -10,9 +10,9 @@ import java.util.Map;
 
 @Mapper
 public interface PriorityOrderJanNewMapper {
-    int insert(@Param("lists") List<PriorityOrderJanNew> record);
+    int insert(@Param("lists") List<PriorityOrderJanNew> record,@Param("authorCd")String authorCd);
 
-    int delete(String companyCd, Integer priorityOrderCd);
+    int delete(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     List<PriorityOrderJanNewVO> selectJanNew(String companyCd, Integer priorityOrderCd);
 
@@ -24,4 +24,9 @@ public interface PriorityOrderJanNewMapper {
     List<Map<String, Object>> selectJanNewOrAttr(String companyCd, Integer priorityOrderCd);
 
     void updateBranchNum(Integer priorityOrderCd, String janNew, Integer branchNum);
+
+    Integer getJanMstNum( @Param("priorityOrderJanNew") PriorityOrderJanNew priorityOrderJanNew);
+
+    Integer getJanMstPlanocycleNum( @Param("priorityOrderJanNew") PriorityOrderJanNew priorityOrderJanNew);
+
 }

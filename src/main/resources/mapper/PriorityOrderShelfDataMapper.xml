@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderShelfDataMapper">
+    <select id="getRestrictData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictDto">
+        select rmst.zokusei1,rmst.zokusei2,rmst.zokusei3,rmst.zokusei4,rmst.zokusei5,rmst.zokusei6,
+               rmst.zokusei7,rmst.zokusei8,rmst.zokusei9,rmst.zokusei10,
+               sum(datas.face),count(datas.jan_cd)
+        from planocycle.work_priority_order_restrict_result rmst
+                 left join
+             planocycle.work_priority_order_restrict_sku datas
+             on rmst.restrict_cd = datas.restrict_cd
+        where datas.adopt_flag = '1'
+        GROUP BY zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10
+
+    </select>
+    <select id="getPlatformShedData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto">
+
+        select tai_cd,tana_cd,datas.restrict_type,
+               sum(datas.face),count(datas.jan_cd)
+        from
+            planocycle.work_priority_order_result_data datas
+        where datas.adopt_flag = '1'
+        GROUP BY datas.tai_cd,datas.tana_cd,datas.restrict_type
+    </select>
+    <select id="getRestrictJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto">
+        select datas.jan_cd as janCd,jans.jan_nm as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, jans.irisu,jans.pkg,jans.alcohol,jans.brand,jans.kikaku,
+               jans.scat1cd_val as scat1NameVal,jans.scat2cd_val as scat2NameVal,jans.scat3cd_val as scat3NameVal,jans.scat4cd_val as scat4NameVal,
+               datas.restrict_type as restrictType,sku_rank as rank,datas.face as faceNum
+        from  planocycle.work_priority_order_result_data datas
+                left join planocycle.work_priority_order_restrict_result rmst
+                        on rmst.restrict_cd = datas.restrict_cd
+                left join masterdb.jan_mst jans
+                        on jans.jan_cd = datas.jan_cd
+            <where>
+                <if test="item.zokusei1 != null">
+                   and  rmst.zokusei1 = #{item.zokusei1}
+                </if>
+                <if test="item.zokusei2 != null">
+                    and  rmst.zokusei2 = #{item.zokusei2}
+                </if>
+                <if test="item.zokusei3 != null">
+                    and  rmst.zokusei3 = #{item.zokusei3}
+                </if>
+                <if test="item.zokusei4 != null">
+                    and  rmst.zokusei4 = #{item.zokusei4}
+                </if>
+                <if test="item.zokusei5 != null">
+                    and  rmst.zokusei5 = #{item.zokusei5}
+                </if>
+                <if test="item.zokusei6 != null">
+                    and  rmst.zokusei6 = #{item.zokusei6}
+                </if>
+                <if test="item.zokusei7 != null">
+                    and  rmst.zokusei7 = #{item.zokusei7}
+                </if>
+                <if test="item.zokusei8 != null">
+                    and  rmst.zokusei8 = #{item.zokuse8}
+                </if>
+                <if test="item.zokusei9 != null">
+                    and  rmst.zokusei9 = #{item.zokuse9}
+                </if>
+                <if test="item.zokusei10 != null">
+                    and  rmst.zokusei10 = #{item.zokuse10}
+                </if>
+            </where>
+
+    </select>
+    <select id="getPlatformShedJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto">
+        select datas.jan_cd as janCd,jans.jan_nm as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, jans.irisu,jans.pkg,jans.alcohol,jans.brand,jans.kikaku,
+               jans.scat1cd_val as scat1NameVal,jans.scat2cd_val as scat2NameVal,jans.scat3cd_val as scat3NameVal,jans.scat4cd_val as scat4NameVal,
+               datas.restrict_type as restrictType,sku_rank as rank,datas.face as faceNum
+        from  planocycle.work_priority_order_result_data datas
+                  left join planocycle.work_priority_order_restrict_result rmst
+                            on rmst.restrict_cd = datas.restrict_cd
+                  left join masterdb.jan_mst jans
+                            on jans.jan_cd = datas.jan_cd
+        where datas.tai_cd = #{item.taiCd} and datas.tana_cd = #{item.tanaCd} and datas.restrict_type = #{item.restrictType}
+    </select>
+</mapper>

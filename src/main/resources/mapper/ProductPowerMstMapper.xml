@@ -52,9 +52,14 @@
                                                     maintainer_name=#{maintainerName},modified=now()
             where company_cd=#{conpanyCd} and product_power_cd=#{productPowerCd} and deleteflg=0
   </update>
+  <update id="setProductPowerCdForMst">
+    update planocycle.work_priority_order_mst
+    set product_power_cd = #{productPowerCd}
+    where company_cd = #{companyCd} and author_cd = #{authorCd}
+  </update>
 
 
-    <select id="selectCommodityList" parameterType="map" resultMap="CommodityListInfo">
+  <select id="selectCommodityList" parameterType="map" resultMap="CommodityListInfo">
     select distinct
       product_power_cd,product_power_name
     from planocycle.product_power_mst
@@ -89,5 +94,15 @@
     left join planocycle.product_power_mst_data datas
     on mst.product_power_cd = datas.product_power_cd and mst.company_cd = datas.company_cd
     where mst.product_power_cd = #{productPowerCd} and mst.company_cd = #{companyCd}
+  </select>
+  <select id="getProductPowerCd" resultType="java.lang.Integer">
+    select product_power_cd
+    from planocycle.work_priority_order_mst
+    where company_cd = #{companyCd} and author_cd = #{authorCd}
+  </select>
+  <select id="getpatternCd" resultType="java.lang.Integer">
+    select shelf_pattern_cd
+    from planocycle.work_priority_order_mst
+    where company_cd = #{companyCd} and author_cd = #{authorCd}
   </select>
 </mapper>

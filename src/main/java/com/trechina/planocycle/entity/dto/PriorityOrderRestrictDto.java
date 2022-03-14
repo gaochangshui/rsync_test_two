@@ -1,14 +1,7 @@
-package com.trechina.planocycle.entity.po;
+package com.trechina.planocycle.entity.dto;
 
-import java.util.Date;
+public class PriorityOrderRestrictDto {
 
-
-public class PriorityOrderRestrictSet {
-    private String companyCd;
-    private Integer priorityOrderCd;
-    private Integer taiCd;
-    private Integer tanaCd;
-    private Integer tanaType;
     private String zokusei1;
     private String zokusei2;
     private String zokusei3;
@@ -29,51 +22,8 @@ public class PriorityOrderRestrictSet {
     private String zokuseiName8;
     private String zokuseiName9;
     private String zokuseiName10;
-    private String authorCd;
-    private Date createTime;
-    private String editerCd;
-    private Date editTime;
-    private Short deleteflg;
-
-    public String getCompanyCd() {
-        return companyCd;
-    }
-
-    public void setCompanyCd(String companyCd) {
-        this.companyCd = companyCd;
-    }
-
-    public Integer getPriorityOrderCd() {
-        return priorityOrderCd;
-    }
-
-    public void setPriorityOrderCd(Integer priorityOrderCd) {
-        this.priorityOrderCd = priorityOrderCd;
-    }
-
-    public Integer getTaiCd() {
-        return taiCd;
-    }
-
-    public void setTaiCd(Integer taiCd) {
-        this.taiCd = taiCd;
-    }
-
-    public Integer getTanaCd() {
-        return tanaCd;
-    }
-
-    public void setTanaCd(Integer tanaCd) {
-        this.tanaCd = tanaCd;
-    }
-
-    public Integer getTanaType() {
-        return tanaType;
-    }
-
-    public void setTanaType(Integer tanaType) {
-        this.tanaType = tanaType;
-    }
+    private Integer skuNum;
+    private Integer faceNum;
 
     public String getZokusei1() {
         return zokusei1;
@@ -235,55 +185,26 @@ public class PriorityOrderRestrictSet {
         this.zokuseiName10 = zokuseiName10;
     }
 
-    public String getAuthorCd() {
-        return authorCd;
+    public Integer getSkuNum() {
+        return skuNum;
     }
 
-    public void setAuthorCd(String authorCd) {
-        this.authorCd = authorCd;
+    public void setSkuNum(Integer skuNum) {
+        this.skuNum = skuNum;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public Integer getFaceNum() {
+        return faceNum;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getEditerCd() {
-        return editerCd;
-    }
-
-    public void setEditerCd(String editerCd) {
-        this.editerCd = editerCd;
-    }
-
-    public Date getEditTime() {
-        return editTime;
-    }
-
-    public void setEditTime(Date editTime) {
-        this.editTime = editTime;
-    }
-
-    public Short getDeleteflg() {
-        return deleteflg;
-    }
-
-    public void setDeleteflg(Short deleteflg) {
-        this.deleteflg = deleteflg;
+    public void setFaceNum(Integer faceNum) {
+        this.faceNum = faceNum;
     }
 
     @Override
     public String toString() {
-        return "PriorityOrderRestrictSet{" +
-                "companyCd='" + companyCd + '\'' +
-                ", priorityOrderCd=" + priorityOrderCd +
-                ", taiCd=" + taiCd +
-                ", tanaCd=" + tanaCd +
-                ", tanaType=" + tanaType +
-                ", zokusei1='" + zokusei1 + '\'' +
+        return "PriorityOrderRestrictDto{" +
+                "zokusei1='" + zokusei1 + '\'' +
                 ", zokusei2='" + zokusei2 + '\'' +
                 ", zokusei3='" + zokusei3 + '\'' +
                 ", zokusei4='" + zokusei4 + '\'' +
@@ -303,11 +224,8 @@ public class PriorityOrderRestrictSet {
                 ", zokuseiName8='" + zokuseiName8 + '\'' +
                 ", zokuseiName9='" + zokuseiName9 + '\'' +
                 ", zokuseiName10='" + zokuseiName10 + '\'' +
-                ", authorCd='" + authorCd + '\'' +
-                ", createTime=" + createTime +
-                ", editerCd='" + editerCd + '\'' +
-                ", editTime=" + editTime +
-                ", deleteflg=" + deleteflg +
+                ", skuNum=" + skuNum +
+                ", faceNum=" + faceNum +
                 '}';
     }
 }

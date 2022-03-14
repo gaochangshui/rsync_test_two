@@ -11,11 +11,11 @@
   </resultMap>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanNew">
     insert into planocycle.priority_order_jan_new (company_cd, priority_order_cd, jan_new,
-      rank, branch_num, branch_account )
+      rank,author_cd ,create_time)
     values
            <foreach collection="lists" separator="," item="list">
            (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janNew,jdbcType=VARCHAR},
-      #{list.rank,jdbcType=INTEGER} , #{list.branchNum,jdbcType=INTEGER} , #{list.branchAccount,jdbcType=NUMERIC})
+      #{list.rank,jdbcType=INTEGER},#{authorCd},now())
            </foreach>
   </insert>
 
@@ -26,25 +26,21 @@
         and jan_new = #{janNew,jdbcType=VARCHAR}
     </update>
     <delete id="delete">
-    delete from planocycle.priority_order_jan_new
-    where company_cd = #{companyCd,jdbcType=VARCHAR}
-      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-  </delete>
-  <select id="selectJanNew" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
-    select news.jan_new as janNew,jans.janname as janName
-         ,string_agg(attr_cd||':'||attr_value,',') as attr
-         ,news.rank,news.branch_num as branchNum,news.branch_account as branchAccount
-         ,'' as errMsg
-    from planocycle.priority_order_jan_new news
-           left join planocycle.priority_order_jan_attribute attr
-             on  news.company_cd = attr.company_cd
-             and news.priority_order_cd = attr.priority_order_cd
-            and news.jan_new = attr.jan_new
-    left join masterdb.jans jans
-    on news.jan_new = jans.jan
-    where news.company_cd = #{companyCd,jdbcType=VARCHAR}
-      and news.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-    group by news.jan_new,jans.janname,rank,branch_num,branch_account
+        delete from planocycle.priority_order_jan_new
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </delete>
+
+    <select id="selectJanNew" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
+        select news.jan_new as janNew,jans.jan_nm as janName,jans.scat1cd_val,jans.scat2cd_val,scat3cd_val,scat4cd_val,news.rank
+        from planocycle.priority_order_jan_new news
+                 left join (select * from masterdb.jan_mst
+                            union
+                            select * from masterdb.jan_mst_planocycle) jans
+                on news.jan_new = jans.jan_cd
+        where news.company_cd = #{companyCd,jdbcType=VARCHAR}
+        and news.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+
   </select>
     <select id="selectJanNewNotExistsMst" resultType="map">
         select '' as jan_old,news.jan_new,'' as sku
@@ -88,6 +84,16 @@
         where  new.company_cd = #{companyCd,jdbcType=VARCHAR}
           and new.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
         group by new.priority_order_cd,new.jan_new,rank
+    </select>
+    <select id="getJanMstNum" resultType="java.lang.Integer">
+        select count(1)
+        from  masterdb.jan_mst
+        where jan_cd = #{priorityOrderJanNew.janNew}
+    </select>
+    <select id="getJanMstPlanocycleNum" resultType="java.lang.Integer">
+        select count(1)
+        from  masterdb.jan_mst_planocycle
+        where jan_cd = #{priorityOrderJanNew.janNew}
     </select>
 
 </mapper>

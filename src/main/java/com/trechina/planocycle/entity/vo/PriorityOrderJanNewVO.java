@@ -1,21 +1,19 @@
 package com.trechina.planocycle.entity.vo;
 
-import java.math.BigDecimal;
-
 public class PriorityOrderJanNewVO {
     private String janNew;
 
     private String janName;
 
-    private String attr;
-
     private Integer rank;
 
-    private Integer branchNum;
+    private String scat1cdVal;
 
-    private BigDecimal branchAccount;
+    private String scat2cdVal;
 
-    private String errMsg;
+    private String scat3cdVal;
+
+    private String scat4cdVal;
 
     public String getJanNew() {
         return janNew;
@@ -33,12 +31,12 @@ public class PriorityOrderJanNewVO {
         this.janName = janName;
     }
 
-    public String getAttr() {
-        return attr;
+    public String getScat1cdVal() {
+        return scat1cdVal;
     }
 
-    public void setAttr(String attr) {
-        this.attr = attr;
+    public void setScat1cdVal(String scat1cdVal) {
+        this.scat1cdVal = scat1cdVal;
     }
 
     public Integer getRank() {
@@ -49,41 +47,40 @@ public class PriorityOrderJanNewVO {
         this.rank = rank;
     }
 
-    public Integer getBranchNum() {
-        return branchNum;
+    public String getScat2cdVal() {
+        return scat2cdVal;
     }
 
-    public void setBranchNum(Integer branchNum) {
-        this.branchNum = branchNum;
+    public void setScat2cdVal(String scat2cdVal) {
+        this.scat2cdVal = scat2cdVal;
     }
 
-    public BigDecimal getBranchAccount() {
-        return branchAccount;
+    public String getScat3cdVal() {
+        return scat3cdVal;
     }
 
-    public void setBranchAccount(BigDecimal branchAccount) {
-        this.branchAccount = branchAccount;
+    public void setScat3cdVal(String scat3cdVal) {
+        this.scat3cdVal = scat3cdVal;
     }
 
-    public String getErrMsg() {
-        return errMsg;
+    public String getScat4cdVal() {
+        return scat4cdVal;
     }
 
-    public void setErrMsg(String errMsg) {
-        this.errMsg = errMsg;
+    public void setScat4cdVal(String scat4cdVal) {
+        this.scat4cdVal = scat4cdVal;
     }
-
 
     @Override
     public String toString() {
         return "PriorityOrderJanNewVO{" +
                 "janNew='" + janNew + '\'' +
                 ", janName='" + janName + '\'' +
-                ", attr='" + attr + '\'' +
                 ", rank=" + rank +
-                ", branchNum=" + branchNum +
-                ", branchAccount=" + branchAccount +
-                ", errMsg='" + errMsg + '\'' +
+                ", scat1cdVal='" + scat1cdVal + '\'' +
+                ", scat2cdVal='" + scat2cdVal + '\'' +
+                ", scat3cdVal='" + scat3cdVal + '\'' +
+                ", scat4cdVal='" + scat4cdVal + '\'' +
                 '}';
     }
 }

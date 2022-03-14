@@ -51,9 +51,14 @@ public interface PriorityOrderMstAttrSortService {
 
 
     /**
-     * 获取属性1属性2组合对应的面积
+     * 计算属性1属性2组合对应的面积
      */
     Map<String, Object> getAttributeArea(Integer patternCd, Integer attr1, Integer attr2);
+
+    /**
+     *编辑时获取属性1属性2组合对应的面积
+     */
+    Map<String,Object> getEditAttributeArea(String companyCd);
 
     List<WorkPriorityOrderRestrictSet> setRestrict(List<PriorityOrderAttrVO> dataList, List<ShelfPtsDataTanaCount> tanaCountList, Short attr1, Short attr2, String companyCd, String authorCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 

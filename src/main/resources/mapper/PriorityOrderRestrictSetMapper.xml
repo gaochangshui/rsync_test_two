@@ -24,7 +24,7 @@
     <result column="deleteflg" jdbcType="SMALLINT" property="deleteflg" />
   </resultMap>
   <sql id="Base_Column_List">
-    company_cd, priority_order_cd, tai_cd, tana_cd, tana_type, zokusei1, zokusei2, 
+    company_cd, priority_order_cd, tai_cd, tana_cd, tana_type, zokusei1, zokusei2,
     zokusei3, zokusei4, zokusei5, zokusei6, zokusei7, zokusei8, zokusei9, zokusei10, 
     author_cd, create_time, editer_cd, edit_time, deleteflg
   </sql>
@@ -46,9 +46,15 @@
       or zokusei7 is not NULL or zokusei8 is not NULL or zokusei9 is not NULL or zokusei10 is not NULL)
 
   </select>
-  <select id="getAttrValues" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
-    select zokusei_id  as attrCd ,val  as val,nm  as attrName
-           masterdb.zokusei_mst_data
+  <select id="getAttrValues" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto">
+    select datas.zokusei_id as zokuseiId,datas.val as val,mst.zokusei_nm ||'-' || datas.nm as  nm
+    from      masterdb.zokusei_mst_data datas
+                left join masterdb.zokusei_mst mst
+                          on datas.zokusei_id = mst.zokusei_id
+  </select>
+  <select id="getAttrValues1" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto">
+    select zokusei_id,val ,nm
+    from masterdb.zokusei_mst_data
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority_order_restrict_set
@@ -60,14 +66,14 @@
   </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
     insert into priority_order_restrict_set (company_cd, priority_order_cd, tai_cd, 
-      tana_cd, tana_type, zokusei1, 
+      tana_cd, tana_type, zokusei1,
       zokusei2, zokusei3, zokusei4, 
       zokusei5, zokusei6, zokusei7, 
       zokusei8, zokusei9, zokusei10, 
       author_cd, create_time, editer_cd, 
       edit_time, deleteflg)
     values (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{taiCd,jdbcType=INTEGER}, 
-      #{tanaCd,jdbcType=INTEGER}, #{tanaType,jdbcType=INTEGER}, #{zokusei1,jdbcType=VARCHAR}, 
+      #{tanaCd,jdbcType=INTEGER}, #{tanaType,jdbcType=INTEGER}, #{zokusei1,jdbcType=VARCHAR},
       #{zokusei2,jdbcType=VARCHAR}, #{zokusei3,jdbcType=VARCHAR}, #{zokusei4,jdbcType=VARCHAR}, 
       #{zokusei5,jdbcType=VARCHAR}, #{zokusei6,jdbcType=VARCHAR}, #{zokusei7,jdbcType=VARCHAR}, 
       #{zokusei8,jdbcType=VARCHAR}, #{zokusei9,jdbcType=VARCHAR}, #{zokusei10,jdbcType=VARCHAR}, 

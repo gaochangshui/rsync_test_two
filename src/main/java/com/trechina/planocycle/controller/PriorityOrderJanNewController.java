@@ -1,10 +1,12 @@
 package com.trechina.planocycle.controller;
 
-import com.alibaba.fastjson.JSONArray;
+import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,17 +22,18 @@ public class PriorityOrderJanNewController {
      * @return
      */
     @GetMapping("/getPriorityOrderJanNew")
-    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo) {
+    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return priorityOrderJanNewService.getPriorityOrderJanNew(companyCd,priorityOrderCd,productPowerNo);
     }
 
     /**
      * 保存新规商品list
-     * @param jsonArray
+     * @param
      * @return
      */
+    //TODO:保存新规商品list
     @PostMapping("/setPriorityOrderJanNew")
-    public Map<String,Object> setPriorityOrderJanNew(@RequestBody JSONArray jsonArray){
-        return priorityOrderJanNewService.setPriorityOrderJanNew(jsonArray);
+    public Map<String,Object> setPriorityOrderJanNew(@RequestBody List<PriorityOrderJanNew> priorityOrderJanNew){
+        return priorityOrderJanNewService.setPriorityOrderJanNew(priorityOrderJanNew);
     }
 }

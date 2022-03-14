@@ -1,7 +1,8 @@
 package com.trechina.planocycle;
 
-import com.trechina.planocycle.entity.po.PriorityOderAttrSet;
+import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult;
 import com.trechina.planocycle.mapper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -32,26 +33,87 @@ class PlanoCycleApiApplicationTests {
     PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
     @Autowired
     PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+    @Autowired
+    PriorityOrderShelfDataMapper priorityOrderShelfDataMapper;
+    @Autowired
+    PriorityOrderJanReplaceMapper priorityOrderJanReplaceMapper;
+    @Autowired
+    WorkPriorityOrderRestrictResultMapper workPriorityOrderRestrictResultMapper;
+    @Autowired
+    WorkPriorityOrderResultDataMapper workPriorityOrderResultDataMapper;
+
 
     @Test
-    public void test1() {
+    public void test0(){
+        List<String> list = new ArrayList<>();
+        list.add("456");
+        list.add("7845");
+        List<List<String>> lists = new ArrayList<>();
+        lists.add(list);
+        //workPriorityOrderResultDataMapper.update(lists);
+        workPriorityOrderResultDataMapper.updates(list);
+        //WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult = new WorkPriorityOrderRestrictResult();
+        //workPriorityOrderRestrictResult.setZokusei1("014");
+        //List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, "0001", 1095);
+        //productPowerData.forEach(System.out::println);
+        //Integer productPowerCd = productPowerMstMapper.getpatternCd("0001", "10215814");
+        //System.out.println(productPowerCd);
+    //    List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, companyCd, productPowerCd);
 
-        int[] a = {1, 2};
+
+        //    String resultDataList = workPriorityOrderResultDataMapper.getResultDataList("0001", "10215814");
+    //    System.out.println(resultDataList);
+    }
+    @Test
+    public void test1(){
+        //List<ProductPowerDataDto> productPowerDataDtoList = new ArrayList<>();
+        //ProductPowerDataDto productPowerDataDto = new ProductPowerDataDto();
+        //productPowerDataDto.setRankResult(1);
+        //productPowerDataDto.setRestrictCd(3L);
+        //productPowerDataDto.setJan("12346");
+        //productPowerDataDtoList.add(productPowerDataDto);
+        //workPriorityOrderResultDataMapper.setResultDataList(productPowerDataDtoList,5L,"0001","10215814");
+        WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult = new WorkPriorityOrderRestrictResult();
+        workPriorityOrderRestrictResult.setZokusei1("0014");
+        List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, "0001", 1363);
+        productPowerData.forEach(System.out::println);
+        ////List<DataInfo> dataPotints = (ArrayList<DataInfo>) request.getAttribute("dataPotints");
+        ////ArrayList<IotDataHistory> iotDataHistories = new ArrayList<IotDataHistory>();
+        ////for (int i = 0; i < dataPotints.size(); i++) {
+        //    //这里执行for循环，通过mybatis查询，并将查询的数据放到list里面
+        //    // iotDataHistories.add(**dataService.getLastData(dataPotints.get(i))**);
+        //    // } String responsebody = handlerJson(iotDataHistories); log.info("获取最后一条数据返回的json数据" + responsebody); return responsebody;
+        ////priorityOrderJanReplaceMapper.selectJanInfo("0001",122);
+        //productPowerMstMapper.setProductPowerCdForMst(1234,"0001","10212159");
+        ////PriorityOrderPlatformShedDto priorityOrderPlatformShedDto = new PriorityOrderPlatformShedDto();
+        //priorityOrderPlatformShedDto.setTaiCd(1);
+        //priorityOrderPlatformShedDto.setTanaCd(1);
+        //priorityOrderPlatformShedDto.setRestrictType(1);
+        //List<PriorityOrderRestrictJanDto> platformShedJans = priorityOrderShelfDataMapper.getPlatformShedJans(priorityOrderPlatformShedDto);
+        //platformShedJans.forEach(System.out::println);
+        //List<PriorityOrderRestrictDto> restrictData = priorityOrderShelfDataMapper.getRestrictData("0001", "10215814");
+        //restrictData.forEach(System.out::println);
+        //PriorityOrderRestrictDto priorityOrderRestrictDto = new PriorityOrderRestrictDto();
+        //priorityOrderRestrictDto.setZokusei1("014");
+        //priorityOrderRestrictDto.setZokusei2("014_041");
+        //List<PriorityOrderRestrictJanDto> restrictJans = priorityOrderShelfDataMapper.getRestrictJans(priorityOrderRestrictDto);
+        //restrictJans.forEach(System.out::println);
+        //int[] a = {1, 2};
       /*  PtsTanaVo tanaData = shelfPtsDataMapper.getTanaData(43);
         System.out.println(tanaData);
 */
-
-
+       // priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOderAttrSet, authorCd);
+        System.out.println("get" + "Scat" + 1 + "cdVal" == "getScat1cdVal");
         //List<PriorityOrderRestrictSet> priorityOrderRestrict = priorityOrderRestrictSetMapper.getPriorityOrderRestrict("0001", "10215814");
        // priorityOrderRestrict.forEach(System.out::println);
-        PriorityOderAttrSet priorityOderAttrSet = new PriorityOderAttrSet();
-        priorityOderAttrSet.setCompanyCd("0001");
-        priorityOderAttrSet.setTaiCd(1);
-        priorityOderAttrSet.setTanaCd(2);
-        priorityOderAttrSet.settanaType(1);
-        priorityOderAttrSet.setZokuseiId(1);
-
-        priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOderAttrSet,"10215814");
+       // PriorityOderAttrSet priorityOderAttrSet = new PriorityOderAttrSet();
+       // priorityOderAttrSet.setCompanyCd("0001");
+       // priorityOderAttrSet.setTaiCd(1);
+       // priorityOderAttrSet.setTanaCd(2);
+       // priorityOderAttrSet.settanaType(1);
+       // priorityOderAttrSet.setZokuseiId(1);
+       //
+       // priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOderAttrSet,"10215814");
 
       /*  List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(1);
         attrValue.forEach(System.out::println);*/

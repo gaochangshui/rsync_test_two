@@ -242,8 +242,8 @@
                     #{item.gdPosAmount},#{item.gdPosNum},#{item.gdBranchAmount},#{item.gdBranchNum},#{item.gdCompareAmount},#{item.gdCompareNum},#{item.gdBranchCompareAmount},
                     #{item.gdBranchCompareNum},#{item.item1},#{item.item2},#{item.item3},#{item.item4},#{item.item5},#{item.item6},#{item.item7},#{item.item8},#{item.item9},
                     #{item.item10},#{item.rankResult},#{authorCd},now(),#{item.pdPosAmountRank},#{item.pdPosNumRank},#{item.pdBranchAmountRank},#{item.pdBranchNumRank},
-                    #{item.pdCompareAmount},#{item.pdCompareNum},#{item.pdBranchCompareAmountRank},#{item.pdBranchCompareNumRank},#{item.gdPosAmountRank},#{item.gdPosNumRank},
-                    #{item.gdBranchAmountRank},#{item.gdBranchNumRank},#{item.gdCompareAmountRank},#{item.gdCompareNumRank},#{item.gdBranchCompareAmount},#{item.gdBranchCompareNumRank},
+                    #{item.pdCompareAmountRank},#{item.pdCompareNumRank},#{item.pdBranchCompareAmountRank},#{item.pdBranchCompareNumRank},#{item.gdPosAmountRank},#{item.gdPosNumRank},
+                    #{item.gdBranchAmountRank},#{item.gdBranchNumRank},#{item.gdCompareAmountRank},#{item.gdCompareNumRank},#{item.gdBranchCompareAmountRank},#{item.gdBranchCompareNumRank},
                     #{item.item1Rank},#{item.item2Rank},#{item.item3Rank},#{item.item4Rank},#{item.item5Rank},#{item.item6Rank},#{item.item7Rank},#{item.item8Rank},#{item.item9Rank},
                     #{item.item10Rank})
                </foreach>

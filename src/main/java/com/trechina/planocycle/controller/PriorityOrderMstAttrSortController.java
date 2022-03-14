@@ -32,12 +32,21 @@ public class PriorityOrderMstAttrSortController {
     }
 
     /**
-     *获取属性1属性2组合对应的面积
+     *新规计算属性1属性2组合对应的面积
      */
     @GetMapping("/getAttributeArea")
     public Map<String,Object> getAttributeArea(Integer patternCd,Integer attr1,Integer attr2){
         return priorityOrderMstAttrSortService.getAttributeArea(patternCd,attr1,attr2);
     }
+
+    /**
+     *编辑时获取属性1属性2组合对应的面积
+     */
+    @GetMapping("getEditAttributeArea")
+    public Map<String,Object> getEditAttributeArea(String companyCd){
+        return priorityOrderMstAttrSortService.getEditAttributeArea(companyCd);
+    }
+
 
     /**
      * 获取属性的分类及商品分类列表

@@ -63,6 +63,14 @@ public class PriorityOrderJanNew {
         this.branchAccount = branchAccount;
     }
 
+    public Integer getBranchNum() {
+        return branchNum;
+    }
+
+    public void setBranchNum(Integer branchNum) {
+        this.branchNum = branchNum;
+    }
+
     @Override
     public String toString() {
         return "PriorityOrderJanNew{" +

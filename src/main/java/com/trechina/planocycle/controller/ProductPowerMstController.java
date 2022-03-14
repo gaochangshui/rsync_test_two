@@ -28,6 +28,12 @@ public class ProductPowerMstController {
         return powerMstService.getProductPowerTable(companyCd);
     }
 
+    /**
+     * 获取商品力点数表一览数据
+     * @param companyCd
+     * @param productPowerCd
+     * @return
+     */
     @GetMapping("getProductPowerInfo")
     public Map<String,Object> getProductPowerInfo(String companyCd ,Integer productPowerCd){
         return powerMstService.getProductPowerInfo(companyCd,productPowerCd);
