@@ -3,6 +3,7 @@ package com.trechina.planocycle.service;
 import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestrictDto;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 public interface PriorityOrderShelfDataService {
@@ -12,7 +13,7 @@ public interface PriorityOrderShelfDataService {
      * @param companyCd
      * @return
      */
-    Map<String,Object> getRestrictData(String companyCd);
+    Map<String,Object> getRestrictData(String companyCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
     /**
      * 新规时获取基本パタ制约别jan详细信息

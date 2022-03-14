@@ -23,7 +23,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
@@ -737,6 +737,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //获取商品力点数表cd
         Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, authorCd);
         Integer patternCd = productPowerMstMapper.getpatternCd(companyCd, authorCd);
+
+
+
         //先按照社员号删掉work表的数据
         workPriorityOrderResultDataMapper.delResultData(companyCd,authorCd);
         //获取制约条件
@@ -759,6 +762,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 }
             }
             if (!newList.isEmpty()) {
+
                 workPriorityOrderResultDataMapper.setResultDataList(newList, workPriorityOrderRestrictResult.getRestrictCd(), companyCd, authorCd);
             }
 
@@ -767,7 +771,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String resultDataList = workPriorityOrderResultDataMapper.getResultDataList(companyCd, authorCd);
         String[] array = resultDataList.split(",");
         //调用cgi
+        System.out.println(System.currentTimeMillis());
         Map<String, Object> Data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd);
+        System.out.println(System.currentTimeMillis());
         List strList = new ArrayList();
         if (Data.get("data") != null && Data.get("data")!=""){
             String[] strResult = Data.get("data").toString().split("@");
@@ -777,10 +783,14 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             for (int i = 0; i < strResult.length; i++) {
                 orderResultData=new WorkPriorityOrderResultData();
                 strSplit = strResult[i].split(" ");
-                orderResultData.setSalesCnt(BigDecimal.valueOf(Double.valueOf(strSplit[1])));
+                orderResultData.setSalesCnt(Double.valueOf(strSplit[1]));
                 orderResultData.setJanCd(strSplit[0]);
+
+
+
                 list.add(orderResultData);
                 if (i % 1000==0 && i >1000){
+
                     workPriorityOrderResultDataMapper.update(list);
 
                 }
@@ -789,6 +799,35 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 workPriorityOrderResultDataMapper.update(list);
 
             }
+
+
+            //获取旧pts的平均值，最大值最小值
+            FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(patternCd);
+            DecimalFormat df = new DecimalFormat("#.00");
+            //获取salesCntAvg并保留两位小数
+            Double salesCntAvg = productPowerMstMapper.getSalesCntAvg(companyCd, authorCd);
+            String format = df.format(salesCntAvg);
+            salesCntAvg = Double.valueOf(format);
+
+            List<WorkPriorityOrderResultData> resultDatas = workPriorityOrderResultDataMapper.getResultDatas(companyCd,authorCd);
+            int i = 1;
+            Double d = null;
+            for (WorkPriorityOrderResultData resultData : resultDatas) {
+                if (resultData.getSalesCnt() != null) {
+                    d = resultData.getSalesCnt() * faceNum.getFaceAvgNum() / salesCntAvg;
+
+                    if (d > faceNum.getFaceMaxNum()) {
+                        resultData.setFace(Long.valueOf(faceNum.getFaceMaxNum()));
+                    } else if (d < faceNum.getFaceMinNum()) {
+                        resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
+                    } else {
+                        resultData.setFace(d.longValue());
+                    }
+
+                }
+
+            }
+            workPriorityOrderResultDataMapper.updateFace(resultDatas);
         }else {
             return Data;
         }

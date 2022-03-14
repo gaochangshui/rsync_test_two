@@ -3,6 +3,7 @@ package com.trechina.planocycle.service;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
 
 import java.util.List;
 import java.util.Map;
@@ -77,5 +78,20 @@ public interface ShelfPtsService {
      * @return
      */
       Map<String,Object> getPtsDetailData(Integer patternCd);
+    /**
+     * 陈列顺设定添加
+     * @param workPriorityOrderSort
+     * @return
+     */
+    Map<String,Object> setDisplay( List<WorkPriorityOrderSort> workPriorityOrderSort);
+    /**
+     * 陈列顺设定展示
+     * @param companyCd
+     * @return
+     */
+
+    Map<String,Object> getDisplay( String companyCd);
+
+
 
 }

@@ -3,6 +3,7 @@ package com.trechina.planocycle.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
 import com.trechina.planocycle.service.ShelfPtsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -127,6 +128,25 @@ public class ShelfPtsController {
 
     }
 
+    /**
+     * 陈列顺设定添加
+     * @param workPriorityOrderSort
+     * @return
+     */
+    @PostMapping("setDisplay")
+    public  Map<String,Object> setDisplay(@RequestBody List<WorkPriorityOrderSort> workPriorityOrderSort){
+        return shelfPtsService.setDisplay(workPriorityOrderSort);
 
+    }
+    /**
+     * 陈列顺设定展示
+     * @param companyCd
+     * @return
+     */
+    @GetMapping("getDisplay")
+    public  Map<String,Object> getDisplay(String companyCd){
+        return shelfPtsService.getDisplay(companyCd);
+
+    }
 
 }

@@ -104,7 +104,14 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         List<PriorityOrderAttrListVo> attributeList = priorityOrderMstAttrSortMapper.getAttribute();
         return ResultMaps.result(ResultEnum.SUCCESS, attributeList);
     }
-
+    /**
+     * 陈列设定获取属性1和属性2
+     */
+    @Override
+    public Map<String, Object> getAttributeSort() {
+        List<PriorityOrderAttrListVo> attributeList = priorityOrderMstAttrSortMapper.getAttributeSort();
+        return ResultMaps.result(ResultEnum.SUCCESS, attributeList);
+    }
     /**
      * 获取属性的分类及商品分类列表
      */

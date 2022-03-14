@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.po.ShelfPtsData;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.PriorityOrderMstAttrSortMapper;
@@ -253,6 +254,34 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
            ptsDetailData.setPtsJanDataList(janData);
        }
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
+    }
+    /**
+     * 陈列顺设定添加
+     * @param workPriorityOrderSort
+     * @return
+     */
+    @Override
+    public Map<String, Object> setDisplay(List<WorkPriorityOrderSort> workPriorityOrderSort) {
+        String aud = httpSession.getAttribute("aud").toString();
+        String companyCd = null;
+        for (WorkPriorityOrderSort priorityOrderSort : workPriorityOrderSort) {
+            companyCd=  priorityOrderSort.getCompanyCd();
+        }
+        shelfPtsDataMapper.deleteDisplay(companyCd,aud);
+        shelfPtsDataMapper.setDisplay(workPriorityOrderSort,aud);
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+    /**
+     * 陈列顺设定展示
+     * @param companyCd
+     * @return
+     */
+    @Override
+    public Map<String, Object> getDisplay(String companyCd) {
+        String aud = httpSession.getAttribute("aud").toString();
+        List<WorkPriorityOrderSort> displayList = shelfPtsDataMapper.getDisplay(companyCd, aud);
+
+        return ResultMaps.result(ResultEnum.SUCCESS,displayList);
     }
 
 

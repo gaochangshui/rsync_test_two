@@ -105,4 +105,18 @@
     from planocycle.work_priority_order_mst
     where company_cd = #{companyCd} and author_cd = #{authorCd}
   </select>
+  <select id="getFaceNum" resultType="com.trechina.planocycle.entity.dto.FaceNumDataDto">
+    select max (jandataMst.face_count) faceMaxNum,min(jandataMst.face_count) faceMinNum,avg(jandataMst.face_count) faceAvgNum
+    from planocycle.shelf_pts_data ptsData
+           left join planocycle.shelf_pts_data_jandata jandataMst
+                     on ptsData.id = jandataMst.pts_cd
+    where ptsData.shelf_pattern_cd=#{patternCd}
+  </select>
+
+  <select id="getSalesCntAvg" resultType="double">
+  select avg(sales_cnt)
+    from planocycle.work_priority_order_result_data
+    where company_cd = #{companyCd} and author_cd = #{authorCd}
+  </select>
+
 </mapper>

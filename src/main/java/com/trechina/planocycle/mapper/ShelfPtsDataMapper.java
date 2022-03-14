@@ -2,6 +2,7 @@ package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.po.ShelfPtsData;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
 import com.trechina.planocycle.entity.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -73,5 +74,11 @@ public interface ShelfPtsDataMapper {
     List<PtsTanaVo> getTanaData(@Param("patternCd")Integer patternCd);
     //获取janData信息
     List<PtsJanDataVo> getJanData(@Param("patternCd")Integer patternCd);
+
+    int setDisplay(@Param("list")List< WorkPriorityOrderSort> workPriorityOrderSort,@Param("authorCd")String authorCd);
+
+    List<WorkPriorityOrderSort> getDisplay(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+
+    int deleteDisplay(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 
 }

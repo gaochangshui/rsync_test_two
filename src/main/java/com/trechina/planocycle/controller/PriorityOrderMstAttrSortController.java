@@ -30,7 +30,13 @@ public class PriorityOrderMstAttrSortController {
     public Map<String,Object> getAttribute(){
         return priorityOrderMstAttrSortService.getAttribute();
     }
-
+    /**
+     * 陈列设定获取属性1和属性2
+     */
+@GetMapping("/getAttributeSort")
+    public Map<String,Object> getAttributeSort(){
+        return priorityOrderMstAttrSortService.getAttributeSort();
+    }
     /**
      *新规计算属性1属性2组合对应的面积
      */

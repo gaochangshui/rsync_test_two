@@ -42,6 +42,10 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     delete from planocycle.shelf_pts_data
     where id = #{id,jdbcType=INTEGER}
   </delete>
+  <delete id="deleteDisplay">
+    delete from planocycle.work_priority_order_sort
+    where company_cd = #{companyCd} and author_cd = #{authorCd}
+  </delete>
   <update id="delShelfHistoryInfo">
     update  planocycle.shelf_pts_data_history
     set deleteflg=1 ,edit_time=now(),editer_cd=#{authorCd}
@@ -201,6 +205,13 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     set valid_flg = 0 ,edit_time=now(),editer_cd=#{authorCd}
     where pattern_cd = #{patternId,jdbcType=INTEGER}
   </update>
+  <insert id="setDisplay">
+    insert into planocycle.work_priority_order_sort(company_cd,author_cd,zokusei_id,sort_num)
+    values
+<foreach collection="list" separator="," item="item" >
+    (#{item.companyCd},#{authorCd},#{item.zokuseiId},#{item.sortNum})
+</foreach>
+  </insert>
   <select id="checkPtsData" parameterType="com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto"
           resultType="java.lang.Integer">
     select count(1) from planocycle.shelf_pts_data
@@ -311,6 +322,13 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
       planocycle.shelf_pts_data_jandata janData
       on ptsData."id" =  janData.pts_cd
     where ptsData.shelf_pattern_cd = #{patternCd}
+  </select>
+  <select id="getDisplay" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderSort">
+    select sort.zokusei_id,sort.sort_num,mst.zokusei_nm as zokuseiName
+    from planocycle.work_priority_order_sort sort
+    left join masterdb.zokusei_mst mst
+    on mst.zokusei_id = sort.zokusei_id
+    where company_cd = #{companyCd} and  author_cd = #{authorCd}
   </select>
 
 

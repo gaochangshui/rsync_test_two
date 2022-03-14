@@ -29,5 +29,9 @@ public interface WorkPriorityOrderResultDataMapper {
     String getResultDataList(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 
     int update(@Param("list") List<WorkPriorityOrderResultData> list);
-    int updates(List<String> list);
+
+    int updateFace(@Param("list") List<WorkPriorityOrderResultData> list);
+
+    List<WorkPriorityOrderResultData>  getResultDatas(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
+
 }

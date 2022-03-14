@@ -34,6 +34,12 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
         and author_cd = #{authorCd,jdbcType=VARCHAR}
   </select>
+  <select id="getResultDatas" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    select jan_cd ,sales_cnt as salesCnt
+    from planocycle.work_priority_order_result_data
+      where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and author_cd = #{authorCd,jdbcType=VARCHAR}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.work_priority_order_result_data
     where company_cd = #{companyCd,jdbcType=VARCHAR}
@@ -202,6 +208,15 @@
       update planocycle.work_priority_order_result_data
       <set>
         sales_cnt = #{item.salesCnt} ::numeric
+      </set>
+      where jan_cd = #{item.janCd} ::varchar
+    </foreach>
+  </update>
+  <update id="updateFace">
+    <foreach collection="list" item="item" separator=";" index="index">
+      update planocycle.work_priority_order_result_data
+      <set>
+        face = #{item.face}
       </set>
       where jan_cd = #{item.janCd} ::varchar
     </foreach>

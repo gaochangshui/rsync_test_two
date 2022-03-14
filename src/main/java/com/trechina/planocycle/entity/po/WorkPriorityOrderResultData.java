@@ -1,7 +1,5 @@
 package com.trechina.planocycle.entity.po;
 
-import java.math.BigDecimal;
-
 public class WorkPriorityOrderResultData {
     private String companyCd;
 
@@ -28,7 +26,7 @@ public class WorkPriorityOrderResultData {
     private Integer restrictType;
 
     private Long faceKeisan;
-    private BigDecimal salesCnt;
+    private Double salesCnt;
 
     public String getCompanyCd() {
         return companyCd;
@@ -134,11 +132,11 @@ public class WorkPriorityOrderResultData {
         this.faceKeisan = faceKeisan;
     }
 
-    public BigDecimal getSalesCnt() {
+    public Double getSalesCnt() {
         return salesCnt;
     }
 
-    public void setSalesCnt(BigDecimal salesCnt) {
+    public void setSalesCnt(Double salesCnt) {
         this.salesCnt = salesCnt;
     }
 

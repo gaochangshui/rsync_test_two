@@ -7,6 +7,7 @@ import com.trechina.planocycle.service.PriorityOrderShelfDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 @RestController
@@ -23,7 +24,7 @@ public class PriorityOrderShelfDataController {
      * @return
      */
     @GetMapping("getRestrictData")
-    public Map<String,Object> getRestrictData(String companyCd){
+    public Map<String,Object> getRestrictData(String companyCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return  priorityOrderShelfDataService.getRestrictData(companyCd);
     }
 

@@ -3,6 +3,7 @@ package com.trechina.planocycle;
 import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult;
+import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
 import com.trechina.planocycle.mapper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -51,8 +52,20 @@ class PlanoCycleApiApplicationTests {
         List<List<String>> lists = new ArrayList<>();
         lists.add(list);
         //workPriorityOrderResultDataMapper.update(lists);
-        workPriorityOrderResultDataMapper.updates(list);
+        //workPriorityOrderResultDataMapper.updates(list);
         //WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult = new WorkPriorityOrderRestrictResult();
+        //FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(43);
+        //System.out.println(faceNum);
+        //DecimalFormat df = new DecimalFormat("#.00");
+        List<PriorityOrderAttrListVo> attributeSort = priorityOrderMstAttrSortMapper.getAttributeSort();
+        attributeSort.forEach(System.out::println);
+        //Double salesCntAvg = productPowerMstMapper.getSalesCntAvg("0001", "10215814");
+        //String format = df.format(salesCntAvg);
+        //salesCntAvg = Double.valueOf(format);
+        //
+        //System.out.println(salesCntAvg);
+
+        workPriorityOrderResultDataMapper.getResultDatas("0001","10215814").forEach(System.out::println);
         //workPriorityOrderRestrictResult.setZokusei1("014");
         //List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, "0001", 1095);
         //productPowerData.forEach(System.out::println);

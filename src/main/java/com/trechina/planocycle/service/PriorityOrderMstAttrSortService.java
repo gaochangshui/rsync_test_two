@@ -43,6 +43,10 @@ public interface PriorityOrderMstAttrSortService {
      * 获取属性1和属性2
      */
     Map<String, Object> getAttribute();
+    /**
+     * 陈列设定获取属性1和属性2
+     */
+    Map<String, Object> getAttributeSort();
 
     /**
      * 获取属性的分类及商品分类列表
