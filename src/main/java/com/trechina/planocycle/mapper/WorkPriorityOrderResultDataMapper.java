@@ -21,11 +21,13 @@ public interface WorkPriorityOrderResultDataMapper {
 
     int updateByPrimaryKey(WorkPriorityOrderResultData record);
 
-    int setResultDataList(@Param("list")List<ProductPowerDataDto> productPowerDataDtoList,@Param("restrictCd")Long restrictCd,@Param("companyCd")String companyCd,
-                          @Param("authorCd")String authorCd);
+    int setResultDataList(@Param("list") List<ProductPowerDataDto> productPowerDataDtoList, @Param("restrictCd") Long restrictCd, @Param("companyCd") String companyCd,
+                          @Param("authorCd") String authorCd);
+
     int delResultData(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 
-    String getResultDataList(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+    String getResultDataList(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 
-    int update(@Param("keyNameList") List<List<String>>keyNameList);
+    int update(@Param("list") List<WorkPriorityOrderResultData> list);
+    int updates(List<String> list);
 }

@@ -23,6 +23,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
@@ -771,16 +772,21 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         if (Data.get("data") != null){
             String[] strResult = Data.get("data").toString().split("@");
             String[] strSplit = null;
+            List<WorkPriorityOrderResultData> list = new ArrayList<>();
+            WorkPriorityOrderResultData orderResultData = new WorkPriorityOrderResultData();
             for (int i = 0; i < strResult.length; i++) {
+
                 strSplit = strResult[i].split(" ");
-                strList.add(strSplit);
+                orderResultData.setSalesCnt(BigDecimal.valueOf(Double.valueOf(strSplit[1])));
+                orderResultData.setJanCd(strSplit[0]);
+                list.add(orderResultData);
                 if (i % 1000==0 && i >1000){
-                    workPriorityOrderResultDataMapper.update(strList);
-                    strList.clear();
+                    workPriorityOrderResultDataMapper.update(list);
+
                 }
             }
-            if (strList.size() > 0) {
-                workPriorityOrderResultDataMapper.update(strList);
+            if (list.size() > 0) {
+                workPriorityOrderResultDataMapper.update(list);
 
             }
         }else {

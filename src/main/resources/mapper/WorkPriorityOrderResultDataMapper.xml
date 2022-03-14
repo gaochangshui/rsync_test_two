@@ -196,22 +196,25 @@
       and author_cd = #{authorCd,jdbcType=VARCHAR}
       and jan_cd = #{janCd,jdbcType=VARCHAR}
   </update>
-  <update id="update">
 
 
+  <update id="updates">
+    update planocycle.work_priority_order_result_data
 
-        <foreach collection="keyNameList" item="item" separator=";" index="index"  >
+      set sales_cnt = #{list[1],javaType=DOUBLE}
 
-          update planocycle.work_priority_order_result_data
-          <set>
-
-                sales_cnt = #{item[1],jdbcType=FLOAT}
-
-          </set>
-            where jan_cd = #{item[0],jdbcType=VARCHAR}
-      </foreach>
-
+     where jan_cd = #{list[0],jdbcType=VARCHAR}
   </update>
+  <update id="update">
+    <foreach collection="list" item="item" separator=";" index="index">
+      update planocycle.work_priority_order_result_data
+      <set>
+        sales_cnt = #{item.salesCnt,jdbcType=NUMERIC}
+      </set>
+      where jan_cd = #{item.janCd,jdbcType=VARCHAR}
+    </foreach>
+  </update>
+
   <insert id="setResultDataList">
     insert into planocycle.work_priority_order_result_data(company_cd,restrict_cd,jan_cd,sku_rank,author_cd)
       values

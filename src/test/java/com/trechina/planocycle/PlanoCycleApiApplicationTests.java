@@ -45,6 +45,13 @@ class PlanoCycleApiApplicationTests {
 
     @Test
     public void test0(){
+        List<String> list = new ArrayList<>();
+        list.add("456");
+        list.add("7845");
+        List<List<String>> lists = new ArrayList<>();
+        lists.add(list);
+        //workPriorityOrderResultDataMapper.update(lists);
+        workPriorityOrderResultDataMapper.updates(list);
         //WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult = new WorkPriorityOrderRestrictResult();
         //workPriorityOrderRestrictResult.setZokusei1("014");
         //List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, "0001", 1095);
