@@ -329,6 +329,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     left join masterdb.zokusei_mst mst
     on mst.zokusei_id = sort.zokusei_id
     where company_cd = #{companyCd} and  author_cd = #{authorCd}
+    order by sort_num
   </select>
 
 

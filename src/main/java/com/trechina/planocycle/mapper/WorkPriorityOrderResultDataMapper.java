@@ -34,4 +34,8 @@ public interface WorkPriorityOrderResultDataMapper {
 
     List<WorkPriorityOrderResultData>  getResultDatas(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 
+    //重新计算rank
+    List<WorkPriorityOrderResultData> getReorder(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("sortName1")String sortName1,
+                                                 @Param("sortName2")String sortName2);
+
 }

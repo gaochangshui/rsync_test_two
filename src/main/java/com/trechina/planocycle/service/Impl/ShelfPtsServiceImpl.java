@@ -244,13 +244,13 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
         List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
         List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
-        if (janData.size()>0){
+        if (ptsDetailData != null){
             ptsDetailData.setPtsTaiList(taiData);
         }
-       if (tanaData.size()>0) {
+       if (ptsDetailData != null) {
            ptsDetailData.setPtsTanaVoList(tanaData);
        }
-       if (janData.size()>0) {
+       if (ptsDetailData != null) {
            ptsDetailData.setPtsJanDataList(janData);
        }
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
@@ -268,6 +268,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             companyCd=  priorityOrderSort.getCompanyCd();
         }
         shelfPtsDataMapper.deleteDisplay(companyCd,aud);
+        if (workPriorityOrderSort.isEmpty()){
+            return ResultMaps.result(ResultEnum.SUCCESS);
+        }
         shelfPtsDataMapper.setDisplay(workPriorityOrderSort,aud);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

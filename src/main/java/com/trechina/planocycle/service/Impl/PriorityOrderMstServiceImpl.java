@@ -73,6 +73,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Autowired
     private WorkPriorityOrderResultDataMapper workPriorityOrderResultDataMapper;
     @Autowired
+    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+    @Autowired
     private cgiUtils cgiUtil;
 
     /**
@@ -747,11 +749,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         // TODO: 2200866
 
         String authorCd = session.getAttribute("aud").toString();
+
         //获取商品力点数表cd
         Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, authorCd);
         Integer patternCd = productPowerMstMapper.getpatternCd(companyCd, authorCd);
-
-
 
         //先按照社员号删掉work表的数据
         workPriorityOrderResultDataMapper.delResultData(companyCd,authorCd);
@@ -760,7 +761,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         // 1.通过制约条件查找符合条件的商品
         for (WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult : resultList) {
             List<ProductPowerDataDto> newList = new ArrayList<>();
-            List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, companyCd, productPowerCd);
+            List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, companyCd, productPowerCd,authorCd);
             for (ProductPowerDataDto productPowerDatum : productPowerData) {
                 if (productPowerDatum.getJanNew()!=null){
                     productPowerDatum.setJan(productPowerDatum.getJanNew());
@@ -782,6 +783,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
 
         String resultDataList = workPriorityOrderResultDataMapper.getResultDataList(companyCd, authorCd);
+        if (resultDataList == null){
+            return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
+        }
         String[] array = resultDataList.split(",");
         //调用cgi
         System.out.println(System.currentTimeMillis());
@@ -823,7 +827,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             salesCntAvg = Double.valueOf(format);
 
             List<WorkPriorityOrderResultData> resultDatas = workPriorityOrderResultDataMapper.getResultDatas(companyCd,authorCd);
-            int i = 1;
+
             Double d = null;
             for (WorkPriorityOrderResultData resultData : resultDatas) {
                 if (resultData.getSalesCnt() != null) {
@@ -837,6 +841,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                         resultData.setFace(d.longValue());
                     }
 
+                }else {
+                    resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
                 }
 
             }
@@ -845,16 +851,30 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             return Data;
         }
         logger.info("拆分后的数据为{}",strList);
-        //  workPriorityOrderRestrictResultMapper.insert()
-        // 1.1. 制约条件
-        // 1.2. 商品力点数表=>商品
-        // 1.3. 新规&Jan变&cut商品
 
-        // 2.计算商品face数
-        // 2.1 台棚的详细信息
-        // 2.2 使用检索出来的商品计算具体face数
 
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    /**
+     * 重新计算rank排序
+     * @param companyCd
+     * @return
+     */
+    @Override
+    public Map<String, Object> getReorder(String companyCd) {
+        String aud = session.getAttribute("aud").toString();
+        String colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, aud);
+        String[] split = colNmforMst.split(",");
+        List<WorkPriorityOrderResultData> reorder = null;
+        if (split.length==1){
+            reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, aud, split[0], null);
+        }else {
+             reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, aud, split[0], split[1]);
+
+        }
+
+        return ResultMaps.result(ResultEnum.SUCCESS,reorder);
     }
 
     @Override

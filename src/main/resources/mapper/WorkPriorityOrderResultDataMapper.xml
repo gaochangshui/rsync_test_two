@@ -40,6 +40,42 @@
       where company_cd = #{companyCd,jdbcType=VARCHAR}
       and author_cd = #{authorCd,jdbcType=VARCHAR}
   </select>
+  <select id="getReorder" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    select a.jan_cd,a.jan_nm,a.scat1cd_val,a.scat2cd_val,a.scat3cd_val,a.scat4cd_val,a.brand,a.sku_rank from
+                (select  datas.jan_cd ,janMst.jan_nm,
+                janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
+                from planocycle.work_priority_order_result_data datas
+                left join masterdb.jan_mst janMst
+                on janMst.jan_cd = datas.jan_cd
+                where company_cd = #{companyCd} and author_cd = #{authorCd}) a
+
+                inner join
+                (select ${sortName1},avg(sku_rank) aavg from (select  datas.jan_cd ,janMst.jan_nm,
+                janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
+                from planocycle.work_priority_order_result_data datas
+                left join masterdb.jan_mst janMst
+                on janMst.jan_cd = datas.jan_cd
+                where company_cd = #{companyCd} and author_cd = #{authorCd}) test group by ${sortName1}
+                ) b
+                on a.${sortName1}=b.${sortName1}
+                <if test="sortName2 !=null">
+                  inner join
+                  (select ${sortName2},avg(sku_rank) aavg from (select  datas.jan_cd ,janMst.jan_nm,
+                  janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
+                  from planocycle.work_priority_order_result_data datas
+                  left join masterdb.jan_mst janMst
+                  on janMst.jan_cd = datas.jan_cd
+                  where company_cd = #{companyCd} and author_cd = #{authorCd}) test group by ${sortName2}
+                  ) c
+                  on a.${sortName2}=c.${sortName2}
+                </if>
+
+    order by b.aavg
+            <if test="sortName2 !=null">
+              ,c.aavg
+            </if>
+           ,a.sku_rank
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.work_priority_order_result_data
     where company_cd = #{companyCd,jdbcType=VARCHAR}
@@ -216,7 +252,7 @@
     <foreach collection="list" item="item" separator=";" index="index">
       update planocycle.work_priority_order_result_data
       <set>
-        face = #{item.face}
+        face = #{item.face},face_keisan = #{item.face}
       </set>
       where jan_cd = #{item.janCd} ::varchar
     </foreach>

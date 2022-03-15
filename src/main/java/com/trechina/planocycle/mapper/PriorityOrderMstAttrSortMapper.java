@@ -60,6 +60,7 @@ public interface PriorityOrderMstAttrSortMapper {
     List<PriorityOrderAttrVO> getEditAttributeArea(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 
 
-
+    //获取列名
+    String getColNmforMst(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 
 }

@@ -83,6 +83,16 @@ public interface PriorityOrderMstService {
      */
     Map<String, Object> autoCalculation(String companyCd);
 
+    /**
+     * 重新计算rank排序
+     * @param companyCd
+     * @return
+     */
+    Map<String, Object>getReorder(String companyCd);
+
+
+
+
     Map<String,Object> getFaceKeisanForCgi(String[]array,String companyCd,Integer shelfPatternNo,String authorCd);
 
 

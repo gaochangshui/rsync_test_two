@@ -3,7 +3,7 @@ package com.trechina.planocycle;
 import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult;
-import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
 import com.trechina.planocycle.mapper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -57,15 +57,18 @@ class PlanoCycleApiApplicationTests {
         //FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(43);
         //System.out.println(faceNum);
         //DecimalFormat df = new DecimalFormat("#.00");
-        List<PriorityOrderAttrListVo> attributeSort = priorityOrderMstAttrSortMapper.getAttributeSort();
-        attributeSort.forEach(System.out::println);
+        //List<PriorityOrderAttrListVo> attributeSort = priorityOrderMstAttrSortMapper.getAttributeSort();
+        //attributeSort.forEach(System.out::println);
         //Double salesCntAvg = productPowerMstMapper.getSalesCntAvg("0001", "10215814");
         //String format = df.format(salesCntAvg);
         //salesCntAvg = Double.valueOf(format);
         //
         //System.out.println(salesCntAvg);
-
-        workPriorityOrderResultDataMapper.getResultDatas("0001","10215814").forEach(System.out::println);
+       // String colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst("0001", "10212159");
+        String [] a= {"brand","scat2cd_val"};
+        List<WorkPriorityOrderResultData> reorder = workPriorityOrderResultDataMapper.getReorder("0001", "10215814", a[0], a[1]);
+        System.out.println(reorder);
+        //workPriorityOrderResultDataMapper.getResultDatas("0001","10215814").forEach(System.out::println);
         //workPriorityOrderRestrictResult.setZokusei1("014");
         //List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, "0001", 1095);
         //productPowerData.forEach(System.out::println);
@@ -88,7 +91,7 @@ class PlanoCycleApiApplicationTests {
         //workPriorityOrderResultDataMapper.setResultDataList(productPowerDataDtoList,5L,"0001","10215814");
         WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult = new WorkPriorityOrderRestrictResult();
         workPriorityOrderRestrictResult.setZokusei1("0014");
-        List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, "0001", 1363);
+        List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, "0001", 1363,"10215814");
         productPowerData.forEach(System.out::println);
         ////List<DataInfo> dataPotints = (ArrayList<DataInfo>) request.getAttribute("dataPotints");
         ////ArrayList<IotDataHistory> iotDataHistories = new ArrayList<IotDataHistory>();

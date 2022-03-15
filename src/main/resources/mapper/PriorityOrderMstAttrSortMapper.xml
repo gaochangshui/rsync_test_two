@@ -137,6 +137,14 @@
     select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.zokusei_mst  where sort_type = 0
     order by zokusei_sort;
   </select>
+  <select id="getColNmforMst" resultType="java.lang.String">
+    select array_to_string(array_agg(jans_col_nm order by sort_num),',')
+    from planocycle.work_priority_order_sort sort
+           left join masterdb.zokusei_mst mst
+                     on mst.zokusei_id = sort.zokusei_id
+    where company_cd = #{companyCd} and  author_cd = #{authorCd}
+
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.priority_order_mst_attrsort
     where company_cd = #{companyCd,jdbcType=VARCHAR}
