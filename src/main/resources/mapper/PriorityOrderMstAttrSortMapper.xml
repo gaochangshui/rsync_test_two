@@ -134,7 +134,7 @@
      where zokusei_id = #{zokuseiId}
   </select>
   <select id="getAttributeSort" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.zokusei_mst  where type = 0
+    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.zokusei_mst  where sort_type = 0
     order by zokusei_sort;
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">

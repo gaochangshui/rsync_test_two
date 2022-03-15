@@ -38,7 +38,7 @@
 
     </select>
     <select id="getPlatformShedJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto">
-        select datas.jan_cd as janCd,jans.jan_nm as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, jans.irisu as zokusei7,jans.pkg as zokusei5,
+        select DISTINCT datas.jan_cd as janCd,jans.jan_nm as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, jans.irisu as zokusei7,jans.pkg as zokusei5,
                jans.alcohol as zokusei8,jans.brand as zokusei9,jans.kikaku as zokusei6,
                jans.scat1cd_val as zokusei1,jans.scat2cd_val as zokusei2,jans.scat3cd_val as zokusei3,jans.scat4cd_val as zokusei4,
                datas.restrict_type as restrictType,sku_rank as rank,datas.face as faceNum
@@ -48,5 +48,6 @@
                   left join masterdb.jan_mst jans
                             on jans.jan_cd = datas.jan_cd
         where datas.tai_cd = #{item.taiCd} and datas.tana_cd = #{item.tanaCd} and datas.restrict_type = #{item.restrictType}
+        and datas.company_cd = #{item.companyCd} and datas.author_cd =#{authorCd}
     </select>
 </mapper>

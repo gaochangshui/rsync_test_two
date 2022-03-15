@@ -143,12 +143,12 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
      */
     @Override
     public Map<String, Object> getPlatformShedJans(PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        List<PriorityOrderRestrictJanDto> platformShedJans = priorityOrderShelfDataMapper.getPlatformShedJans(priorityOrderPlatformShedDto);
+        String aud = session.getAttribute("aud").toString();
+        List<PriorityOrderRestrictJanDto> platformShedJans = priorityOrderShelfDataMapper.getPlatformShedJans(priorityOrderPlatformShedDto,aud);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
         Class clazz = PriorityOrderRestrictJanDto.class;
         for (int i = 1; i <= 10; i++) {
             Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
-            Method getMethodName = clazz.getMethod("get"+"ZokuseiName"+i);
             Method setMethod = clazz.getMethod("set"+"ZokuseiName"+i, String.class);
             for (PriorityOrderRestrictJanDto priorityOrderRestrictJanDto : platformShedJans) {
                 for (PriorityOrderAttrValueDto attrValue : attrValues) {
