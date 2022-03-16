@@ -5,6 +5,8 @@ public class WorkPriorityOrderRestrictSet {
 
     private String authorCd;
 
+    private Integer priorityOrderCd;
+
     private Integer taiCd;
 
     private Integer tanaCd;
@@ -47,6 +49,14 @@ public class WorkPriorityOrderRestrictSet {
         this.authorCd = authorCd == null ? null : authorCd.trim();
     }
 
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
+    }
+
     public Integer getTaiCd() {
         return taiCd;
     }
@@ -63,11 +73,11 @@ public class WorkPriorityOrderRestrictSet {
         this.tanaCd = tanaCd;
     }
 
-    public Short gettanaType() {
+    public Short getTanaType() {
         return tanaType;
     }
 
-    public void settanaType(Short tanaType) {
+    public void setTanaType(Short tanaType) {
         this.tanaType = tanaType;
     }
 

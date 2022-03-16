@@ -5,6 +5,8 @@ public class WorkPriorityOrderSpace {
 
     private String authorCd;
 
+    private Integer priorityOrderCd;
+
     private String attribute1Value;
 
     private String attribute2Value;
@@ -35,6 +37,14 @@ public class WorkPriorityOrderSpace {
 
     public void setAuthorCd(String authorCd) {
         this.authorCd = authorCd == null ? null : authorCd.trim();
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
     }
 
     public String getAttribute1Value() {
