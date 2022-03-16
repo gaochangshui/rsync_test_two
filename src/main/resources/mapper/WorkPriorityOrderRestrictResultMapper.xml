@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult">
     <result column="company_cd" jdbcType="VARCHAR" property="companyCd" />
     <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
     <result column="restrict_cd" jdbcType="BIGINT" property="restrictCd" />
     <result column="zokusei1" jdbcType="VARCHAR" property="zokusei1" />
     <result column="zokusei2" jdbcType="VARCHAR" property="zokusei2" />
@@ -19,13 +20,13 @@
     <result column="sku_cnt" jdbcType="BIGINT" property="skuCnt" />
   </resultMap>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult">
-    insert into planocycle.work_priority_order_restrict_result (company_cd, author_cd, restrict_cd,
+    insert into planocycle.work_priority_order_restrict_result (company_cd, author_cd, priority_order_cd, restrict_cd,
       zokusei1, zokusei2, zokusei3, 
       zokusei4, zokusei5, zokusei6, 
       zokusei7, zokusei8, zokusei9, 
       zokusei10, tana_cnt, sku_cnt
       )
-    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{restrictCd,jdbcType=BIGINT}, 
+    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{restrictCd,jdbcType=BIGINT},
       #{zokusei1,jdbcType=VARCHAR}, #{zokusei2,jdbcType=VARCHAR}, #{zokusei3,jdbcType=VARCHAR}, 
       #{zokusei4,jdbcType=VARCHAR}, #{zokusei5,jdbcType=VARCHAR}, #{zokusei6,jdbcType=VARCHAR}, 
       #{zokusei7,jdbcType=VARCHAR}, #{zokusei8,jdbcType=VARCHAR}, #{zokusei9,jdbcType=VARCHAR}, 
@@ -40,6 +41,9 @@
       </if>
       <if test="authorCd != null">
         author_cd,
+      </if>
+      <if test="priorityOrderCd != null">
+        priority_order_cd,
       </if>
       <if test="restrictCd != null">
         restrict_cd,
@@ -88,6 +92,9 @@
       <if test="authorCd != null">
         #{authorCd,jdbcType=VARCHAR},
       </if>
+      <if test="priorityOrderCd != null">
+        #{priorityOrderCd,jdbcType=INTEGER},
+      </if>
       <if test="restrictCd != null">
         #{restrictCd,jdbcType=BIGINT},
       </if>
@@ -130,7 +137,7 @@
     </trim>
   </insert>
     <insert id="insertAll">
-      insert into planocycle.work_priority_order_restrict_result (company_cd, author_cd, restrict_cd,
+      insert into planocycle.work_priority_order_restrict_result (company_cd, author_cd, priority_order_cd, restrict_cd,
       zokusei1, zokusei2, zokusei3,
       zokusei4, zokusei5, zokusei6,
       zokusei7, zokusei8, zokusei9,
@@ -138,7 +145,7 @@
       )
       values
       <foreach collection="list" item="item" separator=",">
-      (#{item.companyCd,jdbcType=VARCHAR}, #{item.authorCd,jdbcType=VARCHAR}, #{item.restrictCd,jdbcType=BIGINT},
+      (#{item.companyCd,jdbcType=VARCHAR}, #{item.authorCd,jdbcType=VARCHAR}, #{item.priorityOrderCd,jdbcType=INTEGER}, #{item.restrictCd,jdbcType=BIGINT},
       #{item.zokusei1,jdbcType=VARCHAR}, #{item.zokusei2,jdbcType=VARCHAR}, #{item.zokusei3,jdbcType=VARCHAR},
       #{item.zokusei4,jdbcType=VARCHAR}, #{item.zokusei5,jdbcType=VARCHAR}, #{item.zokusei6,jdbcType=VARCHAR},
       #{item.zokusei7,jdbcType=VARCHAR}, #{item.zokusei8,jdbcType=VARCHAR}, #{item.zokusei9,jdbcType=VARCHAR},

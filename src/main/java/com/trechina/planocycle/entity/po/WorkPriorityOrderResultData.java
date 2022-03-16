@@ -5,6 +5,8 @@ public class WorkPriorityOrderResultData {
 
     private String authorCd;
 
+    private Integer priorityOrderCd;
+
     private String janCd;
 
     private Long restrictCd;
@@ -45,6 +47,14 @@ public class WorkPriorityOrderResultData {
 
     public void setAuthorCd(String authorCd) {
         this.authorCd = authorCd == null ? null : authorCd.trim();
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
     }
 
     public String getJanCd() {

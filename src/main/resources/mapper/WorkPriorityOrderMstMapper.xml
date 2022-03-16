@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.WorkPriorityOrderMst">
     <result column="company_cd" jdbcType="VARCHAR" property="companyCd" />
     <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
     <result column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
     <result column="shelf_pattern_cd" jdbcType="BIGINT" property="shelfPatternCd" />
     <result column="attribute1" jdbcType="SMALLINT" property="attribute1" />
@@ -12,10 +13,10 @@
     <result column="partition_val" jdbcType="SMALLINT" property="partitionVal" />
   </resultMap>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderMst">
-    insert into planocycle.work_priority_order_mst (company_cd, author_cd, product_power_cd,
+    insert into planocycle.work_priority_order_mst (company_cd, author_cd, priority_order_cd, product_power_cd,
       shelf_pattern_cd, attribute1, attribute2, 
       partition_flag, partition_val)
-    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{productPowerCd,jdbcType=INTEGER}, 
+    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{productPowerCd,jdbcType=INTEGER},
       #{shelfPatternCd,jdbcType=BIGINT}, #{attribute1,jdbcType=SMALLINT}, #{attribute2,jdbcType=SMALLINT}, 
       #{partitionFlag,jdbcType=SMALLINT}, #{partitionVal,jdbcType=SMALLINT})
   </insert>
@@ -27,6 +28,9 @@
       </if>
       <if test="authorCd != null">
         author_cd,
+      </if>
+      <if test="priorityOrderCd != null">
+        priority_order_cd,
       </if>
       <if test="productPowerCd != null">
         product_power_cd,
@@ -53,6 +57,9 @@
       </if>
       <if test="authorCd != null">
         #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="priorityOrderCd != null">
+        #{priorityOrderCd,jdbcType=INTEGER},
       </if>
       <if test="productPowerCd != null">
         #{productPowerCd,jdbcType=INTEGER},

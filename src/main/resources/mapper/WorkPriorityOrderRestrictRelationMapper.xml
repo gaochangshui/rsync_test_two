@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictRelation">
     <result column="company_cd" jdbcType="VARCHAR" property="companyCd" />
     <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
     <result column="tai_cd" jdbcType="INTEGER" property="taiCd" />
     <result column="tana_cd" jdbcType="INTEGER" property="tanaCd" />
     <result column="tana_type" jdbcType="SMALLINT" property="tanaType" />
@@ -20,13 +21,13 @@
     <result column="zokusei10" jdbcType="VARCHAR" property="zokusei10" />
   </resultMap>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictRelation">
-    insert into planocycle.work_priority_order_restrict_relation (company_cd, author_cd, tai_cd,
+    insert into planocycle.work_priority_order_restrict_relation (company_cd, author_cd, priority_order_cd, tai_cd,
       tana_cd, tana_type, restrict_cd, 
       zokusei1, zokusei2, zokusei3, 
       zokusei4, zokusei5, zokusei6, 
       zokusei7, zokusei8, zokusei9, 
       zokusei10)
-    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{taiCd,jdbcType=INTEGER}, 
+    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{taiCd,jdbcType=INTEGER},
       #{tanaCd,jdbcType=INTEGER}, #{tanaType,jdbcType=SMALLINT}, #{restrictCd,jdbcType=BIGINT}, 
       #{zokusei1,jdbcType=VARCHAR}, #{zokusei2,jdbcType=VARCHAR}, #{zokusei3,jdbcType=VARCHAR}, 
       #{zokusei4,jdbcType=VARCHAR}, #{zokusei5,jdbcType=VARCHAR}, #{zokusei6,jdbcType=VARCHAR}, 
@@ -41,6 +42,9 @@
       </if>
       <if test="authorCd != null">
         author_cd,
+      </if>
+      <if test="priorityOrderCd != null">
+        priority_order_cd,
       </if>
       <if test="taiCd != null">
         tai_cd,
@@ -92,6 +96,9 @@
       <if test="authorCd != null">
         #{authorCd,jdbcType=VARCHAR},
       </if>
+      <if test="priorityOrderCd != null">
+        #{priorityOrderCd,jdbcType=INTEGER},
+      </if>
       <if test="taiCd != null">
         #{taiCd,jdbcType=INTEGER},
       </if>
@@ -137,11 +144,11 @@
     </trim>
   </insert>
   <insert id="insertAll">
-    insert into planocycle.work_priority_order_restrict_relation (company_cd, author_cd, tai_cd,
+    insert into planocycle.work_priority_order_restrict_relation (company_cd, author_cd, priority_order_cd, tai_cd,
     tana_cd, tana_type, restrict_cd)
     values
     <foreach collection="list" item="item" separator=",">
-    (#{item.companyCd,jdbcType=VARCHAR}, #{item.authorCd,jdbcType=VARCHAR}, #{item.taiCd,jdbcType=INTEGER},
+    (#{item.companyCd,jdbcType=VARCHAR}, #{item.authorCd,jdbcType=VARCHAR}, #{item.priorityOrderCd,jdbcType=INTEGER}, #{item.taiCd,jdbcType=INTEGER},
     #{item.tanaCd,jdbcType=INTEGER}, #{item.tanaType,jdbcType=SMALLINT}, #{item.restrictCd,jdbcType=BIGINT})
     </foreach>
   </insert>

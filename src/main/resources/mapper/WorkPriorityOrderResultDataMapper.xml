@@ -5,6 +5,7 @@
     <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
     <id column="author_cd" jdbcType="VARCHAR" property="authorCd" />
     <id column="jan_cd" jdbcType="VARCHAR" property="janCd" />
+    <result column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
     <result column="restrict_cd" jdbcType="BIGINT" property="restrictCd" />
     <result column="sku_rank" jdbcType="BIGINT" property="skuRank" />
     <result column="adopt_flag" jdbcType="INTEGER" property="adoptFlag" />
@@ -17,7 +18,7 @@
     <result column="face_keisan" jdbcType="BIGINT" property="faceKeisan" />
   </resultMap>
   <sql id="Base_Column_List">
-    company_cd, author_cd, jan_cd, restrict_cd, sku_rank, adopt_flag, face, face_sku, 
+    company_cd, author_cd, priority_order_cd, jan_cd, restrict_cd, sku_rank, adopt_flag, face, face_sku,
     irisu, tai_cd, tana_cd, tana_type, face_keisan
   </sql>
   <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
@@ -88,12 +89,12 @@
       and author_cd = #{authorCd,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
-    insert into planocycle.work_priority_order_result_data (company_cd, author_cd, jan_cd,
+    insert into planocycle.work_priority_order_result_data (company_cd, author_cd, priority_order_cd, jan_cd,
       restrict_cd, sku_rank, adopt_flag, 
       face, face_sku, irisu, 
       tai_cd, tana_cd, tana_type,
       face_keisan)
-    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{janCd,jdbcType=VARCHAR}, 
+    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR} ,#{priorityOrderCd,jdbcType=INTEGER}, #{janCd,jdbcType=VARCHAR},
       #{restrictCd,jdbcType=BIGINT}, #{skuRank,jdbcType=BIGINT}, #{adoptFlag,jdbcType=INTEGER}, 
       #{face,jdbcType=BIGINT}, #{faceSku,jdbcType=BIGINT}, #{irisu,jdbcType=BIGINT}, 
       #{taiCd,jdbcType=INTEGER}, #{tanaCd,jdbcType=INTEGER}, #{restrictType,jdbcType=INTEGER}, 
@@ -107,6 +108,9 @@
       </if>
       <if test="authorCd != null">
         author_cd,
+      </if>
+      <if test="priorityOrderCd != null">
+        priority_order_cd,
       </if>
       <if test="janCd != null">
         jan_cd,
@@ -148,6 +152,9 @@
       </if>
       <if test="authorCd != null">
         #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="priorityOrderCd != null">
+        #{priorityOrderCd,jdbcType=INTEGER},
       </if>
       <if test="janCd != null">
         #{janCd,jdbcType=VARCHAR},
