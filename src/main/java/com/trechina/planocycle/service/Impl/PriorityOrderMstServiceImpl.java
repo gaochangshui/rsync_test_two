@@ -75,7 +75,16 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Autowired
     private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     @Autowired
+    private WorkPriorityOrderSpaceMapper workPriorityOrderSpaceMapper;
+    @Autowired
+    private WorkPriorityOrderSortMapper workPriorityOrderSortMapper;
+    @Autowired
+    private WorkPriorityOrderSortRankMapper workPriorityOrderSortRankMapper;
+    @Autowired
+    private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
+    @Autowired
     private cgiUtils cgiUtil;
+
 
     /**
      * 获取优先顺位表list
@@ -875,6 +884,35 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS,reorder);
+    }
+
+    /**
+     * 新规时清空对应临时表所有信息
+     * @param companyCd
+     * @return
+     */
+    @Override
+    public void deleteWorkTable(String companyCd) {
+        //String authorCd = session.getAttribute("aud").toString();
+        String authorCd = "10215814";
+        workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd);
+        //清空RestrictRelation表
+        workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd,authorCd);
+        //清空RestrictResult表
+        workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd,authorCd);
+        //清空RestrictSet表
+        workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd,authorCd);
+        //清空ResultData表
+        workPriorityOrderResultDataMapper.delResultData(companyCd,authorCd);
+        //清空Space表
+        workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd,authorCd);
+        //清空Sort表
+        workPriorityOrderSortMapper.delete(companyCd,authorCd);
+        //清空SortRank表
+        workPriorityOrderSortRankMapper.delete(companyCd,authorCd);
+
+
+
     }
 
     @Override

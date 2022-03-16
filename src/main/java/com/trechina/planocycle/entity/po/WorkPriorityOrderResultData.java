@@ -26,7 +26,10 @@ public class WorkPriorityOrderResultData {
     private Integer restrictType;
 
     private Long faceKeisan;
+
     private Double salesCnt;
+
+    private Integer resultRank;
 
     public String getCompanyCd() {
         return companyCd;
@@ -140,6 +143,14 @@ public class WorkPriorityOrderResultData {
         this.salesCnt = salesCnt;
     }
 
+    public Integer getResultRank() {
+        return resultRank;
+    }
+
+    public void setResultRank(Integer resultRank) {
+        this.resultRank = resultRank;
+    }
+
     @Override
     public String toString() {
         return "WorkPriorityOrderResultData{" +
@@ -157,6 +168,7 @@ public class WorkPriorityOrderResultData {
                 ", restrictType=" + restrictType +
                 ", faceKeisan=" + faceKeisan +
                 ", salesCnt=" + salesCnt +
+                ", resultRank=" + resultRank +
                 '}';
     }
 }

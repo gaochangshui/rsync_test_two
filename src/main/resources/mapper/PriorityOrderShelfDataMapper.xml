@@ -15,18 +15,18 @@
     </select>
     <select id="getPlatformShedData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto">
 
-        select tai_cd,tana_cd,datas.restrict_type,
-               sum(datas.face),count(datas.jan_cd)
+        select tai_cd,tana_cd,datas.tana_type,
+               sum(datas.face) as  faceNum,count(datas.jan_cd) as skuNum
         from
             planocycle.work_priority_order_result_data datas
         where datas.adopt_flag = '1' and company_cd = #{companyCd} and author_cd = #{authorCd}
-        GROUP BY datas.tai_cd,datas.tana_cd,datas.restrict_type
+        GROUP BY datas.tai_cd,datas.tana_cd,datas.tana_type
     </select>
     <select id="getRestrictJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto">
         select datas.jan_cd as janCd,jans.jan_nm as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, jans.irisu as zokusei7,jans.pkg as zokusei5,
                jans.alcohol as zokusei8,jans.brand as zokusei9,jans.kikaku as zokusei6,
                jans.scat1cd_val as zokusei1,jans.scat2cd_val as zokusei2,jans.scat3cd_val as zokusei3,jans.scat4cd_val as zokusei4,
-               datas.restrict_type as restrictType,sku_rank as rank,datas.face as faceNum
+               datas.tana_type as restrictType,sku_rank as rank,datas.face as faceNum
         from  planocycle.work_priority_order_result_data datas
                 left join planocycle.work_priority_order_restrict_result rmst
                         on rmst.restrict_cd = datas.restrict_cd
@@ -41,13 +41,13 @@
         select DISTINCT datas.jan_cd as janCd,jans.jan_nm as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, jans.irisu as zokusei7,jans.pkg as zokusei5,
                jans.alcohol as zokusei8,jans.brand as zokusei9,jans.kikaku as zokusei6,
                jans.scat1cd_val as zokusei1,jans.scat2cd_val as zokusei2,jans.scat3cd_val as zokusei3,jans.scat4cd_val as zokusei4,
-               datas.restrict_type as restrictType,sku_rank as rank,datas.face as faceNum
+               datas.tana_type as restrictType,sku_rank as rank,datas.face as faceNum
         from  planocycle.work_priority_order_result_data datas
                   left join planocycle.work_priority_order_restrict_result rmst
                             on rmst.restrict_cd = datas.restrict_cd
                   left join masterdb.jan_mst jans
                             on jans.jan_cd = datas.jan_cd
-        where datas.tai_cd = #{item.taiCd} and datas.tana_cd = #{item.tanaCd} and datas.restrict_type = #{item.restrictType}
+        where datas.tai_cd = #{item.taiCd} and datas.tana_cd = #{item.tanaCd} and datas.tana_type = #{item.restrictType}
         and datas.company_cd = #{item.companyCd} and datas.author_cd =#{authorCd}
     </select>
 </mapper>

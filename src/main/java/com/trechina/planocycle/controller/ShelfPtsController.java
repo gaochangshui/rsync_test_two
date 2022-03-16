@@ -123,8 +123,8 @@ public class ShelfPtsController {
      * @return
      */
     @GetMapping("getPtsDetailData")
-    public  Map<String,Object> getPtsDetailData(Integer patternCd){
-        return shelfPtsService.getPtsDetailData(patternCd);
+    public  Map<String,Object> getPtsDetailData(Integer patternCd,String companyCd){
+        return shelfPtsService.getPtsDetailData(patternCd,companyCd);
 
     }
 

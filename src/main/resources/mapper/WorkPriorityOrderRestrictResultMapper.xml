@@ -202,13 +202,13 @@
         and  mst.irisu = #{item.zokusei7} :: integer
       </if>
       <if test="item.zokusei8 != null and item.zokusei8!=''">
-        and  mst.alcohol = #{item.zokuse8}
+        and  mst.alcohol = #{item.zokusei8}
       </if>
       <if test="item.zokusei9 != null and item.zokusei9!=''">
-        and  mst.brand = #{item.zokuse9}
+        and  mst.brand = #{item.zokusei9}
       </if>
       <if test="item.zokusei10 != null and item.zokusei10!=''">
-        and  mst.brand = #{item.zokuse10}
+        and  mst.brand = #{item.zokusei10}
       </if>
     </where>
     order by rank_result,jan

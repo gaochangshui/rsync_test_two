@@ -1,10 +1,9 @@
 package com.trechina.planocycle;
 
-import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
 import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.service.PriorityOrderMstService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,8 @@ class PlanoCycleApiApplicationTests {
     WorkPriorityOrderRestrictResultMapper workPriorityOrderRestrictResultMapper;
     @Autowired
     WorkPriorityOrderResultDataMapper workPriorityOrderResultDataMapper;
-
+    @Autowired
+    PriorityOrderMstService priorityOrderMstService;
 
     @Test
     public void test0(){
@@ -67,6 +67,11 @@ class PlanoCycleApiApplicationTests {
        // String colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst("0001", "10212159");
         String [] a= {"brand","scat2cd_val"};
         List<WorkPriorityOrderResultData> reorder = workPriorityOrderResultDataMapper.getReorder("0001", "10215814", a[0], a[1]);
+        int i = 1;
+        for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder) {
+            workPriorityOrderResultData.setResultRank(i++);
+        }
+
         System.out.println(reorder);
         //workPriorityOrderResultDataMapper.getResultDatas("0001","10215814").forEach(System.out::println);
         //workPriorityOrderRestrictResult.setZokusei1("014");
@@ -89,10 +94,11 @@ class PlanoCycleApiApplicationTests {
         //productPowerDataDto.setJan("12346");
         //productPowerDataDtoList.add(productPowerDataDto);
         //workPriorityOrderResultDataMapper.setResultDataList(productPowerDataDtoList,5L,"0001","10215814");
-        WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult = new WorkPriorityOrderRestrictResult();
-        workPriorityOrderRestrictResult.setZokusei1("0014");
-        List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, "0001", 1363,"10215814");
-        productPowerData.forEach(System.out::println);
+        //WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult = new WorkPriorityOrderRestrictResult();
+        //workPriorityOrderRestrictResult.setZokusei1("0014");
+        //List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, "0001", 1363,"10215814");
+        priorityOrderMstService.deleteWorkTable("0001");
+        //productPowerData.forEach(System.out::println);
         ////List<DataInfo> dataPotints = (ArrayList<DataInfo>) request.getAttribute("dataPotints");
         ////ArrayList<IotDataHistory> iotDataHistories = new ArrayList<IotDataHistory>();
         ////for (int i = 0; i < dataPotints.size(); i++) {

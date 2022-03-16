@@ -9,6 +9,7 @@ import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.PriorityOrderMstAttrSortMapper;
 import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
+import com.trechina.planocycle.service.PriorityOrderMstService;
 import com.trechina.planocycle.service.ShelfPatternService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -33,6 +34,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     private ShelfPatternService shelfPatternService;
     @Autowired
     private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+    @Autowired
+    private PriorityOrderMstService priorityOrderMstService;
     /**
      * 获取棚割pts信息
      *
@@ -239,7 +242,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     @Override
-    public Map<String, Object> getPtsDetailData(Integer patternCd) {
+    public Map<String, Object> getPtsDetailData(Integer patternCd,String companyCd) {
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
         List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
         List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
@@ -253,6 +256,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
        if (ptsDetailData != null) {
            ptsDetailData.setPtsJanDataList(janData);
        }
+        priorityOrderMstService.deleteWorkTable(companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
     /**
