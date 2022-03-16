@@ -27,7 +27,7 @@ public class PriorityOrderJanNewController {
     }
 
     /**
-     * 保存新规商品list
+     * work表保存新规商品list
      * @param
      * @return
      */
@@ -36,4 +36,20 @@ public class PriorityOrderJanNewController {
     public Map<String,Object> setPriorityOrderJanNew(@RequestBody List<PriorityOrderJanNew> priorityOrderJanNew){
         return priorityOrderJanNewService.setPriorityOrderJanNew(priorityOrderJanNew);
     }
+
+    /**
+     * 获取新规jan的名字分类
+     * @param janNew
+     * @return
+     *
+     */
+    @GetMapping("getPriorityOrderJanNewInfo")
+    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janNew) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        return priorityOrderJanNewService.getPriorityOrderJanNewInfo(janNew);
+    }
+
+    /**
+     *
+     */
+   
 }

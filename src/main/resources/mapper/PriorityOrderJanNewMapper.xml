@@ -10,12 +10,12 @@
     <result column="branch_account" jdbcType="NUMERIC" property="branchAccount" />
   </resultMap>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanNew">
-    insert into planocycle.priority_order_jan_new (company_cd, priority_order_cd, jan_new,
-      rank,author_cd ,create_time)
+    insert into planocycle.work_priority_order_jan_new (company_cd, jan_new,
+      jan_rank,author_cd)
     values
            <foreach collection="lists" separator="," item="list">
-           (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janNew,jdbcType=VARCHAR},
-      #{list.rank,jdbcType=INTEGER},#{authorCd},now())
+           (#{list.companyCd,jdbcType=VARCHAR}, #{list.janNew,jdbcType=VARCHAR},
+      #{list.rank,jdbcType=INTEGER},#{authorCd})
            </foreach>
   </insert>
 
@@ -32,14 +32,12 @@
     </delete>
 
     <select id="selectJanNew" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
-        select news.jan_new as janNew,jans.jan_nm as janName,jans.scat1cd_val,jans.scat2cd_val,scat3cd_val,scat4cd_val,news.rank
-        from planocycle.priority_order_jan_new news
-                 left join (select * from masterdb.jan_mst
-                            union
-                            select * from masterdb.jan_mst_planocycle) jans
+        select news.jan_new as janNew,jans.jan_nm as janName,jans.scat1cd_val,jans.scat2cd_val,scat3cd_val,scat4cd_val,news.jan_rank
+        from planocycle.work_priority_order_jan_new news
+                 left join  masterdb.jan_mst jans
                 on news.jan_new = jans.jan_cd
         where news.company_cd = #{companyCd,jdbcType=VARCHAR}
-        and news.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        and author_cd =
 
   </select>
     <select id="selectJanNewNotExistsMst" resultType="map">
@@ -94,6 +92,13 @@
         select count(1)
         from  masterdb.jan_mst_planocycle
         where jan_cd = #{priorityOrderJanNew.janNew}
+    </select>
+    <select id="getJanNameClassify" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
+        select jan_cd as janNew,jan_nm as janName,scat1cd_val,scat2cd_val,scat3cd_val,scat4cd_val from masterdb.jan_mst
+        where jan_cd in
+        <foreach collection="janNew" separator="," item="item" open="(" close=")">
+            #{item}
+        </foreach>
     </select>
 
 </mapper>

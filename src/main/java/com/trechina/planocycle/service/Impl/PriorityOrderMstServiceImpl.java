@@ -878,6 +878,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         List<WorkPriorityOrderResultData> reorder = null;
         if (split.length==1){
             reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, aud, split[0], null);
+            workPriorityOrderSortRankMapper.insert(companyCd,reorder,aud);
         }else {
              reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, aud, split[0], split[1]);
 

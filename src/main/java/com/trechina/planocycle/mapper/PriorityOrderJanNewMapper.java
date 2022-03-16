@@ -29,4 +29,6 @@ public interface PriorityOrderJanNewMapper {
 
     Integer getJanMstPlanocycleNum( @Param("priorityOrderJanNew") PriorityOrderJanNew priorityOrderJanNew);
 
+
+    List<PriorityOrderJanNewVO> getJanNameClassify(@Param("janNew") String [] janNew);
 }

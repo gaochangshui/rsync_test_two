@@ -95,7 +95,7 @@ public class PriorityOrderMstController {
     }
 
     @GetMapping("/preCalculation")
-    public Map<String, Object> preCalculation(String companyCd, Long patternCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public Map<String, Object> preCalculation(String companyCd, Long patternCd ) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return priorityOrderMstService.preCalculation(companyCd, patternCd);
     }
 
