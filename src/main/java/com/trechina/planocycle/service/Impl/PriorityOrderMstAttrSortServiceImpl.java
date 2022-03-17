@@ -2,7 +2,10 @@ package com.trechina.planocycle.service.Impl;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderSpaceDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
-import com.trechina.planocycle.entity.po.*;
+import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictSet;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderSpace;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrValue;
@@ -22,6 +25,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -104,6 +108,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         List<PriorityOrderAttrListVo> attributeList = priorityOrderMstAttrSortMapper.getAttribute();
         return ResultMaps.result(ResultEnum.SUCCESS, attributeList);
     }
+
     /**
      * 陈列设定获取属性1和属性2
      */
@@ -112,6 +117,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         List<PriorityOrderAttrListVo> attributeList = priorityOrderMstAttrSortMapper.getAttributeSort();
         return ResultMaps.result(ResultEnum.SUCCESS, attributeList);
     }
+
     /**
      * 获取属性的分类及商品分类列表
      */
@@ -261,7 +267,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         String companyCd = dto.getCompanyCd();
         Long shelfPatternCd = dto.getPatternCd();
         // 1.保存mst
-        workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd,dto.getPriorityOrderCd());
+        workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, dto.getPriorityOrderCd());
         WorkPriorityOrderMst orderMst = new WorkPriorityOrderMst();
         orderMst.setCompanyCd(companyCd);
         orderMst.setAuthorCd(authorCd);
@@ -272,7 +278,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         workPriorityOrderMstMapper.insert(orderMst);
 
         // 2.保存space
-        workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd,dto.getPriorityOrderCd());
+        workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, dto.getPriorityOrderCd());
         List<PriorityOrderAttrVO> dataList = dto.getDataList();
         List<WorkPriorityOrderSpace> spaceList = new ArrayList<>();
         WorkPriorityOrderSpace space = null;
@@ -297,11 +303,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
 
         // 3.space转化为制约条件
-        workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd,dto.getPriorityOrderCd());
+        workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd, dto.getPriorityOrderCd());
         List<ShelfPtsDataTanaCount> tanaCountList = shelfPtsDataTanamstMapper.ptsTanaCountByTai(shelfPatternCd);
         List<WorkPriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
         try {
-            restrictSetList = this.setRestrict(dataList, tanaCountList, dto.getAttr1(), dto.getAttr2(), companyCd, authorCd,dto.getPriorityOrderCd());
+            restrictSetList = this.setRestrict(dataList, tanaCountList, dto.getAttr1(), dto.getAttr2(), companyCd, authorCd, dto.getPriorityOrderCd());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             logger.error(e.getMessage());
         }
@@ -316,7 +322,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     public Map<String, Object> getEditAttributeArea(String companyCd) {
         String authorCd = httpSession.getAttribute("aud").toString();
         List<PriorityOrderAttrVO> editAttributeArea = priorityOrderMstAttrSortMapper.getEditAttributeArea(companyCd, authorCd);
-        return ResultMaps.result(ResultEnum.SUCCESS,editAttributeArea);
+        return ResultMaps.result(ResultEnum.SUCCESS, editAttributeArea);
     }
 
     private List<WorkPriorityOrderRestrictSet> packageRestrict(int begin, int end, Integer taiCd, WorkPriorityOrderRestrictSet tmpRestrictSet) {
@@ -343,7 +349,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
     @Override
     public List<WorkPriorityOrderRestrictSet> setRestrict(List<PriorityOrderAttrVO> dataList, List<ShelfPtsDataTanaCount> tanaCountList,
-                                                          Short attr1, Short attr2, String companyCd, String authorCd,Integer priorityOrderCd)
+                                                          Short attr1, Short attr2, String companyCd, String authorCd, Integer priorityOrderCd)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         List<WorkPriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
         Integer pattan = 0;
@@ -354,6 +360,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         // 创建一个设置对应属性的公共对象
         WorkPriorityOrderRestrictSet tmpRestrictSet = null;
 
+        // 按照rank排序
+        dataList = dataList.stream().sorted(Comparator.comparing(PriorityOrderAttrVO::getRank)).collect(Collectors.toList());
         for (PriorityOrderAttrVO vo : dataList) {
             // 商品数
             pattan = vo.getTanaPattan();
