@@ -931,11 +931,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //清空SortRank表
         workPriorityOrderSortRankMapper.delete(companyCd,authorCd,priorityOrderCd);
         //清空janNew表
-        priorityOrderJanNewMapper.workDelete(companyCd,priorityOrderCd);
+        priorityOrderJanNewMapper.workDelete(companyCd,authorCd,priorityOrderCd);
         //清空jan_replace
-        priorityOrderJanReplaceMapper.workDelete(companyCd,priorityOrderCd);
+        //priorityOrderJanReplaceMapper.workDelete(companyCd,authorCd,priorityOrderCd);
         //清空work_priority_order_cut表
-        priorityOrderJanCardMapper.workDelete(companyCd,priorityOrderCd);
+        //priorityOrderJanCardMapper.workDelete(companyCd,authorCd,priorityOrderCd);
 
 
 
@@ -1100,15 +1100,18 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 //TODO:10215814
     @Override
     public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) {
-        this.deleteWorkTable(companyCd,priorityOrderCd);
-        priorityOrderJanCardMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //priorityOrderJanReplaceMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //priorityOrderJanNewMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //workPriorityOrderMstMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //workPriorityOrderRestrictRelationMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //workPriorityOrderRestrictResultMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //workPriorityOrderRestrictSetMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //workPriorityOrderResultDataMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        this.deleteWorkTable(companyCd,0);
+        String aud = session.getAttribute("aud").toString();
+        priorityOrderJanCardMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        priorityOrderJanReplaceMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        priorityOrderJanNewMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        workPriorityOrderMstMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        workPriorityOrderRestrictRelationMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        workPriorityOrderRestrictResultMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        workPriorityOrderRestrictSetMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        workPriorityOrderResultDataMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        workPriorityOrderSortMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+
         return null;
     }
 

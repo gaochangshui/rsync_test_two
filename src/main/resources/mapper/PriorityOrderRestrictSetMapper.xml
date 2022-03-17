@@ -294,7 +294,7 @@ zokusei8 is null and zokusei9 is null and zokusei10 is null
     <insert id="setPriorityOrderRestrict">
         insert into planocycle.work_priority_order_restrict_set(priority_order_cd,company_cd,tai_cd,tana_cd,tana_type,zokusei${item.zokuseiId},author_cd)
         values (#{item.priorityOrderCd},#{item.companyCd},#{item.taiCd},#{item.tanaCd},#{item.tanaType},#{item.val},#{authorCd})
-        on conflict(company_cd,author_cd,tai_cd,tana_cd,tana_type)
+        on conflict(company_cd,author_cd,tai_cd,tana_cd,tana_type,priority_order_cd)
         do update set
           zokusei${item.zokuseiId} = #{item.val}
 

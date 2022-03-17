@@ -51,7 +51,7 @@ public class PriorityOrderJanNewController {
 
     /**
      * 根据分类去商品力点数表抽同类商品
-     * @param priorityOrderJanNewVO
+     * @param
      * @return
      */
     @PostMapping("getSimilarity")

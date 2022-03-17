@@ -14,7 +14,7 @@ public interface PriorityOrderJanNewMapper {
     int insert(@Param("lists") List<PriorityOrderJanNew> record,@Param("authorCd")String authorCd);
 
     int delete(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
-    int workDelete(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    int workDelete(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     List<PriorityOrderJanNewVO> selectJanNew(String companyCd, Integer priorityOrderCd);
 
@@ -35,4 +35,7 @@ public interface PriorityOrderJanNewMapper {
     List<PriorityOrderJanNewVO> getJanNameClassify(@Param("janNew") String [] janNew);
 
     List<PriorityOrderJanNewDto> getProductPowerData(@Param("productPowerCd")Integer productPowerCd, @Param("item") PriorityOrderJanNewDto priorityOrderJanNewVO);
+
+    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
+
 }

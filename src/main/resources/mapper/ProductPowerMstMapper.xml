@@ -54,8 +54,8 @@
   </update>
   <update id="setProductPowerCdForMst">
     update planocycle.work_priority_order_mst
-    set product_power_cd = #{productPowerCd} , priority_order_cd = #{priorityOrderCd}
-    where company_cd = #{companyCd} and author_cd = #{authorCd}
+    set product_power_cd = #{productPowerCd}
+    where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
   </update>
 
 
