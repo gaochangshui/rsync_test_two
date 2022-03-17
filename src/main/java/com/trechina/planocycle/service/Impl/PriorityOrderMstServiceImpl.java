@@ -2,12 +2,10 @@ package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
-import com.trechina.planocycle.entity.vo.PtsTanaVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
@@ -19,7 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionUsageException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -89,7 +89,16 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private cgiUtils cgiUtil;
     @Autowired
     private ShelfPtsDataMapper shelfPtsDataMapper;
-
+    @Autowired
+    private PriorityOrderRestrictRelationMapper priorityOrderRestrictRelationMapper;
+    @Autowired
+    private PriorityOrderRestrictResultMapper priorityOrderRestrictResultMapper;
+    @Autowired
+    private PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
+    @Autowired
+    private PriorityOrderResultDataMapper priorityOrderResultDataMapper;
+    @Autowired
+    private PriorityOrderSpaceMapper priorityOrderSpaceMapper;
 
 
     /**
@@ -952,6 +961,55 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return null;
     }
 
+
+    /**
+     * 保存所有work_priority_order_xxxx到表到实际表中
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Map<String, Object> saveAllWorkPriorityOrder(String companyCd, Integer priorityOrderCd){
+//        String authorCd = session.getAttribute("aud").toString();
+        String authorCd = "10218504";
+
+        try {
+            //保存OrderMst，逻辑删除原数据
+            priorityOrderMstMapper.insertBySelect(companyCd, authorCd,priorityOrderCd);
+            priorityOrderMstMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd,priorityOrderCd);
+
+            //保存OrderRestrictRelation，逻辑删除原数据
+            priorityOrderRestrictRelationMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
+            priorityOrderRestrictRelationMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+
+            //保存OrderRestrictResult，逻辑删除原数据
+            priorityOrderRestrictResultMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
+            priorityOrderRestrictResultMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+
+            //保存OrderRestrictSet，逻辑删除原数据
+            priorityOrderRestrictSetMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
+            priorityOrderRestrictSetMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+
+            //保存ResultData，逻辑删除原数据
+            priorityOrderResultDataMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
+            priorityOrderResultDataMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            workPriorityOrderResultDataMapper.delResultData(companyCd,authorCd,priorityOrderCd);
+
+            //保存Space，逻辑删除原数据
+            priorityOrderSpaceMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
+            priorityOrderSpaceMapper.logicDeleteByPriorityOrderCd(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+        }catch (Exception exception){
+            logger.error("保存临时表数据到实际表报错", exception);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
+
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
     /**
      * 放置商品
      */
@@ -1058,7 +1116,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                         finalSetJanResultData.add(priorityOrderResultData);
                         usedWidth+=janTotalWidth;
                     }else{
-                        //根据face数进行摆放可以放不开，直接不放，结束该位置的摆放
+                        //根据face数进行摆放放不开，直接不放，结束该位置的摆放
                         break;
                     }
                 }

@@ -17,4 +17,8 @@ public interface PriorityOrderRestrictResultMapper {
     int updateByPrimaryKeySelective(PriorityOrderRestrictResult record);
 
     int updateByPrimaryKey(PriorityOrderRestrictResult record);
+
+    int insertBySelect(@Param("companyCd") String companyCd,@Param("authorCd") String authorCd,@Param("priorityOrderCd") Integer priorityOrderCd);
+
+    int logicDeleteByPriorityOrderCd(@Param("companyCd") String companyCd,@Param("authorCd") String authorCd,@Param("priorityOrderCd") Integer priorityOrderCd);
 }

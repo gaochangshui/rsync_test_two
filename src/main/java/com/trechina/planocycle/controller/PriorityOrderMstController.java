@@ -3,7 +3,9 @@ package com.trechina.planocycle.controller;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
+import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.service.PriorityOrderMstService;
+import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -107,5 +109,10 @@ public class PriorityOrderMstController {
     @GetMapping("/autoCalculation")
     public Map<String,Object> autoCalculation(String companyCd,Integer priorityOrderCd){
         return priorityOrderMstService.autoCalculation(companyCd,priorityOrderCd);
+    }
+
+    @PostMapping("/saveAllWorkPriorityOrder")
+    public Map<String,Object> saveAllWorkPriorityOrder(String companyCd,Integer priorityOrderCd){
+        return priorityOrderMstService.saveAllWorkPriorityOrder(companyCd,priorityOrderCd);
     }
 }

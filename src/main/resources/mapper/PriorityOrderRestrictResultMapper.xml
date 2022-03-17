@@ -103,4 +103,18 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>
+  <insert id="insertBySelect">
+    insert info planocycle.priority_order_restrict_result(priority_order_cd,company_cd,restrict_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,
+    zokusei7,zokusei8,zokusei9,zokusei10,tana_cnt,sku_cnt,author_cd)
+    select priority_order_cd,company_cd,restrict_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,
+    zokusei7,zokusei8,zokusei9,zokusei10,tana_cnt,sku_cnt,author_cd
+    from planocycle.work_priority_order_restrict_result
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </insert>
+  <update id="logicDeleteByPriorityOrderCd">
+    update planocycle.priority_order_restrict_result set delete_flag=1 where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and author_cd=#{authorCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </update>
 </mapper>

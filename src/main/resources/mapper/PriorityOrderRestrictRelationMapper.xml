@@ -90,4 +90,18 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>
+  <update id="logicDeleteByPriorityOrderCd">
+    update planocycle.priority_order_restrict_relation
+    set delete_flag=1
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </update>
+  <insert id="insertBySelect">
+    insert into planocycle.priority_order_restrict_relation(company_cd,priority_order_cd,tai_cd,tana_cd,tana_type,restrict_cd,
+    author_cd)
+    select company_cd,priority_order_cd,tai_cd,tana_cd,tana_type,restrict_cd,
+    author_cd from planocycle.work_priority_order_restrict_relation
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </insert>
 </mapper>

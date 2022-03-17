@@ -17,4 +17,8 @@ public interface PriorityOrderSpaceMapper {
     int updateByPrimaryKeySelective(PriorityOrderSpace record);
 
     int updateByPrimaryKey(PriorityOrderSpace record);
+
+    int insertBySelect(@Param("companyCd") String companyCd, @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
+
+    int logicDeleteByPriorityOrderCd(@Param("companyCd") String companyCd, @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 }

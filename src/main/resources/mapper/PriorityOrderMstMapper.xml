@@ -61,4 +61,20 @@
       #{productPowerCd,jdbcType=INTEGER})
   </insert>
 
+  <update id="logicDeleteByPriorityOrderCd" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMst">
+    update planocycle.priority_order_mst set delete_flag=1
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    and author_cd=#{author_cd,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insertBySelect" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMst">
+    insert into planocycle.priority_order_mst (company_cd, priority_order_cd, priority_order_name,
+    product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd)
+    select company_cd, priority_order_cd, priority_order_name,
+    product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd
+    from planocycle.work_priority_order_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    and author_cd=#{author_cd,jdbcType=VARCHAR}
+  </insert>
+
 </mapper>

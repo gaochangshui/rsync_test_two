@@ -3,6 +3,7 @@ package com.trechina.planocycle.service;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
@@ -99,6 +100,9 @@ public interface PriorityOrderMstService {
 
     Map<String,Object> getFaceKeisanForCgi(String[]array,String companyCd,Integer shelfPatternNo,String authorCd);
 
+
+    @Transactional(rollbackFor = Exception.class)
+    Map<String, Object> saveAllWorkPriorityOrder(String companyCd, Integer priorityOrderCd);
 
     /**
      * 放置商品
