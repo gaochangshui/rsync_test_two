@@ -108,7 +108,18 @@
       #{item.tanaCount,jdbcType=INTEGER}, #{item.zoningNum,jdbcType=INTEGER}, #{item.attribute1Name,jdbcType=VARCHAR}, #{item.attribute2Name,jdbcType=VARCHAR})
     </foreach>
   </insert>
-    <delete id="deleteByAuthorCd">
+  <insert id="setWorkForFinal">
+    insert into planocycle.work_priority_order_space(company_cd, author_cd, priority_order_cd, attribute1_value,
+                                                     attribute2_value, old_zoning, new_zoning,
+                                                     tana_count, zoning_num, attribute1_name, attribute2_name)
+    select company_cd, #{authorCd}, priority_order_cd, attribute1_value,
+           attribute2_value, old_zoning, new_zoning,
+           tana_count, zoning_num, attribute1_name, attribute2_name
+    from planocycle.priority_order_space
+     where company_cd = #{companyCd,jdbcType=VARCHAR}
+            and priority_order_cd = #{priorityOrderCd}
+  </insert>
+  <delete id="deleteByAuthorCd">
       delete from planocycle.work_priority_order_space
       where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
         and priority_order_cd = #{priorityOrderCd}

@@ -1170,7 +1170,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderRestrictSetMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderResultDataMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderSortMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
-
+        workPriorityOrderSortRankMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        workPriorityOrderSpaceMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         return null;
     }
 

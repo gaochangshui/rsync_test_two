@@ -13,4 +13,7 @@ public interface WorkPriorityOrderSortRankMapper {
 
     int insert(@Param("companyCd")String companyCd, @Param("list")List<PriorityOrderJanNewDto> list, @Param("authorCd")String authorCd
     , @Param("priorityOrderCd")Integer priorityOrderCd);
+
+    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd")String authorCd);
+
 }
