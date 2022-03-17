@@ -24,6 +24,11 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
+  <delete id="deleteByAuthorCd" parameterType="map">
+    delete from planocycle.priority_order_restrict_result
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd=#{authorCd,jdbcType=VARCHAR}
+  </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictResult">
     insert into priority_order_restrict_result (company_cd, priority_order_cd, restrict_cd, 
       category, pkg, capacity
@@ -102,5 +107,19 @@
       capacity = #{capacity,jdbcType=INTEGER}
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </update>
+  <insert id="insertBySelect">
+    insert into planocycle.priority_order_restrict_result(priority_order_cd,company_cd,restrict_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,
+    zokusei7,zokusei8,zokusei9,zokusei10,tana_cnt,sku_cnt,author_cd,editer_cd,edit_time,create_time)
+    select priority_order_cd,company_cd,restrict_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,
+    zokusei7,zokusei8,zokusei9,zokusei10,tana_cnt,sku_cnt,author_cd,author_cd,now(),now()
+    from planocycle.work_priority_order_restrict_result
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </insert>
+  <update id="logicDeleteByPriorityOrderCd">
+    update planocycle.priority_order_restrict_result set deleteflg=1 where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and author_cd=#{authorCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>
 </mapper>

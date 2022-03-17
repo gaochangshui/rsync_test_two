@@ -42,7 +42,8 @@ class PlanoCycleApiApplicationTests {
     WorkPriorityOrderResultDataMapper workPriorityOrderResultDataMapper;
     @Autowired
     PriorityOrderMstService priorityOrderMstService;
-
+    @Autowired
+    PriorityOrderJanCardMapper priorityOrderJanCardMapper;
     @Test
     public void test0(){
         List<String> list = new ArrayList<>();
@@ -50,8 +51,9 @@ class PlanoCycleApiApplicationTests {
         list.add("7845");
         List<List<String>> lists = new ArrayList<>();
         lists.add(list);
-        priorityOrderMstService.getReorder("0001",1245);
+        //priorityOrderMstService.getReorder("0001",1245);
         //workPriorityOrderResultDataMapper.update(lists);
+        priorityOrderJanCardMapper.setWorkForFinal("0001",1,"1");
         //workPriorityOrderResultDataMapper.updates(list);
         //WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult = new WorkPriorityOrderRestrictResult();
         //FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(43);

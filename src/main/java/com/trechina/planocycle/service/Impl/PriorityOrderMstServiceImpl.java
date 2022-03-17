@@ -17,7 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionUsageException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -93,7 +95,16 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private cgiUtils cgiUtil;
     @Autowired
     private ShelfPtsDataMapper shelfPtsDataMapper;
-
+    @Autowired
+    private PriorityOrderRestrictRelationMapper priorityOrderRestrictRelationMapper;
+    @Autowired
+    private PriorityOrderRestrictResultMapper priorityOrderRestrictResultMapper;
+    @Autowired
+    private PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
+    @Autowired
+    private PriorityOrderResultDataMapper priorityOrderResultDataMapper;
+    @Autowired
+    private PriorityOrderSpaceMapper priorityOrderSpaceMapper;
 
 
     /**
@@ -931,11 +942,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //清空SortRank表
         workPriorityOrderSortRankMapper.delete(companyCd,authorCd,priorityOrderCd);
         //清空janNew表
-        priorityOrderJanNewMapper.workDelete(companyCd,priorityOrderCd);
+        priorityOrderJanNewMapper.workDelete(companyCd,authorCd,priorityOrderCd);
         //清空jan_replace
-        priorityOrderJanReplaceMapper.workDelete(companyCd,priorityOrderCd);
+        //priorityOrderJanReplaceMapper.workDelete(companyCd,authorCd,priorityOrderCd);
         //清空work_priority_order_cut表
-        priorityOrderJanCardMapper.workDelete(companyCd,priorityOrderCd);
+        //priorityOrderJanCardMapper.workDelete(companyCd,authorCd,priorityOrderCd);
 
 
 
@@ -970,6 +981,55 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    /**
+     * 保存所有work_priority_order_xxxx到表到实际表中
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Map<String, Object> saveAllWorkPriorityOrder(String companyCd, Integer priorityOrderCd){
+        String authorCd = session.getAttribute("aud").toString();
+//        String authorCd = "10218504";
+
+        try {
+            //保存OrderMst，逻辑删除原数据
+            priorityOrderMstMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderMstMapper.insertBySelect(companyCd, authorCd,priorityOrderCd);
+            workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd,priorityOrderCd);
+
+            //保存OrderRestrictRelation，逻辑删除原数据
+            priorityOrderRestrictRelationMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderRestrictRelationMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+
+            //保存OrderRestrictResult，逻辑删除原数据
+            priorityOrderRestrictResultMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderRestrictResultMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+
+            //保存OrderRestrictSet，逻辑删除原数据
+            priorityOrderRestrictSetMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderRestrictSetMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+
+            //保存ResultData，逻辑删除原数据
+            priorityOrderResultDataMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderResultDataMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderResultDataMapper.delResultData(companyCd,authorCd,priorityOrderCd);
+
+            //保存Space，逻辑删除原数据
+            priorityOrderSpaceMapper.logicDeleteByPriorityOrderCd(companyCd,authorCd,priorityOrderCd);
+            priorityOrderSpaceMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+        }catch (Exception exception){
+            logger.error("保存临时表数据到实际表报错", exception);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
+
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
@@ -1078,7 +1138,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                         finalSetJanResultData.add(priorityOrderResultData);
                         usedWidth+=janTotalWidth;
                     }else{
-                        //根据face数进行摆放可以放不开，直接不放，结束该位置的摆放
+                        //根据face数进行摆放放不开，直接不放，结束该位置的摆放
                         break;
                     }
                 }
@@ -1100,15 +1160,18 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 //TODO:10215814
     @Override
     public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) {
-        this.deleteWorkTable(companyCd,priorityOrderCd);
-        priorityOrderJanCardMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //priorityOrderJanReplaceMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //priorityOrderJanNewMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //workPriorityOrderMstMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //workPriorityOrderRestrictRelationMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //workPriorityOrderRestrictResultMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //workPriorityOrderRestrictSetMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        //workPriorityOrderResultDataMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        this.deleteWorkTable(companyCd,0);
+        String aud = session.getAttribute("aud").toString();
+        priorityOrderJanCardMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        priorityOrderJanReplaceMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        priorityOrderJanNewMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        workPriorityOrderMstMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        workPriorityOrderRestrictRelationMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        workPriorityOrderRestrictResultMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        workPriorityOrderRestrictSetMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        workPriorityOrderResultDataMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        workPriorityOrderSortMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+
         return null;
     }
 

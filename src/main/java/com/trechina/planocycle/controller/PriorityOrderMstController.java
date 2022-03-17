@@ -119,4 +119,9 @@ public class PriorityOrderMstController {
     public Map<String,Object> getPriorityOrderAll(String companyCd,Integer priorityOrderCd){
        return priorityOrderMstService.getPriorityOrderAll(companyCd,priorityOrderCd);
     }
+
+    @PostMapping("/saveAllWorkPriorityOrder")
+    public Map<String,Object> saveAllWorkPriorityOrder(String companyCd,Integer priorityOrderCd){
+        return priorityOrderMstService.saveAllWorkPriorityOrder(companyCd,priorityOrderCd);
+    }
 }

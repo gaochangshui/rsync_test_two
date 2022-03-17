@@ -153,7 +153,23 @@
       )
       </foreach>
     </insert>
-    <delete id="deleteByAuthorCd">
+  <insert id="setWorkForFinal">
+    insert into planocycle.work_priority_order_restrict_result(company_cd, author_cd, priority_order_cd, restrict_cd,
+                                                               zokusei1, zokusei2, zokusei3,
+                                                               zokusei4, zokusei5, zokusei6,
+                                                               zokusei7, zokusei8, zokusei9,
+                                                               zokusei10, tana_cnt, sku_cnt)
+    select company_cd, #{authorCd}, priority_order_cd, restrict_cd,
+           zokusei1, zokusei2, zokusei3,
+           zokusei4, zokusei5, zokusei6,
+           zokusei7, zokusei8, zokusei9,
+           zokusei10, tana_cnt, sku_cnt
+           from planocycle.priority_order_restrict_result
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+
+  </insert>
+  <delete id="deleteByAuthorCd">
       delete from planocycle.work_priority_order_restrict_result
       where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
         and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

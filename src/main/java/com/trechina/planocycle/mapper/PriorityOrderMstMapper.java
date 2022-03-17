@@ -15,6 +15,8 @@ public interface PriorityOrderMstMapper {
 
     int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
+    int deleteByAuthorCd(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
     int insert(PriorityOrderMst record);
 
     List<PriorityOrderMst> selectByPrimaryKey(@Param("companyCd") String companyCd);
@@ -26,4 +28,22 @@ public interface PriorityOrderMstMapper {
     int deleteforid(Integer priorityOrderCd);
 
     String selectPriorityOrderCdForProdCd(String companyCd, Integer productPowerCd);
+
+    /**
+     * 逻辑删除，更新delete_flag=1
+     * @param companyCd
+     * @param authorCd
+     * @param priorityOrderCd
+     * @return
+     */
+    int logicDeleteByPriorityOrderCd(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
+
+    /**
+     * 从work临时表中查询数据插入到实际表中
+     * @param companyCd
+     * @param authorCd
+     * @param priorityOrderCd
+     * @return
+     */
+    int insertBySelect(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 }

@@ -2,6 +2,7 @@ package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictSet;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -16,4 +17,7 @@ public interface WorkPriorityOrderRestrictSetMapper {
     int deleteByAuthorCd(String companyCd, String authorCd,Integer priorityOrderCd);
 
     List<WorkPriorityOrderRestrictSet> selectByAuthorCd(String companyCd, String authorCd,Integer priorityOrderCd);
+
+    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd")String authorCd);
+
 }
