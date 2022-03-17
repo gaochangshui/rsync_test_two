@@ -86,6 +86,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Autowired
     private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
     @Autowired
+    private  PriorityOrderJanNewMapper priorityOrderJanNewMapper;
+    @Autowired
+    private PriorityOrderJanReplaceMapper priorityOrderJanReplaceMapper;
+    @Autowired
+    private PriorityOrderJanCardMapper priorityOrderJanCardMapper;
+    @Autowired
     private cgiUtils cgiUtil;
     @Autowired
     private ShelfPtsDataMapper shelfPtsDataMapper;
@@ -886,8 +892,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public Map<String, Object> getReorder(String companyCd,Integer priorityOrderCd) {
+
         String aud = session.getAttribute("aud").toString();
         String colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, aud,priorityOrderCd);
+        if (colNmforMst == null || colNmforMst.equals("")){
+            return ResultMaps.result(ResultEnum.SUCCESS);
+        }
         String[] split = colNmforMst.split(",");
         List<PriorityOrderJanNewDto> reorder = null;
         if (split.length==1){
@@ -897,6 +907,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
              reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud,priorityOrderCd, split[0], split[1]);
 
         }
+        int i = 1;
+        for (PriorityOrderJanNewDto priorityOrderJanNewDto : reorder) {
+            priorityOrderJanNewDto.setRank(i);
+            i++;
+        }
+        workPriorityOrderSortRankMapper.delete(companyCd,aud,priorityOrderCd);
         workPriorityOrderSortRankMapper.insert(companyCd,reorder,aud,priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,reorder);
     }
@@ -925,6 +941,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderSortMapper.delete(companyCd,authorCd,priorityOrderCd);
         //清空SortRank表
         workPriorityOrderSortRankMapper.delete(companyCd,authorCd,priorityOrderCd);
+        //清空janNew表
+        priorityOrderJanNewMapper.workDelete(companyCd,priorityOrderCd);
+        //清空jan_replace
+        priorityOrderJanReplaceMapper.workDelete(companyCd,priorityOrderCd);
+        //清空work_priority_order_cut表
+        priorityOrderJanCardMapper.workDelete(companyCd,priorityOrderCd);
 
 
 
@@ -1135,4 +1157,20 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         return true;
     }
+//TODO:10215814
+    @Override
+    public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) {
+        this.deleteWorkTable(companyCd,priorityOrderCd);
+        priorityOrderJanCardMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        //priorityOrderJanReplaceMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        //priorityOrderJanNewMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        //workPriorityOrderMstMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        //workPriorityOrderRestrictRelationMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        //workPriorityOrderRestrictResultMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        //workPriorityOrderRestrictSetMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        //workPriorityOrderResultDataMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        return null;
+    }
+
+
 }

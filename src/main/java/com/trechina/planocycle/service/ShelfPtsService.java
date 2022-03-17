@@ -91,7 +91,7 @@ public interface ShelfPtsService {
      * @return
      */
 
-    Map<String,Object> getDisplay( String companyCd);
+    Map<String,Object> getDisplay( String companyCd,Integer priorityOrderCd);
 
 
 

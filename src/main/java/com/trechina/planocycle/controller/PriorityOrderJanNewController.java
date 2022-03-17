@@ -1,7 +1,7 @@
 package com.trechina.planocycle.controller;
 
+import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
-import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -55,8 +55,8 @@ public class PriorityOrderJanNewController {
      * @return
      */
     @PostMapping("getSimilarity")
-    public Map<String, Object> getSimilarity(@RequestBody PriorityOrderJanNewVO priorityOrderJanNewVO)  {
-        return priorityOrderJanNewService.getSimilarity(priorityOrderJanNewVO);
+    public Map<String, Object> getSimilarity(@RequestBody PriorityOrderJanNewDto priorityOrderJanNewDto)  {
+        return priorityOrderJanNewService.getSimilarity(priorityOrderJanNewDto);
     }
 
 }

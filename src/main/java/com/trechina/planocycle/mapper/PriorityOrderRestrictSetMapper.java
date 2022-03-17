@@ -34,6 +34,8 @@ public interface PriorityOrderRestrictSetMapper {
 
     List<PriorityOrderAttrValueDto> getAttrValues1();
 
+    int delete(@Param("item") PriorityOderAttrSet priorityOderAttrSet, @Param("authorCd") String authorCd);
+
     int insertBySelect(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     int logicDeleteByPriorityOrderCd(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);

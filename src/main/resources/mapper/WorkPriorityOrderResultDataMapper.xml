@@ -80,7 +80,12 @@
            ,a.sku_rank
   </select>
   <select id="getAttrRank" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
-    select distinct a.${sortName1} as zokusei1
+    select  DISTINCT d.zokusei1
+    <if test="sortName2 !=null">
+      ,d.zokusei2
+    </if>
+    from
+    (select  a.${sortName1} as zokusei1
     <if test="sortName2 !=null">
       ,a.${sortName2} as zokusei2
     </if>
@@ -117,7 +122,8 @@
     <if test="sortName2 !=null">
       ,c.aavg
     </if>
-    ,a.sku_rank
+    ,a.sku_rank) d
+
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.work_priority_order_result_data

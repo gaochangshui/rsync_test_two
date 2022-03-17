@@ -1,7 +1,7 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
-import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -14,6 +14,7 @@ public interface PriorityOrderJanNewMapper {
     int insert(@Param("lists") List<PriorityOrderJanNew> record,@Param("authorCd")String authorCd);
 
     int delete(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    int workDelete(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     List<PriorityOrderJanNewVO> selectJanNew(String companyCd, Integer priorityOrderCd);
 
@@ -33,5 +34,5 @@ public interface PriorityOrderJanNewMapper {
 
     List<PriorityOrderJanNewVO> getJanNameClassify(@Param("janNew") String [] janNew);
 
-    List<ProductPowerMstData> getProductPowerData(@Param("productPowerCd")Integer productPowerCd, @Param("item") PriorityOrderJanNewVO priorityOrderJanNewVO);
+    List<PriorityOrderJanNewDto> getProductPowerData(@Param("productPowerCd")Integer productPowerCd, @Param("item") PriorityOrderJanNewDto priorityOrderJanNewVO);
 }

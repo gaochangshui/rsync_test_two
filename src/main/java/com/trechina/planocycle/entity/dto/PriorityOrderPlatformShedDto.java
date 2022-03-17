@@ -2,6 +2,7 @@ package com.trechina.planocycle.entity.dto;
 
 public class PriorityOrderPlatformShedDto {
     private String companyCd;
+    private Integer priorityOrderCd;
     private Integer taiCd;
     private Integer tanaCd;
     private Integer restrictType;
@@ -54,6 +55,14 @@ public class PriorityOrderPlatformShedDto {
 
     public void setCompanyCd(String companyCd) {
         this.companyCd = companyCd;
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
     }
 
     @Override

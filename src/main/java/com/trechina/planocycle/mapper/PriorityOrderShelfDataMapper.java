@@ -11,9 +11,9 @@ import java.util.List;
 @Mapper
 public interface PriorityOrderShelfDataMapper {
 
-    List<PriorityOrderRestrictDto> getRestrictData(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd);
+    List<PriorityOrderRestrictDto> getRestrictData(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    List<PriorityOrderPlatformShedDto> getPlatformShedData(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd);
+    List<PriorityOrderPlatformShedDto> getPlatformShedData(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     List<PriorityOrderRestrictJanDto> getRestrictJans(@Param("item")PriorityOrderRestrictDto priorityOrderRestrictDto,@Param("authorCd")String authorCd);
 

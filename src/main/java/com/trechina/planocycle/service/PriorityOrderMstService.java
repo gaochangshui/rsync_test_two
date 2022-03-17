@@ -111,4 +111,6 @@ public interface PriorityOrderMstService {
      * @return false 失败，true 成功
      */
     boolean setJan(String companyCd, String authorCd);
+
+    Map<String,Object> getPriorityOrderAll(String companyCd,Integer priorityOrderCd);
 }

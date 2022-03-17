@@ -17,6 +17,14 @@ public class PriorityOderAttrSet {
         this.companyCd = companyCd;
     }
 
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
+    }
+
     public Integer getTaiCd() {
         return taiCd;
     }
@@ -33,11 +41,11 @@ public class PriorityOderAttrSet {
         this.tanaCd = tanaCd;
     }
 
-    public Integer gettanaType() {
+    public Integer getTanaType() {
         return tanaType;
     }
 
-    public void settanaType(Integer tanaType) {
+    public void setTanaType(Integer tanaType) {
         this.tanaType = tanaType;
     }
 
@@ -55,22 +63,6 @@ public class PriorityOderAttrSet {
 
     public void setVal(String val) {
         this.val = val;
-    }
-
-    public Integer getPriorityOrderCd() {
-        return priorityOrderCd;
-    }
-
-    public void setPriorityOrderCd(Integer priorityOrderCd) {
-        this.priorityOrderCd = priorityOrderCd;
-    }
-
-    public Integer getTanaType() {
-        return tanaType;
-    }
-
-    public void setTanaType(Integer tanaType) {
-        this.tanaType = tanaType;
     }
 
     @Override

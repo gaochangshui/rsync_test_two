@@ -33,10 +33,10 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
      * @return
      */
     @Override
-    public Map<String, Object> getRestrictData(String companyCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Map<String, Object> getRestrictData(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         String authorCd = session.getAttribute("aud").toString();
-        List<PriorityOrderRestrictDto> restrictData = priorityOrderShelfDataMapper.getRestrictData(companyCd, authorCd);
+        List<PriorityOrderRestrictDto> restrictData = priorityOrderShelfDataMapper.getRestrictData(companyCd, authorCd,priorityOrderCd);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
         Class clazz = PriorityOrderRestrictDto.class;
         for (int i = 1; i <= 10; i++) {
@@ -131,9 +131,9 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
      * @return
      */
     @Override
-    public Map<String, Object> getPlatformShedData(String companyCd) {
+    public Map<String, Object> getPlatformShedData(String companyCd,Integer priorityOrderCd) {
         String authorCd = session.getAttribute("aud").toString();
-        List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getPlatformShedData(companyCd, authorCd);
+        List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getPlatformShedData(companyCd, authorCd,priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,platformShedData);
     }
     /**

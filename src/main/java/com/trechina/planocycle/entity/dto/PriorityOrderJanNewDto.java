@@ -3,7 +3,9 @@ package com.trechina.planocycle.entity.dto;
 public class PriorityOrderJanNewDto {
 
     private String companyCd;
+
     private Integer priorityOrderCd;
+
     private String janNew;
 
     private String janName;
