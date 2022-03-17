@@ -7,9 +7,27 @@
     <result column="priority_order_name" jdbcType="VARCHAR" property="priorityOrderName" />
     <result column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
   </resultMap>
+  <!-- Home画面の基本パータンList -->
+  <resultMap id="tableNameList" type="com.trechina.planocycle.entity.dto.TableNameDto">
+    <id column="priority_order_cd" jdbcType="INTEGER" property="id" />
+    <result column="priority_order_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+    <result column="author_cd" jdbcType="VARCHAR" property="authorName"/>
+  </resultMap>
+
   <sql id="Base_Column_List">
     company_cd, priority_order_cd, priority_order_name, product_power_cd
   </sql>
+  <select id="getTableNameByCompanyCd" resultMap="tableNameList">
+    select
+    priority_order_cd, priority_order_name,create_time,author_cd
+    from planocycle.priority_Order_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and deleteflg=0
+    and author_cd = #{authorCd,jdbcType=VARCHAR}
+    order by priority_order_cd
+  </select>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.String"
           resultType="com.trechina.planocycle.entity.po.PriorityOrderMst">
     select
