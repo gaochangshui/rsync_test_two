@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.WorkPriorityOrderSpace">
     <result column="company_cd" jdbcType="VARCHAR" property="companyCd" />
     <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
     <result column="attribute1_value" jdbcType="VARCHAR" property="attribute1Value" />
     <result column="attribute2_value" jdbcType="VARCHAR" property="attribute2Value" />
     <result column="old_zoning" jdbcType="INTEGER" property="oldZoning" />
@@ -14,11 +15,11 @@
     <result column="attribute2_name" jdbcType="VARCHAR" property="attribute2Name" />
   </resultMap>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderSpace">
-    insert into work_priority_order_space (company_cd, author_cd, attribute1_value, 
+    insert into work_priority_order_space (company_cd, author_cd, priority_order_cd, attribute1_value,
       attribute2_value, old_zoning, new_zoning, 
       tana_count, zoning_num, attribute1_name, 
       attribute2_name)
-    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{attribute1Value,jdbcType=VARCHAR}, 
+    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{attribute1Value,jdbcType=VARCHAR},
       #{attribute2Value,jdbcType=VARCHAR}, #{oldZoning,jdbcType=INTEGER}, #{newZoning,jdbcType=INTEGER}, 
       #{tanaCount,jdbcType=INTEGER}, #{zoningNum,jdbcType=INTEGER}, #{attribute1Name,jdbcType=VARCHAR}, 
       #{attribute2Name,jdbcType=VARCHAR})
@@ -31,6 +32,9 @@
       </if>
       <if test="authorCd != null">
         author_cd,
+      </if>
+      <if test="priorityOrderCd != null">
+        priority_order_cd,
       </if>
       <if test="attribute1Value != null">
         attribute1_value,
@@ -64,6 +68,9 @@
       <if test="authorCd != null">
         #{authorCd,jdbcType=VARCHAR},
       </if>
+      <if test="priorityOrderCd != null">
+        #{priorityOrderCd,jdbcType=INTEGER},
+      </if>
       <if test="attribute1Value != null">
         #{attribute1Value,jdbcType=VARCHAR},
       </if>
@@ -91,12 +98,12 @@
     </trim>
   </insert>
   <insert id="insertAll">
-    insert into planocycle.work_priority_order_space (company_cd, author_cd, attribute1_value,
+    insert into planocycle.work_priority_order_space (company_cd, author_cd, priority_order_cd, attribute1_value,
     attribute2_value, old_zoning, new_zoning,
     tana_count, zoning_num, attribute1_name, attribute2_name)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.companyCd,jdbcType=VARCHAR}, #{item.authorCd,jdbcType=VARCHAR}, #{item.attribute1Value,jdbcType=VARCHAR},
+      (#{item.companyCd,jdbcType=VARCHAR}, #{item.authorCd,jdbcType=VARCHAR}, #{item.priorityOrderCd,jdbcType=INTEGER}, #{item.attribute1Value,jdbcType=VARCHAR},
       #{item.attribute2Value,jdbcType=VARCHAR}, #{item.oldZoning,jdbcType=INTEGER}, #{item.newZoning,jdbcType=INTEGER},
       #{item.tanaCount,jdbcType=INTEGER}, #{item.zoningNum,jdbcType=INTEGER}, #{item.attribute1Name,jdbcType=VARCHAR}, #{item.attribute2Name,jdbcType=VARCHAR})
     </foreach>

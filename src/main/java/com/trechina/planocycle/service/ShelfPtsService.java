@@ -77,7 +77,8 @@ public interface ShelfPtsService {
      * @param patternCd
      * @return
      */
-      Map<String,Object> getPtsDetailData(Integer patternCd);
+      Map<String,Object> getPtsDetailData(Integer patternCd,String companyCd);
+
     /**
      * 陈列顺设定添加
      * @param workPriorityOrderSort

@@ -5,6 +5,8 @@ public class WorkPriorityOrderRestrictRelation {
 
     private String authorCd;
 
+    private Integer priorityOrderCd;
+
     private Integer taiCd;
 
     private Integer tanaCd;
@@ -47,6 +49,14 @@ public class WorkPriorityOrderRestrictRelation {
 
     public void setAuthorCd(String authorCd) {
         this.authorCd = authorCd == null ? null : authorCd.trim();
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
     }
 
     public Integer getTaiCd() {

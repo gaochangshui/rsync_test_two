@@ -2,6 +2,7 @@ package com.trechina.planocycle.entity.po;
 
 public class WorkPriorityOrderSort {
     private String companyCd;
+    private Integer priorityOrderCd;
     private Integer zokuseiId;
     private String zokuseiName;
     private Integer sortNum;
@@ -13,6 +14,14 @@ public class WorkPriorityOrderSort {
 
     public void setCompanyCd(String companyCd) {
         this.companyCd = companyCd;
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
     }
 
     public Integer getZokuseiId() {

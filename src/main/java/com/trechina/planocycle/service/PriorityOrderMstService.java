@@ -90,8 +90,12 @@ public interface PriorityOrderMstService {
      */
     Map<String, Object>getReorder(String companyCd);
 
-
-
+    /**
+     * 新规时清空对应临时表所有信息
+     * @param companyCd
+     * @return
+     */
+    void deleteWorkTable(String companyCd);
 
     Map<String,Object> getFaceKeisanForCgi(String[]array,String companyCd,Integer shelfPatternNo,String authorCd);
 

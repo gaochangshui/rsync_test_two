@@ -5,6 +5,8 @@ public class WorkPriorityOrderMst {
 
     private String authorCd;
 
+    private Integer priorityOrderCd;
+
     private Integer productPowerCd;
 
     private Long shelfPatternCd;
@@ -31,6 +33,14 @@ public class WorkPriorityOrderMst {
 
     public void setAuthorCd(String authorCd) {
         this.authorCd = authorCd == null ? null : authorCd.trim();
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
     }
 
     public Integer getProductPowerCd() {
