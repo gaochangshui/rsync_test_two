@@ -970,7 +970,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
 
         List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(shelfPatternCd.intValue());
-        List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(shelfPatternCd.intValue());
 
         Short partitionFlag = priorityOrderMst.getPartitionFlag();
         Short partitionVal = priorityOrderMst.getPartitionVal();
@@ -1020,18 +1019,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 }
 
                 //台或半段的宽度, 已使用的宽度
-                long width = 0, usedWidth = 0;
+                double width = 0, usedWidth = 0;
 
                 if(tanaType!=0){
                     //半段的根据具体位置段的宽度放置
-                    Optional<PtsTanaVo> tanaInfo = tanaData.stream().filter(ptsTanaVo -> tanaCd.equals(ptsTanaVo.getTanaCd())
-                            && taiCd.equals(ptsTanaVo.getTaiCd()) && tanaType==ptsTanaVo.getTanaType()).findFirst();
-                    if(!tanaInfo.isPresent()){
-                        logger.info("{}台{}棚{}区分信息不存在", taiCd,tanaCd, tanaType);
-                        continue;
-                    }
-
-                    width = tanaInfo.get().getTanaWidth();
+                    Integer taiWidth = taiInfo.get().getTaiWidth();
+                    width = taiWidth/2.0;
                 }else{
                     //整段的根据具体位置台的宽度放置
                     width = taiInfo.get().getTaiWidth();
