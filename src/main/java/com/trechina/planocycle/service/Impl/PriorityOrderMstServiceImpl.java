@@ -2,9 +2,12 @@ package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
+import com.trechina.planocycle.entity.vo.PtsTaiVo;
+import com.trechina.planocycle.entity.vo.PtsTanaVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
@@ -84,6 +87,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
     @Autowired
     private cgiUtils cgiUtil;
+    @Autowired
+    private ShelfPtsDataMapper shelfPtsDataMapper;
+    @Autowired
+    private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
 
 
     /**
@@ -942,5 +949,148 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 放置商品
+     */
+    @Override
+    public boolean setJan(String companyCd, String authorCd){
+        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd);
+        List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.getResultJans(companyCd, authorCd);
+        WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd);
+
+        Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
+
+        if(shelfPatternCd==null){
+            logger.info("shelfPatternCd:{}不存在", shelfPatternCd);
+            return false;
+        }
+
+        List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(shelfPatternCd.intValue());
+        List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(shelfPatternCd.intValue());
+
+        Short partitionFlag = priorityOrderMst.getPartitionFlag();
+        Short partitionVal = priorityOrderMst.getPartitionVal();
+
+        /**
+         * 最终放置好的商品的list
+         */
+        List<PriorityOrderResultDataDto> finalSetJanResultData = new ArrayList<>();
+
+        if(partitionFlag==null){
+            partitionFlag = 0;
+        }
+
+        if(partitionFlag == 0){
+            //没隔板的情况
+            partitionVal = 0;
+        }else if(partitionFlag==1 && partitionVal==null){
+            //有隔板&隔板默认2mm
+            partitionVal = 2;
+        }
+
+        /**
+         * 根据制约条件进行分组进行摆放
+         */
+        Map<Long, List<WorkPriorityOrderRestrictRelation>> relationByGroup = workPriorityOrderRestrictRelations.stream().collect(Collectors.groupingBy(WorkPriorityOrderRestrictRelation::getRestrictCd));
+
+        for (Map.Entry<Long, List<WorkPriorityOrderRestrictRelation>> relationEntry : relationByGroup.entrySet()) {
+            Long relationCd = relationEntry.getKey();
+            //记录商品放到哪里了-同一个制约的商品可能不同的台、段
+            int setResultDataIndex = 0;
+
+            //符合当前制约条件商品按rank排序
+            List<PriorityOrderResultDataDto> relationSorted = workPriorityOrderResultData.stream().filter(data -> relationCd.equals(data.getRestrictCd())).sorted((o1, o2) -> {
+                //1>2
+                if (Long.compare(o1.getSkuRank(), o2.getSkuRank()) == 1) {
+                    return 1;
+                }
+                //1<2
+                if (Long.compare(o1.getSkuRank(), o2.getSkuRank()) == -1) {
+                    return -1;
+                }
+
+                return 0;
+            }).collect(Collectors.toList());
+            List<WorkPriorityOrderRestrictRelation> relationValue = relationEntry.getValue();
+
+            for (WorkPriorityOrderRestrictRelation workPriorityOrderRestrictRelation : relationValue) {
+                Integer taiCd = workPriorityOrderRestrictRelation.getTaiCd();
+                Integer tanaCd = workPriorityOrderRestrictRelation.getTanaCd();
+                short tanaType = workPriorityOrderRestrictRelation.getTanaType();
+
+                Optional<PtsTaiVo> taiInfo = taiData.stream().filter(ptsTaiVo -> taiCd.equals(ptsTaiVo.getTaiCd())).findFirst();
+
+                if (!taiInfo.isPresent()) {
+                    logger.info("{}台信息不存在", taiCd);
+                    continue;
+                }
+
+                //台或半段的宽度, 已使用的宽度
+                long width = 0, usedWidth = 0;
+
+                if(tanaType!=0){
+                    //半段的根据具体位置段的宽度放置
+                    Optional<PtsTanaVo> tanaInfo = tanaData.stream().filter(ptsTanaVo -> tanaCd.equals(ptsTanaVo.getTanaCd())
+                            && taiCd.equals(ptsTanaVo.getTaiCd()) && tanaType==ptsTanaVo.getTanaType()).findFirst();
+                    if(!tanaInfo.isPresent()){
+                        logger.info("{}台{}棚{}区分信息不存在", taiCd,tanaCd, tanaType);
+                        continue;
+                    }
+
+                    width = tanaInfo.get().getTanaWidth();
+                }else{
+                    //整段的根据具体位置台的宽度放置
+                    width = taiInfo.get().getTaiWidth();
+                }
+
+                //放置商品
+                for (int i = setResultDataIndex; i < relationSorted.size(); i++) {
+                    PriorityOrderResultDataDto priorityOrderResultData = relationSorted.get(i);
+
+                    Long faceSku = priorityOrderResultData.getFaceSku();
+                    Long janWidth = priorityOrderResultData.getJanWidth();
+                    Long face = priorityOrderResultData.getFace();
+
+                    //商品宽度null或者0时使用默认宽度67mm，faceSku>1的需要乘以faceSku
+                    if(janWidth==null || janWidth==0){
+                        if (faceSku==null) {
+                            faceSku = 1L;
+                        }
+                        janWidth = 67 * faceSku;
+                    }
+
+                    long janTotalWidth = janWidth * face + partitionVal;
+                    if(janTotalWidth + usedWidth <= width){
+                        //根据face数进行摆放可以放开
+                        setResultDataIndex = i+1;
+
+                        priorityOrderResultData.setTaiCd(taiCd);
+                        priorityOrderResultData.setTanaCd(tanaCd);
+                        priorityOrderResultData.setAdoptFlag(1);
+                        priorityOrderResultData.setTanaType((int) tanaType);
+
+                        finalSetJanResultData.add(priorityOrderResultData);
+                        usedWidth+=janTotalWidth;
+                    }else{
+                        //根据face数进行摆放可以放不开，直接不放，结束该位置的摆放
+                        break;
+                    }
+                }
+            }
+        }
+
+        double batchNum = Math.ceil(finalSetJanResultData.size() / 1000.0);
+        for (int i = 0; i < batchNum; i++) {
+            //批量更新可以摆放的商品数据到数据库中
+            int start = i * 1000;
+            int end = Math.min(finalSetJanResultData.size(), start + 1000 + 1);
+
+            List<PriorityOrderResultDataDto> subList = finalSetJanResultData.subList(start, end);
+            workPriorityOrderResultDataMapper.updateTaiTanaBatch(companyCd, authorCd, subList);
+        }
+
+        return true;
     }
 }

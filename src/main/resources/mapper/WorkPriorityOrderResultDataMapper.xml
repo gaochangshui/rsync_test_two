@@ -315,4 +315,47 @@
         (#{priorityOrderCd},#{companyCd},#{restrictCd},#{item.jan},#{item.rankResult},0,#{authorCd})
     </foreach>
   </insert>
+  <select id="getResultJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
+    select restrict_cd restrictCd,tai_cd taiCd,tana_cd tanaCd,tana_type tanaType,sku_rank skuRank,data.irisu,data.jan_cd janCd,
+    face_sku faceSku,face_keisan faceKeisan,face,adopt_flag adoptFlag,jan.width janWidth,jan.height janHeight
+    from planocycle.work_priority_order_result_data data
+    inner join masterdb.jan_mst jan on data.jan_cd=jan.jan_cd
+    where data.company_cd=#{companyCd} and data.author_cd=#{authorCd}
+  </select>
+  <update id="updateTaiTanaBatch">
+    UPDATE planocycle.work_priority_order_result_data SET
+      tai_cd =
+      CASE jan_cd
+      <foreach collection="list" item="obj">
+        WHEN #{obj.janCd} THEN #{obj.taiCd}
+      </foreach>
+      ELSE tai_cd
+      END,
+      tana_cd =
+      CASE jan_cd
+      <foreach collection="list" item="obj">
+        WHEN #{obj.janCd} THEN #{obj.tanaCd}
+      </foreach>
+      ELSE tana_cd
+      END,
+      tana_type =
+      CASE jan_cd
+      <foreach collection="list" item="obj">
+        WHEN #{obj.janCd} THEN #{obj.tanaType}
+      </foreach>
+      ELSE tana_type
+      END,
+      adopt_flag =
+      CASE jan_cd
+      <foreach collection="list" item="obj">
+        WHEN #{obj.janCd} THEN #{obj.adoptFlag}
+      </foreach>
+      ELSE adopt_flag
+      END
+      WHERE jan_cd IN
+      <foreach collection="list" item="obj" separator="," open="(" close=")">
+        #{obj.janCd}
+      </foreach>
+      and company_cd=#{companyCd} and author_cd=#{authorCd}
+  </update>
 </mapper>

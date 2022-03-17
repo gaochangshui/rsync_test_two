@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
 import org.apache.ibatis.annotations.Mapper;
@@ -42,4 +43,12 @@ public interface WorkPriorityOrderResultDataMapper {
     List<WorkPriorityOrderResultData> getAttrRank(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd,@Param("sortName1")String sortName1,
                                                  @Param("sortName2")String sortName2);
 
+    List<PriorityOrderResultDataDto>  getResultJans(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
+
+    /**
+     * 批量更新jan的放置位置信息
+     * @param list
+     * @return
+     */
+    int updateTaiTanaBatch(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("list") List<PriorityOrderResultDataDto> list);
 }
