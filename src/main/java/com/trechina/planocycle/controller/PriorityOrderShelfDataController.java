@@ -24,8 +24,8 @@ public class PriorityOrderShelfDataController {
      * @return
      */
     @GetMapping("getRestrictData")
-    public Map<String,Object> getRestrictData(String companyCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        return  priorityOrderShelfDataService.getRestrictData(companyCd);
+    public Map<String,Object> getRestrictData(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        return  priorityOrderShelfDataService.getRestrictData(companyCd,priorityOrderCd);
     }
 
     /**
@@ -45,8 +45,8 @@ public class PriorityOrderShelfDataController {
      * @return
      */
     @GetMapping("getPlatformShedData")
-    public Map<String,Object> getPlatformShedData(String companyCd){
-        return  priorityOrderShelfDataService.getPlatformShedData(companyCd);
+    public Map<String,Object> getPlatformShedData(String companyCd,Integer priorityOrderCd){
+        return  priorityOrderShelfDataService.getPlatformShedData(companyCd,priorityOrderCd);
     }
     /**
      * 新规时获取基本パタ台棚别jans详细信息

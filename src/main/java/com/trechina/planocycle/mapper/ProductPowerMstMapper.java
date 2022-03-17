@@ -32,7 +32,7 @@ public interface ProductPowerMstMapper {
 
     Integer getSkuNum(@Param("companyCd")String companyCd,@Param("productPowerCd")Integer productPowerCd);
 
-    int setProductPowerCdForMst(@Param("productPowerCd")Integer productPowerCd,@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+    int setProductPowerCdForMst(@Param("productPowerCd")Integer productPowerCd,@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     Integer getProductPowerCd(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 

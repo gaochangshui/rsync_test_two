@@ -5,7 +5,7 @@
         insert into planocycle.work_priority_order_sort_rank(company_cd,author_cd,zokusei1_val,zokusei2_val,zokusei_rank)
         values
         <foreach collection="list" item="item" separator=",">
-            (#{companyCd},#{authorCd},#{item.zokusei1},#{item.zokusei2},#{zokusei_rank})
+            (#{companyCd},#{authorCd},#{item.zokusei1},#{item.zokusei2},#{item.rank})
         </foreach>
     </insert>
 

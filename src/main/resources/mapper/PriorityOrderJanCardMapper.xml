@@ -6,12 +6,20 @@
     <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
     <id column="jan_old" jdbcType="VARCHAR" property="janOld" />
   </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="map">
+    <insert id="setWorkForFinal">
+        insert into planocycle.work_priority_order_cut()
+    </insert>
+    <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.priority_order_jan_card
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
-  <select id="selectJanCard" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanCardVO">
+    <delete id="workDelete">
+        delete from planocycle.priority_order_jan_card
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </delete>
+    <select id="selectJanCard" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanCardVO">
     select card.jan_old as janOld
          ,COALESCE(jans.janname,'') as janOldName
          , case when rep.jan_new is not null then 'JAN変商品リストに登録されている商品です。カットしてよいか確認ください'

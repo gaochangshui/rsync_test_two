@@ -284,9 +284,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      * @return
      */
     @Override
-    public Map<String, Object> getDisplay(String companyCd) {
+    public Map<String, Object> getDisplay(String companyCd,Integer priorityOrderCd) {
         String aud = httpSession.getAttribute("aud").toString();
-        List<WorkPriorityOrderSort> displayList = shelfPtsDataMapper.getDisplay(companyCd, aud);
+        List<WorkPriorityOrderSort> displayList = shelfPtsDataMapper.getDisplay(companyCd, aud,priorityOrderCd);
 
         return ResultMaps.result(ResultEnum.SUCCESS,displayList);
     }

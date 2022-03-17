@@ -42,10 +42,10 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     }
 
     @Override
-    public Map<String, Object> getProductPowerInfo(String companyCd, Integer productPowerCd) {
+    public Map<String, Object> getProductPowerInfo(String companyCd, Integer productPowerCd,Integer priorityOrderCd) {
         String authorCd = session.getAttribute("aud").toString();
         //将productPowerCd存到order_mst表中
-        productPowerMstMapper.setProductPowerCdForMst(productPowerCd,companyCd,authorCd);
+        productPowerMstMapper.setProductPowerCdForMst(productPowerCd,companyCd,authorCd,priorityOrderCd);
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, productPowerCd);
         Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, productPowerCd);
         productPowerInfo.setSku(skuNum);

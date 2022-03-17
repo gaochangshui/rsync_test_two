@@ -108,4 +108,15 @@ public class PriorityOrderMstController {
     public Map<String,Object> autoCalculation(String companyCd,Integer priorityOrderCd){
         return priorityOrderMstService.autoCalculation(companyCd,priorityOrderCd);
     }
+
+    /**
+     * 编辑时展示所有信息
+     * @param companyCd
+     * @param priorityOrderCd
+     * @return
+     */
+    @GetMapping("getPriorityOrderAll")
+    public Map<String,Object> getPriorityOrderAll(String companyCd,Integer priorityOrderCd){
+       return priorityOrderMstService.getPriorityOrderAll(companyCd,priorityOrderCd);
+    }
 }

@@ -144,8 +144,8 @@ public class ShelfPtsController {
      * @return
      */
     @GetMapping("getDisplay")
-    public  Map<String,Object> getDisplay(String companyCd){
-        return shelfPtsService.getDisplay(companyCd);
+    public  Map<String,Object> getDisplay(String companyCd,Integer priorityOrderCd){
+        return shelfPtsService.getDisplay(companyCd,priorityOrderCd);
 
     }
 

@@ -16,5 +16,5 @@ public interface ProductPowerMstService {
      */
     Map<String,Object> getProductPowerTable(String companyCd);
 
-     Map<String,Object> getProductPowerInfo(String companyCd ,Integer productPowerCd);
+     Map<String,Object> getProductPowerInfo(String companyCd ,Integer productPowerCd,Integer priorityOrderCd);
 }

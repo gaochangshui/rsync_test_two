@@ -64,6 +64,12 @@
       and tana_cd = #{tanaCd,jdbcType=INTEGER}
       and tana_type = #{tanaType,jdbcType=INTEGER}
   </delete>
+  <delete id="delete">
+    delete from planocycle.work_priority_order_restrict_set
+    where priority_order_cd = #{item.priorityOrderCd} and company_cd = #{item.companyCd} and author_cd = #{authorCd} and
+      zokusei1 is null and zokusei2 is null and  zokusei3 is null and  zokusei4 is null and zokusei5 is null and zokusei6 is null and zokusei7 is null and
+zokusei8 is null and zokusei9 is null and zokusei10 is null
+  </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
     insert into priority_order_restrict_set (company_cd, priority_order_cd, tai_cd, 
       tana_cd, tana_type, zokusei1,

@@ -28,6 +28,7 @@ public class PriorityOrderRestrictSetServiceImpl implements PriorityOrderRestric
         String authorCd = session.getAttribute("aud").toString();
 
         priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOderAttrSet, authorCd);
+        priorityOrderRestrictSetMapper.delete(priorityOderAttrSet,authorCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

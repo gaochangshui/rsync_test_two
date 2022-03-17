@@ -6,7 +6,6 @@ import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanAttribute;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
-import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -161,10 +160,10 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      * @return
      */
     @Override
-    public Map<String, Object> getSimilarity(PriorityOrderJanNewVO priorityOrderJanNewVO) {
+    public Map<String, Object> getSimilarity(PriorityOrderJanNewDto priorityOrderJanNewVO) {
         String aud = session.getAttribute("aud").toString();
         Integer productPowerCd = productPowerMstMapper.getProductPowerCd(priorityOrderJanNewVO.getCompanyCd(), aud,priorityOrderJanNewVO.getPriorityOrderCd());
-        List<ProductPowerMstData> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, priorityOrderJanNewVO);
+        List<PriorityOrderJanNewDto> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, priorityOrderJanNewVO);
 
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerData);
     }

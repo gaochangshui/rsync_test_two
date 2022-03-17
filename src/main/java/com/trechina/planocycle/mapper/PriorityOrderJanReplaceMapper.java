@@ -11,6 +11,8 @@ import java.util.List;
 public interface PriorityOrderJanReplaceMapper {
     int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
+    int workDelete(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
     int insert(@Param("lists") List<PriorityOrderJanReplace> record);
 
     List<PriorityOrderJanReplaceVO> selectJanInfo(String companyCd, Integer priorityOrderCd);

@@ -2,6 +2,7 @@ package com.trechina.planocycle.entity.dto;
 
 public class PriorityOrderRestrictDto {
     private String companyCd;
+    private Integer priorityOrderCd;
     private String zokusei1;
     private String zokusei2;
     private String zokusei3;
@@ -216,6 +217,14 @@ public class PriorityOrderRestrictDto {
 
     public void setCompanyCd(String companyCd) {
         this.companyCd = companyCd;
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
     }
 
     @Override

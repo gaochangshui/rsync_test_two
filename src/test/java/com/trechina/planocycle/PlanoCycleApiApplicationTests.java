@@ -1,7 +1,6 @@
 package com.trechina.planocycle;
 
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import org.junit.jupiter.api.Test;
@@ -51,6 +50,7 @@ class PlanoCycleApiApplicationTests {
         list.add("7845");
         List<List<String>> lists = new ArrayList<>();
         lists.add(list);
+        priorityOrderMstService.getReorder("0001",1245);
         //workPriorityOrderResultDataMapper.update(lists);
         //workPriorityOrderResultDataMapper.updates(list);
         //WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult = new WorkPriorityOrderRestrictResult();
@@ -65,14 +65,14 @@ class PlanoCycleApiApplicationTests {
         //
         //System.out.println(salesCntAvg);
        // String colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst("0001", "10212159");
-        String [] a= {"brand","scat2cd_val"};
-        List<WorkPriorityOrderResultData> reorder = workPriorityOrderResultDataMapper.getReorder("0001", "10215814", a[0], a[1]);
-        int i = 1;
-        for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder) {
-            workPriorityOrderResultData.setResultRank(i++);
-        }
-
-        System.out.println(reorder);
+       // String [] a= {"brand","scat2cd_val"};
+       // List<WorkPriorityOrderResultData> reorder = workPriorityOrderResultDataMapper.getReorder("0001", "10215814", a[0], a[1]);
+       // int i = 1;
+       // for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder) {
+       //     workPriorityOrderResultData.setResultRank(i++);
+       // }
+       //
+       // System.out.println(reorder);
         //workPriorityOrderResultDataMapper.getResultDatas("0001","10215814").forEach(System.out::println);
         //workPriorityOrderRestrictResult.setZokusei1("014");
         //List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, "0001", 1095);

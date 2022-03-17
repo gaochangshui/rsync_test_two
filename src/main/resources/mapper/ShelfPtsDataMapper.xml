@@ -206,10 +206,10 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     where pattern_cd = #{patternId,jdbcType=INTEGER}
   </update>
   <insert id="setDisplay">
-    insert into planocycle.work_priority_order_sort(company_cd,author_cd,zokusei_id,sort_num)
+    insert into planocycle.work_priority_order_sort(priority_order_cd,company_cd,author_cd,zokusei_id,sort_num)
     values
 <foreach collection="list" separator="," item="item" >
-    (#{item.companyCd},#{authorCd},#{item.zokuseiId},#{item.sortNum})
+    (#{item.priorityOrderCd},#{item.companyCd},#{authorCd},#{item.zokuseiId},#{item.sortNum})
 </foreach>
   </insert>
   <select id="checkPtsData" parameterType="com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto"
@@ -328,7 +328,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     from planocycle.work_priority_order_sort sort
     left join masterdb.zokusei_mst mst
     on mst.zokusei_id = sort.zokusei_id
-    where company_cd = #{companyCd} and  author_cd = #{authorCd}
+    where company_cd = #{companyCd} and  author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
     order by sort_num
   </select>
 
