@@ -3,9 +3,10 @@
 <mapper namespace="com.trechina.planocycle.mapper.PriorityOrderResultDataMapper">
   <insert id="insertBySelect">
     insert into planocycle.priority_order_result_data(priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,
-    adopt_flag,face,face_sku,irisu,tai_cd,tana_cd,face_keisan,author_cd)
+    adopt_flag,face,face_sku,irisu,tai_cd,tana_cd,face_keisan,author_cd,editer_cd,create_time,edit_time)
     select priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,
-    case when adopt_flag=1 then true else false end adopt_flag,face,face_sku,irisu,tai_cd,tana_cd,face_keisan,author_cd
+    case when adopt_flag=1 then true else false end adopt_flag,face,face_sku,irisu,tai_cd,tana_cd,face_keisan,author_cd,author_cd,
+    now(), now()
     from planocycle.work_priority_order_result_data
     where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
@@ -15,4 +16,9 @@
     and author_cd=#{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>
+  <delete id="deleteByAuthorCd">
+    delete from planocycle.priority_order_result_data where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and author_cd=#{authorCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
 </mapper>

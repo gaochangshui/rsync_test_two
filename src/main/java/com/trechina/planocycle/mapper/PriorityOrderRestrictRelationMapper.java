@@ -8,6 +8,9 @@ import org.apache.ibatis.annotations.Param;
 public interface PriorityOrderRestrictRelationMapper {
     int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
+    int deleteByAuthorCd(@Param("companyCd") String companyCd,@Param("authorCd") String authorCd,
+                         @Param("priorityOrderCd") Integer priorityOrderCd);
+
     int insert(PriorityOrderRestrictRelation record);
 
     int insertSelective(PriorityOrderRestrictRelation record);

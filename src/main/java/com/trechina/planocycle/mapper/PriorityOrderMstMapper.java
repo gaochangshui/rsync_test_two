@@ -11,6 +11,8 @@ import java.util.Map;
 public interface PriorityOrderMstMapper {
     int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
+    int deleteByAuthorCd(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
     int insert(PriorityOrderMst record);
 
     List<PriorityOrderMst> selectByPrimaryKey(@Param("companyCd") String companyCd);

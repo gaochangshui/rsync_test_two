@@ -64,6 +64,11 @@
       and tana_cd = #{tanaCd,jdbcType=INTEGER}
       and tana_type = #{tanaType,jdbcType=INTEGER}
   </delete>
+  <delete id="deleteByAuthorCd">
+    delete from planocycle.priority_order_restrict_set
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd=#{authorCd,jdbcType=VARCHAR}
+  </delete>
   <delete id="delete">
     delete from planocycle.work_priority_order_restrict_set
     where priority_order_cd = #{item.priorityOrderCd} and company_cd = #{item.companyCd} and author_cd = #{authorCd} and
@@ -304,9 +309,9 @@ zokusei8 is null and zokusei9 is null and zokusei10 is null
     </insert>
   <insert id="insertBySelect">
     insert into planocycle.priority_order_restrict_set(priority_order_cd,company_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,
-    zokusei7,zokusei8,zokusei9,zokusei10,tai_cd,tana_cd,author_cd,tana_type)
+    zokusei7,zokusei8,zokusei9,zokusei10,tai_cd,tana_cd,author_cd,tana_type,edit_time,create_time,editer_cd)
     select priority_order_cd,company_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,
-    zokusei7,zokusei8,zokusei9,zokusei10,tai_cd,tana_cd,author_cd,tana_type
+    zokusei7,zokusei8,zokusei9,zokusei10,tai_cd,tana_cd,author_cd,tana_type,now(),now(),author_cd
     from planocycle.work_priority_order_restrict_set
     where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

@@ -227,9 +227,9 @@
   </insert>
   <insert id="insertBySelect">
     insert into planocycle.priority_order_space(priority_order_cd,company_cd,attribute1_value,attribute2_value,old_zoning,
-    new_zoning,tana_count,zoning_num,attribute1_name,attribute2_name,author_cd)
+    new_zoning,tana_count,zoning_num,attribute1_name,attribute2_name,author_cd,edit_time,editer_cd,create_time)
     select priority_order_cd,company_cd,attribute1_value,attribute2_value,old_zoning,
-    new_zoning,tana_count,zoning_num,attribute1_name,attribute2_name,author_cd
+    new_zoning,tana_count,zoning_num,attribute1_name,attribute2_name,author_cd,now(),author_cd,now()
     from planocycle.work_priority_order_space
     where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
@@ -239,4 +239,9 @@
     and author_cd=#{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>
+  <delete id="deleteByAuthorCd">
+    delete from planocycle.priority_order_space where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and author_cd=#{authorCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
 </mapper>

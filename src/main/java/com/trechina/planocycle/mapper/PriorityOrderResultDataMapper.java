@@ -8,4 +8,6 @@ public interface PriorityOrderResultDataMapper {
     void insertBySelect(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     void logicDeleteByPriorityOrderCd(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
+
+    int deleteByAuthorCd(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 }
