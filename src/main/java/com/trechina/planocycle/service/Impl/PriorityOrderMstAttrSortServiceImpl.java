@@ -256,21 +256,23 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
     @Override
     public Map<String, Object> setAttribute(PriorityOrderSpaceDto dto) {
+
         String authorCd = httpSession.getAttribute("aud").toString();
         String companyCd = dto.getCompanyCd();
         Long shelfPatternCd = dto.getPatternCd();
         // 1.保存mst
-        workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd);
+        workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd,dto.getPriorityOrderCd());
         WorkPriorityOrderMst orderMst = new WorkPriorityOrderMst();
         orderMst.setCompanyCd(companyCd);
         orderMst.setAuthorCd(authorCd);
         orderMst.setShelfPatternCd(shelfPatternCd);
         orderMst.setAttribute1(dto.getAttr1());
         orderMst.setAttribute2(dto.getAttr2());
+        orderMst.setPriorityOrderCd(dto.getPriorityOrderCd());
         workPriorityOrderMstMapper.insert(orderMst);
 
         // 2.保存space
-        workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd);
+        workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd,dto.getPriorityOrderCd());
         List<PriorityOrderAttrVO> dataList = dto.getDataList();
         List<WorkPriorityOrderSpace> spaceList = new ArrayList<>();
         WorkPriorityOrderSpace space = null;
@@ -286,6 +288,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             space.setNewZoning(vo.getNewZoning());
             space.setTanaCount(vo.getTanaPattan());
             space.setZoningNum(vo.getRank());
+            space.setPriorityOrderCd(dto.getPriorityOrderCd());
             spaceList.add(space);
         }
         if (!spaceList.isEmpty()) {
@@ -294,11 +297,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
 
         // 3.space转化为制约条件
-        workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd);
+        workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd,dto.getPriorityOrderCd());
         List<ShelfPtsDataTanaCount> tanaCountList = shelfPtsDataTanamstMapper.ptsTanaCountByTai(shelfPatternCd);
         List<WorkPriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
         try {
-            restrictSetList = this.setRestrict(dataList, tanaCountList, dto.getAttr1(), dto.getAttr2(), companyCd, authorCd);
+            restrictSetList = this.setRestrict(dataList, tanaCountList, dto.getAttr1(), dto.getAttr2(), companyCd, authorCd,dto.getPriorityOrderCd());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             logger.error(e.getMessage());
         }
@@ -340,7 +343,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
     @Override
     public List<WorkPriorityOrderRestrictSet> setRestrict(List<PriorityOrderAttrVO> dataList, List<ShelfPtsDataTanaCount> tanaCountList,
-                                                          Short attr1, Short attr2, String companyCd, String authorCd)
+                                                          Short attr1, Short attr2, String companyCd, String authorCd,Integer priorityOrderCd)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         List<WorkPriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
         Integer pattan = 0;
@@ -362,7 +365,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             tmpRestrictSet = new WorkPriorityOrderRestrictSet();
             tmpRestrictSet.setCompanyCd(companyCd);
             tmpRestrictSet.setAuthorCd(authorCd);
-            tmpRestrictSet.settanaType((short) 0);
+            tmpRestrictSet.setPriorityOrderCd(priorityOrderCd);
+            tmpRestrictSet.setTanaType((short) 0);
             setAttrMethod1.invoke(tmpRestrictSet, vo.getAttrACd());
             setAttrMethod2.invoke(tmpRestrictSet, vo.getAttrBCd());
 

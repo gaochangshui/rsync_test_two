@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
+import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -37,4 +38,10 @@ public interface PriorityOrderJanNewService {
      * @return
      */
     Integer delriorityOrderJanNewInfo(String companyCd,Integer priorityOrderCd);
+    /**
+     * 根据分类去商品力点数表抽同类商品
+     * @param priorityOrderJanNewVO
+     * @return
+     */
+    Map<String, Object> getSimilarity(PriorityOrderJanNewVO priorityOrderJanNewVO);
 }

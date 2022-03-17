@@ -22,20 +22,24 @@ public interface WorkPriorityOrderResultDataMapper {
     int updateByPrimaryKey(WorkPriorityOrderResultData record);
 
     int setResultDataList(@Param("list") List<ProductPowerDataDto> productPowerDataDtoList, @Param("restrictCd") Long restrictCd, @Param("companyCd") String companyCd,
-                          @Param("authorCd") String authorCd);
+                          @Param("authorCd") String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    int delResultData(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
+    int delResultData(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("priorityOrderCd") Integer priorityOrderCd);
 
-    String getResultDataList(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
+    String getResultDataList(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    int update(@Param("list") List<WorkPriorityOrderResultData> list);
+    int update(@Param("list") List<WorkPriorityOrderResultData> list,@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    int updateFace(@Param("list") List<WorkPriorityOrderResultData> list);
+    int updateFace(@Param("list") List<WorkPriorityOrderResultData> list,@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 
-    List<WorkPriorityOrderResultData>  getResultDatas(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
+    List<WorkPriorityOrderResultData>  getResultDatas(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     //重新计算rank
     List<WorkPriorityOrderResultData> getReorder(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("sortName1")String sortName1,
+                                                 @Param("sortName2")String sortName2);
+
+    //获取属性排名
+    List<WorkPriorityOrderResultData> getAttrRank(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd,@Param("sortName1")String sortName1,
                                                  @Param("sortName2")String sortName2);
 
 }

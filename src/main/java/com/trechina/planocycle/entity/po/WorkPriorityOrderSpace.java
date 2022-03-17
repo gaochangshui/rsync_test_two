@@ -23,6 +23,7 @@ public class WorkPriorityOrderSpace {
 
     private String attribute2Name;
 
+
     public String getCompanyCd() {
         return companyCd;
     }

@@ -13,7 +13,7 @@ public interface WorkPriorityOrderRestrictSetMapper {
 
     int insertAll(List<WorkPriorityOrderRestrictSet> list);
 
-    int deleteByAuthorCd(String companyCd, String authorCd);
+    int deleteByAuthorCd(String companyCd, String authorCd,Integer priorityOrderCd);
 
-    List<WorkPriorityOrderRestrictSet> selectByAuthorCd(String companyCd, String authorCd);
+    List<WorkPriorityOrderRestrictSet> selectByAuthorCd(String companyCd, String authorCd,Integer priorityOrderCd);
 }

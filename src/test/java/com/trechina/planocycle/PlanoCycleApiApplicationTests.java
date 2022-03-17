@@ -97,7 +97,7 @@ class PlanoCycleApiApplicationTests {
         //WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult = new WorkPriorityOrderRestrictResult();
         //workPriorityOrderRestrictResult.setZokusei1("0014");
         //List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, "0001", 1363,"10215814");
-        priorityOrderMstService.deleteWorkTable("0001");
+        //priorityOrderMstService.deleteWorkTable("0001");
         //productPowerData.forEach(System.out::println);
         ////List<DataInfo> dataPotints = (ArrayList<DataInfo>) request.getAttribute("dataPotints");
         ////ArrayList<IotDataHistory> iotDataHistories = new ArrayList<IotDataHistory>();

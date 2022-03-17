@@ -34,15 +34,17 @@
     from planocycle.work_priority_order_result_data
     where company_cd = #{companyCd,jdbcType=VARCHAR}
         and author_cd = #{authorCd,jdbcType=VARCHAR}
+        and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
   <select id="getResultDatas" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
     select jan_cd ,sales_cnt as salesCnt
     from planocycle.work_priority_order_result_data
       where company_cd = #{companyCd,jdbcType=VARCHAR}
       and author_cd = #{authorCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd}
   </select>
   <select id="getReorder" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
-    select a.jan_cd,a.jan_nm,a.scat1cd_val,a.scat2cd_val,a.scat3cd_val,a.scat4cd_val,a.brand,a.sku_rank from
+    select a.scat1cd_val,a.scat2cd_val,a.scat3cd_val,a.scat4cd_val,a.brand,a.sku_rank from
                 (select  datas.jan_cd ,janMst.jan_nm,
                 janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
                 from planocycle.work_priority_order_result_data datas
@@ -77,6 +79,46 @@
             </if>
            ,a.sku_rank
   </select>
+  <select id="getAttrRank" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    select distinct a.${sortName1}
+    <if test="sortName2 !=null">
+      ,a.${sortName2}
+    </if>
+    from
+    (select  datas.jan_cd ,janMst.jan_nm,
+    janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
+    from planocycle.work_priority_order_result_data datas
+    left join masterdb.jan_mst janMst
+    on janMst.jan_cd = datas.jan_cd
+    where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}) a
+
+    inner join
+    (select ${sortName1},avg(sku_rank) aavg from (select  datas.jan_cd ,janMst.jan_nm,
+    janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
+    from planocycle.work_priority_order_result_data datas
+    left join masterdb.jan_mst janMst
+    on janMst.jan_cd = datas.jan_cd
+    where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}) test group by ${sortName1}
+    ) b
+    on a.${sortName1}=b.${sortName1}
+    <if test="sortName2 !=null">
+      inner join
+      (select ${sortName2},avg(sku_rank) aavg from (select  datas.jan_cd ,janMst.jan_nm,
+      janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
+      from planocycle.work_priority_order_result_data datas
+      left join masterdb.jan_mst janMst
+      on janMst.jan_cd = datas.jan_cd
+      where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}) test group by ${sortName2}
+      ) c
+      on a.${sortName2}=c.${sortName2}
+    </if>
+
+    order by b.aavg
+    <if test="sortName2 !=null">
+      ,c.aavg
+    </if>
+    ,a.sku_rank
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.work_priority_order_result_data
     where company_cd = #{companyCd,jdbcType=VARCHAR}
@@ -87,6 +129,7 @@
     delete from planocycle.work_priority_order_result_data
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and author_cd = #{authorCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd}
   </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
     insert into planocycle.work_priority_order_result_data (company_cd, author_cd, priority_order_cd, jan_cd,
@@ -252,7 +295,7 @@
       <set>
         sales_cnt = #{item.salesCnt} ::numeric
       </set>
-      where jan_cd = #{item.janCd} ::varchar
+      where jan_cd = #{item.janCd} ::varchar and company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
     </foreach>
   </update>
   <update id="updateFace">
@@ -261,15 +304,15 @@
       <set>
         face = #{item.face},face_keisan = #{item.face}
       </set>
-      where jan_cd = #{item.janCd} ::varchar
+      where jan_cd = #{item.janCd} ::varchar and company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{item.priorityOrderCd}
     </foreach>
   </update>
 
   <insert id="setResultDataList">
-    insert into planocycle.work_priority_order_result_data(company_cd,restrict_cd,jan_cd,sku_rank,adopt_flag,author_cd)
+    insert into planocycle.work_priority_order_result_data(priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,adopt_flag,author_cd)
       values
     <foreach collection="list" item="item" separator="," >
-        (#{companyCd},#{restrictCd},#{item.jan},#{item.rankResult},0,#{authorCd})
+        (#{priorityOrderCd},#{companyCd},#{restrictCd},#{item.jan},#{item.rankResult},0,#{authorCd})
     </foreach>
   </insert>
 </mapper>

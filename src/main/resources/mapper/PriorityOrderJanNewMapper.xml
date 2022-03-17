@@ -10,11 +10,11 @@
     <result column="branch_account" jdbcType="NUMERIC" property="branchAccount" />
   </resultMap>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanNew">
-    insert into planocycle.work_priority_order_jan_new (company_cd, jan_new,
+    insert into planocycle.work_priority_order_jan_new (priority_order_cd,company_cd, jan_new,
       jan_rank,author_cd)
     values
            <foreach collection="lists" separator="," item="list">
-           (#{list.companyCd,jdbcType=VARCHAR}, #{list.janNew,jdbcType=VARCHAR},
+           (#{list.priorityOrderCd},#{list.companyCd,jdbcType=VARCHAR}, trim(#{list.janNew,jdbcType=VARCHAR}),
       #{list.rank,jdbcType=INTEGER},#{authorCd})
            </foreach>
   </insert>
@@ -97,8 +97,15 @@
         select jan_cd as janNew,jan_nm as janName,scat1cd_val,scat2cd_val,scat3cd_val,scat4cd_val from masterdb.jan_mst
         where jan_cd in
         <foreach collection="janNew" separator="," item="item" open="(" close=")">
-            #{item}
+            trim(#{item})
         </foreach>
+    </select>
+    <select id="getProductPowerData" resultType="com.trechina.planocycle.entity.po.ProductPowerMstData">
+        select datas.jan,datas.sku_name ,datas.classify_big,datas.classify_middle ,datas.classify_small ,datas.classify_fine ,datas.rank_result
+        from planocycle.product_power_mst_data datas
+        where datas.classify_big = #{item.scat1cdVal} and datas.classify_middle = #{item.scat2cdVal} and datas.classify_small = #{item.scat3cdVal}
+        and product_power_cd = #{productPowerCd}
+        order by rank_result
     </select>
 
 </mapper>

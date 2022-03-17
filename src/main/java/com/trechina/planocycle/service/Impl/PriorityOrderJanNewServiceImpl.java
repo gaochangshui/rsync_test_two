@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanAttribute;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
+import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -41,6 +42,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     private PriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
     @Autowired
     private PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
+    @Autowired
+    private ProductPowerMstMapper productPowerMstMapper;
     /**
      * 获取新规janList
      *
@@ -138,6 +141,19 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Override
     public Integer delriorityOrderJanNewInfo(String companyCd, Integer priorityOrderCd) {
         return priorityOrderJanNewMapper.delete(companyCd,priorityOrderCd);
+    }
+    /**
+     * 根据分类去商品力点数表抽同类商品
+     * @param priorityOrderJanNewVO
+     * @return
+     */
+    @Override
+    public Map<String, Object> getSimilarity(PriorityOrderJanNewVO priorityOrderJanNewVO) {
+        String aud = session.getAttribute("aud").toString();
+        Integer productPowerCd = productPowerMstMapper.getProductPowerCd(priorityOrderJanNewVO.getCompanyCd(), aud,priorityOrderJanNewVO.getPriorityOrderCd());
+        List<ProductPowerMstData> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, priorityOrderJanNewVO);
+
+        return ResultMaps.result(ResultEnum.SUCCESS,productPowerData);
     }
 
     private String dataSave(JSONArray jsonArray, List<PriorityOrderJanNew> janNewList,

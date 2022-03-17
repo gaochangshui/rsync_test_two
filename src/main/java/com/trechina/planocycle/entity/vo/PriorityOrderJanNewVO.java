@@ -1,6 +1,9 @@
 package com.trechina.planocycle.entity.vo;
 
 public class PriorityOrderJanNewVO {
+
+    private String companyCd;
+    private Integer priorityOrderCd;
     private String janNew;
 
     private String janName;
@@ -69,6 +72,22 @@ public class PriorityOrderJanNewVO {
 
     public void setScat4cdVal(String scat4cdVal) {
         this.scat4cdVal = scat4cdVal;
+    }
+
+    public String getCompanyCd() {
+        return companyCd;
+    }
+
+    public void setCompanyCd(String companyCd) {
+        this.companyCd = companyCd;
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
     }
 
     @Override

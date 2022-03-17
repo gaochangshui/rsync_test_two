@@ -41,7 +41,7 @@
   <select id="getPriorityOrderRestrict" resultType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
     select tai_cd,tana_cd,tana_type,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10
     from planocycle.work_priority_order_restrict_set resSet
-    where company_cd = #{companyCd} and author_cd = #{authorCd}
+    where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd= #{priorityOrderCd}
     and  (zokusei1 is not NULL or zokusei2 is not NULL or zokusei3 is not NULL or zokusei4 is not NULL or zokusei5 is not NULL or zokusei6 is not NULL
       or zokusei7 is not NULL or zokusei8 is not NULL or zokusei9 is not NULL or zokusei10 is not NULL)
 
@@ -286,8 +286,8 @@
       and tana_type = #{tanaType,jdbcType=INTEGER}
   </update>
     <insert id="setPriorityOrderRestrict">
-        insert into planocycle.work_priority_order_restrict_set(company_cd,tai_cd,tana_cd,tana_type,zokusei${item.zokuseiId},author_cd)
-        values (#{item.companyCd},#{item.taiCd},#{item.tanaCd},#{item.tanaType},#{item.val},#{authorCd})
+        insert into planocycle.work_priority_order_restrict_set(priority_order_cd,company_cd,tai_cd,tana_cd,tana_type,zokusei${item.zokuseiId},author_cd)
+        values (#{item.priorityOrderCd},#{item.companyCd},#{item.taiCd},#{item.tanaCd},#{item.tanaType},#{item.val},#{authorCd})
         on conflict(company_cd,author_cd,tai_cd,tana_cd,tana_type)
         do update set
           zokusei${item.zokuseiId} = #{item.val}

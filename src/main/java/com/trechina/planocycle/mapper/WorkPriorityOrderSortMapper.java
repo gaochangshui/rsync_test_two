@@ -6,5 +6,5 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface WorkPriorityOrderSortMapper {
 
-    int delete(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+    int delete(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 }

@@ -64,7 +64,7 @@ public interface PriorityOrderMstAttrSortService {
      */
     Map<String,Object> getEditAttributeArea(String companyCd);
 
-    List<WorkPriorityOrderRestrictSet> setRestrict(List<PriorityOrderAttrVO> dataList, List<ShelfPtsDataTanaCount> tanaCountList, Short attr1, Short attr2, String companyCd, String authorCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    List<WorkPriorityOrderRestrictSet> setRestrict(List<PriorityOrderAttrVO> dataList, List<ShelfPtsDataTanaCount> tanaCountList, Short attr1, Short attr2, String companyCd, String authorCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
     Map<String, Object> setAttribute(PriorityOrderSpaceDto dto);
 }

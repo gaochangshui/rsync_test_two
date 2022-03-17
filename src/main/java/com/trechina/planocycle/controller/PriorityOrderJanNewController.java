@@ -1,6 +1,7 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
+import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +50,13 @@ public class PriorityOrderJanNewController {
     }
 
     /**
-     *
+     * 根据分类去商品力点数表抽同类商品
+     * @param priorityOrderJanNewVO
+     * @return
      */
-   
+    @PostMapping("getSimilarity")
+    public Map<String, Object> getSimilarity(@RequestBody PriorityOrderJanNewVO priorityOrderJanNewVO)  {
+        return priorityOrderJanNewService.getSimilarity(priorityOrderJanNewVO);
+    }
+
 }

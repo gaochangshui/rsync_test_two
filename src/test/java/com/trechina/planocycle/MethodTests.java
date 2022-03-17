@@ -94,7 +94,7 @@ public class MethodTests {
             tanaCount.setTanaUsedCount(0);
             tanaCountList.add(tanaCount);
         }
-        List<WorkPriorityOrderRestrictSet> setList = priorityOrderMstAttrSortService.setRestrict(dataList, tanaCountList, (short) 2, (short) 2,"0001","10047515");
+        List<WorkPriorityOrderRestrictSet> setList = priorityOrderMstAttrSortService.setRestrict(dataList, tanaCountList, (short) 2, (short) 2,"0001","10047515",1);
         ObjectMapper objectMapper = new ObjectMapper();
         System.out.println(objectMapper.writeValueAsString(setList));
     }

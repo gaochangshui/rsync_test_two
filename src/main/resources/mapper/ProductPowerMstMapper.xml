@@ -99,11 +99,13 @@
     select product_power_cd
     from planocycle.work_priority_order_mst
     where company_cd = #{companyCd} and author_cd = #{authorCd}
+    and priority_order_cd = #{priorityOrderCd}
   </select>
   <select id="getpatternCd" resultType="java.lang.Integer">
     select shelf_pattern_cd
     from planocycle.work_priority_order_mst
     where company_cd = #{companyCd} and author_cd = #{authorCd}
+    and priority_order_cd = #{priorityOrderCd}
   </select>
   <select id="getFaceNum" resultType="com.trechina.planocycle.entity.dto.FaceNumDataDto">
     select max (jandataMst.face_count) faceMaxNum,min(jandataMst.face_count) faceMinNum,avg(jandataMst.face_count) faceAvgNum
@@ -116,7 +118,7 @@
   <select id="getSalesCntAvg" resultType="double">
   select avg(sales_cnt)
     from planocycle.work_priority_order_result_data
-    where company_cd = #{companyCd} and author_cd = #{authorCd}
+    where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
   </select>
 
 </mapper>
