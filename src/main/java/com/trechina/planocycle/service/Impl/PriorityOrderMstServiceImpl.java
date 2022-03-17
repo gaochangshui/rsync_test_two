@@ -2,7 +2,6 @@ package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
@@ -89,8 +88,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private cgiUtils cgiUtil;
     @Autowired
     private ShelfPtsDataMapper shelfPtsDataMapper;
-    @Autowired
-    private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
+
 
 
     /**
@@ -863,6 +861,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }else {
             return Data;
         }
+
+        //this.getReorder(companyCd,priorityOrderCd);
         logger.info("拆分后的数据为{}",strList);
 
 
@@ -879,15 +879,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String aud = session.getAttribute("aud").toString();
         String colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, aud,priorityOrderCd);
         String[] split = colNmforMst.split(",");
-        List<WorkPriorityOrderResultData> reorder = null;
+        List<PriorityOrderJanNewDto> reorder = null;
         if (split.length==1){
             reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud,priorityOrderCd, split[0], null);
-            workPriorityOrderSortRankMapper.insert(companyCd,reorder,aud);
+
         }else {
              reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud,priorityOrderCd, split[0], split[1]);
 
         }
-
+        workPriorityOrderSortRankMapper.insert(companyCd,reorder,aud,priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,reorder);
     }
 

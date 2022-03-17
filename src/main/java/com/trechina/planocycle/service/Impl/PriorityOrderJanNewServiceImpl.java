@@ -3,6 +3,7 @@ package com.trechina.planocycle.service.Impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanAttribute;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
@@ -110,9 +111,21 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
 
                 }
             }
+        List<PriorityOrderJanNewDto> priorityOrderJanNewDtos = new ArrayList<>();
+        PriorityOrderJanNewDto priorityOrderJanNewDto = null;
+        for (PriorityOrderJanNewVO priorityOrderJanNewVO : priorityOrderJanNewVOList) {
+            priorityOrderJanNewDto = new PriorityOrderJanNewDto();
+            priorityOrderJanNewDto.setJanName(priorityOrderJanNewVO.getJanName());
+            priorityOrderJanNewDto.setJanNew(priorityOrderJanNewVO.getJanNew());
+            priorityOrderJanNewDto.setZokusei1(priorityOrderJanNewVO.getScat1cdVal());
+            priorityOrderJanNewDto.setZokusei2(priorityOrderJanNewVO.getScat2cdVal());
+            priorityOrderJanNewDto.setZokusei3(priorityOrderJanNewVO.getScat3cdVal());
+            priorityOrderJanNewDto.setZokusei4(priorityOrderJanNewVO.getScat4cdVal());
+            priorityOrderJanNewDtos.add(priorityOrderJanNewDto);
+        }
         Map<String,Object> map = new HashMap<>();
         map.put("array",array);
-        map.put("priorityOrderJanNewVOList",priorityOrderJanNewVOList);
+        map.put("priorityOrderJanNewVOList",priorityOrderJanNewDtos);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
