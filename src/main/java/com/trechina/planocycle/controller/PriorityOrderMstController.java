@@ -95,8 +95,8 @@ public class PriorityOrderMstController {
     }
 
     @GetMapping("/preCalculation")
-    public Map<String, Object> preCalculation(String companyCd, Long patternCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        return priorityOrderMstService.preCalculation(companyCd, patternCd);
+    public Map<String, Object> preCalculation(String companyCd, Long patternCd,Integer priorityOrderCd ) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        return priorityOrderMstService.preCalculation(companyCd, patternCd,priorityOrderCd);
     }
 
     /**
@@ -105,7 +105,7 @@ public class PriorityOrderMstController {
      */
     // TODO: 2200866
     @GetMapping("/autoCalculation")
-    public Map<String,Object> autoCalculation(String companyCd){
-        return priorityOrderMstService.autoCalculation(companyCd);
+    public Map<String,Object> autoCalculation(String companyCd,Integer priorityOrderCd){
+        return priorityOrderMstService.autoCalculation(companyCd,priorityOrderCd);
     }
 }

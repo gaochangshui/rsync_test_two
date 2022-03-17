@@ -5,11 +5,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanAttribute;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
+import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
+import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     private PriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
     @Autowired
     private PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
+    @Autowired
+    private ProductPowerMstMapper productPowerMstMapper;
     /**
      * 获取新规janList
      *
@@ -70,9 +74,50 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         }
            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanNewVOS);
     }
+    /**
+     * 获取新规jan的名字分类
+     * @param janNew
+     * @return
+     *
+     */
+    @Override
+    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janNew) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        List<PriorityOrderJanNewVO> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getJanNameClassify(janNew);
+        if (priorityOrderJanNewVOList == null){
+            return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
+        }
+        List<String> listNew = new ArrayList();
+        for (PriorityOrderJanNewVO priorityOrderJanNewVO : priorityOrderJanNewVOList) {
+           listNew.add( priorityOrderJanNewVO.getJanNew());
+        }
+        List<String> list = Arrays.asList(janNew);
+        List<String> listDisparitStr = ListDisparityUtils.getListDisparitStr(list, listNew);
+        String [] array = new String[listDisparitStr.size()];
+        listDisparitStr.toArray(array);
+        Class clazz = PriorityOrderJanNewVO.class;
+        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
+        for (int i = 1; i <= 4; i++) {
+            Method getMethod = clazz.getMethod("get"+"Scat"+i+"cdVal");
+            Method setMethod = clazz.getMethod("set"+"Scat"+i+"cdVal", String.class);
+            for (PriorityOrderAttrValueDto attrValue : attrValues) {
+                for (PriorityOrderJanNewVO priorityOrderJanNewVO : priorityOrderJanNewVOList) {
+                    if (getMethod.invoke(priorityOrderJanNewVO)!=null && getMethod.invoke(priorityOrderJanNewVO).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
+                        setMethod.invoke(priorityOrderJanNewVO,attrValue.getNm());
+                    }else{
+
+                    }
+                }
+
+                }
+            }
+        Map<String,Object> map = new HashMap<>();
+        map.put("array",array);
+        map.put("priorityOrderJanNewVOList",priorityOrderJanNewVOList);
+        return ResultMaps.result(ResultEnum.SUCCESS,map);
+    }
 
     /**
-     * 保存新规商品list
+     * work表保存新规商品list
      *
      * @param
      * @return
@@ -81,24 +126,6 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Override
     public Map<String, Object> setPriorityOrderJanNew(List<PriorityOrderJanNew> priorityOrderJanNew) {
         String authorCd = session.getAttribute("aud").toString();
-        String companyCd=null;
-        Integer priorityOrderCd = null;
-        for (PriorityOrderJanNew orderJanNew : priorityOrderJanNew) {
-            Integer janMstNum = priorityOrderJanNewMapper.getJanMstNum(orderJanNew);
-            if (janMstNum ==0){
-                Integer janMstPlanocycleNum = priorityOrderJanNewMapper.getJanMstPlanocycleNum(orderJanNew);
-                if (janMstPlanocycleNum == 0){
-                    return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
-                }
-            }
-            companyCd = orderJanNew.getCompanyCd();
-             priorityOrderCd = orderJanNew.getPriorityOrderCd();
-        }
-
-
-            // 全删
-            priorityOrderJanNewMapper.delete(companyCd,priorityOrderCd);
-          //  priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
 
             priorityOrderJanNewMapper.insert(priorityOrderJanNew,authorCd);
             return ResultMaps.result(ResultEnum.SUCCESS);
@@ -114,6 +141,19 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Override
     public Integer delriorityOrderJanNewInfo(String companyCd, Integer priorityOrderCd) {
         return priorityOrderJanNewMapper.delete(companyCd,priorityOrderCd);
+    }
+    /**
+     * 根据分类去商品力点数表抽同类商品
+     * @param priorityOrderJanNewVO
+     * @return
+     */
+    @Override
+    public Map<String, Object> getSimilarity(PriorityOrderJanNewVO priorityOrderJanNewVO) {
+        String aud = session.getAttribute("aud").toString();
+        Integer productPowerCd = productPowerMstMapper.getProductPowerCd(priorityOrderJanNewVO.getCompanyCd(), aud,priorityOrderJanNewVO.getPriorityOrderCd());
+        List<ProductPowerMstData> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, priorityOrderJanNewVO);
+
+        return ResultMaps.result(ResultEnum.SUCCESS,productPowerData);
     }
 
     private String dataSave(JSONArray jsonArray, List<PriorityOrderJanNew> janNewList,

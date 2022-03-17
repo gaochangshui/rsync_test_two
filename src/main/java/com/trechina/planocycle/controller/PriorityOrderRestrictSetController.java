@@ -32,9 +32,9 @@ public class PriorityOrderRestrictSetController {
      * @return
      */
     @GetMapping("/getAttrDisplay")
-    public Map<String,Object> getAttrDisplay(String companyCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public Map<String,Object> getAttrDisplay(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
-        return priorityOrderRestrictSetService.getAttrDisplay(companyCd);
+        return priorityOrderRestrictSetService.getAttrDisplay(companyCd,priorityOrderCd);
     }
 
 }

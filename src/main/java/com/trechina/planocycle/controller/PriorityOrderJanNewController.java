@@ -1,6 +1,7 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
+import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class PriorityOrderJanNewController {
     }
 
     /**
-     * 保存新规商品list
+     * work表保存新规商品list
      * @param
      * @return
      */
@@ -36,4 +37,26 @@ public class PriorityOrderJanNewController {
     public Map<String,Object> setPriorityOrderJanNew(@RequestBody List<PriorityOrderJanNew> priorityOrderJanNew){
         return priorityOrderJanNewService.setPriorityOrderJanNew(priorityOrderJanNew);
     }
+
+    /**
+     * 获取新规jan的名字分类
+     * @param janNew
+     * @return
+     *
+     */
+    @GetMapping("getPriorityOrderJanNewInfo")
+    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janNew) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        return priorityOrderJanNewService.getPriorityOrderJanNewInfo(janNew);
+    }
+
+    /**
+     * 根据分类去商品力点数表抽同类商品
+     * @param priorityOrderJanNewVO
+     * @return
+     */
+    @PostMapping("getSimilarity")
+    public Map<String, Object> getSimilarity(@RequestBody PriorityOrderJanNewVO priorityOrderJanNewVO)  {
+        return priorityOrderJanNewService.getSimilarity(priorityOrderJanNewVO);
+    }
+
 }

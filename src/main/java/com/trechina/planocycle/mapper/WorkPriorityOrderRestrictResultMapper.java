@@ -15,8 +15,8 @@ public interface WorkPriorityOrderRestrictResultMapper {
 
     int insertAll(List<WorkPriorityOrderRestrictResult> list);
 
-    int deleteByAuthorCd(String companyCd, String authorCd);
-    List<WorkPriorityOrderRestrictResult> getResultList(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+    int deleteByAuthorCd(String companyCd, String authorCd,Integer priorityOrderCd);
+    List<WorkPriorityOrderRestrictResult> getResultList(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     List<ProductPowerDataDto> getProductPowerData(@Param("item")WorkPriorityOrderRestrictResult priorityOrderRestrictResults,@Param("companyCd")String companyCd
     ,@Param("productPowerCd")Integer productPowerCd,@Param("authorCd")String authorCd);

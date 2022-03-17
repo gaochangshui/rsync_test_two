@@ -28,7 +28,7 @@ public interface PriorityOrderRestrictSetMapper {
 
     int setPriorityOrderRestrict(@Param("item") PriorityOderAttrSet priorityOderAttrSet, @Param("authorCd") String authorCd);
 
-    List<PriorityOrderRestrictSet> getPriorityOrderRestrict(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+    List<PriorityOrderRestrictSet> getPriorityOrderRestrict(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
     //名字前跟着大分类name
     List<PriorityOrderAttrValueDto> getAttrValues();
 

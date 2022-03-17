@@ -61,6 +61,6 @@ public interface PriorityOrderMstAttrSortMapper {
 
 
     //获取列名
-    String getColNmforMst(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+    String getColNmforMst(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
 }

@@ -242,7 +242,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     @Override
-    public Map<String, Object> getPtsDetailData(Integer patternCd,String companyCd) {
+    public Map<String, Object> getPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd) {
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
         List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
         List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
@@ -256,7 +256,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
        if (ptsDetailData != null) {
            ptsDetailData.setPtsJanDataList(janData);
        }
-        priorityOrderMstService.deleteWorkTable(companyCd);
+        priorityOrderMstService.deleteWorkTable(companyCd,priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
     /**

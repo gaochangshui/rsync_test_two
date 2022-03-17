@@ -32,10 +32,10 @@ public class PriorityOrderRestrictSetServiceImpl implements PriorityOrderRestric
     }
 
     @Override
-    public Map<String, Object> getAttrDisplay(String companyCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Map<String, Object> getAttrDisplay(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //获取社员号
         String authorCd = session.getAttribute("aud").toString();
-        List<PriorityOrderRestrictSet> priorityOrderRestrict = priorityOrderRestrictSetMapper.getPriorityOrderRestrict(companyCd, authorCd);
+        List<PriorityOrderRestrictSet> priorityOrderRestrict = priorityOrderRestrictSetMapper.getPriorityOrderRestrict(companyCd, authorCd,priorityOrderCd);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
         Class clazz = PriorityOrderRestrictSet.class;
         for (int i = 1; i <= 10; i++) {

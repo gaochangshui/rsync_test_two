@@ -14,7 +14,5 @@ public interface WorkPriorityOrderRestrictRelationMapper {
 
     int insertAll(List<WorkPriorityOrderRestrictRelation> list);
 
-    int deleteByAuthorCd(String companyCd, String authorCd);
-
-    List<WorkPriorityOrderRestrictRelation> selectByAuthorCd(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
+    int deleteByAuthorCd(String companyCd, String authorCd,Integer priorityOrderCd);
 }

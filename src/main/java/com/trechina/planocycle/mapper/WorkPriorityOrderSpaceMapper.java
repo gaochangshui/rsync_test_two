@@ -13,5 +13,5 @@ public interface WorkPriorityOrderSpaceMapper {
 
     int insertAll(List<WorkPriorityOrderSpace> list);
 
-    int deleteByAuthorCd(String companyCd, String authorCd);
+    int deleteByAuthorCd(String companyCd, String authorCd,Integer priorityOrderCd );
 }

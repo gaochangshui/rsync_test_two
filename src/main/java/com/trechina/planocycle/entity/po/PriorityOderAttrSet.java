@@ -2,6 +2,7 @@ package com.trechina.planocycle.entity.po;
 
 public class PriorityOderAttrSet {
     private String companyCd;
+    private Integer priorityOrderCd;
     private Integer taiCd;
     private Integer tanaCd;
     private Integer tanaType;
@@ -54,6 +55,22 @@ public class PriorityOderAttrSet {
 
     public void setVal(String val) {
         this.val = val;
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
+    }
+
+    public Integer getTanaType() {
+        return tanaType;
+    }
+
+    public void setTanaType(Integer tanaType) {
+        this.tanaType = tanaType;
     }
 
     @Override

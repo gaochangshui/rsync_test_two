@@ -9,7 +9,5 @@ public interface WorkPriorityOrderMstMapper {
 
     int insertSelective(WorkPriorityOrderMst record);
 
-    int deleteByAuthorCd(String companyCd, String authorCd);
-
-    WorkPriorityOrderMst selectByAuthorCd(String companyCd, String authorCd);
+    int deleteByAuthorCd(String companyCd, String authorCd,Integer priorityOrderCd);
 }

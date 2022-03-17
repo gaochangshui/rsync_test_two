@@ -76,26 +76,26 @@ public interface PriorityOrderMstService {
      */
     String selPriorityOrderCdForProdCd(String companyCd,Integer productPowerCd);
 
-    Map<String, Object> preCalculation(String companyCd, Long patternCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    Map<String, Object> preCalculation(String companyCd, Long patternCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     /**
      * 自动计算
      * @return
      */
-    Map<String, Object> autoCalculation(String companyCd);
+    Map<String, Object> autoCalculation(String companyCd,Integer priorityOrderCd);
 
     /**
      * 重新计算rank排序
      * @param companyCd
      * @return
      */
-    Map<String, Object>getReorder(String companyCd);
+    Map<String, Object>getReorder(String companyCd,Integer priorityOrderCd);
 
     /**
      * 新规时清空对应临时表所有信息
      * @param companyCd
      * @return
      */
-    void deleteWorkTable(String companyCd);
+    void deleteWorkTable(String companyCd,Integer priorityOrderCd);
 
     Map<String,Object> getFaceKeisanForCgi(String[]array,String companyCd,Integer shelfPatternNo,String authorCd);
 
