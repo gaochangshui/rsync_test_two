@@ -8,7 +8,6 @@ import com.trechina.planocycle.mapper.PriorityOrderJanCardMapper;
 import com.trechina.planocycle.service.PriorityOrderJanCardService;
 import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
 import com.trechina.planocycle.utils.ResultMaps;
-import com.trechina.planocycle.utils.dataConverUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -58,46 +55,18 @@ public class PriorityOrderJanCardServiceImpl implements PriorityOrderJanCardServ
     @Override
     public Map<String, Object> setPriorityOrderJanCard(List<PriorityOrderJanCard> priorityOrderJanCard) {
         logger.info("保存card商品list的参数："+priorityOrderJanCard);
-        try {
-            dataConverUtils dataConverUtil = new dataConverUtils();
-            String companyCd = priorityOrderJanCard.get(0).getCompanyCd();
-            Integer priorityOrderCd = priorityOrderJanCard.get(0).getPriorityOrderCd();
-            // 处理参数
-            List<PriorityOrderJanCard> cards = dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderJanCard.class,
-                    priorityOrderJanCard,companyCd,priorityOrderCd);
-            logger.info("保存card商品list的处理完的参数："+cards);
-            //全删
-            priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-            // jancheck
-            String janInfo = priorityOrderJanReplaceService.getJanInfo();
-            List<String> list= Arrays.asList(janInfo.split(","));
-            String notExists = "";
-            List<PriorityOrderJanCard> exists = new ArrayList<>();
-            for (int i = 0; i < cards.size(); i++) {
-                if (list.indexOf(cards.get(i).getJanOld())==-1){
-                    notExists += cards.get(i).getJanOld()+",";
-                } else {
-                    exists.add(cards.get(i));
-                }
-            }
-            if (exists.size()>0) {
-                //全插
-                priorityOrderJanCardMapper.insert(exists);
 
-                // 修改优先顺位存在的jan信息
-                priorityOrderDataMapper.updatePriorityOrderDataForCard(companyCd, priorityOrderCd,
-                        "public.priorityorder" + session.getAttribute("aud").toString());
-            }
-            if (notExists.length()>0){
-                return ResultMaps.result(ResultEnum.JANNOTESISTS,notExists.substring(0,notExists.length()-1));
+        String authorCd = session.getAttribute("aud").toString();
+        String companyCd=null;
+        Integer priorityOrderCd=null;
 
-            }else {
-                return ResultMaps.result(ResultEnum.SUCCESS);
-            }
-        } catch (Exception e) {
-            logger.info("保存card商品list报错："+e);
-            return ResultMaps.result(ResultEnum.FAILURE);
+        for (PriorityOrderJanCard orderJanCard : priorityOrderJanCard) {
+           companyCd= orderJanCard.getCompanyCd();
+           priorityOrderCd = orderJanCard.getPriorityOrderCd();
         }
+                priorityOrderJanCardMapper.workDelete(companyCd,priorityOrderCd,authorCd);
+                priorityOrderJanCardMapper.insert(priorityOrderJanCard,authorCd);
+        return ResultMaps.result(ResultEnum.SUCCESS);
 
     }
 

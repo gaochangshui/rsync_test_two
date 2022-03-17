@@ -5,14 +5,14 @@ public class PriorityOrderJanCard {
 
     private Integer priorityOrderCd;
 
-    private String janOld;
+    private String janCd;
 
     public String getCompanyCd() {
         return companyCd;
     }
 
     public void setCompanyCd(String companyCd) {
-        this.companyCd = companyCd == null ? null : companyCd.trim();
+        this.companyCd = companyCd;
     }
 
     public Integer getPriorityOrderCd() {
@@ -23,11 +23,11 @@ public class PriorityOrderJanCard {
         this.priorityOrderCd = priorityOrderCd;
     }
 
-    public String getJanOld() {
-        return janOld;
+    public String getJanCd() {
+        return janCd;
     }
 
-    public void setJanOld(String janOld) {
-        this.janOld = janOld == null ? null : janOld.trim();
+    public void setJanCd(String janCd) {
+        this.janCd = janCd;
     }
 }

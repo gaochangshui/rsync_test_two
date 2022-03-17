@@ -364,4 +364,19 @@
       </foreach>
       and company_cd=#{companyCd} and author_cd=#{authorCd}
   </update>
+  <insert id="setWorkForFinal">
+    insert into planocycle.work_priority_order_result_data(company_cd, author_cd, priority_order_cd, jan_cd,
+                                                           restrict_cd, sku_rank, adopt_flag,
+                                                           face, face_sku, irisu,
+                                                           tai_cd, tana_cd, tana_type,
+                                                           face_keisan,sales_cnt)
+      select company_cd, #{authorCd}, priority_order_cd, jan_cd,
+                                                   restrict_cd, sku_rank, adopt_flag,
+                                                   face, face_sku, irisu,
+                                                   tai_cd, tana_cd, tana_type,
+                                                   face_keisan,sales_cnt
+        from planocycle.priority_order_result_data
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd}
+  </insert>
 </mapper>

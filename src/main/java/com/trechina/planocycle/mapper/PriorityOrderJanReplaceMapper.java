@@ -11,12 +11,12 @@ import java.util.List;
 public interface PriorityOrderJanReplaceMapper {
     int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
-    int workDelete(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+    int workDelete(@Param("companyCd") String companyCd,@Param("authorCd")String authorCd ,@Param("priorityOrderCd") Integer priorityOrderCd);
 
-    int insert(@Param("lists") List<PriorityOrderJanReplace> record);
+    int insert(@Param("lists") List<PriorityOrderJanReplace> record,@Param("authorCd")String authorCd);
 
     List<PriorityOrderJanReplaceVO> selectJanInfo(String companyCd, Integer priorityOrderCd);
 
-
+    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
     String selectJanDistinct();
 }

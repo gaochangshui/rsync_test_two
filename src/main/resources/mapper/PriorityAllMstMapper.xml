@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.PriorityAllMstMapper">
+
+    <!-- Home画面の全パータンList -->
+    <resultMap id="tableNameList" type="com.trechina.planocycle.entity.dto.TableNameDto">
+        <id column="priority_all_cd" jdbcType="INTEGER" property="id" />
+        <result column="priority_all_name" jdbcType="VARCHAR" property="fileName" />
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="author_cd" jdbcType="VARCHAR" property="authorName"/>
+    </resultMap>
+
+
+    <select id="getTableNameByCompanyCd" resultMap="tableNameList">
+        select
+            priority_all_cd, priority_all_name,create_time,author_cd
+        from planocycle.priority_all_mst
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+            and deleteflg=0
+            and author_cd = #{authorCd,jdbcType=VARCHAR}
+        order by priority_all_cd
+    </select>
+</mapper>

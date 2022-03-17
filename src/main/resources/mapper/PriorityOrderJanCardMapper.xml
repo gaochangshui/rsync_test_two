@@ -4,10 +4,15 @@
   <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderJanCard">
     <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
     <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
-    <id column="jan_old" jdbcType="VARCHAR" property="janOld" />
+    <id column="jan_old" jdbcType="VARCHAR" property="janCd" />
   </resultMap>
     <insert id="setWorkForFinal">
-        insert into planocycle.work_priority_order_cut()
+        insert into planocycle.work_priority_order_cut(priority_order_cd,company_cd,author_cd,jan_cd)
+        select priority_order_cd,company_cd,#{authorCd},jan_cd
+        from planocycle.priority_order_jan_cut
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+            and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+
     </insert>
     <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.priority_order_jan_card
@@ -15,9 +20,10 @@
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
     <delete id="workDelete">
-        delete from planocycle.priority_order_jan_card
+        delete from planocycle.work_priority_order_cut
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+            and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <select id="selectJanCard" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanCardVO">
     select card.jan_old as janOld
@@ -39,13 +45,13 @@
     and card.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanCard">
-    insert into planocycle.priority_order_jan_card (company_cd, priority_order_cd, jan_old
+    insert into planocycle.work_priority_order_cut (company_cd, priority_order_cd, jan_cd,author_cd
       )
     values
        <foreach collection="lists" separator="," item="list">
-        <if test="list.janOld!=null">
-       (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janOld,jdbcType=VARCHAR})
-        </if>
+
+       (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janCd,jdbcType=VARCHAR},#{authorCd})
+
        </foreach>
   </insert>
 
