@@ -114,7 +114,7 @@
         </foreach>
     </select>
     <select id="getProductPowerData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
-        select datas.jan as janNew,datas.sku_name as janName ,datas.classify_big as zokusei1,datas.classify_middle as zokusei2,datas.classify_small as zokusei3,datas.classify_fine as zokusei4,datas.rank_result as rank
+        select datas.jan as janCd,datas.sku_name as janName ,datas.classify_big as zokusei1,datas.classify_middle as zokusei2,datas.classify_small as zokusei3,datas.classify_fine as zokusei4,datas.rank_result as rank
         from planocycle.product_power_mst_data datas
         where datas.classify_big = #{item.zokusei1} and datas.classify_middle = #{item.zokusei2} and datas.classify_small = #{item.zokusei3}
         and product_power_cd = #{productPowerCd}
