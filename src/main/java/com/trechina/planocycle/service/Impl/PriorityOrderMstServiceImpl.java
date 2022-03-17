@@ -969,36 +969,37 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Override
     public Map<String, Object> saveAllWorkPriorityOrder(String companyCd, Integer priorityOrderCd){
         String authorCd = session.getAttribute("aud").toString();
+//        String authorCd = "10218504";
 
         try {
             //保存OrderMst，逻辑删除原数据
-            priorityOrderMstMapper.insertBySelect(companyCd, authorCd,priorityOrderCd);
             priorityOrderMstMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderMstMapper.insertBySelect(companyCd, authorCd,priorityOrderCd);
             workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd,priorityOrderCd);
 
             //保存OrderRestrictRelation，逻辑删除原数据
-            priorityOrderRestrictRelationMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             priorityOrderRestrictRelationMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderRestrictRelationMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
 
             //保存OrderRestrictResult，逻辑删除原数据
-            priorityOrderRestrictResultMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             priorityOrderRestrictResultMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderRestrictResultMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
 
             //保存OrderRestrictSet，逻辑删除原数据
-            priorityOrderRestrictSetMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             priorityOrderRestrictSetMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderRestrictSetMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
 
             //保存ResultData，逻辑删除原数据
-            priorityOrderResultDataMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             priorityOrderResultDataMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderResultDataMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderResultDataMapper.delResultData(companyCd,authorCd,priorityOrderCd);
 
             //保存Space，逻辑删除原数据
-            priorityOrderSpaceMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             priorityOrderSpaceMapper.logicDeleteByPriorityOrderCd(companyCd,authorCd,priorityOrderCd);
+            priorityOrderSpaceMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
         }catch (Exception exception){
             logger.error("保存临时表数据到实际表报错", exception);
