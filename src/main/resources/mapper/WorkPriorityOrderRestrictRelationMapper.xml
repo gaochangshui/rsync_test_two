@@ -149,4 +149,9 @@
       delete from planocycle.work_priority_order_restrict_relation
       where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
+  <select id="selectByAuthorCd" resultMap="BaseResultMap">
+    select tai_cd,tana_cd,tana_type,restrict_cd from planocycle.work_priority_order_restrict_relation
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
+    order by tai_cd,tana_cd,tana_type
+  </select>
 </mapper>

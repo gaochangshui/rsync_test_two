@@ -96,4 +96,11 @@ public interface PriorityOrderMstService {
     Map<String,Object> getFaceKeisanForCgi(String[]array,String companyCd,Integer shelfPatternNo,String authorCd);
 
 
+    /**
+     * 放置商品
+     * @param companyCd
+     * @param authorCd
+     * @return false 失败，true 成功
+     */
+    boolean setJan(String companyCd, String authorCd);
 }

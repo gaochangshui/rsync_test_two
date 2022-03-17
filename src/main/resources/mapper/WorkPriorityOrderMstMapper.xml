@@ -78,4 +78,9 @@
     delete from planocycle.work_priority_order_mst
     where company_cd =  #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
   </delete>
+  <select id="selectByAuthorCd" resultMap="BaseResultMap">
+    select shelf_pattern_cd
+    from planocycle.work_priority_order_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
+  </select>
 </mapper>
