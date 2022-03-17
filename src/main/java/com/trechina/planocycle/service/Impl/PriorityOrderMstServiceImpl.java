@@ -968,7 +968,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
 
         List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(shelfPatternCd.intValue());
-        List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(shelfPatternCd.intValue());
 
         Short partitionFlag = priorityOrderMst.getPartitionFlag();
         Short partitionVal = priorityOrderMst.getPartitionVal();
@@ -1001,18 +1000,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             int setResultDataIndex = 0;
 
             //符合当前制约条件商品按rank排序
-            List<PriorityOrderResultDataDto> relationSorted = workPriorityOrderResultData.stream().filter(data -> relationCd.equals(data.getRestrictCd())).sorted((o1, o2) -> {
-                //1>2
-                if (Long.compare(o1.getSkuRank(), o2.getSkuRank()) == 1) {
-                    return 1;
-                }
-                //1<2
-                if (Long.compare(o1.getSkuRank(), o2.getSkuRank()) == -1) {
-                    return -1;
-                }
-
-                return 0;
-            }).collect(Collectors.toList());
+            List<PriorityOrderResultDataDto> relationSorted = workPriorityOrderResultData
+                    .stream().filter(data -> relationCd.equals(data.getRestrictCd())).sorted(Comparator.comparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
             List<WorkPriorityOrderRestrictRelation> relationValue = relationEntry.getValue();
 
             for (WorkPriorityOrderRestrictRelation workPriorityOrderRestrictRelation : relationValue) {
@@ -1028,18 +1017,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 }
 
                 //台或半段的宽度, 已使用的宽度
-                long width = 0, usedWidth = 0;
+                double width = 0, usedWidth = 0;
 
                 if(tanaType!=0){
                     //半段的根据具体位置段的宽度放置
-                    Optional<PtsTanaVo> tanaInfo = tanaData.stream().filter(ptsTanaVo -> tanaCd.equals(ptsTanaVo.getTanaCd())
-                            && taiCd.equals(ptsTanaVo.getTaiCd()) && tanaType==ptsTanaVo.getTanaType()).findFirst();
-                    if(!tanaInfo.isPresent()){
-                        logger.info("{}台{}棚{}区分信息不存在", taiCd,tanaCd, tanaType);
-                        continue;
-                    }
-
-                    width = tanaInfo.get().getTanaWidth();
+                    Integer taiWidth = taiInfo.get().getTaiWidth();
+                    width = taiWidth/2.0;
                 }else{
                     //整段的根据具体位置台的宽度放置
                     width = taiInfo.get().getTaiWidth();
