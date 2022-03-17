@@ -989,8 +989,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> saveAllWorkPriorityOrder(String companyCd, Integer priorityOrderCd){
+    public Map<String, Object> saveAllWorkPriorityOrder(PriorityOrderPrimaryKeyVO primaryKeyVO){
         String authorCd = session.getAttribute("aud").toString();
+        String companyCd = primaryKeyVO.getCompanyCd();
+        Integer priorityOrderCd = primaryKeyVO.getPriorityOrderCd();
 //        String authorCd = "10218504";
 
         try {
