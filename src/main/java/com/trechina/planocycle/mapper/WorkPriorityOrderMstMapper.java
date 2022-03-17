@@ -2,6 +2,7 @@ package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface WorkPriorityOrderMstMapper {
@@ -10,4 +11,6 @@ public interface WorkPriorityOrderMstMapper {
     int insertSelective(WorkPriorityOrderMst record);
 
     int deleteByAuthorCd(String companyCd, String authorCd,Integer priorityOrderCd);
+
+    WorkPriorityOrderMst selectByAuthorCd(@Param("companyCd") String companyCd,@Param("authorCd") String authorCd);
 }
