@@ -1003,18 +1003,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             int setResultDataIndex = 0;
 
             //符合当前制约条件商品按rank排序
-            List<PriorityOrderResultDataDto> relationSorted = workPriorityOrderResultData.stream().filter(data -> relationCd.equals(data.getRestrictCd())).sorted((o1, o2) -> {
-                //1>2
-                if (Long.compare(o1.getSkuRank(), o2.getSkuRank()) == 1) {
-                    return 1;
-                }
-                //1<2
-                if (Long.compare(o1.getSkuRank(), o2.getSkuRank()) == -1) {
-                    return -1;
-                }
-
-                return 0;
-            }).collect(Collectors.toList());
+            List<PriorityOrderResultDataDto> relationSorted = workPriorityOrderResultData
+                    .stream().filter(data -> relationCd.equals(data.getRestrictCd())).sorted(Comparator.comparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
             List<WorkPriorityOrderRestrictRelation> relationValue = relationEntry.getValue();
 
             for (WorkPriorityOrderRestrictRelation workPriorityOrderRestrictRelation : relationValue) {
