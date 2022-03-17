@@ -2,16 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.PriorityOrderResultDataMapper">
   <insert id="insertBySelect">
-    insert info planocycle.priority_order_result_data(priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,
-    adopt_flag,face,face_sku,irisu,tai_cd,tana_cd,type,face_keisan,author_cd)
+    insert into planocycle.priority_order_result_data(priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,
+    adopt_flag,face,face_sku,irisu,tai_cd,tana_cd,face_keisan,author_cd)
     select priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,
-    adopt_flag,face,face_sku,irisu,tai_cd,tana_cd,type,face_keisan,author_cd
+    case when adopt_flag=1 then true else false end adopt_flag,face,face_sku,irisu,tai_cd,tana_cd,face_keisan,author_cd
     from planocycle.work_priority_order_result_data
     where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </insert>
   <update id="logicDeleteByPriorityOrderCd">
-    update planocycle.priority_order_result_data set delete_flag=1 where company_cd = #{companyCd,jdbcType=VARCHAR}
+    update planocycle.priority_order_result_data set deleteflg=1 where company_cd = #{companyCd,jdbcType=VARCHAR}
     and author_cd=#{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>

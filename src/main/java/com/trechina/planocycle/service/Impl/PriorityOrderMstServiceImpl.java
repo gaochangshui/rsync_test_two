@@ -968,8 +968,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> saveAllWorkPriorityOrder(String companyCd, Integer priorityOrderCd){
-//        String authorCd = session.getAttribute("aud").toString();
-        String authorCd = "10218504";
+        String authorCd = session.getAttribute("aud").toString();
 
         try {
             //保存OrderMst，逻辑删除原数据

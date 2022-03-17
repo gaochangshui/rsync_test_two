@@ -297,7 +297,7 @@
 
     </insert>
   <insert id="insertBySelect">
-    insert info planocycle.priority_order_restrict_set(priority_order_cd,company_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,
+    insert into planocycle.priority_order_restrict_set(priority_order_cd,company_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,
     zokusei7,zokusei8,zokusei9,zokusei10,tai_cd,tana_cd,author_cd,tana_type)
     select priority_order_cd,company_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,
     zokusei7,zokusei8,zokusei9,zokusei10,tai_cd,tana_cd,author_cd,tana_type
@@ -306,7 +306,7 @@
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </insert>
   <update id="logicDeleteByPriorityOrderCd">
-    update planocycle.priority_order_restrict_set set delete_flag=1
+    update planocycle.priority_order_restrict_set set deleteflg=1
     where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>
