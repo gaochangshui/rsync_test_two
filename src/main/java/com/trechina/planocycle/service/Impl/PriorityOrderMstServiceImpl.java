@@ -90,6 +90,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Autowired
     private ShelfPtsDataMapper shelfPtsDataMapper;
 
+
+
     /**
      * 获取优先顺位表list
      *
@@ -860,6 +862,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }else {
             return Data;
         }
+
+        //this.getReorder(companyCd,priorityOrderCd);
         logger.info("拆分后的数据为{}",strList);
 
 
@@ -876,15 +880,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String aud = session.getAttribute("aud").toString();
         String colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, aud,priorityOrderCd);
         String[] split = colNmforMst.split(",");
-        List<WorkPriorityOrderResultData> reorder = null;
+        List<PriorityOrderJanNewDto> reorder = null;
         if (split.length==1){
             reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud,priorityOrderCd, split[0], null);
-            workPriorityOrderSortRankMapper.insert(companyCd,reorder,aud);
+
         }else {
              reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud,priorityOrderCd, split[0], split[1]);
 
         }
-
+        workPriorityOrderSortRankMapper.insert(companyCd,reorder,aud,priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,reorder);
     }
 
@@ -986,10 +990,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             partitionVal = 2;
         }
 
-        //根据制约条件进行分组进行摆放
+        /**
+         * 根据制约条件进行分组进行摆放
+         */
         Map<Long, List<WorkPriorityOrderRestrictRelation>> relationByGroup = workPriorityOrderRestrictRelations.stream().collect(Collectors.groupingBy(WorkPriorityOrderRestrictRelation::getRestrictCd));
 
-        //根据制约条件进行遍历
         for (Map.Entry<Long, List<WorkPriorityOrderRestrictRelation>> relationEntry : relationByGroup.entrySet()) {
             Long relationCd = relationEntry.getKey();
             //记录商品放到哪里了-同一个制约的商品可能不同的台、段
@@ -1000,7 +1005,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                     .stream().filter(data -> relationCd.equals(data.getRestrictCd())).sorted(Comparator.comparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
             List<WorkPriorityOrderRestrictRelation> relationValue = relationEntry.getValue();
 
-            //遍历台、段的制约条件
             for (WorkPriorityOrderRestrictRelation workPriorityOrderRestrictRelation : relationValue) {
                 Integer taiCd = workPriorityOrderRestrictRelation.getTaiCd();
                 Integer tanaCd = workPriorityOrderRestrictRelation.getTanaCd();
@@ -1025,7 +1029,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                     width = taiInfo.get().getTaiWidth();
                 }
 
-                //遍历商品，开始从上到下，从左到右放置商品
+                //放置商品
                 for (int i = setResultDataIndex; i < relationSorted.size(); i++) {
                     PriorityOrderResultDataDto priorityOrderResultData = relationSorted.get(i);
 
@@ -1061,7 +1065,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             }
         }
 
-        //分组更新，一组1000条
         double batchNum = Math.ceil(finalSetJanResultData.size() / 1000.0);
         for (int i = 0; i < batchNum; i++) {
             //批量更新可以摆放的商品数据到数据库中

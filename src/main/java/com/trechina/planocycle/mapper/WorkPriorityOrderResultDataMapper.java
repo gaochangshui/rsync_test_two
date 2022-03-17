@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
@@ -40,8 +41,8 @@ public interface WorkPriorityOrderResultDataMapper {
                                                  @Param("sortName2")String sortName2);
 
     //获取属性排名
-    List<WorkPriorityOrderResultData> getAttrRank(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd,@Param("sortName1")String sortName1,
-                                                 @Param("sortName2")String sortName2);
+    List<PriorityOrderJanNewDto> getAttrRank(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd, @Param("sortName1")String sortName1,
+                                             @Param("sortName2")String sortName2);
 
     List<PriorityOrderResultDataDto>  getResultJans(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 

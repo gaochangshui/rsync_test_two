@@ -1,6 +1,6 @@
 package com.trechina.planocycle.mapper;
 
-import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
+import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -11,5 +11,6 @@ public interface WorkPriorityOrderSortRankMapper {
 
     int delete(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    int insert(@Param("companyCd")String companyCd, @Param("list")List<WorkPriorityOrderResultData> list, @Param("authorCd")String authorCd);
+    int insert(@Param("companyCd")String companyCd, @Param("list")List<PriorityOrderJanNewDto> list, @Param("authorCd")String authorCd
+    , @Param("priorityOrderCd")Integer priorityOrderCd);
 }

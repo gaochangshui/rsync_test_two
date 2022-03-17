@@ -79,10 +79,10 @@
             </if>
            ,a.sku_rank
   </select>
-  <select id="getAttrRank" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
-    select distinct a.${sortName1}
+  <select id="getAttrRank" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
+    select distinct a.${sortName1} as zokusei1
     <if test="sortName2 !=null">
-      ,a.${sortName2}
+      ,a.${sortName2} as zokusei2
     </if>
     from
     (select  datas.jan_cd ,janMst.jan_nm,

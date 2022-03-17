@@ -13,4 +13,5 @@ public interface WorkPriorityOrderMstMapper {
     int deleteByAuthorCd(String companyCd, String authorCd,Integer priorityOrderCd);
 
     WorkPriorityOrderMst selectByAuthorCd(@Param("companyCd") String companyCd,@Param("authorCd") String authorCd);
+
 }
