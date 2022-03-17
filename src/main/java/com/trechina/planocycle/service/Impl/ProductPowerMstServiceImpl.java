@@ -20,7 +20,9 @@ import java.util.Map;
 public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     @Autowired
     ProductPowerMstMapper productPowerMstMapper;
+    @Autowired
     PriorityOrderMstMapper priorityOrderMstMapper;
+    @Autowired
     PriorityAllMstMapper priorityAllMstMapper;
     @Autowired
     HttpSession session;

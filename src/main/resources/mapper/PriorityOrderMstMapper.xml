@@ -20,8 +20,8 @@
   </sql>
   <select id="getTableNameByCompanyCd" resultMap="tableNameList">
     select
-    priority_order_cd, priority_order_name,create_time,author_cd
-    from planocycle.priority_Order_mst
+    priority_order_cd , priority_order_name,create_time,author_cd
+    from planocycle.priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR}
     and deleteflg=0
     and author_cd = #{authorCd,jdbcType=VARCHAR}

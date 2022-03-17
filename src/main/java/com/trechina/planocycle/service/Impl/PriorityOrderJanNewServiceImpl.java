@@ -76,13 +76,13 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     }
     /**
      * 获取新规jan的名字分类
-     * @param janNew
+     * @param
      * @return
      *
      */
     @Override
-    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janNew) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        List<PriorityOrderJanNewVO> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getJanNameClassify(janNew);
+    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        List<PriorityOrderJanNewVO> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getJanNameClassify(janCd);
         if (priorityOrderJanNewVOList == null){
             return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
         }
@@ -90,7 +90,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         for (PriorityOrderJanNewVO priorityOrderJanNewVO : priorityOrderJanNewVOList) {
            listNew.add( priorityOrderJanNewVO.getJanNew());
         }
-        List<String> list = Arrays.asList(janNew);
+        List<String> list = Arrays.asList(janCd);
         List<String> listDisparitStr = ListDisparityUtils.getListDisparitStr(list, listNew);
         String [] array = new String[listDisparitStr.size()];
         listDisparitStr.toArray(array);
@@ -115,7 +115,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         for (PriorityOrderJanNewVO priorityOrderJanNewVO : priorityOrderJanNewVOList) {
             priorityOrderJanNewDto = new PriorityOrderJanNewDto();
             priorityOrderJanNewDto.setJanName(priorityOrderJanNewVO.getJanName());
-            priorityOrderJanNewDto.setJanNew(priorityOrderJanNewVO.getJanNew());
+            priorityOrderJanNewDto.setJanCd(priorityOrderJanNewVO.getJanNew());
             priorityOrderJanNewDto.setZokusei1(priorityOrderJanNewVO.getScat1cdVal());
             priorityOrderJanNewDto.setZokusei2(priorityOrderJanNewVO.getScat2cdVal());
             priorityOrderJanNewDto.setZokusei3(priorityOrderJanNewVO.getScat3cdVal());

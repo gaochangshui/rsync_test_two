@@ -40,13 +40,13 @@ public class PriorityOrderJanNewController {
 
     /**
      * 获取新规jan的名字分类
-     * @param janNew
+     * @param
      * @return
      *
      */
     @GetMapping("getPriorityOrderJanNewInfo")
-    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janNew) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        return priorityOrderJanNewService.getPriorityOrderJanNewInfo(janNew);
+    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        return priorityOrderJanNewService.getPriorityOrderJanNewInfo(janCd);
     }
 
     /**

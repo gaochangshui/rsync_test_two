@@ -3,7 +3,10 @@
 <mapper namespace="com.trechina.planocycle.mapper.WorkPriorityOrderSortMapper">
     <insert id="setWorkForFinal">
         insert into planocycle.work_priority_order_sort(priority_order_cd,company_cd,author_cd,zokusei_id,sort_num,sort_type)
-        select planocycle.
+        select priority_order_cd,company_cd,#{authorCd},zokusei_id,sort_num,sort_type
+        from planocycle.priority_order_sort
+        where company_cd = #{companyCd}
+          and priority_order_cd = #{priorityOrderCd}
     </insert>
     <delete id="delete">
         delete from planocycle.work_priority_order_sort

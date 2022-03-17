@@ -6,7 +6,7 @@ public class PriorityOrderJanNewDto {
 
     private Integer priorityOrderCd;
 
-    private String janNew;
+    private String janCd;
 
     private String janName;
 
@@ -36,12 +36,12 @@ public class PriorityOrderJanNewDto {
         this.priorityOrderCd = priorityOrderCd;
     }
 
-    public String getJanNew() {
-        return janNew;
+    public String getJanCd() {
+        return janCd;
     }
 
-    public void setJanNew(String janNew) {
-        this.janNew = janNew;
+    public void setJanCd(String janCd) {
+        this.janCd = janCd;
     }
 
     public String getJanName() {
@@ -97,7 +97,7 @@ public class PriorityOrderJanNewDto {
         return "PriorityOrderJanNewDto{" +
                 "companyCd='" + companyCd + '\'' +
                 ", priorityOrderCd=" + priorityOrderCd +
-                ", janNew='" + janNew + '\'' +
+                ", janCd='" + janCd + '\'' +
                 ", janName='" + janName + '\'' +
                 ", rank=" + rank +
                 ", zokusei1='" + zokusei1 + '\'' +
