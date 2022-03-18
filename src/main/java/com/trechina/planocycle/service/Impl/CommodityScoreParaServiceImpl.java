@@ -408,7 +408,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 @Override
                 public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
 
-                    return o2.getRankNum().compareTo(o1.getRankNum());
+                    return o1.getRankNum().compareTo(o2.getRankNum());
                 }
             });
         int i=1;

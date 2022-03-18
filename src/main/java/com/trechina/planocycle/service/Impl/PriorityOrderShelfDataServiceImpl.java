@@ -125,7 +125,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
 
         List<PriorityOrderRestrictJanDto> restrictJans = priorityOrderShelfDataMapper.getRestrictJans(priorityOrderRestDto,aud);
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
+        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
         Class clazz = PriorityOrderRestrictJanDto.class;
         for (int i = 1; i <= 10; i++) {
             Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
@@ -164,7 +164,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
         String aud = session.getAttribute("aud").toString();
         List<PriorityOrderRestrictJanDto> platformShedJans = priorityOrderShelfDataMapper.getPlatformShedJans(priorityOrderPlatformShedDto,aud);
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
+        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
         Class clazz = PriorityOrderRestrictJanDto.class;
         for (int i = 1; i <= 10; i++) {
             Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
