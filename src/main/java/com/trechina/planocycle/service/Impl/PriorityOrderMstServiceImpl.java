@@ -1040,7 +1040,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
             //保存jan_new，删除原数据
             priorityOrderJanNewMapper.deleteByAuthorCd(companyCd,priorityOrderCd, authorCd);
-            priorityOrderJanNewMapper.setWorkForFinal(companyCd,priorityOrderCd, authorCd);
+            priorityOrderJanNewMapper.insertBySelect(companyCd,priorityOrderCd, authorCd);
 
             //保存jan_replace，删除原数据
             priorityOrderJanReplaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
@@ -1065,6 +1065,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             PriorityOrderPtsDataDto priorityOrderPtsDataDto = new PriorityOrderPtsDataDto();
             priorityOrderPtsDataDto.setOldPtsCd(ptsCd);
             priorityOrderPtsDataDto.setPriorityOrderCd(priorityOrderCd);
+            priorityOrderPtsDataDto.setAuthorCd(authorCd);
             shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
             Integer id = priorityOrderPtsDataDto.getId();
 

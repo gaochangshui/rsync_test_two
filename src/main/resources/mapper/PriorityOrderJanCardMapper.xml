@@ -60,8 +60,8 @@
         and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <insert id="insertBySelect">
-        insert into planocycle.priority_order_jan_cut(priority_order_cd,company_cd,author_cd,jan_cd)
-        select priority_order_cd,company_cd,author_cd,jan_cd from planocycle.work_priority_order_cut
+        insert into planocycle.priority_order_jan_cut(priority_order_cd,company_cd,author_cd,jan_cd, create_time, editer_cd, edit_time)
+        select priority_order_cd,company_cd,author_cd,jan_cd,now(),#{authorCd},now() from planocycle.work_priority_order_cut
         where company_cd = #{companyCd,jdbcType=VARCHAR}
         and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
