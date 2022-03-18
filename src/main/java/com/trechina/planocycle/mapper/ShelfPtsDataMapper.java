@@ -68,6 +68,9 @@ public interface ShelfPtsDataMapper {
 
     //header/列名
     PtsDetailDataVo getPtsDetailData(@Param("patternCd")Integer patternCd);
+
+    Integer getPtsCd(@Param("patternCd")Integer patternCd);
+
     //获取tai信息
     List<PtsTaiVo> getTaiData(@Param("patternCd")Integer patternCd);
     //获取tana信息
@@ -81,4 +84,5 @@ public interface ShelfPtsDataMapper {
 
     int deleteDisplay(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 
+    int insertPtsData(@Param("ptsCd")Integer ptsCd);
 }

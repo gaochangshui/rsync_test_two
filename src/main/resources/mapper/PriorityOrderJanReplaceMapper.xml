@@ -44,4 +44,15 @@
     </if>
     </foreach>
   </insert>
+  <insert id="insertBySelect">
+    insert into planocycle.priority_order_jan_replace(priority_order_cd,company_cd,author_cd,jan_old,jan_new)
+    select priority_order_cd,company_cd,#{authorCd},jan_old,jan_new
+    from planocycle.work_priority_order_jan_replace
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    and author_cd = #{authorCd,jdbcType=VARCHAR}
+  </insert>
+  <delete id="deleteByAuthorCd">
+    delete from planocycle.priority_order_jan_replace where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    and author_cd = #{authorCd,jdbcType=VARCHAR}
+  </delete>
 </mapper>

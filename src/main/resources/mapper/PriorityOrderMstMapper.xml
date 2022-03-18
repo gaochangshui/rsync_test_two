@@ -92,12 +92,16 @@
 
   <insert id="insertBySelect" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMst">
     insert into planocycle.priority_order_mst (company_cd, priority_order_cd,
-    product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd,editer_cd,edit_time,create_time)
+    product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd,editer_cd,
+    edit_time,create_time, priority_order_name)
     select company_cd, priority_order_cd,
-    product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd,author_cd, now(),now()
+    product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd,author_cd, now(),now(),#{priorityOrderName}
     from planocycle.work_priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     and author_cd=#{authorCd,jdbcType=VARCHAR}
   </insert>
-
+  <select id="selectByOrderName" resultType="int">
+      select count(*) from planocycle.priority_order_mst where priority_order_name=#{priorityOrderName}
+    and priority_order_cd=#{priorityOrderCd}
+  </select>
 </mapper>
