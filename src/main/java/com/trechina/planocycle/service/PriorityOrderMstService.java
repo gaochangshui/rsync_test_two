@@ -102,7 +102,7 @@ public interface PriorityOrderMstService {
 
 
     @Transactional(rollbackFor = Exception.class)
-    Map<String, Object> saveAllWorkPriorityOrder(String companyCd, Integer priorityOrderCd);
+    Map<String, Object> saveAllWorkPriorityOrder(PriorityOrderPrimaryKeyVO primaryKeyVO);
 
     /**
      * 放置商品
@@ -110,7 +110,7 @@ public interface PriorityOrderMstService {
      * @param authorCd
      * @return false 失败，true 成功
      */
-    boolean setJan(String companyCd, String authorCd);
+    boolean setJan(String companyCd, String authorCd, Integer priorityOrderCd);
 
     Map<String,Object> getPriorityOrderAll(String companyCd,Integer priorityOrderCd);
 }

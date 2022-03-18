@@ -44,7 +44,7 @@ public interface WorkPriorityOrderResultDataMapper {
     List<PriorityOrderJanNewDto> getAttrRank(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd, @Param("sortName1")String sortName1,
                                              @Param("sortName2")String sortName2);
 
-    List<PriorityOrderResultDataDto>  getResultJans(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
+    List<PriorityOrderResultDataDto>  getResultJans(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 
     /**
      * 批量更新jan的放置位置信息

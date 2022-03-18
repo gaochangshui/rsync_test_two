@@ -988,38 +988,40 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> saveAllWorkPriorityOrder(String companyCd, Integer priorityOrderCd){
+    public Map<String, Object> saveAllWorkPriorityOrder(PriorityOrderPrimaryKeyVO primaryKeyVO){
         String authorCd = session.getAttribute("aud").toString();
+        String companyCd = primaryKeyVO.getCompanyCd();
+        Integer priorityOrderCd = primaryKeyVO.getPriorityOrderCd();
 //        String authorCd = "10218504";
 
         try {
             //保存OrderMst，逻辑删除原数据
-            priorityOrderMstMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderMstMapper.insertBySelect(companyCd, authorCd,priorityOrderCd);
             workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd,priorityOrderCd);
 
             //保存OrderRestrictRelation，逻辑删除原数据
-            priorityOrderRestrictRelationMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderRestrictRelationMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
 
             //保存OrderRestrictResult，逻辑删除原数据
-            priorityOrderRestrictResultMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderRestrictResultMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
 
             //保存OrderRestrictSet，逻辑删除原数据
-            priorityOrderRestrictSetMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderRestrictSetMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
 
             //保存ResultData，逻辑删除原数据
-            priorityOrderResultDataMapper.logicDeleteByPriorityOrderCd(companyCd, authorCd, priorityOrderCd);
+            priorityOrderResultDataMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderResultDataMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderResultDataMapper.delResultData(companyCd,authorCd,priorityOrderCd);
 
             //保存Space，逻辑删除原数据
-            priorityOrderSpaceMapper.logicDeleteByPriorityOrderCd(companyCd,authorCd,priorityOrderCd);
+            priorityOrderSpaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
             priorityOrderSpaceMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
         }catch (Exception exception){
@@ -1035,10 +1037,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      * 放置商品
      */
     @Override
-    public boolean setJan(String companyCd, String authorCd){
-        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd);
-        List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.getResultJans(companyCd, authorCd);
-        WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd);
+    public boolean setJan(String companyCd, String authorCd, Integer priorityOrderCd){
+        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.getResultJans(companyCd, authorCd, priorityOrderCd);
+        WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
 
         Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
 
