@@ -19,7 +19,7 @@
                 COALESCE( datas.faceNum,0) as faceNum,coalesce(datas.skuNum,0) as skuNum
         from work_priority_order_restrict_relation  relation
                  left join (
-            select tai_cd,tana_cd,tana_type, sum(face) as  faceNum,count(jan_cd) as skuNum from planocycle.work_priority_order_result_data where priority_order_cd = 2757
+            select tai_cd,tana_cd,tana_type, sum(face) as  faceNum,count(jan_cd) as skuNum from planocycle.work_priority_order_result_data where priority_order_cd = #{priorityOrderCd}
             GROUP BY tai_cd,tana_cd,tana_type) datas
 
                            on datas.tai_cd = relation.tai_cd and datas.tana_cd = relation.tana_cd and relation.tana_type = datas.tana_type

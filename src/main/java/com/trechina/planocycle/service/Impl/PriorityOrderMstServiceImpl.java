@@ -789,7 +789,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd) {
         // TODO: 2200866
 
-        String authorCd = session.getAttribute("aud").toString();
+        String authorCd = "10047515";
+        //String authorCd = session.getAttribute("aud").toString();
 
 
         //获取商品力点数表cd
@@ -1296,7 +1297,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //主表信息
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd,aud);
         //space信息
-       // List<>
+       // List<PriorityOrderAttrVO>
         map.put("workPriorityOrderMst",workPriorityOrderMst);
 
 
