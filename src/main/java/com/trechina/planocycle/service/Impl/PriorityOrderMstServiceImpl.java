@@ -1068,9 +1068,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
             Integer id = priorityOrderPtsDataDto.getId();
 
-            shelfPtsDataMapper.insertPtsTaimst(ptsCd, id);
-            shelfPtsDataMapper.insertPtsTanamst(ptsCd, id);
-            shelfPtsDataMapper.insertPtsVersion(ptsCd, id);
+            shelfPtsDataMapper.insertPtsTaimst(ptsCd, id, authorCd);
+            shelfPtsDataMapper.insertPtsTanamst(ptsCd, id, authorCd);
+            shelfPtsDataMapper.insertPtsVersion(ptsCd, id, authorCd);
 
             if(!positionResultData.isEmpty()){
                 shelfPtsDataMapper.insertPtsDataJandata(positionResultData,id, companyCd, authorCd);

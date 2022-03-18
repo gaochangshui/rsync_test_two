@@ -88,11 +88,11 @@ public interface ShelfPtsDataMapper {
 
     int insertPtsData(PriorityOrderPtsDataDto ptsData);
 
-    int insertPtsTaimst(@Param("ptsCd") Integer ptsCd, @Param("id") Integer id);
+    int insertPtsTaimst(@Param("ptsCd") Integer ptsCd, @Param("id") Integer id, @Param("authorCd") String authorCd);
 
-    int insertPtsTanamst(@Param("ptsCd") Integer ptsCd, @Param("id") Integer id);
+    int insertPtsTanamst(@Param("ptsCd") Integer ptsCd, @Param("id") Integer id, @Param("authorCd") String authorCd);
 
-    int insertPtsVersion(@Param("ptsCd") Integer ptsCd, @Param("id") Integer id);
+    int insertPtsVersion(@Param("ptsCd") Integer ptsCd, @Param("id") Integer id, @Param("authorCd") String authorCd);
 
     int insertPtsDataJandata(@Param("list")List<WorkPriorityOrderResultDataDto> positionResultData,
                              @Param("id") Integer id, @Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
