@@ -402,6 +402,6 @@
   <select id="selectByAuthorCd" resultType="com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto">
     select tai_cd, jan_cd,tana_cd,face  from planocycle.work_priority_order_result_data where company_cd = #{companyCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd} and author_cd=#{authorCd} and adopt_flag=1
-    order by tai_cd,tana_type
+    order by tai_cd,tana_type,sort_rank,sku_rank
   </select>
 </mapper>

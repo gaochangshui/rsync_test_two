@@ -1088,18 +1088,23 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
+    /**
+     * 先按照台遍历再遍历棚，同一个棚的商品从左到右的顺序从1开始进行标号，棚变了，重新标号
+     * @param workPriorityOrderResultData
+     * @return
+     */
     private List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData){
         //有棚位置的resultdata数据
         List<WorkPriorityOrderResultDataDto> positionResultData = new ArrayList<>(workPriorityOrderResultData.size());
         //根据台进行分组遍历
         Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTai = workPriorityOrderResultData.stream()
-                .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTaiCd));
+                .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTaiCd, LinkedHashMap::new, Collectors.toList()));
 
         for (Integer taiCd : workPriorityOrderResultDataByTai.keySet()) {
             List<WorkPriorityOrderResultDataDto> workPriorityOrderResultDataDtos = workPriorityOrderResultDataByTai.get(taiCd);
             //根据棚进行分组遍历
             Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTana = workPriorityOrderResultDataDtos.stream()
-                    .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTanaCd));
+                    .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTanaCd, LinkedHashMap::new, Collectors.toList()));
             for (Integer tanaCd : workPriorityOrderResultDataByTana.keySet()) {
                 //同一个棚，序号从1开始累加，下一个棚重新从1开始加
                 Integer tantaPositionCd=0;
