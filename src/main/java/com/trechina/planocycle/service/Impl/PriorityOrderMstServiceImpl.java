@@ -877,7 +877,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             return Data;
         }
 
-        //this.getReorder(companyCd,priorityOrderCd);
+        this.getReorder(companyCd,priorityOrderCd);
         logger.info("拆分后的数据为{}",strList);
 
 
@@ -1172,6 +1172,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderSortMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderSortRankMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderSpaceMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+
         return null;
     }
 
