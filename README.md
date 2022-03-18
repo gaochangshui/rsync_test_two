@@ -28,6 +28,6 @@ PORTAL_URL=http://10.100.1.161:8102/planocycleweb/
 projectIds=nothing
 bucketNames=nothing
 ptsDownPath=http://10.100.1.161:8102/planocycleweb/
-productDownPath=D:\files\
-smartUrlPath=http://10.100.1.161:12001/cocacolalink/planocycle/CGI/
+productDownPath=D:\files
+smartUrlPath=http://10.100.1.161:12001/suntorylink/planocycle/CGI/
 ```
