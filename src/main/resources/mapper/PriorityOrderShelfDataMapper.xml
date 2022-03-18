@@ -15,12 +15,15 @@
     </select>
     <select id="getPlatformShedData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto">
 
-        select tai_cd,tana_cd,datas.tana_type,
-               sum(datas.face) as  faceNum,count(datas.jan_cd) as skuNum
-        from
-            planocycle.work_priority_order_result_data datas
-        where  company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
-        GROUP BY datas.tai_cd,datas.tana_cd,datas.tana_type
+        select  relation.tai_cd,relation.tana_cd,relation.tana_type,
+                COALESCE( datas.faceNum,0) as faceNum,coalesce(datas.skuNum,0) as skuNum
+        from work_priority_order_restrict_relation  relation
+                 left join (
+            select tai_cd,tana_cd,tana_type, sum(face) as  faceNum,count(jan_cd) as skuNum from planocycle.work_priority_order_result_data where priority_order_cd = 2757
+            GROUP BY tai_cd,tana_cd,tana_type) datas
+
+                           on datas.tai_cd = relation.tai_cd and datas.tana_cd = relation.tana_cd and relation.tana_type = datas.tana_type
+        where  relation.company_cd = #{companyCd} and relation.author_cd = #{authorCd} and relation.priority_order_cd =#{priorityOrderCd}
     </select>
     <select id="getRestrictJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto">
         select datas.jan_cd as janCd,jans.jan_nm as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, jans.irisu as zokusei7,jans.pkg as zokusei5,

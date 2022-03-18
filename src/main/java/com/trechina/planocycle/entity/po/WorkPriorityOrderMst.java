@@ -11,6 +11,8 @@ public class WorkPriorityOrderMst {
 
     private Long shelfPatternCd;
 
+    private String areaNameCd;
+
     private Short attribute1;
 
     private Short attribute2;
@@ -88,6 +90,15 @@ public class WorkPriorityOrderMst {
     }
 
     public void setPartitionVal(Short partitionVal) {
+
         this.partitionVal = partitionVal;
+    }
+
+    public String getAreaNameCd() {
+        return areaNameCd;
+    }
+
+    public void setAreaNameCd(String areaNameCd) {
+        this.areaNameCd = areaNameCd;
     }
 }

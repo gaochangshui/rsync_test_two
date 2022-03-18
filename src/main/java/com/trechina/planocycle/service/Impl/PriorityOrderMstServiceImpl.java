@@ -1269,21 +1269,29 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Override
     public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) {
         this.deleteWorkTable(companyCd,0);
-        String aud = session.getAttribute("aud").toString();
+        String aud = "10212159";
+        //String aud = session.getAttribute("aud").toString();
         priorityOrderJanCardMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         priorityOrderJanReplaceMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         priorityOrderJanNewMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderMstMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderRestrictRelationMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderRestrictResultMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
-        workPriorityOrderRestrictSetMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+      //  workPriorityOrderRestrictSetMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderResultDataMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderSortMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderSortRankMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderSpaceMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
 
+        Map<String,Object> map = new HashMap<>();
+        //主表信息
+        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd,aud);
+        //space信息
+       // List<>
+        map.put("workPriorityOrderMst",workPriorityOrderMst);
 
-        return null;
+
+        return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
     @Override

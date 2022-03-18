@@ -9,6 +9,7 @@ public class PriorityOrderSpaceDto {
     private Short attr1;
     private Short attr2;
     private Long patternCd;
+    private String areaNameCd;
     private List<PriorityOrderAttrVO> dataList;
     private Integer priorityOrderCd;
     public String getCompanyCd() {
@@ -58,5 +59,13 @@ public class PriorityOrderSpaceDto {
     public void setDataList(List<PriorityOrderAttrVO> dataList) {
 
         this.dataList = dataList;
+    }
+
+    public String getAreaNameCd() {
+        return areaNameCd;
+    }
+
+    public void setAreaNameCd(String areaNameCd) {
+        this.areaNameCd = areaNameCd;
     }
 }
