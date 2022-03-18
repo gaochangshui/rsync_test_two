@@ -1064,11 +1064,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             priorityOrderSortRankMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderSortRankMapper.delete(companyCd,authorCd,priorityOrderCd);
 
-//            WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-//            Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
-//            Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
+            WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+            Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
+            Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
 
-//            shelfPtsDataMapper.insertPtsData(ptsCd);
+            shelfPtsDataMapper.insertPtsData(ptsCd);
         }catch (Exception exception){
             logger.error("保存临时表数据到实际表报错", exception);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -1237,15 +1237,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return null;
     }
 
-//    @Override
-//    public Map<String, Object> checkOrderName(PriorityOrderMstVO priorityOrderMstVO) {
-//        String priorityOrderName = priorityOrderMstVO.getPriorityOrderName();
-//        Integer priorityOrderCd = priorityOrderMstVO.getPriorityOrderCd();
-//
-//        int i = priorityOrderMstMapper.selectByOrderName(priorityOrderName, priorityOrderCd);
-//        if(i>0){
-//            return ResultMaps.result(ResultEnum.NAMEISEXISTS);
-//        }
-//        return ResultMaps.result(ResultEnum.SUCCESS);
-//    }
+    @Override
+    public Map<String, Object> checkOrderName(PriorityOrderMstVO priorityOrderMstVO) {
+        String priorityOrderName = priorityOrderMstVO.getPriorityOrderName();
+        Integer priorityOrderCd = priorityOrderMstVO.getPriorityOrderCd();
+
+        int i = priorityOrderMstMapper.selectByOrderName(priorityOrderName, priorityOrderCd);
+        if(i>0){
+            return ResultMaps.result(ResultEnum.NAMEISEXISTS);
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
 }

@@ -2,6 +2,7 @@ package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
+import com.trechina.planocycle.entity.vo.PriorityOrderMstVO;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +122,16 @@ public class PriorityOrderMstController {
     }
 
     @PostMapping("/saveAllWorkPriorityOrder")
-    public Map<String,Object> saveAllWorkPriorityOrder(@RequestBody PriorityOrderPrimaryKeyVO primaryKeyVO){
+    public Map<String,Object> saveAllWorkPriorityOrder(@RequestBody PriorityOrderMstVO primaryKeyVO){
         return priorityOrderMstService.saveAllWorkPriorityOrder(primaryKeyVO);
+    }
+
+    /**
+     * 编辑时校验pts的名字是否存在
+     * @return
+     */
+    @PostMapping("/checkOrderName")
+    public Map<String,Object> checkOrderName(@RequestBody PriorityOrderMstVO priorityOrderMstVO){
+        return priorityOrderMstService.checkOrderName(priorityOrderMstVO);
     }
 }
