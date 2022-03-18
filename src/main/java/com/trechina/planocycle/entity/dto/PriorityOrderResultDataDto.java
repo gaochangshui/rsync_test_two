@@ -11,6 +11,8 @@ public class PriorityOrderResultDataDto {
 
     private Long skuRank;
 
+    private Long sortRank;
+
     private Integer adoptFlag;
 
     private Long face;
@@ -32,6 +34,14 @@ public class PriorityOrderResultDataDto {
 
     private Long janWidth;
     private Long janHeight;
+
+    public Long getSortRank() {
+        return sortRank;
+    }
+
+    public void setSortRank(Long sortRank) {
+        this.sortRank = sortRank;
+    }
 
     public Integer getTanaType() {
         return tanaType;
