@@ -5,7 +5,7 @@ public class PriorityOrderPlatformShedDto {
     private Integer priorityOrderCd;
     private Integer taiCd;
     private Integer tanaCd;
-    private Integer restrictType;
+    private Integer tanaType;
     private Integer faceNum;
     private Integer skuNum;
 
@@ -25,12 +25,12 @@ public class PriorityOrderPlatformShedDto {
         this.tanaCd = tanaCd;
     }
 
-    public Integer getRestrictType() {
-        return restrictType;
+    public Integer getTanaType() {
+        return tanaType;
     }
 
-    public void setRestrictType(Integer restrictType) {
-        this.restrictType = restrictType;
+    public void setTanaType(Integer tanaType) {
+        this.tanaType = tanaType;
     }
 
     public Integer getFaceNum() {
@@ -69,9 +69,10 @@ public class PriorityOrderPlatformShedDto {
     public String toString() {
         return "PriorityOrderPlatformShedDto{" +
                 "companyCd='" + companyCd + '\'' +
+                ", priorityOrderCd=" + priorityOrderCd +
                 ", taiCd=" + taiCd +
                 ", tanaCd=" + tanaCd +
-                ", restrictType=" + restrictType +
+                ", tanaType=" + tanaType +
                 ", faceNum=" + faceNum +
                 ", skuNum=" + skuNum +
                 '}';

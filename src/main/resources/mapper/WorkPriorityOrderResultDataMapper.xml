@@ -44,13 +44,13 @@
     and priority_order_cd = #{priorityOrderCd}
   </select>
   <select id="getReorder" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
-    select a.scat1cd_val,a.scat2cd_val,a.scat3cd_val,a.scat4cd_val,a.brand,a.sku_rank from
+    select a.scat1cd_val,a.scat2cd_val,a.scat3cd_val,a.scat4cd_val,a.brand,a.sku_rank ,a.jan_cd from
                 (select  datas.jan_cd ,janMst.jan_nm,
                 janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
                 from planocycle.work_priority_order_result_data datas
                 left join masterdb.jan_mst janMst
                 on janMst.jan_cd = datas.jan_cd
-                where company_cd = #{companyCd} and author_cd = #{authorCd}) a
+                where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}) a
 
                 inner join
                 (select ${sortName1},avg(sku_rank) aavg from (select  datas.jan_cd ,janMst.jan_nm,
@@ -58,7 +58,7 @@
                 from planocycle.work_priority_order_result_data datas
                 left join masterdb.jan_mst janMst
                 on janMst.jan_cd = datas.jan_cd
-                where company_cd = #{companyCd} and author_cd = #{authorCd}) test group by ${sortName1}
+                where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}) test group by ${sortName1}
                 ) b
                 on a.${sortName1}=b.${sortName1}
                 <if test="sortName2 !=null">
@@ -68,7 +68,7 @@
                   from planocycle.work_priority_order_result_data datas
                   left join masterdb.jan_mst janMst
                   on janMst.jan_cd = datas.jan_cd
-                  where company_cd = #{companyCd} and author_cd = #{authorCd}) test group by ${sortName2}
+                  where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}) test group by ${sortName2}
                   ) c
                   on a.${sortName2}=c.${sortName2}
                 </if>
@@ -363,6 +363,15 @@
         #{obj.janCd}
       </foreach>
       and company_cd=#{companyCd} and author_cd=#{authorCd}
+  </update>
+  <update id="setSortRank">
+    <foreach collection="list" item="item" separator=";" index="index">
+      update planocycle.work_priority_order_result_data
+      <set>
+        sort_rank = #{item.resultRank} ::numeric
+      </set>
+      where jan_cd = #{item.janCd} ::varchar and company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
+    </foreach>
   </update>
   <insert id="setWorkForFinal">
     insert into planocycle.work_priority_order_result_data(company_cd, author_cd, priority_order_cd, jan_cd,

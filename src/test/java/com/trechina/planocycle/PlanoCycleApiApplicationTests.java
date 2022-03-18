@@ -1,6 +1,7 @@
 package com.trechina.planocycle;
 
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import org.junit.jupiter.api.Test;
@@ -53,8 +54,10 @@ class PlanoCycleApiApplicationTests {
         lists.add(list);
         //priorityOrderMstService.getReorder("0001",1245);
         //workPriorityOrderResultDataMapper.update(lists);
-        priorityOrderJanCardMapper.setWorkForFinal("0001",1,"1");
+        //priorityOrderJanCardMapper.setWorkForFinal("0001",1,"1");
         //workPriorityOrderResultDataMapper.updates(list);
+        List<WorkPriorityOrderResultData> scat1cd_val = workPriorityOrderResultDataMapper.getReorder("0001", "10215814", 1245, "scat1cd_val", null);
+        System.out.println(scat1cd_val);
         //WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult = new WorkPriorityOrderRestrictResult();
         //FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(43);
         //System.out.println(faceNum);

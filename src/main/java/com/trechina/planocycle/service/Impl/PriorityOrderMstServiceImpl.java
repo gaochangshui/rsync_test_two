@@ -901,19 +901,28 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
         String[] split = colNmforMst.split(",");
         List<PriorityOrderJanNewDto> reorder = null;
+        List<WorkPriorityOrderResultData> reorder1 = null;
         if (split.length==1){
             //workPriorityOrderResultDataMapper.getReorder(companyCd,aud,priorityOrderCd,split[0],null)
             reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud,priorityOrderCd, split[0], null);
+            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, aud, priorityOrderCd, split[0], null);
 
         }else {
              reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud,priorityOrderCd, split[0], split[1]);
+            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, aud, priorityOrderCd, split[0], split[1]);
+
 
         }
         int i = 1;
         for (PriorityOrderJanNewDto priorityOrderJanNewDto : reorder) {
-            priorityOrderJanNewDto.setRank(i);
-            i++;
+            priorityOrderJanNewDto.setRank(i++);
         }
+        int j = 1;
+        for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder1) {
+            workPriorityOrderResultData.setResultRank(j++);
+
+        }
+        workPriorityOrderResultDataMapper.setSortRank(reorder1,companyCd,aud,priorityOrderCd);
         workPriorityOrderSortRankMapper.delete(companyCd,aud,priorityOrderCd);
         workPriorityOrderSortRankMapper.insert(companyCd,reorder,aud,priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,reorder);
