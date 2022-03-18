@@ -45,3 +45,5 @@ bucketNames: ${bucketNames}
 ptsDownPath: ${ptsDownPath}
 productDownPath: ${productDownPath}
 smartUrlPath: ${smartUrlPath}
+# 每个台棚按照有13个品类计算
+skuPerPattan: 13
