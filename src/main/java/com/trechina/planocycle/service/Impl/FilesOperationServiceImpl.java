@@ -72,7 +72,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             String fileName = filename;
             if (!multipartFile.isEmpty()) {
                 String names = "";
-                if (multipartFile != null && multipartFile.getOriginalFilename() != null) {
+                if (multipartFile.getOriginalFilename() != null) {
                     names = multipartFile.getOriginalFilename();
                 }
                 if (names != null && names.indexOf(".csv") > -1) {
@@ -96,13 +96,6 @@ public class FilesOperationServiceImpl implements FilesOperationService {
         }
     }
 
-//    List<ShelfPtsDataTaimst> dataTaimstList = new ArrayList<>();
-//    ShelfPtsDataTaimst ptsDataTaimst = null;
-//    List<ShelfPtsDataTanamst> dataTanamstList = new ArrayList<>();
-//    ShelfPtsDataTanamst ptsDataTanamst = null;
-//    List<ShelfPtsDataJandata> dataJandataList = new ArrayList<>();
-//    ShelfPtsDataJandata ptsDataJandata = null;
-
     private List<ShelfPtsDataTaimst> convertArrayToTaimstList(List<String[]> datas, Integer ptsCd, String companyCd, String authorCd, Date createTime) {
         List<ShelfPtsDataTaimst> result = new ArrayList<>();
         ShelfPtsDataTaimst ptsDataTaimst = null;
@@ -111,10 +104,10 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             ptsDataTaimst.setPtsCd(ptsCd);
             ptsDataTaimst.setCompanyCd(companyCd);
 
-            ptsDataTaimst.setTaiCd(Integer.valueOf(data[0]));
-            ptsDataTaimst.setTaiHeight(Integer.valueOf(data[1]));
-            ptsDataTaimst.setTaiWidth(Integer.valueOf(data[2]));
-            ptsDataTaimst.setTaiDepth(Integer.valueOf(data[3]));
+            ptsDataTaimst.setTaiCd(stringToInteger(data[0]));
+            ptsDataTaimst.setTaiHeight(stringToInteger(data[1]));
+            ptsDataTaimst.setTaiWidth(stringToInteger(data[2]));
+            ptsDataTaimst.setTaiDepth(stringToInteger(data[3]));
             ptsDataTaimst.setTaiName(data[4]);
 
             ptsDataTaimst.setAuthorCd(authorCd);
@@ -125,6 +118,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
         return result;
     }
 
+
     private List<ShelfPtsDataTanamst> convertArrayToTanamstList(List<String[]> datas, Integer ptsCd, String companyCd, String authorCd, Date createTime) {
         List<ShelfPtsDataTanamst> result = new ArrayList<>();
         ShelfPtsDataTanamst ptsDataTanamst = null;
@@ -133,13 +127,13 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             ptsDataTanamst.setPtsCd(ptsCd);
             ptsDataTanamst.setCompanyCd(companyCd);
 
-            ptsDataTanamst.setTaiCd(data[0] == null ? null : Integer.valueOf(data[0]));
-            ptsDataTanamst.setTanaCd(data[1] == null ? null : Integer.valueOf(data[1]));
-            ptsDataTanamst.setTanaHeight(data[2] == null ? null : Integer.valueOf(data[2]));
-            ptsDataTanamst.setTanaWidth(data[3] == null ? null : Integer.valueOf(data[3]));
-            ptsDataTanamst.setTanaDepth(data[4] == null ? null : Integer.valueOf(data[4]));
-            ptsDataTanamst.setTanaThickness(data[5] == null ? null : Integer.valueOf(data[5]));
-            ptsDataTanamst.setTanaType(data[6] == null ? null : Integer.valueOf(data[6]));
+            ptsDataTanamst.setTaiCd(stringToInteger(data[0]));
+            ptsDataTanamst.setTanaCd(stringToInteger(data[1]));
+            ptsDataTanamst.setTanaHeight(stringToInteger(data[2]));
+            ptsDataTanamst.setTanaWidth(stringToInteger(data[3]));
+            ptsDataTanamst.setTanaDepth(stringToInteger(data[4]));
+            ptsDataTanamst.setTanaThickness(stringToInteger(data[5]));
+            ptsDataTanamst.setTanaType(stringToInteger(data[6]));
 
             ptsDataTanamst.setAuthorCd(authorCd);
             ptsDataTanamst.setCreateTime(createTime);
@@ -157,18 +151,19 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             ptsDataJandata.setPtsCd(ptsCd);
             ptsDataJandata.setCompanyCd(companyCd);
 
-            ptsDataJandata.setTaiCd(data[0] == null ? null : Integer.valueOf(data[0]));
-            ptsDataJandata.setTanaCd(data[1] == null ? null : Integer.valueOf(data[1]));
-            ptsDataJandata.setTanapositionCd(data[2] == null ? null : Integer.valueOf(data[2]));
-            ptsDataJandata.setJan(data[3]);
-            ptsDataJandata.setFaceCount(data[4] == null ? null : Integer.valueOf(data[4]));
-            ptsDataJandata.setFaceMen(data[5] == null ? null : Integer.valueOf(data[5]));
-            ptsDataJandata.setFaceKaiten(data[6] == null ? null : Integer.valueOf(data[6]));
-            ptsDataJandata.setTumiagesu(data[7] == null ? null : Integer.valueOf(data[7]));
-            ptsDataJandata.setZaikosu(data[8] == null ? null : Integer.valueOf(data[8]));
-            ptsDataJandata.setFaceDisplayflg(data[9] == null ? null : Integer.valueOf(data[9]));
-            ptsDataJandata.setFacePosition(data[10] == null ? null : Integer.valueOf(data[10]));
-            ptsDataJandata.setDepthDisplayNum(data[11] == null ? null : Integer.valueOf(data[11]));
+            ptsDataJandata.setTaiCd(stringToInteger(data[0]));
+            ptsDataJandata.setTanaCd(stringToInteger(data[01]));
+            ptsDataJandata.setTanapositionCd(stringToInteger(data[2]));
+            // Jan为空的时候，数据库存null
+            ptsDataJandata.setJan("".equals(data[3]) ? null : data[3]);
+            ptsDataJandata.setFaceCount(stringToInteger(data[4]));
+            ptsDataJandata.setFaceMen(stringToInteger(data[5]));
+            ptsDataJandata.setFaceKaiten(stringToInteger(data[6]));
+            ptsDataJandata.setTumiagesu(stringToInteger(data[7]));
+            ptsDataJandata.setZaikosu(stringToInteger(data[8]));
+            ptsDataJandata.setFaceDisplayflg(stringToInteger(data[9]));
+            ptsDataJandata.setFacePosition(stringToInteger(data[10]));
+            ptsDataJandata.setDepthDisplayNum(stringToInteger(data[11]));
 
             ptsDataJandata.setAuthorCd(authorCd);
             ptsDataJandata.setCreateTime(createTime);
@@ -176,6 +171,10 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             result.add(ptsDataJandata);
         }
         return result;
+    }
+
+    private Integer stringToInteger(String str) {
+        return str == null ? null : Integer.valueOf(str);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -196,7 +195,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 for (MultipartFile file : multipartFileList) {
                     String filenames = "";
                     if (file != null && file.getOriginalFilename() != null) {
-                        filenames = ("" + file.getOriginalFilename()).replaceAll(" ", "*");
+                        filenames = ("" + file.getOriginalFilename()).replace(" ", "*");
                         if (filenames.indexOf(".csv") > -1) {
                             excelPutPath(file, path + filenames);
                             File file1 = new File(path + filenames);
@@ -218,9 +217,9 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                 int titleNum = 0;
                                 while ((line = bufferedReader.readLine()) != null) {
                                     if (lineNum == 1) {
-                                        logger.info("第一行信息" + line);
+                                        logger.info("第一行信息{}", line);
                                         String[] arr = line.split(",");
-                                        if (arr[1].equals("V3.0") == false && arr[1].equals("V2.0") == false) {
+                                        if (!arr[1].equals("V3.0") && !arr[1].equals("V2.0")) {
                                             logger.info("不包含3.0和2.0");
                                             return ResultMaps.result(ResultEnum.FILEVERSIONFAILURE);
                                         }
@@ -229,7 +228,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                         ptsDataVersion.setOutflg(arr[2]);
                                         lineNum += 1;
                                     } else if (lineNum == 2) {
-                                        ptsDataVersion.setModename(line);
+                                        ptsDataVersion.setModename(line.replace(",", ""));
                                         lineNum += 1;
                                     }
                                     // 数据分段
@@ -279,54 +278,47 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                             // :TODO 屏蔽掉了往GCP上传文件的部分
 //                            fileSaveRemote(path, companyCd, filenames, resourceBundle.getString("PtsCsvPath"),
 //                                    projectIds, bucketNames);
-                            try {
-                                // 保存pts信息
-                                ShelfPtsDto shelfPtsDto = new ShelfPtsDto();
-                                shelfPtsDto.setCompanyCd(companyCd);
-                                shelfPtsDto.setFileName(filenames);
+                            // 保存pts信息
+                            ShelfPtsDto shelfPtsDto = new ShelfPtsDto();
+                            shelfPtsDto.setCompanyCd(companyCd);
+                            shelfPtsDto.setFileName(filenames);
 
-                                Map<String, Object> res = shelfPtsService.setShelfPtsInfo(shelfPtsDto, 0);
-                                Integer ptsId = (Integer) res.get("data");
-                                ptsDataVersion.setPtsCd(ptsId);
-                                //
-                                shelfPtsDataVersionMapper.insert(ptsDataVersion);
-                                List<ShelfPtsDataTaimst> dataTaimstList = convertArrayToTaimstList(arrList1, ptsId, companyCd, authorCd, now);
+                            Map<String, Object> res = shelfPtsService.setShelfPtsInfo(shelfPtsDto, 0);
+                            Integer ptsId = (Integer) res.get("data");
+                            ptsDataVersion.setPtsCd(ptsId);
+                            //
+                            shelfPtsDataVersionMapper.insert(ptsDataVersion);
+                            List<ShelfPtsDataTaimst> dataTaimstList = convertArrayToTaimstList(arrList1, ptsId, companyCd, authorCd, now);
 
-                                List<ShelfPtsDataTanamst> dataTanamstList = convertArrayToTanamstList(arrList2, ptsId, companyCd, authorCd, now);
+                            List<ShelfPtsDataTanamst> dataTanamstList = convertArrayToTanamstList(arrList2, ptsId, companyCd, authorCd, now);
 
-                                List<ShelfPtsDataJandata> dataJandataList = convertArrayToJanList(arrList3, ptsId, companyCd, authorCd, now);
+                            List<ShelfPtsDataJandata> dataJandataList = convertArrayToJanList(arrList3, ptsId, companyCd, authorCd, now);
 
-                                shelfPtsDataTaimstMapper.insertAll(dataTaimstList);
+                            shelfPtsDataTaimstMapper.insertAll(dataTaimstList);
 
-                                shelfPtsDataTanamstMapper.insertAll(dataTanamstList);
+                            shelfPtsDataTanamstMapper.insertAll(dataTanamstList);
 
-                                shelfPtsDataJandataMapper.insertAll(dataJandataList);
+                            shelfPtsDataJandataMapper.insertAll(dataJandataList);
 
-                                // 返回id
-                                String uuid = UUID.randomUUID().toString();
-                                String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-                                GetPtsCsvCgiDto getPtsCsvCgiDto = new GetPtsCsvCgiDto();
-                                getPtsCsvCgiDto.setCompany(companyCd);
-                                getPtsCsvCgiDto.setMode("pts_shori");
-                                getPtsCsvCgiDto.setPtsIdCsvNm(ptsId + "@" + filenames);
-                                getPtsCsvCgiDto.setGuid(uuid);
-                                logger.info("调用pts_shori的参数" + getPtsCsvCgiDto);
+                            // 返回id
+                            String uuid = UUID.randomUUID().toString();
+                            String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
+                            GetPtsCsvCgiDto getPtsCsvCgiDto = new GetPtsCsvCgiDto();
+                            getPtsCsvCgiDto.setCompany(companyCd);
+                            getPtsCsvCgiDto.setMode("pts_shori");
+                            getPtsCsvCgiDto.setPtsIdCsvNm(ptsId + "@" + filenames);
+                            getPtsCsvCgiDto.setGuid(uuid);
+                            logger.info("调用pts_shori的参数{}", getPtsCsvCgiDto);
 
-                                ResourceBundle resource = ResourceBundle.getBundle("pathConfig");
-                                String paths = resource.getString("PtsUploadData");
-                                String result = null;
-                                result = cgiUtil.postCgi(paths, getPtsCsvCgiDto, tokenInfo);
-                                logger.info("taskid返回pts文件处理：" + result);
-                                String queryPath = resourceBundle.getString("TaskQuery");
-                                // 带着taskid，再次请求cgi获取运行状态/数据
-                                Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-                                logger.info("调用pts_shori的结果" + Data);
-
-                            } catch (IOException e) {
-                                logger.info("报错:" + e);
-                                logger.info("pts文件处理报错" + e);
-                                return ResultMaps.result(ResultEnum.FAILURE);
-                            }
+                            ResourceBundle resource = ResourceBundle.getBundle("pathConfig");
+                            String paths = resource.getString("PtsUploadData");
+                            String result = null;
+                            result = cgiUtil.postCgi(paths, getPtsCsvCgiDto, tokenInfo);
+                            logger.info("taskid返回pts文件处理：{}", result);
+                            String queryPath = resourceBundle.getString("TaskQuery");
+                            // 带着taskid，再次请求cgi获取运行状态/数据
+                            Map<String, Object> data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
+                            logger.info("调用pts_shori的结果{}", data);
                         }
                     }
                 }
@@ -336,8 +328,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 return ResultMaps.result(ResultEnum.FAILURE);
             }
         } catch (IOException e) {
-            logger.info("报错:" + e);
-            logger.info("上传文件报错：" + e);
+            logger.info("报错,上传文件报错：{}", e.getMessage());
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -350,17 +341,17 @@ public class FilesOperationServiceImpl implements FilesOperationService {
      */
     @Override
     public Map<String, Object> csvConvertExcelDowlLoad(MultipartFile multipartFile, String productDownPath, HttpServletResponse response) {
-        logger.info("a" + multipartFile.getSize());
+        logger.info("a{}", multipartFile.getSize());
         // 不存在会创建路径
         judgeExistsPath(productDownPath);
         String files = productDownPath + "productFile.csv";
-        String ExcelFiles = productDownPath + "productExcel.xlsx";
+        String excelFiles = productDownPath + "productExcel.xlsx";
         //存放文件
         try {
             excelPutPath(multipartFile, files);
             //读取csv写入excel
             try (DataInputStream in = new DataInputStream(new FileInputStream(files));) {
-                InputStreamReader inputStreamReader = new InputStreamReader(in, "UTF-8");
+                InputStreamReader inputStreamReader = new InputStreamReader(in, StandardCharsets.UTF_8);
                 try (BufferedReader reader = new BufferedReader(inputStreamReader);) {
                     String line = null;
                     try (XSSFWorkbook workbook = new XSSFWorkbook();) {
@@ -370,25 +361,24 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                         for (int i = 0; (line = reader.readLine()) != null; i++) {
                             row = sheet.createRow(i);
                             if (i == 0) {
-                                line = line.replaceAll("\"", "");
+                                line = line.replace("\"", "");
                                 line = line.substring(1, line.length());
                             }
-                            String item[] = line.split(",");
+                            String[] item = line.split(",");
                             for (int j = 0; j < item.length; j++) {
                                 cell = row.createCell(j);
                                 cell.setCellValue(item[j]);
                             }
                         }
-                        FileOutputStream fos = new FileOutputStream(ExcelFiles);
+                        FileOutputStream fos = new FileOutputStream(excelFiles);
                         workbook.write(fos);
                         try {
                             response.setContentType("application/Octet-stream");
                             response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode("商品力点数表", "UTF-8") + ".xlsx");
                         } catch (UnsupportedEncodingException e) {
-//                            e.printStackTrace();
-                            logger.info("csv转excel报错" + e);
+                            logger.info("csv转excel报错:{}", e.getMessage());
                         }
-                        File fileExcel = new File(ExcelFiles);
+                        File fileExcel = new File(excelFiles);
                         OutputStream outputStream = response.getOutputStream();
                         try (InputStream is = new FileInputStream(fileExcel);) {
                             // 构造一个长度为1024的字节数组
@@ -415,9 +405,9 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 }
             }
         } catch (IOException e) {
-            logger.info("csv转excel报错2:" + e);
+            logger.info("csv转excel报错2:{}", e.getMessage());
         }
-        return null;
+        return Collections.emptyMap();
     }
 
     /**
@@ -430,15 +420,8 @@ public class FilesOperationServiceImpl implements FilesOperationService {
      */
     private void fileSaveRemote(String path, String companyCd, String fileName, String remotePaths, String projectIds,
                                 String bucketNames) throws IOException {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String remotePath = remotePaths;
         remotePath = remotePath.replace("COMPANYCD", companyCd);
-        //存放文件--物理机版
-//                        logger.info("开始链接服务器");
-//                        sshFtpUtils ssh = new sshFtpUtils();
-//                        logger.info("远程服务器地址" + remotePath);
-//                        logger.info("打印pushfile参数" + fileName);
-//                        ssh.pushFile(path + fileName, remotePath);
         // 存放文件--数据桶版本
         // The ID of your GCP project
         String projectId = projectIds;
@@ -487,7 +470,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     @Override
     public List<String[]> uploadCsvToList(MultipartFile multipartFile) {
         if (multipartFile == null) {
-            return null;
+            return Collections.emptyList();
         }
         List<String[]> result = new ArrayList<>();
         //起手转成字符流

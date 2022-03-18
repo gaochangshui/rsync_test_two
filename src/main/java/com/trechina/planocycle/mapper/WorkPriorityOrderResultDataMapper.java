@@ -37,7 +37,7 @@ public interface WorkPriorityOrderResultDataMapper {
     List<WorkPriorityOrderResultData>  getResultDatas(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     //重新计算rank
-    List<WorkPriorityOrderResultData> getReorder(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("sortName1")String sortName1,
+    List<WorkPriorityOrderResultData> getReorder(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd,@Param("sortName1")String sortName1,
                                                  @Param("sortName2")String sortName2);
 
     //获取属性排名
@@ -45,6 +45,8 @@ public interface WorkPriorityOrderResultDataMapper {
                                              @Param("sortName2")String sortName2);
 
     List<PriorityOrderResultDataDto>  getResultJans(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
+    //批量更新最终rank
+     int  setSortRank(@Param("list")List<WorkPriorityOrderResultData> list,@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 
     /**
      * 批量更新jan的放置位置信息
