@@ -877,7 +877,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             return Data;
         }
 
-        //this.getReorder(companyCd,priorityOrderCd);
+        this.getReorder(companyCd,priorityOrderCd);
+
+        this.setJan(companyCd,authorCd,priorityOrderCd);
         logger.info("拆分后的数据为{}",strList);
 
 
@@ -899,18 +901,28 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
         String[] split = colNmforMst.split(",");
         List<PriorityOrderJanNewDto> reorder = null;
+        List<WorkPriorityOrderResultData> reorder1 = null;
         if (split.length==1){
+            //workPriorityOrderResultDataMapper.getReorder(companyCd,aud,priorityOrderCd,split[0],null)
             reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud,priorityOrderCd, split[0], null);
+            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, aud, priorityOrderCd, split[0], null);
 
         }else {
              reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud,priorityOrderCd, split[0], split[1]);
+            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, aud, priorityOrderCd, split[0], split[1]);
+
 
         }
         int i = 1;
         for (PriorityOrderJanNewDto priorityOrderJanNewDto : reorder) {
-            priorityOrderJanNewDto.setRank(i);
-            i++;
+            priorityOrderJanNewDto.setRank(i++);
         }
+        int j = 1;
+        for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder1) {
+            workPriorityOrderResultData.setResultRank(j++);
+
+        }
+        workPriorityOrderResultDataMapper.setSortRank(reorder1,companyCd,aud,priorityOrderCd);
         workPriorityOrderSortRankMapper.delete(companyCd,aud,priorityOrderCd);
         workPriorityOrderSortRankMapper.insert(companyCd,reorder,aud,priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,reorder);
@@ -1037,10 +1049,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      * 放置商品
      */
     @Override
-    public boolean setJan(String companyCd, String authorCd){
-        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd);
-        List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.getResultJans(companyCd, authorCd);
-        WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd);
+    public boolean setJan(String companyCd, String authorCd, Integer priorityOrderCd){
+        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.getResultJans(companyCd, authorCd, priorityOrderCd);
+        WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
 
         Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
 
@@ -1083,7 +1095,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
             //符合当前制约条件商品按rank排序
             List<PriorityOrderResultDataDto> relationSorted = workPriorityOrderResultData
-                    .stream().filter(data -> relationCd.equals(data.getRestrictCd())).sorted(Comparator.comparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
+                    .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
+                    .sorted(Comparator.comparingLong(PriorityOrderResultDataDto::getSortRank).thenComparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
             List<WorkPriorityOrderRestrictRelation> relationValue = relationEntry.getValue();
 
             for (WorkPriorityOrderRestrictRelation workPriorityOrderRestrictRelation : relationValue) {
@@ -1174,6 +1187,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderSortMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderSortRankMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderSpaceMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+
         return null;
     }
 

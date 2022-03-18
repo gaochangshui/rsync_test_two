@@ -177,16 +177,17 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                             priorityOrderAttr.setAttrACd(orderAttrVO.getAttrACd());
                             priorityOrderAttr.setAttrAName(orderAttrVO.getAttrAName());
                             priorityOrderAttr.setJansAColnm(orderAttrVO.getJansAColnm());
-                            attrList.add(priorityOrderAttr);
+
                             Integer facenum = priorityOrderMstAttrSortMapper.getfeceNum(priorityOrderAttrVO.getJansAColnm(), orderAttrVO.getJansAColnm(), priorityOrderAttrVO.getAttrACd(), orderAttrVO.getAttrACd(), patternCd);
                             if (facenum != null) {
                                 Integer result = facenum * 100 / faceNum;
-                                priorityOrderAttrVO.setNewZoning(result);
-                                priorityOrderAttrVO.setExistingZoning(result);
+                                priorityOrderAttr.setNewZoning(result);
+                                priorityOrderAttr.setExistingZoning(result);
                             } else {
-                                priorityOrderAttrVO.setNewZoning(0);
-                                priorityOrderAttrVO.setExistingZoning(0);
+                                priorityOrderAttr.setNewZoning(0);
+                                priorityOrderAttr.setExistingZoning(0);
                             }
+                            attrList.add(priorityOrderAttr);
                         }
                     }
                 }
@@ -251,6 +252,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             }
 
         }
+        logger.info("attrList:{}",attrList);
         Collections.sort(attrList, (o1, o2) -> o2.getExistingZoning().compareTo(o1.getExistingZoning()));
         int i = 1;
         for (PriorityOrderAttrVO priorityOrderAttrVO : attrList) {

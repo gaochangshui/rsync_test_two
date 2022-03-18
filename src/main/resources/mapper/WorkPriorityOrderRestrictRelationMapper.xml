@@ -168,6 +168,7 @@
   <select id="selectByAuthorCd" resultMap="BaseResultMap">
     select tai_cd,tana_cd,tana_type,restrict_cd from planocycle.work_priority_order_restrict_relation
     where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and restrict_cd is not null
     order by tai_cd,tana_cd,tana_type
   </select>
 </mapper>
