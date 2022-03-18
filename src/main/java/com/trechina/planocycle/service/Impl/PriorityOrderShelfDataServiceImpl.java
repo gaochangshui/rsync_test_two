@@ -35,7 +35,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Override
     public Map<String, Object> getRestrictData(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-        String authorCd = session.getAttribute("aud").toString();
+        String authorCd = "10212159";
+        //String authorCd = session.getAttribute("aud").toString();
         List<PriorityOrderRestrictDto> restrictData = priorityOrderShelfDataMapper.getRestrictData(companyCd, authorCd,priorityOrderCd);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
         Class clazz = PriorityOrderRestrictDto.class;
@@ -60,12 +61,23 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
         List<PriorityOrderRestDto> list = new ArrayList();
         PriorityOrderRestDto priorityOrderRestDto =null;
+        Class c = PriorityOrderRestrictDto.class;
         for (PriorityOrderRestrictDto restrictDatum : restrictData) {
             priorityOrderRestDto = new PriorityOrderRestDto();
             priorityOrderRestDto.setRestrictCd(restrictDatum.getRestrictCd());
-            priorityOrderRestDto.setRestrictName(restrictDatum.getZokuseiName1()+restrictDatum.getZokuseiName2()+restrictDatum.getZokuseiName3()
-                    +restrictDatum.getZokuseiName4()+restrictDatum.getZokuseiName5()+restrictDatum.getZokuseiName6()+restrictDatum.getZokuseiName7()
-            +restrictDatum.getZokuseiName8()+restrictDatum.getZokuseiName9()+restrictDatum.getZokuseiName10());
+            String s = "";
+            for (int i = 1; i <= 10; i++){
+                Method getMethod = c.getMethod("get"+"ZokuseiName"+i);
+                if (getMethod.invoke(restrictDatum)!=null || !getMethod.invoke(restrictDatum).equals("")){
+                    if (i==1){
+                        s+=getMethod.invoke(restrictDatum);
+                    }else {
+                        s+=getMethod.invoke(restrictDatum)+"->";
+                    }
+
+                }
+            }
+            priorityOrderRestDto.setRestrictName(s);
             priorityOrderRestDto.setFaceNum(restrictDatum.getFaceNum());
             priorityOrderRestDto.setSkuNum(restrictDatum.getSkuNum());
             list.add(priorityOrderRestDto);
