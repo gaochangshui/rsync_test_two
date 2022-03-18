@@ -2,8 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.PriorityOrderSortMapper">
     <insert id="insertBySelect">
-        insert into planocycle.priority_order_sort(priority_order_cd,company_cd,author_cd,zokusei_id,sort_num,sort_type)
-        select priority_order_cd,company_cd,#{authorCd},zokusei_id,sort_num,sort_type
+        insert into planocycle.priority_order_sort(priority_order_cd,company_cd,author_cd,zokusei_id,sort_num,sort_type,
+        create_time, edit_time, editer_cd)
+        select priority_order_cd,company_cd,#{authorCd},zokusei_id,sort_num,sort_type,now(),now(),#{authorCd}
         from planocycle.work_priority_order_sort
         where company_cd = #{companyCd} and author_cd = #{authorCd}
         and priority_order_cd = #{priorityOrderCd}

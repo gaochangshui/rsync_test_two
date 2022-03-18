@@ -5,6 +5,15 @@ public class PriorityOrderPtsDataDto {
     private Integer id;
     private Integer oldPtsCd;
     private Integer priorityOrderCd;
+    private String authorCd;
+
+    public String getAuthorCd() {
+        return authorCd;
+    }
+
+    public void setAuthorCd(String authorCd) {
+        this.authorCd = authorCd;
+    }
 
     public Integer getPriorityOrderCd() {
         return priorityOrderCd;
