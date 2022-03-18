@@ -2,6 +2,7 @@ package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
+import com.trechina.planocycle.entity.vo.PriorityOrderMstVO;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,7 +103,7 @@ public interface PriorityOrderMstService {
 
 
     @Transactional(rollbackFor = Exception.class)
-    Map<String, Object> saveAllWorkPriorityOrder(PriorityOrderPrimaryKeyVO primaryKeyVO);
+    Map<String, Object> saveAllWorkPriorityOrder(PriorityOrderMstVO primaryKeyVO);
 
     /**
      * 放置商品
@@ -113,4 +114,6 @@ public interface PriorityOrderMstService {
     boolean setJan(String companyCd, String authorCd, Integer priorityOrderCd);
 
     Map<String,Object> getPriorityOrderAll(String companyCd,Integer priorityOrderCd);
+//
+//    Map<String, Object> checkOrderName(PriorityOrderMstVO priorityOrderMstVO);
 }
