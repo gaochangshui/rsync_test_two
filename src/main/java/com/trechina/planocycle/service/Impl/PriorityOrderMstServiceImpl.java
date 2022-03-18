@@ -1108,14 +1108,17 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTai = workPriorityOrderResultData.stream()
                 .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTaiCd, LinkedHashMap::new, Collectors.toList()));
 
-        for (Integer taiCd : workPriorityOrderResultDataByTai.keySet()) {
+        for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entrySet : workPriorityOrderResultDataByTai.entrySet()) {
+            Integer taiCd = entrySet.getKey();
+
             List<WorkPriorityOrderResultDataDto> workPriorityOrderResultDataDtos = workPriorityOrderResultDataByTai.get(taiCd);
             //根据棚进行分组遍历
             Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTana = workPriorityOrderResultDataDtos.stream()
                     .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTanaCd, LinkedHashMap::new, Collectors.toList()));
-            for (Integer tanaCd : workPriorityOrderResultDataByTana.keySet()) {
+            for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entry : workPriorityOrderResultDataByTana.entrySet()) {
                 //同一个棚，序号从1开始累加，下一个棚重新从1开始加
                 Integer tantaPositionCd=0;
+                Integer tanaCd = entry.getKey();
 
                 for (WorkPriorityOrderResultDataDto currentDataDto : workPriorityOrderResultDataByTana.get(tanaCd)) {
                     currentDataDto.setTanaPositionCd(++tantaPositionCd);
@@ -1144,24 +1147,17 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(shelfPatternCd.intValue());
 
-        Short partitionFlag = priorityOrderMst.getPartitionFlag();
-        Short partitionVal = priorityOrderMst.getPartitionVal();
+        Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
+        Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
 
         /**
          * 最终放置好的商品的list
          */
         List<PriorityOrderResultDataDto> finalSetJanResultData = new ArrayList<>();
 
-        if(partitionFlag==null){
-            partitionFlag = 0;
-        }
-
         if(partitionFlag == 0){
             //没隔板的情况
             partitionVal = 0;
-        }else if(partitionFlag==1 && partitionVal==null){
-            //有隔板&隔板默认2mm
-            partitionVal = 2;
         }
 
         /**
@@ -1176,20 +1172,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
             //符合当前制约条件商品按rank排序
             //如果sortrank为null就只按skurank排序
-            Optional<PriorityOrderResultDataDto> any = workPriorityOrderResultData
-                    .stream().filter(data -> relationCd.equals(data.getRestrictCd()) && data.getSortRank() != null).findAny();
-            List<PriorityOrderResultDataDto> relationSorted = null;
-
-            if(any.isPresent()){
-                relationSorted = workPriorityOrderResultData
-                        .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
-                        .sorted(Comparator.comparingLong(PriorityOrderResultDataDto::getSortRank)
-                                .thenComparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
-            }else{
-                relationSorted = workPriorityOrderResultData
-                        .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
-                        .sorted(Comparator.comparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
-            }
+            List<PriorityOrderResultDataDto> relationSorted =  workPriorityOrderResultData
+                    .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
+                    .sorted(Comparator.comparing(PriorityOrderResultDataDto::getSortRank, Comparator.nullsFirst(Long::compareTo))
+                            .thenComparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
 
             List<WorkPriorityOrderRestrictRelation> relationValue = relationEntry.getValue();
 
@@ -1206,30 +1192,28 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 }
 
                 //台或半段的宽度, 已使用的宽度
-                double width = 0, usedWidth = 0;
+                double width = 0;
+                double usedWidth = 0;
 
+                Integer taiWidth = taiInfo.get().getTaiWidth();
                 if(tanaType!=0){
                     //半段的根据具体位置段的宽度放置
-                    Integer taiWidth = taiInfo.get().getTaiWidth();
                     width = taiWidth/2.0;
                 }else{
                     //整段的根据具体位置台的宽度放置
-                    width = taiInfo.get().getTaiWidth();
+                    width = taiWidth;
                 }
 
                 //放置商品
                 for (int i = setResultDataIndex; i < relationSorted.size(); i++) {
                     PriorityOrderResultDataDto priorityOrderResultData = relationSorted.get(i);
 
-                    Long faceSku = priorityOrderResultData.getFaceSku();
-                    Long janWidth = priorityOrderResultData.getJanWidth();
+                    Long faceSku = Optional.ofNullable(priorityOrderResultData.getFaceSku()).orElse(1L);
+                    Long janWidth = Optional.ofNullable(priorityOrderResultData.getJanWidth()).orElse(0L);
                     Long face = priorityOrderResultData.getFace();
 
                     //商品宽度null或者0时使用默认宽度67mm，faceSku>1的需要乘以faceSku
-                    if(janWidth==null || janWidth==0){
-                        if (faceSku==null) {
-                            faceSku = 1L;
-                        }
+                    if(janWidth == 0){
                         janWidth = 67 * faceSku;
                     }
 
