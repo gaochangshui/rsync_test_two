@@ -1013,63 +1013,80 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             //保存OrderMst，删除原数据
             priorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderMstMapper.insertBySelect(companyCd, authorCd,priorityOrderCd, priorityOrderName);
-            workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd,priorityOrderCd);
 
             //保存OrderRestrictRelation，删除原数据
             priorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderRestrictRelationMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
-            workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
 
             //保存OrderRestrictResult，删除原数据
             priorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderRestrictResultMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
-            workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
 
             //保存OrderRestrictSet，删除原数据
             priorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderRestrictSetMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
-            workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
 
             //保存ResultData，删除原数据
             priorityOrderResultDataMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderResultDataMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
-            workPriorityOrderResultDataMapper.delResultData(companyCd,authorCd,priorityOrderCd);
 
             //保存Space，删除原数据
             priorityOrderSpaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
             priorityOrderSpaceMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
-            workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
 
             //保存cut，删除原数据
             priorityOrderJanCardMapper.deleteByAuthorCd(companyCd,priorityOrderCd, authorCd);
             priorityOrderJanCardMapper.insertBySelect(companyCd,priorityOrderCd,authorCd);
-            priorityOrderJanCardMapper.workDelete(companyCd,priorityOrderCd,authorCd);
 
             //保存jan_new，删除原数据
             priorityOrderJanNewMapper.deleteByAuthorCd(companyCd,priorityOrderCd, authorCd);
             priorityOrderJanNewMapper.setWorkForFinal(companyCd,priorityOrderCd, authorCd);
-            priorityOrderJanNewMapper.workDelete(companyCd,authorCd,priorityOrderCd);
 
             //保存jan_replace，删除原数据
             priorityOrderJanReplaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
             priorityOrderJanReplaceMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
-            priorityOrderJanReplaceMapper.workDelete(companyCd,authorCd,priorityOrderCd);
 
             //保存sort，删除原数据
             priorityOrderSortMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
             priorityOrderSortMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
-            workPriorityOrderSortMapper.delete(companyCd,authorCd,priorityOrderCd);
 
             //保存sort_rank，删除原数据
             priorityOrderSortRankMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
             priorityOrderSortRankMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
-            workPriorityOrderSortRankMapper.delete(companyCd,authorCd,priorityOrderCd);
 
             WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
             Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
             Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
 
-            shelfPtsDataMapper.insertPtsData(ptsCd);
+            //查询出所有采纳了的商品，按照台棚进行排序，标记商品在棚上的位置
+            List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+            List<WorkPriorityOrderResultDataDto> positionResultData = this.calculateTanaPosition(workPriorityOrderResultData);
+
+            PriorityOrderPtsDataDto priorityOrderPtsDataDto = new PriorityOrderPtsDataDto();
+            priorityOrderPtsDataDto.setOldPtsCd(ptsCd);
+            priorityOrderPtsDataDto.setPriorityOrderCd(priorityOrderCd);
+            shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
+            Integer id = priorityOrderPtsDataDto.getId();
+
+            shelfPtsDataMapper.insertPtsTaimst(ptsCd, id);
+            shelfPtsDataMapper.insertPtsTanamst(ptsCd, id);
+            shelfPtsDataMapper.insertPtsVersion(ptsCd, id);
+
+            if(!positionResultData.isEmpty()){
+                shelfPtsDataMapper.insertPtsDataJandata(positionResultData,id, companyCd, authorCd);
+            }
+
+            workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd,priorityOrderCd);
+            workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderResultDataMapper.delResultData(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderSortMapper.delete(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderSortRankMapper.delete(companyCd,authorCd,priorityOrderCd);
+            priorityOrderJanNewMapper.workDelete(companyCd,authorCd,priorityOrderCd);
+            priorityOrderJanReplaceMapper.workDelete(companyCd,authorCd,priorityOrderCd);
+            priorityOrderJanCardMapper.workDelete(companyCd,priorityOrderCd,authorCd);
         }catch (Exception exception){
             logger.error("保存临时表数据到实际表报错", exception);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -1077,6 +1094,36 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    /**
+     * 先按照台遍历再遍历棚，同一个棚的商品从左到右的顺序从1开始进行标号，棚变了，重新标号
+     * @param workPriorityOrderResultData
+     * @return
+     */
+    private List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData){
+        //有棚位置的resultdata数据
+        List<WorkPriorityOrderResultDataDto> positionResultData = new ArrayList<>(workPriorityOrderResultData.size());
+        //根据台进行分组遍历
+        Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTai = workPriorityOrderResultData.stream()
+                .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTaiCd, LinkedHashMap::new, Collectors.toList()));
+
+        for (Integer taiCd : workPriorityOrderResultDataByTai.keySet()) {
+            List<WorkPriorityOrderResultDataDto> workPriorityOrderResultDataDtos = workPriorityOrderResultDataByTai.get(taiCd);
+            //根据棚进行分组遍历
+            Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTana = workPriorityOrderResultDataDtos.stream()
+                    .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTanaCd, LinkedHashMap::new, Collectors.toList()));
+            for (Integer tanaCd : workPriorityOrderResultDataByTana.keySet()) {
+                //同一个棚，序号从1开始累加，下一个棚重新从1开始加
+                Integer tantaPositionCd=0;
+
+                for (WorkPriorityOrderResultDataDto currentDataDto : workPriorityOrderResultDataByTana.get(tanaCd)) {
+                    currentDataDto.setTanaPositionCd(++tantaPositionCd);
+                    positionResultData.add(currentDataDto);
+                }
+            }
+        }
+        return positionResultData;
     }
 
     /**

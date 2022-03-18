@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
+import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -19,6 +20,8 @@ public interface WorkPriorityOrderResultDataMapper {
     int insertSelective(WorkPriorityOrderResultData record);
 
     WorkPriorityOrderResultData selectByPrimaryKey(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("janCd") String janCd);
+
+    List<WorkPriorityOrderResultDataDto> selectByAuthorCd(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 
     int updateByPrimaryKeySelective(WorkPriorityOrderResultData record);
 
