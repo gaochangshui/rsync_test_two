@@ -332,5 +332,15 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     order by sort_num
   </select>
 
+  <select id="getPtsCd" resultType="int">
+    select id from planocycle.shelf_pts_data where shelf_pattern_cd=#{shelfPatternCd}
+  </select>
 
+  <insert id="insertPtsData" useGeneratedKeys="true" keyProperty="id">
+    insert into planocycle.priority_order_pts_data(company_cd,file_name,authorcd,shelf_pattern_cd,valid_flg,
+    start_day,edit_time,create_time,editer_cd,authorcd)
+    select company_cd,file_name,authorcd,shelf_pattern_cd,valid_flg,start_day,now(),now(),authorcd,authorcd
+    from planocycle.shelf_pts_data
+    where id=#{ptsCd}
+  </insert>
 </mapper>

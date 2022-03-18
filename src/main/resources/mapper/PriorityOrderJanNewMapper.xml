@@ -120,5 +120,9 @@
         and product_power_cd = #{productPowerCd}
         order by rank_result
     </select>
-
+    <delete id="deleteByAuthorCd">
+        delete from planocycle.priority_order_jan_new where
+        company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        and author_cd=#{authorCd}
+    </delete>
 </mapper>

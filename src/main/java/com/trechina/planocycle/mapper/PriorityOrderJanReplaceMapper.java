@@ -19,4 +19,7 @@ public interface PriorityOrderJanReplaceMapper {
 
     int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
     String selectJanDistinct();
+    int insertBySelect(@Param("companyCd") String companyCd,@Param("authorCd")String authorCd ,@Param("priorityOrderCd") Integer priorityOrderCd);
+
+    int deleteByAuthorCd(@Param("companyCd") String companyCd,@Param("authorCd")String authorCd ,@Param("priorityOrderCd") Integer priorityOrderCd);
 }
