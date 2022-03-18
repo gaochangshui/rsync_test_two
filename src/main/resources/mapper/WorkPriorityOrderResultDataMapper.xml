@@ -326,7 +326,7 @@
     face_sku faceSku,face_keisan faceKeisan,face,adopt_flag adoptFlag,jan.width janWidth,jan.height janHeight
     from planocycle.work_priority_order_result_data data
     inner join masterdb.jan_mst jan on data.jan_cd=jan.jan_cd
-    where data.company_cd=#{companyCd} and data.author_cd=#{authorCd}
+    where data.company_cd=#{companyCd} and data.author_cd=#{authorCd} and priority_order_cd=#{priorityOrderCd}
   </select>
   <update id="updateTaiTanaBatch">
     UPDATE planocycle.work_priority_order_result_data SET
