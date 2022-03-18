@@ -38,8 +38,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Override
     public Map<String, Object> getRestrictData(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-        String authorCd = "10212159";
-        //String authorCd = session.getAttribute("aud").toString();
+        //String authorCd = "10212159";
+        String authorCd = session.getAttribute("aud").toString();
         List<PriorityOrderRestrictDto> restrictData = priorityOrderShelfDataMapper.getRestrictData(companyCd, authorCd,priorityOrderCd);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
         Class clazz = PriorityOrderRestrictDto.class;
@@ -121,8 +121,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
      */
     @Override
     public Map<String, Object> getRestrictJans(PriorityOrderRestDto priorityOrderRestDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        String aud = "10212159";
-        //String aud = session.getAttribute("aud").toString();
+       // String aud = "10212159";
+        String aud = session.getAttribute("aud").toString();
 
 
         List<PriorityOrderRestrictJanDto> restrictJans = priorityOrderShelfDataMapper.getRestrictJans(priorityOrderRestDto,aud);
@@ -163,8 +163,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Override
     public Map<String, Object> getPlatformShedJans(PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-        String aud = "10212159";
-        //String aud = session.getAttribute("aud").toString();
+        //String aud = "10212159";
+        String aud = session.getAttribute("aud").toString();
         List<PriorityOrderRestrictJanDto> platformShedJans = priorityOrderShelfDataMapper.getPlatformShedJans(priorityOrderPlatformShedDto,aud);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
         Class clazz = PriorityOrderRestrictJanDto.class;
