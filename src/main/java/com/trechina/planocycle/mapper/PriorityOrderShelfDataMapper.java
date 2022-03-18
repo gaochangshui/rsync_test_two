@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderRestDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestrictDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -15,7 +16,7 @@ public interface PriorityOrderShelfDataMapper {
 
     List<PriorityOrderPlatformShedDto> getPlatformShedData(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    List<PriorityOrderRestrictJanDto> getRestrictJans(@Param("item")PriorityOrderRestrictDto priorityOrderRestrictDto,@Param("authorCd")String authorCd);
+    List<PriorityOrderRestrictJanDto> getRestrictJans(@Param("item") PriorityOrderRestDto priorityOrderRestDto, @Param("authorCd")String authorCd);
 
     List<PriorityOrderRestrictJanDto> getPlatformShedJans(@Param("item")PriorityOrderPlatformShedDto priorityOrderPlatformShedDto,@Param("authorCd")String authorCd);
 

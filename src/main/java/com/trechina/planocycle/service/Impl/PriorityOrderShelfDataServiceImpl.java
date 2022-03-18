@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.PriorityOrderRestrictSetMapper;
 import com.trechina.planocycle.mapper.PriorityOrderShelfDataMapper;
+import com.trechina.planocycle.mapper.WorkPriorityOrderResultDataMapper;
 import com.trechina.planocycle.service.PriorityOrderShelfDataService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Autowired
     private PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
     @Autowired
+    private WorkPriorityOrderResultDataMapper workPriorityOrderResultDataMapper;
+    @Autowired
     private HttpSession session;
 
     /**
@@ -35,7 +38,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Override
     public Map<String, Object> getRestrictData(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-        String authorCd = session.getAttribute("aud").toString();
+        String authorCd = "10212159";
+        //String authorCd = session.getAttribute("aud").toString();
         List<PriorityOrderRestrictDto> restrictData = priorityOrderShelfDataMapper.getRestrictData(companyCd, authorCd,priorityOrderCd);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
         Class clazz = PriorityOrderRestrictDto.class;
@@ -60,12 +64,24 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
         List<PriorityOrderRestDto> list = new ArrayList();
         PriorityOrderRestDto priorityOrderRestDto =null;
+        Class c = PriorityOrderRestrictDto.class;
         for (PriorityOrderRestrictDto restrictDatum : restrictData) {
             priorityOrderRestDto = new PriorityOrderRestDto();
             priorityOrderRestDto.setRestrictCd(restrictDatum.getRestrictCd());
-            priorityOrderRestDto.setRestrictName(restrictDatum.getZokuseiName1()+restrictDatum.getZokuseiName2()+restrictDatum.getZokuseiName3()
-                    +restrictDatum.getZokuseiName4()+restrictDatum.getZokuseiName5()+restrictDatum.getZokuseiName6()+restrictDatum.getZokuseiName7()
-            +restrictDatum.getZokuseiName8()+restrictDatum.getZokuseiName9()+restrictDatum.getZokuseiName10());
+            String s = "";
+            for (int i = 1; i <= 10; i++){
+                Method getMethod = c.getMethod("get"+"ZokuseiName"+i);
+                if (getMethod.invoke(restrictDatum)!=null && !getMethod.invoke(restrictDatum).equals("")){
+                    if (i==1){
+                        s+=getMethod.invoke(restrictDatum);
+                    }else {
+                         s+= "->"+getMethod.invoke(restrictDatum);
+                    }
+
+                }
+            }
+            s = s.substring(2);
+            priorityOrderRestDto.setRestrictName(s);
             priorityOrderRestDto.setFaceNum(restrictDatum.getFaceNum());
             priorityOrderRestDto.setSkuNum(restrictDatum.getSkuNum());
             list.add(priorityOrderRestDto);
@@ -100,14 +116,16 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     }
     /**
      * 新规时获取基本パタ制约别jan详细信息
-     * @param priorityOrderRestrictDto
+     * @param
      * @return
      */
     @Override
-    public Map<String, Object> getRestrictJans(PriorityOrderRestrictDto priorityOrderRestrictDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Map<String, Object> getRestrictJans(PriorityOrderRestDto priorityOrderRestDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String aud = session.getAttribute("aud").toString();
-        List<PriorityOrderRestrictJanDto> restrictJans = priorityOrderShelfDataMapper.getRestrictJans(priorityOrderRestrictDto,aud);
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
+
+
+        List<PriorityOrderRestrictJanDto> restrictJans = priorityOrderShelfDataMapper.getRestrictJans(priorityOrderRestDto,aud);
+        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
         Class clazz = PriorityOrderRestrictJanDto.class;
         for (int i = 1; i <= 10; i++) {
             Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
@@ -143,9 +161,10 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
      */
     @Override
     public Map<String, Object> getPlatformShedJans(PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
         String aud = session.getAttribute("aud").toString();
         List<PriorityOrderRestrictJanDto> platformShedJans = priorityOrderShelfDataMapper.getPlatformShedJans(priorityOrderPlatformShedDto,aud);
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
+        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
         Class clazz = PriorityOrderRestrictJanDto.class;
         for (int i = 1; i <= 10; i++) {
             Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
@@ -161,4 +180,16 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         }
         return ResultMaps.result(ResultEnum.SUCCESS,platformShedJans);
     }
+    /**
+     * 保存faceNum
+     * @param priorityOrderRestrictJanDto
+     * @return
+     */
+    @Override
+    public Map<String, Object> setFaceNumForData(List<PriorityOrderRestrictJanDto> priorityOrderRestrictJanDto) {
+        String authorCd = session.getAttribute("aud").toString();
+        workPriorityOrderResultDataMapper.updateFaceNum(priorityOrderRestrictJanDto,authorCd);
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
 }

@@ -2,12 +2,14 @@ package com.trechina.planocycle.controller;
 
 
 import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderRestrictDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderRestDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
 import com.trechina.planocycle.service.PriorityOrderShelfDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -30,12 +32,12 @@ public class PriorityOrderShelfDataController {
 
     /**
      * 新规时获取基本パタ制约别jan详细信息
-     * @param priorityOrderRestrictDto
+     * @param
      * @return
      */
     @PostMapping("getRestrictJans")
-    public Map<String,Object> getRestrictJans(@RequestBody PriorityOrderRestrictDto priorityOrderRestrictDto) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        return priorityOrderShelfDataService.getRestrictJans(priorityOrderRestrictDto);
+    public Map<String,Object> getRestrictJans(@RequestBody PriorityOrderRestDto priorityOrderRestDto) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        return priorityOrderShelfDataService.getRestrictJans(priorityOrderRestDto);
 
     }
 
@@ -57,4 +59,15 @@ public class PriorityOrderShelfDataController {
     public Map<String,Object> getPlatformShedJans(@RequestBody PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return  priorityOrderShelfDataService.getPlatformShedJans(priorityOrderPlatformShedDto);
     }
+
+    /**
+     * 保存faceNum
+     * @param priorityOrderRestrictJanDto
+     * @return
+     */
+    @PostMapping("setFaceNumForData")
+    public Map<String,Object> setFaceNumForData(@RequestBody List<PriorityOrderRestrictJanDto> priorityOrderRestrictJanDto) {
+        return  priorityOrderShelfDataService.setFaceNumForData(priorityOrderRestrictJanDto);
+    }
+
 }

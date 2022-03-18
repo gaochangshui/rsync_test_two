@@ -1,6 +1,8 @@
 package com.trechina.planocycle.entity.dto;
 
 public class PriorityOrderRestDto {
+    private String companyCd;
+    private Integer priorityOrderCd;
     private Integer restrictCd;
     private String restrictName;
 
@@ -37,6 +39,22 @@ public class PriorityOrderRestDto {
 
     public void setFaceNum(Integer faceNum) {
         this.faceNum = faceNum;
+    }
+
+    public String getCompanyCd() {
+        return companyCd;
+    }
+
+    public void setCompanyCd(String companyCd) {
+        this.companyCd = companyCd;
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
     }
 
     @Override

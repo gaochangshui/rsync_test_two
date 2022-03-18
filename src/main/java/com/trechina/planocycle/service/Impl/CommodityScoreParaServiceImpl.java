@@ -369,32 +369,32 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
         //
         productPowerMstDataList.stream().forEach(item->{
-            BigDecimal rankNum = item.getPdPosAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getPdPosAmount()))
-                    .add(item.getPdPosNum().multiply(BigDecimal.valueOf(rankCalculateVo.getPdPosNum())))
-                    .add(item.getPdBranchAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getPdBranchAmount())))
-                    .add(item.getPdBranchNum().multiply(BigDecimal.valueOf(rankCalculateVo.getPdBranchNum())))
-                    .add(item.getPdCompareAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getPdCompareAmount())))
-                    .add(item.getPdCompareNum().multiply(BigDecimal.valueOf(rankCalculateVo.getPdCompareNum())))
-                    .add(item.getPdBranchCompareAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getPdBranchCompareAmount())))
-                    .add(item.getPdBranchCompareNum().multiply(BigDecimal.valueOf(rankCalculateVo.getPdBranchCompareNum())))
-                    .add(item.getGdPosAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getGdPosAmount())))
-                    .add(item.getGdPosNum().multiply(BigDecimal.valueOf(rankCalculateVo.getGdPosNum())))
-                    .add(item.getGdBranchAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getGdBranchAmount())))
-                    .add(item.getGdBranchNum().multiply(BigDecimal.valueOf(rankCalculateVo.getGdBranchNum())))
-                    .add(item.getGdCompareAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getGdCompareAmount())))
-                    .add(item.getGdCompareNum().multiply(BigDecimal.valueOf(rankCalculateVo.getGdCompareNum())))
-                    .add(item.getGdBranchCompareAmount().multiply(BigDecimal.valueOf(rankCalculateVo.getGdBranchCompareAmount())))
-                    .add(item.getGdBranchCompareNum().multiply(BigDecimal.valueOf(rankCalculateVo.getGdBranchCompareNum())))
-                    .add(item.getItem1().multiply(BigDecimal.valueOf(rankCalculateVo.getItem1())))
-                    .add(item.getItem2().multiply(BigDecimal.valueOf(rankCalculateVo.getItem2())))
-                    .add(item.getItem3().multiply(BigDecimal.valueOf(rankCalculateVo.getItem3())))
-                    .add(item.getItem4().multiply(BigDecimal.valueOf(rankCalculateVo.getItem4())))
-                    .add(item.getItem5().multiply(BigDecimal.valueOf(rankCalculateVo.getItem5())))
-                    .add(item.getItem6().multiply(BigDecimal.valueOf(rankCalculateVo.getItem6())))
-                    .add(item.getItem7().multiply(BigDecimal.valueOf(rankCalculateVo.getItem7())))
-                    .add(item.getItem8().multiply(BigDecimal.valueOf(rankCalculateVo.getItem8())))
-                    .add(item.getItem9().multiply(BigDecimal.valueOf(rankCalculateVo.getItem9())))
-                    .add(item.getItem10().multiply(BigDecimal.valueOf(rankCalculateVo.getItem10())));
+            Integer rankNum = item.getPdPosAmountRank()* rankCalculateVo.getPdPosAmount()+
+                    item.getPdPosNumRank()* rankCalculateVo.getPdPosNum() +
+                    item.getPdBranchAmountRank()*rankCalculateVo.getPdBranchAmount()+
+                    item.getPdBranchNumRank()*rankCalculateVo.getPdBranchNum() +
+                    item.getPdCompareAmountRank()*rankCalculateVo.getPdCompareAmount()+
+                    item.getPdCompareNumRank() *rankCalculateVo.getPdCompareNum()+
+                    item.getPdBranchCompareAmountRank()*rankCalculateVo.getPdBranchCompareAmount()+
+                    item.getPdBranchCompareNumRank()*rankCalculateVo.getPdBranchCompareNum()+
+                    item.getGdPosAmountRank()*rankCalculateVo.getGdPosAmount()+
+                    item.getGdPosNumRank()*rankCalculateVo.getGdPosNum()+
+                    item.getGdBranchAmountRank()*rankCalculateVo.getGdBranchAmount()+
+                    item.getGdBranchNumRank()*rankCalculateVo.getGdBranchNum()+
+                    item.getGdCompareAmountRank()*rankCalculateVo.getGdCompareAmount()+
+                    item.getGdCompareNumRank()*rankCalculateVo.getGdCompareNum()+
+                    item.getGdBranchCompareAmountRank()*rankCalculateVo.getGdBranchCompareAmount()+
+                    item.getGdBranchCompareNumRank()*rankCalculateVo.getGdBranchCompareNum()+
+                    item.getItem1Rank()*rankCalculateVo.getItem1()+
+                    item.getItem2Rank()*rankCalculateVo.getItem2()+
+                    item.getItem3Rank()*rankCalculateVo.getItem3()+
+                    item.getItem4Rank()*rankCalculateVo.getItem4()+
+                    item.getItem5Rank()*rankCalculateVo.getItem5()+
+                    item.getItem6Rank()*rankCalculateVo.getItem6()+
+                    item.getItem7Rank()*rankCalculateVo.getItem7()+
+                    item.getItem8Rank()*rankCalculateVo.getItem8()+
+                    item.getItem9Rank()*rankCalculateVo.getItem9()+
+                    item.getItem10Rank()*rankCalculateVo.getItem10();
                 item.setRankNum(rankNum);
 
 
@@ -408,7 +408,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 @Override
                 public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
 
-                    return o2.getRankNum().compareTo(o1.getRankNum());
+                    return o1.getRankNum().compareTo(o2.getRankNum());
                 }
             });
         int i=1;

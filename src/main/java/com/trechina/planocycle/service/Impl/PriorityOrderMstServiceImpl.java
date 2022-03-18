@@ -782,6 +782,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         // TODO: 2200866
 
         String authorCd = session.getAttribute("aud").toString();
+        
 
         //获取商品力点数表cd
         Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, authorCd,priorityOrderCd);
@@ -1265,6 +1266,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderSortMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderSortRankMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderSpaceMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+
 
         return null;
     }

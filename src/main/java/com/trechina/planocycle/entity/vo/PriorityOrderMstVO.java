@@ -28,4 +28,6 @@ public class PriorityOrderMstVO {
     public void setPriorityOrderName(String priorityOrderName) {
         this.priorityOrderName = priorityOrderName;
     }
+
+
 }

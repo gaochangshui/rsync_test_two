@@ -1,9 +1,11 @@
 package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderRestrictDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderRestDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Map;
 
 public interface PriorityOrderShelfDataService {
@@ -17,10 +19,10 @@ public interface PriorityOrderShelfDataService {
 
     /**
      * 新规时获取基本パタ制约别jan详细信息
-     * @param priorityOrderRestrictDto
+     * @param
      * @return
      */
-    Map<String,Object> getRestrictJans( PriorityOrderRestrictDto priorityOrderRestrictDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    Map<String,Object> getRestrictJans( PriorityOrderRestDto priorityOrderRestDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     /**
      * 新规时获取基本パタ台棚别信息
      * @param companyCd
@@ -33,4 +35,10 @@ public interface PriorityOrderShelfDataService {
      * @return
      */
     Map<String,Object> getPlatformShedJans( PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    /**
+     * 保存faceNum
+     * @param priorityOrderRestrictJanDto
+     * @return
+     */
+    Map<String,Object> setFaceNumForData( List<PriorityOrderRestrictJanDto> priorityOrderRestrictJanDto);
 }

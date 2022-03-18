@@ -3,9 +3,11 @@ package com.trechina.planocycle.entity.dto;
 
 
 public class PriorityOrderRestrictJanDto {
+    private String companyCd;
+    private Integer priorityOrderCd;
     private Integer taiCd;
     private  Integer tanaCd;
-    private Integer restrictType;
+    private Integer tanaType;
     private String janCd;
     private  String janName;
     private Integer rank;
@@ -41,18 +43,6 @@ public class PriorityOrderRestrictJanDto {
 
     public Integer getTanaCd() {
         return tanaCd;
-    }
-
-    public void setTanaCd(Integer tanaCd) {
-        this.tanaCd = tanaCd;
-    }
-
-    public Integer getRestrictType() {
-        return restrictType;
-    }
-
-    public void setRestrictType(Integer restrictType) {
-        this.restrictType = restrictType;
     }
 
     public String getJanCd() {
@@ -191,6 +181,34 @@ public class PriorityOrderRestrictJanDto {
         this.zokuseiName3 = zokuseiName3;
     }
 
+    public void setTanaCd(Integer tanaCd) {
+        this.tanaCd = tanaCd;
+    }
+
+    public Integer getTanaType() {
+        return tanaType;
+    }
+
+    public void setTanaType(Integer tanaType) {
+        this.tanaType = tanaType;
+    }
+
+    public String getCompanyCd() {
+        return companyCd;
+    }
+
+    public void setCompanyCd(String companyCd) {
+        this.companyCd = companyCd;
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
+    }
+
     public String getZokuseiName4() {
         return zokuseiName4;
     }
@@ -252,7 +270,7 @@ public class PriorityOrderRestrictJanDto {
         return "PriorityOrderRestrictJanDto{" +
                 "taiCd=" + taiCd +
                 ", tanaCd=" + tanaCd +
-                ", restrictType=" + restrictType +
+                ", restrictType=" + tanaType +
                 ", janCd='" + janCd + '\'' +
                 ", janName='" + janName + '\'' +
                 ", rank=" + rank +
