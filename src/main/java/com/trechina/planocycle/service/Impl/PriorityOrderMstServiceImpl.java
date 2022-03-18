@@ -4,8 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
-import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
-import com.trechina.planocycle.entity.vo.PtsTaiVo;
+import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
@@ -104,7 +103,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private PriorityOrderResultDataMapper priorityOrderResultDataMapper;
     @Autowired
     private PriorityOrderSpaceMapper priorityOrderSpaceMapper;
-
+    @Autowired
+    private PriorityOrderSortRankMapper priorityOrderSortRankMapper;
+    @Autowired
+    private PriorityOrderSortMapper priorityOrderSortMapper;
 
     /**
      * 获取优先顺位表list
@@ -988,42 +990,73 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> saveAllWorkPriorityOrder(PriorityOrderPrimaryKeyVO primaryKeyVO){
+    public Map<String, Object> saveAllWorkPriorityOrder(PriorityOrderMstVO primaryKeyVO){
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = primaryKeyVO.getCompanyCd();
         Integer priorityOrderCd = primaryKeyVO.getPriorityOrderCd();
-//        String authorCd = "10218504";
+        String priorityOrderName = primaryKeyVO.getPriorityOrderName();
 
         try {
-            //保存OrderMst，逻辑删除原数据
+            //保存OrderMst，删除原数据
             priorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            priorityOrderMstMapper.insertBySelect(companyCd, authorCd,priorityOrderCd);
+            priorityOrderMstMapper.insertBySelect(companyCd, authorCd,priorityOrderCd, priorityOrderName);
             workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd,priorityOrderCd);
 
-            //保存OrderRestrictRelation，逻辑删除原数据
+            //保存OrderRestrictRelation，删除原数据
             priorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderRestrictRelationMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
 
-            //保存OrderRestrictResult，逻辑删除原数据
+            //保存OrderRestrictResult，删除原数据
             priorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderRestrictResultMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
 
-            //保存OrderRestrictSet，逻辑删除原数据
+            //保存OrderRestrictSet，删除原数据
             priorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderRestrictSetMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
 
-            //保存ResultData，逻辑删除原数据
+            //保存ResultData，删除原数据
             priorityOrderResultDataMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderResultDataMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderResultDataMapper.delResultData(companyCd,authorCd,priorityOrderCd);
 
-            //保存Space，逻辑删除原数据
+            //保存Space，删除原数据
             priorityOrderSpaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
             priorityOrderSpaceMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
             workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+
+            //保存cut，删除原数据
+            priorityOrderJanCardMapper.deleteByAuthorCd(companyCd,priorityOrderCd, authorCd);
+            priorityOrderJanCardMapper.insertBySelect(companyCd,priorityOrderCd,authorCd);
+            priorityOrderJanCardMapper.workDelete(companyCd,priorityOrderCd,authorCd);
+
+            //保存jan_new，删除原数据
+            priorityOrderJanNewMapper.deleteByAuthorCd(companyCd,priorityOrderCd, authorCd);
+            priorityOrderJanNewMapper.setWorkForFinal(companyCd,priorityOrderCd, authorCd);
+            priorityOrderJanNewMapper.workDelete(companyCd,authorCd,priorityOrderCd);
+
+            //保存jan_replace，删除原数据
+            priorityOrderJanReplaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+            priorityOrderJanReplaceMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
+            priorityOrderJanReplaceMapper.workDelete(companyCd,authorCd,priorityOrderCd);
+
+            //保存sort，删除原数据
+            priorityOrderSortMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+            priorityOrderSortMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderSortMapper.delete(companyCd,authorCd,priorityOrderCd);
+
+            //保存sort_rank，删除原数据
+            priorityOrderSortRankMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+            priorityOrderSortRankMapper.insertBySelect(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderSortRankMapper.delete(companyCd,authorCd,priorityOrderCd);
+
+//            WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+//            Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
+//            Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
+
+//            shelfPtsDataMapper.insertPtsData(ptsCd);
         }catch (Exception exception){
             logger.error("保存临时表数据到实际表报错", exception);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -1082,9 +1115,22 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             int setResultDataIndex = 0;
 
             //符合当前制约条件商品按rank排序
-            List<PriorityOrderResultDataDto> relationSorted = workPriorityOrderResultData
-                    .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
-                    .sorted(Comparator.comparingLong(PriorityOrderResultDataDto::getSortRank).thenComparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
+            //如果sortrank为null就只按skurank排序
+            Optional<PriorityOrderResultDataDto> any = workPriorityOrderResultData
+                    .stream().filter(data -> relationCd.equals(data.getRestrictCd()) && data.getSortRank() != null).findAny();
+            List<PriorityOrderResultDataDto> relationSorted = null;
+
+            if(any.isPresent()){
+                relationSorted = workPriorityOrderResultData
+                        .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
+                        .sorted(Comparator.comparingLong(PriorityOrderResultDataDto::getSortRank)
+                                .thenComparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
+            }else{
+                relationSorted = workPriorityOrderResultData
+                        .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
+                        .sorted(Comparator.comparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
+            }
+
             List<WorkPriorityOrderRestrictRelation> relationValue = relationEntry.getValue();
 
             for (WorkPriorityOrderRestrictRelation workPriorityOrderRestrictRelation : relationValue) {
@@ -1178,5 +1224,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return null;
     }
 
-
+//    @Override
+//    public Map<String, Object> checkOrderName(PriorityOrderMstVO priorityOrderMstVO) {
+//        String priorityOrderName = priorityOrderMstVO.getPriorityOrderName();
+//        Integer priorityOrderCd = priorityOrderMstVO.getPriorityOrderCd();
+//
+//        int i = priorityOrderMstMapper.selectByOrderName(priorityOrderName, priorityOrderCd);
+//        if(i>0){
+//            return ResultMaps.result(ResultEnum.NAMEISEXISTS);
+//        }
+//        return ResultMaps.result(ResultEnum.SUCCESS);
+//    }
 }
