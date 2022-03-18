@@ -1279,8 +1279,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Override
     public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) {
         this.deleteWorkTable(companyCd,0);
-        String aud = "10212159";
-        //String aud = session.getAttribute("aud").toString();
+        //String aud = "10212159";
+        String aud = session.getAttribute("aud").toString();
         priorityOrderJanCardMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         priorityOrderJanReplaceMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         priorityOrderJanNewMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
