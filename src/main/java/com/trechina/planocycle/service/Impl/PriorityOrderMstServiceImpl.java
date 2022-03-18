@@ -878,6 +878,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
 
         this.getReorder(companyCd,priorityOrderCd);
+
+        this.setJan(companyCd,authorCd,priorityOrderCd);
         logger.info("拆分后的数据为{}",strList);
 
 
@@ -900,6 +902,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String[] split = colNmforMst.split(",");
         List<PriorityOrderJanNewDto> reorder = null;
         if (split.length==1){
+            //workPriorityOrderResultDataMapper.getReorder(companyCd,aud,priorityOrderCd,split[0],null)
             reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud,priorityOrderCd, split[0], null);
 
         }else {
