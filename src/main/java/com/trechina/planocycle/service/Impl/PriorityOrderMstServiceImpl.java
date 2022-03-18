@@ -1076,7 +1076,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 shelfPtsDataMapper.insertPtsDataJandata(positionResultData,id, companyCd, authorCd);
             }
 
-            this.deleteWorkTable(companyCd, priorityOrderCd);
+            workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd,priorityOrderCd);
+            workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderResultDataMapper.delResultData(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderSortMapper.delete(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderSortRankMapper.delete(companyCd,authorCd,priorityOrderCd);
+            priorityOrderJanNewMapper.workDelete(companyCd,authorCd,priorityOrderCd);
             priorityOrderJanReplaceMapper.workDelete(companyCd,authorCd,priorityOrderCd);
             priorityOrderJanCardMapper.workDelete(companyCd,priorityOrderCd,authorCd);
         }catch (Exception exception){
