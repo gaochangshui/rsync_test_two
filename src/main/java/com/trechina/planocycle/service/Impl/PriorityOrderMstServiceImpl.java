@@ -36,6 +36,8 @@ import java.util.stream.Stream;
 @Service
 public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Value("${skuPerPattan}")
+    Long skuCountPerPattan;
     @Autowired
     private HttpSession session;
     @Autowired
