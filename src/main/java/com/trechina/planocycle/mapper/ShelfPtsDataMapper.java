@@ -1,6 +1,8 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
+import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.ShelfPtsData;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
 import com.trechina.planocycle.entity.vo.*;
@@ -84,5 +86,14 @@ public interface ShelfPtsDataMapper {
 
     int deleteDisplay(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 
-    int insertPtsData(@Param("ptsCd")Integer ptsCd);
+    int insertPtsData(PriorityOrderPtsDataDto ptsData);
+
+    int insertPtsTaimst(@Param("ptsCd") Integer ptsCd, @Param("id") Integer id);
+
+    int insertPtsTanamst(@Param("ptsCd") Integer ptsCd, @Param("id") Integer id);
+
+    int insertPtsVersion(@Param("ptsCd") Integer ptsCd, @Param("id") Integer id);
+
+    int insertPtsDataJandata(@Param("list")List<WorkPriorityOrderResultDataDto> positionResultData,
+                             @Param("id") Integer id, @Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 }
