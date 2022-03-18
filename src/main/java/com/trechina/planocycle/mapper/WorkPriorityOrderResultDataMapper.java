@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
@@ -57,4 +58,6 @@ public interface WorkPriorityOrderResultDataMapper {
 
     int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd")String authorCd);
 
+    //用户编辑faceNum
+    int updateFaceNum(@Param("list") List<PriorityOrderRestrictJanDto> list,@Param("authorCd")String authorCd);
 }

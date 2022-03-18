@@ -368,10 +368,20 @@
     <foreach collection="list" item="item" separator=";" index="index">
       update planocycle.work_priority_order_result_data
       <set>
-          <if test=""></if>
+
         sort_rank = #{item.resultRank} ::numeric
       </set>
       where jan_cd = #{item.janCd} ::varchar and company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
+    </foreach>
+  </update>
+  <update id="updateFaceNum">
+    <foreach collection="list" item="item" separator=";" index="index">
+      update planocycle.work_priority_order_result_data
+      <set>
+
+        face_keisan = #{item.faceNum} ::numeric
+      </set>
+      where jan_cd = #{item.janCd} ::varchar and company_cd = #{item.companyCd} and author_cd = #{authorCd} and priority_order_cd = #{item.priorityOrderCd}
     </foreach>
   </update>
   <insert id="setWorkForFinal">

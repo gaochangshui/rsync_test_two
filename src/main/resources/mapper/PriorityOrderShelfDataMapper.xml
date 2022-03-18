@@ -30,12 +30,14 @@
         from  planocycle.work_priority_order_result_data datas
                 left join planocycle.work_priority_order_restrict_result rmst
                         on rmst.restrict_cd = datas.restrict_cd
+                            and rmst.company_cd = #{item.companyCd} and rmst.author_cd = #{authorCd}
+                            and rmst.priority_order_cd = #{item.priorityOrderCd}
                 left join masterdb.jan_mst jans
                         on jans.jan_cd = datas.jan_cd
 
             where   datas.restrict_cd = #{item.restrictCd} and datas.company_cd = #{item.companyCd} and datas.author_cd = #{authorCd}
             and datas.priority_order_cd = #{item.priorityOrderCd}
-
+            order by sku_rank
 
     </select>
     <select id="getPlatformShedJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto">
@@ -48,7 +50,7 @@
                             on rmst.restrict_cd = datas.restrict_cd
                   left join masterdb.jan_mst jans
                             on jans.jan_cd = datas.jan_cd
-        where datas.tai_cd = #{item.taiCd} and datas.tana_cd = #{item.tanaCd} and datas.tana_type = #{item.restrictType}
+        where datas.tai_cd = #{item.taiCd} and datas.tana_cd = #{item.tanaCd} and datas.tana_type = #{item.tanaType}
         and datas.company_cd = #{item.companyCd} and datas.author_cd =#{authorCd} and datas.priority_order_cd = #{item.priorityOrderCd}
     </select>
 </mapper>

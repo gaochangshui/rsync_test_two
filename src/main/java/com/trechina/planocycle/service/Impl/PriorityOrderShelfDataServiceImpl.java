@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.PriorityOrderRestrictSetMapper;
 import com.trechina.planocycle.mapper.PriorityOrderShelfDataMapper;
+import com.trechina.planocycle.mapper.WorkPriorityOrderResultDataMapper;
 import com.trechina.planocycle.service.PriorityOrderShelfDataService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     private PriorityOrderShelfDataMapper priorityOrderShelfDataMapper;
     @Autowired
     private PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
+    @Autowired
+    private WorkPriorityOrderResultDataMapper workPriorityOrderResultDataMapper;
     @Autowired
     private HttpSession session;
 
@@ -68,15 +71,16 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             String s = "";
             for (int i = 1; i <= 10; i++){
                 Method getMethod = c.getMethod("get"+"ZokuseiName"+i);
-                if (getMethod.invoke(restrictDatum)!=null || !getMethod.invoke(restrictDatum).equals("")){
+                if (getMethod.invoke(restrictDatum)!=null && !getMethod.invoke(restrictDatum).equals("")){
                     if (i==1){
                         s+=getMethod.invoke(restrictDatum);
                     }else {
-                        s+=getMethod.invoke(restrictDatum)+"->";
+                         s+= "->"+getMethod.invoke(restrictDatum);
                     }
 
                 }
             }
+            s = s.substring(2);
             priorityOrderRestDto.setRestrictName(s);
             priorityOrderRestDto.setFaceNum(restrictDatum.getFaceNum());
             priorityOrderRestDto.setSkuNum(restrictDatum.getSkuNum());
@@ -112,13 +116,15 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     }
     /**
      * 新规时获取基本パタ制约别jan详细信息
-     * @param priorityOrderRestrictDto
+     * @param
      * @return
      */
     @Override
-    public Map<String, Object> getRestrictJans(PriorityOrderRestrictDto priorityOrderRestrictDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Map<String, Object> getRestrictJans(PriorityOrderRestDto priorityOrderRestDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String aud = session.getAttribute("aud").toString();
-        List<PriorityOrderRestrictJanDto> restrictJans = priorityOrderShelfDataMapper.getRestrictJans(priorityOrderRestrictDto,aud);
+
+
+        List<PriorityOrderRestrictJanDto> restrictJans = priorityOrderShelfDataMapper.getRestrictJans(priorityOrderRestDto,aud);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
         Class clazz = PriorityOrderRestrictJanDto.class;
         for (int i = 1; i <= 10; i++) {
@@ -155,6 +161,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
      */
     @Override
     public Map<String, Object> getPlatformShedJans(PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
         String aud = session.getAttribute("aud").toString();
         List<PriorityOrderRestrictJanDto> platformShedJans = priorityOrderShelfDataMapper.getPlatformShedJans(priorityOrderPlatformShedDto,aud);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
@@ -173,4 +180,16 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         }
         return ResultMaps.result(ResultEnum.SUCCESS,platformShedJans);
     }
+    /**
+     * 保存faceNum
+     * @param priorityOrderRestrictJanDto
+     * @return
+     */
+    @Override
+    public Map<String, Object> setFaceNumForData(List<PriorityOrderRestrictJanDto> priorityOrderRestrictJanDto) {
+        String authorCd = session.getAttribute("aud").toString();
+        workPriorityOrderResultDataMapper.updateFaceNum(priorityOrderRestrictJanDto,authorCd);
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
 }

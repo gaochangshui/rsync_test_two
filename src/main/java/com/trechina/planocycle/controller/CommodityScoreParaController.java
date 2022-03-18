@@ -128,7 +128,6 @@ public class CommodityScoreParaController {
 
         return commodityScoreParaService.deleteReserve(jsonObject);
     }
-
-
+    
 
 }
