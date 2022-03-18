@@ -1099,7 +1099,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTana = workPriorityOrderResultDataDtos.stream()
                     .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTanaCd));
             for (Integer tanaCd : workPriorityOrderResultDataByTana.keySet()) {
-                //同一个棚，序号从1开始累加，下一个棚重新从0开始加
+                //同一个棚，序号从1开始累加，下一个棚重新从1开始加
                 Integer tantaPositionCd=0;
 
                 for (WorkPriorityOrderResultDataDto currentDataDto : workPriorityOrderResultDataByTana.get(tanaCd)) {
