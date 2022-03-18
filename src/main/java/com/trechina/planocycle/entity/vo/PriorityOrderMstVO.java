@@ -28,12 +28,4 @@ public class PriorityOrderMstVO {
     public void setPriorityOrderName(String priorityOrderName) {
         this.priorityOrderName = priorityOrderName;
     }
-
-    public String getShelfPatternCd() {
-        return shelfPatternCd;
-    }
-
-    public void setShelfPatternCd(String shelfPatternCd) {
-        this.shelfPatternCd = shelfPatternCd;
-    }
 }
