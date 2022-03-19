@@ -1,6 +1,5 @@
 package com.trechina.planocycle.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
 import com.trechina.planocycle.entity.vo.PriorityOrderMstVO;
@@ -123,5 +122,5 @@ public interface PriorityOrderMstService {
 
     Map<String, Object> checkOrderName(PriorityOrderMstVO priorityOrderMstVO);
 
-    Map<String,Object> deletePriorityOrderAll( JSONObject jsonObject);
+    Map<String,Object> deletePriorityOrderAll( PriorityOrderMstVO priorityOrderMstVO);
 }

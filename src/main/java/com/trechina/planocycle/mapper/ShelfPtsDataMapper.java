@@ -66,11 +66,13 @@ public interface ShelfPtsDataMapper {
     //获取棚名称
     String getPengName(@Param("patternCd")Integer patternCd);
     //获取棚pattern名称
-    String getPatternName(@Param("patternCd")Integer patternCd);
+    String getPatternName(@Param("patternCd")Integer ternCd);
+
+
 
     //header/列名
     PtsDetailDataVo getPtsDetailData(@Param("patternCd")Integer patternCd);
-
+    //获取ptsCd
     Integer getPtsCd(@Param("patternCd")Integer patternCd);
 
     //获取tai信息

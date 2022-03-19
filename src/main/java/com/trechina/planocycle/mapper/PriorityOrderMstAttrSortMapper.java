@@ -37,7 +37,7 @@ public interface PriorityOrderMstAttrSortMapper {
 
     List<PriorityOrderAttrListVo> getAttrValue(@Param("zokuseiId") Integer zokuseiId);
 
-    List<PriorityOrderAttrVO> getAttrValue5(@Param("attr1") Integer a1cd);
+    List<PriorityOrderAttrVO> getAttrValue5(@Param("attr1") Integer a1cd,@Param("ptsCd")Integer ptsCd);
 
     //获取商品分类属性结构
     List<PriorityOrderAttrValue> getGoodsAttrTree();

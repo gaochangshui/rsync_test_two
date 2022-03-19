@@ -317,8 +317,8 @@ zokusei8 is null and zokusei9 is null and zokusei10 is null
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </insert>
   <update id="logicDeleteByPriorityOrderCd">
-    update planocycle.priority_order_restrict_set set deleteflg=1
-    where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
+    update planocycle.priority_order_restrict_set set deleteflg=1 , editer_cd = #{authorCd} , edit_time=now()
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>
 </mapper>

@@ -1288,6 +1288,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         Map<String,Object> map = new HashMap<>();
         //主表信息
         WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd,aud);
+        Integer shelfCd = workPriorityOrderMstMapper.getShelfName(workPriorityOrderMst.getShelfPatternCd().intValue());
+        workPriorityOrderMst.setShelfCd(shelfCd);
+
+
         //space信息
         List<PriorityOrderAttrVO> workPriorityOrderSpace = priorityOrderSpaceMapper.workPriorityOrderSpace(companyCd, aud, priorityOrderCd);
         //set表信息
@@ -1314,6 +1318,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getPlatformShedData(companyCd, aud,priorityOrderCd);
         //获取基本制约别信息
         Map<String, Object> restrictData = priorityOrderShelfDataService.getRestrictData(companyCd, priorityOrderCd);
+        Map<String, Object> ptsDetailData = shelfPtsService.getPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue(), companyCd, priorityOrderCd);
+        //商品力信息
+        ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, workPriorityOrderMst.getProductPowerCd());
+        Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, workPriorityOrderMst.getProductPowerCd());
+        productPowerInfo.setSku(skuNum);
         ////获取janNew信息
         //Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
         ////获取janCut信息
@@ -1327,6 +1336,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         map.put("workPriorityOrderSort",workPriorityOrderSort);
         map.put("platformShedData",platformShedData);
         map.put("restrictData",restrictData.get("data"));
+        map.put("ptsDetailData",ptsDetailData.get("data"));
+        map.put("productPowerInfo",productPowerInfo);
         //map.put("priorityOrderJanNew",priorityOrderJanNew.get("priorityOrderJanNewVOS"));
         //map.put("priorityOrderJanCut",priorityOrderJanCut);
         //map.put("priorityOrderJanReplace",priorityOrderJanReplace);
@@ -1347,15 +1358,26 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
     @Override
-    public Map<String, Object> deletePriorityOrderAll(JSONObject jsonObject) {
+    public Map<String, Object> deletePriorityOrderAll(PriorityOrderMstVO priorityOrderMstVO) {
         String aud = session.getAttribute("aud").toString();
-        String companyCd = String.valueOf(((Map) jsonObject.get("param")).get("companyCd"));
-        Integer priorityOrderCd = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("priorityOrderCd")));
+        String companyCd = priorityOrderMstVO.getCompanyCd();
+        Integer priorityOrderCd = priorityOrderMstVO.getPriorityOrderCd();
         //删除mst表
         priorityOrderMstMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
-        //删除
+        //删除relation
+        priorityOrderRestrictRelationMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
         //删除result表
         priorityOrderRestrictResultMapper.logicDeleteByPriorityOrderCd(companyCd, aud,priorityOrderCd);
-        return null;
+        //删除set表
+        priorityOrderRestrictSetMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
+        //删除data表
+        priorityOrderResultDataMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
+        //删除sort表
+        priorityOrderSortMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
+        //删除rank表
+        priorityOrderSortRankMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
+        //删除space表
+        priorityOrderSpaceMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 }
