@@ -1168,10 +1168,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public boolean setJan(String companyCd, String authorCd, Integer priorityOrderCd) {
-        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.getResultJans(companyCd, authorCd, priorityOrderCd);
         WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-
         Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
 
         if (shelfPatternCd == null) {
@@ -1179,6 +1176,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             return false;
         }
 
+        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.getResultJans(companyCd, authorCd, priorityOrderCd);
         List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(shelfPatternCd.intValue());
 
         Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
