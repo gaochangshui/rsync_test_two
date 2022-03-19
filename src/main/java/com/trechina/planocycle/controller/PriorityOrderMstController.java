@@ -134,6 +134,11 @@ public class PriorityOrderMstController {
         return priorityOrderMstService.checkOrderName(priorityOrderMstVO);
     }
 
+    /**
+     * 基本パターン删除
+     * @param priorityOrderMstVO
+     * @return
+     */
     @DeleteMapping("/deletePriorityOrderAll")
     public Map<String,Object> deletePriorityOrderAll(@RequestBody PriorityOrderMstVO priorityOrderMstVO){
         return priorityOrderMstService.deletePriorityOrderAll(priorityOrderMstVO);

@@ -893,9 +893,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         } else {
             return Data;
         }
-
+        //按照属性重新排序
         this.getReorder(companyCd, priorityOrderCd);
-
+        //摆放商品
         this.setJan(companyCd, authorCd, priorityOrderCd);
         logger.info("拆分后的数据为{}", strList);
 
@@ -940,6 +940,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             workPriorityOrderResultData.setResultRank(j++);
 
         }
+
         workPriorityOrderResultDataMapper.setSortRank(reorder1,companyCd,aud,priorityOrderCd);
         workPriorityOrderSortRankMapper.delete(companyCd,aud,priorityOrderCd);
         workPriorityOrderSortRankMapper.insert(companyCd,reorder,aud,priorityOrderCd);
