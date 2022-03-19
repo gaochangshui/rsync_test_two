@@ -122,4 +122,10 @@
     and author_cd=#{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>
+
+  <select id="getPriorityOrderRestrictAll" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult">
+    select restrict_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10,tana_cnt, sku_cnt
+    from planocycle.priority_order_restrict_result
+    where company_cd = #{companyCd, jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd}
+  </select>
 </mapper>

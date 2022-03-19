@@ -59,8 +59,8 @@ public class PriorityAllMstController {
         // 自動計算する前に選択された基本パターン、全パターンを一時テーブルに保存
         if (priorityAllMstService.saveWKAllPatternData(priorityAllSaveDto) == 0) {
             // 一時テーブルデータにより自動計算を行う
-            return ResultMaps.result(ResultEnum.SUCCESS, "保存成功。");
-            //return priorityAllMstService.autoCalculation(companyCd, priorityAllCd, priorityOrderCD);
+            //return ResultMaps.result(ResultEnum.SUCCESS, "保存成功。");
+            return priorityAllMstService.autoCalculation(priorityAllSaveDto);
         } else {
             return ResultMaps.result(ResultEnum.FAILURE, "保存で失敗しました。");
         }
