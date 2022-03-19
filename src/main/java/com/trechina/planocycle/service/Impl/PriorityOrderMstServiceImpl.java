@@ -1202,7 +1202,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         /**
          * 根据制约条件进行分组进行摆放
          */
-        Map<Long, List<WorkPriorityOrderRestrictRelation>> relationByGroup = workPriorityOrderRestrictRelations.stream().collect(Collectors.groupingBy(WorkPriorityOrderRestrictRelation::getRestrictCd));
+        Map<Long, List<WorkPriorityOrderRestrictRelation>> relationByGroup = workPriorityOrderRestrictRelations
+                .stream().collect(Collectors.groupingBy(WorkPriorityOrderRestrictRelation::getRestrictCd, LinkedHashMap::new, Collectors.toList()));
 
         for (Map.Entry<Long, List<WorkPriorityOrderRestrictRelation>> relationEntry : relationByGroup.entrySet()) {
             Long relationCd = relationEntry.getKey();
