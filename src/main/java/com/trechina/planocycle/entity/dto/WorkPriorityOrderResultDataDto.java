@@ -9,6 +9,69 @@ public class WorkPriorityOrderResultDataDto {
     private Integer taiCd;
     private Integer tanaCd;
     private Integer tanaPositionCd;
+    private Integer faceMen;
+    private Integer faceKaiten;
+    private Integer tumiagesu;
+    private Integer zaikosu;
+    private Integer faceDisplayflg;
+    private Integer facePosition;
+    private Integer depthDisplayNum;
+
+    public Integer getFaceMen() {
+        return faceMen;
+    }
+
+    public void setFaceMen(Integer faceMen) {
+        this.faceMen = faceMen;
+    }
+
+    public Integer getFaceKaiten() {
+        return faceKaiten;
+    }
+
+    public void setFaceKaiten(Integer faceKaiten) {
+        this.faceKaiten = faceKaiten;
+    }
+
+    public Integer getTumiagesu() {
+        return tumiagesu;
+    }
+
+    public void setTumiagesu(Integer tumiagesu) {
+        this.tumiagesu = tumiagesu;
+    }
+
+    public Integer getZaikosu() {
+        return zaikosu;
+    }
+
+    public void setZaikosu(Integer zaikosu) {
+        this.zaikosu = zaikosu;
+    }
+
+    public Integer getFaceDisplayflg() {
+        return faceDisplayflg;
+    }
+
+    public void setFaceDisplayflg(Integer faceDisplayflg) {
+        this.faceDisplayflg = faceDisplayflg;
+    }
+
+    public Integer getFacePosition() {
+        return facePosition;
+    }
+
+    public void setFacePosition(Integer facePosition) {
+        this.facePosition = facePosition;
+    }
+
+    public Integer getDepthDisplayNum() {
+        return depthDisplayNum;
+    }
+
+    public void setDepthDisplayNum(Integer depthDisplayNum) {
+        this.depthDisplayNum = depthDisplayNum;
+    }
 
     public Integer getTanaPositionCd() {
         return tanaPositionCd;

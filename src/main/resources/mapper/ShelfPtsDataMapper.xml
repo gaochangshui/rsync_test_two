@@ -337,12 +337,12 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
   </select>
 
   <insert id="insertPtsData" parameterType="com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto">
-    <selectKey keyProperty="id" resultType="int" order="AFTER">
+    <selectKey keyProperty="id" resultType="int" order="BEFORE">
       select nextval('planocycle.priority_order_pts_data_id_seq'::regclass) as id
     </selectKey>
-    insert into planocycle.priority_order_pts_data(company_cd,file_name,authorcd,shelf_pattern_cd,valid_flg,
+    insert into planocycle.priority_order_pts_data(id,company_cd,file_name,authorcd,shelf_pattern_cd,valid_flg,
     start_day,edit_time,create_time,editer_cd,priority_order_cd)
-    select company_cd,file_name,#{authorCd},shelf_pattern_cd,valid_flg,start_day,now(),now(),#{authorCd}, #{priorityOrderCd}
+    select #{id},company_cd,file_name,#{authorCd},shelf_pattern_cd,valid_flg,start_day,now(),now(),#{authorCd}, #{priorityOrderCd}
     from planocycle.shelf_pts_data
     where id=#{oldPtsCd} and deleteflg=0
   </insert>
@@ -372,10 +372,14 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     where pts_cd=#{ptsCd} and deleteflg=0
   </insert>
   <insert id="insertPtsDataJandata">
-    insert into planocycle.priority_order_pts_data_jandata(company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,create_time,edit_time,
-    author_cd,editer_cd, pts_cd) values
+    insert into planocycle.priority_order_pts_data_jandata(company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,
+    face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num,
+    create_time,edit_time,author_cd,editer_cd, pts_cd) values
     <foreach collection="list" index="index" item="item" separator=",">
-      (#{companyCd},#{item.janCd},#{item.face},#{item.taiCd},#{item.tanaCd},#{item.tanaPositionCd},now(), now(),#{authorCd},#{authorCd},#{id})
+      (#{companyCd},#{item.janCd},#{item.face},#{item.taiCd},#{item.tanaCd},#{item.tanaPositionCd},
+      #{item.faceMen},#{item.faceKaiten},#{item.tumiagesu},#{item.zaikosu},#{item.faceDisplayflg},#{item.facePosition},
+      #{item.depthDisplayNum},
+      now(), now(),#{authorCd},#{authorCd},#{id})
     </foreach>
   </insert>
   <delete id="deletePtsTaimst">

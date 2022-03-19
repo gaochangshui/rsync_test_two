@@ -1156,6 +1156,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
                 for (WorkPriorityOrderResultDataDto currentDataDto : workPriorityOrderResultDataByTana.get(tanaCd)) {
                     currentDataDto.setTanaPositionCd(++tantaPositionCd);
+                    currentDataDto.setFaceMen(1);
+                    currentDataDto.setFaceKaiten(0);
+                    currentDataDto.setTumiagesu(1);
+                    currentDataDto.setFaceDisplayflg(0);
+                    currentDataDto.setFacePosition(1);
+                    currentDataDto.setDepthDisplayNum(1);
                     positionResultData.add(currentDataDto);
                 }
             }
