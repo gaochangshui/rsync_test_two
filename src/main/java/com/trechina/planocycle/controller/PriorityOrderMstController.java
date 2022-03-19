@@ -42,7 +42,6 @@ public class PriorityOrderMstController {
         return priorityOrderMstService.setPriorityOrderMst(priorityOrderMstDto);
     }
 
-//    public Map<String,Object> getPriorityOrderAttr(@)
 
     /**
      * 查询登陆者所在企业有没有优先顺位表
@@ -117,7 +116,7 @@ public class PriorityOrderMstController {
      * @return
      */
     @GetMapping("getPriorityOrderAll")
-    public Map<String,Object> getPriorityOrderAll(String companyCd,Integer priorityOrderCd){
+    public Map<String,Object> getPriorityOrderAll(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
        return priorityOrderMstService.getPriorityOrderAll(companyCd,priorityOrderCd);
     }
 
@@ -133,5 +132,15 @@ public class PriorityOrderMstController {
     @PostMapping("/checkOrderName")
     public Map<String,Object> checkOrderName(@RequestBody PriorityOrderMstVO priorityOrderMstVO){
         return priorityOrderMstService.checkOrderName(priorityOrderMstVO);
+    }
+
+    /**
+     * 基本パターン删除
+     * @param priorityOrderMstVO
+     * @return
+     */
+    @DeleteMapping("/deletePriorityOrderAll")
+    public Map<String,Object> deletePriorityOrderAll(@RequestBody PriorityOrderMstVO priorityOrderMstVO){
+        return priorityOrderMstService.deletePriorityOrderAll(priorityOrderMstVO);
     }
 }

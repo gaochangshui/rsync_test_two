@@ -83,9 +83,9 @@
   </insert>
   <insert id="setWorkForFinal">
     insert into planocycle.work_priority_order_mst(priority_order_cd,company_cd,author_cd,product_power_cd,shelf_pattern_cd,attribute1
-    ,attribute2,partition_flag,partition_val)
+    ,attribute2,partition_flag,partition_val,area_name_cd)
     select priority_order_cd,company_cd,#{authorCd},product_power_cd,shelf_pattern_cd,attribute1
-                            ,attribute2,partition_flag,partition_val
+                            ,attribute2,partition_flag,partition_val,area_name_cd
     from planocycle.priority_order_mst
       where company_cd =  #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
@@ -101,8 +101,13 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
-  <select id="getWorkPriorityOrderMst" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderMst">
-    select product_power_cd ,shelf_pattern_cd ,attribute1,attribute2,area_name_cd from planocycle.work_priority_order_mst
-    where priority_order_cd = #{priorityOrderCd} and company_cd = #{companyCd} and author_cd = #{companyCd}
+  <select id="getWorkPriorityOrderMst" resultType="com.trechina.planocycle.entity.vo.WorkPriorityOrderMstEditVo">
+    select product_power_cd as productPowerCd,shelf_pattern_cd as shelfPatternCd,attribute1 as attrA,attribute2 as attrB,area_name_cd as areaNameCd from planocycle.work_priority_order_mst
+    where priority_order_cd = #{priorityOrderCd} and company_cd = #{companyCd} and author_cd = #{authorCd}
   </select>
+    <select id="getShelfName" resultType="java.lang.Integer">
+      select shelf_name_cd
+        from planocycle.shelf_pattern_mst
+        where shelf_pattern_cd = #{shelfPattern}
+    </select>
 </mapper>

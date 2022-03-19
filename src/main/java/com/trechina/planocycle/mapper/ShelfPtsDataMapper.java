@@ -66,11 +66,13 @@ public interface ShelfPtsDataMapper {
     //获取棚名称
     String getPengName(@Param("patternCd")Integer patternCd);
     //获取棚pattern名称
-    String getPatternName(@Param("patternCd")Integer patternCd);
+    String getPatternName(@Param("patternCd")Integer ternCd);
+
+
 
     //header/列名
     PtsDetailDataVo getPtsDetailData(@Param("patternCd")Integer patternCd);
-
+    //获取ptsCd
     Integer getPtsCd(@Param("patternCd")Integer patternCd);
 
     //获取tai信息
@@ -83,6 +85,7 @@ public interface ShelfPtsDataMapper {
     int setDisplay(@Param("list")List< WorkPriorityOrderSort> workPriorityOrderSort,@Param("authorCd")String authorCd);
 
     List<WorkPriorityOrderSort> getDisplay(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    List<WorkPriorityOrderSortVo> getDisplays(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     int deleteDisplay(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 
@@ -96,4 +99,21 @@ public interface ShelfPtsDataMapper {
 
     int insertPtsDataJandata(@Param("list")List<WorkPriorityOrderResultDataDto> positionResultData,
                              @Param("id") Integer id, @Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
+
+    int deletePtsTaimst(@Param("ptsCd")Integer ptsCd);
+    //删除临时表的Data
+    int deleteWorkPtsTaimst(@Param("ptsCd")Integer ptsCd);
+
+    int deletePtsTanamst(@Param("ptsCd")Integer ptsCd);
+
+    int deletePtsVersion(@Param("ptsCd")Integer ptsCd);
+
+    int deletePtsData(@Param("ptsCd")Integer ptsCd);
+    //删除临时表的Data
+    int deleteWorkPtsData(@Param("ptsCd")Integer ptsCd);
+
+    int deletePtsDataJandata(@Param("ptsCd")Integer ptsCd);
+
+    Integer selectPtsCdByAuthorCd(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,
+                              @Param("priorityOrderCd")Integer priorityOrderCd, @Param("patternCd") Long patternCd);
 }

@@ -38,11 +38,11 @@
   <select id="selectPriorityOrderCount" resultType="java.lang.Integer">
     select count(1)
     from planocycle.shelf_pts_data pts
-    inner join planocycle.product_power_mst prod
-    on pts.company_cd = prod.company_cd
-    left join masterdb.group_company grpcom
-    on pts.company_cd = grpcom.group_cd
-    where coalesce(grpcom.company_cd,pts.company_cd) in (
+    inner join planocycle.shelf_pattern_mst pattern
+    on pts.company_cd = pattern.company_cd and pts.shelf_pattern_cd = pattern.shelf_pattern_cd
+    inner join planocycle.shelf_pattern_area area
+    on pattern.company_cd = area.company_cd and pattern.shelf_pattern_cd = area.shelf_pattern_cd
+    where coalesce(pts.company_cd,area.company_cd) in (
           <foreach collection="lists" separator="," item="list">
             #{list}
           </foreach>
@@ -85,17 +85,17 @@
   </insert>
 
   <update id="logicDeleteByPriorityOrderCd" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMst">
-    update planocycle.priority_order_mst set deleteflg=1
+    update planocycle.priority_order_mst set deleteflg=1 , editer_cd= #{authorCd} , edit_time=now()
     where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-    and author_cd=#{authorCd,jdbcType=VARCHAR}
+
   </update>
 
   <insert id="insertBySelect" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMst">
     insert into planocycle.priority_order_mst (company_cd, priority_order_cd,
     product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd,editer_cd,
-    edit_time,create_time, priority_order_name)
+    edit_time,create_time, priority_order_name,area_name_cd)
     select company_cd, priority_order_cd,
-    product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd,author_cd, now(),now(),#{priorityOrderName}
+    product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd,author_cd, now(),now(),#{priorityOrderName},area_name_cd
     from planocycle.work_priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     and author_cd=#{authorCd,jdbcType=VARCHAR}

@@ -118,7 +118,9 @@ public interface PriorityOrderMstService {
      * @param priorityOrderCd
      * @return
      */
-    Map<String,Object> getPriorityOrderAll(String companyCd,Integer priorityOrderCd);
+    Map<String,Object> getPriorityOrderAll(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
     Map<String, Object> checkOrderName(PriorityOrderMstVO priorityOrderMstVO);
+
+    Map<String,Object> deletePriorityOrderAll( PriorityOrderMstVO priorityOrderMstVO);
 }

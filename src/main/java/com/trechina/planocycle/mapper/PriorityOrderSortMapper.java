@@ -6,5 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface PriorityOrderSortMapper {
     int deleteByAuthorCd(String companyCd, String authorCd, Integer priorityOrderCd);
 
+    int logicDeleteByPriorityOrderCd(String companyCd, String authorCd, Integer priorityOrderCd);
+
     void insertBySelect(String companyCd, String authorCd, Integer priorityOrderCd);
 }

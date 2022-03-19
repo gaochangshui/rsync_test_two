@@ -9,6 +9,10 @@
         where company_cd = #{companyCd} and author_cd = #{authorCd}
         and priority_order_cd = #{priorityOrderCd}
     </insert>
+    <update id="logicDeleteByPriorityOrderCd">
+        update planocycle.priority_order_sort set deleteflg=1 , editer_cd = #{authorCd} , edit_time=now() where company_cd = #{companyCd}
+                                                                and priority_order_cd = #{priorityOrderCd}
+    </update>
     <delete id="deleteByAuthorCd">
         delete from planocycle.priority_order_sort
         where company_cd = #{companyCd} and author_cd = #{authorCd}

@@ -38,7 +38,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Override
     public Map<String, Object> getRestrictData(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-        //String authorCd = "10212159";
+
         String authorCd = session.getAttribute("aud").toString();
         List<PriorityOrderRestrictDto> restrictData = priorityOrderShelfDataMapper.getRestrictData(companyCd, authorCd,priorityOrderCd);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
@@ -72,15 +72,12 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             for (int i = 1; i <= 10; i++){
                 Method getMethod = c.getMethod("get"+"ZokuseiName"+i);
                 if (getMethod.invoke(restrictDatum)!=null && !getMethod.invoke(restrictDatum).equals("")){
-                    if (i==1){
-                        s+=getMethod.invoke(restrictDatum);
-                    }else {
                          s+= "->"+getMethod.invoke(restrictDatum);
-                    }
-
                 }
             }
-            s = s.substring(2);
+            if (!s.equals("")) {
+                s = s.substring(2);
+            }
             priorityOrderRestDto.setRestrictName(s);
             priorityOrderRestDto.setFaceNum(restrictDatum.getFaceNum());
             priorityOrderRestDto.setSkuNum(restrictDatum.getSkuNum());
@@ -121,7 +118,6 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
      */
     @Override
     public Map<String, Object> getRestrictJans(PriorityOrderRestDto priorityOrderRestDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-       // String aud = "10212159";
         String aud = session.getAttribute("aud").toString();
 
 

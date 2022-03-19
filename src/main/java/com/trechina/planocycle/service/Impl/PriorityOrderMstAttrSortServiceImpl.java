@@ -154,6 +154,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     @Override
     public Map<String, Object> getAttributeArea(Integer patternCd, Integer attr1, Integer attr2) {
         Integer faceNum = shelfPtsDataMapper.getFaceNum(patternCd);
+        Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
         int attrType1 = priorityOrderMstAttrSortMapper.getAttrType(attr1);
         int attrType2 = priorityOrderMstAttrSortMapper.getAttrType(attr2);
         List<PriorityOrderAttrVO> attrList = new ArrayList<>();
@@ -161,8 +162,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
             int attrSort = priorityOrderMstAttrSortMapper.getAttrSort(attr1);
             int attrSort1 = priorityOrderMstAttrSortMapper.getAttrSort(attr2);
-            List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort);
-            List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort1);
+            List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort,ptsCd);
+            List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort1,ptsCd);
             PriorityOrderAttrVO priorityOrderAttr = null;
             if (attrSort > attrSort1) {
 
