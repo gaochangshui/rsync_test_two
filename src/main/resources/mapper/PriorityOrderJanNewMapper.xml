@@ -50,7 +50,7 @@
                  left join  masterdb.jan_mst jans
                 on news.jan_new = jans.jan_cd
         where news.company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd =
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
 
   </select>
     <select id="selectJanNewNotExistsMst" resultType="map">

@@ -30,13 +30,19 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
+  <select id="workPriorityOrderSpace" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrVO">
+    SELECT attribute1_value AS attrACd,attribute2_value AS attrBCd,old_zoning AS existingZoning,new_zoning AS newZoning,tana_count AS tanaPattan,zoning_num AS rank,attribute1_name AS attrAName,attribute2_name AS  attrBName
+    FROM planocycle.work_priority_order_space
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd = #{authorCd}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority_order_space
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderSpace">
-    insert into priority_order_space (company_cd, priority_order_cd, attribute1_value, 
+    insert into priority_order_space (company_cd, priority_order_cd, attribute1_value,
       attribute2_value, old_zoning, new_zoning, 
       tana_count, zoning_num, author_cd, 
       create_time, editer_cd, edit_time, 

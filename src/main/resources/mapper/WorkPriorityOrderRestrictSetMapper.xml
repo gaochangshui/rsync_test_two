@@ -186,4 +186,11 @@
     where company_cd =  #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd}
   </select>
+  <select id="getWorkPrioritySet" resultType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
+    select
+    <include refid="Base_Column_List" />
+    from planocycle.work_priority_order_restrict_set
+    where company_cd =  #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd}
+  </select>
 </mapper>

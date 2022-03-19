@@ -117,7 +117,7 @@ public class PriorityOrderMstController {
      * @return
      */
     @GetMapping("getPriorityOrderAll")
-    public Map<String,Object> getPriorityOrderAll(String companyCd,Integer priorityOrderCd){
+    public Map<String,Object> getPriorityOrderAll(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
        return priorityOrderMstService.getPriorityOrderAll(companyCd,priorityOrderCd);
     }
 

@@ -59,4 +59,6 @@ public class PriorityOrderJanNewController {
         return priorityOrderJanNewService.getSimilarity(priorityOrderJanNewDto);
     }
 
+
+
 }

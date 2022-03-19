@@ -25,6 +25,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -92,6 +93,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private PriorityOrderJanReplaceMapper priorityOrderJanReplaceMapper;
     @Autowired
     private PriorityOrderJanCardMapper priorityOrderJanCardMapper;
+
     @Autowired
     private cgiUtils cgiUtil;
     @Autowired
@@ -110,6 +112,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private PriorityOrderSortRankMapper priorityOrderSortRankMapper;
     @Autowired
     private PriorityOrderSortMapper priorityOrderSortMapper;
+    @Autowired
+    private PriorityOrderShelfDataMapper priorityOrderShelfDataMapper;
+    @Autowired
+    private ShelfPtsService shelfPtsService;
+    @Autowired
+    private PriorityOrderShelfDataService priorityOrderShelfDataService;
 
     /**
      * 获取优先顺位表list
@@ -789,8 +797,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd) {
         // TODO: 2200866
 
-        String authorCd = "10047515";
-        //String authorCd = session.getAttribute("aud").toString();
+        //String authorCd = "10047515";
+        String authorCd = session.getAttribute("aud").toString();
 
 
         //获取商品力点数表cd
@@ -1261,10 +1269,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
     //TODO:10215814
     @Override
-    public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) {
-        this.deleteWorkTable(companyCd,0);
-        //String aud = "10212159";
+    public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
         String aud = session.getAttribute("aud").toString();
+        this.deleteWorkTable(companyCd,priorityOrderCd);
         priorityOrderJanCardMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         priorityOrderJanReplaceMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         priorityOrderJanNewMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
@@ -1279,11 +1287,49 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         Map<String,Object> map = new HashMap<>();
         //主表信息
-        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd,aud);
+        WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd,aud);
         //space信息
-       // List<PriorityOrderAttrVO>
-        map.put("workPriorityOrderMst",workPriorityOrderMst);
+        List<PriorityOrderAttrVO> workPriorityOrderSpace = priorityOrderSpaceMapper.workPriorityOrderSpace(companyCd, aud, priorityOrderCd);
+        //set表信息
+        List<PriorityOrderRestrictSet> workPriorityOrderRestrictSet = priorityOrderRestrictSetMapper.getPriorityOrderRestrict(companyCd, aud,priorityOrderCd);
+        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
+        Class clazz = PriorityOrderRestrictSet.class;
+        for (int i = 1; i <= 10; i++) {
+            Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
+            Method setMethod = clazz.getMethod("set"+"ZokuseiName"+i, String.class);
+            for (PriorityOrderRestrictSet priorityOrderRestrictSet : workPriorityOrderRestrictSet) {
+                for (PriorityOrderAttrValueDto attrValue : attrValues) {
+                    if (getMethod.invoke(priorityOrderRestrictSet)!=null&&getMethod.invoke(priorityOrderRestrictSet).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
+                        setMethod.invoke(priorityOrderRestrictSet,attrValue.getNm());
+                    }
+                }
+            }
+        }
 
+        //商品力点数表信息
+        Map<String, Object> taiNumTanaNum = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue());
+        //获取陈列顺信息
+        List<WorkPriorityOrderSort> workPriorityOrderSort = shelfPtsDataMapper.getDisplay(companyCd, aud,priorityOrderCd);
+        //获取基本台棚别信息
+        List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getPlatformShedData(companyCd, aud,priorityOrderCd);
+        //获取基本制约别信息
+        Map<String, Object> restrictData = priorityOrderShelfDataService.getRestrictData(companyCd, priorityOrderCd);
+        //获取janNew信息
+        Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
+        //获取janCut信息
+        List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd);
+        //获取jan变信息
+        List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd,priorityOrderCd);
+        map.put("workPriorityOrderMst",workPriorityOrderMst);
+        map.put("workPriorityOrderSpace",workPriorityOrderSpace);
+        map.put("workPriorityOrderRestrictSet",workPriorityOrderRestrictSet);
+        map.put("taiNumTanaNum",taiNumTanaNum.get("taiTanaNum"));
+        map.put("workPriorityOrderSort",workPriorityOrderSort);
+        map.put("platformShedData",platformShedData);
+        map.put("restrictData",restrictData.get("list"));
+        map.put("priorityOrderJanNew",priorityOrderJanNew.get("priorityOrderJanNewVOS"));
+        map.put("priorityOrderJanCut",priorityOrderJanCut);
+        map.put("priorityOrderJanReplace",priorityOrderJanReplace);
 
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }

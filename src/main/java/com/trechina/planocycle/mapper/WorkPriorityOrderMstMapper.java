@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
+import com.trechina.planocycle.entity.vo.WorkPriorityOrderMstEditVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,7 +17,7 @@ public interface WorkPriorityOrderMstMapper {
 
     int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
 
-    WorkPriorityOrderMst getWorkPriorityOrderMst(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
+    WorkPriorityOrderMstEditVo getWorkPriorityOrderMst(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd")String authorCd);
 
 
 }

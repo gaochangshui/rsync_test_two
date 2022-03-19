@@ -8,7 +8,7 @@
         from planocycle.work_priority_order_restrict_result rmst
                  left join
              planocycle.work_priority_order_result_data datas
-             on rmst.restrict_cd = datas.restrict_cd
+             on rmst.restrict_cd = datas.restrict_cd and datas.priority_order_cd = #{priorityOrderCd} and datas.company_cd = #{companyCd}
         where   datas.company_cd = #{companyCd} and rmst.author_cd = #{authorCd} and rmst.priority_order_cd = #{priorityOrderCd}
         GROUP BY zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10,rmst.restrict_cd
 
@@ -17,7 +17,7 @@
 
         select  relation.tai_cd,relation.tana_cd,relation.tana_type,
                 COALESCE( datas.faceNum,0) as faceNum,coalesce(datas.skuNum,0) as skuNum
-        from work_priority_order_restrict_relation  relation
+        from planocycle.work_priority_order_restrict_relation  relation
                  left join (
             select tai_cd,tana_cd,tana_type, sum(face) as  faceNum,count(jan_cd) as skuNum from planocycle.work_priority_order_result_data where priority_order_cd = #{priorityOrderCd}
             GROUP BY tai_cd,tana_cd,tana_type) datas
