@@ -42,7 +42,6 @@ public class PriorityOrderMstController {
         return priorityOrderMstService.setPriorityOrderMst(priorityOrderMstDto);
     }
 
-//    public Map<String,Object> getPriorityOrderAttr(@)
 
     /**
      * 查询登陆者所在企业有没有优先顺位表

@@ -12,6 +12,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -53,6 +55,15 @@ class PlanoCycleApiApplicationTests {
         list.add("7845");
         List<List<String>> lists = new ArrayList<>();
         lists.add(list);
+
+        DecimalFormat df = new DecimalFormat("#.00");
+        df.setRoundingMode(RoundingMode.DOWN);
+        //获取salesCntAvg并保留两位小数
+        Double salesCntAvg = 4.999;
+        String format = df.format(salesCntAvg);
+        salesCntAvg = Double.valueOf(format);
+        System.out.println(salesCntAvg);
+
         //priorityOrderMstService.getReorder("0001",1245);
         //workPriorityOrderResultDataMapper.update(lists);
         //priorityOrderJanCardMapper.setWorkForFinal("0001",1,"1");
