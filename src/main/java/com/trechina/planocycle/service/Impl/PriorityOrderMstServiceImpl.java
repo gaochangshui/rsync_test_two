@@ -1087,13 +1087,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
             //查出已有的新pts，先删掉再保存
             //新pts中已有数据的ptsCd
-            int oldPtsCd = shelfPtsDataMapper.selectPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
+            Integer oldPtsCd = shelfPtsDataMapper.selectPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
 
-            shelfPtsDataMapper.deletePtsData(oldPtsCd);
-            shelfPtsDataMapper.deletePtsTaimst(oldPtsCd);
-            shelfPtsDataMapper.deletePtsTanamst(oldPtsCd);
-            shelfPtsDataMapper.deletePtsVersion(oldPtsCd);
-            shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
+            if(Optional.ofNullable(oldPtsCd).isPresent()){
+                shelfPtsDataMapper.deletePtsData(oldPtsCd);
+                shelfPtsDataMapper.deletePtsTaimst(oldPtsCd);
+                shelfPtsDataMapper.deletePtsTanamst(oldPtsCd);
+                shelfPtsDataMapper.deletePtsVersion(oldPtsCd);
+                shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
+            }
 
             //从已有的pts中查询出数据
             shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
