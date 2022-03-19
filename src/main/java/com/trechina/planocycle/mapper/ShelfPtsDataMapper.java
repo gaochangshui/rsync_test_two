@@ -85,6 +85,7 @@ public interface ShelfPtsDataMapper {
     int setDisplay(@Param("list")List< WorkPriorityOrderSort> workPriorityOrderSort,@Param("authorCd")String authorCd);
 
     List<WorkPriorityOrderSort> getDisplay(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    List<WorkPriorityOrderSortVo> getDisplays(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     int deleteDisplay(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 
@@ -100,12 +101,16 @@ public interface ShelfPtsDataMapper {
                              @Param("id") Integer id, @Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 
     int deletePtsTaimst(@Param("ptsCd")Integer ptsCd);
+    //删除临时表的Data
+    int deleteWorkPtsTaimst(@Param("ptsCd")Integer ptsCd);
 
     int deletePtsTanamst(@Param("ptsCd")Integer ptsCd);
 
     int deletePtsVersion(@Param("ptsCd")Integer ptsCd);
 
     int deletePtsData(@Param("ptsCd")Integer ptsCd);
+    //删除临时表的Data
+    int deleteWorkPtsData(@Param("ptsCd")Integer ptsCd);
 
     int deletePtsDataJandata(@Param("ptsCd")Integer ptsCd);
 
