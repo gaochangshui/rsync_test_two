@@ -395,7 +395,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     delete from planocycle.priority_order_pts_data where id=#{ptsCd}
   </delete>
   <delete id="deletePtsDataJandata">
-    delete from planocycle.priority_order_pts_data where pts_cd=#{ptsCd}
+    delete from planocycle.priority_order_pts_data_jandata where pts_cd=#{ptsCd}
   </delete>
   <delete id="deleteWorkPtsData">
     delete from planocycle.priority_order_pts_data where id=#{ptsCd}
