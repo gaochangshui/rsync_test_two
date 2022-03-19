@@ -96,4 +96,17 @@ public interface ShelfPtsDataMapper {
 
     int insertPtsDataJandata(@Param("list")List<WorkPriorityOrderResultDataDto> positionResultData,
                              @Param("id") Integer id, @Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
+
+    int deletePtsTaimst(@Param("ptsCd")Integer ptsCd);
+
+    int deletePtsTanamst(@Param("ptsCd")Integer ptsCd);
+
+    int deletePtsVersion(@Param("ptsCd")Integer ptsCd);
+
+    int deletePtsData(@Param("ptsCd")Integer ptsCd);
+
+    int deletePtsDataJandata(@Param("ptsCd")Integer ptsCd);
+
+    Integer selectPtsCdByAuthorCd(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,
+                              @Param("priorityOrderCd")Integer priorityOrderCd, @Param("patternCd") Long patternCd);
 }

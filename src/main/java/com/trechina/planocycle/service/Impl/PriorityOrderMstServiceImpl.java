@@ -1071,19 +1071,32 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
             WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
             Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
+            //临时表中的ptscd
             Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
 
             //查询出所有采纳了的商品，按照台棚进行排序，标记商品在棚上的位置
             List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
             List<WorkPriorityOrderResultDataDto> positionResultData = this.calculateTanaPosition(workPriorityOrderResultData);
 
-            PriorityOrderPtsDataDto priorityOrderPtsDataDto = new PriorityOrderPtsDataDto();
-            priorityOrderPtsDataDto.setOldPtsCd(ptsCd);
-            priorityOrderPtsDataDto.setPriorityOrderCd(priorityOrderCd);
-            priorityOrderPtsDataDto.setAuthorCd(authorCd);
+            PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
+                    .withPriorityOrderCd(priorityOrderCd)
+                    .withOldPtsCd(ptsCd)
+                    .withCompanyCd(companyCd)
+                    .withAuthorCd(authorCd).build();
+
+            //查出已有的新pts，先删掉再保存
+            //新pts中已有数据的ptsCd
+            int oldPtsCd = shelfPtsDataMapper.selectPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
+
+            shelfPtsDataMapper.deletePtsData(oldPtsCd);
+            shelfPtsDataMapper.deletePtsTaimst(oldPtsCd);
+            shelfPtsDataMapper.deletePtsTanamst(oldPtsCd);
+            shelfPtsDataMapper.deletePtsVersion(oldPtsCd);
+            shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
+
+            //从已有的pts中查询出数据
             shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
             Integer id = priorityOrderPtsDataDto.getId();
-
             shelfPtsDataMapper.insertPtsTaimst(ptsCd, id, authorCd);
             shelfPtsDataMapper.insertPtsTanamst(ptsCd, id, authorCd);
             shelfPtsDataMapper.insertPtsVersion(ptsCd, id, authorCd);
@@ -1092,6 +1105,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 shelfPtsDataMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
             }
 
+            //删除临时表中的数据
             workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);

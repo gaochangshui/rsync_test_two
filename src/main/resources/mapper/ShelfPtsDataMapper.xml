@@ -344,14 +344,14 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     start_day,edit_time,create_time,editer_cd,priority_order_cd)
     select company_cd,file_name,#{authorCd},shelf_pattern_cd,valid_flg,start_day,now(),now(),#{authorCd}, #{priorityOrderCd}
     from planocycle.shelf_pts_data
-    where id=#{oldPtsCd}
+    where id=#{oldPtsCd} and deleteflg=0
   </insert>
   <insert id="insertPtsTaimst">
     insert into planocycle.priority_order_pts_data_taimst(company_cd,pts_cd,tai_cd,tai_width,tai_depth,tai_name,edit_time,
     create_time,editer_cd,author_cd)
     select company_cd,#{id},tai_cd,tai_width,tai_depth,tai_name,now(),now(),#{authorCd},#{authorCd}
     from planocycle.shelf_pts_data_taimst
-    where pts_cd=#{ptsCd}
+    where pts_cd=#{ptsCd} and deleteflg=0
   </insert>
   <insert id="insertPtsTanamst">
     insert into planocycle.priority_order_pts_data_tanamst(company_cd,
@@ -360,7 +360,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     select company_cd,#{id},tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,
     now(),now(),#{authorCd},#{authorCd}
     from planocycle.shelf_pts_data_tanamst
-    where pts_cd=#{ptsCd}
+    where pts_cd=#{ptsCd} and deleteflg=0
   </insert>
   <insert id="insertPtsVersion">
     insert into planocycle.priority_order_pts_data_version(company_cd,
@@ -369,7 +369,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     select company_cd, #{id}, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,jan_header,
     now(),now(),#{authorCd},#{authorCd}
     from planocycle.shelf_pts_data_version
-    where pts_cd=#{ptsCd}
+    where pts_cd=#{ptsCd} and deleteflg=0
   </insert>
   <insert id="insertPtsDataJandata">
     insert into planocycle.priority_order_pts_data_jandata(company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,create_time,edit_time,
@@ -378,4 +378,25 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
       (#{companyCd},#{item.janCd},#{item.face},#{item.taiCd},#{item.tanaCd},#{item.tanaPositionCd},now(), now(),#{authorCd},#{authorCd},#{id})
     </foreach>
   </insert>
+  <delete id="deletePtsTaimst">
+    delete from planocycle.priority_order_pts_data_taimst where pts_cd=#{ptsCd}
+  </delete>
+  <delete id="deletePtsTanamst">
+    delete from planocycle.priority_order_pts_data_tanamst where pts_cd=#{ptsCd}
+    and author_cd=#{authorCd}
+  </delete>
+  <delete id="deletePtsVersion">
+    delete from planocycle.priority_order_pts_data_version where pts_cd=#{ptsCd}
+    and author_cd=#{authorCd}
+  </delete>
+  <delete id="deletePtsData">
+    delete from planocycle.priority_order_pts_data where id=#{ptsCd}
+  </delete>
+  <delete id="deletePtsDataJandata">
+    delete from planocycle.priority_order_pts_data where pts_cd=#{ptsCd}
+  </delete>
+  <select id="selectPtsCdByAuthorCd" resultType="int">
+    select id from planocycle.priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
+    and authorcd=#{authorCd} and shelf_pattern_cd=#{patternCd}
+  </select>
 </mapper>
