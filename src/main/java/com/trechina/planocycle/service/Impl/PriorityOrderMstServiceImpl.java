@@ -1314,22 +1314,22 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getPlatformShedData(companyCd, aud,priorityOrderCd);
         //获取基本制约别信息
         Map<String, Object> restrictData = priorityOrderShelfDataService.getRestrictData(companyCd, priorityOrderCd);
-        //获取janNew信息
-        Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
-        //获取janCut信息
-        List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd);
-        //获取jan变信息
-        List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd,priorityOrderCd);
+        ////获取janNew信息
+        //Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
+        ////获取janCut信息
+        //List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd);
+        ////获取jan变信息
+        //List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd,priorityOrderCd);
         map.put("workPriorityOrderMst",workPriorityOrderMst);
         map.put("workPriorityOrderSpace",workPriorityOrderSpace);
         map.put("workPriorityOrderRestrictSet",workPriorityOrderRestrictSet);
-        map.put("taiNumTanaNum",taiNumTanaNum.get("taiTanaNum"));
+        map.put("taiNumTanaNum",taiNumTanaNum.get("data"));
         map.put("workPriorityOrderSort",workPriorityOrderSort);
         map.put("platformShedData",platformShedData);
-        map.put("restrictData",restrictData.get("list"));
-        map.put("priorityOrderJanNew",priorityOrderJanNew.get("priorityOrderJanNewVOS"));
-        map.put("priorityOrderJanCut",priorityOrderJanCut);
-        map.put("priorityOrderJanReplace",priorityOrderJanReplace);
+        map.put("restrictData",restrictData.get("data"));
+        //map.put("priorityOrderJanNew",priorityOrderJanNew.get("priorityOrderJanNewVOS"));
+        //map.put("priorityOrderJanCut",priorityOrderJanCut);
+        //map.put("priorityOrderJanReplace",priorityOrderJanReplace);
 
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
@@ -1344,5 +1344,18 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public Map<String, Object> deletePriorityOrderAll(JSONObject jsonObject) {
+        String aud = session.getAttribute("aud").toString();
+        String companyCd = String.valueOf(((Map) jsonObject.get("param")).get("companyCd"));
+        Integer priorityOrderCd = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("priorityOrderCd")));
+        //删除mst表
+        priorityOrderMstMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
+        //删除
+        //删除result表
+        priorityOrderRestrictResultMapper.logicDeleteByPriorityOrderCd(companyCd, aud,priorityOrderCd);
+        return null;
     }
 }

@@ -118,7 +118,7 @@
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </insert>
   <update id="logicDeleteByPriorityOrderCd">
-    update planocycle.priority_order_restrict_result set deleteflg=1 where company_cd = #{companyCd,jdbcType=VARCHAR}
+    update planocycle.priority_order_restrict_result set deleteflg=1  where company_cd = #{companyCd,jdbcType=VARCHAR}
     and author_cd=#{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>
