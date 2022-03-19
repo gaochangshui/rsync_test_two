@@ -973,6 +973,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderSortRankMapper.delete(companyCd, authorCd, priorityOrderCd);
         //清空janNew表
         priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
+        //清空
         //清空jan_replace
         //priorityOrderJanReplaceMapper.workDelete(companyCd,authorCd,priorityOrderCd);
         //清空work_priority_order_cut表

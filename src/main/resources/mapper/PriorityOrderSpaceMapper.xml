@@ -35,7 +35,7 @@
     FROM planocycle.work_priority_order_space
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd = #{authorCd}
-    order by old_zoning
+    order by old_zoning desc
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority_order_space
