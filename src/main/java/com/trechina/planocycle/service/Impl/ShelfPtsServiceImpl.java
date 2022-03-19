@@ -256,7 +256,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
        if (ptsDetailData != null) {
            ptsDetailData.setPtsJanDataList(janData);
        }
-        priorityOrderMstService.deleteWorkTable(companyCd,priorityOrderCd);
+      //  priorityOrderMstService.deleteWorkTable(companyCd,priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
     /**
