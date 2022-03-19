@@ -1,6 +1,5 @@
 package com.trechina.planocycle.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
 import com.trechina.planocycle.entity.vo.PriorityOrderMstVO;
@@ -136,8 +135,8 @@ public class PriorityOrderMstController {
         return priorityOrderMstService.checkOrderName(priorityOrderMstVO);
     }
 
-    @PostMapping("/deletePriorityOrderAll")
-    public Map<String,Object> deletePriorityOrderAll(@RequestBody JSONObject jsonObject){
-        return priorityOrderMstService.deletePriorityOrderAll(jsonObject);
+    @DeleteMapping("/deletePriorityOrderAll")
+    public Map<String,Object> deletePriorityOrderAll(@RequestBody PriorityOrderMstVO priorityOrderMstVO){
+        return priorityOrderMstService.deletePriorityOrderAll(priorityOrderMstVO);
     }
 }

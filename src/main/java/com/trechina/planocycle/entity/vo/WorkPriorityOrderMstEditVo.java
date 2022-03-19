@@ -5,6 +5,8 @@ public class WorkPriorityOrderMstEditVo {
 
     private Integer productPowerCd;
 
+    private Integer shelfCd;
+
     private Long shelfPatternCd;
 
     private String areaNameCd;
@@ -16,6 +18,14 @@ public class WorkPriorityOrderMstEditVo {
     private Short partitionFlag;
 
     private Short partitionVal;
+
+    public Integer getShelfCd() {
+        return shelfCd;
+    }
+
+    public void setShelfCd(Integer shelfCd) {
+        this.shelfCd = shelfCd;
+    }
 
     public Integer getProductPowerCd() {
         return productPowerCd;
@@ -77,6 +87,7 @@ public class WorkPriorityOrderMstEditVo {
     public String toString() {
         return "WorkPriorityOrderMstEditVo{" +
                 "productPowerCd=" + productPowerCd +
+                ", shelfCd=" + shelfCd +
                 ", shelfPatternCd=" + shelfPatternCd +
                 ", areaNameCd='" + areaNameCd + '\'' +
                 ", attrA=" + attrA +

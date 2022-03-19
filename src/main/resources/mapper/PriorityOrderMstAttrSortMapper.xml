@@ -90,10 +90,46 @@
   </select>
 
   <select id="getAttrValue5" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrVO">
-    select datas.val as attrACd , datas.nm as attrAName, mst.jans_col_nm as jansAColnm
-    from masterdb.zokusei_mst_data datas left join masterdb.zokusei_mst mst
-    on datas.zokusei_id = mst.zokusei_id
-    where  datas.zokusei_id = #{attr1}
+    select DISTINCT  msts.attrACd,msts.attrAName,msts.jansAColnm from
+      (select datas.val as attrACd , datas.nm as attrAName, mst.jans_col_nm as jansAColnm
+       from masterdb.zokusei_mst_data datas left join masterdb.zokusei_mst mst
+                                                      on datas.zokusei_id = mst.zokusei_id
+       where  datas.zokusei_id =${attr1}) msts
+
+
+    left join masterdb.jan_mst  mst
+    <if test="attr1 == 1">
+      on mst.scat1cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 2">
+      on mst.scat2cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 3">
+      on mst.scat3cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 4">
+      on mst.scat4cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 5">
+      on mst.pkg = msts.attrACd
+    </if>
+    <if test="attr1 == 6">
+      on mst.kikaku = msts.attrACd
+    </if>
+    <if test="attr1 == 7">
+      on mst.irisu = msts.attrACd
+    </if>
+    <if test="attr1 == 8">
+      on mst.alcohol = msts.attrACd
+    </if>
+    <if test="attr1 == 9">
+      on mst.brand = msts.attrACd
+    </if>
+    left join
+    planocycle.shelf_pts_data_jandata d
+        on mst.jan_cd = d.jan
+
+    where pts_cd = #{ptsCd}
 
   </select>
   <select id="getfeceNum" resultType="java.lang.Integer">
