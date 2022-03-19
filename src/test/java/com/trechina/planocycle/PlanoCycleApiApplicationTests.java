@@ -57,8 +57,8 @@ class PlanoCycleApiApplicationTests {
         //workPriorityOrderResultDataMapper.update(lists);
         //priorityOrderJanCardMapper.setWorkForFinal("0001",1,"1");
         //workPriorityOrderResultDataMapper.updates(list);
-        workPriorityOrderRestrictSetMapper.deleteByAuthorCd("0001","10212159",2840);
-        workPriorityOrderRestrictSetMapper.setWorkForFinal("0001",2840,"10212159");
+        //workPriorityOrderRestrictSetMapper.deleteByAuthorCd("0001","10212159",2840);
+        //workPriorityOrderRestrictSetMapper.setWorkForFinal("0001",2840,"10212159");
         //List<WorkPriorityOrderResultData> scat1cd_val = workPriorityOrderResultDataMapper.getReorder("0001", "10215814", 1245, "scat1cd_val", null);
         //System.out.println(scat1cd_val);
         //WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult = new WorkPriorityOrderRestrictResult();
