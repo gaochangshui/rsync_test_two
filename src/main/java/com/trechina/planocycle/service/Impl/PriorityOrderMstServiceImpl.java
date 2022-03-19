@@ -797,7 +797,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd) {
         // TODO: 2200866
 
-        //String authorCd = "10047515";
         String authorCd = session.getAttribute("aud").toString();
 
 
@@ -973,6 +972,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderSortRankMapper.delete(companyCd, authorCd, priorityOrderCd);
         //清空janNew表
         priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
+
         //清空
         //清空jan_replace
         //priorityOrderJanReplaceMapper.workDelete(companyCd,authorCd,priorityOrderCd);
@@ -1335,7 +1335,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //商品力点数表信息
         Map<String, Object> taiNumTanaNum = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue());
         //获取陈列顺信息
-        List<WorkPriorityOrderSort> workPriorityOrderSort = shelfPtsDataMapper.getDisplay(companyCd, aud,priorityOrderCd);
+        List<WorkPriorityOrderSortVo> workPriorityOrderSort = shelfPtsDataMapper.getDisplays(companyCd, aud,priorityOrderCd);
         //获取基本台棚别信息
         List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getPlatformShedData(companyCd, aud,priorityOrderCd);
         //获取基本制约别信息
@@ -1363,7 +1363,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //map.put("priorityOrderJanNew",priorityOrderJanNew.get("priorityOrderJanNewVOS"));
         //map.put("priorityOrderJanCut",priorityOrderJanCut);
         //map.put("priorityOrderJanReplace",priorityOrderJanReplace);
-
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 

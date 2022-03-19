@@ -399,8 +399,22 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
   <delete id="deletePtsDataJandata">
     delete from planocycle.priority_order_pts_data where pts_cd=#{ptsCd}
   </delete>
+  <delete id="deleteWorkPtsData">
+    delete from planocycle.priority_order_pts_data where id=#{ptsCd}
+  </delete>
+  <delete id="deleteWorkPtsTaimst">
+    delete from planocycle.shelf_pts_data_taimst where pts_cd=#{ptsCd}
+  </delete>
   <select id="selectPtsCdByAuthorCd" resultType="int">
     select id from planocycle.priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
     and authorcd=#{authorCd} and shelf_pattern_cd=#{patternCd} and deleteflg=0
+  </select>
+  <select id="getDisplays" resultType="com.trechina.planocycle.entity.vo.WorkPriorityOrderSortVo">
+    select sort.zokusei_id as attrCd,sort.sort_num,mst.zokusei_nm as attrName
+    from planocycle.work_priority_order_sort sort
+           left join masterdb.zokusei_mst mst
+                     on mst.zokusei_id = sort.zokusei_id
+    where company_cd = #{companyCd} and  author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
+    order by sort_num
   </select>
 </mapper>
