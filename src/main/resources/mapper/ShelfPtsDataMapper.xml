@@ -387,11 +387,9 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
   </delete>
   <delete id="deletePtsTanamst">
     delete from planocycle.priority_order_pts_data_tanamst where pts_cd=#{ptsCd}
-    and author_cd=#{authorCd}
   </delete>
   <delete id="deletePtsVersion">
     delete from planocycle.priority_order_pts_data_version where pts_cd=#{ptsCd}
-    and author_cd=#{authorCd}
   </delete>
   <delete id="deletePtsData">
     delete from planocycle.priority_order_pts_data where id=#{ptsCd}
