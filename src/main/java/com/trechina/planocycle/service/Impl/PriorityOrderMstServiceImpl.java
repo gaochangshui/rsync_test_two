@@ -309,8 +309,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      * @return
      */
     @Override
-    public Map<String, Object> getPriorityOrderExistsFlg() {
-        List<String> companyCd = Arrays.asList(session.getAttribute("inCharge").toString().split(","));
+    public Map<String, Object> getPriorityOrderExistsFlg(String companyCd) {
+        //List<String> companyCd = Arrays.asList(session.getAttribute("inCharge").toString().split(","));
         int result = priorityOrderMstMapper.selectPriorityOrderCount(companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
@@ -1402,5 +1402,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //删除space表
         priorityOrderSpaceMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public Map<String, Object> downLoadForPtsCsv(HttpServletResponse response) {
+        return null;
     }
 }

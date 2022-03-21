@@ -38,7 +38,7 @@ public interface PriorityOrderMstService {
      * 获取登录这所在企业是否有优先顺位表
      * @return
      */
-    Map<String,Object> getPriorityOrderExistsFlg();
+    Map<String,Object> getPriorityOrderExistsFlg(String companyCd);
 
     /**
      * 优先顺位表获取rank属性的动态列
@@ -123,4 +123,6 @@ public interface PriorityOrderMstService {
     Map<String, Object> checkOrderName(PriorityOrderMstVO priorityOrderMstVO);
 
     Map<String,Object> deletePriorityOrderAll( PriorityOrderMstVO priorityOrderMstVO);
+
+    Map<String,Object> downLoadForPtsCsv( HttpServletResponse response);
 }

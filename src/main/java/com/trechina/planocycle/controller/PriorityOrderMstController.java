@@ -48,8 +48,8 @@ public class PriorityOrderMstController {
      * @return
      */
     @GetMapping("/getPriorityOrderExistsFlg")
-    public Map<String,Object> getPriorityOrderExistsFlg(){
-        return priorityOrderMstService.getPriorityOrderExistsFlg();
+    public Map<String,Object> getPriorityOrderExistsFlg(String companyCd){
+        return priorityOrderMstService.getPriorityOrderExistsFlg(companyCd);
     }
 
     /**
@@ -142,5 +142,11 @@ public class PriorityOrderMstController {
     @DeleteMapping("/deletePriorityOrderAll")
     public Map<String,Object> deletePriorityOrderAll(@RequestBody PriorityOrderMstVO priorityOrderMstVO){
         return priorityOrderMstService.deletePriorityOrderAll(priorityOrderMstVO);
+    }
+
+    @GetMapping("/downLoadForPtsCsv")
+
+    public Map<String,Object> downLoadForPtsCsv( HttpServletResponse response){
+        return priorityOrderMstService.downLoadForPtsCsv(response);
     }
 }

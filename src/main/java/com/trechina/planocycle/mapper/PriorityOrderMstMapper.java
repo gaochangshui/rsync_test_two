@@ -21,7 +21,7 @@ public interface PriorityOrderMstMapper {
 
     List<PriorityOrderMst> selectByPrimaryKey(@Param("companyCd") String companyCd);
 
-    int selectPriorityOrderCount(@Param("lists") List<String> companyCd);
+    int selectPriorityOrderCount(@Param("companyCd") String companyCd);
 
     Map<String,Object> selectProductPowerCd(Integer priorityOrderCd);
 

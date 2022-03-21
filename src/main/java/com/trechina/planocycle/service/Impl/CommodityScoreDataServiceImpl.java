@@ -101,6 +101,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             List strList = new ArrayList();
             // 带着taskId，再次请求cgi获取运行状态/数据
             Map<String, Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
+            if (Data.get("data").equals("9")){
+                return Data;
+            }
             logger.info("商品力点数表web版cgi返回数据：" + Data);
             // 返回的数据是字符串，处理成二维数组
             if (Data.get("data") != null && Data.get("data") != "") {
