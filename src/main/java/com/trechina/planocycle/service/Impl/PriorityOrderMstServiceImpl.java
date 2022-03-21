@@ -898,7 +898,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //摆放商品
         this.setJan(companyCd, authorCd, priorityOrderCd);
 
-        //保存pts到最终表里
+        //保存pts到临时表里
         shelfPtsService.saveWorkPtsData(companyCd, authorCd, priorityOrderCd);
         logger.info("拆分后的数据为{}", strList);
 
