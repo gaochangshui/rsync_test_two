@@ -329,12 +329,19 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         List<ShelfPtsDataTanamst> shelfPtsDataTanamst = shelfPtsDataTanamstMapper.selectByPtsCd(companyCd, ptsCd);
         List<ShelfPtsDataJandata> shelfPtsDataJandata = shelfPtsDataJandataMapper.selectByPtsCd(companyCd, ptsCd);
 
+        response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=utf-8");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename="+ptsData.getFileName());
+
         PrintWriter printWriter = response.getWriter();
+        //为了解决excel打开乱码的问题
+        byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+        printWriter.write(new String(bom));
+
         CsvWriter csvWriter = CsvWriter.builder().build(printWriter);
         csvWriter.writeRow(Lists.newArrayList(shelfPtsDataVersion.getCommoninfo(),
                 shelfPtsDataVersion.getVersioninfo(), shelfPtsDataVersion.getOutflg()));
-        csvWriter.writeRow(shelfPtsDataVersion.getTaiHeader().split(","));
         csvWriter.writeRow(shelfPtsDataVersion.getModename());
+        csvWriter.writeRow(shelfPtsDataVersion.getTaiHeader().split(","));
 
         for (ShelfPtsDataTaimst ptsDataTaimst : shelfPtsDataTaimst) {
             csvWriter.writeRow(Lists.newArrayList(ptsDataTaimst.getTaiCd()+"",
@@ -359,9 +366,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         }
 
         csvWriter.close();
-
-        response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename="+ptsData.getFileName());
     }
 
     @Override
