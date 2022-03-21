@@ -1,10 +1,9 @@
 package com.trechina.planocycle.service.Impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityAllRestrictDto;
 import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderRestrictDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
-import com.trechina.planocycle.entity.po.PriorityOrderRestrictSet;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -12,7 +11,6 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityAllMstService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
-import jnr.ffi.annotations.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,14 +41,15 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
     /**
      * 新規作成＆編集の処理
-     * @param companyCd
-     * @param priorityAllCd
-     * @return
+     *
+     * @param jsonObject@return
      */
     @Override
-    public Map<String, Object> addPriorityAllData(String companyCd, Integer priorityAllCd) {
+    public Map<String, Object> addPriorityAllData(JSONObject jsonObject) {
         try{
             String authorCd = session.getAttribute("aud").toString();
+            String companyCd = jsonObject.get("companyCd").toString();
+            Integer priorityAllCd = (Integer) jsonObject.get("priorityAllCd");
             //「companyCd、priorityAllCd、Author_cd」によりWKテーブルをクリア
             priorityAllMstMapper.deleteWKTableMst(companyCd, priorityAllCd, authorCd);
             priorityAllMstMapper.deleteWKTableShelfs(companyCd, priorityAllCd, authorCd);
@@ -233,13 +232,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                         //      係数<1 の場合「基本より小さい場合
                         //          tana_cnt が１及び以下の分は維持
                         //          tana_cnt が１より大きい分は係数*tana_cnt、小数点は切り捨て
-                        if(basicSet.getTanaCnt() <= 1) {
-                            allSet.setTanaCnt(basicSet.getTanaCnt().intValue());
+                        Integer tmpTanaCnt = inX.multiply(new BigDecimal(basicSet.getTanaCnt())).intValue();
+                        if(tmpTanaCnt <= 1) {
+                            allSet.setTanaCnt(1);
                         } else {
-                            Integer tmpTanaCnt = inX.multiply(new BigDecimal(basicSet.getTanaCnt())).intValue();
-                            if (tmpTanaCnt == 0) {
-                                tmpTanaCnt = 1;
-                            }
                             allSet.setTanaCnt(tmpTanaCnt);
                         }
 
