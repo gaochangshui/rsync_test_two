@@ -112,8 +112,8 @@ public class ShelfPtsController {
      */
 
     @GetMapping("getTaiNumTanaNum")
-    public  Map<String,Object> getTaiNumTanaNum(Integer patternCd){
-        return shelfPtsService.getTaiNumTanaNum(patternCd);
+    public  Map<String,Object> getTaiNumTanaNum(Integer patternCd,Integer priorityOrderCd){
+        return shelfPtsService.getTaiNumTanaNum(patternCd,priorityOrderCd);
 
     }
 

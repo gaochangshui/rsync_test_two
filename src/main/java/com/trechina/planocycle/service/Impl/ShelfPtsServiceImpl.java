@@ -227,7 +227,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      * @return
      */
     @Override
-    public Map<String, Object> getTaiNumTanaNum(Integer patternCd) {
+    public Map<String, Object> getTaiNumTanaNum(Integer patternCd,Integer priorityOrderCd) {
         Map<String,Object> taiTanaNum = new HashMap<>();
         //台数
         Integer taiNum = shelfPtsDataMapper.getTaiNum(patternCd);
@@ -239,15 +239,36 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         Integer skuNum = shelfPtsDataMapper.getSkuNum(patternCd);
         //pattern名称
         String shelfPatternName = shelfPtsDataMapper.getPatternName(patternCd);
+        Integer newSkuNum = shelfPtsDataMapper.getNewSkuNum(patternCd);
+        Integer newFaceNum = shelfPtsDataMapper.getNewFaceNum(patternCd);
         //棚名称
         String shelfName = shelfPtsDataMapper.getPengName(patternCd);
+
+
+        PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsNewDetailData(priorityOrderCd);
+        List<PtsTaiVo> taiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);
+        List<PtsTanaVo> tanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
+        List<PtsJanDataVo> janData = shelfPtsDataMapper.getNewJanData(priorityOrderCd);
+        if (ptsDetailData != null){
+            ptsDetailData.setPtsTaiList(taiData);
+        }
+        if (ptsDetailData != null) {
+            ptsDetailData.setPtsTanaVoList(tanaData);
+        }
+        if (ptsDetailData != null) {
+            ptsDetailData.setPtsJanDataList(janData);
+        }
+
+
         taiTanaNum.put("taiNum",taiNum);
         taiTanaNum.put("tanaNum",tanaNum);
         taiTanaNum.put("faceNum",faceNum);
         taiTanaNum.put("skuNum",skuNum);
         taiTanaNum.put("shelfPatternName",shelfPatternName);
         taiTanaNum.put("shelfName",shelfName);
-
+        taiTanaNum.put("newSkuNum",newSkuNum);
+        taiTanaNum.put("newFaceNum",newFaceNum);
+        taiTanaNum.put("ptsDetailData",ptsDetailData);
         return ResultMaps.result(ResultEnum.SUCCESS,taiTanaNum);
     }
 

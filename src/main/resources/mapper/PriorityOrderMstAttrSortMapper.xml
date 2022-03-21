@@ -53,10 +53,46 @@
     where zokusei_id = #{attrId}
   </select>
   <select id="getAttrValue" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select datas.val as attrCd,datas.nm as attrName ,datas.type as type, mst.jans_col_nm as jansColNm
+    select DISTINCT  msts.attrACd as attrCd,msts.attrAName as attrName,msts.jansAColnm as  jansColnm from
+    (select datas.val as attrACd , datas.nm as attrAName, mst.jans_col_nm as jansAColnm
     from masterdb.zokusei_mst_data datas left join masterdb.zokusei_mst mst
-    on mst.zokusei_id = datas.zokusei_id
-    where mst.zokusei_id = #{zokuseiId}
+    on datas.zokusei_id = mst.zokusei_id
+    where  datas.zokusei_id =${attr1}) msts
+
+
+    left join masterdb.jan_mst  mst
+    <if test="attr1 == 1">
+      on mst.scat1cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 2">
+      on mst.scat2cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 3">
+      on mst.scat3cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 4">
+      on mst.scat4cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 5">
+      on mst.pkg = msts.attrACd
+    </if>
+    <if test="attr1 == 6">
+      on cast(mst.kikaku as VARCHAR) = msts.attrACd
+    </if>
+    <if test="attr1 == 7">
+      on cast(mst.irisu as VARCHAR) = msts.attrACd
+    </if>
+    <if test="attr1 == 8">
+      on mst.alcohol = msts.attrACd
+    </if>
+    <if test="attr1 == 9">
+      on mst.brand = msts.attrACd
+    </if>
+    left join
+    planocycle.shelf_pts_data_jandata d
+    on mst.jan_cd = d.jan
+
+    where pts_cd = #{ptsCd}
   </select>
   <select id="getGoodsAttrTree" resultMap="attrTreeMap">
     --Tree

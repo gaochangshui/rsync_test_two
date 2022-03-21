@@ -2,9 +2,7 @@ package com.trechina.planocycle.service.Impl;
 
 import com.trechina.planocycle.entity.dto.PriorityAllRestrictDto;
 import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderRestrictDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
-import com.trechina.planocycle.entity.po.PriorityOrderRestrictSet;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -12,7 +10,6 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityAllMstService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
-import jnr.ffi.annotations.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +100,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         // 基本パターンに紐付け棚パターンCDをもらう
         Integer patternCd = priorityAllMstMapper.getPatternCdBYPriorityCd(companyCd, priorityOrderCd);
         // 棚パターンのPTS基本情報をもらう
-        Map<String, Object> ptsInfoTemp = shelfPtsService.getTaiNumTanaNum(patternCd);
+        Map<String, Object> ptsInfoTemp = shelfPtsService.getTaiNumTanaNum(patternCd,priorityOrderCd);
         if ((Integer)ptsInfoTemp.get("code") != 101) {
             return ResultMaps.result(ResultEnum.FAILURE, "該当基本パターンに紐付け棚パターンが見つけていませんでした。");
         }

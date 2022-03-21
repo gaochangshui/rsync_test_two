@@ -415,4 +415,56 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     where company_cd = #{companyCd} and  author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
     order by sort_num
   </select>
+  <select id="getNewFaceNum" resultType="java.lang.Integer">
+    select sum(jandataMst.face_count) faceNum
+    from planocycle.priority_order_pts_data ptsData
+           left join planocycle.priority_order_pts_data_jandata jandataMst
+                     on ptsData.id = jandataMst.pts_cd
+    where ptsData.shelf_pattern_cd=#{patternCd}
+  </select>
+  <select id="getNewSkuNum" resultType="java.lang.Integer">
+    select count(jandataMst.jan) skuNum
+    from planocycle.priority_order_pts_data ptsData
+           left join planocycle.priority_order_pts_data_jandata jandataMst
+                     on ptsData.id = jandataMst.pts_cd
+    where ptsData.shelf_pattern_cd=#{patternCd}
+  </select>
+  <select id="getPtsNewDetailData" resultType="com.trechina.planocycle.entity.vo.PtsDetailDataVo">
+    select ptsVersion.tai_header,ptsVersion.tana_header,ptsVersion.jan_header,ptsVersion.modename
+    from planocycle.priority_order_pts_data ptsData
+           left join planocycle.priority_order_pts_data_version ptsVersion
+                     on ptsData."id" = ptsVersion.pts_cd
+    where ptsData.priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getNewTaiData" resultType="com.trechina.planocycle.entity.vo.PtsTaiVo">
+    select
+      taiMst.tai_cd,taiMst.tai_height,taiMst.tai_width,taiMst.tai_depth,taiMst.tai_name
+    from
+      planocycle.priority_order_pts_data ptsData
+        left join
+      planocycle.priority_order_pts_data_taimst taiMst
+      on ptsData."id" =  taiMst.pts_cd
+    where ptsData.priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getNewTanaData" resultType="com.trechina.planocycle.entity.vo.PtsTanaVo">
+    select
+      tanaMst.tai_cd,tanaMst.tana_cd,tanaMst.tana_height,tanaMst.tana_width,tanaMst.tana_depth,tanaMst.tana_thickness,tanaMst.tana_type
+    from
+      planocycle.priority_order_pts_data ptsData
+        left join
+      planocycle.priority_order_pts_data_tanamst tanaMst
+      on ptsData."id" =  tanaMst.pts_cd
+    where ptsData.priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getNewJanData" resultType="com.trechina.planocycle.entity.vo.PtsJanDataVo">
+    select
+      janData.tai_cd,janData.tana_cd,janData.tanaposition_cd,janData.jan,janData.face_count,janData.face_men,janData.face_kaiten,
+      janData.tumiagesu,janData.zaikosu,janData.face_displayflg,janData.face_position,janData.depth_display_num
+    from
+      planocycle.priority_order_pts_data ptsData
+        left join
+      planocycle.priority_order_pts_data_jandata janData
+      on ptsData."id" =  janData.pts_cd
+    where ptsData.priority_order_cd = #{priorityOrderCd}
+  </select>
 </mapper>

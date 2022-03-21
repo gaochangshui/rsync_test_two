@@ -3,7 +3,6 @@ package com.trechina.planocycle.service;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
-import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
 
 import java.util.List;
@@ -80,7 +79,7 @@ public interface ShelfPtsService {
      * @param patternCd
      * @return
      */
-      Map<String,Object> getTaiNumTanaNum(Integer patternCd);
+      Map<String,Object> getTaiNumTanaNum(Integer patternCd,Integer priorityOrderCd);
     /**
      * 获取棚pattern 关联pts的详细信息
      * @param patternCd

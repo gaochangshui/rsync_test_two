@@ -1263,7 +1263,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
 
         //商品力点数表信息
-        Map<String, Object> taiNumTanaNum = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue());
+        Map<String, Object> taiNumTanaNum = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue(),priorityOrderCd);
         //获取陈列顺信息
         List<WorkPriorityOrderSortVo> workPriorityOrderSort = shelfPtsDataMapper.getDisplays(companyCd, aud,priorityOrderCd);
         //获取基本台棚别信息
@@ -1334,6 +1334,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
     @Override
     public Map<String, Object> downLoadForPtsCsv(HttpServletResponse response) {
+        //// 创建对象，如果是实际业务请从数据库取出数据
+        //ArrayList<ActionDetailsDto> datas = new ArrayList();
+        //ActionDetailsDto actionDetailsDto = new ActionDetailsDto();
+        //actionDetailsDto.setContent("您好，请确认你7月份的绩效系统");
+        //actionDetailsDto.setObjectName("tomxin");
+        //actionDetailsDto.setObjectId(123456L);
+        //datas.add(actionDetailsDto);
         return null;
     }
 }
