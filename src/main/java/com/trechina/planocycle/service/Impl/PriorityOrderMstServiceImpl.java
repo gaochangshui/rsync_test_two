@@ -1284,7 +1284,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             int end = Math.min(finalSetJanResultData.size(), start + 1000 + 1);
 
             List<PriorityOrderResultDataDto> subList = finalSetJanResultData.subList(start, end);
-            workPriorityOrderResultDataMapper.updateTaiTanaBatch(companyCd, authorCd, subList);
+            workPriorityOrderResultDataMapper.updateTaiTanaBatch(companyCd, priorityOrderCd, authorCd, subList);
         }
 
         return true;

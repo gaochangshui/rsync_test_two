@@ -57,7 +57,7 @@ public interface WorkPriorityOrderResultDataMapper {
      * @param list
      * @return
      */
-    int updateTaiTanaBatch(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("list") List<PriorityOrderResultDataDto> list);
+    int updateTaiTanaBatch(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd") String authorCd, @Param("list") List<PriorityOrderResultDataDto> list);
 
     int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd")String authorCd);
 
