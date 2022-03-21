@@ -153,5 +153,5 @@ public interface ShelfPtsDataMapper {
     int deleteFinalPtsVersion(@Param("ptsCd")Integer ptsCd);
     int deleteFinalPtsDataJandata(@Param("ptsCd")Integer ptsCd);
 
-    ShelfPtsData selectPtsCdByPatternCd(String companyCd, Long shelfPatternCd);
+    ShelfPtsData selectPtsCdByPatternCd(@Param("companyCd") String companyCd, @Param("patternCd") Long shelfPatternCd);
 }
