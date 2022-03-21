@@ -16,4 +16,6 @@ public interface ShelfPtsDataVersionMapper {
     int updateByPrimaryKeySelective(ShelfPtsDataVersion record);
 
     int updateByPrimaryKey(ShelfPtsDataVersion record);
+
+    ShelfPtsDataVersion selectNewByPtsCd(String companyCd, Integer ptsCd);
 }

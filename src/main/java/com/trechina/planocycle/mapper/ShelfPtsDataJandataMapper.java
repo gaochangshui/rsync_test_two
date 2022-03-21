@@ -22,4 +22,6 @@ public interface ShelfPtsDataJandataMapper {
     int insertAll(List<ShelfPtsDataJandata> list);
 
     List<ShelfPtsDataJandata> selectByPtsCd(@Param("companyCd") String companyCd, @Param("ptsCd") Integer ptsCd);
+
+    List<ShelfPtsDataJandata> selectNewByPtsCd(String companyCd, Integer ptsCd);
 }

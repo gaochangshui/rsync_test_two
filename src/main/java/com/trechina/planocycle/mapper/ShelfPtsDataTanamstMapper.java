@@ -29,4 +29,6 @@ public interface ShelfPtsDataTanamstMapper {
     List<ShelfPtsDataTanamst> selectByPatternCd(Long shelfPatternCd);
 
     List<ShelfPtsDataTanamst> selectByPtsCd(String companyCd, Integer ptsCd);
+
+    List<ShelfPtsDataTanamst> selectNewByPtsCd(String companyCd, Integer ptsCd);
 }

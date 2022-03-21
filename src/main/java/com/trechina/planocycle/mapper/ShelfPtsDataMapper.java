@@ -152,4 +152,6 @@ public interface ShelfPtsDataMapper {
     int deleteFinalPtsTanamst(@Param("ptsCd")Integer ptsCd);
     int deleteFinalPtsVersion(@Param("ptsCd")Integer ptsCd);
     int deleteFinalPtsDataJandata(@Param("ptsCd")Integer ptsCd);
+
+    ShelfPtsData selectPtsCdByPatternCd(String companyCd, Long shelfPatternCd);
 }
