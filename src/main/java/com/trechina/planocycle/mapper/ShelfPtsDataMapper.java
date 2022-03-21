@@ -62,11 +62,11 @@ public interface ShelfPtsDataMapper {
     //face数
     Integer getFaceNum(@Param("patternCd")Integer patternCd);
     //新face数
-    Integer getNewFaceNum(@Param("patternCd")Integer patternCd);
+    Integer getNewFaceNum(@Param("priorityOrderCd")Integer priorityOrderCd);
     //sku数
     Integer getSkuNum(@Param("patternCd")Integer patternCd);
     //新sku数
-    Integer getNewSkuNum(@Param("patternCd")Integer patternCd);
+    Integer getNewSkuNum(@Param("priorityOrderCd")Integer priorityOrderCd);
     //获取棚名称
     String getPengName(@Param("patternCd")Integer patternCd);
     //获取棚pattern名称
@@ -129,4 +129,10 @@ public interface ShelfPtsDataMapper {
 
     ShelfPtsData selectPtsCdByAuthorCd(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,
                               @Param("priorityOrderCd")Integer priorityOrderCd, @Param("patternCd") Long patternCd);
+
+
+    int insertFinalPtsData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    int insertFinalPtsTaiData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
+
+    Integer getId(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 }

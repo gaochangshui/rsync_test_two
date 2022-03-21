@@ -1,7 +1,6 @@
 package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
@@ -15,10 +14,7 @@ import com.trechina.planocycle.service.PriorityOrderMstService;
 import com.trechina.planocycle.service.ShelfPatternService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
-import de.siegmar.fastcsv.reader.CsvReader;
 import de.siegmar.fastcsv.writer.CsvWriter;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +22,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -256,24 +249,31 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         Integer skuNum = shelfPtsDataMapper.getSkuNum(patternCd);
         //pattern名称
         String shelfPatternName = shelfPtsDataMapper.getPatternName(patternCd);
-        Integer newSkuNum = shelfPtsDataMapper.getNewSkuNum(patternCd);
-        Integer newFaceNum = shelfPtsDataMapper.getNewFaceNum(patternCd);
+
+        Integer newSkuNum = shelfPtsDataMapper.getNewSkuNum(priorityOrderCd);
+        if (newSkuNum == null) {
+            newSkuNum = 0;
+        }
+        Integer newFaceNum = shelfPtsDataMapper.getNewFaceNum(priorityOrderCd);
+        if (newFaceNum == null){
+            newFaceNum = 0;
+        }
         //棚名称
         String shelfName = shelfPtsDataMapper.getPengName(patternCd);
 
 
-        PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsNewDetailData(priorityOrderCd);
+        PtsDetailDataVo newPtsDetailData = shelfPtsDataMapper.getPtsNewDetailData(priorityOrderCd);
         List<PtsTaiVo> taiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);
         List<PtsTanaVo> tanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
         List<PtsJanDataVo> janData = shelfPtsDataMapper.getNewJanData(priorityOrderCd);
-        if (ptsDetailData != null){
-            ptsDetailData.setPtsTaiList(taiData);
+        if (newPtsDetailData != null){
+            newPtsDetailData.setPtsTaiList(taiData);
         }
-        if (ptsDetailData != null) {
-            ptsDetailData.setPtsTanaVoList(tanaData);
+        if (newPtsDetailData != null) {
+            newPtsDetailData.setPtsTanaVoList(tanaData);
         }
-        if (ptsDetailData != null) {
-            ptsDetailData.setPtsJanDataList(janData);
+        if (newPtsDetailData != null) {
+            newPtsDetailData.setPtsJanDataList(janData);
         }
 
 
@@ -285,7 +285,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         taiTanaNum.put("shelfName",shelfName);
         taiTanaNum.put("newSkuNum",newSkuNum);
         taiTanaNum.put("newFaceNum",newFaceNum);
-        taiTanaNum.put("ptsDetailData",ptsDetailData);
+        taiTanaNum.put("newPtsDetailData",newPtsDetailData);
         return ResultMaps.result(ResultEnum.SUCCESS,taiTanaNum);
     }
 
@@ -304,7 +304,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
        if (ptsDetailData != null) {
            ptsDetailData.setPtsJanDataList(janData);
        }
-      //  priorityOrderMstService.deleteWorkTable(companyCd,priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
     /**
@@ -386,7 +385,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     @Override
-    public void saveFinalPtsData(String companyCd, String authorCd, Integer priorityOrderCd) {
+    public void saveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd) {
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
 
@@ -424,6 +423,16 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 
         if (!positionResultData.isEmpty()) {
             shelfPtsDataMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
+        }
+    }
+
+    @Override
+    public void saveFinalPtsData(String companyCd, String authorCd, Integer priorityOrderCd) {
+
+        shelfPtsDataMapper.insertFinalPtsData(companyCd,authorCd,priorityOrderCd);
+        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+        if (id!=null){
+            shelfPtsDataMapper.insertFinalPtsTaiData(companyCd,authorCd,priorityOrderCd);
         }
     }
 

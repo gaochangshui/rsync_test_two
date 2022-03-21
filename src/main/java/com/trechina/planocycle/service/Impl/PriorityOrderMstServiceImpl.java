@@ -899,7 +899,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         this.setJan(companyCd, authorCd, priorityOrderCd);
 
         //保存pts到最终表里
-        shelfPtsService.saveFinalPtsData(companyCd, authorCd, priorityOrderCd);
+        shelfPtsService.saveWorkPtsData(companyCd, authorCd, priorityOrderCd);
         logger.info("拆分后的数据为{}", strList);
 
 
@@ -976,12 +976,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderSortRankMapper.delete(companyCd, authorCd, priorityOrderCd);
         //清空janNew表
         priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
-
-        //清空
         //清空jan_replace
-        //priorityOrderJanReplaceMapper.workDelete(companyCd,authorCd,priorityOrderCd);
+        priorityOrderJanReplaceMapper.workDelete(companyCd,authorCd,priorityOrderCd);
         //清空work_priority_order_cut表
-        //priorityOrderJanCardMapper.workDelete(companyCd,authorCd,priorityOrderCd);
+        priorityOrderJanCardMapper.workDelete(companyCd,priorityOrderCd,authorCd);
 
 
     }
@@ -1270,6 +1268,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getPlatformShedData(companyCd, aud,priorityOrderCd);
         //获取基本制约别信息
         Map<String, Object> restrictData = priorityOrderShelfDataService.getRestrictData(companyCd, priorityOrderCd);
+        //获取pts详细数据信息
         Map<String, Object> ptsDetailData = shelfPtsService.getPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue(), companyCd, priorityOrderCd);
         //商品力信息
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, workPriorityOrderMst.getProductPowerCd());
@@ -1334,13 +1333,33 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
     @Override
     public Map<String, Object> downLoadForPtsCsv(HttpServletResponse response) {
-        //// 创建对象，如果是实际业务请从数据库取出数据
-        //ArrayList<ActionDetailsDto> datas = new ArrayList();
-        //ActionDetailsDto actionDetailsDto = new ActionDetailsDto();
-        //actionDetailsDto.setContent("您好，请确认你7月份的绩效系统");
-        //actionDetailsDto.setObjectName("tomxin");
-        //actionDetailsDto.setObjectId(123456L);
-        //datas.add(actionDetailsDto);
+        // 创建对象，如果是实际业务请从数据库取出数据
+
+        PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(43);
+        List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(43);
+        List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(43);
+        List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(43);
+        if (ptsDetailData != null){
+            ptsDetailData.setPtsTaiList(taiData);
+        }
+        if (ptsDetailData != null) {
+            ptsDetailData.setPtsTanaVoList(tanaData);
+        }
+        if (ptsDetailData != null) {
+            ptsDetailData.setPtsJanDataList(janData);
+        }
+        //try {
+        //    //创建临时csv文件
+        //    File tempFile = createTempFile(datas);
+        //    //输出csv流文件，提供给浏览器下载
+        //    outCsvStream(response, tempFile);
+        //    //删除临时文件
+        //    deleteFile(tempFile);
+        //
+        //} catch (IOException e) {
+        //    System.out.println("导出失败");
+        //}
+        //
         return null;
     }
 }
