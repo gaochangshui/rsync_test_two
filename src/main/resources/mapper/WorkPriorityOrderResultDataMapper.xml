@@ -331,30 +331,30 @@
   <update id="updateTaiTanaBatch">
     UPDATE planocycle.work_priority_order_result_data SET
       tai_cd =
-      CASE jan_cd
+      CASE concat(jan_cd,restrict_cd)
       <foreach collection="list" item="obj">
-        WHEN #{obj.janCd} THEN #{obj.taiCd}
+        WHEN concat(#{obj.janCd},#{obj.restrictCd}) THEN #{obj.taiCd}
       </foreach>
       ELSE tai_cd
       END,
       tana_cd =
-      CASE jan_cd
+      CASE concat(jan_cd,restrict_cd)
       <foreach collection="list" item="obj">
-        WHEN #{obj.janCd} THEN #{obj.tanaCd}
+        WHEN concat(#{obj.janCd},#{obj.restrictCd}) THEN #{obj.tanaCd}
       </foreach>
       ELSE tana_cd
       END,
       tana_type =
-      CASE jan_cd
+      CASE concat(jan_cd,restrict_cd)
       <foreach collection="list" item="obj">
-        WHEN #{obj.janCd} THEN #{obj.tanaType}
+        WHEN concat(#{obj.janCd},#{obj.restrictCd}) THEN #{obj.tanaType}
       </foreach>
       ELSE tana_type
       END,
       adopt_flag =
-      CASE jan_cd
+      CASE concat(jan_cd,restrict_cd)
       <foreach collection="list" item="obj">
-        WHEN #{obj.janCd} THEN #{obj.adoptFlag}
+        WHEN concat(#{obj.janCd},#{obj.restrictCd}) THEN #{obj.adoptFlag}
       </foreach>
       ELSE adopt_flag
       END
@@ -362,7 +362,7 @@
       <foreach collection="list" item="obj" separator="," open="(" close=")">
         #{obj.janCd}
       </foreach>
-      and company_cd=#{companyCd} and author_cd=#{authorCd}
+      and company_cd=#{companyCd} and author_cd=#{authorCd} and priority_order_cd = #{priorityOrderCd}
   </update>
   <update id="setSortRank">
     <foreach collection="list" item="item" separator=";" index="index">

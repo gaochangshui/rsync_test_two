@@ -3,6 +3,7 @@ package com.trechina.planocycle.service;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
+import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
 
 import java.util.List;
@@ -29,6 +30,14 @@ public interface ShelfPtsService {
      * @return
      */
     Map<String,Object> saveShelfPts(List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto);
+
+    /**
+     * 保存pts数据到最终表里
+     * @param companyCd
+     * @param authorCd
+     * @param priorityOrderCd
+     */
+    void saveFinalPtsData(String companyCd, String authorCd, Integer priorityOrderCd);
 
     /**
      * 获取棚pattern关联过的csv履历数据
@@ -92,7 +101,5 @@ public interface ShelfPtsService {
      */
 
     Map<String,Object> getDisplay( String companyCd,Integer priorityOrderCd);
-
-
 
 }
