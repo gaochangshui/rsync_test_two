@@ -20,4 +20,6 @@ public interface ShelfPtsDataJandataMapper {
     int updateByPrimaryKey(ShelfPtsDataJandata record);
 
     int insertAll(List<ShelfPtsDataJandata> list);
+
+    List<ShelfPtsDataJandata> selectByPtsCd(@Param("companyCd") String companyCd, @Param("ptsCd") Integer ptsCd);
 }

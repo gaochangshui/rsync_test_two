@@ -227,4 +227,11 @@
     on t1.pts_cd=t2.id
     where t1.deleteflg=0 and t2.shelf_pattern_cd =#{shelfPatternCd}
   </select>
+  <select id="selectByPtsCd" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from planocycle.shelf_pts_data_tanamst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and pts_cd = #{ptsCd,jdbcType=INTEGER}
+  </select>
 </mapper>

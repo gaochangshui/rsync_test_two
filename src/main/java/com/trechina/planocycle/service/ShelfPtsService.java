@@ -6,6 +6,8 @@ import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -102,4 +104,5 @@ public interface ShelfPtsService {
 
     Map<String,Object> getDisplay( String companyCd,Integer priorityOrderCd);
 
+    void downloadPtsCsv(String companyCd, Integer priorityOrderCd, Long shelfPatternCd, HttpServletResponse response) throws IOException;
 }

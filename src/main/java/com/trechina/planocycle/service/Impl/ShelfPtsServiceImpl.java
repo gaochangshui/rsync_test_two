@@ -1,30 +1,38 @@
 package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
-import com.trechina.planocycle.entity.po.ShelfPtsData;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
+import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.PriorityOrderMstAttrSortMapper;
-import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
-import com.trechina.planocycle.mapper.WorkPriorityOrderMstMapper;
-import com.trechina.planocycle.mapper.WorkPriorityOrderResultDataMapper;
+import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import com.trechina.planocycle.service.ShelfPatternService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
+import de.siegmar.fastcsv.reader.CsvReader;
+import de.siegmar.fastcsv.writer.CsvWriter;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,6 +54,15 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     private WorkPriorityOrderResultDataMapper workPriorityOrderResultDataMapper;
     @Autowired
     private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
+    @Autowired
+    private ShelfPtsDataVersionMapper shelfPtsDataVersionMapper;
+    @Autowired
+    private ShelfPtsDataTaimstMapper shelfPtsDataTaimstMapper;
+    @Autowired
+    private ShelfPtsDataTanamstMapper shelfPtsDataTanamstMapper;
+    @Autowired
+    private ShelfPtsDataJandataMapper shelfPtsDataJandataMapper;
+
     /**
      * 获取棚割pts信息
      *
@@ -302,6 +319,52 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     @Override
+    public void downloadPtsCsv(String companyCd, Integer priorityOrderCd, Long shelfPatternCd, HttpServletResponse response) throws IOException {
+        String authorCd = httpSession.getAttribute("aud").toString();
+        ShelfPtsData ptsData = shelfPtsDataMapper.selectPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
+        Integer ptsCd = ptsData.getId();
+
+        ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
+        List<ShelfPtsDataTaimst> shelfPtsDataTaimst = shelfPtsDataTaimstMapper.selectByPtsCd(companyCd, ptsCd);
+        List<ShelfPtsDataTanamst> shelfPtsDataTanamst = shelfPtsDataTanamstMapper.selectByPtsCd(companyCd, ptsCd);
+        List<ShelfPtsDataJandata> shelfPtsDataJandata = shelfPtsDataJandataMapper.selectByPtsCd(companyCd, ptsCd);
+
+        PrintWriter printWriter = response.getWriter();
+        CsvWriter csvWriter = CsvWriter.builder().build(printWriter);
+        csvWriter.writeRow(Lists.newArrayList(shelfPtsDataVersion.getCommoninfo(),
+                shelfPtsDataVersion.getVersioninfo(), shelfPtsDataVersion.getOutflg()));
+        csvWriter.writeRow(shelfPtsDataVersion.getTaiHeader().split(","));
+        csvWriter.writeRow(shelfPtsDataVersion.getModename());
+
+        for (ShelfPtsDataTaimst ptsDataTaimst : shelfPtsDataTaimst) {
+            csvWriter.writeRow(Lists.newArrayList(ptsDataTaimst.getTaiCd()+"",
+                    ptsDataTaimst.getTaiHeight()+"", ptsDataTaimst.getTaiWidth()+"", ptsDataTaimst.getTaiDepth()+"",
+                    Optional.ofNullable(ptsDataTaimst.getTaiName()).orElse("")));
+        }
+
+        csvWriter.writeRow(shelfPtsDataVersion.getTanaHeader().split(","));
+        for (ShelfPtsDataTanamst ptsDataTanamst : shelfPtsDataTanamst) {
+            csvWriter.writeRow(Lists.newArrayList(ptsDataTanamst.getTaiCd()+"",
+                    ptsDataTanamst.getTanaCd()+"", ptsDataTanamst.getTanaHeight()+"", ptsDataTanamst.getTanaWidth()+"",
+                    ptsDataTanamst.getTanaDepth()+"", ptsDataTanamst.getTanaThickness()+"", ptsDataTanamst.getTanaType()+""));
+        }
+
+        csvWriter.writeRow(shelfPtsDataVersion.getJanHeader().split(","));
+        for (ShelfPtsDataJandata ptsDataJandatum : shelfPtsDataJandata) {
+            csvWriter.writeRow(Lists.newArrayList(ptsDataJandatum.getTaiCd()+"",
+                    ptsDataJandatum.getTanaCd()+"", ptsDataJandatum.getTanapositionCd()+"", ptsDataJandatum.getJan()+"",
+                    ptsDataJandatum.getFaceCount()+"",  ptsDataJandatum.getFaceMen()+"", ptsDataJandatum.getFaceKaiten()+"",
+                    ptsDataJandatum.getTumiagesu()+"",  ptsDataJandatum.getZaikosu()+"",  ptsDataJandatum.getFaceDisplayflg()+"",
+                    ptsDataJandatum.getFacePosition()+"",  ptsDataJandatum.getDepthDisplayNum()+""));
+        }
+
+        csvWriter.close();
+
+        response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename="+ptsData.getFileName());
+    }
+
+    @Override
     public void saveFinalPtsData(String companyCd, String authorCd, Integer priorityOrderCd) {
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
@@ -312,7 +375,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 
         //查出已有的新pts，先删掉再保存
         //新pts中已有数据的ptsCd
-        Integer oldPtsCd = shelfPtsDataMapper.selectPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
+        ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
+        Integer oldPtsCd = shelfPtsData.getId();
         //临时表中的ptscd
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
 
