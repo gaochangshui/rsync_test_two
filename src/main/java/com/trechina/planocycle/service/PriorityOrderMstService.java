@@ -124,5 +124,5 @@ public interface PriorityOrderMstService {
 
     Map<String,Object> deletePriorityOrderAll( PriorityOrderMstVO priorityOrderMstVO);
 
-    Map<String,Object> downLoadForPtsCsv( HttpServletResponse response);
+
 }

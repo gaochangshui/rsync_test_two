@@ -1364,35 +1364,5 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    @Override
-    public Map<String, Object> downLoadForPtsCsv(HttpServletResponse response) {
-        // 创建对象，如果是实际业务请从数据库取出数据
 
-        PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(43);
-        List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(43);
-        List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(43);
-        List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(43);
-        if (ptsDetailData != null){
-            ptsDetailData.setPtsTaiList(taiData);
-        }
-        if (ptsDetailData != null) {
-            ptsDetailData.setPtsTanaVoList(tanaData);
-        }
-        if (ptsDetailData != null) {
-            ptsDetailData.setPtsJanDataList(janData);
-        }
-        //try {
-        //    //创建临时csv文件
-        //    File tempFile = createTempFile(datas);
-        //    //输出csv流文件，提供给浏览器下载
-        //    outCsvStream(response, tempFile);
-        //    //删除临时文件
-        //    deleteFile(tempFile);
-        //
-        //} catch (IOException e) {
-        //    System.out.println("导出失败");
-        //}
-        //
-        return null;
-    }
 }
