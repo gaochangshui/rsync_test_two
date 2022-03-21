@@ -122,6 +122,7 @@ public interface ShelfPtsDataMapper {
     int deletePtsVersion(@Param("ptsCd")Integer ptsCd);
 
     int deletePtsData(@Param("ptsCd")Integer ptsCd);
+
     //删除临时表的Data
     int deleteWorkPtsData(@Param("ptsCd")Integer ptsCd);
 
@@ -132,7 +133,23 @@ public interface ShelfPtsDataMapper {
 
 
     int insertFinalPtsData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+
     int insertFinalPtsTaiData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
 
+    int insertFinalPtsTanaData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
+
+    int insertFinalPtsVersionData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
+
+    int insertFinalPtsDataJanData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
+
+
     Integer getId(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+
+
+    //删除最终表data
+    int deleteFinalPtsData(@Param("ptsCd")Integer ptsCd);
+    int deleteFinalPtsTaimst(@Param("ptsCd")Integer ptsCd);
+    int deleteFinalPtsTanamst(@Param("ptsCd")Integer ptsCd);
+    int deleteFinalPtsVersion(@Param("ptsCd")Integer ptsCd);
+    int deleteFinalPtsDataJandata(@Param("ptsCd")Integer ptsCd);
 }

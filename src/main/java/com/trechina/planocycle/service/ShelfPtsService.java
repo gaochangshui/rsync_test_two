@@ -40,7 +40,7 @@ public interface ShelfPtsService {
      */
     void saveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd);
     /**
-     * 保存pts数据到临时表里
+     * 保存pts数据到最终表里
      * @param companyCd
      * @param authorCd
      * @param priorityOrderCd

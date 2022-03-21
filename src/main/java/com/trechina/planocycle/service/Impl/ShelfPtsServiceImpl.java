@@ -387,7 +387,12 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 
         csvWriter.close();
     }
-
+    /**
+     * 保存pts数据到临时表里
+     * @param companyCd
+     * @param authorCd
+     * @param priorityOrderCd
+     */
     @Override
     public void saveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd) {
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
@@ -429,14 +434,27 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             shelfPtsDataMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
         }
     }
-
+    /**
+     * 保存pts数据到最终表里
+     * @param companyCd
+     * @param authorCd
+     * @param priorityOrderCd
+     */
     @Override
     public void saveFinalPtsData(String companyCd, String authorCd, Integer priorityOrderCd) {
+        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+        shelfPtsDataMapper.deleteFinalPtsData(id);
+        shelfPtsDataMapper.deleteFinalPtsTaimst(id);
+        shelfPtsDataMapper.deleteFinalPtsTanamst(id);
+        shelfPtsDataMapper.deleteFinalPtsVersion(id);
+        shelfPtsDataMapper.deleteFinalPtsDataJandata(id);
 
         shelfPtsDataMapper.insertFinalPtsData(companyCd,authorCd,priorityOrderCd);
-        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
         if (id!=null){
-            shelfPtsDataMapper.insertFinalPtsTaiData(companyCd,authorCd,priorityOrderCd);
+            shelfPtsDataMapper.insertFinalPtsTaiData(companyCd,authorCd,id);
+            shelfPtsDataMapper.insertFinalPtsTanaData(companyCd,authorCd,id);
+            shelfPtsDataMapper.insertFinalPtsVersionData(companyCd,authorCd,id);
+            shelfPtsDataMapper.insertFinalPtsDataJanData(companyCd,authorCd,id);
         }
     }
 

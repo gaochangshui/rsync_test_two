@@ -399,26 +399,69 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     from planocycle.work_priority_order_pts_data_taimst
     where company_cd = #{companyCd} and pts_cd = #{ptsCd}
   </insert>
+  <insert id="insertFinalPtsTanaData">
+    insert into planocycle.priority_order_pts_data_tanamst(company_cd,
+                                                                pts_cd, tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,edit_time,
+                                                                create_time,editer_cd,author_cd)
+    select company_cd,#{id},tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,
+           now(),now(),#{authorCd},#{authorCd}
+    from planocycle.work_priority_order_pts_data_tanamst
+    where pts_cd=#{ptsCd} and company_cd = #{companyCd}
+  </insert>
+  <insert id="insertFinalPtsVersionData">
+    insert into planocycle.priority_order_pts_data_version(company_cd,
+                                                                pts_cd, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,
+                                                                jan_header,edit_time,create_time,editer_cd,author_cd)
+    select company_cd, #{id}, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,jan_header,
+           now(),now(),#{authorCd},#{authorCd}
+    from planocycle.work_priority_order_pts_data_version
+    where pts_cd=#{ptsCd} and company_cd = #{companyCd}
+  </insert>
+  <insert id="insertFinalPtsDataJanData">
+    insert into planocycle.priority_order_pts_data_jandata(company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,
+            face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num,
+            create_time,edit_time,author_cd,editer_cd, pts_cd
+    select company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,
+            face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num,
+            create_time,edit_time,author_cd,editer_cd, pts_cd
+    from planocycle.work_priority_order_pts_data_jandata
+    where pts_cd = #{ptsCd} and company_cd = #{companyCd}
+  </insert>
   <delete id="deletePtsTaimst">
-    delete from planocycle.priority_order_pts_data_taimst where pts_cd=#{ptsCd}
+    delete from planocycle.work_priority_order_pts_data_taimst where pts_cd=#{ptsCd}
   </delete>
   <delete id="deletePtsTanamst">
-    delete from planocycle.priority_order_pts_data_tanamst where pts_cd=#{ptsCd}
+    delete from planocycle.work_priority_order_pts_data_tanamst where pts_cd=#{ptsCd}
   </delete>
   <delete id="deletePtsVersion">
-    delete from planocycle.priority_order_pts_data_version where pts_cd=#{ptsCd}
+    delete from planocycle.work_priority_order_pts_data_version where pts_cd=#{ptsCd}
   </delete>
   <delete id="deletePtsData">
-    delete from planocycle.priority_order_pts_data where id=#{ptsCd}
+    delete from planocycle.work_priority_order_pts_data where id=#{ptsCd}
   </delete>
   <delete id="deletePtsDataJandata">
-    delete from planocycle.priority_order_pts_data_jandata where pts_cd=#{ptsCd}
+    delete from planocycle.work_priority_order_pts_data_jandata where pts_cd=#{ptsCd}
   </delete>
   <delete id="deleteWorkPtsData">
     delete from planocycle.priority_order_pts_data where id=#{ptsCd}
   </delete>
   <delete id="deleteWorkPtsTaimst">
     delete from planocycle.shelf_pts_data_taimst where pts_cd=#{ptsCd}
+  </delete>
+  <delete id="deleteFinalPtsData">
+    delete from planocycle.priority_order_pts_data where id=#{ptsCd}
+  </delete>
+  <delete id="deleteFinalPtsTaimst">
+    delete from planocycle.priority_order_pts_data_taimst where pts_cd=#{ptsCd}
+  </delete>
+  <delete id="deleteFinalPtsTanamst">
+    delete from planocycle.priority_order_pts_data_tanamst where pts_cd=#{ptsCd}
+  </delete>
+  <delete id="deleteFinalPtsVersion">
+    delete from planocycle.priority_order_pts_data_version where pts_cd=#{ptsCd}
+  </delete>
+  <delete id="deleteFinalPtsDataJandata">
+    delete from planocycle.priority_order_pts_data_jandata where pts_cd=#{ptsCd}
   </delete>
   <select id="selectPtsCdByAuthorCd" resultMap="BaseResultMap">
     select id,file_name from planocycle.priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
