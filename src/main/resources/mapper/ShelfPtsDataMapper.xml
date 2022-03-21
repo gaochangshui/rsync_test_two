@@ -205,6 +205,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     set valid_flg = 0 ,edit_time=now(),editer_cd=#{authorCd}
     where pattern_cd = #{patternId,jdbcType=INTEGER}
   </update>
+  <update id="setFinalPtsData"></update>
   <insert id="setDisplay">
     insert into planocycle.work_priority_order_sort(priority_order_cd,company_cd,author_cd,zokusei_id,sort_num)
     values
@@ -340,21 +341,21 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     <selectKey keyProperty="id" resultType="int" order="BEFORE">
       select nextval('planocycle.priority_order_pts_data_id_seq'::regclass) as id
     </selectKey>
-    insert into planocycle.priority_order_pts_data(id,company_cd,file_name,authorcd,shelf_pattern_cd,valid_flg,
+    insert into planocycle.work_priority_order_pts_data(id,company_cd,file_name,authorcd,shelf_pattern_cd,valid_flg,
     start_day,edit_time,create_time,editer_cd,priority_order_cd)
     select #{id},company_cd,file_name,#{authorCd},shelf_pattern_cd,valid_flg,start_day,now(),now(),#{authorCd}, #{priorityOrderCd}
     from planocycle.shelf_pts_data
     where id=#{oldPtsCd} and deleteflg=0
   </insert>
   <insert id="insertPtsTaimst">
-    insert into planocycle.priority_order_pts_data_taimst(company_cd,pts_cd,tai_cd,tai_width,tai_depth,tai_name,edit_time,
+    insert into planocycle.work_priority_order_pts_data_taimst(company_cd,pts_cd,tai_cd,tai_height,tai_width,tai_depth,tai_name,edit_time,
     create_time,editer_cd,author_cd)
-    select company_cd,#{id},tai_cd,tai_width,tai_depth,tai_name,now(),now(),#{authorCd},#{authorCd}
+    select company_cd,#{id},tai_cd,tai_height,tai_width,tai_depth,tai_name,now(),now(),#{authorCd},#{authorCd}
     from planocycle.shelf_pts_data_taimst
     where pts_cd=#{ptsCd} and deleteflg=0
   </insert>
   <insert id="insertPtsTanamst">
-    insert into planocycle.priority_order_pts_data_tanamst(company_cd,
+    insert into planocycle.work_priority_order_pts_data_tanamst(company_cd,
     pts_cd, tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,edit_time,
     create_time,editer_cd,author_cd)
     select company_cd,#{id},tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,
@@ -363,16 +364,16 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     where pts_cd=#{ptsCd} and deleteflg=0
   </insert>
   <insert id="insertPtsVersion">
-    insert into planocycle.priority_order_pts_data_version(company_cd,
+    insert into planocycle.work_priority_order_pts_data_version(company_cd,
     pts_cd, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,
     jan_header,edit_time,create_time,editer_cd,author_cd)
     select company_cd, #{id}, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,jan_header,
     now(),now(),#{authorCd},#{authorCd}
     from planocycle.shelf_pts_data_version
-    where pts_cd=#{ptsCd} and deleteflg=0
+    where pts_cd=#{ptsCd}
   </insert>
   <insert id="insertPtsDataJandata">
-    insert into planocycle.priority_order_pts_data_jandata(company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,
+    insert into planocycle.work_priority_order_pts_data_jandata(company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,
     face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num,
     create_time,edit_time,author_cd,editer_cd, pts_cd) values
     <foreach collection="list" index="index" item="item" separator=",">
@@ -381,6 +382,22 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
       #{item.depthDisplayNum},
       now(), now(),#{authorCd},#{authorCd},#{id})
     </foreach>
+  </insert>
+  <insert id="insertFinalPtsData">
+    insert into planocycle.priority_order_pts_data(id,company_cd,file_name,authorcd,shelf_pattern_cd,valid_flg,
+                                                   start_day,edit_time,create_time,editer_cd,priority_order_cd)
+    select id,company_cd,file_name,#{authorCd},shelf_pattern_cd,valid_flg,
+           start_day,edit_time,create_time,editer_cd,priority_order_cd
+    from planocycle.work_priority_order_pts_data
+    where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+  </insert>
+  <insert id="insertFinalPtsTaiData">
+    insert into planocycle.priority_order_pts_data_taimst(company_cd,pts_cd,tai_cd,tai_height,tai_width,tai_depth,tai_name,edit_time,
+                                                               create_time,editer_cd,author_cd)
+    select company_cd,pts_cd,tai_cd,tai_height,tai_width,tai_depth,tai_name,edit_time,
+           create_time,editer_cd,author_cd
+    from planocycle.work_priority_order_pts_data_taimst
+    where company_cd = #{companyCd} and pts_cd = #{ptsCd}
   </insert>
   <delete id="deletePtsTaimst">
     delete from planocycle.priority_order_pts_data_taimst where pts_cd=#{ptsCd}
@@ -403,8 +420,8 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
   <delete id="deleteWorkPtsTaimst">
     delete from planocycle.shelf_pts_data_taimst where pts_cd=#{ptsCd}
   </delete>
-  <select id="selectPtsCdByAuthorCd" resultType="int">
-    select id from planocycle.priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
+  <select id="selectPtsCdByAuthorCd" resultMap="BaseResultMap">
+    select id,file_name from planocycle.priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
     and authorcd=#{authorCd} and shelf_pattern_cd=#{patternCd} and deleteflg=0
   </select>
   <select id="getDisplays" resultType="com.trechina.planocycle.entity.vo.WorkPriorityOrderSortVo">
@@ -414,5 +431,60 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
                      on mst.zokusei_id = sort.zokusei_id
     where company_cd = #{companyCd} and  author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
     order by sort_num
+  </select>
+  <select id="getNewFaceNum" resultType="java.lang.Integer">
+    select sum(jandataMst.face_count) faceNum
+    from planocycle.priority_order_pts_data ptsData
+           left join planocycle.priority_order_pts_data_jandata jandataMst
+                     on ptsData.id = jandataMst.pts_cd
+    where ptsData.priority_order_cd=#{priorityOrderCd}
+  </select>
+  <select id="getNewSkuNum" resultType="java.lang.Integer">
+    select count(jandataMst.jan) skuNum
+    from planocycle.priority_order_pts_data ptsData
+           left join planocycle.priority_order_pts_data_jandata jandataMst
+                     on ptsData.id = jandataMst.pts_cd
+    where ptsData.priority_order_cd=#{priorityOrderCd}
+  </select>
+  <select id="getPtsNewDetailData" resultType="com.trechina.planocycle.entity.vo.PtsDetailDataVo">
+    select ptsVersion.tai_header,ptsVersion.tana_header,ptsVersion.jan_header,ptsVersion.modename
+    from planocycle.priority_order_pts_data ptsData
+           left join planocycle.priority_order_pts_data_version ptsVersion
+                     on ptsData."id" = ptsVersion.pts_cd
+    where ptsData.priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getNewTaiData" resultType="com.trechina.planocycle.entity.vo.PtsTaiVo">
+    select
+      taiMst.tai_cd,taiMst.tai_height,taiMst.tai_width,taiMst.tai_depth,taiMst.tai_name
+    from
+      planocycle.priority_order_pts_data ptsData
+        left join
+      planocycle.priority_order_pts_data_taimst taiMst
+      on ptsData."id" =  taiMst.pts_cd
+    where ptsData.priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getNewTanaData" resultType="com.trechina.planocycle.entity.vo.PtsTanaVo">
+    select
+      tanaMst.tai_cd,tanaMst.tana_cd,tanaMst.tana_height,tanaMst.tana_width,tanaMst.tana_depth,tanaMst.tana_thickness,tanaMst.tana_type
+    from
+      planocycle.priority_order_pts_data ptsData
+        left join
+      planocycle.priority_order_pts_data_tanamst tanaMst
+      on ptsData."id" =  tanaMst.pts_cd
+    where ptsData.priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getNewJanData" resultType="com.trechina.planocycle.entity.vo.PtsJanDataVo">
+    select
+      janData.tai_cd,janData.tana_cd,janData.tanaposition_cd,janData.jan,janData.face_count,janData.face_men,janData.face_kaiten,
+      janData.tumiagesu,janData.zaikosu,janData.face_displayflg,janData.face_position,janData.depth_display_num
+    from
+      planocycle.priority_order_pts_data ptsData
+        left join
+      planocycle.priority_order_pts_data_jandata janData
+      on ptsData."id" =  janData.pts_cd
+    where ptsData.priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getId" resultType="java.lang.Integer">
+    select id from planocycle.work_priority_order_pts_data where companyCd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
   </select>
 </mapper>

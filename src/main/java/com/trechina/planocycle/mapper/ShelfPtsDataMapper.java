@@ -61,8 +61,12 @@ public interface ShelfPtsDataMapper {
     Integer getTanaNum(@Param("patternCd")Integer patternCd);
     //face数
     Integer getFaceNum(@Param("patternCd")Integer patternCd);
+    //新face数
+    Integer getNewFaceNum(@Param("priorityOrderCd")Integer priorityOrderCd);
     //sku数
     Integer getSkuNum(@Param("patternCd")Integer patternCd);
+    //新sku数
+    Integer getNewSkuNum(@Param("priorityOrderCd")Integer priorityOrderCd);
     //获取棚名称
     String getPengName(@Param("patternCd")Integer patternCd);
     //获取棚pattern名称
@@ -72,15 +76,24 @@ public interface ShelfPtsDataMapper {
 
     //header/列名
     PtsDetailDataVo getPtsDetailData(@Param("patternCd")Integer patternCd);
+    //新header/列名
+    PtsDetailDataVo getPtsNewDetailData(@Param("priorityOrderCd")Integer priorityOrderCd);
     //获取ptsCd
     Integer getPtsCd(@Param("patternCd")Integer patternCd);
 
     //获取tai信息
     List<PtsTaiVo> getTaiData(@Param("patternCd")Integer patternCd);
+    //获取新tai信息
+    List<PtsTaiVo> getNewTaiData(@Param("priorityOrderCd")Integer priorityOrderCd);
+
     //获取tana信息
     List<PtsTanaVo> getTanaData(@Param("patternCd")Integer patternCd);
+    //获取新tana信息
+    List<PtsTanaVo> getNewTanaData(@Param("priorityOrderCd")Integer priorityOrderCd);
     //获取janData信息
     List<PtsJanDataVo> getJanData(@Param("patternCd")Integer patternCd);
+    //获取旧janData信息
+    List<PtsJanDataVo> getNewJanData(@Param("priorityOrderCd")Integer priorityOrderCd);
 
     int setDisplay(@Param("list")List< WorkPriorityOrderSort> workPriorityOrderSort,@Param("authorCd")String authorCd);
 
@@ -114,6 +127,12 @@ public interface ShelfPtsDataMapper {
 
     int deletePtsDataJandata(@Param("ptsCd")Integer ptsCd);
 
-    Integer selectPtsCdByAuthorCd(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,
+    ShelfPtsData selectPtsCdByAuthorCd(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,
                               @Param("priorityOrderCd")Integer priorityOrderCd, @Param("patternCd") Long patternCd);
+
+
+    int insertFinalPtsData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    int insertFinalPtsTaiData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
+
+    Integer getId(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 }

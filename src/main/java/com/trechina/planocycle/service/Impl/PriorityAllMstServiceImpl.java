@@ -102,7 +102,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         // 基本パターンに紐付け棚パターンCDをもらう
         Integer patternCd = priorityAllMstMapper.getPatternCdBYPriorityCd(companyCd, priorityOrderCd);
         // 棚パターンのPTS基本情報をもらう
-        Map<String, Object> ptsInfoTemp = shelfPtsService.getTaiNumTanaNum(patternCd);
+        Map<String, Object> ptsInfoTemp = shelfPtsService.getTaiNumTanaNum(patternCd,priorityOrderCd);
         if ((Integer)ptsInfoTemp.get("code") != 101) {
             return ResultMaps.result(ResultEnum.FAILURE, "該当基本パターンに紐付け棚パターンが見つけていませんでした。");
         }

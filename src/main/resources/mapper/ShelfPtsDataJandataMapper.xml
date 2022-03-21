@@ -273,4 +273,9 @@
       #{item.authorCd,jdbcType=VARCHAR})
     </foreach>
   </insert>
+  <select id="selectByPtsCd" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from planocycle.priority_order_pts_data_jandata where
+    company_cd = #{companyCd,jdbcType=VARCHAR}
+    and pts_cd = #{ptsCd,jdbcType=INTEGER}
+  </select>
 </mapper>

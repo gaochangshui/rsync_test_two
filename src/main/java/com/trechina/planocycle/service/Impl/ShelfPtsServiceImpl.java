@@ -1,27 +1,34 @@
 package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
-import com.trechina.planocycle.entity.po.ShelfPtsData;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
+import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.PriorityOrderMstAttrSortMapper;
-import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
+import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import com.trechina.planocycle.service.ShelfPatternService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
+import de.siegmar.fastcsv.writer.CsvWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ShelfPtsServiceImpl implements ShelfPtsService {
@@ -36,6 +43,19 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     @Autowired
     private PriorityOrderMstService priorityOrderMstService;
+    @Autowired
+    private WorkPriorityOrderResultDataMapper workPriorityOrderResultDataMapper;
+    @Autowired
+    private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
+    @Autowired
+    private ShelfPtsDataVersionMapper shelfPtsDataVersionMapper;
+    @Autowired
+    private ShelfPtsDataTaimstMapper shelfPtsDataTaimstMapper;
+    @Autowired
+    private ShelfPtsDataTanamstMapper shelfPtsDataTanamstMapper;
+    @Autowired
+    private ShelfPtsDataJandataMapper shelfPtsDataJandataMapper;
+
     /**
      * 获取棚割pts信息
      *
@@ -217,7 +237,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      * @return
      */
     @Override
-    public Map<String, Object> getTaiNumTanaNum(Integer patternCd) {
+    public Map<String, Object> getTaiNumTanaNum(Integer patternCd,Integer priorityOrderCd) {
         Map<String,Object> taiTanaNum = new HashMap<>();
         //台数
         Integer taiNum = shelfPtsDataMapper.getTaiNum(patternCd);
@@ -229,15 +249,43 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         Integer skuNum = shelfPtsDataMapper.getSkuNum(patternCd);
         //pattern名称
         String shelfPatternName = shelfPtsDataMapper.getPatternName(patternCd);
+
+        Integer newSkuNum = shelfPtsDataMapper.getNewSkuNum(priorityOrderCd);
+        if (newSkuNum == null) {
+            newSkuNum = 0;
+        }
+        Integer newFaceNum = shelfPtsDataMapper.getNewFaceNum(priorityOrderCd);
+        if (newFaceNum == null){
+            newFaceNum = 0;
+        }
         //棚名称
         String shelfName = shelfPtsDataMapper.getPengName(patternCd);
+
+
+        PtsDetailDataVo newPtsDetailData = shelfPtsDataMapper.getPtsNewDetailData(priorityOrderCd);
+        List<PtsTaiVo> taiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);
+        List<PtsTanaVo> tanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
+        List<PtsJanDataVo> janData = shelfPtsDataMapper.getNewJanData(priorityOrderCd);
+        if (newPtsDetailData != null){
+            newPtsDetailData.setPtsTaiList(taiData);
+        }
+        if (newPtsDetailData != null) {
+            newPtsDetailData.setPtsTanaVoList(tanaData);
+        }
+        if (newPtsDetailData != null) {
+            newPtsDetailData.setPtsJanDataList(janData);
+        }
+
+
         taiTanaNum.put("taiNum",taiNum);
         taiTanaNum.put("tanaNum",tanaNum);
         taiTanaNum.put("faceNum",faceNum);
         taiTanaNum.put("skuNum",skuNum);
         taiTanaNum.put("shelfPatternName",shelfPatternName);
         taiTanaNum.put("shelfName",shelfName);
-
+        taiTanaNum.put("newSkuNum",newSkuNum);
+        taiTanaNum.put("newFaceNum",newFaceNum);
+        taiTanaNum.put("newPtsDetailData",newPtsDetailData);
         return ResultMaps.result(ResultEnum.SUCCESS,taiTanaNum);
     }
 
@@ -256,7 +304,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
        if (ptsDetailData != null) {
            ptsDetailData.setPtsJanDataList(janData);
        }
-      //  priorityOrderMstService.deleteWorkTable(companyCd,priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
     /**
@@ -291,7 +338,148 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         return ResultMaps.result(ResultEnum.SUCCESS,displayList);
     }
 
+    @Override
+    public void downloadPtsCsv(String companyCd, Integer priorityOrderCd, Long shelfPatternCd, HttpServletResponse response) throws IOException {
+        String authorCd = httpSession.getAttribute("aud").toString();
+        ShelfPtsData ptsData = shelfPtsDataMapper.selectPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
+        Integer ptsCd = ptsData.getId();
 
+        ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
+        List<ShelfPtsDataTaimst> shelfPtsDataTaimst = shelfPtsDataTaimstMapper.selectByPtsCd(companyCd, ptsCd);
+        List<ShelfPtsDataTanamst> shelfPtsDataTanamst = shelfPtsDataTanamstMapper.selectByPtsCd(companyCd, ptsCd);
+        List<ShelfPtsDataJandata> shelfPtsDataJandata = shelfPtsDataJandataMapper.selectByPtsCd(companyCd, ptsCd);
+
+        response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=utf-8");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename="+ptsData.getFileName());
+
+        PrintWriter printWriter = response.getWriter();
+        //为了解决excel打开乱码的问题
+        byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+        printWriter.write(new String(bom));
+
+        CsvWriter csvWriter = CsvWriter.builder().build(printWriter);
+        csvWriter.writeRow(Lists.newArrayList(shelfPtsDataVersion.getCommoninfo(),
+                shelfPtsDataVersion.getVersioninfo(), shelfPtsDataVersion.getOutflg()));
+        csvWriter.writeRow(shelfPtsDataVersion.getModename());
+        csvWriter.writeRow(shelfPtsDataVersion.getTaiHeader().split(","));
+
+        for (ShelfPtsDataTaimst ptsDataTaimst : shelfPtsDataTaimst) {
+            csvWriter.writeRow(Lists.newArrayList(ptsDataTaimst.getTaiCd()+"",
+                    ptsDataTaimst.getTaiHeight()+"", ptsDataTaimst.getTaiWidth()+"", ptsDataTaimst.getTaiDepth()+"",
+                    Optional.ofNullable(ptsDataTaimst.getTaiName()).orElse("")));
+        }
+
+        csvWriter.writeRow(shelfPtsDataVersion.getTanaHeader().split(","));
+        for (ShelfPtsDataTanamst ptsDataTanamst : shelfPtsDataTanamst) {
+            csvWriter.writeRow(Lists.newArrayList(ptsDataTanamst.getTaiCd()+"",
+                    ptsDataTanamst.getTanaCd()+"", ptsDataTanamst.getTanaHeight()+"", ptsDataTanamst.getTanaWidth()+"",
+                    ptsDataTanamst.getTanaDepth()+"", ptsDataTanamst.getTanaThickness()+"", ptsDataTanamst.getTanaType()+""));
+        }
+
+        csvWriter.writeRow(shelfPtsDataVersion.getJanHeader().split(","));
+        for (ShelfPtsDataJandata ptsDataJandatum : shelfPtsDataJandata) {
+            csvWriter.writeRow(Lists.newArrayList(ptsDataJandatum.getTaiCd()+"",
+                    ptsDataJandatum.getTanaCd()+"", ptsDataJandatum.getTanapositionCd()+"", ptsDataJandatum.getJan()+"",
+                    ptsDataJandatum.getFaceCount()+"",  ptsDataJandatum.getFaceMen()+"", ptsDataJandatum.getFaceKaiten()+"",
+                    ptsDataJandatum.getTumiagesu()+"",  ptsDataJandatum.getZaikosu()+"",  ptsDataJandatum.getFaceDisplayflg()+"",
+                    ptsDataJandatum.getFacePosition()+"",  ptsDataJandatum.getDepthDisplayNum()+""));
+        }
+
+        csvWriter.close();
+    }
+
+    @Override
+    public void saveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd) {
+        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
+
+        //查询出所有采纳了的商品，按照台棚进行排序，标记商品在棚上的位置
+        List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        List<WorkPriorityOrderResultDataDto> positionResultData = this.calculateTanaPosition(workPriorityOrderResultData);
+
+        //查出已有的新pts，先删掉再保存
+        //新pts中已有数据的ptsCd
+        ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
+        Integer oldPtsCd = shelfPtsData.getId();
+        //临时表中的ptscd
+        Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
+
+        PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
+                .withPriorityOrderCd(priorityOrderCd)
+                .withOldPtsCd(ptsCd)
+                .withCompanyCd(companyCd)
+                .withAuthorCd(authorCd).build();
+
+        if(Optional.ofNullable(oldPtsCd).isPresent()){
+            shelfPtsDataMapper.deletePtsData(oldPtsCd);
+            shelfPtsDataMapper.deletePtsTaimst(oldPtsCd);
+            shelfPtsDataMapper.deletePtsTanamst(oldPtsCd);
+            shelfPtsDataMapper.deletePtsVersion(oldPtsCd);
+            shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
+        }
+
+        //从已有的pts中查询出数据
+        shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
+        Integer id = priorityOrderPtsDataDto.getId();
+        shelfPtsDataMapper.insertPtsTaimst(ptsCd, id, authorCd);
+        shelfPtsDataMapper.insertPtsTanamst(ptsCd, id, authorCd);
+        shelfPtsDataMapper.insertPtsVersion(ptsCd, id, authorCd);
+
+        if (!positionResultData.isEmpty()) {
+            shelfPtsDataMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
+        }
+    }
+
+    @Override
+    public void saveFinalPtsData(String companyCd, String authorCd, Integer priorityOrderCd) {
+
+        shelfPtsDataMapper.insertFinalPtsData(companyCd,authorCd,priorityOrderCd);
+        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+        if (id!=null){
+            shelfPtsDataMapper.insertFinalPtsTaiData(companyCd,authorCd,priorityOrderCd);
+        }
+    }
+
+
+    /**
+     * 先按照台遍历再遍历棚，同一个棚的商品从左到右的顺序从1开始进行标号，棚变了，重新标号
+     *
+     * @param workPriorityOrderResultData
+     * @return
+     */
+    private List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData) {
+        //有棚位置的resultdata数据
+        List<WorkPriorityOrderResultDataDto> positionResultData = new ArrayList<>(workPriorityOrderResultData.size());
+        //根据台进行分组遍历
+        Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTai = workPriorityOrderResultData.stream()
+                .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTaiCd, LinkedHashMap::new, Collectors.toList()));
+
+        for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entrySet : workPriorityOrderResultDataByTai.entrySet()) {
+            Integer taiCd = entrySet.getKey();
+
+            List<WorkPriorityOrderResultDataDto> workPriorityOrderResultDataDtos = workPriorityOrderResultDataByTai.get(taiCd);
+            //根据棚进行分组遍历
+            Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTana = workPriorityOrderResultDataDtos.stream()
+                    .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTanaCd, LinkedHashMap::new, Collectors.toList()));
+            for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entry : workPriorityOrderResultDataByTana.entrySet()) {
+                //同一个棚，序号从1开始累加，下一个棚重新从1开始加
+                Integer tantaPositionCd=0;
+                Integer tanaCd = entry.getKey();
+
+                for (WorkPriorityOrderResultDataDto currentDataDto : workPriorityOrderResultDataByTana.get(tanaCd)) {
+                    currentDataDto.setTanaPositionCd(++tantaPositionCd);
+                    currentDataDto.setFaceMen(1);
+                    currentDataDto.setFaceKaiten(0);
+                    currentDataDto.setTumiagesu(1);
+                    currentDataDto.setFaceDisplayflg(0);
+                    currentDataDto.setFacePosition(1);
+                    currentDataDto.setDepthDisplayNum(1);
+                    positionResultData.add(currentDataDto);
+                }
+            }
+        }
+        return positionResultData;
+    }
     /**
      * 获取棚pattern关联过的csv履历数据
      *
