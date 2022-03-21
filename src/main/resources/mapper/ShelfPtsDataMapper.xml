@@ -403,7 +403,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     insert into planocycle.priority_order_pts_data_tanamst(company_cd,
                                                                 pts_cd, tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,edit_time,
                                                                 create_time,editer_cd,author_cd)
-    select company_cd,#{id},tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,
+    select company_cd,#{ptsCd},tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,
            now(),now(),#{authorCd},#{authorCd}
     from planocycle.work_priority_order_pts_data_tanamst
     where pts_cd=#{ptsCd} and company_cd = #{companyCd}
@@ -412,7 +412,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     insert into planocycle.priority_order_pts_data_version(company_cd,
                                                                 pts_cd, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,
                                                                 jan_header,edit_time,create_time,editer_cd,author_cd)
-    select company_cd, #{id}, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,jan_header,
+    select company_cd, #{ptsCd}, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,jan_header,
            now(),now(),#{authorCd},#{authorCd}
     from planocycle.work_priority_order_pts_data_version
     where pts_cd=#{ptsCd} and company_cd = #{companyCd}
@@ -420,7 +420,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
   <insert id="insertFinalPtsDataJanData">
     insert into planocycle.priority_order_pts_data_jandata(company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,
             face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num,
-            create_time,edit_time,author_cd,editer_cd, pts_cd
+            create_time,edit_time,author_cd,editer_cd, pts_cd)
     select company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,
             face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num,
             create_time,edit_time,author_cd,editer_cd, pts_cd
@@ -447,7 +447,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     insert into planocycle.work_priority_order_pts_data_tanamst(company_cd,
                                                            pts_cd, tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,edit_time,
                                                            create_time,editer_cd,author_cd)
-    select company_cd,#{id},tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,
+    select company_cd,#{ptsCd},tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,
            now(),now(),#{authorCd},#{authorCd}
     from planocycle.priority_order_pts_data_tanamst
     where pts_cd=#{ptsCd} and company_cd = #{companyCd}
@@ -456,7 +456,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     insert into planocycle.work_priority_order_pts_data_version(company_cd,
                                                            pts_cd, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,
                                                            jan_header,edit_time,create_time,editer_cd,author_cd)
-    select company_cd, #{id}, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,jan_header,
+    select company_cd, #{ptsCd}, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,jan_header,
            now(),now(),#{authorCd},#{authorCd}
     from planocycle.priority_order_pts_data_version
     where pts_cd=#{ptsCd} and company_cd = #{companyCd}
@@ -464,11 +464,11 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
   <insert id="insertWorkPtsJanData">
     insert into planocycle.work_priority_order_pts_data_jandata(company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,
                                                            face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num,
-                                                           create_time,edit_time,author_cd,editer_cd, pts_cd
+                                                           create_time,edit_time,author_cd,editer_cd, pts_cd)
                                                              select company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,
                                                            face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num,
                                                            create_time,edit_time,author_cd,editer_cd, pts_cd
-                                                             from planocycle.work_priority_order_pts_data_jandata
+                                                             from planocycle.priority_order_pts_data_jandata
     where pts_cd = #{ptsCd} and company_cd = #{companyCd}
   </insert>
   <delete id="deletePtsTaimst">
