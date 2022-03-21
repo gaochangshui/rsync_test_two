@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
 
 import java.util.List;
@@ -9,11 +10,10 @@ public interface PriorityAllMstService {
 
     /**
      * 新規作成＆編集の処理
-     * @param companyCd
-     * @param priorityAllCd
-     * @return
+     *
+     * @param jsonObject@return
      */
-    Map<String, Object> addPriorityAllData(String companyCd, Integer priorityAllCd);
+    Map<String, Object> addPriorityAllData(JSONObject jsonObject);
 
     /**
      * 基本パターン一覧のList

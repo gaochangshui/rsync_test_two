@@ -1,5 +1,6 @@
 package com.trechina.planocycle.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.service.PriorityAllMstService;
@@ -24,8 +25,8 @@ public class PriorityAllMstController {
     private PriorityAllMstService priorityAllMstService;
 
     @PostMapping("/addPriorityAllData")
-    public Map<String, Object> addPriorityAllData(String companyCd, Integer priorityAllCd) {
-        return priorityAllMstService.addPriorityAllData(companyCd, priorityAllCd);
+    public Map<String, Object> addPriorityAllData(@RequestBody JSONObject jsonObject) {
+        return priorityAllMstService.addPriorityAllData(jsonObject);
     }
 
     /**
