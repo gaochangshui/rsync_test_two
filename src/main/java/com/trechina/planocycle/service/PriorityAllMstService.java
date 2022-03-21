@@ -43,7 +43,7 @@ public interface PriorityAllMstService {
      * @param priorityOrderCd
      * @return
      */
-    Map<String, Object> autoCalculation(String companyCd, Integer priorityAllCd, Integer priorityOrderCd);
+    Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto);
 
     /**
      * 自动计算
