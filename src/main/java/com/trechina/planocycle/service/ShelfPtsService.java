@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
+import com.trechina.planocycle.entity.vo.PtsCsvVO;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -110,5 +111,5 @@ public interface ShelfPtsService {
 
     Map<String,Object> getDisplay( String companyCd,Integer priorityOrderCd);
 
-    void downloadPtsCsv(String companyCd, Integer priorityOrderCd, Long shelfPatternCd, HttpServletResponse response) throws IOException;
+    void downloadPtsCsv(PtsCsvVO ptsCsvVO, HttpServletResponse response) throws IOException;
 }

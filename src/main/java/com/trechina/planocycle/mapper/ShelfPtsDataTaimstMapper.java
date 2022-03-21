@@ -22,4 +22,6 @@ public interface ShelfPtsDataTaimstMapper {
     int updateByPrimaryKey(ShelfPtsDataTaimst record);
 
     int insertAll(List<ShelfPtsDataTaimst> list);
+
+    List<ShelfPtsDataTaimst> selectNewByPtsCd(String companyCd, Integer ptsCd);
 }

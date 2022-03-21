@@ -159,4 +159,6 @@ public interface ShelfPtsDataMapper {
     int insertWorkPtsTanaData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
     int insertWorkPtsVersionData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
     int insertWorkPtsJanData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
+
+    ShelfPtsData selectPtsCdByPatternCd(String companyCd, Long shelfPatternCd);
 }

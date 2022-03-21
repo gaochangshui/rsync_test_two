@@ -196,4 +196,11 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and pts_cd = #{ptsCd,jdbcType=INTEGER}
   </update>
+  <select id="selectNewByPtsCd" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from planocycle.priority_order_pts_data_version
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and pts_cd = #{ptsCd,jdbcType=INTEGER}
+  </select>
 </mapper>

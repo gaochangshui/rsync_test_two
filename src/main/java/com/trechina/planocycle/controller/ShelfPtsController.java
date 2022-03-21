@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
+import com.trechina.planocycle.entity.vo.PtsCsvVO;
 import com.trechina.planocycle.service.ShelfPtsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -153,12 +154,11 @@ public class ShelfPtsController {
 
     /**
      * 下载csv文件
-     * @param companyCd
-     * @param priorityOrderCd
+     * @param ptsCsvVO
      * @return
      */
-    @GetMapping("downloadPtsCsv")
-    public  void downloadPtsCsv(String companyCd, Integer priorityOrderCd, Long shelfPatternCd, HttpServletResponse response) throws IOException {
-        shelfPtsService.downloadPtsCsv(companyCd,priorityOrderCd, shelfPatternCd, response);
+    @PostMapping("downloadPtsCsv")
+    public  void downloadPtsCsv(@RequestBody PtsCsvVO ptsCsvVO, HttpServletResponse response) throws IOException {
+        shelfPtsService.downloadPtsCsv(ptsCsvVO, response);
     }
 }
