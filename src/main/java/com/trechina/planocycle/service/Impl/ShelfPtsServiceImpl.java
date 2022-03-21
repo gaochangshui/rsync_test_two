@@ -339,24 +339,57 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     @Override
-    public void downloadPtsCsv(String companyCd, Integer priorityOrderCd, Long shelfPatternCd, HttpServletResponse response) throws IOException {
+    public void downloadPtsCsv(PtsCsvVO ptsCsvVO, HttpServletResponse response) throws IOException {
         String authorCd = httpSession.getAttribute("aud").toString();
-        ShelfPtsData ptsData = shelfPtsDataMapper.selectPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
-        Integer ptsCd = ptsData.getId();
+        Integer type = ptsCsvVO.getType();
+        Long shelfPatternCd = ptsCsvVO.getShelfPatternCd();
+        String companyCd = ptsCsvVO.getCompanyCd();
+        Integer typeCd = ptsCsvVO.getTypeCd();
 
-        ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
-        List<ShelfPtsDataTaimst> shelfPtsDataTaimst = shelfPtsDataTaimstMapper.selectByPtsCd(companyCd, ptsCd);
-        List<ShelfPtsDataTanamst> shelfPtsDataTanamst = shelfPtsDataTanamstMapper.selectByPtsCd(companyCd, ptsCd);
-        List<ShelfPtsDataJandata> shelfPtsDataJandata = shelfPtsDataJandataMapper.selectByPtsCd(companyCd, ptsCd);
+        ShelfPtsDataVersion shelfPtsDataVersion=null;
+        List<ShelfPtsDataTaimst> shelfPtsDataTaimst = null;
+        List<ShelfPtsDataTanamst> shelfPtsDataTanamst = null;
+        List<ShelfPtsDataJandata> shelfPtsDataJandata = null;
+        String fileName = "";
+
+        if(type == 0){
+            //旧パターン
+            ShelfPtsData ptsData = shelfPtsDataMapper.selectPtsCdByPatternCd(companyCd, shelfPatternCd);
+            Integer ptsCd = ptsData.getId();
+            fileName = ptsData.getFileName();
+
+            shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
+            shelfPtsDataTaimst = shelfPtsDataTaimstMapper.selectByPtsCd(companyCd, ptsCd);
+            shelfPtsDataTanamst = shelfPtsDataTanamstMapper.selectByPtsCd(companyCd, ptsCd);
+            shelfPtsDataJandata = shelfPtsDataJandataMapper.selectNewByPtsCd(companyCd, ptsCd);
+        }else if(type == 1){
+            //新基本パターン
+            ShelfPtsData ptsData = shelfPtsDataMapper.selectPtsCdByAuthorCd(companyCd, authorCd, typeCd, shelfPatternCd);
+            Integer ptsCd = ptsData.getId();
+            fileName = ptsData.getFileName();
+
+            shelfPtsDataVersion = shelfPtsDataVersionMapper.selectNewByPtsCd(companyCd, ptsCd);
+            shelfPtsDataTaimst = shelfPtsDataTaimstMapper.selectNewByPtsCd(companyCd, ptsCd);
+            shelfPtsDataTanamst = shelfPtsDataTanamstMapper.selectByPtsCd(companyCd, ptsCd);
+            shelfPtsDataJandata = shelfPtsDataJandataMapper.selectNewByPtsCd(companyCd, ptsCd);
+        }else{
+            //新全パターン
+            return;
+        }
 
         response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=utf-8");
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename="+ptsData.getFileName());
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename="+fileName);
 
         PrintWriter printWriter = response.getWriter();
         //为了解决excel打开乱码的问题
         byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
         printWriter.write(new String(bom));
 
+        this.generateCsv(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, printWriter);
+    }
+
+    public void generateCsv(ShelfPtsDataVersion shelfPtsDataVersion, List<ShelfPtsDataTaimst> shelfPtsDataTaimst,
+                            List<ShelfPtsDataTanamst> shelfPtsDataTanamst,  List<ShelfPtsDataJandata> shelfPtsDataJandata, PrintWriter printWriter){
         CsvWriter csvWriter = CsvWriter.builder().build(printWriter);
         csvWriter.writeRow(Lists.newArrayList(shelfPtsDataVersion.getCommoninfo(),
                 shelfPtsDataVersion.getVersioninfo(), shelfPtsDataVersion.getOutflg()));
@@ -385,7 +418,11 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                     ptsDataJandatum.getFacePosition()+"",  ptsDataJandatum.getDepthDisplayNum()+""));
         }
 
-        csvWriter.close();
+        try {
+            csvWriter.close();
+        } catch (IOException e) {
+            logger.error("csv writer 关闭异常",e);
+        }
     }
     /**
      * 保存pts数据到临时表里
