@@ -369,7 +369,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     select company_cd, #{id}, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,jan_header,
     now(),now(),#{authorCd},#{authorCd}
     from planocycle.shelf_pts_data_version
-    where pts_cd=#{ptsCd} and deleteflg=0
+    where pts_cd=#{ptsCd}
   </insert>
   <insert id="insertPtsDataJandata">
     insert into planocycle.priority_order_pts_data_jandata(company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,
@@ -403,8 +403,8 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
   <delete id="deleteWorkPtsTaimst">
     delete from planocycle.shelf_pts_data_taimst where pts_cd=#{ptsCd}
   </delete>
-  <select id="selectPtsCdByAuthorCd" resultType="int">
-    select id from planocycle.priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
+  <select id="selectPtsCdByAuthorCd" resultMap="BaseResultMap">
+    select id,file_name from planocycle.priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
     and authorcd=#{authorCd} and shelf_pattern_cd=#{patternCd} and deleteflg=0
   </select>
   <select id="getDisplays" resultType="com.trechina.planocycle.entity.vo.WorkPriorityOrderSortVo">
