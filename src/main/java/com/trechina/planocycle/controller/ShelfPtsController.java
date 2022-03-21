@@ -8,6 +8,8 @@ import com.trechina.planocycle.service.ShelfPtsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -149,4 +151,14 @@ public class ShelfPtsController {
 
     }
 
+    /**
+     * 下载csv文件
+     * @param companyCd
+     * @param priorityOrderCd
+     * @return
+     */
+    @GetMapping("downloadPtsCsv")
+    public  void downloadPtsCsv(String companyCd, Integer priorityOrderCd, Long shelfPatternCd, HttpServletResponse response) throws IOException {
+        shelfPtsService.downloadPtsCsv(companyCd,priorityOrderCd, shelfPatternCd, response);
+    }
 }

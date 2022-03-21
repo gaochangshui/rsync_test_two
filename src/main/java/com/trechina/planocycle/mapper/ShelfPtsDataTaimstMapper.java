@@ -15,6 +15,8 @@ public interface ShelfPtsDataTaimstMapper {
 
     ShelfPtsDataTaimst selectByPrimaryKey(@Param("companyCd") String companyCd, @Param("ptsCd") Integer ptsCd, @Param("taiCd") Integer taiCd);
 
+    List<ShelfPtsDataTaimst> selectByPtsCd(@Param("companyCd") String companyCd, @Param("ptsCd") Integer ptsCd);
+
     int updateByPrimaryKeySelective(ShelfPtsDataTaimst record);
 
     int updateByPrimaryKey(ShelfPtsDataTaimst record);

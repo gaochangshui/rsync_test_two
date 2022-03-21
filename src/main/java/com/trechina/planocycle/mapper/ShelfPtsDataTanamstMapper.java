@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
+import com.trechina.planocycle.entity.po.ShelfPtsDataTaimst;
 import com.trechina.planocycle.entity.po.ShelfPtsDataTanamst;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -26,4 +27,6 @@ public interface ShelfPtsDataTanamstMapper {
     List<ShelfPtsDataTanaCount> ptsTanaCountByTai(Long shelfPatternCd);
 
     List<ShelfPtsDataTanamst> selectByPatternCd(Long shelfPatternCd);
+
+    List<ShelfPtsDataTanamst> selectByPtsCd(String companyCd, Integer ptsCd);
 }
