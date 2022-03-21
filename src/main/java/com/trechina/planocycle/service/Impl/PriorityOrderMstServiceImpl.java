@@ -1301,10 +1301,20 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String priorityOrderName = priorityOrderMstVO.getPriorityOrderName();
         Integer priorityOrderCd = priorityOrderMstVO.getPriorityOrderCd();
 
-        int i = priorityOrderMstMapper.selectByOrderName(priorityOrderName, priorityOrderCd);
-        if (i > 0) {
+        String orderName = priorityOrderMstMapper.selectByOrderName(priorityOrderName);
+        int isEdit = priorityOrderMstMapper.selectByPriorityOrderCd(priorityOrderCd);
+
+        if(isEdit>0){
+            //编辑-更新名字
+            priorityOrderMstMapper.updateOrderName(priorityOrderCd, priorityOrderName);
+            return ResultMaps.result(ResultEnum.SUCCESS);
+        }
+
+        //新规
+        if(!Optional.ofNullable(orderName).isPresent()){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
+
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

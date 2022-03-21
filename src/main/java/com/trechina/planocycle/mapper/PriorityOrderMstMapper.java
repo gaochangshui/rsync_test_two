@@ -48,5 +48,9 @@ public interface PriorityOrderMstMapper {
     int insertBySelect(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,
                        @Param("priorityOrderCd")Integer priorityOrderCd, @Param("priorityOrderName") String priorityOrderName);
 
-    int selectByOrderName(@Param("priorityOrderName")String priorityOrderName, @Param("priorityOrderCd")Integer priorityOrderCd);
+    String selectByOrderName(@Param("priorityOrderName") String priorityOrderName);
+
+    int selectByPriorityOrderCd(@Param("priorityOrderCd") Integer priorityOrderCd);
+
+    int updateOrderName(@Param("priorityOrderCd") Integer priorityOrderCd, @Param("priorityOrderName") String priorityOrderName);
 }
