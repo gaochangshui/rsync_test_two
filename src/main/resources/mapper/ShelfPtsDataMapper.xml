@@ -427,6 +427,50 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     from planocycle.work_priority_order_pts_data_jandata
     where pts_cd = #{ptsCd} and company_cd = #{companyCd}
   </insert>
+  <insert id="insertWorkPtsData">
+    insert into planocycle.work_priority_order_pts_data(id,company_cd,file_name,authorcd,shelf_pattern_cd,valid_flg,
+                                                   start_day,edit_time,create_time,editer_cd,priority_order_cd)
+    select id,company_cd,file_name,#{authorCd},shelf_pattern_cd,valid_flg,
+           start_day,edit_time,create_time,editer_cd,priority_order_cd
+    from planocycle.priority_order_pts_data
+    where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+  </insert>
+  <insert id="insertWorkPtsTaiData">
+    insert into planocycle.work_priority_order_pts_data_taimst(company_cd,pts_cd,tai_cd,tai_height,tai_width,tai_depth,tai_name,edit_time,
+                                                          create_time,editer_cd,author_cd)
+    select company_cd,pts_cd,tai_cd,tai_height,tai_width,tai_depth,tai_name,edit_time,
+           create_time,editer_cd,author_cd
+    from planocycle.priority_order_pts_data_taimst
+    where company_cd = #{companyCd} and pts_cd = #{ptsCd}
+  </insert>
+  <insert id="insertWorkPtsTanaData">
+    insert into planocycle.work_priority_order_pts_data_tanamst(company_cd,
+                                                           pts_cd, tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,edit_time,
+                                                           create_time,editer_cd,author_cd)
+    select company_cd,#{id},tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,
+           now(),now(),#{authorCd},#{authorCd}
+    from planocycle.priority_order_pts_data_tanamst
+    where pts_cd=#{ptsCd} and company_cd = #{companyCd}
+  </insert>
+  <insert id="insertWorkPtsVersionData">
+    insert into planocycle.work_priority_order_pts_data_version(company_cd,
+                                                           pts_cd, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,
+                                                           jan_header,edit_time,create_time,editer_cd,author_cd)
+    select company_cd, #{id}, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,jan_header,
+           now(),now(),#{authorCd},#{authorCd}
+    from planocycle.priority_order_pts_data_version
+    where pts_cd=#{ptsCd} and company_cd = #{companyCd}
+  </insert>
+  <insert id="insertWorkPtsJanData">
+    insert into planocycle.work_priority_order_pts_data_jandata(company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,
+                                                           face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num,
+                                                           create_time,edit_time,author_cd,editer_cd, pts_cd
+                                                             select company_cd,jan,face_count,tai_cd,tana_cd,tanaposition_cd,
+                                                           face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num,
+                                                           create_time,edit_time,author_cd,editer_cd, pts_cd
+                                                             from planocycle.work_priority_order_pts_data_jandata
+    where pts_cd = #{ptsCd} and company_cd = #{companyCd}
+  </insert>
   <delete id="deletePtsTaimst">
     delete from planocycle.work_priority_order_pts_data_taimst where pts_cd=#{ptsCd}
   </delete>
@@ -528,6 +572,6 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     where ptsData.priority_order_cd = #{priorityOrderCd}
   </select>
   <select id="getId" resultType="java.lang.Integer">
-    select id from planocycle.work_priority_order_pts_data where companyCd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    select id from planocycle.work_priority_order_pts_data where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
   </select>
 </mapper>

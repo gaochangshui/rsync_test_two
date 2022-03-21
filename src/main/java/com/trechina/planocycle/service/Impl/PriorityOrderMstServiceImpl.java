@@ -311,6 +311,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Override
     public Map<String, Object> getPriorityOrderExistsFlg(String companyCd) {
         //List<String> companyCd = Arrays.asList(session.getAttribute("inCharge").toString().split(","));
+
         int result = priorityOrderMstMapper.selectPriorityOrderCount(companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
@@ -980,6 +981,22 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         priorityOrderJanReplaceMapper.workDelete(companyCd,authorCd,priorityOrderCd);
         //清空work_priority_order_cut表
         priorityOrderJanCardMapper.workDelete(companyCd,priorityOrderCd,authorCd);
+        //获取ptsCd
+        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+        //清空work_priority_order_pts_data
+        shelfPtsDataMapper.deletePtsData(id);
+        //清空work_priority_order_pts_data_taimst
+        shelfPtsDataMapper.deletePtsTaimst(id);
+        //清空work_priority_order_pts_data_tanamst
+        shelfPtsDataMapper.deletePtsTanamst(id);
+        //清空work_priority_order_pts_data_version
+        shelfPtsDataMapper.deletePtsVersion(id);
+        //清空work_priority_order_pts_data_jandata
+        shelfPtsDataMapper.deletePtsDataJandata(id);
+
+
+
+
 
 
     }
@@ -1220,7 +1237,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     //TODO:10215814
     @Override
     public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-
+        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
         String aud = session.getAttribute("aud").toString();
         this.deleteWorkTable(companyCd,priorityOrderCd);
         priorityOrderJanCardMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
@@ -1234,7 +1251,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderSortMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderSortRankMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
         workPriorityOrderSpaceMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        //获取ptsId
 
+        shelfPtsDataMapper.insertWorkPtsData(companyCd,aud,priorityOrderCd);
+        shelfPtsDataMapper.insertWorkPtsTaiData(companyCd,aud,id);
+        shelfPtsDataMapper.insertWorkPtsTanaData(companyCd,aud,id);
+        shelfPtsDataMapper.insertWorkPtsVersionData(companyCd,aud,id);
+        shelfPtsDataMapper.insertWorkPtsJanData(companyCd,aud,id);
         Map<String,Object> map = new HashMap<>();
         //主表信息
         WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd,aud);
@@ -1300,7 +1323,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String priorityOrderName = priorityOrderMstVO.getPriorityOrderName();
         Integer priorityOrderCd = priorityOrderMstVO.getPriorityOrderCd();
 
-        String orderName = priorityOrderMstMapper.selectByOrderName(priorityOrderName);
+        Integer orderName = priorityOrderMstMapper.selectByOrderName(priorityOrderName);
         int isEdit = priorityOrderMstMapper.selectByPriorityOrderCd(priorityOrderCd);
 
         if(isEdit>0){

@@ -103,6 +103,6 @@
     select count(*) from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
   <update id="updateOrderName">
-    update planocycle.priority_order_mst priority_order_name=#{priorityOrderName} where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    update planocycle.priority_order_mst set priority_order_name=#{priorityOrderName} where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>
 </mapper>
