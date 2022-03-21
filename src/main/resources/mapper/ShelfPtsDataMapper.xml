@@ -477,15 +477,15 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
   </select>
   <select id="getNewFaceNum" resultType="java.lang.Integer">
     select sum(jandataMst.face_count) faceNum
-    from planocycle.priority_order_pts_data ptsData
-           left join planocycle.priority_order_pts_data_jandata jandataMst
+    from planocycle.work_priority_order_pts_data ptsData
+           left join planocycle.work_priority_order_pts_data_jandata jandataMst
                      on ptsData.id = jandataMst.pts_cd
     where ptsData.priority_order_cd=#{priorityOrderCd}
   </select>
   <select id="getNewSkuNum" resultType="java.lang.Integer">
     select count(jandataMst.jan) skuNum
-    from planocycle.priority_order_pts_data ptsData
-           left join planocycle.priority_order_pts_data_jandata jandataMst
+    from planocycle.work_priority_order_pts_data ptsData
+           left join planocycle.work_priority_order_pts_data_jandata jandataMst
                      on ptsData.id = jandataMst.pts_cd
     where ptsData.priority_order_cd=#{priorityOrderCd}
   </select>
