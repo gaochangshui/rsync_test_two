@@ -897,6 +897,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         this.getReorder(companyCd, priorityOrderCd);
         //摆放商品
         this.setJan(companyCd, authorCd, priorityOrderCd);
+
+        //保存pts到最终表里
+        shelfPtsService.saveFinalPtsData(companyCd, authorCd, priorityOrderCd);
         logger.info("拆分后的数据为{}", strList);
 
 
@@ -1071,43 +1074,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             priorityOrderSortRankMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderSortRankMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
-            WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
-            //临时表中的ptscd
-            Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
-
-            //查询出所有采纳了的商品，按照台棚进行排序，标记商品在棚上的位置
-            List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            List<WorkPriorityOrderResultDataDto> positionResultData = this.calculateTanaPosition(workPriorityOrderResultData);
-
-            PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
-                    .withPriorityOrderCd(priorityOrderCd)
-                    .withOldPtsCd(ptsCd)
-                    .withCompanyCd(companyCd)
-                    .withAuthorCd(authorCd).build();
-
-            //查出已有的新pts，先删掉再保存
-            //新pts中已有数据的ptsCd
-            Integer oldPtsCd = shelfPtsDataMapper.selectPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
-
-            if(Optional.ofNullable(oldPtsCd).isPresent()){
-                shelfPtsDataMapper.deletePtsData(oldPtsCd);
-                shelfPtsDataMapper.deletePtsTaimst(oldPtsCd);
-                shelfPtsDataMapper.deletePtsTanamst(oldPtsCd);
-                shelfPtsDataMapper.deletePtsVersion(oldPtsCd);
-                shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
-            }
-
-            //从已有的pts中查询出数据
-            shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
-            Integer id = priorityOrderPtsDataDto.getId();
-            shelfPtsDataMapper.insertPtsTaimst(ptsCd, id, authorCd);
-            shelfPtsDataMapper.insertPtsTanamst(ptsCd, id, authorCd);
-            shelfPtsDataMapper.insertPtsVersion(ptsCd, id, authorCd);
-
-            if (!positionResultData.isEmpty()) {
-                shelfPtsDataMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
-            }
+            //保存pts数据
+            shelfPtsService.saveFinalPtsData(companyCd, authorCd, priorityOrderCd);
 
             //删除临时表中的数据
             workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
@@ -1128,46 +1096,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS);
-    }
-
-    /**
-     * 先按照台遍历再遍历棚，同一个棚的商品从左到右的顺序从1开始进行标号，棚变了，重新标号
-     *
-     * @param workPriorityOrderResultData
-     * @return
-     */
-    private List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData) {
-        //有棚位置的resultdata数据
-        List<WorkPriorityOrderResultDataDto> positionResultData = new ArrayList<>(workPriorityOrderResultData.size());
-        //根据台进行分组遍历
-        Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTai = workPriorityOrderResultData.stream()
-                .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTaiCd, LinkedHashMap::new, Collectors.toList()));
-
-        for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entrySet : workPriorityOrderResultDataByTai.entrySet()) {
-            Integer taiCd = entrySet.getKey();
-
-            List<WorkPriorityOrderResultDataDto> workPriorityOrderResultDataDtos = workPriorityOrderResultDataByTai.get(taiCd);
-            //根据棚进行分组遍历
-            Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTana = workPriorityOrderResultDataDtos.stream()
-                    .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTanaCd, LinkedHashMap::new, Collectors.toList()));
-            for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entry : workPriorityOrderResultDataByTana.entrySet()) {
-                //同一个棚，序号从1开始累加，下一个棚重新从1开始加
-                Integer tantaPositionCd=0;
-                Integer tanaCd = entry.getKey();
-
-                for (WorkPriorityOrderResultDataDto currentDataDto : workPriorityOrderResultDataByTana.get(tanaCd)) {
-                    currentDataDto.setTanaPositionCd(++tantaPositionCd);
-                    currentDataDto.setFaceMen(1);
-                    currentDataDto.setFaceKaiten(0);
-                    currentDataDto.setTumiagesu(1);
-                    currentDataDto.setFaceDisplayflg(0);
-                    currentDataDto.setFacePosition(1);
-                    currentDataDto.setDepthDisplayNum(1);
-                    positionResultData.add(currentDataDto);
-                }
-            }
-        }
-        return positionResultData;
     }
 
     /**

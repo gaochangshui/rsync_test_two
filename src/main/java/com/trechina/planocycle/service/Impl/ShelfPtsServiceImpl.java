@@ -1,14 +1,19 @@
 package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
+import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.ShelfPtsData;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.PriorityOrderMstAttrSortMapper;
 import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
+import com.trechina.planocycle.mapper.WorkPriorityOrderMstMapper;
+import com.trechina.planocycle.mapper.WorkPriorityOrderResultDataMapper;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import com.trechina.planocycle.service.ShelfPatternService;
 import com.trechina.planocycle.service.ShelfPtsService;
@@ -22,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ShelfPtsServiceImpl implements ShelfPtsService {
@@ -36,6 +42,10 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     @Autowired
     private PriorityOrderMstService priorityOrderMstService;
+    @Autowired
+    private WorkPriorityOrderResultDataMapper workPriorityOrderResultDataMapper;
+    @Autowired
+    private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
     /**
      * 获取棚割pts信息
      *
@@ -291,7 +301,87 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         return ResultMaps.result(ResultEnum.SUCCESS,displayList);
     }
 
+    @Override
+    public void saveFinalPtsData(String companyCd, String authorCd, Integer priorityOrderCd) {
+        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
 
+        //查询出所有采纳了的商品，按照台棚进行排序，标记商品在棚上的位置
+        List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        List<WorkPriorityOrderResultDataDto> positionResultData = this.calculateTanaPosition(workPriorityOrderResultData);
+
+        //查出已有的新pts，先删掉再保存
+        //新pts中已有数据的ptsCd
+        Integer oldPtsCd = shelfPtsDataMapper.selectPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
+        //临时表中的ptscd
+        Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
+
+        PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
+                .withPriorityOrderCd(priorityOrderCd)
+                .withOldPtsCd(ptsCd)
+                .withCompanyCd(companyCd)
+                .withAuthorCd(authorCd).build();
+
+        if(Optional.ofNullable(oldPtsCd).isPresent()){
+            shelfPtsDataMapper.deletePtsData(oldPtsCd);
+            shelfPtsDataMapper.deletePtsTaimst(oldPtsCd);
+            shelfPtsDataMapper.deletePtsTanamst(oldPtsCd);
+            shelfPtsDataMapper.deletePtsVersion(oldPtsCd);
+            shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
+        }
+
+        //从已有的pts中查询出数据
+        shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
+        Integer id = priorityOrderPtsDataDto.getId();
+        shelfPtsDataMapper.insertPtsTaimst(ptsCd, id, authorCd);
+        shelfPtsDataMapper.insertPtsTanamst(ptsCd, id, authorCd);
+        shelfPtsDataMapper.insertPtsVersion(ptsCd, id, authorCd);
+
+        if (!positionResultData.isEmpty()) {
+            shelfPtsDataMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
+        }
+    }
+
+
+    /**
+     * 先按照台遍历再遍历棚，同一个棚的商品从左到右的顺序从1开始进行标号，棚变了，重新标号
+     *
+     * @param workPriorityOrderResultData
+     * @return
+     */
+    private List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData) {
+        //有棚位置的resultdata数据
+        List<WorkPriorityOrderResultDataDto> positionResultData = new ArrayList<>(workPriorityOrderResultData.size());
+        //根据台进行分组遍历
+        Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTai = workPriorityOrderResultData.stream()
+                .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTaiCd, LinkedHashMap::new, Collectors.toList()));
+
+        for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entrySet : workPriorityOrderResultDataByTai.entrySet()) {
+            Integer taiCd = entrySet.getKey();
+
+            List<WorkPriorityOrderResultDataDto> workPriorityOrderResultDataDtos = workPriorityOrderResultDataByTai.get(taiCd);
+            //根据棚进行分组遍历
+            Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTana = workPriorityOrderResultDataDtos.stream()
+                    .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTanaCd, LinkedHashMap::new, Collectors.toList()));
+            for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entry : workPriorityOrderResultDataByTana.entrySet()) {
+                //同一个棚，序号从1开始累加，下一个棚重新从1开始加
+                Integer tantaPositionCd=0;
+                Integer tanaCd = entry.getKey();
+
+                for (WorkPriorityOrderResultDataDto currentDataDto : workPriorityOrderResultDataByTana.get(tanaCd)) {
+                    currentDataDto.setTanaPositionCd(++tantaPositionCd);
+                    currentDataDto.setFaceMen(1);
+                    currentDataDto.setFaceKaiten(0);
+                    currentDataDto.setTumiagesu(1);
+                    currentDataDto.setFaceDisplayflg(0);
+                    currentDataDto.setFacePosition(1);
+                    currentDataDto.setDepthDisplayNum(1);
+                    positionResultData.add(currentDataDto);
+                }
+            }
+        }
+        return positionResultData;
+    }
     /**
      * 获取棚pattern关联过的csv履历数据
      *
