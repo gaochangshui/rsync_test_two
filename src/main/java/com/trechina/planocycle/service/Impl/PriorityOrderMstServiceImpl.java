@@ -1093,17 +1093,17 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             shelfPtsService.saveFinalPtsData(companyCd, authorCd, priorityOrderCd);
 
             //删除临时表中的数据
-            workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
-            workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            workPriorityOrderSortMapper.delete(companyCd, authorCd, priorityOrderCd);
-            workPriorityOrderSortRankMapper.delete(companyCd, authorCd, priorityOrderCd);
-            priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
-            priorityOrderJanReplaceMapper.workDelete(companyCd, authorCd, priorityOrderCd);
-            priorityOrderJanCardMapper.workDelete(companyCd, priorityOrderCd, authorCd);
+//            workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
+//            workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
+//            workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
+//            workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
+//            workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
+//            workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
+//            workPriorityOrderSortMapper.delete(companyCd, authorCd, priorityOrderCd);
+//            workPriorityOrderSortRankMapper.delete(companyCd, authorCd, priorityOrderCd);
+//            priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
+//            priorityOrderJanReplaceMapper.workDelete(companyCd, authorCd, priorityOrderCd);
+//            priorityOrderJanCardMapper.workDelete(companyCd, priorityOrderCd, authorCd);
         } catch (Exception exception) {
             logger.error("保存临时表数据到实际表报错", exception);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
