@@ -143,10 +143,5 @@ public class PriorityOrderMstController {
     public Map<String,Object> deletePriorityOrderAll(@RequestBody PriorityOrderMstVO priorityOrderMstVO){
         return priorityOrderMstService.deletePriorityOrderAll(priorityOrderMstVO);
     }
-
-    @GetMapping("/downLoadForPtsCsv")
-
-    public Map<String,Object> downLoadForPtsCsv( HttpServletResponse response){
-        return priorityOrderMstService.downLoadForPtsCsv(response);
-    }
+    
 }
