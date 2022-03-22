@@ -72,6 +72,30 @@ public class PtsDetailDataVo {
         this.modename = modename;
     }
 
+    public String getCommoninfo() {
+        return commoninfo;
+    }
+
+    public void setCommoninfo(String commoninfo) {
+        this.commoninfo = commoninfo;
+    }
+
+    public String getVersioninfo() {
+        return versioninfo;
+    }
+
+    public void setVersioninfo(String versioninfo) {
+        this.versioninfo = versioninfo;
+    }
+
+    public String getOutflg() {
+        return outflg;
+    }
+
+    public void setOutflg(String outflg) {
+        this.outflg = outflg;
+    }
+
     @Override
     public String toString() {
         return "PtsDetailDataVo{" +
@@ -79,6 +103,9 @@ public class PtsDetailDataVo {
                 ", tanaHeader='" + tanaHeader + '\'' +
                 ", janHeader='" + janHeader + '\'' +
                 ", modename='" + modename + '\'' +
+                ", commoninfo='" + commoninfo + '\'' +
+                ", versioninfo='" + versioninfo + '\'' +
+                ", outflg='" + outflg + '\'' +
                 ", ptsTaiList=" + ptsTaiList +
                 ", ptsTanaVoList=" + ptsTanaVoList +
                 ", ptsJanDataList=" + ptsJanDataList +
