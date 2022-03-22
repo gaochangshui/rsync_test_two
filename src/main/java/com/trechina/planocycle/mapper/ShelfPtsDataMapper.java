@@ -131,7 +131,8 @@ public interface ShelfPtsDataMapper {
     ShelfPtsData selectPtsCdByAuthorCd(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,
                               @Param("priorityOrderCd")Integer priorityOrderCd, @Param("patternCd") Long patternCd);
 
-
+    ShelfPtsData selectWorkPtsCdByAuthorCd(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,
+                                       @Param("priorityOrderCd")Integer priorityOrderCd, @Param("patternCd") Long patternCd);
     int insertFinalPtsData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     int insertFinalPtsTaiData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);

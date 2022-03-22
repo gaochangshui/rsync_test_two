@@ -1,16 +1,16 @@
 package com.trechina.planocycle.entity.vo;
 
 public class PriorityOrderJanReplaceVO {
-    private String janOld;
+    private String janCd;
     private String janNew;
     private String janName;
 
-    public String getJanOld() {
-        return janOld;
+    public String getJanCd() {
+        return janCd;
     }
 
-    public void setJanOld(String janOld) {
-        this.janOld = janOld;
+    public void setJanCd(String janCd) {
+        this.janCd = janCd;
     }
 
     public String getJanNew() {
@@ -32,7 +32,7 @@ public class PriorityOrderJanReplaceVO {
     @Override
     public String toString() {
         return "PriorityOrderJanReplaceVO{" +
-                "janOld='" + janOld + '\'' +
+                "janOld='" + janCd + '\'' +
                 ", janNew='" + janNew + '\'' +
                 ", janName='" + janName + '\'' +
                 '}';

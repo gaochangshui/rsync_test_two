@@ -7,7 +7,7 @@ public class PriorityAllPatternListVO {
     private Integer taiCnt;
     private Integer tanaCnt;
     private Integer checkFlag;
-
+    private Boolean disabled = true;
     public String getShelfName() {
         return shelfName;
     }
@@ -56,6 +56,14 @@ public class PriorityAllPatternListVO {
         this.checkFlag = checkFlag;
     }
 
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
     @Override
     public String toString() {
         return "PriorityAllPatternListVO{" +
@@ -65,7 +73,7 @@ public class PriorityAllPatternListVO {
                 ", taiCnt=" + taiCnt +
                 ", tanaCnt=" + tanaCnt +
                 ", checkFlag=" + checkFlag +
+                ", disabled=" + disabled +
                 '}';
     }
-
 }

@@ -1385,12 +1385,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, workPriorityOrderMst.getProductPowerCd());
         Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, workPriorityOrderMst.getProductPowerCd());
         productPowerInfo.setSku(skuNum);
-        ////获取janNew信息
-        //Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
+        //获取janNew信息
+        Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
         ////获取janCut信息
-        //List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd);
-        ////获取jan变信息
-        //List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd,priorityOrderCd);
+        List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd);
+        //获取jan变信息
+        List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd,priorityOrderCd);
         map.put("workPriorityOrderMst",workPriorityOrderMst);
         map.put("workPriorityOrderSpace",workPriorityOrderSpace);
         map.put("workPriorityOrderRestrictSet",workPriorityOrderRestrictSet);
@@ -1400,9 +1400,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         map.put("restrictData",restrictData.get("data"));
         map.put("ptsDetailData",ptsDetailData.get("data"));
         map.put("productPowerInfo",productPowerInfo);
-        //map.put("priorityOrderJanNew",priorityOrderJanNew.get("priorityOrderJanNewVOS"));
-        //map.put("priorityOrderJanCut",priorityOrderJanCut);
-        //map.put("priorityOrderJanReplace",priorityOrderJanReplace);
+        map.put("priorityOrderJanNew",priorityOrderJanNew.get("data"));
+        map.put("priorityOrderJanCut",priorityOrderJanCut);
+        map.put("priorityOrderJanReplace",priorityOrderJanReplace);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 

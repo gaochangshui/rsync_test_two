@@ -1,40 +1,30 @@
 package com.trechina.planocycle.entity.vo;
 
 public class PriorityOrderJanCardVO {
-    private String janOld;
-    private String janOldName;
-    private String errMsg;
+    private String janCd;
+    private String janName;
 
-    public String getJanOld() {
-        return janOld;
+    public String getJanCd() {
+        return janCd;
     }
 
-    public void setJanOld(String janOld) {
-        this.janOld = janOld;
+    public void setJanCd(String janCd) {
+        this.janCd = janCd;
     }
 
-    public String getJanOldName() {
-        return janOldName;
+    public String getJanName() {
+        return janName;
     }
 
-    public void setJanOldName(String janOldName) {
-        this.janOldName = janOldName;
-    }
-
-    public String getErrMsg() {
-        return errMsg;
-    }
-
-    public void setErrMsg(String errMsg) {
-        this.errMsg = errMsg;
+    public void setJanName(String janName) {
+        this.janName = janName;
     }
 
     @Override
     public String toString() {
         return "PriorityOrderJanCardVO{" +
-                "janOld='" + janOld + '\'' +
-                ", janOldName='" + janOldName + '\'' +
-                ", errMsg='" + errMsg + '\'' +
+                "janCd='" + janCd + '\'' +
+                ", janName='" + janName + '\'' +
                 '}';
     }
 }
