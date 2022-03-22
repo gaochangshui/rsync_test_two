@@ -254,11 +254,15 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     where ptsData.shelf_pattern_cd=#{patternCd}
   </select>
   <select id="getSkuNum" resultType="java.lang.Integer">
-    select count(jandataMst.jan) skuNum
-    from planocycle.shelf_pts_data ptsData
-           left join planocycle.shelf_pts_data_jandata jandataMst
-                     on ptsData.id = jandataMst.pts_cd
-    where ptsData.shelf_pattern_cd=#{patternCd}
+
+    select count(jans.jan)
+    from(		select jandataMst.jan jan
+                 from planocycle.shelf_pts_data ptsData
+                        left join planocycle.shelf_pts_data_jandata jandataMst
+                                  on ptsData.id = jandataMst.pts_cd
+                 where ptsData.shelf_pattern_cd=#{patternCd}
+                 group by jan
+        )jans
   </select>
   <select id="getPtsDatailData" resultType="com.trechina.planocycle.entity.vo.PtsDetailDataVo">
     select ptsVersion.tai_header,ptsVersion.tana_header,ptsVersion.jan_header
@@ -527,11 +531,14 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     where ptsData.priority_order_cd=#{priorityOrderCd}
   </select>
   <select id="getNewSkuNum" resultType="java.lang.Integer">
-    select count(jandataMst.jan) skuNum
-    from planocycle.work_priority_order_pts_data ptsData
-           left join planocycle.work_priority_order_pts_data_jandata jandataMst
-                     on ptsData.id = jandataMst.pts_cd
-    where ptsData.priority_order_cd=#{priorityOrderCd}
+    select count(jans.jan)
+    from (
+           select jandataMst.jan
+           from planocycle.work_priority_order_pts_data ptsData
+                  left join planocycle.work_priority_order_pts_data_jandata jandataMst
+                            on ptsData.id = jandataMst.pts_cd
+           where ptsData.priority_order_cd=#{priorityOrderCd}
+           group by jan) jans
   </select>
   <select id="getPtsNewDetailData" resultType="com.trechina.planocycle.entity.vo.PtsDetailDataVo">
     select ptsVersion.tai_header,ptsVersion.tana_header,ptsVersion.jan_header,ptsVersion.modename
