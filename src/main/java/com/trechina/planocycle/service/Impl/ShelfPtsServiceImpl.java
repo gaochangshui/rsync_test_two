@@ -479,7 +479,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      */
     @Override
     public void saveFinalPtsData(String companyCd, String authorCd, Integer priorityOrderCd) {
-        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+        Integer id = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);
         shelfPtsDataMapper.deleteFinalPtsData(id);
         shelfPtsDataMapper.deleteFinalPtsTaimst(id);
         shelfPtsDataMapper.deleteFinalPtsTanamst(id);
