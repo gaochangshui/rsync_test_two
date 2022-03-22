@@ -41,11 +41,11 @@
         delete from planocycle.work_priority_order_jan_new
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
+
     </delete>
 
-    <select id="selectJanNew" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
-        select news.jan_new as janNew,jans.jan_nm as janName,jans.scat1cd_val,jans.scat2cd_val,scat3cd_val,scat4cd_val,news.jan_rank
+    <select id="selectJanNew" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
+        select news.jan_new as janCd,jans.jan_nm as janName,jans.scat1cd_val as zokusei1,jans.scat2cd_val as zokusei2,scat3cd_val as zokusei3,scat4cd_val as zokusei4,news.jan_rank as rank
         from planocycle.work_priority_order_jan_new news
                  left join  masterdb.jan_mst jans
                 on news.jan_new = jans.jan_cd

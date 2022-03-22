@@ -55,15 +55,15 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
             logger.info("获取新规商品list参数："+companyCd+","+priorityOrderCd);
-            List<PriorityOrderJanNewVO> priorityOrderJanNewVOS = priorityOrderJanNewMapper.selectJanNew(companyCd,priorityOrderCd);
+            List<PriorityOrderJanNewDto> priorityOrderJanNewVOS = priorityOrderJanNewMapper.selectJanNew(companyCd,priorityOrderCd);
             logger.info("获取新规商品list返回结果集b："+priorityOrderJanNewVOS);
             List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
-            Class clazz = PriorityOrderJanNewVO.class;
+            Class clazz = PriorityOrderJanNewDto.class;
         for (int i = 1; i <= 4; i++) {
-            Method getMethod = clazz.getMethod("get"+"Scat"+i+"cdVal");
-            Method setMethod = clazz.getMethod("set"+"Scat"+i+"cdVal", String.class);
+            Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
+            Method setMethod = clazz.getMethod("set"+"Zokusei"+i, String.class);
             for (PriorityOrderAttrValueDto attrValue : attrValues) {
-                for (PriorityOrderJanNewVO priorityOrderJanNewVO : priorityOrderJanNewVOS) {
+                for (PriorityOrderJanNewDto priorityOrderJanNewVO : priorityOrderJanNewVOS) {
                     if (getMethod.invoke(priorityOrderJanNewVO)!=null && getMethod.invoke(priorityOrderJanNewVO).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
                         setMethod.invoke(priorityOrderJanNewVO,attrValue.getNm());
                     }else{
@@ -138,7 +138,15 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Override
     public Map<String, Object> setPriorityOrderJanNew(List<PriorityOrderJanNew> priorityOrderJanNew) {
         String authorCd = session.getAttribute("aud").toString();
+        String companyCd = null;
+        Integer priorityOrderCd = null;
+        for (PriorityOrderJanNew orderJanNew : priorityOrderJanNew) {
+            companyCd = orderJanNew.getCompanyCd();
+            priorityOrderCd = orderJanNew.getPriorityOrderCd();
 
+        }
+
+        priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
             priorityOrderJanNewMapper.insert(priorityOrderJanNew,authorCd);
             return ResultMaps.result(ResultEnum.SUCCESS);
     }
