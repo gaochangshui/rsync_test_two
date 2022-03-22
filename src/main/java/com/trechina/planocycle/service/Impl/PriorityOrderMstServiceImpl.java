@@ -1118,7 +1118,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     /**
      * 放置商品
      */
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean setJan(String companyCd, String authorCd, Integer priorityOrderCd, Integer minFace) {
         WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
