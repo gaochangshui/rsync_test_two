@@ -492,12 +492,13 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      */
     @Override
     public void saveFinalPtsData(String companyCd, String authorCd, Integer priorityOrderCd) {
-        Integer id = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);
-        shelfPtsDataMapper.deleteFinalPtsData(id);
-        shelfPtsDataMapper.deleteFinalPtsTaimst(id);
-        shelfPtsDataMapper.deleteFinalPtsTanamst(id);
-        shelfPtsDataMapper.deleteFinalPtsVersion(id);
-        shelfPtsDataMapper.deleteFinalPtsDataJandata(id);
+        Integer newId = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);
+        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+        shelfPtsDataMapper.deleteFinalPtsData(newId);
+        shelfPtsDataMapper.deleteFinalPtsTaimst(newId);
+        shelfPtsDataMapper.deleteFinalPtsTanamst(newId);
+        shelfPtsDataMapper.deleteFinalPtsVersion(newId);
+        shelfPtsDataMapper.deleteFinalPtsDataJandata(newId);
 
         shelfPtsDataMapper.insertFinalPtsData(companyCd,authorCd,priorityOrderCd);
         if (id!=null){
