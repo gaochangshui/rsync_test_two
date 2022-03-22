@@ -322,7 +322,7 @@
     </foreach>
   </insert>
   <select id="getResultJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
-    select restrict_cd restrictCd,tai_cd taiCd,tana_cd tanaCd,tana_type tanaType,sku_rank skuRank,data.irisu,data.jan_cd janCd,
+    select restrict_cd restrictCd,tai_cd taiCd,tana_cd tanaCd,tana_type tanaType,sku_rank skuRank,jan.irisu,data.jan_cd janCd,
     face_sku faceSku,face_keisan faceKeisan,face,adopt_flag adoptFlag,jan.width janWidth,jan.height janHeight, sort_rank sortRank
     from planocycle.work_priority_order_result_data data
     inner join masterdb.jan_mst jan on data.jan_cd=jan.jan_cd
@@ -357,6 +357,13 @@
         WHEN concat(#{obj.janCd},#{obj.restrictCd}) THEN #{obj.adoptFlag}
       </foreach>
       ELSE adopt_flag
+      END,
+      face_fact =
+      CASE concat(jan_cd,restrict_cd)
+      <foreach collection="list" item="obj">
+        WHEN concat(#{obj.janCd},#{obj.restrictCd}) THEN #{obj.faceFact}
+      </foreach>
+      ELSE face_fact
       END
       WHERE jan_cd IN
       <foreach collection="list" item="obj" separator="," open="(" close=")">
