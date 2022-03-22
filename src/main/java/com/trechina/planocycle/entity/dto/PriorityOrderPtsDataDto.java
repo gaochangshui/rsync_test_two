@@ -7,6 +7,15 @@ public class PriorityOrderPtsDataDto {
     private Integer priorityOrderCd;
     private String authorCd;
     private String companyCd;
+    private String fileName;
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
     public String getCompanyCd() {
         return companyCd;

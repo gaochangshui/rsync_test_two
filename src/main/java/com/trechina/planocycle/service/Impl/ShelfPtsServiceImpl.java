@@ -460,6 +460,10 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
         }
 
+        ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
+        String modeName = shelfPtsDataVersion.getModename();
+        //modeName作为下载pts的文件名
+        priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
         //从已有的pts中查询出数据
         shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
         Integer id = priorityOrderPtsDataDto.getId();
