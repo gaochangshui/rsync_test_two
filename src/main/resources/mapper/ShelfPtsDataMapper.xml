@@ -541,7 +541,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
            group by jan) jans
   </select>
   <select id="getPtsNewDetailData" resultType="com.trechina.planocycle.entity.vo.PtsDetailDataVo">
-    select ptsVersion.tai_header,ptsVersion.tana_header,ptsVersion.jan_header,ptsVersion.modename
+    select ptsVersion.tai_header,ptsVersion.tana_header,ptsVersion.jan_header,ptsVersion.modename,ptsVersion.commoninfo,ptsVersion.versioninfo,ptsVersion.outflg
     from planocycle.work_priority_order_pts_data ptsData
            left join planocycle.work_priority_order_pts_data_version ptsVersion
                      on ptsData."id" = ptsVersion.pts_cd

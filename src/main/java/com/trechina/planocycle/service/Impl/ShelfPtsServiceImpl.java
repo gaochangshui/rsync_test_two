@@ -21,15 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.UriUtils;
-import org.yaml.snakeyaml.util.UriEncoder;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -390,7 +386,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         printWriter.write(new String(bom));
 
         String format = MessageFormat.format("attachment;filename={0};", fileName);
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, format);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION,format);
         this.generateCsv(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, printWriter);
     }
 
