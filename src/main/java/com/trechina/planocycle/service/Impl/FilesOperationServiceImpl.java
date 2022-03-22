@@ -228,7 +228,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                         ptsDataVersion.setOutflg(arr[2]);
                                         lineNum += 1;
                                     } else if (lineNum == 2) {
-                                        ptsDataVersion.setModename(line.replace(",", ""));
+                                        ptsDataVersion.setModename(line);
                                         lineNum += 1;
                                     }
                                     // 数据分段

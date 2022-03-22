@@ -10,6 +10,7 @@ import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -104,5 +105,15 @@ public class MethodTests {
         String a = null;
         String b = "Hello world";
         System.out.println(a+b);
+
+        WorkPriorityOrderRestrictSet set = new WorkPriorityOrderRestrictSet();
+        set.setTanaType((short)1);
+        WorkPriorityOrderRestrictSet set1 = new WorkPriorityOrderRestrictSet();
+        WorkPriorityOrderRestrictSet set2 = new WorkPriorityOrderRestrictSet();
+        BeanUtils.copyProperties(set,set1);
+        BeanUtils.copyProperties(set,set2);
+        set1.setTaiCd(1);
+        System.out.println(set1.getTaiCd());
+        System.out.println(set2.getTaiCd());
     }
 }
