@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -385,9 +386,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
         printWriter.write(new String(bom));
 
-        String format = MessageFormat.format("attachment;filename={0};", fileName);
-
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION,format);
+        String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
+        response.setHeader("Content-Disposition", format);
         this.generateCsv(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, printWriter);
     }
 
