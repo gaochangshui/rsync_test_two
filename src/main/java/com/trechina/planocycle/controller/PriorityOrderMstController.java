@@ -144,4 +144,9 @@ public class PriorityOrderMstController {
         return priorityOrderMstService.deletePriorityOrderAll(priorityOrderMstVO);
     }
 
+    @GetMapping("/setJan")
+    public void setJan(){
+        priorityOrderMstService.setJan("0001", "10218504", 2, 2);
+    }
+
 }

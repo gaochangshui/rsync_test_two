@@ -1196,22 +1196,23 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         Long face = targetResultData.getFace();
         Long janWidth = targetResultData.getJanWidth();
 
-        double remainderWidth = width - usedWidth - partitionVal;
+        //剩下可用的宽度（需要考虑有隔板的情况）
+        double remainderWidth = width - usedWidth;
         //通过cut目标商品的face数是否能放下
-        boolean isSetByCutTarget = false;
+        boolean isSetByCut = false;
 
         //先看要放的商品一个一个的减能不能放下
         for (Long i = face - 1; i >= minFace; i--) {
-            if(janWidth * i <= remainderWidth){
+            if((janWidth * i + partitionVal) <= remainderWidth){
                 //能放下
-                isSetByCutTarget = true;
+                isSetByCut = true;
                 //保存实际的face数
                 targetResultData.setFaceFact(i);
                 break;
             }
         }
 
-        if(!isSetByCutTarget){
+        if(!isSetByCut){
             //通过cut目标商品的face数不能放下
             //只处理入数=1的，不等于1的不进行cut
             List<PriorityOrderResultDataDto> resultDataDtoByIrisu = resultDataDtoList.stream()
@@ -1222,8 +1223,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 return false;
             }
 
-            //按照最小face进行放置，需要多少宽度
-            long needWidth = targetResultData.getJanWidth() * minFace;
+            //按照最小face进行放置，需要多少宽度（需要考虑有隔板的情况）
+            long needWidth = targetResultData.getJanWidth() * minFace + partitionVal;
             for (int i = resultDataDtoByIrisu.size()-1; i >= minFace ; i--) {
                 PriorityOrderResultDataDto currentResultData = resultDataDtoByIrisu.get(i);
                 Long faceFact = currentResultData.getFaceFact();
@@ -1233,20 +1234,21 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                     continue;
                 }
 
-                long remainFace = faceFact - face;
+                //当前商品还能减几个face数
+                long remainFace = faceFact - minFace;
                 for (long j = 1; j <= remainFace; j++) {
                     //cut n 个face的宽度是否能满足目标上面放置需要的宽度
                     if(currentResultData.getJanWidth()*j >= needWidth){
                         currentResultData.setFaceFact(currentResultData.getFaceFact() -  j);
                         targetResultData.setFaceFact(minFace);
-                        isSetByCutTarget = true;
+                        isSetByCut = true;
                         break;
                     }
                 }
             }
         }
 
-        return isSetByCutTarget;
+        return isSetByCut;
     }
 
     //TODO:10215814
