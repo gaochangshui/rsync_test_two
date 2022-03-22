@@ -109,9 +109,11 @@ public interface PriorityOrderMstService {
      * 放置商品
      * @param companyCd
      * @param authorCd
+     * @param minFace 最小face数
      * @return false 失败，true 成功
      */
-    boolean setJan(String companyCd, String authorCd, Integer priorityOrderCd);
+    boolean setJan(String companyCd, String authorCd, Integer priorityOrderCd, Integer minFace);
+
     /**
      * 编辑时展示所有信息
      * @param companyCd

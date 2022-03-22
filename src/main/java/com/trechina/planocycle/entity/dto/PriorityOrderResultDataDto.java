@@ -17,6 +17,8 @@ public class PriorityOrderResultDataDto {
 
     private Long face;
 
+    private Long faceFact;
+
     private Long faceSku;
 
     private Long irisu;
@@ -34,6 +36,14 @@ public class PriorityOrderResultDataDto {
 
     private Long janWidth;
     private Long janHeight;
+
+    public Long getFaceFact() {
+        return faceFact;
+    }
+
+    public void setFaceFact(Long faceFact) {
+        this.faceFact = faceFact;
+    }
 
     public Long getSortRank() {
         return sortRank;
