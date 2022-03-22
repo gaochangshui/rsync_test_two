@@ -145,6 +145,7 @@ public interface ShelfPtsDataMapper {
 
 
     Integer getId(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    Integer getNewId(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
 
     //删除最终表data

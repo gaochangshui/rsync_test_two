@@ -581,4 +581,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     select id,file_name from planocycle.work_priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
                                                                   and authorcd=#{authorCd} and shelf_pattern_cd=#{patternCd} and deleteflg=0
   </select>
+  <select id="getNewId" resultType="java.lang.Integer">
+    select id from planocycle.priority_order_pts_data where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+  </select>
 </mapper>
