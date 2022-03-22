@@ -77,6 +77,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             }
             if (!s.equals("")) {
                 s = s.substring(2);
+            }else {
+                s="无制约";
             }
             priorityOrderRestDto.setRestrictName(s);
             priorityOrderRestDto.setFaceNum(restrictDatum.getFaceNum());
