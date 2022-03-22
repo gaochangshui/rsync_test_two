@@ -1255,6 +1255,14 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
     /**
      * 通过cut face数是否能放下
+     * 逻辑：第一步：先对要放置的商品进行face数--
+     *          1.如果face数*商品宽度能放下就放，记下实际存放的face数
+     *          2.减到face数==最小face数还是放不下，走第二步
+     *      第二步：对同一台棚区分(taiCd_tanaCd_tanaType)中的商品list倒序进行cut face判断
+     *          1.如果没有入数irisu=1的商品则不进行cut，直接结束
+     *          2.如果有入数irisu=1，倒序遍历商品list，进行face数--
+     *              3.如果face数*宽度能放下就放，记下实际存放的face数
+     *              4.如果face数减到最小face数，还是无法放下，结束，该位置不放了
      * @param resultDataDtoList 同台棚区分的商品list
      * @param targetResultData 要放置的商品
      * @param width 当前台棚区分的宽度
