@@ -97,12 +97,13 @@
     and author_cd=#{authorCd,jdbcType=VARCHAR}
   </insert>
   <select id="selectByOrderName" resultType="int">
-      select count(*) from planocycle.priority_order_mst where priority_order_name=#{priorityOrderName}
+      select count(*) from planocycle.priority_order_mst where priority_order_name=#{priorityOrderName} and deleteflg=0
   </select>
   <select id="selectByPriorityOrderCd" resultType="int">
-    select count(*) from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    select count(*) from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and deleteflg=0
   </select>
   <update id="updateOrderName">
     update planocycle.priority_order_mst set priority_order_name=#{priorityOrderName} where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    and deleteflg=0
   </update>
 </mapper>
