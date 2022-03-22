@@ -179,6 +179,13 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and pts_cd = #{ptsCd,jdbcType=INTEGER}
   </update>
+  <select id="selectNewByPtsCd" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from planocycle.priority_order_pts_data_version
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and pts_cd = #{ptsCd,jdbcType=INTEGER}
+  </select>
   <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.ShelfPtsDataVersion">
     update planocycle.shelf_pts_data_version
     set commoninfo = #{commoninfo,jdbcType=VARCHAR},
@@ -196,11 +203,4 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and pts_cd = #{ptsCd,jdbcType=INTEGER}
   </update>
-  <select id="selectNewByPtsCd" parameterType="map" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from planocycle.priority_order_pts_data_version
-    where company_cd = #{companyCd,jdbcType=VARCHAR}
-    and pts_cd = #{ptsCd,jdbcType=INTEGER}
-  </select>
 </mapper>

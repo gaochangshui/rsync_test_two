@@ -21,11 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriUtils;
+import org.yaml.snakeyaml.util.UriEncoder;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -378,13 +383,14 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         }
 
         response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=utf-8");
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename="+fileName);
 
         PrintWriter printWriter = response.getWriter();
         //为了解决excel打开乱码的问题
         byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
         printWriter.write(new String(bom));
 
+        String format = MessageFormat.format("attachment;filename={0};", fileName);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, format);
         this.generateCsv(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, printWriter);
     }
 
@@ -409,13 +415,16 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                     ptsDataTanamst.getTanaDepth()+"", ptsDataTanamst.getTanaThickness()+"", ptsDataTanamst.getTanaType()+""));
         }
 
-        csvWriter.writeRow(shelfPtsDataVersion.getJanHeader().split(","));
+        String[] janHeaders = shelfPtsDataVersion.getJanHeader().split(",");
+        csvWriter.writeRow(janHeaders);
         for (ShelfPtsDataJandata ptsDataJandatum : shelfPtsDataJandata) {
-            csvWriter.writeRow(Lists.newArrayList(ptsDataJandatum.getTaiCd()+"",
-                    ptsDataJandatum.getTanaCd()+"", ptsDataJandatum.getTanapositionCd()+"", ptsDataJandatum.getJan()+"",
-                    ptsDataJandatum.getFaceCount()+"",  ptsDataJandatum.getFaceMen()+"", ptsDataJandatum.getFaceKaiten()+"",
-                    ptsDataJandatum.getTumiagesu()+"",  ptsDataJandatum.getZaikosu()+"",  ptsDataJandatum.getFaceDisplayflg()+"",
-                    ptsDataJandatum.getFacePosition()+"",  ptsDataJandatum.getDepthDisplayNum()+""));
+            List<String> janData = Lists.newArrayList(ptsDataJandatum.getTaiCd() + "",
+                    ptsDataJandatum.getTanaCd() + "", ptsDataJandatum.getTanapositionCd() + "", ptsDataJandatum.getJan() + "",
+                    ptsDataJandatum.getFaceCount() + "", ptsDataJandatum.getFaceMen() + "", ptsDataJandatum.getFaceKaiten() + "",
+                    ptsDataJandatum.getTumiagesu() + "",
+                    Optional.ofNullable(ptsDataJandatum.getZaikosu()).orElse(0) + "", Optional.ofNullable(ptsDataJandatum.getFaceDisplayflg()).orElse(0) + "",
+                    Optional.ofNullable(ptsDataJandatum.getFacePosition()).orElse(0) + "", Optional.ofNullable(ptsDataJandatum.getDepthDisplayNum()).orElse(0) + "");
+            csvWriter.writeRow(janData.subList(0, janHeaders.length));
         }
 
         try {
