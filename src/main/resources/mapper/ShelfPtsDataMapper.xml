@@ -512,7 +512,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     delete from planocycle.priority_order_pts_data_jandata where pts_cd=#{ptsCd}
   </delete>
   <select id="selectPtsCdByAuthorCd" resultMap="BaseResultMap">
-    select id,file_name from planocycle.priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
+    select id,file_name from planocycle.work_priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
     and authorcd=#{authorCd} and shelf_pattern_cd=#{patternCd} and deleteflg=0
   </select>
   <select id="getDisplays" resultType="com.trechina.planocycle.entity.vo.WorkPriorityOrderSortVo">

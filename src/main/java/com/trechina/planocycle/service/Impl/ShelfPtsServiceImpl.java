@@ -386,6 +386,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         printWriter.write(new String(bom));
 
         String format = MessageFormat.format("attachment;filename={0};", fileName);
+
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION,format);
         this.generateCsv(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, printWriter);
     }

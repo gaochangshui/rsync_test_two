@@ -237,7 +237,7 @@
   </select>
   <select id="selectNewByPtsCd" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" />
-    from planocycle.priority_order_pts_data_tanamst where company_cd = #{companyCd,jdbcType=VARCHAR}
+    from planocycle.work_priority_order_pts_data_tanamst where company_cd = #{companyCd,jdbcType=VARCHAR}
     and pts_cd = #{ptsCd,jdbcType=INTEGER}
     order by tai_cd,tana_cd,tana_type
   </select>
