@@ -40,8 +40,8 @@
       create_time, author_cd, edit_time, 
       editer_cd, deleteflg)
     values (#{companyCd,jdbcType=VARCHAR}, #{ptsCd,jdbcType=INTEGER}, #{commoninfo,jdbcType=VARCHAR}, 
-      #{versioninfo,jdbcType=VARCHAR}, #{outflg,jdbcType=VARCHAR}, #{modename,jdbcType=VARCHAR}, 
-      #{taiHeader,jdbcType=VARCHAR}, #{tanaHeader,jdbcType=VARCHAR}, #{janHeader,jdbcType=VARCHAR}, 
+      #{versioninfo,jdbcType=VARCHAR}, #{outflg,jdbcType=VARCHAR}, rtrim(#{modename,jdbcType=VARCHAR},','),
+      rtrim(#{taiHeader,jdbcType=VARCHAR},','), rtrim(#{tanaHeader,jdbcType=VARCHAR},','), rtrim(#{janHeader,jdbcType=VARCHAR},','),
       #{createTime,jdbcType=TIMESTAMP}, #{authorCd,jdbcType=VARCHAR}, #{editTime,jdbcType=TIMESTAMP}, 
       #{editerCd,jdbcType=VARCHAR}, #{deleteflg,jdbcType=INTEGER})
   </insert>

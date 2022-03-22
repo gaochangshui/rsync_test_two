@@ -88,7 +88,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Autowired
     private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
     @Autowired
-    private  PriorityOrderJanNewMapper priorityOrderJanNewMapper;
+    private PriorityOrderJanNewMapper priorityOrderJanNewMapper;
     @Autowired
     private PriorityOrderJanReplaceMapper priorityOrderJanReplaceMapper;
     @Autowired
@@ -127,9 +127,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public Map<String, Object> getPriorityOrderList(String companyCd) {
-        logger.info("获取优先顺位表参数：" + companyCd);
+        logger.info("获取优先顺位表参数：{}", companyCd);
         List<PriorityOrderMst> priorityOrderMstList = priorityOrderMstMapper.selectByPrimaryKey(companyCd);
-        logger.info("获取优先顺位表返回值：" + priorityOrderMstList);
+        logger.info("获取优先顺位表返回值：{}", priorityOrderMstList);
         return ResultMaps.result(ResultEnum.SUCCESS, priorityOrderMstList);
     }
 
@@ -142,7 +142,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) {
-        logger.info("保存优先顺位表参数" + priorityOrderMstDto);
+        logger.info("保存优先顺位表参数{}", priorityOrderMstDto);
         // check优先顺位表名称
         Integer count = priorityOrderPatternMapper.selectByPriorityOrderName(priorityOrderMstDto.getCompanyCd(),
                 priorityOrderMstDto.getPriorityOrderName(),
@@ -152,13 +152,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
         // 把参数处理成两个表的的数据，insert
         try {
-            logger.info("保存优先顺位表参数：" + priorityOrderMstDto);
+            logger.info("保存优先顺位表参数：{}", priorityOrderMstDto);
             PriorityOrderMst priorityOrderMst = new PriorityOrderMst();
             priorityOrderMst.setCompanyCd(priorityOrderMstDto.getCompanyCd());
             priorityOrderMst.setPriorityOrderCd(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMst.setPriorityOrderName(priorityOrderMstDto.getPriorityOrderName());
             priorityOrderMst.setProductPowerCd(priorityOrderMstDto.getProductPowerCd());
-            logger.info("保存优先顺位表mst表要保存的数据：" + priorityOrderMst);
+            logger.info("保存优先顺位表mst表要保存的数据：{}", priorityOrderMst);
             priorityOrderMstMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMstMapper.insert(priorityOrderMst);
             List<PriorityOrderPattern> priorityOrderPatternList = new ArrayList<>();
@@ -170,7 +170,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 priorityOrderPattern.setShelfPatternCd(Integer.valueOf(shelfPatternList[i]));
                 priorityOrderPatternList.add(priorityOrderPattern);
             }
-            logger.info("保存优先顺位表pattert表要保存的数据：" + priorityOrderPatternList.toString());
+            logger.info("保存优先顺位表pattert表要保存的数据：{}", priorityOrderPatternList);
             priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderPatternMapper.insert(priorityOrderPatternList);
             // 处理属性保存
@@ -190,25 +190,23 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             cgiSave(priorityOrderMstDto);
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
-            logger.info("报错:" + e);
-            logger.error("保存优先顺位表报错：" + e);
+            logger.info("报错:{}", e.getMessage());
+            logger.error("保存优先顺位表报错：{}", e.getMessage());
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
 
     // 调用cgi保存数据
     private void cgiSave(PriorityOrderMstDto priorityOrderMstDto) {
-        JSONArray jsonArray = (JSONArray) JSONArray.parse(String.valueOf(priorityOrderMstDto.getPriorityData()).replaceAll(" ", ""));
+        JSONArray jsonArray = (JSONArray) JSONArray.parse(String.valueOf(priorityOrderMstDto.getPriorityData()).replace(" ", ""));
         String[] res = new String[jsonArray.size()];
 
         for (int i = 0; i < jsonArray.size(); i++) {
             String rowStr = "";
-            Map<String, Object> rowMaps = new HashMap<>();
-            rowMaps = (Map<String, Object>) jsonArray.get(i);
+            Map<String, Object> rowMaps = (Map<String, Object>) jsonArray.get(i);
             rowStr += ((Map) jsonArray.get(i)).get("jan_old").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("jan_old") + " ";
             rowStr += ((Map) jsonArray.get(i)).get("jan_new").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("jan_new") + " ";
 
-            final String[] keys = {""};
             Object[] listKey = rowMaps.keySet().stream().sorted().toArray();
             for (int z = 0; z < listKey.length; z++) {
                 if (listKey[z].toString().indexOf("attr") > -1) {
@@ -238,7 +236,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     // 处理属性保存
     private void attrSave(PriorityOrderMstDto priorityOrderMstDto, List<Map<String, Object>> array) {
 
-        logger.info("获取rankAttributeCdList" + array);
+        logger.info("获取rankAttributeCdList{}", array);
         List<PriorityOrderMstAttrSort> priorityOrderMstAttrSortList = new ArrayList<>();
         for (int i = 0; i < array.size(); i++) {
             PriorityOrderMstAttrSort priorityOrderMstAttrSort = new PriorityOrderMstAttrSort();
@@ -282,7 +280,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         if (wirteReadFlag.equals("write")) {
             priorityOrderDataForCgiDto.setDataArray(res);
         }
-        logger.info("保存优先顺位表给cgi的参数" + priorityOrderDataForCgiDto);
+        logger.info("保存优先顺位表给cgi的参数{}", priorityOrderDataForCgiDto);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("PriorityOrderData");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
@@ -290,11 +288,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             Map<String, Object> resultCgi = new HashMap<>();
             //递归调用cgi，首先去taskid
             String result = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
-            logger.info("taskId返回：" + result);
+            logger.info("taskId返回：{}", result);
             String queryPath = resourceBundle.getString("TaskQuery");
             //带着taskId，再次请求cgi获取运行状态/数据
             resultCgi = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-            logger.info("保存优先顺位表结果：" + resultCgi);
+            logger.info("保存优先顺位表结果：{}", resultCgi);
             return resultCgi;
 
         } catch (IOException e) {
@@ -325,7 +323,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public Map<String, Object> getRankAttr(String companyCd, Integer productPowerCd) {
-        logger.info("优先顺位表获取rank属性的动态列：" + companyCd + "," + productPowerCd);
+        logger.info("优先顺位表获取rank属性的动态列：{},{}", companyCd, productPowerCd);
         Map<String, Object> result = new HashMap<>();
         commodityScoreMasterService.productPowerParamAttrName(companyCd, productPowerCd, result);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
@@ -340,7 +338,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public Map<String, Object> getPtsFileDownLoad(PriorityOrderPtsDownDto priorityOrderPtsDownDto, HttpServletResponse response, String ptsDownPath) {
-        logger.info("获取pts出力参数:" + priorityOrderPtsDownDto);
+        logger.info("获取pts出力参数:{}", priorityOrderPtsDownDto);
         // 从cgi获取数据
         String uuid = UUID.randomUUID().toString();
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
@@ -348,25 +346,23 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         priorityOrderPtsDownDto.setGuid(uuid);
         // rankAttributeCd
         List<Map<String, Object>> array = (List<Map<String, Object>>) JSONArray.parse(priorityOrderPtsDownDto.getRankAttributeList());
-        logger.info("获取rankAttributeCdList" + array);
         String rankInfo = "";
         String attrInfo = "";
-        String rankInfo_mulit = "";
-        String attrInfo_mulit = "";
+        StringBuilder rankInfoBuilder = new StringBuilder();
+        StringBuilder attrInfoBuilder = new StringBuilder();
         String sortStr = "";
         String sort = "";
         for (int i = 1; i <= array.size(); i++) {
             for (int j = 0; j < array.size(); j++) {
                 sortStr = String.valueOf(array.get(j).get("sort"));
-                sort = "";
                 if (sortStr.equals("")) {
                     sort = "0";
                 } else {
                     sort = sortStr;
                 }
                 if (String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i == array.size()) {
-                    rankInfo_mulit += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
-                    attrInfo_mulit += "13,";
+                    rankInfoBuilder.append(array.get(j).get("cd") + "_" + i + "_" + sort + ",");
+                    attrInfoBuilder.append("13,");
                 } else {
                     if (!String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i == Integer.valueOf(String.valueOf(array.get(j).get("value")))) {
                         rankInfo += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
@@ -375,28 +371,27 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 }
             }
         }
-        rankInfo = rankInfo + rankInfo_mulit;
-        attrInfo = attrInfo + attrInfo_mulit;
+        rankInfo = rankInfo + rankInfoBuilder.toString();
+        attrInfo = attrInfo + attrInfoBuilder.toString();
         String rankFinalInfo = rankInfo.substring(0, rankInfo.length() - 1);
         String attrFinalInfo = attrInfo.substring(0, attrInfo.length() - 1);
-        logger.info("处理完的rankAttributeCd" + rankFinalInfo);
+        logger.info("处理完的rankAttributeCd{}", rankFinalInfo);
         priorityOrderPtsDownDto.setAttributeCd(attrFinalInfo);
         priorityOrderPtsDownDto.setRankAttributeCd(rankFinalInfo);
         // shelfPatternNoNm
         String resultShelf = shelfPatternService.getShePatternNoNm(priorityOrderPtsDownDto.getShelfPatternNo());
-        logger.info("抽出完的shelfPatternNoNm" + resultShelf);
-        priorityOrderPtsDownDto.setShelfPatternNoNm(resultShelf.replaceAll(" ", "*"));
-        logger.info("获取处理完的pts出力参数:" + priorityOrderPtsDownDto);
+        logger.info("抽出完的shelfPatternNoNm{}", resultShelf);
+        priorityOrderPtsDownDto.setShelfPatternNoNm(resultShelf.replace(" ", "*"));
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         Map<String, Object> ptsPath = new HashMap<>();
         try {
             //递归调用cgi，首先去taskid
             String result = cgiUtil.postCgi(path, priorityOrderPtsDownDto, tokenInfo);
-            logger.info("taskId返回：" + result);
+            logger.info("taskId返回：{}", result);
             String queryPath = resourceBundle.getString("TaskQuery");
             //带着taskId，再次请求cgi获取运行状态/数据
             ptsPath = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-            logger.info("pts路径返回数据：" + ptsPath);
+            logger.info("pts路径返回数据：{}", ptsPath);
 
         } catch (IOException e) {
             logger.info("报错:" + e);
@@ -407,88 +402,19 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
             sshFtpUtils sshFtp = new sshFtpUtils();
             try {
-                logger.info("pts全路径输出：" + ptsDownPath + ptsPath.get("data").toString());
+                logger.info("pts全路径输出：{},{}", ptsDownPath, ptsPath.get("data"));
                 byte[] files = sshFtp.downLoafCgi(ptsDownPath + ptsPath.get("data").toString(), tokenInfo);
-                logger.info("files byte:" + files);
+                logger.info("files byte:{}", files);
                 response.setContentType("application/Octet-stream");
-                logger.info("finename:" + fileName[fileName.length - 1]);
+                logger.info("finename:{}", fileName[fileName.length - 1]);
                 response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName[fileName.length - 1], "UTF-8"));
                 OutputStream outputStream = response.getOutputStream();
                 outputStream.write(files);
                 outputStream.close();
             } catch (IOException e) {
 //                e.printStackTrace();
-                logger.info("获取pts文件下载报错" + e);
+                logger.info("获取pts文件下载报错{}", e.getMessage());
             }
-
-//            String pathResult = ptsPath.get("data").toString();
-//            if (pathResult.equals("-1") || pathResult.equals("2")){
-//                return ResultMaps.result(ResultEnum.FAILURE);
-//            }
-//            String[] ptsPathArr = pathResult.split("/");
-//            String fileName = ptsPathArr[ptsPathArr.length - 1];
-//            logger.info("pts文件名称"+fileName);
-//            logger.info("实例化filesOperationService");
-//            FilesOperationServiceImpl filesOperationService = new FilesOperationServiceImpl();
-//            logger.info("实例化成功filesOperationService");
-//            String usercd = (String) session.getAttribute("aud");
-//            String tempPath = resourceBundle.getString("csvPathShelf") + usercd + "/";
-//            logger.info("temppath"+tempPath);
-//            String csvPath = tempPath + fileName;
-//            logger.info("csvPath"+csvPath);
-//            filesOperationService.judgeExistsPath(tempPath);
-//            // 数据桶版本
-//            String projectIds= resourceBundle.getString("projectId");
-//            String bucketNames= resourceBundle.getString("bucketName");
-//            // The ID of your GCP project
-//            String projectId = projectIds;
-//            // The ID of your GCS bucket
-//            String bucketName = bucketNames;
-//            // The ID of your GCS object
-//            String objectName = pathResult;
-//            logger.info("objectName"+objectName);
-//            // The path to your file to upload
-//            String destFilePath  = csvPath;
-//            logger.info("destFilePath"+destFilePath);
-//            File jsonKey = new File("/secrets/.gcp-credientials.json");
-//            try {
-//                Storage storage = StorageOptions.newBuilder().setProjectId(projectId).setCredentials(GoogleCredentials
-//                        .fromStream(new FileInputStream(jsonKey))).build().getService();
-//                Blob blob = storage.get(BlobId.of(bucketName, objectName));
-//                blob.downloadTo(Paths.get(destFilePath));
-//                File files = new File(csvPath);
-//                response.setContentType("application/Octet-stream");
-////                String chars = new String(fileName.getBytes("iso8859-1"), "utf-8");
-//                response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName, "UTF-8"));
-//                try(FileInputStream ips = new FileInputStream(files);){
-//                    OutputStream outputStream = response.getOutputStream();
-//                    int len =0;
-//                    byte[] buffer  = new byte[1024];
-//                    while ((len = ips.read(buffer)) != -1){
-//                        outputStream.write(buffer,0,len);
-//                        outputStream.flush();
-//                    }
-//                    outputStream.close();
-//                    if(!files.delete()){
-//                        logger.info("删除文件失败");
-//                    }
-//                }
-//
-//            } catch (UnsupportedEncodingException e) {
-//                logger.info("下载pts报错"+e);
-//            } catch (FileNotFoundException e) {
-//                logger.info("报错:"+e);
-//            } catch (IOException e) {
-//                logger.info("报错:"+e);
-//            }
-            // 物理机版本
-//            try {
-//                response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName, "UTF-8"));
-//            } catch (UnsupportedEncodingException e) {
-//                e.printStackTrace();
-//            }
-//            sshFtpUtils sshFtp = new sshFtpUtils();
-//            sshFtp.getFile(ptsPath.get("data").toString(), csvPath, response, fileName);
         }
         logger.info("下载成功");
         return null;
@@ -502,9 +428,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd) {
-        logger.info("根据优先顺位表cd获取商品力点数表cd的参数" + priorityOrderCd);
+        logger.info("根据优先顺位表cd获取商品力点数表cd的参数{}", priorityOrderCd);
         Map<String, Object> productPowerCd = priorityOrderMstMapper.selectProductPowerCd(priorityOrderCd);
-        logger.info("根据优先顺位表cd获取商品力点数表cd的返回值" + priorityOrderCd);
+        logger.info("根据优先顺位表cd获取商品力点数表cd的返回值{}", priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS, productPowerCd);
     }
 
@@ -558,12 +484,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String resultJan = null;
         try {
             resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
-            logger.info("taskId返回：" + resultJan);
+            logger.info("taskId返回：{}", resultJan);
             //带着taskId，再次请求cgi获取运行状态/数据
             Map<String, Object> result = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
-            logger.info("删除smart优先顺位表信息：" + result);
+            logger.info("删除smart优先顺位表信息：{}", result);
         } catch (IOException e) {
-            logger.info("报错:" + e);
+            logger.info("报错:{}", e.getMessage());
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
@@ -609,13 +535,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         WorkPriorityOrderRestrictSet halfRestrictSet1 = null;
         WorkPriorityOrderRestrictSet halfRestrictSet2 = null;
         // 整台制约
-        Optional<WorkPriorityOrderRestrictSet> fullTaiSetOptional = null;
+        Optional<WorkPriorityOrderRestrictSet> fullTaiSetOptional;
         WorkPriorityOrderRestrictSet fullTaiSet = null;
         // 整段制约
-        Optional<WorkPriorityOrderRestrictSet> fullTanaSetOptional = null;
+        Optional<WorkPriorityOrderRestrictSet> fullTanaSetOptional;
         WorkPriorityOrderRestrictSet fullTanaSet = null;
         // 半段制约
-        Optional<WorkPriorityOrderRestrictSet> halfTanaSetOptional = null;
         WorkPriorityOrderRestrictSet halfTanaSet = null;
         String zokusei = null;
         // 3.1 查出半段设定的台段
@@ -646,7 +571,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             }
             // 3.2.2 整段制约
             fullTanaSetOptional = workRestrictSetList.stream()
-                    .filter(obj -> obj.getTaiCd().equals(tanamst.getTaiCd()) && obj.getTanaCd().equals(tanamst.getTanaCd())).findFirst();
+                    .filter(obj -> obj.getTaiCd().equals(tanamst.getTaiCd())
+                            && obj.getTanaCd().equals(tanamst.getTanaCd())
+                            && obj.getTanaType() == 0)
+                    .findFirst();
             if (fullTanaSetOptional.isPresent()) {
                 fullTanaSet = fullTanaSetOptional.get();
                 // [1,10]
@@ -736,10 +664,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
 
             // 将台段和条件进行关联
-            Optional<WorkPriorityOrderRestrictResult> restrictResultOptional = null;
             List<WorkPriorityOrderRestrictRelation> orderRestrictRelationList = new ArrayList<>();
             WorkPriorityOrderRestrictRelation orderRestrictRelation = null;
-            Optional<WorkPriorityOrderRestrictResult> resultOptional = null;
+            Optional<WorkPriorityOrderRestrictResult> resultOptional;
             WorkPriorityOrderRestrictResult restrictResult = null;
             for (WorkPriorityOrderRestrictSet set : resultList) {
                 orderRestrictRelation = new WorkPriorityOrderRestrictRelation();
@@ -840,10 +767,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
         String[] array = resultDataList.split(",");
         //调用cgi
-        System.out.println(System.currentTimeMillis());
         Map<String, Object> Data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd);
-        System.out.println(System.currentTimeMillis());
-        List strList = new ArrayList();
         if (Data.get("data") != null && Data.get("data") != "") {
             String[] strResult = Data.get("data").toString().split("@");
             String[] strSplit = null;
@@ -901,7 +825,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         //保存pts到临时表里
         shelfPtsService.saveWorkPtsData(companyCd, authorCd, priorityOrderCd);
-        logger.info("拆分后的数据为{}", strList);
 
 
         return ResultMaps.result(ResultEnum.SUCCESS);
@@ -945,14 +868,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         }
 
-        workPriorityOrderResultDataMapper.setSortRank(reorder1,companyCd,aud,priorityOrderCd);
-        workPriorityOrderSortRankMapper.delete(companyCd,aud,priorityOrderCd);
-        workPriorityOrderSortRankMapper.insert(companyCd,reorder,aud,priorityOrderCd);
-        return ResultMaps.result(ResultEnum.SUCCESS,reorder);
+        workPriorityOrderResultDataMapper.setSortRank(reorder1, companyCd, aud, priorityOrderCd);
+        workPriorityOrderSortRankMapper.delete(companyCd, aud, priorityOrderCd);
+        workPriorityOrderSortRankMapper.insert(companyCd, reorder, aud, priorityOrderCd);
+        return ResultMaps.result(ResultEnum.SUCCESS, reorder);
     }
 
     /**
      * 新规时清空对应临时表所有信息
+     *
      * @param companyCd
      * @return
      */
@@ -978,9 +902,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //清空janNew表
         priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
         //清空jan_replace
-        priorityOrderJanReplaceMapper.workDelete(companyCd,authorCd,priorityOrderCd);
+        priorityOrderJanReplaceMapper.workDelete(companyCd, authorCd, priorityOrderCd);
         //清空work_priority_order_cut表
-        priorityOrderJanCardMapper.workDelete(companyCd,priorityOrderCd,authorCd);
+        priorityOrderJanCardMapper.workDelete(companyCd, priorityOrderCd, authorCd);
         //获取ptsCd
         Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
         //清空work_priority_order_pts_data
@@ -993,10 +917,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         shelfPtsDataMapper.deletePtsVersion(id);
         //清空work_priority_order_pts_data_jandata
         shelfPtsDataMapper.deletePtsDataJandata(id);
-
-
-
-
 
 
     }
@@ -1019,11 +939,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             Map<String, Object> resultCgi = new HashMap<>();
             //递归调用cgi，首先去taskid
             String result = cgiUtil.postCgi(path, priorityOrderJanCgiDto, tokenInfo);
-            logger.info("taskId返回：" + result);
+            logger.info("taskId返回：{}", result);
             String queryPath = resourceBundle.getString("TaskQuery");
             //带着taskId，再次请求cgi获取运行状态/数据
             resultCgi = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-            logger.info("保存优先顺位表结果：" + resultCgi);
+            logger.info("保存优先顺位表结果：{}", resultCgi);
             return resultCgi;
 
         } catch (IOException e) {
@@ -1074,8 +994,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             priorityOrderJanCardMapper.insertBySelect(companyCd, priorityOrderCd, authorCd);
 
             //保存jan_new，删除原数据
-            priorityOrderJanNewMapper.deleteByAuthorCd(companyCd,priorityOrderCd, authorCd);
-            priorityOrderJanNewMapper.insertBySelect(companyCd,priorityOrderCd, authorCd);
+            priorityOrderJanNewMapper.deleteByAuthorCd(companyCd, priorityOrderCd, authorCd);
+            priorityOrderJanNewMapper.insertBySelect(companyCd, priorityOrderCd, authorCd);
 
             //保存jan_replace，删除原数据
             priorityOrderJanReplaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
@@ -1138,7 +1058,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
          */
         List<PriorityOrderResultDataDto> finalSetJanResultData = new ArrayList<>();
 
-        if(partitionFlag == 0){
+        if (partitionFlag == 0) {
             //没隔板的情况
             partitionVal = 0;
         }
@@ -1156,7 +1076,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
             //符合当前制约条件商品按rank排序
             //如果sortrank为null就只按skurank排序
-            List<PriorityOrderResultDataDto> relationSorted =  workPriorityOrderResultData
+            List<PriorityOrderResultDataDto> relationSorted = workPriorityOrderResultData
                     .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
                     .sorted(Comparator.comparing(PriorityOrderResultDataDto::getSortRank, Comparator.nullsFirst(Long::compareTo))
                             .thenComparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
@@ -1180,10 +1100,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 double usedWidth = 0;
 
                 Integer taiWidth = taiInfo.get().getTaiWidth();
-                if(tanaType!=0){
+                if (tanaType != 0) {
                     //半段的根据具体位置段的宽度放置
-                    width = taiWidth/2.0;
-                }else{
+                    width = taiWidth / 2.0;
+                } else {
                     //整段的根据具体位置台的宽度放置
                     width = taiWidth;
                 }
@@ -1197,7 +1117,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                     Long face = priorityOrderResultData.getFace();
 
                     //商品宽度null或者0时使用默认宽度67mm，faceSku>1的需要乘以faceSku
-                    if(janWidth == 0){
+                    if (janWidth == 0) {
                         janWidth = 67 * faceSku;
                     }
 
@@ -1239,28 +1159,28 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
         String aud = session.getAttribute("aud").toString();
-        this.deleteWorkTable(companyCd,priorityOrderCd);
-        priorityOrderJanCardMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
-        priorityOrderJanReplaceMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
-        priorityOrderJanNewMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
-        workPriorityOrderMstMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
-        workPriorityOrderRestrictRelationMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
-        workPriorityOrderRestrictResultMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
-        workPriorityOrderRestrictSetMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
-        workPriorityOrderResultDataMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
-        workPriorityOrderSortMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
-        workPriorityOrderSortRankMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
-        workPriorityOrderSpaceMapper.setWorkForFinal(companyCd,priorityOrderCd,aud);
+        this.deleteWorkTable(companyCd, priorityOrderCd);
+        priorityOrderJanCardMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
+        priorityOrderJanReplaceMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
+        priorityOrderJanNewMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
+        workPriorityOrderMstMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
+        workPriorityOrderRestrictRelationMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
+        workPriorityOrderRestrictResultMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
+        workPriorityOrderRestrictSetMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
+        workPriorityOrderResultDataMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
+        workPriorityOrderSortMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
+        workPriorityOrderSortRankMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
+        workPriorityOrderSpaceMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         //获取ptsId
 
-        shelfPtsDataMapper.insertWorkPtsData(companyCd,aud,priorityOrderCd);
-        shelfPtsDataMapper.insertWorkPtsTaiData(companyCd,aud,id);
-        shelfPtsDataMapper.insertWorkPtsTanaData(companyCd,aud,id);
-        shelfPtsDataMapper.insertWorkPtsVersionData(companyCd,aud,id);
-        shelfPtsDataMapper.insertWorkPtsJanData(companyCd,aud,id);
-        Map<String,Object> map = new HashMap<>();
+        shelfPtsDataMapper.insertWorkPtsData(companyCd, aud, priorityOrderCd);
+        shelfPtsDataMapper.insertWorkPtsTaiData(companyCd, aud, id);
+        shelfPtsDataMapper.insertWorkPtsTanaData(companyCd, aud, id);
+        shelfPtsDataMapper.insertWorkPtsVersionData(companyCd, aud, id);
+        shelfPtsDataMapper.insertWorkPtsJanData(companyCd, aud, id);
+        Map<String, Object> map = new HashMap<>();
         //主表信息
-        WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd,aud);
+        WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd, aud);
         Integer shelfCd = workPriorityOrderMstMapper.getShelfName(workPriorityOrderMst.getShelfPatternCd().intValue());
         workPriorityOrderMst.setShelfCd(shelfCd);
 
@@ -1268,27 +1188,27 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //space信息
         List<PriorityOrderAttrVO> workPriorityOrderSpace = priorityOrderSpaceMapper.workPriorityOrderSpace(companyCd, aud, priorityOrderCd);
         //set表信息
-        List<PriorityOrderRestrictSet> workPriorityOrderRestrictSet = priorityOrderRestrictSetMapper.getPriorityOrderRestrict(companyCd, aud,priorityOrderCd);
+        List<PriorityOrderRestrictSet> workPriorityOrderRestrictSet = priorityOrderRestrictSetMapper.getPriorityOrderRestrict(companyCd, aud, priorityOrderCd);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
         Class clazz = PriorityOrderRestrictSet.class;
         for (int i = 1; i <= 10; i++) {
-            Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
-            Method setMethod = clazz.getMethod("set"+"ZokuseiName"+i, String.class);
+            Method getMethod = clazz.getMethod("get" + "Zokusei" + i);
+            Method setMethod = clazz.getMethod("set" + "ZokuseiName" + i, String.class);
             for (PriorityOrderRestrictSet priorityOrderRestrictSet : workPriorityOrderRestrictSet) {
                 for (PriorityOrderAttrValueDto attrValue : attrValues) {
-                    if (getMethod.invoke(priorityOrderRestrictSet)!=null&&getMethod.invoke(priorityOrderRestrictSet).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
-                        setMethod.invoke(priorityOrderRestrictSet,attrValue.getNm());
+                    if (getMethod.invoke(priorityOrderRestrictSet) != null && getMethod.invoke(priorityOrderRestrictSet).equals(attrValue.getVal()) && attrValue.getZokuseiId() == i) {
+                        setMethod.invoke(priorityOrderRestrictSet, attrValue.getNm());
                     }
                 }
             }
         }
 
         //商品力点数表信息
-        Map<String, Object> taiNumTanaNum = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue(),priorityOrderCd);
+        Map<String, Object> taiNumTanaNum = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue(), priorityOrderCd);
         //获取陈列顺信息
-        List<WorkPriorityOrderSortVo> workPriorityOrderSort = shelfPtsDataMapper.getDisplays(companyCd, aud,priorityOrderCd);
+        List<WorkPriorityOrderSortVo> workPriorityOrderSort = shelfPtsDataMapper.getDisplays(companyCd, aud, priorityOrderCd);
         //获取基本台棚别信息
-        List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getPlatformShedData(companyCd, aud,priorityOrderCd);
+        List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getPlatformShedData(companyCd, aud, priorityOrderCd);
         //获取基本制约别信息
         Map<String, Object> restrictData = priorityOrderShelfDataService.getRestrictData(companyCd, priorityOrderCd);
         //获取pts详细数据信息
@@ -1303,19 +1223,19 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd);
         ////获取jan变信息
         //List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd,priorityOrderCd);
-        map.put("workPriorityOrderMst",workPriorityOrderMst);
-        map.put("workPriorityOrderSpace",workPriorityOrderSpace);
-        map.put("workPriorityOrderRestrictSet",workPriorityOrderRestrictSet);
-        map.put("taiNumTanaNum",taiNumTanaNum.get("data"));
-        map.put("workPriorityOrderSort",workPriorityOrderSort);
-        map.put("platformShedData",platformShedData);
-        map.put("restrictData",restrictData.get("data"));
-        map.put("ptsDetailData",ptsDetailData.get("data"));
-        map.put("productPowerInfo",productPowerInfo);
+        map.put("workPriorityOrderMst", workPriorityOrderMst);
+        map.put("workPriorityOrderSpace", workPriorityOrderSpace);
+        map.put("workPriorityOrderRestrictSet", workPriorityOrderRestrictSet);
+        map.put("taiNumTanaNum", taiNumTanaNum.get("data"));
+        map.put("workPriorityOrderSort", workPriorityOrderSort);
+        map.put("platformShedData", platformShedData);
+        map.put("restrictData", restrictData.get("data"));
+        map.put("ptsDetailData", ptsDetailData.get("data"));
+        map.put("productPowerInfo", productPowerInfo);
         //map.put("priorityOrderJanNew",priorityOrderJanNew.get("priorityOrderJanNewVOS"));
         //map.put("priorityOrderJanCut",priorityOrderJanCut);
         //map.put("priorityOrderJanReplace",priorityOrderJanReplace);
-        return ResultMaps.result(ResultEnum.SUCCESS,map);
+        return ResultMaps.result(ResultEnum.SUCCESS, map);
     }
 
     @Override
@@ -1326,14 +1246,14 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         Integer orderName = priorityOrderMstMapper.selectByOrderName(priorityOrderName);
         int isEdit = priorityOrderMstMapper.selectByPriorityOrderCd(priorityOrderCd);
 
-        if(isEdit>0){
+        if (isEdit > 0) {
             //编辑-更新名字
             priorityOrderMstMapper.updateOrderName(priorityOrderCd, priorityOrderName);
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
 
         //新规
-        if(!Optional.ofNullable(orderName).isPresent()){
+        if (!Optional.ofNullable(orderName).isPresent()) {
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
 
@@ -1346,21 +1266,21 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String companyCd = priorityOrderMstVO.getCompanyCd();
         Integer priorityOrderCd = priorityOrderMstVO.getPriorityOrderCd();
         //删除mst表
-        priorityOrderMstMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
+        priorityOrderMstMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
         //删除relation
-        priorityOrderRestrictRelationMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
+        priorityOrderRestrictRelationMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
         //删除result表
-        priorityOrderRestrictResultMapper.logicDeleteByPriorityOrderCd(companyCd, aud,priorityOrderCd);
+        priorityOrderRestrictResultMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
         //删除set表
-        priorityOrderRestrictSetMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
+        priorityOrderRestrictSetMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
         //删除data表
-        priorityOrderResultDataMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
+        priorityOrderResultDataMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
         //删除sort表
-        priorityOrderSortMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
+        priorityOrderSortMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
         //删除rank表
-        priorityOrderSortRankMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
+        priorityOrderSortRankMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
         //删除space表
-        priorityOrderSpaceMapper.logicDeleteByPriorityOrderCd(companyCd,aud,priorityOrderCd);
+        priorityOrderSpaceMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
