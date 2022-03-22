@@ -122,7 +122,7 @@
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </update>
 
-  <select id="getPriorityOrderRestrictAll" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult">
+  <select id="getPriorityOrderRestrictAll" resultType="com.trechina.planocycle.entity.po.WorkPriorityAllRestrictResult">
     select re.restrict_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10
     ,sum(case la.tana_type when 0 then 1.0 else 0.5 end) as tana_cnt,re.sku_cnt
     from planocycle.priority_order_restrict_result re
@@ -131,6 +131,6 @@
     and re.restrict_cd = la.restrict_cd
     where  re.priority_order_cd = #{priorityOrderCd}
     and re.company_cd = #{companyCd, jdbcType=VARCHAR}
-    group by re.restrict_cd,tana_cnt, sku_cnt
+    group by re.restrict_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10,tana_cnt, sku_cnt
   </select>
 </mapper>

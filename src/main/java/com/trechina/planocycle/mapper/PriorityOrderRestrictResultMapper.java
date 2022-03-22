@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.PriorityOrderRestrictResult;
+import com.trechina.planocycle.entity.po.WorkPriorityAllRestrictResult;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -27,6 +28,6 @@ public interface PriorityOrderRestrictResultMapper {
 
     int logicDeleteByPriorityOrderCd(@Param("companyCd") String companyCd,@Param("authorCd") String authorCd,@Param("priorityOrderCd") Integer priorityOrderCd);
 
-    List<WorkPriorityOrderRestrictResult> getPriorityOrderRestrictAll(@Param("companyCd")String companyCd, @Param("priorityOrderCd")Integer priorityOrderCd);
+    List<WorkPriorityAllRestrictResult> getPriorityOrderRestrictAll(@Param("companyCd")String companyCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 
 }

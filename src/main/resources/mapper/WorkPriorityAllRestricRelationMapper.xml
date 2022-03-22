@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.WorkPriorityAllRestrictRelationMapper">
+
+
+    <insert id="insertWKTableRelation">
+        INSERT INTO planocycle.work_priority_all_restrict_relation(
+        priority_all_cd, company_cd, author_cd, shelf_pattern_cd, tai_cd, tana_cd, tana_type, restrict_cd)
+        VALUES
+        <foreach collection="allRelationList" item="list" separator=",">
+            (#{list.priorityAllCd, jdbcType=INTEGER}, #{list.companyCd, jdbcType=VARCHAR},
+            #{list.authorCd, jdbcType=VARCHAR}, #{list.patternCd, jdbcType=INTEGER},
+            #{list.taiCd, jdbcType=INTEGER}, #{list.tanaCd, jdbcType=INTEGER},
+            #{list.tanaType, jdbcType=INTEGER}, #{list.restrictCd, jdbcType=INTEGER})
+        </foreach>
+    </insert>
+    <delete id="deleteWKTableRelation">
+        delete from planocycle.work_priority_all_restrict_relation
+        where priority_all_cd = #{priorityAllCd}
+        and company_cd = #{companyCd,jdbcType=VARCHAR}
+        and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+
+</mapper>
