@@ -25,10 +25,10 @@
     and author_cd = #{authorCd,jdbcType=VARCHAR}
   </delete>
   <select id="selectJanInfo" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanReplaceVO">
-    select jan_old as janOld,jan_new as janNew,janname as janName from planocycle.priority_order_jan_replace jan
-    left join masterdb.jans mst
-    on jan.jan_new  = mst.jan
-    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    select jan_old as janCd,jan_new as janNew,jan_nm as janName from planocycle.work_priority_order_jan_replace jan
+    left join masterdb.jan_mst mst
+    on jan.jan_old  = mst.jan_cd
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
   <select id="selectJanDistinct" resultType="java.lang.String">
     select array_to_string(array_agg(jan),',') from masterdb.jans

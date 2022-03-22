@@ -26,24 +26,11 @@
             and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <select id="selectJanCard" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanCardVO">
-    select card.jan_old as janOld
-         ,COALESCE(jans.janname,'') as janOldName
-         , case when rep.jan_new is not null then 'JAN変商品リストに登録されている商品です。カットしてよいか確認ください'
-                when news.jan_new is not null then '新規商品リストに登録されている商品です。カットしてよいか確認ください' end as errMsg
-    from planocycle.priority_order_jan_card card
-         left join planocycle.priority_order_jan_replace rep
-               on card.company_cd = rep.company_cd
-                and card.priority_order_cd = rep.priority_order_cd
-                and card.jan_old = rep.jan_new
-        left join planocycle.priority_order_jan_new news
-        on card.company_cd = news.company_cd
-        and card.priority_order_cd = news.priority_order_cd
-        and card.jan_old = news.jan_new
-         left join masterdb.jans as jans
-               on card.jan_old = jans.jan
-    where card.company_cd = #{companyCd,jdbcType=VARCHAR}
-    and card.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-  </select>
+        select cut.jan_cd,mst.jan_nm as janName  from planocycle.work_priority_order_cut  cut
+                                                          left join masterdb.jan_mst mst
+                                                                    on cut.jan_cd = mst.jan_cd
+        where priority_order_cd= #{priorityOrderCd} and company_cd = #{companyCd}
+    </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanCard">
     insert into planocycle.work_priority_order_cut (company_cd, priority_order_cd, jan_cd,author_cd
       )

@@ -40,7 +40,7 @@ public class PriorityOrderJanCardServiceImpl implements PriorityOrderJanCardServ
     @Override
     public Map<String, Object> getPriorityOrderJanCard(String companyCd, Integer priorityOrderCd) {
         logger.info("获取card商品list参数:"+companyCd+","+priorityOrderCd);
-        List<PriorityOrderJanCardVO> priorityOrderJanCardVOS = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd);
+        List<PriorityOrderJanCardVO> priorityOrderJanCardVOS = priorityOrderJanCardMapper.selectJanCard(companyCd, priorityOrderCd);
         logger.info("获取card商品list返回值："+priorityOrderJanCardVOS);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCardVOS);
     }
