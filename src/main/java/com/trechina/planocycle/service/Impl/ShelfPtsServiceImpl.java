@@ -383,14 +383,14 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         }
 
         response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=utf-8");
-
+        response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
+        String format = MessageFormat.format("attachment;filename={0};", URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString()));
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, format);
         PrintWriter printWriter = response.getWriter();
         //为了解决excel打开乱码的问题
         byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
         printWriter.write(new String(bom));
 
-        String format = MessageFormat.format("attachment;filename={0};", fileName);
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, format);
         this.generateCsv(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, printWriter);
     }
 
