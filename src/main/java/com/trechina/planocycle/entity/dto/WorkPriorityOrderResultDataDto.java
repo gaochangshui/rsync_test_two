@@ -6,6 +6,7 @@ public class WorkPriorityOrderResultDataDto {
     private Integer priorityOrderCd;
     private String janCd;
     private Long face;
+    private Long faceFact;
     private Integer taiCd;
     private Integer tanaCd;
     private Integer tanaPositionCd;
@@ -16,6 +17,14 @@ public class WorkPriorityOrderResultDataDto {
     private Integer faceDisplayflg;
     private Integer facePosition;
     private Integer depthDisplayNum;
+
+    public Long getFaceFact() {
+        return faceFact;
+    }
+
+    public void setFaceFact(Long faceFact) {
+        this.faceFact = faceFact;
+    }
 
     public Integer getFaceMen() {
         return faceMen;
