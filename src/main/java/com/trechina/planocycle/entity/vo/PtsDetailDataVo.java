@@ -9,6 +9,9 @@ public class PtsDetailDataVo {
     private String tanaHeader;
     private String janHeader;
     private String modename;
+    private String commoninfo;
+    private String versioninfo;
+    private String outflg;
     private List<PtsTaiVo> ptsTaiList;
     private List<PtsTanaVo> ptsTanaVoList;
     private List<PtsJanDataVo> ptsJanDataList;

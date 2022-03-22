@@ -1252,7 +1252,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     //TODO:10215814
     @Override
     public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+        Integer id = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);
         String aud = session.getAttribute("aud").toString();
         this.deleteWorkTable(companyCd, priorityOrderCd);
         priorityOrderJanCardMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
