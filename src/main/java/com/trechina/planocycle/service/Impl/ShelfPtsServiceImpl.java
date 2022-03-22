@@ -441,7 +441,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 
         //查出已有的新pts，先删掉再保存
         //新pts中已有数据的ptsCd
-        ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
+        ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectWorkPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
         //临时表中的ptscd
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
 
