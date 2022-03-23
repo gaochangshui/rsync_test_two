@@ -39,8 +39,8 @@
     values
     <foreach collection="lists" separator="," item="list">
     <if test="list.companyCd!=null and list.priorityOrderCd!=null and list.janOld!=null and list.janNew!=null">
-     (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janOld,jdbcType=VARCHAR},
-      #{list.janNew,jdbcType=VARCHAR},#{authorCd,jdbcType=VARCHAR})
+     (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, trim(#{list.janOld}),
+      trim(#{list.janNew}),#{authorCd,jdbcType=VARCHAR})
     </if>
     </foreach>
   </insert>

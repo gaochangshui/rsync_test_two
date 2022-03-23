@@ -2,6 +2,8 @@ package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
+import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -44,4 +46,16 @@ public interface PriorityOrderJanNewService {
      * @return
      */
     Map<String, Object> getSimilarity(PriorityOrderJanNewDto priorityOrderJanNewDto);
+    /**
+     * 新规不存在商品详细信息
+     * @param janMstPlanocycleVo
+     * @return
+     */
+    Map<String,Object>setJanNewInfo(@RequestBody List<JanMstPlanocycleVo> janMstPlanocycleVo);
+    /**
+     * 查询不存在商品详细信息
+     * @param
+     * @return
+     */
+    Map<String,Object>getJanNewInfo(String companyCd,Integer priorityOrderCd);
 }

@@ -1,6 +1,7 @@
 package com.trechina.planocycle;
 
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
+import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,8 @@ class PlanoCycleApiApplicationTests {
     PriorityOrderJanCardMapper priorityOrderJanCardMapper;
     @Autowired
     WorkPriorityOrderRestrictSetMapper workPriorityOrderRestrictSetMapper;
+    @Autowired
+    PriorityOrderJanNewMapper priorityOrderJanNewMapper;
     @Test
     public void test0(){
         List<String> list = new ArrayList<>();
@@ -63,7 +66,29 @@ class PlanoCycleApiApplicationTests {
         String format = df.format(salesCntAvg);
         salesCntAvg = Double.valueOf(format);
         System.out.println(salesCntAvg);
-
+        JanMstPlanocycleVo janMstPlanocycleVo = new JanMstPlanocycleVo();
+        janMstPlanocycleVo.setJanCd("123");
+        janMstPlanocycleVo.setJanName("区区");
+        janMstPlanocycleVo.setTanka("12");
+        janMstPlanocycleVo.setTanni("124");
+        janMstPlanocycleVo.setWidth("12");
+        janMstPlanocycleVo.setHeight("45");
+        janMstPlanocycleVo.setDepth("1");
+        janMstPlanocycleVo.setScatnm("78");
+        janMstPlanocycleVo.setZokusei1("12");
+        janMstPlanocycleVo.setZokusei2("12");
+        janMstPlanocycleVo.setZokusei3("12");
+        janMstPlanocycleVo.setZokusei4("12");
+        janMstPlanocycleVo.setZokusei5("12");
+        janMstPlanocycleVo.setZokusei6("12");
+        janMstPlanocycleVo.setZokusei7("12");
+        janMstPlanocycleVo.setZokusei8("12");
+        janMstPlanocycleVo.setZokusei9("12");
+        janMstPlanocycleVo.setDepth("45");
+        List<JanMstPlanocycleVo> listss = new ArrayList();
+        listss.add(janMstPlanocycleVo);
+      //  priorityOrderJanNewMapper.test(janMstPlanocycleVo);
+       // priorityOrderJanNewMapper.setJanNewInfo(listss);
         //priorityOrderMstService.getReorder("0001",1245);
         //workPriorityOrderResultDataMapper.update(lists);
         //priorityOrderJanCardMapper.setWorkForFinal("0001",1,"1");

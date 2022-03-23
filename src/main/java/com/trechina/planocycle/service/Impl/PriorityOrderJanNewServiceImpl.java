@@ -6,6 +6,7 @@ import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanAttribute;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
+import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -174,6 +175,31 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         List<PriorityOrderJanNewDto> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, priorityOrderJanNewVO);
 
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerData);
+    }
+    /**
+     * 新规不存在商品详细信息
+     * @param janMstPlanocycleVo
+     * @return
+     */
+    @Override
+    public Map<String, Object> setJanNewInfo(List<JanMstPlanocycleVo> janMstPlanocycleVo) {
+        String aud = session.getAttribute("aud").toString();
+        String companyCd = janMstPlanocycleVo.get(0).getCompanyCd();
+        Integer priorityOrderCd =janMstPlanocycleVo.get(0).getPriorityOrderCd();
+
+        priorityOrderJanNewMapper.deleteJanNewInfo(companyCd,priorityOrderCd);
+        priorityOrderJanNewMapper.setJanNewInfo(janMstPlanocycleVo,companyCd,priorityOrderCd,aud);
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+    /**
+     * 新规不存在商品详细信息
+     * @param
+     * @return
+     */
+    @Override
+    public Map<String, Object> getJanNewInfo(String companyCd, Integer priorityOrderCd) {
+        List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd, priorityOrderCd);
+        return ResultMaps.result(ResultEnum.SUCCESS,janNewInfo);
     }
 
     private String dataSave(JSONArray jsonArray, List<PriorityOrderJanNew> janNewList,
