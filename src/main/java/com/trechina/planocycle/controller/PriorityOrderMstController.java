@@ -143,10 +143,4 @@ public class PriorityOrderMstController {
     public Map<String,Object> deletePriorityOrderAll(@RequestBody PriorityOrderMstVO priorityOrderMstVO){
         return priorityOrderMstService.deletePriorityOrderAll(priorityOrderMstVO);
     }
-
-    @GetMapping("/setJan")
-    public void setJan(){
-        priorityOrderMstService.setJan("0001", "10218504", 2, 2);
-    }
-
 }
