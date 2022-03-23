@@ -577,6 +577,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
       planocycle.work_priority_order_pts_data_jandata janData
       on ptsData."id" =  janData.pts_cd
     where ptsData.priority_order_cd = #{priorityOrderCd}
+    order by tai_cd,tana_cd,tanaposition_cd
   </select>
   <select id="getId" resultType="java.lang.Integer">
     select id from planocycle.work_priority_order_pts_data where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
