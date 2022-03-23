@@ -1156,10 +1156,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                             usedWidth += priorityOrderResultData.getJanWidth() * priorityOrderResultData.getFaceFact() + partitionVal;
                             resultData.add(priorityOrderResultData);
                             finalSetJanResultData.put(taiTanaKey, resultData);
-                        }else{
-                            //根据face数进行摆放放不开，直接不放，结束该位置的摆放
-                            break;
                         }
+
+                        //根据face数进行摆放放不开，直接不放，结束该位置的摆放
+                        break;
                     }
                 }
             }
