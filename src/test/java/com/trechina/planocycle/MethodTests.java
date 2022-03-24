@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
+import com.trechina.planocycle.entity.po.ShelfPtsDataTanamst;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictSet;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
 import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
@@ -95,23 +96,24 @@ public class MethodTests {
             tanaCount.setTanaUsedCount(0);
             tanaCountList.add(tanaCount);
         }
-        List<WorkPriorityOrderRestrictSet> setList = priorityOrderMstAttrSortService.setRestrict(dataList, tanaCountList, (short) 2, (short) 2,"0001","10047515",1);
+        List<ShelfPtsDataTanamst> ptsDataTanamstList = Collections.emptyList();
+        List<WorkPriorityOrderRestrictSet> setList = priorityOrderMstAttrSortService.setRestrict(dataList, ptsDataTanamstList, tanaCountList, (short) 2, (short) 2, "0001", "10047515", 1);
         ObjectMapper objectMapper = new ObjectMapper();
         System.out.println(objectMapper.writeValueAsString(setList));
     }
 
     @Test
-    public void setString(){
+    public void setString() {
         String a = null;
         String b = "Hello world";
-        System.out.println(a+b);
+        System.out.println(a + b);
 
         WorkPriorityOrderRestrictSet set = new WorkPriorityOrderRestrictSet();
-        set.setTanaType((short)1);
+        set.setTanaType((short) 1);
         WorkPriorityOrderRestrictSet set1 = new WorkPriorityOrderRestrictSet();
         WorkPriorityOrderRestrictSet set2 = new WorkPriorityOrderRestrictSet();
-        BeanUtils.copyProperties(set,set1);
-        BeanUtils.copyProperties(set,set2);
+        BeanUtils.copyProperties(set, set1);
+        BeanUtils.copyProperties(set, set2);
         set1.setTaiCd(1);
         System.out.println(set1.getTaiCd());
         System.out.println(set2.getTaiCd());
