@@ -76,7 +76,7 @@ public class PriorityOrderJanNewController {
      * @return
      */
     @GetMapping("getJanNewInfo")
-    public Map<String,Object>getJanNewInfo(String companyCd,Integer priorityOrderCd)  {
-        return priorityOrderJanNewService.getJanNewInfo(companyCd,priorityOrderCd);
+    public Map<String,Object>getJanNewInfo(String companyCd)  {
+        return priorityOrderJanNewService.getJanNewInfo(companyCd);
     }
 }

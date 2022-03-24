@@ -148,7 +148,9 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         }
 
         priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
-            priorityOrderJanNewMapper.insert(priorityOrderJanNew,authorCd);
+        if(priorityOrderJanNew.size()>0) {
+            priorityOrderJanNewMapper.insert(priorityOrderJanNew, authorCd);
+        }
             return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -183,22 +185,21 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      */
     @Override
     public Map<String, Object> setJanNewInfo(List<JanMstPlanocycleVo> janMstPlanocycleVo) {
-        String aud = session.getAttribute("aud").toString();
         String companyCd = janMstPlanocycleVo.get(0).getCompanyCd();
-        Integer priorityOrderCd =janMstPlanocycleVo.get(0).getPriorityOrderCd();
 
-        priorityOrderJanNewMapper.deleteJanNewInfo(companyCd,priorityOrderCd);
-        priorityOrderJanNewMapper.setJanNewInfo(janMstPlanocycleVo,companyCd,priorityOrderCd,aud);
+
+        priorityOrderJanNewMapper.deleteJanNewInfo(companyCd);
+        priorityOrderJanNewMapper.setJanNewInfo(janMstPlanocycleVo,companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
     /**
-     * 新规不存在商品详细信息
+     * 展示不存在商品详细信息
      * @param
      * @return
      */
     @Override
-    public Map<String, Object> getJanNewInfo(String companyCd, Integer priorityOrderCd) {
-        List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd, priorityOrderCd);
+    public Map<String, Object> getJanNewInfo(String companyCd) {
+        List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS,janNewInfo);
     }
 

@@ -747,6 +747,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 if (productPowerDatum.getJanNew() != null) {
                     productPowerDatum.setJan(productPowerDatum.getJanNew());
                 }
+                if (productPowerDatum.getRankNewResult()!=null){
+                    productPowerDatum.setRankResult(productPowerDatum.getRankNewResult());
+                }
             }
             for (ProductPowerDataDto productPowerDatum : productPowerData) {
                 newList.add(productPowerDatum);
@@ -920,8 +923,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         shelfPtsDataMapper.deletePtsVersion(id);
         //清空work_priority_order_pts_data_jandata
         shelfPtsDataMapper.deletePtsDataJandata(id);
-        //清空work_jan_mst_planocycle
-        priorityOrderJanNewMapper.deleteJanNewInfo(companyCd,priorityOrderCd);
+
 
 
     }
@@ -1017,9 +1019,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             //保存pts数据
             shelfPtsService.saveFinalPtsData(companyCd, authorCd, priorityOrderCd);
 
-            //保存新规商品信息数据
-            priorityOrderJanNewMapper.deleteFinalJanNewInfo(companyCd,priorityOrderCd);
-            priorityOrderJanNewMapper.setFinalJanNewInfo(companyCd,priorityOrderCd,authorCd);
+
             //删除临时表中的数据
 //            workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
 //            workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
@@ -1274,7 +1274,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderSortMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         workPriorityOrderSortRankMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         workPriorityOrderSpaceMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
-        priorityOrderJanNewMapper.setWorkInfoForFinal(companyCd,priorityOrderCd,aud);
+
         //获取ptsId
 
         shelfPtsDataMapper.insertWorkPtsData(companyCd, aud, priorityOrderCd);
@@ -1328,7 +1328,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //获取jan变信息
         List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd,priorityOrderCd);
         //获取商品详细信息
-        List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd, priorityOrderCd);
+        List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd);
         map.put("workPriorityOrderMst",workPriorityOrderMst);
         map.put("workPriorityOrderSpace",workPriorityOrderSpace);
         map.put("workPriorityOrderRestrictSet",workPriorityOrderRestrictSet);

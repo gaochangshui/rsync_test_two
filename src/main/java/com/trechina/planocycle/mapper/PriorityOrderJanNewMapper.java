@@ -45,14 +45,11 @@ public interface PriorityOrderJanNewMapper {
 
 
     //新规不存在商品的基本信息
-    int setJanNewInfo(@Param("list") List<JanMstPlanocycleVo> janMstPlanocycleVo,@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd,@Param("authorCd")String authorCd);
-    //保存到最终表里
-    int setFinalJanNewInfo(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd,@Param("authorCd")String authorCd);
-    int setWorkInfoForFinal(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd,@Param("authorCd")String authorCd);
+    int setJanNewInfo(@Param("list") List<JanMstPlanocycleVo> janMstPlanocycleVo,@Param("companyCd")String companyCd);
     //删除work表信息
-    int deleteJanNewInfo(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
-    //删除最终表数据
-    int deleteFinalJanNewInfo(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    int deleteJanNewInfo(@Param("companyCd")String companyCd);
+
+
     //展示work表信息
-    List<JanMstPlanocycleVo> getJanNewInfo(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    List<JanMstPlanocycleVo> getJanNewInfo(@Param("companyCd")String companyCd);
 }

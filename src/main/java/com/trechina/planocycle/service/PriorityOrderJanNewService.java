@@ -57,5 +57,5 @@ public interface PriorityOrderJanNewService {
      * @param
      * @return
      */
-    Map<String,Object>getJanNewInfo(String companyCd,Integer priorityOrderCd);
+    Map<String,Object>getJanNewInfo(String companyCd);
 }

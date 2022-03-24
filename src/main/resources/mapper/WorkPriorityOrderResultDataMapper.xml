@@ -396,12 +396,12 @@
                                                            restrict_cd, sku_rank, adopt_flag,
                                                            face, face_sku, irisu,
                                                            tai_cd, tana_cd, tana_type,
-                                                           face_keisan,sales_cnt)
+                                                           face_keisan,sales_cnt,face_fact)
       select company_cd, #{authorCd}, priority_order_cd, jan_cd,
                                                    restrict_cd, sku_rank, adopt_flag,
                                                    face, face_sku, irisu,
                                                    tai_cd, tana_cd, tana_type,
-                                                   face_keisan,sales_cnt
+                                                   face_keisan,sales_cnt,face_fact
         from planocycle.priority_order_result_data
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and priority_order_cd = #{priorityOrderCd}
