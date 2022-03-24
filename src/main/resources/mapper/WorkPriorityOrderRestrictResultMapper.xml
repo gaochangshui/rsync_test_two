@@ -181,15 +181,18 @@
   </select>
   <select id="getProductPowerData" resultType="com.trechina.planocycle.entity.dto.ProductPowerDataDto">
 
-    select mst.jan,mst.jan_new,rank_result
+    select mst.jan,mst.jan_new,rank_result,mst.jan_rank
     from ( select distinct mstData.jan,mstData.sku_name,replaces.jan_new,janMst.brand,
-    janMst.kikaku,janMst.pkg,janMst.irisu,janMst.alcohol,janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,mstData.rank_result
+    janMst.kikaku,janMst.pkg,janMst.irisu,janMst.alcohol,janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,mstData.rank_result,janNews.jan_rank
     from
     planocycle.product_power_mst_data  mstData
     left join masterdb.jan_mst janMst
     on  janMst.jan_cd = mstData.jan
     left join planocycle.work_priority_order_jan_replace replaces
     on replaces.jan_old = mstData.jan and replaces.author_cd = #{authorCd} and replaces.company_cd = #{companyCd} and  replaces.priority_order_cd = #{item.priorityOrderCd}
+    left join planocycle.work_priority_order_jan_new janNews
+    on janNews.jan_new = mstData.jan and janNews.author_cd = #{authorCd} and janNews.company_cd = #{companyCd} and  janNews.priority_order_cd = #{item.priorityOrderCd}
+
     where
     mstData.company_cd = #{companyCd} and mstData.product_power_cd=#{productPowerCd}
     and
@@ -197,12 +200,13 @@
     and card.priority_order_cd = #{item.priorityOrderCd})
     union
     select janNew.jan_new,janMst.jan_nm,null,janMst.brand,
-    janMst.kikaku,janMst.pkg,janMst.irisu,janMst.alcohol,janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janNew.jan_rank
+    janMst.kikaku,janMst.pkg,janMst.irisu,janMst.alcohol,janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janNew.jan_rank,null
     from
     planocycle.work_priority_order_jan_new janNew
     left join masterdb.jan_mst janMst
     on  janMst.jan_cd = janNew.jan_new
     where  janNew.author_cd = #{authorCd} and janNew.company_cd = #{companyCd} and janNew.priority_order_cd = #{item.priorityOrderCd}
+    and not exists (select jan from planocycle.product_power_mst_data datas where datas.jan = janNew.jan_new)
     ) mst
 
     <where>
