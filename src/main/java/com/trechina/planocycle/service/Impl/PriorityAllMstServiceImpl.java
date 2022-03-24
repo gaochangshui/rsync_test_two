@@ -1,8 +1,10 @@
 package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
-import com.trechina.planocycle.entity.dto.*;
+import com.trechina.planocycle.entity.dto.PriorityAllRestrictDto;
+import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
@@ -10,6 +12,7 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommonMstService;
 import com.trechina.planocycle.service.PriorityAllMstService;
+import com.trechina.planocycle.service.PriorityAllPtsService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
@@ -48,6 +51,8 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     private WorkPriorityAllResultDataMapper workPriorityAllResultDataMapper;
     @Autowired
     private CommonMstService commonMstService;
+    @Autowired
+    private PriorityAllPtsService priorityAllPtsService;
 
     /**
      * 新規作成＆編集の処理
@@ -237,7 +242,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
                 this.setJan(companyCd, authorCd, priorityAllCd, priorityOrderCd, pattern.getShelfPatternCd(), 1);
                 //保存pts到临时表里
-                shelfPtsService.saveWorkPtsData(companyCd, authorCd, priorityOrderCd);
+                priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
             }
         } catch(Exception ex) {
             logger.error("", ex);
