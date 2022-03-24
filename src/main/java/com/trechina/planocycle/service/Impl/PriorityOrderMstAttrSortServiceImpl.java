@@ -269,6 +269,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         String companyCd = dto.getCompanyCd();
         Long shelfPatternCd = dto.getPatternCd();
         // 1.保存mst
+        Integer productPowerCd = workPriorityOrderMstMapper.getProductPowerCd(companyCd, dto.getPriorityOrderCd());
         workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, dto.getPriorityOrderCd());
         WorkPriorityOrderMst orderMst = new WorkPriorityOrderMst();
         orderMst.setCompanyCd(companyCd);
@@ -278,19 +279,9 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         orderMst.setAttribute2(dto.getAttr2());
         orderMst.setAreaNameCd(dto.getAreaNameCd());
         orderMst.setPriorityOrderCd(dto.getPriorityOrderCd());
+        orderMst.setProductPowerCd(productPowerCd);
         workPriorityOrderMstMapper.insert(orderMst);
-        ////获取ptsCd
-        //Integer id = shelfPtsDataMapper.getId(companyCd, dto.getPriorityOrderCd());
-        ////清空work_priority_order_pts_data
-        //shelfPtsDataMapper.deletePtsData(id);
-        ////清空work_priority_order_pts_data_taimst
-        //shelfPtsDataMapper.deletePtsTaimst(id);
-        ////清空work_priority_order_pts_data_tanamst
-        //shelfPtsDataMapper.deletePtsTanamst(id);
-        ////清空work_priority_order_pts_data_version
-        //shelfPtsDataMapper.deletePtsVersion(id);
-        ////清空work_priority_order_pts_data_jandata
-        //shelfPtsDataMapper.deletePtsDataJandata(id);
+
         // 2.保存space
         workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, dto.getPriorityOrderCd());
         List<PriorityOrderAttrVO> dataList = dto.getDataList();
@@ -329,6 +320,19 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         if (!restrictSetList.isEmpty()) {
             workPriorityOrderRestrictSetMapper.insertAll(restrictSetList);
         }
+
+        //获取ptsCd
+        Integer id = shelfPtsDataMapper.getId(companyCd, dto.getPriorityOrderCd());
+        //清空work_priority_order_pts_data
+        shelfPtsDataMapper.deletePtsData(id);
+        //清空work_priority_order_pts_data_taimst
+        shelfPtsDataMapper.deletePtsTaimst(id);
+        //清空work_priority_order_pts_data_tanamst
+        shelfPtsDataMapper.deletePtsTanamst(id);
+        //清空work_priority_order_pts_data_version
+        shelfPtsDataMapper.deletePtsVersion(id);
+        //清空work_priority_order_pts_data_jandata
+        shelfPtsDataMapper.deletePtsDataJandata(id);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
