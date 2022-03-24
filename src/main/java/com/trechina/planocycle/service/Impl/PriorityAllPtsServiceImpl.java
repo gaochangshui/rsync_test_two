@@ -12,7 +12,7 @@ import com.trechina.planocycle.mapper.PriorityAllPtsMapper;
 import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
 import com.trechina.planocycle.mapper.ShelfPtsDataVersionMapper;
 import com.trechina.planocycle.service.CommonMstService;
-import com.trechina.planocycle.service.IPriorityAllPtsService;
+import com.trechina.planocycle.service.PriorityAllPtsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class PriorityAllPtsServiceImpl implements IPriorityAllPtsService {
+public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
     @Autowired
     private CommonMstService commonMstService;
     @Autowired

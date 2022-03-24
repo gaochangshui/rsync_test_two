@@ -239,7 +239,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
                 //从基本パターンresult_data中查询出来存到work_all_priority_result_data中(face、台棚放置数据不存)
                 workPriorityAllResultDataMapper.insertWKTableResultData(companyCd, priorityAllCd, priorityOrderCd, authorCd, pattern.getShelfPatternCd());
-
+                //todo：最小face数需要计算
                 this.setJan(companyCd, authorCd, priorityAllCd, priorityOrderCd, pattern.getShelfPatternCd(), 1);
                 //保存pts到临时表里
                 priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
