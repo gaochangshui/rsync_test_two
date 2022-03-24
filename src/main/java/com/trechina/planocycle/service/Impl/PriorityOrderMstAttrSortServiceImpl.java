@@ -279,7 +279,18 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         orderMst.setAreaNameCd(dto.getAreaNameCd());
         orderMst.setPriorityOrderCd(dto.getPriorityOrderCd());
         workPriorityOrderMstMapper.insert(orderMst);
-
+        ////获取ptsCd
+        //Integer id = shelfPtsDataMapper.getId(companyCd, dto.getPriorityOrderCd());
+        ////清空work_priority_order_pts_data
+        //shelfPtsDataMapper.deletePtsData(id);
+        ////清空work_priority_order_pts_data_taimst
+        //shelfPtsDataMapper.deletePtsTaimst(id);
+        ////清空work_priority_order_pts_data_tanamst
+        //shelfPtsDataMapper.deletePtsTanamst(id);
+        ////清空work_priority_order_pts_data_version
+        //shelfPtsDataMapper.deletePtsVersion(id);
+        ////清空work_priority_order_pts_data_jandata
+        //shelfPtsDataMapper.deletePtsDataJandata(id);
         // 2.保存space
         workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, dto.getPriorityOrderCd());
         List<PriorityOrderAttrVO> dataList = dto.getDataList();
