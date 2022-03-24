@@ -6,6 +6,8 @@
     <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
     <result column="priority_order_name" jdbcType="VARCHAR" property="priorityOrderName" />
     <result column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
+    <result column="partition_flag" jdbcType="INTEGER" property="partitionFlag" />
+    <result column="partition_val" jdbcType="INTEGER" property="partitionVal" />
   </resultMap>
   <!-- Home画面の基本パータンList -->
   <resultMap id="tableNameList" type="com.trechina.planocycle.entity.dto.TableNameDto">
@@ -101,6 +103,9 @@
   </select>
   <select id="selectByPriorityOrderCd" resultType="int">
     select count(*) from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and deleteflg=0
+  </select>
+  <select id="selectOrderMstByPriorityOrderCd" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and deleteflg=0
   </select>
   <update id="updateOrderName">
     update planocycle.priority_order_mst set priority_order_name=#{priorityOrderName} where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

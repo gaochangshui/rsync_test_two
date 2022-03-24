@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.TableNameDto;
+import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -53,6 +54,5 @@ public interface PriorityAllMstMapper {
     void insertWKTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd, @Param("patterns") List<Integer> patterns);
 
 
-
-
+    List<WorkPriorityOrderResultDataDto> selectByAuthorCd(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd);
 }
