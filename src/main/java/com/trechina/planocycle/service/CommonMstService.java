@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictRelation;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
 
@@ -30,4 +31,6 @@ public interface CommonMstService {
                                                              List<PtsTaiVo> taiData, List<PriorityOrderResultDataDto> workPriorityOrderResultData,
                                                              List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations,
                                                              Integer minFace);
+
+    List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData);
 }

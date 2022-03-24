@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.Impl;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.Areas;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictRelation;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
@@ -136,7 +137,6 @@ public class CommonMstServiceImpl implements CommonMstService {
 
                             setResultDataIndex = i + 1;
                             //更新已用宽度
-                            usedWidth += priorityOrderResultData.getJanWidth() * priorityOrderResultData.getFaceFact() + partitionVal;
                             resultData.add(priorityOrderResultData);
                             finalSetJanResultData.put(taiTanaKey, resultData);
                         }
@@ -225,5 +225,46 @@ public class CommonMstServiceImpl implements CommonMstService {
         }
 
         return isSetByCut;
+    }
+
+    /**
+     * 先按照台遍历再遍历棚，同一个棚的商品从左到右的顺序从1开始进行标号，棚变了，重新标号
+     *
+     * @param workPriorityOrderResultData
+     * @return
+     */
+    @Override
+    public List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData) {
+        //有棚位置的resultdata数据
+        List<WorkPriorityOrderResultDataDto> positionResultData = new ArrayList<>(workPriorityOrderResultData.size());
+        //根据台进行分组遍历
+        Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTai = workPriorityOrderResultData.stream()
+                .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTaiCd, LinkedHashMap::new, Collectors.toList()));
+
+        for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entrySet : workPriorityOrderResultDataByTai.entrySet()) {
+            Integer taiCd = entrySet.getKey();
+
+            List<WorkPriorityOrderResultDataDto> workPriorityOrderResultDataDtos = workPriorityOrderResultDataByTai.get(taiCd);
+            //根据棚进行分组遍历
+            Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTana = workPriorityOrderResultDataDtos.stream()
+                    .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTanaCd, LinkedHashMap::new, Collectors.toList()));
+            for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entry : workPriorityOrderResultDataByTana.entrySet()) {
+                //同一个棚，序号从1开始累加，下一个棚重新从1开始加
+                Integer tantaPositionCd=0;
+                Integer tanaCd = entry.getKey();
+
+                for (WorkPriorityOrderResultDataDto currentDataDto : workPriorityOrderResultDataByTana.get(tanaCd)) {
+                    currentDataDto.setTanaPositionCd(++tantaPositionCd);
+                    currentDataDto.setFaceMen(1);
+                    currentDataDto.setFaceKaiten(0);
+                    currentDataDto.setTumiagesu(1);
+                    currentDataDto.setFaceDisplayflg(0);
+                    currentDataDto.setFacePosition(1);
+                    currentDataDto.setDepthDisplayNum(1);
+                    positionResultData.add(currentDataDto);
+                }
+            }
+        }
+        return positionResultData;
     }
 }

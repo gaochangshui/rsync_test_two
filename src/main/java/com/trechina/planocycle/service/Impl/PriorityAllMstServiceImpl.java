@@ -1,15 +1,14 @@
 package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.trechina.planocycle.entity.dto.PriorityAllRestrictDto;
-import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
-import com.trechina.planocycle.entity.dto.TableNameDto;
-import com.trechina.planocycle.entity.po.ShelfPtsDataTanamst;
-import com.trechina.planocycle.entity.po.WorkPriorityAllRestrictRelation;
-import com.trechina.planocycle.entity.po.WorkPriorityAllRestrictResult;
+import com.google.common.collect.Lists;
+import com.trechina.planocycle.entity.dto.*;
+import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
+import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.service.CommonMstService;
 import com.trechina.planocycle.service.PriorityAllMstService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
@@ -44,6 +44,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     private WorkPriorityAllRestrictRelationMapper workPriorityAllRestrictRelationMapper;
     @Autowired
     private WorkPriorityAllRestrictMapper workPriorityAllRestrictMapper;
+    @Autowired
+    private WorkPriorityAllResultDataMapper workPriorityAllResultDataMapper;
+    @Autowired
+    private CommonMstService commonMstService;
 
     /**
      * 新規作成＆編集の処理
@@ -212,31 +216,59 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, basicPatternCd);
             basicRestrictList = priorityOrderRestrictResultMapper.getPriorityOrderRestrictAll(companyCd, priorityOrderCd);
             // 全パターンのList
-            for(PriorityAllPatternListVO pattern : info) {
-                if (pattern.getCheckFlag() == 1) {
+            List<PriorityAllPatternListVO> checkedInfo = info.stream().filter(vo->vo.getCheckFlag()==1).collect(Collectors.toList());
+            for(PriorityAllPatternListVO pattern : checkedInfo) {
+                // パターンのPTS台/棚List
+                List<ShelfPtsDataTanamst> tanaList = shelfPtsDataTanamstMapper.selectByPatternCd(pattern.getShelfPatternCd().longValue());
 
-                    // パターンのPTS台/棚List
-                    List<ShelfPtsDataTanamst> tanaList = shelfPtsDataTanamstMapper.selectByPatternCd(pattern.getShelfPatternCd().longValue());
+                // 全パターン制約一覧作成 workPriorityAllRestrict
+                allRestrictDtoList = makeWKRestrictList(tanaList, pattern, basicRestrictList, priorityAllCd, companyCd, authorCd, basicTannaNum);
+                // 全パターンのRelation一覧作成
+                allRelationsList = makeWKRelationList(allRestrictDtoList, tanaList, priorityAllCd, companyCd, authorCd,pattern.getShelfPatternCd());
 
-                    // 全パターン制約一覧作成 workPriorityAllRestrict
-                    allRestrictDtoList = makeWKRestrictList(tanaList, pattern, basicRestrictList, priorityAllCd, companyCd, authorCd, basicTannaNum);
-                    // 全パターンのRelation一覧作成
-                    allRelationsList = makeWKRelationList(allRestrictDtoList, tanaList, priorityAllCd, companyCd, authorCd,pattern.getShelfPatternCd());
+                // 全パターンRelationテーブル更新
+                workPriorityAllRestrictRelationMapper.insertWKTableRelation(allRelationsList);
+                // 全パターン制約テーブルに保存
+                workPriorityAllRestrictMapper.insertWKTableRestrict(allRestrictDtoList);
 
 
-                    // 全パターンRelationテーブル更新
-                    workPriorityAllRestrictRelationMapper.insertWKTableRelation(allRelationsList);
-                    // 全パターン制約テーブルに保存
-                    workPriorityAllRestrictMapper.insertWKTableRestrict(allRestrictDtoList);
-                }
+                //从基本パターンresult_data中查询出来存到work_all_priority_result_data中(face、台棚放置数据不存)
+                workPriorityAllResultDataMapper.insertWKTableResultData(companyCd, priorityAllCd, priorityOrderCd, authorCd, pattern.getShelfPatternCd());
+
+                this.setJan(companyCd, authorCd, priorityAllCd, priorityOrderCd, pattern.getShelfPatternCd(), 1);
+                //保存pts到临时表里
+                shelfPtsService.saveWorkPtsData(companyCd, authorCd, priorityOrderCd);
             }
         } catch(Exception ex) {
+            logger.error("", ex);
             return ResultMaps.result(ResultEnum.FAILURE, ex.getMessage());
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS, "計算成功しました。");
     }
 
+    @Override
+    public boolean setJan(String companyCd, String authorCd, Integer priorityAllCd, Integer priorityOrderCd, Integer shelfPatternCd, Integer minFace) {
+        PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
+
+        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityAllRestrictRelationMapper.selectByAuthorCd(companyCd, priorityAllCd, authorCd, shelfPatternCd);
+        List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityAllResultDataMapper.getResultJans(companyCd, priorityAllCd,authorCd,shelfPatternCd);
+        List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(shelfPatternCd);
+
+        Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
+        Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
+
+        Map<String, List<PriorityOrderResultDataDto>> finalSetJanResultData =
+                commonMstService.commSetJan(partitionFlag, partitionVal, taiData,
+                        workPriorityOrderResultData, workPriorityOrderRestrictRelations, minFace);
+
+        for (String taiTanaKey : finalSetJanResultData.keySet()) {
+            List<PriorityOrderResultDataDto> resultDataDtos = finalSetJanResultData.get(taiTanaKey);
+            workPriorityAllResultDataMapper.updateTaiTanaBatch(companyCd, priorityAllCd, shelfPatternCd, authorCd, resultDataDtos);
+        }
+
+        return true;
+    }
     /**
      * 保存
      * @param companyCd
@@ -280,6 +312,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
         // チェックされたパターン
         BigDecimal inX = new BigDecimal(pattern.getTanaCnt()).divide(basicTannaNum, 2, BigDecimal.ROUND_DOWN);
+        logger.info("基本パターン：{}, 全パターン：{},系数：{}", pattern.getTanaCnt(), basicTannaNum, inX.doubleValue());
         BigDecimal allTanaNum = new BigDecimal(0);
         // 基本パターンの制約List
         for(WorkPriorityAllRestrictResult basicSet : basicRestrictList) {
@@ -303,11 +336,16 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             //      係数<1 の場合「基本より小さい場合
             //          tana_cnt が１及び以下の分は維持
             //          tana_cnt が１より大きい分は係数*tana_cnt、小数点は切り捨て
-            Integer tmpTanaCnt = inX.multiply(basicSet.getTanaCnt()).intValue();
-            if(tmpTanaCnt < 1) {
-                allSet.setTanaCnt(new BigDecimal(0.5));
+            BigDecimal basicTanaCnt = basicSet.getTanaCnt();
+            Integer tmpTanaCnt = inX.multiply(basicTanaCnt).intValue();
+            allSet.setBasicTanaCnt(basicTanaCnt);
+
+            if(basicTanaCnt.compareTo(BigDecimal.valueOf(0.5))==0) {
+                allSet.setTanaCnt(BigDecimal.valueOf(0.5));
+                logger.info("扩/缩后：{}", 0.5);
             } else {
                 allSet.setTanaCnt(new BigDecimal(tmpTanaCnt));
+                logger.info("扩/缩后：{}", tmpTanaCnt);
             }
 
             allSet.setSkuCnt(allSet.getTanaCnt().multiply(new BigDecimal(13)).intValue());
@@ -318,13 +356,18 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         // 残棚がある場合
         if (new BigDecimal(pattern.getTanaCnt()).compareTo(allTanaNum) > 0 ) {
             //　棚数の小順
-            Collections.sort(allRestrictDtoList ,(a, b)->{
-                return b.getTanaCnt().compareTo(a.getTanaCnt());
-            });
+            allRestrictDtoList.sort((a, b) -> b.getBasicTanaCnt().compareTo(a.getBasicTanaCnt()));
+
             // 棚数が多い制約から棚追加
             for(PriorityAllRestrictDto allRestrict : allRestrictDtoList) {
-                if (new BigDecimal(pattern.getTanaCnt()).subtract(allTanaNum).compareTo(new BigDecimal(1)) < 0) {
-                    allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(new BigDecimal(0.5)));
+                BigDecimal remainTanaCnt = new BigDecimal(pattern.getTanaCnt()).subtract(allTanaNum);
+                if(remainTanaCnt.compareTo(BigDecimal.ZERO)==0){
+                    //没有剩余的tana数，直接结束
+                    break;
+                }
+                logger.info("基本{}, 扩缩后{}", allRestrict.getBasicTanaCnt(), allRestrict.getTanaCnt());
+                if (remainTanaCnt.compareTo(new BigDecimal(1)) < 0) {
+                    allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(BigDecimal.valueOf(0.5)));
                     allRestrict.setSkuCnt(allRestrict.getSkuCnt() + 7);
                     break;
                 } else {
@@ -335,9 +378,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             }
         }
         // 制約IDにより並び替え
-        Collections.sort(allRestrictDtoList ,(a, b)->{
-            return a.getRestrictCd().intValue() - b.getRestrictCd().intValue();
-        });
+        Collections.sort(allRestrictDtoList , Comparator.comparingInt(a -> a.getRestrictCd().intValue()));
 
         return allRestrictDtoList;
     }
@@ -368,7 +409,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             relation.setTaiCd(tanaInfo.getTaiCd());
             relation.setTanaCd(tanaInfo.getTanaCd());
             relation.setRestrictCd(allRestrictDtoList.get(iRestrict).getRestrictCd());
-            if (iTanaCnt.compareTo(new BigDecimal(0.5)) == 0) {
+            if (iTanaCnt.compareTo(BigDecimal.valueOf(0.5)) == 0) {
                 // 該当制約の面積が半棚の場合
                 relation.setTanaType((short) 1);
                 // 該当棚の残り半分を次の制約を設定する
@@ -383,7 +424,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 iRestrict++;
                 relation2.setRestrictCd(allRestrictDtoList.get(iRestrict).getRestrictCd());
                 // 次の制約の棚Cntは半分を減らす
-                iTanaCnt = allRestrictDtoList.get(iRestrict).getTanaCnt().subtract(new BigDecimal(0.5));
+                iTanaCnt = allRestrictDtoList.get(iRestrict).getTanaCnt().subtract(BigDecimal.valueOf(0.5));
                 if (iTanaCnt.compareTo(new BigDecimal(0)) == 0 && iRestrict < allRestrictDtoList.size() - 1){
                     // まだ終わってないから次へ
                     iRestrict++;

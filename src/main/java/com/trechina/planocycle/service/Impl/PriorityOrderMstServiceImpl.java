@@ -687,8 +687,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                     // 台棚数量累加
                     long tanaCnt = restrictResult.getTanaCnt() + 1;
                     restrictResult.setTanaCnt(tanaCnt);
-                    // TODO:每个棚固定13个品类
-                    restrictResult.setSkuCnt(tanaCnt * skuCountPerPattan);
+                    // TODO:每个棚固定13个品类, 扩大三倍取商品，全パターン直接用这些商品
+                    restrictResult.setSkuCnt(tanaCnt * skuCountPerPattan * 3);
                 }
 
                 orderRestrictRelationList.add(orderRestrictRelation);

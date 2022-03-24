@@ -9,6 +9,26 @@ public class PriorityOrderMst {
 
     private Integer productPowerCd;
 
+    private Short partitionFlag;
+
+    private Short partitionVal;
+
+    public Short getPartitionFlag() {
+        return partitionFlag;
+    }
+
+    public void setPartitionFlag(Short partitionFlag) {
+        this.partitionFlag = partitionFlag;
+    }
+
+    public Short getPartitionVal() {
+        return partitionVal;
+    }
+
+    public void setPartitionVal(Short partitionVal) {
+        this.partitionVal = partitionVal;
+    }
+
     public String getCompanyCd() {
         return companyCd;
     }

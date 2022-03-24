@@ -20,5 +20,11 @@
         and company_cd = #{companyCd,jdbcType=VARCHAR}
         and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
-
+    <select id="selectByAuthorCd" resultType="com.trechina.planocycle.entity.dto.WorkPriorityAllRestrictRelationDto">
+        select tai_cd,tana_cd,tana_type,restrict_cd from planocycle.work_priority_all_restrict_relation
+        where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
+        and priority_all_cd = #{priorityAllCd,jdbcType=INTEGER} and restrict_cd is not null
+        and shelf_pattern_cd=#{shelfPatternCd}
+        order by tai_cd,tana_cd,tana_type
+    </select>
 </mapper>

@@ -45,6 +45,8 @@ public interface PriorityAllMstService {
      */
     Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto);
 
+    boolean setJan(String companyCd, String authorCd, Integer priorityAllCd, Integer priorityOrderCd, Integer shelfPatternCd, Integer minFace);
+
     /**
      * 自动计算
      * @return
