@@ -743,7 +743,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             List<ProductPowerDataDto> newList = new ArrayList<>();
             workPriorityOrderRestrictResult.setPriorityOrderCd(priorityOrderCd);
             List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, companyCd, productPowerCd, authorCd);
+
             for (ProductPowerDataDto productPowerDatum : productPowerData) {
+
                 if (productPowerDatum.getJanNew() != null) {
                     productPowerDatum.setJan(productPowerDatum.getJanNew());
                 }
@@ -1162,10 +1164,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                             usedWidth += priorityOrderResultData.getJanWidth() * priorityOrderResultData.getFaceFact() + partitionVal;
                             resultData.add(priorityOrderResultData);
                             finalSetJanResultData.put(taiTanaKey, resultData);
-                        }else{
-                            //根据face数进行摆放放不开，直接不放，结束该位置的摆放
-                            break;
                         }
+
+                        //根据face数进行摆放放不开，直接不放，结束该位置的摆放
+                        break;
                     }
                 }
             }
@@ -1181,14 +1183,14 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
     /**
      * 通过cut face数是否能放下
-     * 逻辑：第一步：先对要放置的商品进行face数--
+     * 逻辑：第一步：先对要放置的商品进行face数-1
      *          1.如果face数*商品宽度能放下就放，记下实际存放的face数
-     *          2.减到face数==最小face数还是放不下，走第二步
+     *          2.放不下，走第二步
      *      第二步：对同一台棚区分(taiCd_tanaCd_tanaType)中的商品list倒序进行cut face判断
      *          1.如果没有入数irisu=1的商品则不进行cut，直接结束
-     *          2.如果有入数irisu=1，倒序遍历商品list，进行face数--
+     *          2.如果有入数irisu=1，倒序遍历商品list，进行face数-1
      *              3.如果face数*宽度能放下就放，记下实际存放的face数
-     *              4.如果face数减到最小face数，还是无法放下，结束，该位置不放了
+     *              4.无法放下，结束，该位置不放了
      * @param resultDataDtoList 同台棚区分的商品list
      * @param targetResultData 要放置的商品
      * @param width 当前台棚区分的宽度
@@ -1229,9 +1231,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 return false;
             }
 
-            //按照最小face进行放置，需要多少宽度（需要考虑有隔板的情况）
-            long needWidth = targetResultData.getJanWidth() * minFace + partitionVal;
-            for (int i = resultDataDtoByIrisu.size()-1; i >= minFace ; i--) {
+            //按照最小face进行放置，需要多少宽度（需要考虑有隔板的情况）+剩下没用的宽度
+            double needWidth = targetResultData.getJanWidth() * minFace + partitionVal;
+            for (int i = resultDataDtoByIrisu.size()-1; i >= 0 ; i--) {
                 PriorityOrderResultDataDto currentResultData = resultDataDtoByIrisu.get(i);
                 Long faceFact = currentResultData.getFaceFact();
 
@@ -1240,16 +1242,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                     continue;
                 }
 
-                //当前商品还能减几个face数
-                long remainFace = faceFact - minFace;
-                for (long j = 1; j <= remainFace; j++) {
-                    //cut n 个face的宽度是否能满足目标上面放置需要的宽度
-                    if(currentResultData.getJanWidth()*j >= needWidth){
-                        currentResultData.setFaceFact(currentResultData.getFaceFact() -  j);
-                        targetResultData.setFaceFact(minFace);
-                        isSetByCut = true;
-                        break;
-                    }
+                //当前商品减一个face数，能不能放下目标商品
+                //cut 1 个face的宽度再加剩下的宽度是否能满足目标上面放置需要的宽度
+                if(currentResultData.getJanWidth() + remainderWidth >= needWidth){
+                    currentResultData.setFaceFact(faceFact -  1);
+                    targetResultData.setFaceFact(minFace);
+                    isSetByCut = true;
+                    break;
                 }
             }
         }

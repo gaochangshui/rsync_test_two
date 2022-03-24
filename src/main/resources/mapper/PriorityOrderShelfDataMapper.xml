@@ -56,6 +56,6 @@
                             on jans.jan_cd = datas.jan_cd
         where datas.tai_cd = #{item.taiCd} and datas.tana_cd = #{item.tanaCd} and datas.tana_type = #{item.tanaType}
         and datas.company_cd = #{item.companyCd} and datas.author_cd =#{authorCd} and datas.priority_order_cd = #{item.priorityOrderCd}
-        order by tai_cd,tana_cd,sku_rank
+        order by sku_rank
     </select>
 </mapper>

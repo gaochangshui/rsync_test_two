@@ -193,7 +193,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         // 基本パターンに紐付け棚パターンCDをもらう
         Integer basicPatternCd = 0;
         BigDecimal basicTannaNum = new BigDecimal(0);
-        BigDecimal allTanaNum = new BigDecimal(0);
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = priorityAllSaveDto.getCompanyCd();
         Integer priorityAllCd = priorityAllSaveDto.getPriorityAllCd();
@@ -212,126 +211,18 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             basicTannaNum = new BigDecimal(shelfPtsDataMapper.getTanaNum(basicPatternCd));
             info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, basicPatternCd);
             basicRestrictList = priorityOrderRestrictResultMapper.getPriorityOrderRestrictAll(companyCd, priorityOrderCd);
-            BigDecimal inX = new BigDecimal(1.00);   // 係数
             // 全パターンのList
             for(PriorityAllPatternListVO pattern : info) {
                 if (pattern.getCheckFlag() == 1) {
-                    allRestrictDtoList = new ArrayList<>();
-                    allRelationsList = new ArrayList<>();
-                    // チェックされたパターン
-                    inX = new BigDecimal(pattern.getTanaCnt()).divide(basicTannaNum, 2, BigDecimal.ROUND_DOWN);
-                    allTanaNum = new BigDecimal(0);
-                    // 基本パターンの制約List
-                    for(WorkPriorityAllRestrictResult basicSet : basicRestrictList) {
-                        PriorityAllRestrictDto allSet = new PriorityAllRestrictDto();
-                        allSet.setPriorityAllCd(priorityAllCd);
-                        allSet.setCompanyCd(companyCd);
-                        allSet.setAuthorCd(authorCd);
-                        allSet.setPatternCd(pattern.getShelfPatternCd());
-                        allSet.setRestrictCd(basicSet.getRestrictCd());
-                        allSet.setZokusei1(basicSet.getZokusei1());
-                        allSet.setZokusei2(basicSet.getZokusei2());
-                        allSet.setZokusei3(basicSet.getZokusei3());
-                        allSet.setZokusei4(basicSet.getZokusei4());
-                        allSet.setZokusei5(basicSet.getZokusei5());
-                        allSet.setZokusei6(basicSet.getZokusei6());
-                        allSet.setZokusei7(basicSet.getZokusei7());
-                        allSet.setZokusei8(basicSet.getZokusei8());
-                        allSet.setZokusei9(basicSet.getZokusei9());
-                        allSet.setZokusei10(basicSet.getZokusei10());
-
-                        //      係数<1 の場合「基本より小さい場合
-                        //          tana_cnt が１及び以下の分は維持
-                        //          tana_cnt が１より大きい分は係数*tana_cnt、小数点は切り捨て
-                        Integer tmpTanaCnt = inX.multiply(basicSet.getTanaCnt()).intValue();
-                        if(tmpTanaCnt < 1) {
-                            allSet.setTanaCnt(new BigDecimal(0.5));
-                        } else {
-                            allSet.setTanaCnt(new BigDecimal(tmpTanaCnt));
-                        }
-
-                        allSet.setSkuCnt(allSet.getTanaCnt().multiply(new BigDecimal(13)).intValue());
-                        // 全パターン制約に追加
-                        allRestrictDtoList.add(allSet);
-                        allTanaNum = allTanaNum.add(allSet.getTanaCnt());
-                    }
-                    // 残棚がある場合
-                    if (new BigDecimal(pattern.getTanaCnt()).compareTo(allTanaNum) > 0 ) {
-                        //　棚数の小順
-                        Collections.sort(allRestrictDtoList ,(a, b)->{
-                            return b.getTanaCnt().compareTo(a.getTanaCnt());
-                        });
-                        // 棚数が多い制約から棚追加
-                        for(PriorityAllRestrictDto allRestrict : allRestrictDtoList) {
-                            if (new BigDecimal(pattern.getTanaCnt()).subtract(allTanaNum).compareTo(new BigDecimal(1)) < 0) {
-                                allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(new BigDecimal(0.5)));
-                                allRestrict.setSkuCnt(allRestrict.getSkuCnt() + 7);
-                                break;
-                            } else {
-                                allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(new BigDecimal(1)));
-                                allRestrict.setSkuCnt(allRestrict.getSkuCnt() + 13);
-                                allTanaNum = allTanaNum.add(new BigDecimal(1));
-                            }
-                        }
-                    }
-                    // 制約IDにより並び替え
-                    Collections.sort(allRestrictDtoList ,(a, b)->{
-                        return a.getRestrictCd().intValue() - b.getRestrictCd().intValue();
-                    });
 
                     // パターンのPTS台/棚List
                     List<ShelfPtsDataTanamst> tanaList = shelfPtsDataTanamstMapper.selectByPatternCd(pattern.getShelfPatternCd().longValue());
-                    int iRestrict = 0;
-                    BigDecimal iTanaCnt = allRestrictDtoList.get(0).getTanaCnt();
-                    for (ShelfPtsDataTanamst tanaInfo : tanaList) {
-                        WorkPriorityAllRestrictRelation relation = new WorkPriorityAllRestrictRelation();
-                        WorkPriorityAllRestrictRelation relation2 = null;
-                        relation.setPriorityAllCd(priorityAllCd);
-                        relation.setCompanyCd(companyCd);
-                        relation.setAuthorCd(authorCd);
-                        relation.setPatternCd(pattern.getShelfPatternCd());
-                        relation.setTaiCd(tanaInfo.getTaiCd());
-                        relation.setTanaCd(tanaInfo.getTanaCd());
-                        relation.setRestrictCd(allRestrictDtoList.get(iRestrict).getRestrictCd());
-                        if (iTanaCnt.compareTo(new BigDecimal(0.5)) == 0) {
-                            // 該当制約の面積が半棚の場合
-                            relation.setTanaType((short) 1);
-                            // 該当棚の残り半分を次の制約を設定する
-                            relation2 = new WorkPriorityAllRestrictRelation();
-                            relation2.setPriorityAllCd(priorityAllCd);
-                            relation2.setCompanyCd(companyCd);
-                            relation2.setAuthorCd(authorCd);
-                            relation2.setPatternCd(pattern.getShelfPatternCd());
-                            relation2.setTaiCd(tanaInfo.getTaiCd());
-                            relation2.setTanaCd(tanaInfo.getTanaCd());
-                            relation2.setTanaType((short) 2);
-                            iRestrict++;
-                            relation2.setRestrictCd(allRestrictDtoList.get(iRestrict).getRestrictCd());
-                            // 次の制約の棚Cntは半分を減らす
-                            iTanaCnt = allRestrictDtoList.get(iRestrict).getTanaCnt().subtract(new BigDecimal(0.5));
-                            if (iTanaCnt.compareTo(new BigDecimal(0)) == 0 && iRestrict < allRestrictDtoList.size() - 1){
-                                // まだ終わってないから次へ
-                                iRestrict++;
-                                iTanaCnt = allRestrictDtoList.get(iRestrict).getTanaCnt();
-                            }
-                        } else if (iTanaCnt.compareTo(new BigDecimal(1)) == 0) {
-                            // 残り棚数１の場合、該当制約設定完了次の制約へ
-                            relation.setTanaType((short)0);
-                            if (iRestrict < allRestrictDtoList.size() - 1) {
-                                iRestrict++;
-                                iTanaCnt = allRestrictDtoList.get(iRestrict).getTanaCnt();
-                            }
-                        } else {
-                            // 残棚数が１以上の場合、この制約の棚Cnt-１で次の棚に行く
-                            relation.setTanaType((short)0);
-                            iTanaCnt = iTanaCnt.subtract(new BigDecimal(1));
-                        }
-                        // Listに追加
-                        allRelationsList.add(relation);
-                        if (relation2 != null) {
-                            allRelationsList.add(relation2);
-                        }
-                    }
+
+                    // 全パターン制約一覧作成 workPriorityAllRestrict
+                    allRestrictDtoList = makeWKRestrictList(tanaList, pattern, basicRestrictList, priorityAllCd, companyCd, authorCd, basicTannaNum);
+                    // 全パターンのRelation一覧作成
+                    allRelationsList = makeWKRelationList(allRestrictDtoList, tanaList, priorityAllCd, companyCd, authorCd,pattern.getShelfPatternCd());
+
 
                     // 全パターンRelationテーブル更新
                     workPriorityAllRestrictRelationMapper.insertWKTableRelation(allRelationsList);
@@ -371,4 +262,151 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         return null;
     }
 
+    /**
+     * 基本パターンの制約により各パターンの制約一覧を作成
+     * @param tanaList
+     * @param pattern
+     * @param basicRestrictList
+     * @param priorityAllCd
+     * @param companyCd
+     * @param authorCd
+     * @param basicTannaNum
+     * @return
+     */
+    private List<PriorityAllRestrictDto> makeWKRestrictList(List<ShelfPtsDataTanamst> tanaList, PriorityAllPatternListVO pattern
+            , List<WorkPriorityAllRestrictResult> basicRestrictList, Integer priorityAllCd
+            , String companyCd, String  authorCd, BigDecimal basicTannaNum) {
+        List<PriorityAllRestrictDto> allRestrictDtoList = new ArrayList<>();
+
+        // チェックされたパターン
+        BigDecimal inX = new BigDecimal(pattern.getTanaCnt()).divide(basicTannaNum, 2, BigDecimal.ROUND_DOWN);
+        BigDecimal allTanaNum = new BigDecimal(0);
+        // 基本パターンの制約List
+        for(WorkPriorityAllRestrictResult basicSet : basicRestrictList) {
+            PriorityAllRestrictDto allSet = new PriorityAllRestrictDto();
+            allSet.setPriorityAllCd(priorityAllCd);
+            allSet.setCompanyCd(companyCd);
+            allSet.setAuthorCd(authorCd);
+            allSet.setPatternCd(pattern.getShelfPatternCd());
+            allSet.setRestrictCd(basicSet.getRestrictCd());
+            allSet.setZokusei1(basicSet.getZokusei1());
+            allSet.setZokusei2(basicSet.getZokusei2());
+            allSet.setZokusei3(basicSet.getZokusei3());
+            allSet.setZokusei4(basicSet.getZokusei4());
+            allSet.setZokusei5(basicSet.getZokusei5());
+            allSet.setZokusei6(basicSet.getZokusei6());
+            allSet.setZokusei7(basicSet.getZokusei7());
+            allSet.setZokusei8(basicSet.getZokusei8());
+            allSet.setZokusei9(basicSet.getZokusei9());
+            allSet.setZokusei10(basicSet.getZokusei10());
+
+            //      係数<1 の場合「基本より小さい場合
+            //          tana_cnt が１及び以下の分は維持
+            //          tana_cnt が１より大きい分は係数*tana_cnt、小数点は切り捨て
+            Integer tmpTanaCnt = inX.multiply(basicSet.getTanaCnt()).intValue();
+            if(tmpTanaCnt < 1) {
+                allSet.setTanaCnt(new BigDecimal(0.5));
+            } else {
+                allSet.setTanaCnt(new BigDecimal(tmpTanaCnt));
+            }
+
+            allSet.setSkuCnt(allSet.getTanaCnt().multiply(new BigDecimal(13)).intValue());
+            // 全パターン制約に追加
+            allRestrictDtoList.add(allSet);
+            allTanaNum = allTanaNum.add(allSet.getTanaCnt());
+        }
+        // 残棚がある場合
+        if (new BigDecimal(pattern.getTanaCnt()).compareTo(allTanaNum) > 0 ) {
+            //　棚数の小順
+            Collections.sort(allRestrictDtoList ,(a, b)->{
+                return b.getTanaCnt().compareTo(a.getTanaCnt());
+            });
+            // 棚数が多い制約から棚追加
+            for(PriorityAllRestrictDto allRestrict : allRestrictDtoList) {
+                if (new BigDecimal(pattern.getTanaCnt()).subtract(allTanaNum).compareTo(new BigDecimal(1)) < 0) {
+                    allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(new BigDecimal(0.5)));
+                    allRestrict.setSkuCnt(allRestrict.getSkuCnt() + 7);
+                    break;
+                } else {
+                    allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(new BigDecimal(1)));
+                    allRestrict.setSkuCnt(allRestrict.getSkuCnt() + 13);
+                    allTanaNum = allTanaNum.add(new BigDecimal(1));
+                }
+            }
+        }
+        // 制約IDにより並び替え
+        Collections.sort(allRestrictDtoList ,(a, b)->{
+            return a.getRestrictCd().intValue() - b.getRestrictCd().intValue();
+        });
+
+        return allRestrictDtoList;
+    }
+
+    /**
+     * Relation一覧を作成
+     * @param allRestrictDtoList
+     * @param tanaList
+     * @param priorityAllCd
+     * @param companyCd
+     * @param authorCd
+     * @param patternCd
+     * @return
+     */
+    private List<WorkPriorityAllRestrictRelation> makeWKRelationList(List<PriorityAllRestrictDto> allRestrictDtoList
+            , List<ShelfPtsDataTanamst> tanaList, Integer priorityAllCd, String companyCd
+            , String  authorCd, Integer patternCd){
+        List<WorkPriorityAllRestrictRelation> allRelationsList = new ArrayList<>();
+        int iRestrict = 0;
+        BigDecimal iTanaCnt = allRestrictDtoList.get(0).getTanaCnt();
+        for (ShelfPtsDataTanamst tanaInfo : tanaList) {
+            WorkPriorityAllRestrictRelation relation = new WorkPriorityAllRestrictRelation();
+            WorkPriorityAllRestrictRelation relation2 = null;
+            relation.setPriorityAllCd(priorityAllCd);
+            relation.setCompanyCd(companyCd);
+            relation.setAuthorCd(authorCd);
+            relation.setPatternCd(patternCd);
+            relation.setTaiCd(tanaInfo.getTaiCd());
+            relation.setTanaCd(tanaInfo.getTanaCd());
+            relation.setRestrictCd(allRestrictDtoList.get(iRestrict).getRestrictCd());
+            if (iTanaCnt.compareTo(new BigDecimal(0.5)) == 0) {
+                // 該当制約の面積が半棚の場合
+                relation.setTanaType((short) 1);
+                // 該当棚の残り半分を次の制約を設定する
+                relation2 = new WorkPriorityAllRestrictRelation();
+                relation2.setPriorityAllCd(priorityAllCd);
+                relation2.setCompanyCd(companyCd);
+                relation2.setAuthorCd(authorCd);
+                relation2.setPatternCd(patternCd);
+                relation2.setTaiCd(tanaInfo.getTaiCd());
+                relation2.setTanaCd(tanaInfo.getTanaCd());
+                relation2.setTanaType((short) 2);
+                iRestrict++;
+                relation2.setRestrictCd(allRestrictDtoList.get(iRestrict).getRestrictCd());
+                // 次の制約の棚Cntは半分を減らす
+                iTanaCnt = allRestrictDtoList.get(iRestrict).getTanaCnt().subtract(new BigDecimal(0.5));
+                if (iTanaCnt.compareTo(new BigDecimal(0)) == 0 && iRestrict < allRestrictDtoList.size() - 1){
+                    // まだ終わってないから次へ
+                    iRestrict++;
+                    iTanaCnt = allRestrictDtoList.get(iRestrict).getTanaCnt();
+                }
+            } else if (iTanaCnt.compareTo(new BigDecimal(1)) == 0) {
+                // 残り棚数１の場合、該当制約設定完了次の制約へ
+                relation.setTanaType((short)0);
+                if (iRestrict < allRestrictDtoList.size() - 1) {
+                    iRestrict++;
+                    iTanaCnt = allRestrictDtoList.get(iRestrict).getTanaCnt();
+                }
+            } else {
+                // 残棚数が１以上の場合、この制約の棚Cnt-１で次の棚に行く
+                relation.setTanaType((short)0);
+                iTanaCnt = iTanaCnt.subtract(new BigDecimal(1));
+            }
+            // Listに追加
+            allRelationsList.add(relation);
+            if (relation2 != null) {
+                allRelationsList.add(relation2);
+            }
+        }
+        return allRelationsList;
+    }
 }
