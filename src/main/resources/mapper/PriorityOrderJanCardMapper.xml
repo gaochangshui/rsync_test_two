@@ -37,7 +37,7 @@
     values
        <foreach collection="lists" separator="," item="list">
 
-       (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janCd,jdbcType=VARCHAR},#{authorCd})
+       (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, trim(#{list.janCd}),#{authorCd})
 
        </foreach>
   </insert>

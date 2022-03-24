@@ -208,11 +208,11 @@
             on tai.pts_cd = tana.pts_cd
             and tai.tai_cd = tana.tai_cd
         where shelf.company_cd = #{companyCd,jdbcType=VARCHAR}
-<!--            and shelf.shelf_name_cd = (-->
-<!--                    select shelf_name_cd-->
-<!--                    from planocycle.shelf_pattern_mst-->
-<!--                    where shelf_pattern_cd = #{patternCd})-->
-<!--             and shelf.shelf_pattern_cd != #{patternCd}-->
+            and shelf.shelf_name_cd = (
+                    select shelf_name_cd
+                    from planocycle.shelf_pattern_mst
+                    where shelf_pattern_cd = #{patternCd})
+             and shelf.shelf_pattern_cd != #{patternCd}
         group by shelfnm.shelf_name,shelf.shelf_pattern_cd,shelf.shelf_pattern_name,allshelf.shelf_patten_cd
         order by shelf.shelf_pattern_cd
     </select>

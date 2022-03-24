@@ -119,7 +119,6 @@ public class ShelfPtsController {
         return shelfPtsService.getTaiNumTanaNum(patternCd,priorityOrderCd);
 
     }
-
     /**
      * 获取棚pattern 关联pts的详细信息
      * @param patternCd

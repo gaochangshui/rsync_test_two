@@ -110,4 +110,7 @@
         from planocycle.shelf_pattern_mst
         where shelf_pattern_cd = #{shelfPattern}
     </select>
+  <select id="getProductPowerCd" resultType="java.lang.Integer">
+    select product_power_cd from planocycle.work_priority_order_mst where company_cd =#{companyCd} and  priority_order_cd = #{priorityOrderCd}
+  </select>
 </mapper>

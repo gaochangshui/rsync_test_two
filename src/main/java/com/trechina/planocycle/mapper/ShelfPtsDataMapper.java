@@ -72,7 +72,7 @@ public interface ShelfPtsDataMapper {
     //获取棚pattern名称
     String getPatternName(@Param("patternCd")Integer ternCd);
 
-
+    Integer getpatternCd(@Param("priorityOrderCd")Integer priorityOrderCd);
 
     //header/列名
     PtsDetailDataVo getPtsDetailData(@Param("patternCd")Integer patternCd);

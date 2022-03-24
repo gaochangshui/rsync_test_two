@@ -2,10 +2,7 @@ package com.trechina.planocycle.service.Impl;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderSpaceDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
-import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictSet;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderSpace;
+import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrValue;
@@ -162,8 +159,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
             int attrSort = priorityOrderMstAttrSortMapper.getAttrSort(attr1);
             int attrSort1 = priorityOrderMstAttrSortMapper.getAttrSort(attr2);
-            List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort,ptsCd);
-            List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort1,ptsCd);
+            List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort, ptsCd);
+            List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort1, ptsCd);
             PriorityOrderAttrVO priorityOrderAttr = null;
             if (attrSort > attrSort1) {
 
@@ -226,8 +223,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
         } else {
 
-            List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(attr2,ptsCd);
-            List<PriorityOrderAttrListVo> attrValue1 = priorityOrderMstAttrSortMapper.getAttrValue(attr1,ptsCd);
+            List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(attr2, ptsCd);
+            List<PriorityOrderAttrListVo> attrValue1 = priorityOrderMstAttrSortMapper.getAttrValue(attr1, ptsCd);
 
 
             PriorityOrderAttrVO priorityOrderAttrVO = null;
@@ -255,7 +252,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             }
 
         }
-        logger.info("attrList:{}",attrList);
+        logger.info("attrList:{}", attrList);
         Collections.sort(attrList, (o1, o2) -> o2.getExistingZoning().compareTo(o1.getExistingZoning()));
         int i = 1;
         for (PriorityOrderAttrVO priorityOrderAttrVO : attrList) {
@@ -272,6 +269,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         String companyCd = dto.getCompanyCd();
         Long shelfPatternCd = dto.getPatternCd();
         // 1.保存mst
+        Integer productPowerCd = workPriorityOrderMstMapper.getProductPowerCd(companyCd, dto.getPriorityOrderCd());
         workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, dto.getPriorityOrderCd());
         WorkPriorityOrderMst orderMst = new WorkPriorityOrderMst();
         orderMst.setCompanyCd(companyCd);
@@ -281,6 +279,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         orderMst.setAttribute2(dto.getAttr2());
         orderMst.setAreaNameCd(dto.getAreaNameCd());
         orderMst.setPriorityOrderCd(dto.getPriorityOrderCd());
+        orderMst.setProductPowerCd(productPowerCd);
         workPriorityOrderMstMapper.insert(orderMst);
 
         // 2.保存space
@@ -310,16 +309,30 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
         // 3.space转化为制约条件
         workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd, dto.getPriorityOrderCd());
+        List<ShelfPtsDataTanamst> ptsDataTanamstList = shelfPtsDataTanamstMapper.selectByPatternCd(shelfPatternCd);
         List<ShelfPtsDataTanaCount> tanaCountList = shelfPtsDataTanamstMapper.ptsTanaCountByTai(shelfPatternCd);
         List<WorkPriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
         try {
-            restrictSetList = this.setRestrict(dataList, tanaCountList, dto.getAttr1(), dto.getAttr2(), companyCd, authorCd, dto.getPriorityOrderCd());
+            restrictSetList = this.setRestrict(dataList, ptsDataTanamstList, tanaCountList, dto.getAttr1(), dto.getAttr2(), companyCd, authorCd, dto.getPriorityOrderCd());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             logger.error(e.getMessage());
         }
         if (!restrictSetList.isEmpty()) {
             workPriorityOrderRestrictSetMapper.insertAll(restrictSetList);
         }
+
+        //获取ptsCd
+        Integer id = shelfPtsDataMapper.getId(companyCd, dto.getPriorityOrderCd());
+        //清空work_priority_order_pts_data
+        shelfPtsDataMapper.deletePtsData(id);
+        //清空work_priority_order_pts_data_taimst
+        shelfPtsDataMapper.deletePtsTaimst(id);
+        //清空work_priority_order_pts_data_tanamst
+        shelfPtsDataMapper.deletePtsTanamst(id);
+        //清空work_priority_order_pts_data_version
+        shelfPtsDataMapper.deletePtsVersion(id);
+        //清空work_priority_order_pts_data_jandata
+        shelfPtsDataMapper.deletePtsDataJandata(id);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -331,7 +344,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         return ResultMaps.result(ResultEnum.SUCCESS, editAttributeArea);
     }
 
-    private List<WorkPriorityOrderRestrictSet> packageRestrict(int begin, int end, Integer taiCd, WorkPriorityOrderRestrictSet tmpRestrictSet) {
+    private List<WorkPriorityOrderRestrictSet> packageRestrict(int begin, int end, Integer[] tanaCdArray, Integer taiCd, WorkPriorityOrderRestrictSet tmpRestrictSet) {
         List<WorkPriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
         WorkPriorityOrderRestrictSet restrictSet = null;
         if (begin < end) {
@@ -339,7 +352,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                 restrictSet = new WorkPriorityOrderRestrictSet();
                 BeanUtils.copyProperties(tmpRestrictSet, restrictSet);
                 restrictSet.setTaiCd(taiCd);
-                restrictSet.setTanaCd(i + 1);
+                restrictSet.setTanaCd(tanaCdArray[i]);
                 restrictSetList.add(restrictSet);
             }
         } else {
@@ -354,7 +367,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
 
     @Override
-    public List<WorkPriorityOrderRestrictSet> setRestrict(List<PriorityOrderAttrVO> dataList, List<ShelfPtsDataTanaCount> tanaCountList,
+    public List<WorkPriorityOrderRestrictSet> setRestrict(List<PriorityOrderAttrVO> dataList, List<ShelfPtsDataTanamst> ptsDataTanamstList, List<ShelfPtsDataTanaCount> tanaCountList,
                                                           Short attr1, Short attr2, String companyCd, String authorCd, Integer priorityOrderCd)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         List<WorkPriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
@@ -385,6 +398,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             setAttrMethod2.invoke(tmpRestrictSet, vo.getAttrBCd());
 
             for (ShelfPtsDataTanaCount tanaCount : tanaCountList) {
+                // 台中棚的序号并不是连续的，有可能是1,2,3,6,7
+                Integer[] tanaCdArray = ptsDataTanamstList.stream()
+                        .filter(obj -> tanaCount.getTaiCd().equals(obj.getTaiCd()))
+                        .map(ShelfPtsDataTanamst::getTanaCd)
+                        .sorted().toArray(Integer[]::new);
                 // 判断台是否有空余
                 if ((tanaCount.getTanaCount() - tanaCount.getTanaUsedCount()) > 0) {
                     if (tanaCount.getTanaUsedCount() == 0) {
@@ -394,7 +412,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                             pattan -= tanaCount.getTanaCount();
                             tanaCount.setTanaUsedCount(tanaCount.getTanaCount());
                             //## 整台制约条件
-                            restrictSetList.addAll(packageRestrict(0, 0, tanaCount.getTaiCd(), tmpRestrictSet));
+                            restrictSetList.addAll(packageRestrict(0, 0, tanaCdArray, tanaCount.getTaiCd(), tmpRestrictSet));
                             if (pattan > 0) {
                                 // 商品还有，继续下一个台
                                 continue;
@@ -406,7 +424,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                             // 商品占用部分台
                             tanaCount.setTanaUsedCount(pattan);
                             //## 段制约条件
-                            restrictSetList.addAll(packageRestrict(0, pattan, tanaCount.getTaiCd(), tmpRestrictSet));
+                            restrictSetList.addAll(packageRestrict(0, pattan, tanaCdArray, tanaCount.getTaiCd(), tmpRestrictSet));
                             // 跳出循环，继续下一个商品
                             break;
                         }
@@ -415,7 +433,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                         if (pattan >= (tanaCount.getTanaCount() - tanaCount.getTanaUsedCount())) {
                             // 商品占用的棚数可以占满台
                             //## 段制约条件：从上一次接着放
-                            restrictSetList.addAll(packageRestrict(tanaCount.getTanaUsedCount(), tanaCount.getTanaCount(), tanaCount.getTaiCd(), tmpRestrictSet));
+                            restrictSetList.addAll(packageRestrict(tanaCount.getTanaUsedCount(), tanaCount.getTanaCount(), tanaCdArray, tanaCount.getTaiCd(), tmpRestrictSet));
                             pattan -= (tanaCount.getTanaCount() - tanaCount.getTanaUsedCount());
                             tanaCount.setTanaUsedCount(tanaCount.getTanaCount());
                             if (pattan > 0) {
@@ -428,7 +446,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                         } else {
                             // 商品占用部分台
                             //## 段制约条件：从上一次接着放
-                            restrictSetList.addAll(packageRestrict(tanaCount.getTanaUsedCount(), tanaCount.getTanaUsedCount() + pattan, tanaCount.getTaiCd(), tmpRestrictSet));
+                            restrictSetList.addAll(packageRestrict(tanaCount.getTanaUsedCount(), tanaCount.getTanaUsedCount() + pattan, tanaCdArray, tanaCount.getTaiCd(), tmpRestrictSet));
                             tanaCount.setTanaUsedCount(tanaCount.getTanaUsedCount() + pattan);
                             // 跳出循环，继续下一个商品
                             break;

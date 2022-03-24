@@ -120,6 +120,11 @@ public class PriorityOrderMstController {
        return priorityOrderMstService.getPriorityOrderAll(companyCd,priorityOrderCd);
     }
 
+    /**
+     * 最终保存
+     * @param primaryKeyVO
+     * @return
+     */
     @PostMapping("/saveAllWorkPriorityOrder")
     public Map<String,Object> saveAllWorkPriorityOrder(@RequestBody PriorityOrderMstVO primaryKeyVO){
         return priorityOrderMstService.saveAllWorkPriorityOrder(primaryKeyVO);

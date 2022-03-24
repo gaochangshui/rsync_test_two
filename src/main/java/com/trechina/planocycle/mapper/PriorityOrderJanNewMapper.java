@@ -2,6 +2,7 @@ package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
+import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -40,4 +41,15 @@ public interface PriorityOrderJanNewMapper {
 
     int deleteByAuthorCd(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
     int insertBySelect(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
+
+
+
+    //新规不存在商品的基本信息
+    int setJanNewInfo(@Param("list") List<JanMstPlanocycleVo> janMstPlanocycleVo,@Param("companyCd")String companyCd);
+    //删除work表信息
+    int deleteJanNewInfo(@Param("companyCd")String companyCd);
+
+
+    //展示work表信息
+    List<JanMstPlanocycleVo> getJanNewInfo(@Param("companyCd")String companyCd);
 }

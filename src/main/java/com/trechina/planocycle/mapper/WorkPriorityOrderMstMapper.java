@@ -12,7 +12,7 @@ public interface WorkPriorityOrderMstMapper {
     int insertSelective(WorkPriorityOrderMst record);
 
     int deleteByAuthorCd(String companyCd, String authorCd,Integer priorityOrderCd);
-
+    Integer getProductPowerCd(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
     WorkPriorityOrderMst selectByAuthorCd(@Param("companyCd") String companyCd,@Param("authorCd") String authorCd,  @Param("priorityOrderCd") Integer priorityOrderCd);
 
     int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);

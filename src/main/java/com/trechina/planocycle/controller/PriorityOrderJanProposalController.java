@@ -31,7 +31,7 @@ public class PriorityOrderJanProposalController {
      * @param priorityOrderJanProposal
      * @return
      */
-    @PostMapping("/setPriorityOrderJanProposal")
+        @PostMapping("/setPriorityOrderJanProposal")
     public Map<String,Object> setPriorityOrderJanProposal(@RequestBody List<PriorityOrderJanProposal> priorityOrderJanProposal){
         return priorityOrderJanProposalService.setPriorityOrderJanProposal(priorityOrderJanProposal);
     }

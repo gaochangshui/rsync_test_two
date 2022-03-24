@@ -126,21 +126,31 @@
   </select>
   <select id="getShelfPatternForArea" resultMap="getNamePatternMap">
     SELECT DISTINCT
-      mst.id shelfCd,
-      mst.shelf_name shelfName,
-      pattern.shelf_pattern_cd patternCd,
-      pattern.shelf_pattern_name patternName
+    mst.id shelfCd,
+    mst.shelf_name shelfName,
+    pattern.shelf_pattern_cd patternCd,
+    pattern.shelf_pattern_name patternName
     FROM
-      planocycle.shelf_name_mst mst
-        LEFT JOIN planocycle.shelf_pattern_mst pattern ON mst.id = pattern.shelf_name_cd
-        AND pattern.deleteflg = 0
-        LEFT JOIN planocycle.shelf_pattern_area area ON pattern.shelf_pattern_cd = area.shelf_pattern_cd
+    planocycle.shelf_name_mst mst
 
-        AND area.deleteflg = 0
+    inner JOIN planocycle.shelf_pattern_mst pattern ON mst.id = pattern.shelf_name_cd
+    AND pattern.deleteflg = 0
+    inner join planocycle.shelf_pts_data pts
+    on pattern.shelf_pattern_cd = pts.shelf_pattern_cd
+    and pts.deleteflg = 0
+    inner join planocycle.shelf_pts_data_jandata jandata
+    on pts.id = jandata.pts_cd
+    LEFT JOIN planocycle.shelf_pattern_area area ON pattern.shelf_pattern_cd = area.shelf_pattern_cd
+
+    AND area.deleteflg = 0
+
     WHERE
-       mst.deleteflg = 0
-      and exists (select deleteflg from planocycle.shelf_pattern_branch as br where pattern.shelf_pattern_cd=br.shelf_pattern_cd and deleteflg = 0 )
-      and area.areacd in
+    mst.deleteflg = 0
+    and exists (select deleteflg from planocycle.shelf_pattern_branch as br where pattern.shelf_pattern_cd=br.shelf_pattern_cd and deleteflg = 0 )
+
+
+
+    and area.areacd in
       <foreach collection="areaCds" item="item" open="(" close=")" separator=",">
         #{item}
       </foreach>

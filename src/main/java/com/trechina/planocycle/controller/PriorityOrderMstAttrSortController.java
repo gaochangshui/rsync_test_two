@@ -62,6 +62,11 @@ public class PriorityOrderMstAttrSortController {
         return priorityOrderMstAttrSortService.getAttributeList();
     }
 
+    /**
+     * ゾーニング設定
+     * @param dto
+     * @return
+     */
     @PostMapping("/setAttribute")
     public Map<String,Object> setAttribute(@RequestBody PriorityOrderSpaceDto dto){
         return priorityOrderMstAttrSortService.setAttribute(dto);

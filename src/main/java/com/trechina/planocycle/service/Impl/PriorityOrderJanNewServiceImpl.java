@@ -6,6 +6,7 @@ import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanAttribute;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
+import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -147,7 +148,9 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         }
 
         priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
-            priorityOrderJanNewMapper.insert(priorityOrderJanNew,authorCd);
+        if(priorityOrderJanNew.size()>0) {
+            priorityOrderJanNewMapper.insert(priorityOrderJanNew, authorCd);
+        }
             return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -174,6 +177,30 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         List<PriorityOrderJanNewDto> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, priorityOrderJanNewVO);
 
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerData);
+    }
+    /**
+     * 新规不存在商品详细信息
+     * @param janMstPlanocycleVo
+     * @return
+     */
+    @Override
+    public Map<String, Object> setJanNewInfo(List<JanMstPlanocycleVo> janMstPlanocycleVo) {
+        String companyCd = janMstPlanocycleVo.get(0).getCompanyCd();
+
+
+        priorityOrderJanNewMapper.deleteJanNewInfo(companyCd);
+        priorityOrderJanNewMapper.setJanNewInfo(janMstPlanocycleVo,companyCd);
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+    /**
+     * 展示不存在商品详细信息
+     * @param
+     * @return
+     */
+    @Override
+    public Map<String, Object> getJanNewInfo(String companyCd) {
+        List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd);
+        return ResultMaps.result(ResultEnum.SUCCESS,janNewInfo);
     }
 
     private String dataSave(JSONArray jsonArray, List<PriorityOrderJanNew> janNewList,

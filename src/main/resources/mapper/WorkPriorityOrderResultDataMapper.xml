@@ -315,10 +315,10 @@
   </update>
 
   <insert id="setResultDataList">
-    insert into planocycle.work_priority_order_result_data(priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,adopt_flag,author_cd)
+    insert into planocycle.work_priority_order_result_data(priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,adopt_flag,author_cd,sort_rank)
       values
     <foreach collection="list" item="item" separator="," >
-        (#{priorityOrderCd},#{companyCd},#{restrictCd},#{item.jan},#{item.rankResult},0,#{authorCd})
+        (#{priorityOrderCd},#{companyCd},#{restrictCd},#{item.jan},#{item.rankResult},0,#{authorCd},#{item.rankResult})
     </foreach>
   </insert>
   <select id="getResultJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
@@ -399,12 +399,12 @@
                                                            restrict_cd, sku_rank, adopt_flag,
                                                            face, face_sku, irisu,
                                                            tai_cd, tana_cd, tana_type,
-                                                           face_keisan,sales_cnt)
+                                                           face_keisan,sales_cnt,face_fact)
       select company_cd, #{authorCd}, priority_order_cd, jan_cd,
                                                    restrict_cd, sku_rank, adopt_flag,
                                                    face, face_sku, irisu,
                                                    tai_cd, tana_cd, tana_type,
-                                                   face_keisan,sales_cnt
+                                                   face_keisan,sales_cnt,face_fact
         from planocycle.priority_order_result_data
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and priority_order_cd = #{priorityOrderCd}

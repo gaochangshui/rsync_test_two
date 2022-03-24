@@ -194,7 +194,7 @@
     mstData.company_cd = #{companyCd} and mstData.product_power_cd=#{productPowerCd}
     and
     not EXISTS(select * from  planocycle.work_priority_order_cut card where mstData.jan = card.jan_cd and card.author_cd = #{authorCd} and card.company_cd = #{companyCd}
-        and card.priority_order_cd = #{item.priorityOrderCd})
+    and card.priority_order_cd = #{item.priorityOrderCd})
     union
     select janNew.jan_new,janMst.jan_nm,null,janMst.brand,
     janMst.kikaku,janMst.pkg,janMst.irisu,janMst.alcohol,janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janNew.jan_rank
@@ -202,8 +202,9 @@
     planocycle.work_priority_order_jan_new janNew
     left join masterdb.jan_mst janMst
     on  janMst.jan_cd = janNew.jan_new
-        where  janNew.author_cd = #{authorCd} and janNew.company_cd = #{companyCd} and janNew.priority_order_cd = #{item.priorityOrderCd}
-        ) mst
+    where  janNew.author_cd = #{authorCd} and janNew.company_cd = #{companyCd} and janNew.priority_order_cd = #{item.priorityOrderCd}
+    ) mst
+
     <where>
       <if test="item.zokusei1 != null and item.zokusei1!=''">
         and  mst.scat1cd_val = #{item.zokusei1}

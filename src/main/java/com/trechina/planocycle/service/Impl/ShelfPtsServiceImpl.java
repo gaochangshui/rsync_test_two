@@ -242,7 +242,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      * @return
      */
     @Override
-    public Map<String, Object> getTaiNumTanaNum(Integer patternCd,Integer priorityOrderCd) {
+    public Map<String, Object>
+    getTaiNumTanaNum(Integer patternCd,Integer priorityOrderCd) {
         Map<String,Object> taiTanaNum = new HashMap<>();
         //台数
         Integer taiNum = shelfPtsDataMapper.getTaiNum(patternCd);
@@ -255,6 +256,10 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         //pattern名称
         String shelfPatternName = shelfPtsDataMapper.getPatternName(patternCd);
 
+
+        //棚名称
+        String shelfName = shelfPtsDataMapper.getPengName(patternCd);
+
         Integer newSkuNum = shelfPtsDataMapper.getNewSkuNum(priorityOrderCd);
         if (newSkuNum == null) {
             newSkuNum = 0;
@@ -263,10 +268,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         if (newFaceNum == null){
             newFaceNum = 0;
         }
-        //棚名称
-        String shelfName = shelfPtsDataMapper.getPengName(patternCd);
-
-
         PtsDetailDataVo newPtsDetailData = shelfPtsDataMapper.getPtsNewDetailData(priorityOrderCd);
         List<PtsTaiVo> taiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);
         List<PtsTanaVo> tanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
@@ -309,8 +310,11 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
        if (ptsDetailData != null) {
            ptsDetailData.setPtsJanDataList(janData);
        }
+
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
+
+
     /**
      * 陈列顺设定添加
      * @param workPriorityOrderSort

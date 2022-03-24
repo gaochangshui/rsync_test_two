@@ -5,6 +5,7 @@ public class ProductPowerDataDto {
     private String janNew;
     private Long restrictCd;
     private Integer rankResult;
+    private Integer rankNewResult;
     public String getJan() {
         return jan;
     }
@@ -36,6 +37,14 @@ public class ProductPowerDataDto {
 
     public void setRankResult(Integer rankResult) {
         this.rankResult = rankResult;
+    }
+
+    public Integer getRankNewResult() {
+        return rankNewResult;
+    }
+
+    public void setRankNewResult(Integer rankNewResult) {
+        this.rankNewResult = rankNewResult;
     }
 
     @Override

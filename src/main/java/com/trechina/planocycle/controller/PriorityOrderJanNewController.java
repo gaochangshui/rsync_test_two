@@ -2,6 +2,7 @@ package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
+import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +60,23 @@ public class PriorityOrderJanNewController {
         return priorityOrderJanNewService.getSimilarity(priorityOrderJanNewDto);
     }
 
+    /**
+     * 新规不存在商品详细信息
+     * @param
+     * @return
+     */
+    @PostMapping("setJanNewInfo")
+    public Map<String,Object>setJanNewInfo(@RequestBody List<JanMstPlanocycleVo> janMstPlanocycleVos)  {
+        return priorityOrderJanNewService.setJanNewInfo(janMstPlanocycleVos);
+    }
 
-
+    /**
+     * 查询不存在商品详细信息
+     * @param
+     * @return
+     */
+    @GetMapping("getJanNewInfo")
+    public Map<String,Object>getJanNewInfo(String companyCd)  {
+        return priorityOrderJanNewService.getJanNewInfo(companyCd);
+    }
 }

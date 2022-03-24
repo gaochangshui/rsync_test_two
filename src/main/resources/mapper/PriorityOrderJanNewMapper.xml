@@ -15,7 +15,7 @@
     values
            <foreach collection="lists" separator="," item="list">
            (#{list.priorityOrderCd},#{list.companyCd,jdbcType=VARCHAR}, trim(#{list.janNew,jdbcType=VARCHAR}),
-      #{list.rank,jdbcType=INTEGER},#{authorCd})
+            #{list.rank} :: integer,#{authorCd})
            </foreach>
   </insert>
 
@@ -24,7 +24,25 @@
         set branch_num = #{branchNum,jdbcType=INTEGER}
         where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
         and jan_new = #{janNew,jdbcType=VARCHAR}
+
+
     </update>
+
+    <insert id="setJanNewInfo" parameterType="com.trechina.planocycle.entity.vo.JanMstPlanocycleVo">
+        insert into masterdb.jan_mst_planocycle(company_cd,jan_cd,jan_nm,tanka,tanni,width,height,scat1cd,scat2cd,scat3cd,scat4cd,scatnm,pkg,alcohol,brand
+        ,scat1cd_val,scat2cd_val,scat3cd_val,scat4cd_val,kikaku,irisu,depth
+        )
+        values
+            <foreach collection="list" item="item" separator=",">
+                (trim(#{companyCd}),trim(#{item.janCd}),trim(#{item.janName}),trim(#{item.tanka}) :: integer,trim(#{item.tanni})
+                ,trim(#{item.width}) :: integer,trim(#{item.height}) :: integer,trim(#{item.zokusei1}),trim(#{item.zokusei2}),trim(#{item.zokusei3}),trim(#{item.zokusei4})
+                ,trim(#{item.scatnm}),trim(#{item.zokusei5}),trim(#{item.zokusei8}),trim(#{item.zokusei9})
+                ,trim(#{item.zokusei1}),trim(#{item.zokusei1}) || '_' || trim(#{item.zokusei2}),trim(#{item.zokusei1}) || '_' || trim(#{item.zokusei2}) || '_' || trim(#{item.zokusei3}),
+                 trim(#{item.zokusei1}) || '_' || trim(#{item.zokusei2}) || '_' || trim(#{item.zokusei3}) || '_' || trim(#{item.zokusei4}),trim(#{item.zokusei6} ):: integer
+                 ,trim(#{item.zokusei7}):: integer ,trim(#{item.depth}) :: integer
+                )
+            </foreach>
+    </insert>
     <insert id="setWorkForFinal">
         insert into planocycle.work_priority_order_jan_new(priority_order_cd,company_cd,author_cd,jan_new,jan_rank)
         select priority_order_cd,company_cd,#{authorCd},jan_new,jan_rank
@@ -120,10 +138,22 @@
         and product_power_cd = #{productPowerCd}
         order by rank_result
     </select>
+    <select id="getJanNewInfo" resultType="com.trechina.planocycle.entity.vo.JanMstPlanocycleVo">
+        select jan_cd as janCd,jan_nm as janName,tanka,tanni,width,height,depth,scatnm,scat1cd as zokusei1,scat2cd as zokusei2,scat3cd as zokusei3
+             ,scat4cd as zokusei4,pkg as zokusei5,kikaku as zokusei6,irisu as zokusei7,alcohol as zokusei8,brand as zokusei9
+        from masterdb.jan_mst_planocycle
+        where company_cd = #{companyCd}
+    </select>
     <delete id="deleteByAuthorCd">
         delete from planocycle.priority_order_jan_new where
         company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
         and author_cd=#{authorCd}
+    </delete>
+    <delete id="deleteJanNewInfo">
+        delete from masterdb.jan_mst_planocycle where company_cd = #{companyCd}
+    </delete>
+    <delete id="deleteFinalJanNewInfo">
+        delete from masterdb.jan_mst_planocycle where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </delete>
     <insert id="insertBySelect">
         insert into planocycle.priority_order_jan_new(priority_order_cd,company_cd,author_cd,jan_new,jan_rank,create_time,edit_time,editer_cd)
@@ -132,4 +162,5 @@
         where company_cd = #{companyCd,jdbcType=VARCHAR}
         and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     </insert>
+
 </mapper>
