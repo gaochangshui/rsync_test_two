@@ -19,7 +19,16 @@ public class PriorityAllRestrictDto {
     private String zokusei10;
     private Long restrictCd;
     private BigDecimal tanaCnt;
+    private BigDecimal basicTanaCnt;
     private Integer skuCnt;
+
+    public BigDecimal getBasicTanaCnt() {
+        return basicTanaCnt;
+    }
+
+    public void setBasicTanaCnt(BigDecimal basicTanaCnt) {
+        this.basicTanaCnt = basicTanaCnt;
+    }
 
     public String getZokusei1() {
         return zokusei1;

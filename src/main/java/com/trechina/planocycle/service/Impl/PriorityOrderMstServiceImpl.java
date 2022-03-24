@@ -48,6 +48,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Autowired
     private CommodityScoreMasterService commodityScoreMasterService;
     @Autowired
+    private CommonMstService commonMstService;
+    @Autowired
     private ShelfPatternService shelfPatternService;
     @Autowired
     private PriorityOrderMstAttrSortService priorityOrderMstAttrSortService;
@@ -1055,115 +1057,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
         Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
 
-        /**
-         * 根据tai_tana分类存放已经分配好的商品list
-         */
-        Map<String, List<PriorityOrderResultDataDto>> finalSetJanResultData = new HashMap<>();
-
-        if (partitionFlag == 0) {
-            //没隔板的情况
-            partitionVal = 0;
-        }
-
-        /**
-         * 根据制约条件进行分组进行摆放
-         */
-        Map<Long, List<WorkPriorityOrderRestrictRelation>> relationByGroup = workPriorityOrderRestrictRelations
-                .stream().collect(Collectors.groupingBy(WorkPriorityOrderRestrictRelation::getRestrictCd, LinkedHashMap::new, Collectors.toList()));
-
-        for (Map.Entry<Long, List<WorkPriorityOrderRestrictRelation>> relationEntry : relationByGroup.entrySet()) {
-            Long relationCd = relationEntry.getKey();
-            //记录商品放到哪里了-同一个制约的商品可能不同的台、段
-            int setResultDataIndex = 0;
-
-            //符合当前制约条件商品按rank排序
-            //如果sortrank为null就只按skurank排序
-            List<PriorityOrderResultDataDto> relationSorted = workPriorityOrderResultData
-                    .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
-                    .sorted(Comparator.comparing(PriorityOrderResultDataDto::getSortRank, Comparator.nullsFirst(Long::compareTo))
-                            .thenComparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
-
-            List<WorkPriorityOrderRestrictRelation> relationValue = relationEntry.getValue();
-
-            for (WorkPriorityOrderRestrictRelation workPriorityOrderRestrictRelation : relationValue) {
-                Integer taiCd = workPriorityOrderRestrictRelation.getTaiCd();
-                Integer tanaCd = workPriorityOrderRestrictRelation.getTanaCd();
-                short tanaType = workPriorityOrderRestrictRelation.getTanaType();
-
-                //分类key，同一类的商品进行减face数处理
-                String taiTanaKey = taiCd + "_" + tanaCd + "_" + tanaType;
-
-                Optional<PtsTaiVo> taiInfo = taiData.stream().filter(ptsTaiVo -> taiCd.equals(ptsTaiVo.getTaiCd())).findFirst();
-
-                if (!taiInfo.isPresent()) {
-                    logger.info("{}台信息不存在", taiCd);
-                    continue;
-                }
-
-                //台或半段的宽度, 已使用的宽度
-                double width = 0;
-                double usedWidth = 0;
-
-                Integer taiWidth = taiInfo.get().getTaiWidth();
-                if (tanaType != 0) {
-                    //半段的根据具体位置段的宽度放置
-                    width = taiWidth / 2.0;
-                } else {
-                    //整段的根据具体位置台的宽度放置
-                    width = taiWidth;
-                }
-
-                //放置商品
-                for (int i = setResultDataIndex; i < relationSorted.size(); i++) {
-                    PriorityOrderResultDataDto priorityOrderResultData = relationSorted.get(i);
-
-                    Long faceSku = Optional.ofNullable(priorityOrderResultData.getFaceSku()).orElse(1L);
-                    Long janWidth = Optional.ofNullable(priorityOrderResultData.getJanWidth()).orElse(0L);
-                    Long face = priorityOrderResultData.getFace();
-
-                    //商品宽度null或者0时使用默认宽度67mm，faceSku>1的需要乘以faceSku
-                    if (janWidth == 0) {
-                        janWidth = 67 * faceSku;
-                    }
-                    priorityOrderResultData.setJanWidth(janWidth);
-
-                    long janTotalWidth = janWidth * face + partitionVal;
-                    if (janTotalWidth + usedWidth <= width) {
-                        //根据face数进行摆放可以放开
-                        setResultDataIndex = i + 1;
-
-                        priorityOrderResultData.setFaceFact(face);
-                        priorityOrderResultData.setTaiCd(taiCd);
-                        priorityOrderResultData.setTanaCd(tanaCd);
-                        priorityOrderResultData.setAdoptFlag(1);
-                        priorityOrderResultData.setTanaType((int) tanaType);
-
-                        List<PriorityOrderResultDataDto> resultData = finalSetJanResultData.getOrDefault(taiTanaKey, new ArrayList<>());
-                        resultData.add(priorityOrderResultData);
-                        finalSetJanResultData.put(taiTanaKey, resultData);
-
-                        usedWidth += janTotalWidth;
-                    } else {
-                        List<PriorityOrderResultDataDto> resultData = finalSetJanResultData.getOrDefault(taiTanaKey, new ArrayList<>());
-                        if(this.isSetJanByCutFace(resultData, width, usedWidth, partitionVal, minFace, priorityOrderResultData)){
-                            priorityOrderResultData.setTaiCd(taiCd);
-                            priorityOrderResultData.setTanaType((int) tanaType);
-                            priorityOrderResultData.setAdoptFlag(1);
-                            priorityOrderResultData.setTanaCd(tanaCd);
-
-                            setResultDataIndex = i + 1;
-                            //更新已用宽度
-                            usedWidth += priorityOrderResultData.getJanWidth() * priorityOrderResultData.getFaceFact() + partitionVal;
-                            resultData.add(priorityOrderResultData);
-                            finalSetJanResultData.put(taiTanaKey, resultData);
-                        }
-
-                        //根据face数进行摆放放不开，直接不放，结束该位置的摆放
-                        break;
-                    }
-                }
-            }
-        }
+        Map<String, List<PriorityOrderResultDataDto>> finalSetJanResultData =
+                commonMstService.commSetJan(partitionFlag, partitionVal, taiData,
+                        workPriorityOrderResultData, workPriorityOrderRestrictRelations, minFace);
 
         for (String taiTanaKey : finalSetJanResultData.keySet()) {
             List<PriorityOrderResultDataDto> resultDataDtos = finalSetJanResultData.get(taiTanaKey);
@@ -1171,81 +1067,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
 
         return true;
-    }
-
-    /**
-     * 通过cut face数是否能放下
-     * 逻辑：第一步：先对要放置的商品进行face数-1
-     *          1.如果face数*商品宽度能放下就放，记下实际存放的face数
-     *          2.放不下，走第二步
-     *      第二步：对同一台棚区分(taiCd_tanaCd_tanaType)中的商品list倒序进行cut face判断
-     *          1.如果没有入数irisu=1的商品则不进行cut，直接结束
-     *          2.如果有入数irisu=1，倒序遍历商品list，进行face数-1
-     *              3.如果face数*宽度能放下就放，记下实际存放的face数
-     *              4.无法放下，结束，该位置不放了
-     * @param resultDataDtoList 同台棚区分的商品list
-     * @param targetResultData 要放置的商品
-     * @param width 当前台棚区分的宽度
-     * @param usedWidth 当前台棚区分的已用宽度
-     * @param minFace 最小face数
-     * @param partitionVal 隔板宽度
-     * @return true放，false不放
-     */
-    private boolean isSetJanByCutFace(List<PriorityOrderResultDataDto> resultDataDtoList, double width, double usedWidth, long partitionVal,
-                                      long minFace, PriorityOrderResultDataDto targetResultData){
-        Long face = targetResultData.getFace();
-        Long janWidth = targetResultData.getJanWidth();
-
-        //剩下可用的宽度（需要考虑有隔板的情况）
-        double remainderWidth = width - usedWidth;
-        //通过cut目标商品的face数是否能放下
-        boolean isSetByCut = false;
-
-        //先看要放的商品一个一个的减能不能放下
-        for (Long i = face - 1; i >= minFace; i--) {
-            if((janWidth * i + partitionVal) <= remainderWidth){
-                //能放下
-                isSetByCut = true;
-                //保存实际的face数
-                targetResultData.setFaceFact(i);
-                break;
-            }
-        }
-
-        if(!isSetByCut){
-            //通过cut目标商品的face数不能放下
-            //只处理入数=1的，不等于1的不进行cut
-            List<PriorityOrderResultDataDto> resultDataDtoByIrisu = resultDataDtoList.stream()
-                    .filter(data-> 1 == data.getIrisu()).collect(Collectors.toList());
-
-            if(resultDataDtoByIrisu.isEmpty()){
-                //没有符合条件的无法cut
-                return false;
-            }
-
-            //按照最小face进行放置，需要多少宽度（需要考虑有隔板的情况）+剩下没用的宽度
-            double needWidth = targetResultData.getJanWidth() * minFace + partitionVal;
-            for (int i = resultDataDtoByIrisu.size()-1; i >= 0 ; i--) {
-                PriorityOrderResultDataDto currentResultData = resultDataDtoByIrisu.get(i);
-                Long faceFact = currentResultData.getFaceFact();
-
-                if(faceFact <= minFace){
-                    //小于等于最小face不能再cut了
-                    continue;
-                }
-
-                //当前商品减一个face数，能不能放下目标商品
-                //cut 1 个face的宽度再加剩下的宽度是否能满足目标上面放置需要的宽度
-                if(currentResultData.getJanWidth() + remainderWidth >= needWidth){
-                    currentResultData.setFaceFact(faceFact -  1);
-                    targetResultData.setFaceFact(minFace);
-                    isSetByCut = true;
-                    break;
-                }
-            }
-        }
-
-        return isSetByCut;
     }
 
     //TODO:10215814
