@@ -53,6 +53,8 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     private PriorityOrderMstService priorityOrderMstService;
     @Autowired
     private ProductPowerMstMapper productPowerMstMapper;
+    @Autowired
+    private PriorityAllNumGeneratorMapper priorityAllNumGeneratorMapper;
     @Value("${skuPerPattan}")
     private Long skuCountPerPattan;
 
@@ -63,8 +65,9 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      */
     @Override
     public Map<String, Object> addPriorityAllData(JSONObject jsonObject) {
-        try{
-            String authorCd = session.getAttribute("aud").toString();
+      //  try{
+            String authorCd = "10218504";
+            //String authorCd = session.getAttribute("aud").toString();
             String companyCd = jsonObject.get("companyCd").toString();
             Integer priorityAllCd = (Integer) jsonObject.get("priorityAllCd");
             //「companyCd、priorityAllCd、Author_cd」によりWKテーブルをクリア
@@ -76,6 +79,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             priorityAllMstMapper.deleteWKTablePtsTai(companyCd, priorityAllCd, authorCd);
             priorityAllMstMapper.deleteWKTablePtsTana(companyCd, priorityAllCd, authorCd);
             priorityAllMstMapper.deleteWKTablePtsJans(companyCd, priorityAllCd, authorCd);
+            priorityAllMstMapper.deleteWKTablePtsData(companyCd, priorityAllCd, authorCd);
+            priorityAllMstMapper.deleteWKTablePtsRelation(companyCd, priorityAllCd, authorCd);
+            priorityAllMstMapper.deleteWKTablePtsVersion(companyCd, priorityAllCd, authorCd);
+
 
             if (priorityAllCd != 0) {
                 // データコピー
@@ -87,11 +94,17 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 priorityAllMstMapper.copyWKTablePtsTai(companyCd, priorityAllCd, authorCd);
                 priorityAllMstMapper.copyWKTablePtsTana(companyCd, priorityAllCd, authorCd);
                 priorityAllMstMapper.copyWKTablePtsJans(companyCd, priorityAllCd, authorCd);
+                Integer priorityOrderCd = priorityAllMstMapper.getPriorityOrderCd(priorityAllCd, companyCd, authorCd);
+                Map<String, Object> allPatternData = getAllPatternData(companyCd, priorityAllCd, priorityOrderCd);
+                Map <String ,Object> map = new HashMap<>();
+                map.put("priorityOrderCd",priorityOrderCd);
+                map.put("allPatternData",allPatternData.get("data"));
+                return ResultMaps.result(ResultEnum.SUCCESS,map);
             }
-            return ResultMaps.result(ResultEnum.SUCCESS, "新規作成成功しました。");
-        } catch (Exception ex) {
-            return ResultMaps.result(ResultEnum.FAILURE, "新規作成失敗しました。");
-        }
+            return ResultMaps.result(ResultEnum.SUCCESS, null);
+      //  } catch (Exception ex) {
+       //     return ResultMaps.result(ResultEnum.FAILURE, "新規作成失敗しました。");
+       // }
     }
 
     /**
@@ -345,6 +358,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     @Override
     public Map<String, Object> savePriorityAll(String companyCd, Integer priorityAllCd) {
         String aud = session.getAttribute("aud").toString();
+        ProductPowerNumGenerator p = new ProductPowerNumGenerator();
         if (priorityAllCd != 0){
             priorityAllMstMapper.deleteFinalTableMst(companyCd,priorityAllCd,aud);
             priorityAllMstMapper.deleteFinalTableShelfs(companyCd,priorityAllCd,aud);
@@ -353,10 +367,43 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             priorityAllMstMapper.deleteFinalTablePtsTai(companyCd,priorityAllCd,aud);
             priorityAllMstMapper.deleteFinalTablePtsTana(companyCd,priorityAllCd,aud);
             priorityAllMstMapper.deleteFinalTablePtsJans(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deleteFinalTablePtsData(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deleteFinalTablePtsRelation(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deleteFinalTablePtsVersion(companyCd,priorityAllCd,aud);
 
+            priorityAllMstMapper.setFinalTableMst(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.setFinalTableShelfs(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.setFinalTableRestrict(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.setFinalTableRelation(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.setFinalTableResult(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.setFinalTablePtsTai(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.setFinalTablePtsTana(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.setFinalTablePtsJans(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.setFinalTablePtsData(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.setFinalTablePtsVersion(companyCd,priorityAllCd,aud);
+
+        }else {
+
+            p.setUsercd(session.getAttribute("aud").toString());
+            int id = priorityAllNumGeneratorMapper.insert(p);
+
+            logger.info("全pattern表自动取号："+p.getId());
+            priorityAllMstMapper.setFinalTableMst(companyCd,p.getId(),aud);
+            priorityAllMstMapper.setNewFinalTableShelfs(companyCd,p.getId(),aud);
+            priorityAllMstMapper.setNewFinalTableRestrict(companyCd,p.getId(),aud);
+            priorityAllMstMapper.setNewFinalTableRelation(companyCd,p.getId(),aud);
+            priorityAllMstMapper.setNewFinalTableResult(companyCd,p.getId(),aud);
+            priorityAllMstMapper.setNewFinalTablePtsTai(companyCd,p.getId(),aud);
+            priorityAllMstMapper.setNewFinalTablePtsTana(companyCd,p.getId(),aud);
+            priorityAllMstMapper.setNewFinalTablePtsJans(companyCd,p.getId(),aud);
+            priorityAllMstMapper.setNewFinalTablePtsData(companyCd,p.getId(),aud);
+            priorityAllMstMapper.setNewFinalTablePtsVersion(companyCd,p.getId(),aud);
+            return ResultMaps.result(ResultEnum.SUCCESS,p.getId());
         }
 
-        return null;
+
+
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
@@ -369,6 +416,15 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      */
     @Override
     public Map<String, Object> getPriorityPtsInfo(String companyCd, Integer priorityAllCd, Integer patternCd) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> deletePriorityAll( PriorityAllSaveDto priorityAllSaveDto) {
+        String aud = session.getAttribute("aud").toString();
+        String companyCd = priorityAllSaveDto.getCompanyCd();
+        Integer priorityAllCd = priorityAllSaveDto.getPriorityAllCd();
+        priorityAllMstMapper.deleteMst(companyCd,priorityAllCd,aud);
         return null;
     }
 

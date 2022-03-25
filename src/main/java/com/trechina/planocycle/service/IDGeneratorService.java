@@ -13,4 +13,6 @@ public interface IDGeneratorService {
      * 商品力点数表自动采号，并返回
      */
     Map<String,Object> ProductPowerNumGenerator();
+
+    Map<String,Object> PriorityAllID();
 }

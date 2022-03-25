@@ -58,9 +58,9 @@
     <insert id="insertPtsVersion">
         insert into planocycle.work_priority_all_pts_data_version(company_cd,
         pts_cd, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,
-        jan_header,author_cd, shelf_pattern_cd)
+        jan_header,author_cd, shelf_pattern_cd,priority_all_cd)
         select company_cd, #{id}, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,jan_header,
-        #{authorCd},#{patternCd}
+        #{authorCd},#{patternCd},#{priorityAllCd}
         from planocycle.shelf_pts_data_version
         where pts_cd=#{ptsCd}
     </insert>

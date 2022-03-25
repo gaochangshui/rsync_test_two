@@ -31,4 +31,10 @@ public class IDGeneratorController {
     public Map<String,Object> getProductPowerID(){
         return idGeneratorService.ProductPowerNumGenerator();
     }
+
+
+    @GetMapping("/getPriorityAllID")
+    public Map<String,Object> PriorityAllID(){
+        return idGeneratorService.PriorityAllID();
+    }
 }

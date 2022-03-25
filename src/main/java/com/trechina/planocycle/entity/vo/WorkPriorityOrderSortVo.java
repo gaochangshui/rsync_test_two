@@ -3,7 +3,7 @@ package com.trechina.planocycle.entity.vo;
 public class WorkPriorityOrderSortVo {
     private String companyCd;
     private Integer priorityOrderCd;
-    private Integer attrCd;
+    private String attrCd;
     private String attrName;
     private Integer sortNum;
     private Boolean disabled = false;
@@ -17,11 +17,11 @@ public class WorkPriorityOrderSortVo {
         this.priorityOrderCd = priorityOrderCd;
     }
 
-    public Integer getAttrCd() {
+    public String getAttrCd() {
         return attrCd;
     }
 
-    public void setAttrCd(Integer attrCd) {
+    public void setAttrCd(String attrCd) {
         this.attrCd = attrCd;
     }
 

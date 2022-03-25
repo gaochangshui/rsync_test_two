@@ -80,16 +80,17 @@
            ,a.sku_rank
   </select>
   <select id="getAttrRank" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
-    select  DISTINCT d.zokusei1
+
+    select distinct mm.${sortName2} as zokusei1
     <if test="sortName2 !=null">
-      ,d.zokusei2
+                  ,mm.${sortName2} as zokusei2
     </if>
-    from
-    (select  a.${sortName1} as zokusei1
+                  ,mm.bavvg
     <if test="sortName2 !=null">
-      ,a.${sortName2} as zokusei2
+                  ,mm.cavvg
     </if>
-    from
+    from (
+    select  a.scat1cd_val,a.scat2cd_val,a.scat3cd_val,a.scat4cd_val,a.brand,a.sku_rank ,a.jan_cd,b.aavg as bavvg, c.aavg as cavvg from
     (select  datas.jan_cd ,janMst.jan_nm,
     janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
     from planocycle.work_priority_order_result_data datas
@@ -98,7 +99,7 @@
     where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}) a
 
     inner join
-    (select ${sortName1},avg(sku_rank) aavg from (select  datas.jan_cd ,janMst.jan_nm,
+    (select${sortName1},avg(sku_rank) aavg from (select  datas.jan_cd ,janMst.jan_nm,
     janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
     from planocycle.work_priority_order_result_data datas
     left join masterdb.jan_mst janMst
@@ -107,22 +108,22 @@
     ) b
     on a.${sortName1}=b.${sortName1}
     <if test="sortName2 !=null">
-      inner join
-      (select ${sortName2},avg(sku_rank) aavg from (select  datas.jan_cd ,janMst.jan_nm,
-      janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
-      from planocycle.work_priority_order_result_data datas
-      left join masterdb.jan_mst janMst
-      on janMst.jan_cd = datas.jan_cd
-      where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}) test group by ${sortName2}
-      ) c
-      on a.${sortName2}=c.${sortName2}
+    inner join
+    (select ${sortName2},avg(sku_rank) aavg from (select  datas.jan_cd ,janMst.jan_nm,
+    janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
+    from planocycle.work_priority_order_result_data datas
+    left join masterdb.jan_mst janMst
+    on janMst.jan_cd = datas.jan_cd
+    where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}) test group by ${sortName2}
+    ) c
+    on a.${sortName2}=c.${sortName2}
     </if>
+        )mm
 
-    order by b.aavg
+    order by mm.bavvg
     <if test="sortName2 !=null">
-      ,c.aavg
+           ,mm.cavvg
     </if>
-    ,a.sku_rank) d
 
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">

@@ -107,4 +107,14 @@ public class PriorityAllMstController {
         return priorityAllMstService.savePriorityAll(companyCd, priorityAllCd);
     }
 
+
+    /**
+     * 删除 api⑦
+     * @param priorityAllSaveDto
+     * @return
+     */
+    @DeleteMapping("/deletePriorityAll")
+    public Map<String, Object> deletePriorityAll(@RequestBody  PriorityAllSaveDto priorityAllSaveDto){
+        return priorityAllMstService.deletePriorityAll(priorityAllSaveDto);
+    }
 }

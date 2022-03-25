@@ -44,7 +44,7 @@ public interface PriorityAllMstService {
     boolean setJan(String companyCd, String authorCd, Integer priorityAllCd, Integer priorityOrderCd, Integer shelfPatternCd, Integer minFace);
 
     /**
-     * 自动计算
+     * 保存
      * @return
      */
     Map<String, Object> savePriorityAll(String companyCd,Integer priorityAllCd);
@@ -57,5 +57,8 @@ public interface PriorityAllMstService {
      * @return
      */
     Map<String, Object> getPriorityPtsInfo(String companyCd, Integer priorityAllCd, Integer patternCd);
+
+
+    Map<String, Object> deletePriorityAll( PriorityAllSaveDto priorityAllSaveDto);
 
 }

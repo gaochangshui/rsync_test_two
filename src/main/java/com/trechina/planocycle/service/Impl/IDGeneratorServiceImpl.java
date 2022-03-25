@@ -49,4 +49,9 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
         logger.info("商品力点数表取号："+productPowerNumGenerator.getId());
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerNumGenerator);
     }
+
+    @Override
+    public Map<String, Object> PriorityAllID() {
+        return null;
+    }
 }
