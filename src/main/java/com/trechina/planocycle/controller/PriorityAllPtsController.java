@@ -14,7 +14,7 @@ public class PriorityAllPtsController {
     @Autowired
     private PriorityAllPtsService priorityAllPtsService;
     /**
-     * 获取棚pattern 关联pts的详细信息
+     * 获取pts详情接口
      * @param patternCd
      * @return
      */
