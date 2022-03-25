@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.PriorityAllPtsMapper">
     <insert id="insertWorkPtsData">
-        insert into planocycle.work_priority_all_pts_data(id,company_cd,file_name,authorcd,shelf_pattern_cd,valid_flg,
+        insert into planocycle.work_priority_all_pts_data(id,company_cd,file_name,author_cd,shelf_pattern_cd,valid_flg,
         start_day,edit_time,create_time,editer_cd,priority_order_cd)
         select id,company_cd,file_name,#{authorCd},shelf_pattern_cd,valid_flg,
         start_day,edit_time,create_time,editer_cd,priority_order_cd
@@ -12,7 +12,7 @@
     <select id="selectWorkPtsCdByAuthorCd" resultType="com.trechina.planocycle.entity.po.ShelfPtsData">
         select id,file_name from planocycle.work_priority_all_pts_data where company_cd=#{companyCd}
         and priority_all_cd=#{priorityAllCd}
-        and authorcd=#{authorCd} and shelf_pattern_cd=#{patternCd} and deleteflg=0
+        and author_cd=#{authorCd} and shelf_pattern_cd=#{patternCd} and deleteflg=0
     </select>
     <delete id="deletePtsTaimst">
         delete from planocycle.work_priority_all_pts_tai where pts_cd=#{ptsCd}
@@ -33,7 +33,7 @@
         <selectKey keyProperty="id" resultType="int" order="BEFORE">
             select nextval('planocycle.priority_all_pts_data_id_seq'::regclass) as id
         </selectKey>
-        insert into planocycle.work_priority_all_pts_data(id,company_cd,file_name,authorcd,shelf_pattern_cd,valid_flg,
+        insert into planocycle.work_priority_all_pts_data(id,company_cd,file_name,author_cd,shelf_pattern_cd,valid_flg,
         start_day,edit_time,create_time,editer_cd,priority_all_cd)
         select #{id},company_cd,#{fileName},#{authorCd},shelf_pattern_cd,valid_flg,start_day,now(),now(),#{authorCd}, #{priorityAllCd}
         from planocycle.shelf_pts_data
@@ -58,9 +58,9 @@
     <insert id="insertPtsVersion">
         insert into planocycle.work_priority_all_pts_data_version(company_cd,
         pts_cd, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,
-        jan_header,author_cd, shelf_pattern_cd,priority_all_cd)
+        jan_header,author_cd, shelf_pattern_cd, priority_all_cd)
         select company_cd, #{id}, commoninfo,versioninfo,outflg,modename,tai_header,tana_header,jan_header,
-        #{authorCd},#{patternCd},#{priorityAllCd}
+        #{authorCd},#{patternCd}, #{priorityAllCd}
         from planocycle.shelf_pts_data_version
         where pts_cd=#{ptsCd}
     </insert>
@@ -104,6 +104,46 @@
         on ptsData."id" = ptsVersion.pts_cd
         where ptsData.shelf_pattern_cd = #{patternCd}
         and ptsData.priority_all_cd=#{priorityAllCd} and ptsData.company_cd=#{companyCd}
-        and ptsData.deleteflg=0 and authorcd=#{authorCd}
+        and ptsData.deleteflg=0 and ptsData.author_cd=#{authorCd}
+    </select>
+    <select id="selectAllVersionByPtsCd" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataVersion">
+        select
+        company_cd,pts_cd ,commoninfo,versioninfo,outflg ,modename ,tai_header ,tana_header ,jan_header ,author_cd ,deleteflg,
+        priority_all_cd ,shelf_pattern_cd
+        from planocycle.work_priority_all_pts_data_version
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and pts_cd = #{ptsCd,jdbcType=INTEGER}
+    </select>
+    <select id="selectAllTaimstByPtsCd" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataTaimst">
+        select priority_all_cd ,company_cd ,author_cd ,shelf_patten_cd ,tai_cd ,tai_height ,tai_width ,tai_depth,
+        tai_nm ,pts_cd
+        from planocycle.work_priority_all_pts_tai where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and pts_cd = #{ptsCd,jdbcType=INTEGER}
+        order by tai_cd
+    </select>
+    <select id="selectAllTanamstByPtsCd" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataTanamst">
+        select  priority_all_cd ,company_cd ,author_cd ,shelf_patten_cd ,tai_cd ,tana_cd ,tana_height ,tana_width,
+        tana_depth ,tana_thickness ,tana_type ,tana_nm ,pts_cd
+        from planocycle.work_priority_all_pts_tana where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and pts_cd = #{ptsCd,jdbcType=INTEGER}
+        order by tai_cd,tana_cd,tana_type
+    </select>
+    <select id="selectAllJandataByPtsCd" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataJandata">
+        select priority_all_cd ,company_cd ,author_cd ,shelf_patten_cd ,tai_cd ,tana_cd,
+        tanaposition_cd ,jan_cd jan ,face_count ,face_men ,face_kaiten ,tumiagesu,
+        zaikosu ,face_displayflg ,face_position ,depth_display_num ,pts_cd
+        from planocycle.work_priority_all_pts_jans where
+        company_cd = #{companyCd,jdbcType=VARCHAR}
+        and pts_cd = #{ptsCd,jdbcType=INTEGER}
+        order by tai_cd,tana_cd,tanaposition_cd
+    </select>
+    <select id="selectPtsCdByAuthorCd" resultType="com.trechina.planocycle.entity.po.ShelfPtsData">
+        select id,file_name from planocycle.work_priority_all_pts_data where company_cd=#{companyCd} and priority_all_cd=#{priorityAllCd}
+        and author_cd=#{authorCd} and shelf_pattern_cd=#{shelfPatternCd} and deleteflg=0
+    </select>
+    <select id="selectByPriorityAllCd" resultType="com.trechina.planocycle.entity.po.ShelfPtsData">
+        select id,file_name from planocycle.work_priority_all_pts_data
+        where company_cd=#{companyCd} and priority_all_cd=#{priorityAllCd} and deleteflg=0
+        and author_cd=#{authorCd}
     </select>
 </mapper>
