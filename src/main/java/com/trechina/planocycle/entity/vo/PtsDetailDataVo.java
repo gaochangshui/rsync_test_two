@@ -5,6 +5,7 @@ import java.util.List;
 
 public class PtsDetailDataVo {
 
+    private Integer id;
     private String taiHeader;
     private String tanaHeader;
     private String janHeader;
@@ -15,6 +16,14 @@ public class PtsDetailDataVo {
     private List<PtsTaiVo> ptsTaiList;
     private List<PtsTanaVo> ptsTanaVoList;
     private List<PtsJanDataVo> ptsJanDataList;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getTaiHeader() {
         return taiHeader;

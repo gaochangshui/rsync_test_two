@@ -328,7 +328,7 @@
     COALESCE(jan.width, jan2.width) as janWidth,COALESCE(jan.height, jan2.height) janHeight, sort_rank sortRank
     from planocycle.work_priority_order_result_data data
     left join masterdb.jan_mst jan on data.jan_cd=jan.jan_cd
-    left join masterdb.jan_mst_planocycle jan2 on data.jan_cd=jan2.jan_cd and jan2.priority_order_cd=#{priorityOrderCd}
+    left join masterdb.jan_mst_planocycle jan2 on data.jan_cd=jan2.jan_cd and jan2.company_cd=#{companyCd}
     where data.company_cd=#{companyCd} and data.author_cd=#{authorCd} and data.priority_order_cd=#{priorityOrderCd}
   </select>
   <update id="updateTaiTanaBatch">

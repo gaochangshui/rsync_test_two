@@ -1,22 +1,27 @@
 package com.trechina.planocycle.service.Impl;
 
 import com.trechina.planocycle.entity.dto.PriorityAllPtsDataDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
-import com.trechina.planocycle.entity.po.PriorityOrderMst;
 import com.trechina.planocycle.entity.po.ShelfPtsData;
 import com.trechina.planocycle.entity.po.ShelfPtsDataVersion;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
+import com.trechina.planocycle.entity.vo.PtsDetailDataVo;
+import com.trechina.planocycle.entity.vo.PtsJanDataVo;
+import com.trechina.planocycle.entity.vo.PtsTaiVo;
+import com.trechina.planocycle.entity.vo.PtsTanaVo;
+import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.PriorityAllMstMapper;
 import com.trechina.planocycle.mapper.PriorityAllPtsMapper;
 import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
 import com.trechina.planocycle.mapper.ShelfPtsDataVersionMapper;
 import com.trechina.planocycle.service.CommonMstService;
 import com.trechina.planocycle.service.PriorityAllPtsService;
+import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -31,6 +36,8 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
     private PriorityAllMstMapper priorityAllMstMapper;
     @Autowired
     private ShelfPtsDataVersionMapper shelfPtsDataVersionMapper;
+    @Autowired
+    private HttpSession session;
 
     @Override
     public void saveWorkPtsData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd) {
@@ -73,5 +80,25 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         if (!positionResultData.isEmpty()) {
             priorityAllPtsMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd, priorityAllCd, patternCd);
         }
+    }
+
+    @Override
+    public Map<String, Object> getPtsDetailData(Integer patternCd, String companyCd, Integer priorityAllCd) {
+        String authorCd = session.getAttribute("aud").toString();
+        PtsDetailDataVo ptsDetailData = priorityAllPtsMapper.getPtsDetailData(companyCd, authorCd, priorityAllCd, patternCd);
+
+        if(ptsDetailData != null){
+            Integer id = ptsDetailData.getId();
+
+            List<PtsTaiVo> taiData = priorityAllPtsMapper.getTaiData(id);
+            List<PtsTanaVo> tanaData = priorityAllPtsMapper.getTanaData(id);
+            List<PtsJanDataVo> janData = priorityAllPtsMapper.getJanData(id);
+
+            ptsDetailData.setPtsTaiList(taiData);
+            ptsDetailData.setPtsTanaVoList(tanaData);
+            ptsDetailData.setPtsJanDataList(janData);
+        }
+
+        return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
 }
