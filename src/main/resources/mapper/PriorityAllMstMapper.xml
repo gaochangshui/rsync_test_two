@@ -52,7 +52,48 @@
         and company_cd = #{companyCd,jdbcType=VARCHAR}
         and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
-
+    <delete id="deleteFinalTableMst">
+        delete from planocycle.priority_all_mst
+        where priority_all_cd = #{priorityAllCd}
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteFinalTableShelfs">
+        delete from planocycle.priority_all_shelfs
+        where priority_all_cd = #{priorityAllCd}
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteFinalTableRestrict">
+        delete from planocycle.priority_all_restrict
+        where priority_all_cd = #{priorityAllCd}
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteFinalTableResult">
+        delete from planocycle.priority_all_result_data
+        where priority_all_cd = #{priorityAllCd}
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteFinalTablePtsTai">
+        delete from planocycle.priority_all_pts_tai
+        where priority_all_cd = #{priorityAllCd}
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteFinalTablePtsTana">
+        delete from planocycle.priority_all_pts_tana
+        where priority_all_cd = #{priorityAllCd}
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteFinalTablePtsJans">
+        delete from planocycle.priority_all_pts_jans
+        where priority_all_cd = #{priorityAllCd}
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
 
     <insert id="copyWKTableMst">
         insert into planocycle.work_priority_all_mst

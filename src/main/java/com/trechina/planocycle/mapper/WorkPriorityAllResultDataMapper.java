@@ -22,7 +22,7 @@ public interface WorkPriorityAllResultDataMapper {
     void updateTaiTanaBatch(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd,@Param("patternCd") Integer patternCd,
                             @Param("authorCd") String authorCd,@Param("list") List<PriorityOrderResultDataDto> resultDataDtos);
 
-    String getJans(@Param("patternCd") Integer patternCd,@Param("companyCd") String companyCd,@Param("priorityAllCd") Integer priorityAllCd);
+    String getJans(@Param("patternCd") Integer patternCd,@Param("companyCd") String companyCd,@Param("priorityAllCd") Integer priorityAllCd,@Param("authorCd")String authorCd);
 
     int update(@Param("list") List<PriorityAllResultDataDto> list, @Param("companyCd")String companyCd, @Param("authorCd")String authorCd, @Param("priorityAllCd")Integer priorityAllCd,
                    @Param("patternCd")Integer patternCd);

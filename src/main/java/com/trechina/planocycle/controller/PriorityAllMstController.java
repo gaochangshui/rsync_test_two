@@ -4,16 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.service.PriorityAllMstService;
-import com.trechina.planocycle.service.PriorityOrderMstService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/planoCycle/PriorityAllMst")
@@ -66,6 +62,8 @@ public class PriorityAllMstController {
             return ResultMaps.result(ResultEnum.FAILURE, "保存で失敗しました。");
         }
     }
+
+
 
     /**
      * PTS詳細 api④

@@ -3,7 +3,6 @@ package com.trechina.planocycle.service;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
 
-import java.util.List;
 import java.util.Map;
 
 public interface PriorityAllMstService {
@@ -37,13 +36,10 @@ public interface PriorityAllMstService {
      */
     Integer saveWKAllPatternData(PriorityAllSaveDto priorityAllSaveDto);
 
-    /**
-     * 計算
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
+
     Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto);
+
+
 
     boolean setJan(String companyCd, String authorCd, Integer priorityAllCd, Integer priorityOrderCd, Integer shelfPatternCd, Integer minFace);
 
@@ -51,7 +47,7 @@ public interface PriorityAllMstService {
      * 自动计算
      * @return
      */
-    Map<String, Object> savePriorityAll(String companyCd,Integer priorityOrderCd);
+    Map<String, Object> savePriorityAll(String companyCd,Integer priorityAllCd);
 
     /**
      * pts詳細

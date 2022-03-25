@@ -34,12 +34,12 @@
     <select id="getJans" resultType="java.lang.String">
         select array_to_string(array_agg(DISTINCT jan_cd),',')
         from planocycle.work_priority_all_result_data
-        where priority_all_cd = #{priorityAllCd} and company_cd = #{companyCd} and shelf_patten_cd = #{patternCd}
+        where priority_all_cd = #{priorityAllCd} and company_cd = #{companyCd} and shelf_patten_cd = #{patternCd} and author_cd = #{authorCd}
     </select>
     <select id="getAvgSalesCunt" resultType="java.lang.Double">
         select avg(sales_cnt)
         FROM planocycle.work_priority_all_result_data
-        where priority_all_cd = #{priorityAllCd} and company_cd = #{companyCd} and shelf_patten_cd = #{patternCd}
+        where priority_all_cd = #{priorityAllCd} and company_cd = #{companyCd} and shelf_patten_cd = #{patternCd} and author_cd = #{authorCd}
     </select>
     <select id="getResultDatas" resultType="com.trechina.planocycle.entity.dto.PriorityAllResultDataDto">
         select jan_cd ,sales_cnt as salesCnt

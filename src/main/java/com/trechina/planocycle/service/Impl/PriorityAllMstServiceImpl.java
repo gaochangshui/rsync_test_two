@@ -244,7 +244,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 //从基本パターンresult_data中查询出来存到work_all_priority_result_data中(face、台棚放置数据不存)
                 workPriorityAllResultDataMapper.insertWKTableResultData(companyCd, priorityAllCd, priorityOrderCd, authorCd, pattern.getShelfPatternCd());
                 //获取pattern对应的jan
-                String resultDataList = workPriorityAllResultDataMapper.getJans(pattern.getShelfPatternCd(), companyCd, priorityAllCd);
+                String resultDataList = workPriorityAllResultDataMapper.getJans(pattern.getShelfPatternCd(), companyCd, priorityAllCd,authorCd);
                 if (resultDataList == null) {
                     return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
                 }
@@ -311,6 +311,8 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         return ResultMaps.result(ResultEnum.SUCCESS, "計算成功しました。");
     }
 
+
+
     @Override
     public boolean setJan(String companyCd, String authorCd, Integer priorityAllCd, Integer priorityOrderCd, Integer shelfPatternCd, Integer minFace) {
         PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
@@ -336,12 +338,13 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     /**
      * 保存
      * @param companyCd
-     * @param priorityOrderCd
+     * @param priorityAllCd
      * @return
      * TODO:0321 liuxinyu
      */
     @Override
-    public Map<String, Object> savePriorityAll(String companyCd, Integer priorityOrderCd) {
+    public Map<String, Object> savePriorityAll(String companyCd, Integer priorityAllCd) {
+
         return null;
     }
 
