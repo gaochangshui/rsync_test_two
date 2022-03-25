@@ -60,6 +60,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     private ShelfPtsDataJandataMapper shelfPtsDataJandataMapper;
     @Autowired
     private CommonMstService commonMstService;
+    @Autowired
+    private PriorityAllPtsMapper priorityAllPtsMapper;
 
     /**
      * 获取棚割pts信息
@@ -383,7 +385,14 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             shelfPtsDataJandata = shelfPtsDataJandataMapper.selectNewByPtsCd(companyCd, ptsCd);
         }else{
             //新全パターン
-            return;
+            ShelfPtsData ptsData = priorityAllPtsMapper.selectPtsCdByAuthorCd(companyCd, authorCd, typeCd, shelfPatternCd);
+            Integer ptsCd = ptsData.getId();
+            fileName = ptsData.getFileName();
+
+            shelfPtsDataVersion = priorityAllPtsMapper.selectAllVersionByPtsCd(companyCd, ptsCd);
+            shelfPtsDataTaimst = priorityAllPtsMapper.selectAllTaimstByPtsCd(companyCd, ptsCd);
+            shelfPtsDataTanamst = priorityAllPtsMapper.selectAllTanamstByPtsCd(companyCd, ptsCd);
+            shelfPtsDataJandata = priorityAllPtsMapper.selectAllJandataByPtsCd(companyCd, ptsCd);
         }
 
         response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=utf-8");

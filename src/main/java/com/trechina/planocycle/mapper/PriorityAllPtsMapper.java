@@ -1,9 +1,8 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.PriorityAllPtsDataDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
-import com.trechina.planocycle.entity.po.ShelfPtsData;
+import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PtsDetailDataVo;
 import com.trechina.planocycle.entity.vo.PtsJanDataVo;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
@@ -46,4 +45,14 @@ public interface PriorityAllPtsMapper {
     List<PtsJanDataVo> getJanData(Integer id);
 
     PtsDetailDataVo getPtsDetailData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd);
+
+    ShelfPtsDataVersion selectAllVersionByPtsCd(String companyCd, Integer ptsCd);
+
+    List<ShelfPtsDataTaimst> selectAllTaimstByPtsCd(String companyCd, Integer ptsCd);
+
+    List<ShelfPtsDataTanamst> selectAllTanamstByPtsCd(String companyCd, Integer ptsCd);
+
+    List<ShelfPtsDataJandata> selectAllJandataByPtsCd(String companyCd, Integer ptsCd);
+
+    ShelfPtsData selectPtsCdByAuthorCd(String companyCd, String authorCd, Integer priorityAllCd, Long shelfPatternCd);
 }
