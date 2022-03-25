@@ -4,6 +4,10 @@ import com.trechina.planocycle.entity.dto.PriorityAllPtsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.ShelfPtsData;
+import com.trechina.planocycle.entity.vo.PtsDetailDataVo;
+import com.trechina.planocycle.entity.vo.PtsJanDataVo;
+import com.trechina.planocycle.entity.vo.PtsTaiVo;
+import com.trechina.planocycle.entity.vo.PtsTanaVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -34,4 +38,12 @@ public interface PriorityAllPtsMapper {
 
     void insertPtsDataJandata(@Param("list") List<WorkPriorityOrderResultDataDto> positionResultData,
                               Integer id, String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd);
+
+    List<PtsTaiVo> getTaiData(Integer id);
+
+    List<PtsTanaVo> getTanaData(Integer id);
+
+    List<PtsJanDataVo> getJanData(Integer id);
+
+    PtsDetailDataVo getPtsDetailData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd);
 }
