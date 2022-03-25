@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -140,8 +141,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             }
         }
 
-
-        return ResultMaps.result(ResultEnum.SUCCESS, attr);
+        Stream<PriorityOrderAttrValueVo> sorted = attr.stream().sorted(Comparator.comparing(PriorityOrderAttrValueVo::getAttrCd));
+        return ResultMaps.result(ResultEnum.SUCCESS, sorted);
     }
 
 

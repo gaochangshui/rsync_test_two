@@ -31,6 +31,25 @@
         where data.company_cd=#{companyCd} and data.author_cd=#{authorCd} and priority_all_cd=#{priorityAllCd}
         and shelf_patten_cd=#{patternCd}
     </select>
+    <select id="getJans" resultType="java.lang.String">
+        select array_to_string(array_agg(DISTINCT jan_cd),',')
+        from planocycle.work_priority_all_result_data
+        where priority_all_cd = #{priorityAllCd} and company_cd = #{companyCd} and shelf_patten_cd = #{patternCd}
+    </select>
+    <select id="getAvgSalesCunt" resultType="java.lang.Double">
+        select avg(sales_cnt)
+        FROM planocycle.work_priority_all_result_data
+        where priority_all_cd = #{priorityAllCd} and company_cd = #{companyCd} and shelf_patten_cd = #{patternCd}
+    </select>
+    <select id="getResultDatas" resultType="com.trechina.planocycle.entity.dto.PriorityAllResultDataDto">
+        select jan_cd ,sales_cnt as salesCnt
+        from planocycle.work_priority_all_result_data
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+          and priority_all_cd = #{priorityAllCd}
+          and shelf_patten_cd = #{patternCd}
+    </select>
+
     <update id="updateTaiTanaBatch">
         UPDATE planocycle.work_priority_all_result_data SET
         tai_cd =
@@ -73,5 +92,25 @@
             #{obj.janCd}
         </foreach>
         and company_cd=#{companyCd} and author_cd=#{authorCd} and priority_all_cd = #{priorityAllCd} and shelf_patten_cd=#{patternCd}
+    </update>
+    <update id="update">
+        <foreach collection="list" item="item" separator=";" index="index">
+            update planocycle.work_priority_all_result_data
+            <set>
+                sales_cnt = #{item.salesCnt} ::numeric
+            </set>
+            where jan_cd = #{item.janCd} ::varchar and company_cd = #{companyCd} and author_cd = #{authorCd} and priority_all_cd = #{priorityAllCd}
+            and shelf_patten_cd = #{patternCd}
+        </foreach>
+    </update>
+    <update id="updateFace">
+        <foreach collection="list" item="item" separator=";" index="index">
+            update planocycle.work_priority_all_result_data
+            <set>
+                face = #{item.faceNum},face_keisan = #{item.faceNum}
+            </set>
+            where jan_cd = #{item.janCd} ::varchar and company_cd = #{item.companyCd} and author_cd = #{item.authorCd} and priority_all_cd = #{item.priorityAllCd}
+            and shelf_patten_cd=#{item.shelfPatternCd}
+        </foreach>
     </update>
 </mapper>

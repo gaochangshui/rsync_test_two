@@ -1,19 +1,13 @@
 package com.trechina.planocycle.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.trechina.planocycle.entity.dto.PriorityAllRestrictDto;
-import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
-import com.trechina.planocycle.entity.dto.TableNameDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
-import com.trechina.planocycle.service.CommonMstService;
-import com.trechina.planocycle.service.PriorityAllMstService;
-import com.trechina.planocycle.service.PriorityAllPtsService;
-import com.trechina.planocycle.service.ShelfPtsService;
+import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,6 +48,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     private CommonMstService commonMstService;
     @Autowired
     private PriorityAllPtsService priorityAllPtsService;
+    @Autowired
+    private PriorityOrderMstService priorityOrderMstService;
+    @Autowired
+    private ProductPowerMstMapper productPowerMstMapper;
 
     /**
      * 新規作成＆編集の処理
@@ -239,8 +238,63 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
                 //从基本パターンresult_data中查询出来存到work_all_priority_result_data中(face、台棚放置数据不存)
                 workPriorityAllResultDataMapper.insertWKTableResultData(companyCd, priorityAllCd, priorityOrderCd, authorCd, pattern.getShelfPatternCd());
+                //获取pattern对应的jan
+                String resultDataList = workPriorityAllResultDataMapper.getJans(pattern.getShelfPatternCd(), companyCd, priorityAllCd);
+                if (resultDataList == null) {
+                    return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
+                }
+                String[] array = resultDataList.split(",");
+                //调用smt计算推荐face数
+                Map<String, Object> Data = priorityOrderMstService.getFaceKeisanForCgi(array, companyCd,  pattern.getShelfPatternCd(), authorCd);
+                if (Data.get("data") != null && Data.get("data") != "") {
+                    String[] strResult = Data.get("data").toString().split("@");
+                    String[] strSplit = null;
+                    List<PriorityAllResultDataDto> list = new ArrayList<>();
+                    PriorityAllResultDataDto orderResultData = null;
+                    for (int i = 0; i < strResult.length; i++) {
+                        orderResultData = new PriorityAllResultDataDto();
+                        strSplit = strResult[i].split(" ");
+                        orderResultData.setSalesCnt(Double.valueOf(strSplit[1]));
+                        orderResultData.setJanCd(strSplit[0]);
+
+
+                        list.add(orderResultData);
+                    }
+                    workPriorityAllResultDataMapper.update(list,companyCd,authorCd,priorityAllCd,pattern.getShelfPatternCd());
+                }
+                //获取旧pts的平均值，最大值最小值
+                FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(pattern.getShelfPatternCd());
+                Integer minFaceNum = faceNum.getFaceMinNum();
+                DecimalFormat df = new DecimalFormat("#.00");
+                //获取salesCntAvg并保留两位小数
+                Double avgSalesCunt = workPriorityAllResultDataMapper.getAvgSalesCunt(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
+                String format = df.format(avgSalesCunt);
+                avgSalesCunt = Double.valueOf(format);
+                List<PriorityAllResultDataDto> resultDatas = workPriorityAllResultDataMapper.getResultDatas(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
+                Double d = null;
+                for (PriorityAllResultDataDto resultData : resultDatas) {
+                    resultData.setPriorityAllCd(priorityAllCd);
+                    resultData.setCompanyCd(companyCd);
+                    resultData.setShelfPatternCd(pattern.getShelfPatternCd());
+                    if (resultData.getSalesCnt() != null) {
+                        d = resultData.getSalesCnt() * faceNum.getFaceAvgNum() / avgSalesCunt;
+
+                        if (d > faceNum.getFaceMaxNum()) {
+                            resultData.setFaceNum(Integer.valueOf(faceNum.getFaceMaxNum()));
+                        } else if (d < faceNum.getFaceMinNum()) {
+                            resultData.setFaceNum(Integer.valueOf(faceNum.getFaceMinNum()));
+                        } else {
+                            resultData.setFaceNum(d.intValue());
+                        }
+
+                    } else {
+                        resultData.setFaceNum(Integer.valueOf(faceNum.getFaceMinNum()));
+                    }
+
+                }
+                workPriorityAllResultDataMapper.updateFace(resultDatas);
                 //todo：最小face数需要计算
-                this.setJan(companyCd, authorCd, priorityAllCd, priorityOrderCd, pattern.getShelfPatternCd(), 1);
+                this.setJan(companyCd, authorCd, priorityAllCd, priorityOrderCd, pattern.getShelfPatternCd(), minFaceNum);
                 //保存pts到临时表里
                 priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
             }
