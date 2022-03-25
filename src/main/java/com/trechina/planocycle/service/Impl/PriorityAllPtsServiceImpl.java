@@ -22,14 +22,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriUtils;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -125,11 +123,9 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         Integer priorityAllCd = priorityAllVO.getPriorityAllCd();
         String companyCd = priorityAllVO.getCompanyCd();
         String zipFileName = null;
-//        , zipPath = null
 
         List<ShelfPtsData> shelfPtsDataList = priorityAllPtsMapper.selectByPriorityAllCd(companyCd, authorCd, priorityAllCd);
         long currentTimeMillis = System.currentTimeMillis();
-        ZipOutputStream zos = null;
 
         String path = this.getClass().getClassLoader().getResource("").getPath();
         logger.info("parent path: {}", path);
@@ -142,14 +138,12 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         }
         FileInputStream fis = null;
 
-        try {
+        try(ZipOutputStream zos = new ZipOutputStream(response.getOutputStream())) {
             zipFileName = MessageFormat.format("全パターン{0}.zip", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
 
             String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(zipFileName, "utf-8"));
             response.setHeader("Content-Disposition", format);
             response.setHeader(HttpHeaders.CONTENT_TYPE, "application/x-zip-compressed;charset=utf-8");
-            ServletOutputStream outputStream = response.getOutputStream();
-            zos = new ZipOutputStream(outputStream);
 
             for (ShelfPtsData ptsData : shelfPtsDataList) {
                 Integer ptsCd = ptsData.getId();
@@ -177,21 +171,12 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
                 zos.closeEntry();
                 fis.close();
             }
-
-            outputStream.flush();
         } catch (IOException e) {
             logger.error("", e);
         } finally {
             if(fis!=null){
                 try {
                     fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if(zos!=null){
-                try {
-                    zos.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

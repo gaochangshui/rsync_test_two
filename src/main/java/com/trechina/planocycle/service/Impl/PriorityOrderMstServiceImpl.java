@@ -687,7 +687,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                     // 台棚数量累加
                     long tanaCnt = restrictResult.getTanaCnt() + 1;
                     restrictResult.setTanaCnt(tanaCnt);
-                    // TODO:每个棚固定13个品类, 扩大三倍取商品，全パターン直接用这些商品
+                    //每个棚固定13个品类, 扩大三倍取商品，全パターン直接用这些商品
                     restrictResult.setSkuCnt(tanaCnt * skuCountPerPattan * 3);
                 }
 
@@ -1069,7 +1069,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 commonMstService.commSetJan(partitionFlag, partitionVal, taiData,
                         workPriorityOrderResultData, workPriorityOrderRestrictRelations, minFace);
 
-        for (String taiTanaKey : finalSetJanResultData.keySet()) {
+        for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : finalSetJanResultData.entrySet()) {
+            String taiTanaKey = entry.getKey();
             List<PriorityOrderResultDataDto> resultDataDtos = finalSetJanResultData.get(taiTanaKey);
             workPriorityOrderResultDataMapper.updateTaiTanaBatch(companyCd, priorityOrderCd, authorCd, resultDataDtos);
         }
