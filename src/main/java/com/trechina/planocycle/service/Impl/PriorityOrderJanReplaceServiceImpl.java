@@ -56,8 +56,11 @@ public class PriorityOrderJanReplaceServiceImpl implements PriorityOrderJanRepla
            companyCd = orderJanReplace.getCompanyCd();
             priorityOrderCd = orderJanReplace.getPriorityOrderCd();
         }
+
         priorityOrderJanReplaceMapper.workDelete(companyCd,authorCd,priorityOrderCd);
-                priorityOrderJanReplaceMapper.insert(priorityOrderJanReplace,authorCd);
+        if (priorityOrderJanReplace.get(0).getCompanyCd()!=null) {
+            priorityOrderJanReplaceMapper.insert(priorityOrderJanReplace, authorCd);
+        }
                 return ResultMaps.result(ResultEnum.SUCCESS);
 
     }
