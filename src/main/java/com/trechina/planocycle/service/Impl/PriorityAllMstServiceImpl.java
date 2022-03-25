@@ -12,6 +12,7 @@ import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
@@ -52,6 +53,8 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     private PriorityOrderMstService priorityOrderMstService;
     @Autowired
     private ProductPowerMstMapper productPowerMstMapper;
+    @Value("${skuPerPattan}")
+    private Long skuCountPerPattan;
 
     /**
      * 新規作成＆編集の処理
@@ -214,6 +217,8 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         // 全パターンのRelationList
         List<WorkPriorityAllRestrictRelation> allRelationsList = new ArrayList<>();
 
+        workPriorityAllResultDataMapper.deleteWKTableResultData(companyCd, priorityAllCd, authorCd);
+
         try {
             basicPatternCd = priorityAllMstMapper.getPatternCdBYPriorityCd(companyCd, priorityOrderCd);
             basicTannaNum = new BigDecimal(shelfPtsDataMapper.getTanaNum(basicPatternCd));
@@ -369,6 +374,9 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             , String companyCd, String  authorCd, BigDecimal basicTannaNum) {
         List<PriorityAllRestrictDto> allRestrictDtoList = new ArrayList<>();
 
+        //基本パターン的face数扩大三倍取商品（基本パターン已同步修改）
+        skuCountPerPattan*=3;
+
         // チェックされたパターン
         BigDecimal inX = new BigDecimal(pattern.getTanaCnt()).divide(basicTannaNum, 2, BigDecimal.ROUND_DOWN);
         logger.info("基本パターン：{}, 全パターン：{},系数：{}", pattern.getTanaCnt(), basicTannaNum, inX.doubleValue());
@@ -407,7 +415,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 logger.info("扩/缩后：{}", tmpTanaCnt);
             }
 
-            allSet.setSkuCnt(allSet.getTanaCnt().multiply(new BigDecimal(13)).intValue());
+            allSet.setSkuCnt(allSet.getTanaCnt().multiply(new BigDecimal(skuCountPerPattan)).intValue());
             // 全パターン制約に追加
             allRestrictDtoList.add(allSet);
             allTanaNum = allTanaNum.add(allSet.getTanaCnt());
@@ -427,11 +435,11 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 logger.info("基本{}, 扩缩后{}", allRestrict.getBasicTanaCnt(), allRestrict.getTanaCnt());
                 if (remainTanaCnt.compareTo(new BigDecimal(1)) < 0) {
                     allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(BigDecimal.valueOf(0.5)));
-                    allRestrict.setSkuCnt(allRestrict.getSkuCnt() + 7);
+                    allRestrict.setSkuCnt(allRestrict.getSkuCnt() + BigDecimal.valueOf(skuCountPerPattan/2).setScale(0, BigDecimal.ROUND_CEILING).intValue());
                     break;
                 } else {
                     allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(new BigDecimal(1)));
-                    allRestrict.setSkuCnt(allRestrict.getSkuCnt() + 13);
+                    allRestrict.setSkuCnt(allRestrict.getSkuCnt() + skuCountPerPattan.intValue());
                     allTanaNum = allTanaNum.add(new BigDecimal(1));
                 }
             }

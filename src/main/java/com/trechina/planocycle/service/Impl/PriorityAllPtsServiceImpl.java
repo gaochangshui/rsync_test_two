@@ -66,12 +66,12 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         //从已有的pts中查询出数据
         priorityAllPtsMapper.insertPtsData(priorityOrderPtsDataDto);
         Integer id = priorityOrderPtsDataDto.getId();
-        priorityAllPtsMapper.insertPtsTaimst(ptsCd, id, authorCd);
-        priorityAllPtsMapper.insertPtsTanamst(ptsCd, id, authorCd);
-        priorityAllPtsMapper.insertPtsVersion(ptsCd, id, authorCd);
+        priorityAllPtsMapper.insertPtsTaimst(ptsCd, id, authorCd, priorityAllCd, patternCd);
+        priorityAllPtsMapper.insertPtsTanamst(ptsCd, id, authorCd, priorityAllCd, patternCd);
+        priorityAllPtsMapper.insertPtsVersion(ptsCd, id, authorCd, priorityAllCd, patternCd);
 
         if (!positionResultData.isEmpty()) {
-            priorityAllPtsMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
+            priorityAllPtsMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd, priorityAllCd, patternCd);
         }
     }
 }
