@@ -28,7 +28,7 @@ public class PriorityAllPtsController {
      * 打包下载全pattern的pts文件
      * @return
      */
-    @PostMapping("getBatchDownloadPtsData")
+    @PostMapping("batchDownloadPtsData")
     public void batchDownloadPtsData(@RequestBody PriorityAllVO priorityAllVO, HttpServletResponse response){
         priorityAllPtsService.batchDownloadPtsData(priorityAllVO, response);
     }
