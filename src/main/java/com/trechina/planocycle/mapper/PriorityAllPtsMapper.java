@@ -26,11 +26,12 @@ public interface PriorityAllPtsMapper {
 
     void insertPtsData(PriorityAllPtsDataDto priorityAllPtsDataDto);
 
-    void insertPtsTaimst(Integer ptsCd, Integer id, String authorCd);
+    void insertPtsTaimst(Integer ptsCd, Integer id, String authorCd, Integer priorityAllCd, Integer patternCd);
 
-    void insertPtsTanamst(Integer ptsCd, Integer id, String authorCd);
+    void insertPtsTanamst(Integer ptsCd, Integer id, String authorCd, Integer priorityAllCd, Integer patternCd);
 
-    void insertPtsVersion(Integer ptsCd, Integer id, String authorCd);
+    void insertPtsVersion(Integer ptsCd, Integer id, String authorCd, Integer priorityAllCd, Integer patternCd);
 
-    void insertPtsDataJandata(List<WorkPriorityOrderResultDataDto> positionResultData, Integer id, String companyCd, String authorCd);
+    void insertPtsDataJandata(@Param("list") List<WorkPriorityOrderResultDataDto> positionResultData,
+                              Integer id, String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd);
 }

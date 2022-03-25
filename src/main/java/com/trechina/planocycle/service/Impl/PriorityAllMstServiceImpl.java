@@ -215,6 +215,8 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         // 全パターンのRelationList
         List<WorkPriorityAllRestrictRelation> allRelationsList = new ArrayList<>();
 
+        workPriorityAllResultDataMapper.deleteWKTableResultData(companyCd, priorityAllCd, authorCd);
+
         try {
             basicPatternCd = priorityAllMstMapper.getPatternCdBYPriorityCd(companyCd, priorityOrderCd);
             basicTannaNum = new BigDecimal(shelfPtsDataMapper.getTanaNum(basicPatternCd));

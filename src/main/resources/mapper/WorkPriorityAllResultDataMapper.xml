@@ -16,7 +16,7 @@
         order by shelfs.shelf_patten_cd
     </insert>
     <delete id="deleteWKTableResultData">
-        delete from planocycle.work_priority_all_restrict_relation
+        delete from planocycle.work_priority_all_result_data
         where priority_all_cd = #{priorityAllCd}
         and company_cd = #{companyCd,jdbcType=VARCHAR}
         and author_cd = #{authorCd,jdbcType=VARCHAR}
