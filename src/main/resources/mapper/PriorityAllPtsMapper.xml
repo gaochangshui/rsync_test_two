@@ -104,7 +104,7 @@
         on ptsData."id" = ptsVersion.pts_cd
         where ptsData.shelf_pattern_cd = #{patternCd}
         and ptsData.priority_all_cd=#{priorityAllCd} and ptsData.company_cd=#{companyCd}
-        and ptsData.deleteflg=0 and author_cd=#{authorCd}
+        and ptsData.deleteflg=0 and ptsData.author_cd=#{authorCd}
     </select>
     <select id="selectAllVersionByPtsCd" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataVersion">
         select
