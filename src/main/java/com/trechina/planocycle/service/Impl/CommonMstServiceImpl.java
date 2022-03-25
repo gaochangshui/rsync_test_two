@@ -64,8 +64,8 @@ public class CommonMstServiceImpl implements CommonMstService {
             //如果sortrank为null就只按skurank排序
             List<PriorityOrderResultDataDto> relationSorted = workPriorityOrderResultData
                     .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
-                    .sorted(Comparator.comparing(PriorityOrderResultDataDto::getSortRank, Comparator.nullsFirst(Long::compareTo))
-                            .thenComparingLong(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
+                    .sorted(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank, Comparator.nullsFirst(Long::compareTo))
+                            .thenComparingLong(PriorityOrderResultDataDto::getSortRank)).collect(Collectors.toList());
 
             List<WorkPriorityOrderRestrictRelation> relationValue = relationEntry.getValue();
 
