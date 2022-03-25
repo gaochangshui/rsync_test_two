@@ -55,4 +55,6 @@ public interface PriorityAllPtsMapper {
     List<ShelfPtsDataJandata> selectAllJandataByPtsCd(String companyCd, Integer ptsCd);
 
     ShelfPtsData selectPtsCdByAuthorCd(String companyCd, String authorCd, Integer priorityAllCd, Long shelfPatternCd);
+
+    List<ShelfPtsData> selectByPriorityAllCd(String companyCd, String authorCd, Integer priorityAllCd);
 }
