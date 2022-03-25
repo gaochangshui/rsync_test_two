@@ -344,6 +344,17 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      */
     @Override
     public Map<String, Object> savePriorityAll(String companyCd, Integer priorityAllCd) {
+        String aud = session.getAttribute("aud").toString();
+        if (priorityAllCd != 0){
+            priorityAllMstMapper.deleteFinalTableMst(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deleteFinalTableShelfs(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deleteFinalTableRestrict(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deleteFinalTableResult(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deleteFinalTablePtsTai(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deleteFinalTablePtsTana(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deleteFinalTablePtsJans(companyCd,priorityAllCd,aud);
+
+        }
 
         return null;
     }

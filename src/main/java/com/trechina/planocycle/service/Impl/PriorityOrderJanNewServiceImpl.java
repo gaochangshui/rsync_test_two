@@ -148,7 +148,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         }
 
         priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
-        if(priorityOrderJanNew.size()>0) {
+        if(priorityOrderJanNew.get(0).getJanNew() != null) {
             priorityOrderJanNewMapper.insert(priorityOrderJanNew, authorCd);
         }
             return ResultMaps.result(ResultEnum.SUCCESS);
