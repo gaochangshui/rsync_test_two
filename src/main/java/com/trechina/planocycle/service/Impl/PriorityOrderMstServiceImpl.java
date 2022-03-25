@@ -868,10 +868,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
 
         }
-        int i = 1;
-        for (PriorityOrderJanNewDto priorityOrderJanNewDto : reorder) {
-            priorityOrderJanNewDto.setRank(i++);
-        }
+        //int i = 1;
+        //for (PriorityOrderJanNewDto priorityOrderJanNewDto : reorder) {
+        //    priorityOrderJanNewDto.setRank(i++);
+        //}
         int j = 1;
         for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder1) {
             workPriorityOrderResultData.setResultRank(j++);

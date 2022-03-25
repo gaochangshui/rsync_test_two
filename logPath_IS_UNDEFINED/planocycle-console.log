@@ -235,3 +235,13 @@ org.postgresql.util.PSQLException: ERROR: syntax error at or near ","
 20220325 16:44:13.033  [http-nio-8383-exec-2] INFO  com.trechina.planocycle.service.Impl.PriorityOrderJanNewServiceImpl.getPriorityOrderJanNew():60 - 获取新规商品list返回结果集b：[PriorityOrderJanNewDto{companyCd='null', priorityOrderCd=null, janCd='2', janName='ﾋﾞ-ﾙｵｵﾋﾞﾝ', rank=1, zokusei1='0014', zokusei2='0014_0041', zokusei3='0014_0041_0001', zokusei4='0014_0041_0001_0001'}]
 20220325 16:44:32.939  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
 20220325 16:44:32.943  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.
+20220325 16:56:45.385  [http-nio-8383-exec-2] INFO  org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/].log():173 - Initializing Spring DispatcherServlet 'dispatcherServlet'
+20220325 16:56:45.385  [http-nio-8383-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet.initServletBean():525 - Initializing Servlet 'dispatcherServlet'
+20220325 16:56:45.387  [http-nio-8383-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet.initServletBean():547 - Completed initialization in 1 ms
+20220325 16:56:45.418  [http-nio-8383-exec-2] INFO  com.trechina.planocycle.service.Impl.UserServiceImpl.getUserCd():22 - 登录的社员号：10212159
+20220325 16:56:45.616  [http-nio-8383-exec-1] INFO  com.trechina.planocycle.service.Impl.CommodityScoreMasterServiceImpl.getEnterpriseInfo():60 - [ {"F1":"0001","F2":"トライアル","F3":"0001","F4":"トライアル"}, {"F1":"0002","F2":"ライフ関東","F3":"0002","F4":"ライフ関東"} ]
+20220325 16:56:45.674  [http-nio-8383-exec-1] INFO  com.trechina.planocycle.service.Impl.CommodityScoreMasterServiceImpl.getEnterpriseInfo():66 - 获取企业信息：[{"F1":"0001","F2":"トライアル","F3":"0001","F4":"トライアル"},{"F1":"0002","F2":"ライフ関東","F3":"0002","F4":"ライフ関東"}]
+20220325 16:56:45.914  [http-nio-8383-exec-5] INFO  com.zaxxer.hikari.HikariDataSource.getConnection():110 - DatebookHikariCP - Starting...
+20220325 16:56:46.539  [http-nio-8383-exec-5] INFO  com.zaxxer.hikari.HikariDataSource.getConnection():123 - DatebookHikariCP - Start completed.
+20220325 16:57:01.809  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
+20220325 16:57:02.176  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.
