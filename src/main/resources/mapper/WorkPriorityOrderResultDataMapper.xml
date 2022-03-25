@@ -90,7 +90,11 @@
                   ,mm.cavvg
     </if>
     from (
-    select  a.scat1cd_val,a.scat2cd_val,a.scat3cd_val,a.scat4cd_val,a.brand,a.sku_rank ,a.jan_cd,b.aavg as bavvg, c.aavg as cavvg from
+    select  a.scat1cd_val,a.scat2cd_val,a.scat3cd_val,a.scat4cd_val,a.brand,a.sku_rank ,a.jan_cd,b.aavg as bavvg
+    <if test="sortName2 !=null">
+         , c.aavg as cavvg
+    </if>
+    from
     (select  datas.jan_cd ,janMst.jan_nm,
     janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
     from planocycle.work_priority_order_result_data datas
