@@ -76,6 +76,7 @@ public class Thread {
                 begin.await();
             } catch (InterruptedException e) {
                 logger.error("", e);
+                java.lang.Thread.currentThread().interrupt();
             }finally {
                end.countDown();
             }

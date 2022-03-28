@@ -81,6 +81,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             exec(strList);
         } catch (InterruptedException e) {
             logger.error("", e);
+            Thread.currentThread().interrupt();
         }
         List<ProductPowerMstData> syokikaList = productPowerDataMapper.selectWKSyokika(companyCd, authorCd);
 
@@ -324,6 +325,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 stopWatch.stop();
             } catch (InterruptedException e) {
                 logger.error("", e);
+                Thread.currentThread().interrupt();
             } finally {
                 end.countDown();
                 logger.info("执行时间为：{}", stopWatch.prettyPrint());
