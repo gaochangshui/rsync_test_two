@@ -27,10 +27,10 @@ public class sshFtpUtils {
     public String pushFile(String localFile,String remotePath){
         try {
             File file = new File(localFile);
-            logger.info("ssh服务器参数："+localFile+","+remotePath);
+            logger.info("ssh服务器参数：{},{}",localFile,remotePath);
             Connection connection = getConnection();
             boolean auth = connection.authenticateWithPassword(user,pw);
-            logger.info("ssh服务器身份验证返回值："+auth);
+            logger.info("ssh服务器身份验证返回值：{}",auth);
             if (auth) {
                 logger.info("验证成功");
                 SCPClient client =new SCPClient(connection);
@@ -44,7 +44,6 @@ public class sshFtpUtils {
                         os.write(b,0,i);
                     }
                     os.flush();
-                    fileInputStream.close();
                     connection.close();
                     return "传送成功";
                 }
@@ -53,7 +52,7 @@ public class sshFtpUtils {
                 return "传送失败";
             }
         } catch (IOException e) {
-            logger.info("报错:"+e);
+            logger.info("报错:",e);
             return "链接失败";
         }
     }
@@ -88,11 +87,11 @@ public class sshFtpUtils {
         return os.toByteArray();
     }
 
-    public String getFile(String remoteFile, String localTargetDirectory, HttpServletResponse response,String fileName) {
+    public String getFile(String remoteFile, String localTargetDirectory, HttpServletResponse response) {
         try{
                 Connection connection = getConnection();
                 boolean auth = connection.authenticateWithPassword(user,pw);
-                logger.info("ssh服务器身份验证返回值："+auth);
+                logger.info("ssh服务器身份验证返回值：{}",auth);
                 if (auth) {
                     logger.info("验证成功");
                     SCPClient client =new SCPClient(connection);
@@ -122,7 +121,7 @@ public class sshFtpUtils {
                 }
 
             } catch (IOException e) {
-            logger.info("报错:"+e);
+            logger.info("报错:",e);
             return "链接失败";
         }
     }

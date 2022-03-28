@@ -42,7 +42,7 @@ public class FilesOperationController {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("csvPathCommodityPower")+session.getAttribute("aud").toString()+"/";
 
-        return filesOperationService.CsvUpload(multipartFile,path,companyCd,filename,projectIds,bucketNames);
+        return filesOperationService.csvUpload(multipartFile,path,companyCd,filename,projectIds,bucketNames);
     }
 
     /**

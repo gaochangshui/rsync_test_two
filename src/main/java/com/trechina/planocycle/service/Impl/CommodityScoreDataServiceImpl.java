@@ -52,7 +52,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         if ("9".equals(Data.get("data"))){
             return Data;
         }
-        logger.info("商品力点数表web版cgi返回数据：" + Data);
+        logger.info("商品力点数表web版cgi返回数据：{}", Data);
         String authorCd = session.getAttribute("aud").toString();
         // 返回的数据是字符串，处理成二维数组
         if (Data.get("data") != null) {
@@ -84,7 +84,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
         List<ProductPowerMstData> syokikaList = productPowerDataMapper.selectWKSyokika(companyCd, authorCd);
 
-        logger.info("返回pos基本信息为", syokikaList);
+        logger.info("返回pos基本信息为{}", syokikaList);
         return ResultMaps.result(ResultEnum.SUCCESS, syokikaList);
     }
 
@@ -107,7 +107,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             if (Data.get("data").equals("9")){
                 return Data;
             }
-            logger.info("商品力点数表web版cgi返回数据：" + Data);
+            logger.info("商品力点数表web版cgi返回数据：{}", Data);
             // 返回的数据是字符串，处理成二维数组
             if (Data.get("data") != null && Data.get("data") != "") {
                 String[] strResult = Data.get("data").toString().split("@");
@@ -193,21 +193,18 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerDataForCgiDto.setCompany(companyCd);
         productPowerDataForCgiDto.setMode("yobi_shori");
         productPowerDataForCgiDto.setGuid(uuid);
-        //productPowerDataForCgiDto.setDataCd(datacd);
-        //productPowerDataForCgiDto.setFileNm(filename);
         productPowerDataForCgiDto.setProductPowerNo(productPowerNo);
-        // productPowerDataForCgiDto.setDataNm(dataNm);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("保存文件的时候调用cgi的参数" + productPowerDataForCgiDto);
+        logger.info("保存文件的时候调用cgi的参数{}", productPowerDataForCgiDto);
         try {
             //递归调用cgi，首先去taskid
             String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
-            logger.info("taskId返回：" + result);
+            logger.info("taskId返回：{}", result);
             //带着taskId，再次请求cgi获取运行状态/数据
             Map<String, Object> Data = cgiUtil.postCgiLoop(cgiUtil.setPath("TaskQuery"), result, tokenInfo);
-            logger.info("保存文件的时候调用cgi返回的数据：" + Data);
+            logger.info("保存文件的时候调用cgi返回的数据：{}", Data);
         } catch (IOException e) {
-            logger.info("保存文件的时候调用cgi报错：" + e);
+            logger.info("保存文件的时候调用cgi报错：", e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
@@ -236,13 +233,13 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             productPowerDataForCgiDto.setRecentlyFlag("WEEK");
         }
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("调用cgi获取data的参数：" + productPowerDataForCgiDto);
+        logger.info("调用cgi获取data的参数：{}", productPowerDataForCgiDto);
         try {
             String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
-            logger.info("taskId返回：" + result);
+            logger.info("taskId返回：{}", result);
             return ResultMaps.result(ResultEnum.SUCCESS, result);
         } catch (IOException e) {
-            logger.info("获取商品力点数表taskid数据报错：" + e);
+            logger.info("获取商品力点数表taskid数据报错：", e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -278,13 +275,13 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
         productPowerDataForCgiDto.setUsercd(aud);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("调用cgi获取data的参数：" + productPowerDataForCgiDto);
+        logger.info("调用cgi获取data的参数：{}", productPowerDataForCgiDto);
         try {
             String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
-            logger.info("taskId返回：" + result);
+            logger.info("taskId返回：{}", result);
             return ResultMaps.result(ResultEnum.SUCCESS, result);
         } catch (IOException e) {
-            logger.info("获取商品力点数表taskid数据报错：" + e);
+            logger.info("获取商品力点数表taskid数据报错：", e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -294,8 +291,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String authorCd = session.getAttribute("aud").toString();
         productPowerDataMapper.deleteWKSyokika(companyCd, authorCd);
         productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
-        // productPowerDataMapper.deleteWKYobiiitern(companyCd,authorCd);
-        // productPowerDataMapper.deleteWKYobiiiternData(companyCd,authorCd,);
         List<ProductPowerMstData> productPowerMstData = productPowerDataMapper.getProductPowerMstData(companyCd, productPowerCd);
 
         return ResultMaps.result(ResultEnum.SUCCESS, productPowerMstData);

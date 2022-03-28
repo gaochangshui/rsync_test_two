@@ -414,10 +414,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                             tanaCount.setTanaUsedCount(tanaCount.getTanaCount());
                             //## 整台制约条件
                             restrictSetList.addAll(packageRestrict(0, 0, tanaCdArray, tanaCount.getTaiCd(), tmpRestrictSet));
-                            if (pattan > 0) {
+                            if (pattan <= 0) {
                                 // 商品还有，继续下一个台
-                                continue;
-                            } else {
                                 // 商品没有，继续下一个商品
                                 break;
                             }
@@ -437,10 +435,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                             restrictSetList.addAll(packageRestrict(tanaCount.getTanaUsedCount(), tanaCount.getTanaCount(), tanaCdArray, tanaCount.getTaiCd(), tmpRestrictSet));
                             pattan -= (tanaCount.getTanaCount() - tanaCount.getTanaUsedCount());
                             tanaCount.setTanaUsedCount(tanaCount.getTanaCount());
-                            if (pattan > 0) {
+                            if (pattan <= 0) {
                                 // 商品还有，继续下一个台
-                                continue;
-                            } else {
                                 // 商品没有，继续下一个商品
                                 break;
                             }
@@ -453,10 +449,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                             break;
                         }
                     }
-                } else {
-                    // 台满了，直接跳过
-                    continue;
                 }
+                // 台满了，直接跳过
             }
         }
         return restrictSetList;

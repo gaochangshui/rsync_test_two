@@ -30,7 +30,7 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
      * @return
      */
     @Override
-    public Map<String, Object> PriorityOrderNumGenerator() {
+    public Map<String, Object> priorityOrderNumGenerator() {
         PriorityOrderNumGenerator priorityOrderNumGenerator = new PriorityOrderNumGenerator();
         priorityOrderNumGenerator.setUsercd(session.getAttribute("aud").toString());
         Integer id = priorityOrderNumGeneratorMapper.insert(priorityOrderNumGenerator);
@@ -42,7 +42,7 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
      * 商品力点数表自动采号，并返回
      */
     @Override
-    public Map<String, Object> ProductPowerNumGenerator() {
+    public Map<String, Object> productPowerNumGenerator() {
         ProductPowerNumGenerator productPowerNumGenerator = new ProductPowerNumGenerator();
         productPowerNumGenerator.setUsercd(session.getAttribute("aud").toString());
         Integer id =productPowerNumGeneratorMapper.insert(productPowerNumGenerator);
@@ -51,7 +51,7 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
     }
 
     @Override
-    public Map<String, Object> PriorityAllID() {
+    public Map<String, Object> priorityAllID() {
         return null;
     }
 }

@@ -30,8 +30,8 @@ public class CommonMstServiceImpl implements CommonMstService {
     }
 
     @Override
-    public Map<String, Object> getAreaForShelfName(Integer ShelfNameCd) {
-        List<Areas> areasList = areasMapper.selectForShelfName(ShelfNameCd);
+    public Map<String, Object> getAreaForShelfName(Integer shelfNameCd) {
+        List<Areas> areasList = areasMapper.selectForShelfName(shelfNameCd);
         return ResultMaps.result(ResultEnum.SUCCESS,areasList);
     }
 
@@ -84,17 +84,14 @@ public class CommonMstServiceImpl implements CommonMstService {
                     continue;
                 }
 
+                Integer taiWidth = taiInfo.get().getTaiWidth();
                 //台或半段的宽度, 已使用的宽度
-                double width = 0;
+                double width = taiWidth;
                 double usedWidth = 0;
 
-                Integer taiWidth = taiInfo.get().getTaiWidth();
                 if (tanaType != 0) {
                     //半段的根据具体位置段的宽度放置
                     width = taiWidth / 2.0;
-                } else {
-                    //整段的根据具体位置台的宽度放置
-                    width = taiWidth;
                 }
 
                 //放置商品
@@ -203,19 +200,15 @@ public class CommonMstServiceImpl implements CommonMstService {
             }
 
             //按照最小face进行放置，需要多少宽度（需要考虑有隔板的情况）+剩下没用的宽度
-            double needWidth = targetResultData.getJanWidth() * minFace + partitionVal;
+            long needWidth = targetResultData.getJanWidth() * minFace + partitionVal;
             for (int i = resultDataDtoByIrisu.size()-1; i >= 0 ; i--) {
                 PriorityOrderResultDataDto currentResultData = resultDataDtoByIrisu.get(i);
                 Long faceFact = currentResultData.getFaceFact();
 
-                if(faceFact <= minFace){
-                    //小于等于最小face不能再cut了
-                    continue;
-                }
-
+                //小于等于最小face不能再cut了
                 //当前商品减一个face数，能不能放下目标商品
                 //cut 1 个face的宽度再加剩下的宽度是否能满足目标上面放置需要的宽度
-                if(currentResultData.getJanWidth() + remainderWidth >= needWidth){
+                if(faceFact > minFace && currentResultData.getJanWidth() + remainderWidth >= needWidth){
                     currentResultData.setFaceFact(faceFact -  1);
                     targetResultData.setFaceFact(minFace);
                     isSetByCut = true;

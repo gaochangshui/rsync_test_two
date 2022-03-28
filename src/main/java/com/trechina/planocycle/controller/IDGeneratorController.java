@@ -20,7 +20,7 @@ public class IDGeneratorController {
      */
     @GetMapping("/getPriorityOrderID")
     public Map<String,Object> getPriorityOrderID(){
-        return idGeneratorService.PriorityOrderNumGenerator();
+        return idGeneratorService.priorityOrderNumGenerator();
     }
 
     /**
@@ -29,12 +29,12 @@ public class IDGeneratorController {
      */
     @GetMapping("")
     public Map<String,Object> getProductPowerID(){
-        return idGeneratorService.ProductPowerNumGenerator();
+        return idGeneratorService.productPowerNumGenerator();
     }
 
 
     @GetMapping("/getPriorityAllID")
     public Map<String,Object> PriorityAllID(){
-        return idGeneratorService.PriorityAllID();
+        return idGeneratorService.priorityAllID();
     }
 }
