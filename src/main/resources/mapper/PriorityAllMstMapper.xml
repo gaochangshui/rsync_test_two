@@ -488,7 +488,7 @@
         from planocycle.shelf_pattern_mst shelf
         left join planocycle.work_priority_all_shelfs allshelf
             on allshelf.priority_all_cd = #{priorityAllCd}
-            and allshelf.company_cd = shelf.company_cd
+            and allshelf.company_cd = shelf.company_cd and allshelf.author_cd = shelf.author_cd
             and allshelf.shelf_patten_cd = shelf.shelf_pattern_cd
         inner join planocycle.shelf_name_mst shelfnm
             on shelf.shelf_name_cd = shelfnm.id

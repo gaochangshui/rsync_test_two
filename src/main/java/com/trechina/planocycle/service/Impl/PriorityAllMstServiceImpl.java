@@ -277,6 +277,8 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                         list.add(orderResultData);
                     }
                     workPriorityAllResultDataMapper.update(list,companyCd,authorCd,priorityAllCd,pattern.getShelfPatternCd());
+                }else {
+                    continue;
                 }
                 //获取旧pts的平均值，最大值最小值
                 FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(pattern.getShelfPatternCd());
