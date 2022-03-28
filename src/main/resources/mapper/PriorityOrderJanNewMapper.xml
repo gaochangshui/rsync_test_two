@@ -135,7 +135,7 @@
         select datas.jan as janCd,datas.sku_name as janName ,datas.classify_big as zokusei1,datas.classify_middle as zokusei2,datas.classify_small as zokusei3,datas.classify_fine as zokusei4,datas.rank_result as rank
         from planocycle.product_power_mst_data datas
         where datas.classify_big = #{item.zokusei1} and datas.classify_middle = #{item.zokusei2} and datas.classify_small = #{item.zokusei3}
-        and product_power_cd = #{productPowerCd} and datas.jan != #{janCd}
+        and product_power_cd = #{productPowerCd} and datas.jan != #{item.janCd}
         order by rank_result
     </select>
     <select id="getJanNewInfo" resultType="com.trechina.planocycle.entity.vo.JanMstPlanocycleVo">
@@ -143,6 +143,12 @@
              ,scat4cd as zokusei4,pkg as zokusei5,kikaku as zokusei6,irisu as zokusei7,alcohol as zokusei8,brand as zokusei9
         from masterdb.jan_mst_planocycle
         where company_cd = #{companyCd}
+    </select>
+    <select id="getJanNew" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
+        SELECT jan_New as janCd,jan_rank as rank
+        from planocycle.priority_order_jan_new
+        where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+            and author_cd=#{authorCd}
     </select>
     <delete id="deleteByAuthorCd">
         delete from planocycle.priority_order_jan_new where

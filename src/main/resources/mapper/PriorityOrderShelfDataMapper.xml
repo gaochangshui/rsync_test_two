@@ -25,6 +25,7 @@
 
                            on datas.tai_cd = relation.tai_cd and datas.tana_cd = relation.tana_cd and relation.tana_type = datas.tana_type
         where  relation.company_cd = #{companyCd} and relation.author_cd = #{authorCd} and relation.priority_order_cd =#{priorityOrderCd}
+        order by tai_cd,tana_cd
     </select>
     <select id="getRestrictJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto">
         select datas.jan_cd as janCd,jans.jan_nm as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, jans.irisu as zokusei7,jans.pkg as zokusei5,
