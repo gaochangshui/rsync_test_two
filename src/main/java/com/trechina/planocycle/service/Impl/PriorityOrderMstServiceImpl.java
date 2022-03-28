@@ -728,7 +728,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         // TODO: 2200866
 
 
-        String authorCd = session.getAttribute("aud").toString();
+        String authorCd = "10004314";
+        //String authorCd = session.getAttribute("aud").toString();
 
 
         //获取商品力点数表cd

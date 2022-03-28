@@ -65,9 +65,9 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      */
     @Override
     public Map<String, Object> addPriorityAllData(JSONObject jsonObject) {
-      //  try{
-            String authorCd = "10218504";
-            //String authorCd = session.getAttribute("aud").toString();
+        try{
+
+            String authorCd = session.getAttribute("aud").toString();
             String companyCd = jsonObject.get("companyCd").toString();
             Integer priorityAllCd = (Integer) jsonObject.get("priorityAllCd");
             //「companyCd、priorityAllCd、Author_cd」によりWKテーブルをクリア
@@ -102,9 +102,9 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 return ResultMaps.result(ResultEnum.SUCCESS,map);
             }
             return ResultMaps.result(ResultEnum.SUCCESS, null);
-      //  } catch (Exception ex) {
-       //     return ResultMaps.result(ResultEnum.FAILURE, "新規作成失敗しました。");
-       // }
+        } catch (Exception ex) {
+            return ResultMaps.result(ResultEnum.FAILURE, "新規作成失敗しました。");
+        }
     }
 
     /**
@@ -356,10 +356,15 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      * TODO:0321 liuxinyu
      */
     @Override
-    public Map<String, Object> savePriorityAll(String companyCd, Integer priorityAllCd) {
+    public Map<String, Object> savePriorityAll(String companyCd, Integer priorityAllCd,String priorityAllName) {
         String aud = session.getAttribute("aud").toString();
+        Integer cd = priorityAllMstMapper.selectPriorityAllName(priorityAllName, companyCd);
+        if (cd !=priorityAllCd && cd != null){
+            return ResultMaps.result(ResultEnum.NAMEISEXISTS);
+        }
         ProductPowerNumGenerator p = new ProductPowerNumGenerator();
         if (priorityAllCd != 0){
+
             priorityAllMstMapper.deleteFinalTableMst(companyCd,priorityAllCd,aud);
             priorityAllMstMapper.deleteFinalTableShelfs(companyCd,priorityAllCd,aud);
             priorityAllMstMapper.deleteFinalTableRestrict(companyCd,priorityAllCd,aud);
@@ -371,7 +376,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             priorityAllMstMapper.deleteFinalTablePtsRelation(companyCd,priorityAllCd,aud);
             priorityAllMstMapper.deleteFinalTablePtsVersion(companyCd,priorityAllCd,aud);
 
-            priorityAllMstMapper.setFinalTableMst(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.setFinalTableMst(companyCd,priorityAllCd,aud,priorityAllName);
             priorityAllMstMapper.setFinalTableShelfs(companyCd,priorityAllCd,aud);
             priorityAllMstMapper.setFinalTableRestrict(companyCd,priorityAllCd,aud);
             priorityAllMstMapper.setFinalTableRelation(companyCd,priorityAllCd,aud);
@@ -388,7 +393,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             int id = priorityAllNumGeneratorMapper.insert(p);
 
             logger.info("全pattern表自动取号："+p.getId());
-            priorityAllMstMapper.setFinalTableMst(companyCd,p.getId(),aud);
+            priorityAllMstMapper.setNewFinalTableMst(companyCd,p.getId(),aud,priorityAllName);
             priorityAllMstMapper.setNewFinalTableShelfs(companyCd,p.getId(),aud);
             priorityAllMstMapper.setNewFinalTableRestrict(companyCd,p.getId(),aud);
             priorityAllMstMapper.setNewFinalTableRelation(companyCd,p.getId(),aud);

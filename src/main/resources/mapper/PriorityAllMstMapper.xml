@@ -11,7 +11,7 @@
     </resultMap>
     <insert id="setFinalTableMst">
         insert into planocycle.priority_all_mst(priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd,create_time)
-        select priority_all_cd,company_cd,author_cd,priority_all_nm,priority_order_cd,now() from planocycle.work_priority_all_mst
+        select priority_all_cd,company_cd,author_cd,#{priorityAllName},priority_order_cd,now() from planocycle.work_priority_all_mst
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
           and author_cd = #{authorCd,jdbcType=VARCHAR}
@@ -114,7 +114,7 @@
     </insert>
     <insert id="setNewFinalTableMst">
         insert into planocycle.priority_all_mst(priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd,create_time)
-        select #{priorityAllCd},company_cd,author_cd,priority_all_nm,priority_order_cd,now() from planocycle.work_priority_all_mst
+        select #{priorityAllCd},company_cd,author_cd,#{priorityAllName},priority_order_cd,now() from planocycle.work_priority_all_mst
         where priority_all_cd = 0
           and company_cd = #{companyCd,jdbcType=VARCHAR}
           and author_cd = #{authorCd,jdbcType=VARCHAR}
@@ -515,5 +515,8 @@
     </select>
     <select id="getPriorityOrderCd" resultType="java.lang.Integer">
         select priority_order_cd from  planocycle.priority_all_mst where priority_all_cd = #{priorityAllCd} and company_cd = #{companyCd} and author_cd = #{authorCd}
+    </select>
+    <select id="selectPriorityAllName" resultType="java.lang.Integer">
+        select priority_all_cd from planocycle.priority_all_mst where company_cd = #{companyCd} and priority_all_name = #{priorityAllName}
     </select>
 </mapper>
