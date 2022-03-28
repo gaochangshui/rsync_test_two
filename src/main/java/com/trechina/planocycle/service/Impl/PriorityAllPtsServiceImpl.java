@@ -142,8 +142,6 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             logger.info("mkdir:{}",isMkdir);
         }
 
-        ReadableByteChannel readableByteChannel = null;
-
         ServletOutputStream outputStream = response.getOutputStream();
         try(ZipOutputStream zos = new ZipOutputStream(outputStream);
             WritableByteChannel writableByteChannel = Channels.newChannel(zos)) {
@@ -165,21 +163,20 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
                 String filePath = this.generateCsv2File(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, fileParentPath, fileName);
                 zos.putNextEntry(new ZipEntry(fileName));
 
-                readableByteChannel = Channels.newChannel(new FileInputStream(filePath));
+                try(FileInputStream fis = new FileInputStream(filePath);
+                    ReadableByteChannel readableByteChannel = Channels.newChannel(fis)){
+                    byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+                    writableByteChannel.write(ByteBuffer.wrap(bom));
 
-                byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-                writableByteChannel.write(ByteBuffer.wrap(bom));
-
-                ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
-                while (readableByteChannel.read(byteBuffer)!=-1){
-                    byteBuffer.clear();
-                    writableByteChannel.write(byteBuffer);
-                    byteBuffer.flip();
+                    ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+                    while (readableByteChannel.read(byteBuffer)!=-1){
+                        byteBuffer.clear();
+                        writableByteChannel.write(byteBuffer);
+                        byteBuffer.flip();
+                    }
                 }
 
                 zos.closeEntry();
-                readableByteChannel.close();
-                writableByteChannel.close();
             }
 
             zos.flush();
@@ -187,14 +184,6 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             logger.error("", e);
         } finally {
             outputStream.close();
-
-            if(readableByteChannel!=null){
-                try {
-                    readableByteChannel.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
 
             this.deleteDir(new File(fileParentPath));
         }
