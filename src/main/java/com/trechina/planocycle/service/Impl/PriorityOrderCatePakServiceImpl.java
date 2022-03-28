@@ -27,6 +27,9 @@ public class PriorityOrderCatePakServiceImpl implements PriorityOrderCatePakServ
     private PriorityOrderCatepakMapper priorityOrderCatepakMapper;
     @Autowired
     private PriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
+
+    private static final String FINAL_ATTR_SMALL = "attrSmall";
+    private static final String FINAL_ATTR_BIG = "attrBig";
     /**
      * 获取カテパケ拡縮
      *
@@ -37,12 +40,12 @@ public class PriorityOrderCatePakServiceImpl implements PriorityOrderCatePakServ
     @Override
     public Map<String, Object> getPriorityOrderCatePak(String companyCd, Integer priorityOrderCd,Integer productPowerNo) {
         try {
-            logger.info("获取カテパケ拡縮参数："+companyCd+","+priorityOrderCd);
+            logger.info("获取カテパケ拡縮参数：{},{}",companyCd,priorityOrderCd);
             List<PriorityOrderCatePakVO> priorityOrderCatePakVOS = priorityOrderCatepakMapper.selectByPrimaryKey(companyCd,
                     priorityOrderCd);
-            logger.info("获取カテパケ拡縮结果集：" + priorityOrderCatePakVOS);
+            logger.info("获取カテパケ拡縮结果集：{}",priorityOrderCatePakVOS);
             JSONArray jsonArray = new JSONArray();
-            if (priorityOrderCatePakVOS.size()>0) {
+            if (!priorityOrderCatePakVOS.isEmpty()) {
                 // 遍历结果集，拆分动态列
                 priorityOrderCatePakVOS.forEach(item -> {
                     Map<String, Object> result = new HashMap<>();
@@ -52,7 +55,7 @@ public class PriorityOrderCatePakServiceImpl implements PriorityOrderCatePakServ
                     // 遍历small
                     for (int i = 0; i < attrSmall.length; i++) {
                         valList = attrSmall[i].split(":");
-                        result.put("attrSmall" + valList[0], valList[1]);
+                        result.put(FINAL_ATTR_SMALL + valList[0], valList[1]);
                     }
                     result.put("rank", item.getRank());
                     result.put("branchNum", item.getBranchNum());
@@ -62,9 +65,9 @@ public class PriorityOrderCatePakServiceImpl implements PriorityOrderCatePakServ
                         for (int i = 0; i < attrBig.length; i++) {
                             valList = attrBig[i].split(":");
                             if (valList.length==1){
-                                result.put("attrBig" + valList[0], "");
+                                result.put(FINAL_ATTR_BIG + valList[0], "");
                             }else{
-                                result.put("attrBig" + valList[0], valList[1]);
+                                result.put(FINAL_ATTR_BIG + valList[0], valList[1]);
                             }
                         }
                     }
@@ -76,13 +79,13 @@ public class PriorityOrderCatePakServiceImpl implements PriorityOrderCatePakServ
             } else {
                 Integer colResult = priorityOrderCatepakMapper.selectColName(companyCd,
                         productPowerNo);
-                logger.info("获取カテパケ拡縮结果集2：" + colResult);
+                logger.info("获取カテパケ拡縮结果集2：{}",colResult);
                 if (colResult!=null) {
                     List<String> list = new ArrayList<>();
-                    String[] valList;
+
                     for (int i = 0; i < colResult; i++) {
-                        list.add("attrSmall" + i);
-                        list.add("attrBig" + i);
+                        list.add(FINAL_ATTR_SMALL + i);
+                        list.add(FINAL_ATTR_BIG + i);
                     }
                     list.add("rank");
                     list.add("branchNum");
@@ -90,10 +93,10 @@ public class PriorityOrderCatePakServiceImpl implements PriorityOrderCatePakServ
                 }
 
             }
-            logger.info("カテパケ拡縮结果"+jsonArray.toString());
+            logger.info("カテパケ拡縮结果{}", jsonArray);
             return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
         }catch (Exception e) {
-            logger.info("获取カテパケ拡縮失败："+e);
+            logger.info("获取カテパケ拡縮失败：",e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -108,7 +111,7 @@ public class PriorityOrderCatePakServiceImpl implements PriorityOrderCatePakServ
     @Override
     public Map<String, Object> setPriorityOrderCatePak(JSONArray jsonArray) {
         try {
-            logger.info("保存カテパケ拡縮参数:"+jsonArray);
+            logger.info("保存カテパケ拡縮参数:{}",jsonArray);
             //获取参数中第一行的企业和优先顺位号
             String companyCd = String.valueOf(((HashMap) jsonArray.get(0)).get("companyCd"));
             Integer priorityOrderCd = (Integer) ((HashMap) jsonArray.get(0)).get("priorityOrderCd");
@@ -123,17 +126,16 @@ public class PriorityOrderCatePakServiceImpl implements PriorityOrderCatePakServ
                     priorityOrderCatepak.setCompanyCd(companyCd);
                     priorityOrderCatepak.setPriorityOrderCd(priorityOrderCd);
                     priorityOrderCatepak.setRank(Integer.valueOf(((HashMap) item).get("rank").toString()));
-//                priorityOrderCatepak.setBranchNum(Integer.valueOf(((HashMap) item).get("branchNum").toString()));
                     // 写入数据重新取号，返回自增列id，实体类自动接收
                     priorityOrderCatepakMapper.insert(priorityOrderCatepak);
-                    logger.info("保存カテパケ拡縮返回值:" + priorityOrderCatepak.toString());
+                    logger.info("保存カテパケ拡縮返回值:{}", priorityOrderCatepak);
                     catePakAttr(companyCd, priorityOrderCd, (HashMap) item, priorityOrderCatepak);
                 }
 
             });
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
-            logger.info("保存カテパケ拡縮报错:"+e);
+            logger.info("保存カテパケ拡縮报错:",e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -175,24 +177,24 @@ public class PriorityOrderCatePakServiceImpl implements PriorityOrderCatePakServ
         String colValue = "";
         int idx =1;
         for (Object key: item.keySet()) {
-            if (key.toString().indexOf("attrSmall")>-1 || key.toString().indexOf("attrBig")>-1) {
+            if (key.toString().contains(FINAL_ATTR_SMALL) || key.toString().contains(FINAL_ATTR_BIG)) {
                 PriorityOrderCatepakAttribute catepakAttribute = new PriorityOrderCatepakAttribute();
                 // 动态属性列表
                 catepakAttribute.setCompanyCd(companyCd);
                 catepakAttribute.setPriorityOrderCd(priorityOrderCd);
                 catepakAttribute.setCatepakCd(priorityOrderCatepak.getId());
-                if (key.toString().indexOf("attrSmall") > -1) {
+                if (key.toString().contains(FINAL_ATTR_SMALL)) {
                     //缩小是0
                     catepakAttribute.setFlg(0);
-                    catepakAttribute.setAttrCd(Integer.valueOf(key.toString().replace("attrSmall", "")));
+                    catepakAttribute.setAttrCd(Integer.valueOf(key.toString().replace(FINAL_ATTR_SMALL, "")));
                     // 记录列名+值
                     colValue+="attr"+idx+"='"+item.get(key)+"',";
                     idx+=1;
                 }
-                if (key.toString().indexOf("attrBig") > -1) {
+                if (key.toString().contains(FINAL_ATTR_BIG)) {
                     //扩张是1
                     catepakAttribute.setFlg(1);
-                    catepakAttribute.setAttrCd(Integer.valueOf(key.toString().replace("attrBig", "")));
+                    catepakAttribute.setAttrCd(Integer.valueOf(key.toString().replace(FINAL_ATTR_BIG, "")));
 
                 }
                 catepakAttribute.setAttrValue(String.valueOf(item.get(key)));
@@ -214,7 +216,7 @@ public class PriorityOrderCatePakServiceImpl implements PriorityOrderCatePakServ
         List<String> colValueList = Arrays.asList(colValue.split(","));
         String branchNum =  priorityOrderCatepakAttributeMapper.selectForTempTable(colValueList,
                 "public.priorityorder"+session.getAttribute("aud").toString());
-        logger.info("查询定番店铺数"+branchNum);
+        logger.info("查询定番店铺数{}",branchNum);
         if (branchNum!=null){
             priorityOrderCatepakMapper.updateBranchNum(priorityOrderCatepak.getId(),Integer.valueOf(branchNum));
         } else {
