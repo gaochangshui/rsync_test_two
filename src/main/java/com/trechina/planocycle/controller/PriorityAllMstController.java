@@ -107,8 +107,8 @@ public class PriorityAllMstController {
      * @return
      */
     @GetMapping("/savePriorityAllData")
-    public Map<String, Object> savePriorityAllData(String companyCd, Integer priorityAllCd){
-        return priorityAllMstService.savePriorityAll(companyCd, priorityAllCd);
+    public Map<String, Object> savePriorityAllData(String companyCd, Integer priorityAllCd,String priorityAllName){
+        return priorityAllMstService.savePriorityAll(companyCd, priorityAllCd,priorityAllName);
     }
 
 
@@ -121,4 +121,7 @@ public class PriorityAllMstController {
     public Map<String, Object> deletePriorityAll(@RequestBody  PriorityAllSaveDto priorityAllSaveDto){
         return priorityAllMstService.deletePriorityAll(priorityAllSaveDto);
     }
+
+
+
 }

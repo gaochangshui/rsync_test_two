@@ -146,7 +146,7 @@
     </select>
     <select id="getJanNew" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
         SELECT jan_New as janCd,jan_rank as rank
-        from planocycle.priority_order_jan_new
+        from planocycle.work_priority_order_jan_new
         where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
             and author_cd=#{authorCd}
     </select>

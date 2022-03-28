@@ -47,7 +47,7 @@ public interface PriorityAllMstService {
      * 保存
      * @return
      */
-    Map<String, Object> savePriorityAll(String companyCd,Integer priorityAllCd);
+    Map<String, Object> savePriorityAll(String companyCd,Integer priorityAllCd,String priorityAllName);
 
     /**
      * pts詳細

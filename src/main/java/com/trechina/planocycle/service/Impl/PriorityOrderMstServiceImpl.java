@@ -728,7 +728,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         // TODO: 2200866
 
 
-        String authorCd = session.getAttribute("aud").toString();
+        String authorCd = "10004314";
+        //String authorCd = session.getAttribute("aud").toString();
 
 
         //获取商品力点数表cd
@@ -829,7 +830,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             return Data;
         }
         //按照属性重新排序
-        this.getReorder(companyCd, priorityOrderCd);
+        this.getReorder(companyCd, priorityOrderCd,productPowerCd);
         //摆放商品
         this.setJan(companyCd, authorCd, priorityOrderCd, minFaceNum);
 
@@ -847,7 +848,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      * @return
      */
     @Override
-    public Map<String, Object> getReorder(String companyCd, Integer priorityOrderCd) {
+    public Map<String, Object> getReorder(String companyCd, Integer priorityOrderCd,Integer productPowerCd) {
 
         String aud = session.getAttribute("aud").toString();
         String colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, aud, priorityOrderCd);
@@ -859,12 +860,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         List<WorkPriorityOrderResultData> reorder1 = null;
         if (split.length == 1) {
             //workPriorityOrderResultDataMapper.getReorder(companyCd,aud,priorityOrderCd,split[0],null)
-          //  reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud, priorityOrderCd, split[0], null);
-            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, aud, priorityOrderCd, split[0], null);
+            reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud, priorityOrderCd, split[0], null);
+            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, aud,productPowerCd, priorityOrderCd, split[0], null);
 
         } else {
            // reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud, priorityOrderCd, split[0], split[1]);
-            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, aud, priorityOrderCd, split[0], split[1]);
+            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, aud,productPowerCd, priorityOrderCd, split[0], split[1]);
 
 
         }
@@ -872,11 +873,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //for (PriorityOrderJanNewDto priorityOrderJanNewDto : reorder) {
         //    priorityOrderJanNewDto.setRank(i++);
         //}
-        int j = 1;
-        for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder1) {
-            workPriorityOrderResultData.setResultRank(j++);
-
-        }
+        //int j = 1;
+        //for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder1) {
+        //    workPriorityOrderResultData.setResultRank(j++);
+        //
+        //}
 
         workPriorityOrderResultDataMapper.setSortRank(reorder1, companyCd, aud, priorityOrderCd);
        // workPriorityOrderSortRankMapper.delete(companyCd, aud, priorityOrderCd);
