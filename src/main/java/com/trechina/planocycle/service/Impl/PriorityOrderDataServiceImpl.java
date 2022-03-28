@@ -49,7 +49,7 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
     @Override
     public Map<String, Object> getPriorityOrderData(PriorityOrderDataForCgiDto priorityOrderDataForCgiDto) {
         // 从cgi获取数据
-        logger.info("优先顺位表初期设定数据参数"+priorityOrderDataForCgiDto);
+        logger.info("优先顺位表初期设定数据参数{}",priorityOrderDataForCgiDto);
         Map<String,Object> Data = new HashMap<>();
         //没有下面这俩参数代表直接跳转画面，有既存数据
         if (priorityOrderDataForCgiDto.getMode().equals("priority_data")){
@@ -84,18 +84,18 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
             priorityOrderDataForCgiDto.setWriteReadFlag("read");
             priorityOrderDataForCgiDto.setMode("priority_shoki");
             String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-            logger.info("调用cgi获取优先顺位表的参数："+priorityOrderDataForCgiDto);
+            logger.info("调用cgi获取优先顺位表的参数：{}",priorityOrderDataForCgiDto);
             try {
                 //递归调用cgi，首先去taskid
                 String result = cgiUtil.postCgi(path,priorityOrderDataForCgiDto,tokenInfo);
-                logger.info("taskId返回："+result);
+                logger.info("taskId返回：{}",result);
                 String queryPath = resourceBundle.getString("TaskQuery");
                 //带着taskId，再次请求cgi获取运行状态/数据
                 Data =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-                logger.info("优先顺位表cgi返回数据："+Data);
+                logger.info("优先顺位表cgi返回数据：{}",Data);
 
             } catch (IOException e) {
-                logger.info("获取优先顺位表数据报错："+e);
+                logger.info("获取优先顺位表数据报错：",e);
                 return ResultMaps.result(ResultEnum.FAILURE);
             }
         }
@@ -137,8 +137,7 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
     // 查询属性名
     @Override
     public List<Map<String,Object>> getAttrName(Integer productPowerCd){
-        List<Map<String,Object>> attrName = priorityOrderDataMapper.selectPriorityAttrName(productPowerCd);
-        return attrName;
+        return priorityOrderDataMapper.selectPriorityAttrName(productPowerCd);
     }
 
 
@@ -149,15 +148,12 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
         List<Map<String,String>> keyNameList = new ArrayList<>();
         //拿到表头
         colNameList(datas, keyNameList);
-        logger.info("打印创建临时表前的表头"+keyNameList.toString());
+        logger.info("打印创建临时表前的表头{}", keyNameList);
         logger.info(keyNameList.toString());
-        String name = "";
-        Integer nameId = 0;
-        List<Map<String, String>> finalKeyName= new ArrayList<>();
 
         //临时存数据的实体表 priorityorder+社员号
         String tablename = "public.priorityorder"+session.getAttribute("aud").toString();
-        logger.info("创建的表名"+tablename);
+        logger.info("创建的表名{}",tablename);
         //初始化建表
         priorityOrderDataMapper.dropTempData(tablename);
         priorityOrderDataMapper.updateTempData(keyNameList,tablename);
@@ -175,13 +171,13 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
      */
     @Override
     public Map<String, Object> getPriorityOrderDataUpd(List<String> colNameList,Integer priorityOrderCd) {
-        logger.info("优先顺位表反应按钮抽出数据参数"+colNameList);
+        logger.info("优先顺位表反应按钮抽出数据参数{}",colNameList);
         // 获取所有列名
         List<String> colName = priorityOrderDataMapper.selectTempColName("priorityorder"+session.getAttribute("aud").toString());
 
-        logger.info("优先顺位表临时表抽出表头"+colName);
+        logger.info("优先顺位表临时表抽出表头{}",colName);
         List<Map<String, Object>> result;
-        if (colNameList.size()>0) {
+        if (!colNameList.isEmpty()) {
             result = priorityOrderDataMapper.selectTempDataAndMst(colNameList, colName,priorityOrderCd,
                     "public.priorityorder"+session.getAttribute("aud").toString());
             result.forEach(item ->{
@@ -197,7 +193,7 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
             result = priorityOrderDataMapper.selectTempDataCol(null,priorityOrderCd,
                     "public.priorityorder"+session.getAttribute("aud").toString());
         }
-        logger.info("优先顺位表临时表抽出数据"+result);
+        logger.info("优先顺位表临时表抽出数据{}",result);
         Map<String,Object> colMap = new HashMap<>();
         colMap.put("col", Arrays.stream(colName.stream().toArray()).sorted());
         result.add(0,colMap);

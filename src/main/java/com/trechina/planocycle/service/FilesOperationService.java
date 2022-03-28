@@ -15,7 +15,7 @@ public interface FilesOperationService {
      * @return
      * @throws IOException
      */
-    Map<String, Object> CsvUpload(MultipartFile multipartFile, String path, String companyCd, String filename,
+    Map<String, Object> csvUpload(MultipartFile multipartFile, String path, String companyCd, String filename,
                                   String projectIds, String bucketNames) throws IOException;
 
     Map<String, Object> CsvUploadMulti(MultipartFile[] multipartFileList, String path, String companyCd,

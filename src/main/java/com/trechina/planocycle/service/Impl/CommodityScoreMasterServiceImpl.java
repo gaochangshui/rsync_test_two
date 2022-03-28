@@ -60,10 +60,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
             logger.info(result);
             resultInfo = JSON.parse(result);
         } catch (IOException e) {
-            logger.info("报错:"+e);
+            logger.info("报错:",e);
         }
 
-        logger.info("获取企业信息："+resultInfo);
+        logger.info("获取企业信息：{}",resultInfo);
 
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
@@ -76,7 +76,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public Map<String, Object> getCommodityListInfo(String conpanyCd) {
         List<CommodityListInfoVO> resultInfo = productPowerMstMapper.selectCommodityList(conpanyCd);
-        logger.info("获取企业cd关联的商品力点数List："+resultInfo);
+        logger.info("获取企业cd关联的商品力点数List：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
 
@@ -91,7 +91,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         JSONArray jsonArray = new JSONArray();
         Map<String, Object> result = new HashMap<>();
         ProductPowerParamMst resultInfo = productPowerParamMstMapper.selectCommodityParam(conpanyCd,productPowerCd);
-        logger.info("获取商品力点数参数返回值："+resultInfo);
+        logger.info("获取商品力点数参数返回值：{}",resultInfo);
         productPowerParamAttr(conpanyCd, productPowerCd, result);
 
         jsonArray.add(resultInfo);
@@ -102,7 +102,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public void productPowerParamAttr(String conpanyCd, Integer productPowerCd, Map<String, Object> result) {
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd, productPowerCd);
-        logger.info("获取动态列返回值："+productOrderParamAttrVO);
+        logger.info("获取动态列返回值：{}",productOrderParamAttrVO);
         //遍历动态列
         if (productOrderParamAttrVO !=null && !productOrderParamAttrVO.getAttr().equals("")){
             String[] attrList = productOrderParamAttrVO.getAttr().split(",");
@@ -117,7 +117,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public void productPowerParamAttrName(String conpanyCd, Integer productPowerCd, Map<String, Object> result) {
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectAttrName(conpanyCd, productPowerCd);
-        logger.info("获取动态列返回值："+productOrderParamAttrVO);
+        logger.info("获取动态列返回值：{}",productOrderParamAttrVO);
         //遍历动态列
         if (productOrderParamAttrVO !=null && !productOrderParamAttrVO.getAttr().equals("")){
             String[] attrList = productOrderParamAttrVO.getAttr().split(",");
@@ -143,8 +143,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
      */
     @Override
     public ProductOrderAttrAndItemVO getAttrAndItmemInfo(String companyCd,Integer productOrderCd) {
-        ProductOrderAttrAndItemVO productOrderAttrAndItemVO = productPowerParamMstMapper.selectAttrAndItem(companyCd,productOrderCd);
-        return productOrderAttrAndItemVO;
+        return productPowerParamMstMapper.selectAttrAndItem(companyCd,productOrderCd);
     }
 
 
@@ -156,7 +155,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setCommodityList(ProductCdAndNameDto productPowerName) {
-        logger.info("商品力点数名保存参数："+ productPowerName);
+        logger.info("商品力点数名保存参数：{}", productPowerName);
         // 判断名字是否重复
 
         Integer resultName = productPowerMstMapper.selectExistsName(productPowerName.getProductPowerName(),
@@ -189,7 +188,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerMst.setAuthorName((String) session.getAttribute("aud"));
         productPowerMst.setMaintainerCd((session.getAttribute("aud").toString()));
         productPowerMst.setMaintainerName((String) session.getAttribute("aud"));
-        logger.info("商品力点数名保存："+ productPowerMst);
+        logger.info("商品力点数名保存：{}", productPowerMst);
         productPowerMstMapper.insert(productPowerMst);
     }
     private void updateMasterInfo(ProductCdAndNameDto productPowerName) {
@@ -200,7 +199,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
 
         productPowerMst.setMaintainerCd((session.getAttribute("aud").toString()));
         productPowerMst.setMaintainerName((String) session.getAttribute("aud"));
-        logger.info("商品力点数名保存："+ productPowerMst);
+        logger.info("商品力点数名保存：{}", productPowerMst);
         productPowerMstMapper.update(productPowerMst);
     }
 
@@ -212,7 +211,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
      */
     @Override
     public Map<String, Object> setCommodityParam(ProductPowerParamMst productPowerParamMst) {
-        logger.info("商品力点数list模板的参数："+productPowerParamMst);
+        logger.info("商品力点数list模板的参数：{}",productPowerParamMst);
         String aud = session.getAttribute("aud").toString();
         productPowerParamMstMapper.insert(productPowerParamMst,aud);
         return ResultMaps.result(ResultEnum.SUCCESS);
@@ -230,7 +229,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
             String result=cgiUtil.getCgi(pathInfo,(String) session.getAttribute("MSPACEDGOURDLP"));
             return ResultMaps.result(ResultEnum.SUCCESS, JSON.parse(result));
         } catch (IOException e) {
-            logger.info("报错:"+e);
+            logger.info("报错:",e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -247,7 +246,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
             String result=cgiUtil.getCgi(pathInfo,(String) session.getAttribute("MSPACEDGOURDLP"));
             return ResultMaps.result(ResultEnum.SUCCESS, JSON.parse(result));
         } catch (IOException e) {
-            logger.info("报错:"+e);
+            logger.info("报错:",e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -260,16 +259,16 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> delCommodityParam(ProductPowerParamMst productPowerParamMst) {
-        logger.info("如果有改动就删除商品力点数list模板的参数："+productPowerParamMst);
+        logger.info("如果有改动就删除商品力点数list模板的参数：{}",productPowerParamMst);
 
         Integer resuleNum = productPowerParamMstMapper.deleteCommofityParamForChange(productPowerParamMst);
-        logger.info("改动结果："+resuleNum);
+        logger.info("改动结果：{}",resuleNum);
         // 删除了step1参数才删除表示项目和weight设定
         if (resuleNum>0){
             // 重置为1，给前台使用，1代表有改动，0代表没改动
             resuleNum = 1;
             boolean result = delSmartData(productPowerParamMst);
-            if (result ==false) {
+            if (!result) {
                 return ResultMaps.result(ResultEnum.FAILURE);
             }
         }
@@ -280,7 +279,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     public boolean delSmartData(ProductPowerParamMst productPowerParamMst) {
         String authorCd = session.getAttribute("aud").toString();
         String authorName = (String) session.getAttribute("aud");
-        logger.info("参数为:"+productPowerParamMst);
+        logger.info("参数为:{}",productPowerParamMst);
         String uuid = UUID.randomUUID().toString();
         //商品力点数mst表删除
         productPowerMstMapper.delete(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd,authorName);
@@ -311,13 +310,13 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
             String path = resourceBundle.getString("ProductPowerData");
             String result = null;
             result = cgiUtil.postCgi(path,productPowerDataForCgiDto,tokenInfo);
-            logger.info("taskid返回："+result);
+            logger.info("taskid返回：{}",result);
             String queryPath = resourceBundle.getString("TaskQuery");
             // 带着taskid，再次请求cgi获取运行状态/数据
             Map<String,Object> Data = cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
             return true;
         } catch (IOException e) {
-            logger.info("报错:"+e);
+            logger.info("报错:",e);
             return false;
         }
 

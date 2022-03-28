@@ -60,19 +60,18 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Override
     public Map<String, Object> getCommodityScorePara(String conpanyCd, Integer productPowerCd) {
         List<ProductPowerShowMst> productPowerShowMstList = productPowerShowMstMapper.selectByPrimaryKey(productPowerCd,conpanyCd);
-        logger.info("获取表示项目参数："+productPowerShowMstList);
-//        ProductPowerParamMst productPowerParamMst = productPowerParamMstMapper.selectCommodityParam(conpanyCd,productPowerCd);
+        logger.info("获取表示项目参数：{}",productPowerShowMstList);
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd,productPowerCd);
-        logger.info("获取动态列参数："+productOrderParamAttrVO);
+        logger.info("获取动态列参数：{}",productOrderParamAttrVO);
         //构造前端用的数据格式
         List<String> marketList = new ArrayList<>();
         List<String> posList = new ArrayList<>();
         //遍历数据库返回值所有的行，组合成市场的list和pos的list
         productPowerShowMstList.forEach(item -> {
             if (item.getMarketPosFlag() == 1) {
-                marketList.add(item.getDataCd().toString());
+                marketList.add(item.getDataCd());
             } else {
-                posList.add(item.getDataCd().toString());
+                posList.add(item.getDataCd());
             }
         });
        try {
@@ -92,7 +91,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
            }
            jsonArray.add(result);
            jsonArray.add(attrMap);
-           logger.info("动态列返回："+jsonArray.toString());
+           logger.info("动态列返回：{}", jsonArray);
            //返回
            return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
        }catch (Exception e) {
@@ -149,21 +148,21 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         productPowerDataForCgiSave.setGuid(uuidSave);
         productPowerDataForCgiSave.setProductPowerNo(productPowerParam.getProductPowerNo());
 
-        logger.info("保存jan rank"+productPowerDataForCgiSave);
+        logger.info("保存jan rank{}",productPowerDataForCgiSave);
         //递归调用cgi，首先获取taskid
         try {
             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
             String path = resourceBundle.getString("ProductPowerData");
             String result = null;
-            logger.info("携带参数：" + productPowerDataForCgiSave);
+            logger.info("携带参数：{}", productPowerDataForCgiSave);
             result = cgiUtil.postCgi(path, productPowerDataForCgiSave, tokenInfo);
-            logger.info("taskid返回--保存jan rank：" + result);
+            logger.info("taskid返回--保存jan rank：{}", result);
             String queryPath = resourceBundle.getString("TaskQuery");
             // 带着taskid，再次请求cgi获取运行状态/数据
             Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-            logger.info("保存jan rank"+Data);
+            logger.info("保存jan rank{}",Data);
         } catch (IOException e) {
-            logger.info("保存期间、表示项目、weight所有参数报错--保存jan rank" + e);
+            logger.info("保存期间、表示项目、weight所有参数报错--保存jan rank",e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
@@ -202,7 +201,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> delCommodityScoreAllInfo(ProductPowerPrimaryKeyVO primaryKeyVO) {
-        logger.info("参数为："+primaryKeyVO);
+        logger.info("参数为：{}",primaryKeyVO);
         ProductPowerParamMst productPowerParamMst = new ProductPowerParamMst();
         productPowerParamMst.setConpanyCd(primaryKeyVO.getCompanyCd());
         productPowerParamMst.setProductPowerCd(primaryKeyVO.getProductPowerCd());
@@ -232,7 +231,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Override
     public Map<String, Object> delYoBi(ProductPowerReserveMst productPowerReserveMst) {
         //处理ProductPowerReserv
-            String uuid = UUID.randomUUID().toString();
             ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
             productPowerDataForCgiDto.setMode("yobi_delete");
             productPowerDataForCgiDto.setCompany(productPowerReserveMst.getConpanyCd());
@@ -248,12 +246,12 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 cgiUtils cgiUtil = new cgiUtils();
                 String result = null;
                 result = cgiUtil.postCgi(path, productPowerDataForCgiDto, tokenInfo);
-                logger.info("taskid返回删除 yobi：" + result);
+                logger.info("taskid返回删除 yobi：{}", result);
                 String queryPath = resourceBundle.getString("TaskQuery");
                 // 带着taskid，再次请求cgi获取运行状态/数据
                 Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
             } catch (IOException e) {
-                logger.info("保存期间、表示项目、weight所有参数报错--删除 yobi" + e);
+                logger.info("保存期间、表示项目、weight所有参数报错--删除 yobi",e);
                 return ResultMaps.result(ResultEnum.FAILURE);
             }
         return ResultMaps.result(ResultEnum.SUCCESS);

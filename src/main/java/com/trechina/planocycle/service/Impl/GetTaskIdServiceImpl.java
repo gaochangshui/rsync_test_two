@@ -29,7 +29,7 @@ public class GetTaskIdServiceImpl implements GetTaskIdService {
      */
     @Override
     public Map<String, Object> getTaskId(Map<String, Object> para) {
-        logger.info("获取taskid共同方法接收到的参数："+para.toString());
+        logger.info("获取taskid共同方法接收到的参数：{}",para.toString());
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         // mode就是path地址的key
         String path = resourceBundle.getString(para.get("mode").toString());
@@ -38,12 +38,11 @@ public class GetTaskIdServiceImpl implements GetTaskIdService {
         para.put("guid",uuid);
         try {
             String result = cgiUtil.postCgi(path,para,tokenInfo);
-            logger.info("获取taskid共同方法返回："+result);
+            logger.info("获取taskid共同方法返回：{}",result);
             return ResultMaps.result(ResultEnum.SUCCESS,result);
         } catch (IOException e) {
-            logger.info("获取taskid共同方法报错："+e);
+            logger.info("获取taskid共同方法报错：",e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
-//        return ResultMaps.result(ResultEnum.SUCCESS,"123 ");
     }
 }

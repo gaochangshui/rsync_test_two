@@ -66,7 +66,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
      * @return
      */
     @Override
-    public Map<String, Object> CsvUpload(MultipartFile multipartFile, String path, String companyCd, String filename,
+    public Map<String, Object> csvUpload(MultipartFile multipartFile, String path, String companyCd, String filename,
                                          String projectIds, String bucketNames) {
         try {
             String fileName = filename;
