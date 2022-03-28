@@ -396,7 +396,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             logger.info("pts路径返回数据：{}", ptsPath);
 
         } catch (IOException e) {
-            logger.info("报错:" + e);
+            logger.info("报错:",e);
         }
         String filePath = ptsPath.get("data").toString();
         if (filePath.length() > 1) {
@@ -414,7 +414,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 outputStream.write(files);
                 outputStream.close();
             } catch (IOException e) {
-//                e.printStackTrace();
                 logger.info("获取pts文件下载报错{}", e.getMessage());
             }
         }

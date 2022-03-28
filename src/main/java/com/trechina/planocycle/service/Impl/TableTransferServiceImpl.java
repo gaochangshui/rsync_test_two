@@ -1,6 +1,5 @@
 package com.trechina.planocycle.service.Impl;
 
-import com.trechina.planocycle.entity.po.Jans;
 import com.trechina.planocycle.mapper.AreasMapper;
 import com.trechina.planocycle.mapper.AttributeMapper;
 import com.trechina.planocycle.mapper.BranchsMapper;

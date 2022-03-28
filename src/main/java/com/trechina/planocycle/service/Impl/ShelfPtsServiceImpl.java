@@ -70,7 +70,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      */
     @Override
     public Map<String, Object> getShelfPtsInfo(String companyCd, Integer rangFlag, String areaList) {
-        logger.info("获取棚割pts信息参数：" + companyCd + "," + areaList);
+        logger.info("获取棚割pts信息参数：{},{}",companyCd,areaList);
         String[] strArr = areaList.split(",");
         List<Integer> list = new ArrayList<>();
         if (strArr.length > 0 && !areaList.equals("")) {
@@ -78,9 +78,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 list.add(Integer.valueOf(strArr[i]));
             }
         }
-        logger.info("处理area信息：" + list);
+        logger.info("处理area信息：{}", list);
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.selectByPrimaryKey(companyCd, rangFlag, list);
-        logger.info("返回棚割pts信息的值：" + shelfPtsData);
+        logger.info("返回棚割pts信息的值：{}", shelfPtsData);
         return ResultMaps.result(ResultEnum.SUCCESS, shelfPtsData);
     }
 
@@ -94,17 +94,17 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     public Map<String, Object> setShelfPtsInfo(ShelfPtsDto shelfPtsDto, Integer flg) {
         String authorCd = httpSession.getAttribute("aud").toString();
         Date now = Calendar.getInstance().getTime();
-        logger.info("保存棚割pts数据的参数：" + shelfPtsDto);
+        logger.info("保存棚割pts数据的参数：{}", shelfPtsDto);
         ShelfPtsData shelfPtsData = new ShelfPtsData();
         shelfPtsData.setConpanyCd(shelfPtsDto.getCompanyCd());
         shelfPtsData.setFileName(shelfPtsDto.getFileName());
         shelfPtsData.setAuthorcd(authorCd);
         shelfPtsDataMapper.insert(shelfPtsData);
-        logger.info("保存后的参数：" + shelfPtsData);
+        logger.info("保存后的参数：{}", shelfPtsData);
         if (flg == 0) {
             // 查询patternid
             String[] ptsKeyList = shelfPtsData.getFileName().split("_");
-            logger.info("返回的ptskey：" + ptsKeyList);
+            logger.info("返回的ptskey：{}", ptsKeyList);
 
             String ptsKey = "";
             if (ptsKeyList.length > 3) {
@@ -114,13 +114,13 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             } else {
                 ptsKey = "__";
             }
-            logger.info("手动组合的ptskey：" + ptsKey);
+            logger.info("手动组合的ptskey：{}", ptsKey);
             List<Integer> patternIdList = shelfPatternService.getpatternIdOfPtsKey(ptsKey.substring(0, ptsKey.length() - 1));
-            logger.info("根据组合的ptskey找patternid：" + patternIdList.toString());
+            logger.info("根据组合的ptskey找patternid：{}", patternIdList.toString());
             if (!patternIdList.isEmpty()) {
                 Integer patternId = patternIdList.get(0);
-                logger.info("用到的patternid：" + patternId);
-                logger.info("用到的patternid：" + patternId);
+                logger.info("用到的patternid：{}", patternId);
+                logger.info("用到的patternid：{}", patternId);
                 // 清空patternid
                 shelfPtsDataMapper.updateSingle(patternId, authorCd);
                 shelfPtsDataMapper.updatePtsHistoryFlgSingle(patternId, authorCd);
@@ -128,8 +128,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 shelfPtsDataMapper.updateShelfPtsOfAutoInner(shelfPtsData.getId(), patternId, authorCd);
                 // 写入history
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Calendar calendar = Calendar.getInstance();
-                Date date = calendar.getTime();
+
                 ShelfPtsJoinPatternDto shelfPtsJoinPatternDto = new ShelfPtsJoinPatternDto();
                 shelfPtsJoinPatternDto.setCompanyCd(shelfPtsDto.getCompanyCd());
                 shelfPtsJoinPatternDto.setShelfPtsCd(shelfPtsData.getId());
@@ -150,9 +149,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> saveShelfPts(List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto) {
-        logger.info("ptd关联pattern的参数:" + shelfPtsJoinPatternDto);
+        logger.info("ptd关联pattern的参数:{}", shelfPtsJoinPatternDto);
         // 修改有效无效flg 有效1 无效0 全改为0
-//        shelfPtsDataMapper.updateByValidFlg(shelfPtsJoinPatternDto.get(0).getCompanyCd());
         // 修改表数据
         // shujucheck
 //        if (shelfPtsDataMapper.checkPtsData(shelfPtsJoinPatternDto) == 0) {
@@ -187,15 +185,11 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> saveShelfPtsOfPattern(List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto) {
-        logger.info("ptd关联pattern的参数:" + shelfPtsJoinPatternDto);
+        logger.info("ptd关联pattern的参数:{}", shelfPtsJoinPatternDto);
         // 修改有效无效flg 有效1 无效0 全改为0
-//        shelfPtsDataMapper.updateByValidFlg(shelfPtsJoinPatternDto.get(0).getCompanyCd());
         // 表数据都职位空
         shelfPtsDataMapper.updateAll(shelfPtsJoinPatternDto);
         // shujucheck
-//        if (shelfPtsDataMapper.checkPatternData(shelfPtsJoinPatternDto) == 0) {
-//            return ResultMaps.result(ResultEnum.FAILURE);
-//        }
         String authorCd = httpSession.getAttribute("aud").toString();
         // 修改表数据
         shelfPtsDataMapper.updateByPrimaryKeyOfPattern(shelfPtsJoinPatternDto);
@@ -556,7 +550,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      */
     @Override
     public Map<String, Object> getPtsInfoOfPattern(String companyCd, Integer rangFlag, String areaList) {
-        logger.info("获取棚pattern别的pts信息参数：" + companyCd + "," + areaList);
+        logger.info("获取棚pattern别的pts信息参数：{},{}", companyCd, areaList);
         String[] strArr = areaList.split(",");
         List<Integer> list = new ArrayList<>();
         if (strArr.length > 0 && !areaList.equals("")) {
@@ -564,7 +558,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 list.add(Integer.valueOf(strArr[i]));
             }
         }
-        logger.info("处理area信息：" + list);
+        logger.info("处理area信息：{}", list);
         List<ShelfPtsData> shelfPtsNameVOList = shelfPtsDataMapper.selectPtsInfoOfPattern(companyCd, rangFlag, list);
         return ResultMaps.result(ResultEnum.SUCCESS, shelfPtsNameVOList);
     }
