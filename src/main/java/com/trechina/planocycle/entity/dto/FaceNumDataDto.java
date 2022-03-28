@@ -1,6 +1,7 @@
 package com.trechina.planocycle.entity.dto;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class FaceNumDataDto {
     private Integer faceMaxNum;
@@ -24,12 +25,12 @@ public class FaceNumDataDto {
     }
 
     public Double getFaceAvgNum() {
-       faceAvgNum =  new BigDecimal(this.faceAvgNum).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+       faceAvgNum = BigDecimal.valueOf(this.faceAvgNum).setScale(2, RoundingMode.HALF_UP).doubleValue();
         return faceAvgNum;
     }
 
     public void setFaceAvgNum(Double faceAvgNum) {
-        faceAvgNum =  new BigDecimal(faceAvgNum).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+        faceAvgNum = BigDecimal.valueOf(faceAvgNum).setScale(2, RoundingMode.HALF_UP).doubleValue();
         this.faceAvgNum = faceAvgNum;
     }
 

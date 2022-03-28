@@ -5,6 +5,8 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -48,6 +50,8 @@ class PlanoCycleApiApplicationTests {
     WorkPriorityOrderRestrictSetMapper workPriorityOrderRestrictSetMapper;
     @Autowired
     PriorityOrderJanNewMapper priorityOrderJanNewMapper;
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Test
     public void test0(){
         //List<String> list = new ArrayList<>();
@@ -168,7 +172,7 @@ class PlanoCycleApiApplicationTests {
         System.out.println(tanaData);
 */
        // priorityOrderRestrictSetMapper.setPriorityOrderRestrict(priorityOderAttrSet, authorCd);
-        System.out.println("get" + "Scat" + 1 + "cdVal" == "getScat1cdVal");
+        System.out.println(("get" + "Scat" + 1 + "cdVal").equals("getScat1cdVal"));
         //List<PriorityOrderRestrictSet> priorityOrderRestrict = priorityOrderRestrictSetMapper.getPriorityOrderRestrict("0001", "10215814");
        // priorityOrderRestrict.forEach(System.out::println);
        // PriorityOderAttrSet priorityOderAttrSet = new PriorityOderAttrSet();
@@ -311,14 +315,7 @@ class PlanoCycleApiApplicationTests {
                 Method setMethod = classType.getDeclaredMethod(setMethodName, new Class[]{classType.getDeclaredFields()[i].getType()});
                 setMethod.invoke(stu1, obj[i]);
             }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
         }
         return stu1;
     }
@@ -388,13 +385,13 @@ class PlanoCycleApiApplicationTests {
             data.setProductPowerCd((long) 12);
             data.setJan("JAN" + i);
             data.setSkuName("sku");
-            data.setPdPosAmount(new BigDecimal(Math.random() * 10));
-            data.setPdPosNum(new BigDecimal(Math.random() * 10));
-            data.setPdBranchAmount(new BigDecimal(Math.random() * 10));
+            data.setPdPosAmount(BigDecimal.valueOf(Math.random() * 10));
+            data.setPdPosNum(BigDecimal.valueOf(Math.random() * 10));
+            data.setPdBranchAmount(BigDecimal.valueOf(Math.random() * 10));
 
-            data.setGdPosAmount(new BigDecimal(Math.random() * 10));
-            data.setGdPosNum(new BigDecimal(Math.random() * 10));
-            data.setGdBranchAmount(new BigDecimal(Math.random() * 10));
+            data.setGdPosAmount(BigDecimal.valueOf(Math.random() * 10));
+            data.setGdPosNum(BigDecimal.valueOf(Math.random() * 10));
+            data.setGdBranchAmount(BigDecimal.valueOf(Math.random() * 10));
             dataList.add(data);
         }
         String[] columns = {"pPosAmount", "pPosNum", "pBranchAmount", "gPosAmount", "gPosNum", "gBranchAmount"};
@@ -411,10 +408,8 @@ class PlanoCycleApiApplicationTests {
             public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
                 try {
                     return new BigDecimal(String.valueOf(getMethod.invoke(o1))).compareTo(new BigDecimal(String.valueOf(getMethod.invoke(o2))));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    return 0;
-                } catch (InvocationTargetException e) {
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    logger.error("", e);
                     return 0;
                 }
             }
