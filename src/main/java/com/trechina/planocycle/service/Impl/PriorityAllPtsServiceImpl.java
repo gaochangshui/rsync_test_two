@@ -22,12 +22,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriUtils;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -118,7 +123,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
     }
 
     @Override
-    public void batchDownloadPtsData(PriorityAllVO priorityAllVO, HttpServletResponse response) {
+    public void batchDownloadPtsData(PriorityAllVO priorityAllVO, HttpServletResponse response) throws IOException {
         String authorCd = session.getAttribute("aud").toString();
         Integer priorityAllCd = priorityAllVO.getPriorityAllCd();
         String companyCd = priorityAllVO.getCompanyCd();
@@ -136,14 +141,17 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             boolean isMkdir = file.mkdirs();
             logger.info("mkdir:{}",isMkdir);
         }
-        FileInputStream fis = null;
 
-        try(ZipOutputStream zos = new ZipOutputStream(response.getOutputStream())) {
+        ReadableByteChannel readableByteChannel = null;
+
+        ServletOutputStream outputStream = response.getOutputStream();
+        try(ZipOutputStream zos = new ZipOutputStream(outputStream);
+            WritableByteChannel writableByteChannel = Channels.newChannel(zos)) {
             zipFileName = MessageFormat.format("全パターン{0}.zip", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
 
             String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(zipFileName, "utf-8"));
             response.setHeader("Content-Disposition", format);
-            response.setHeader(HttpHeaders.CONTENT_TYPE, "application/x-zip-compressed;charset=utf-8");
+            response.setHeader(HttpHeaders.CONTENT_TYPE, "application/zip");
 
             for (ShelfPtsData ptsData : shelfPtsDataList) {
                 Integer ptsCd = ptsData.getId();
@@ -157,26 +165,32 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
                 String filePath = this.generateCsv2File(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, fileParentPath, fileName);
                 zos.putNextEntry(new ZipEntry(fileName));
 
-                fis = new FileInputStream(filePath);
-                byte[] buffer = new byte[1024];
+                readableByteChannel = Channels.newChannel(new FileInputStream(filePath));
 
-                //为了解决excel打开乱码的问题
                 byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-                zos.write(bom);
-                int len = 0;
-                while((len = fis.read(buffer))!=-1){
-                    zos.write(buffer, 0, len);
+                writableByteChannel.write(ByteBuffer.wrap(bom));
+
+                ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+                while (readableByteChannel.read(byteBuffer)!=-1){
+                    byteBuffer.clear();
+                    writableByteChannel.write(byteBuffer);
+                    byteBuffer.flip();
                 }
 
                 zos.closeEntry();
-                fis.close();
+                readableByteChannel.close();
+                writableByteChannel.close();
             }
+
+            zos.flush();
         } catch (IOException e) {
             logger.error("", e);
         } finally {
-            if(fis!=null){
+            outputStream.close();
+
+            if(readableByteChannel!=null){
                 try {
-                    fis.close();
+                    readableByteChannel.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

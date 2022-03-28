@@ -509,7 +509,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             }
         }
         // 制約IDにより並び替え
-        Collections.sort(allRestrictDtoList , Comparator.comparingInt(a -> a.getRestrictCd().intValue()));
+        allRestrictDtoList.sort(Comparator.comparingInt(a -> a.getRestrictCd().intValue()));
 
         return allRestrictDtoList;
     }

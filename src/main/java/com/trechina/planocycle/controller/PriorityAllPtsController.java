@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -29,7 +30,7 @@ public class PriorityAllPtsController {
      * @return
      */
     @PostMapping("batchDownloadPtsData")
-    public void batchDownloadPtsData(@RequestBody PriorityAllVO priorityAllVO, HttpServletResponse response){
+    public void batchDownloadPtsData(@RequestBody PriorityAllVO priorityAllVO, HttpServletResponse response) throws IOException {
         priorityAllPtsService.batchDownloadPtsData(priorityAllVO, response);
     }
 }

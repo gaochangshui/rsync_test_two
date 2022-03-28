@@ -3,6 +3,7 @@ package com.trechina.planocycle.service;
 import com.trechina.planocycle.entity.vo.PriorityAllVO;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 
 public interface PriorityAllPtsService {
@@ -11,5 +12,5 @@ public interface PriorityAllPtsService {
 
     Map<String, Object> getPtsDetailData(Integer patternCd, String companyCd, Integer priorityAllCd);
 
-    void batchDownloadPtsData(PriorityAllVO priorityAllVO, HttpServletResponse response);
+    void batchDownloadPtsData(PriorityAllVO priorityAllVO, HttpServletResponse response) throws IOException;
 }
