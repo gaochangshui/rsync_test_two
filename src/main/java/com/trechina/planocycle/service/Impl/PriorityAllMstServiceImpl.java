@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -136,7 +137,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         if ((Integer)ptsInfoTemp.get("code") != 101) {
             return ResultMaps.result(ResultEnum.FAILURE, "該当基本パターンに紐付け棚パターンが見つけていませんでした。");
         }
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         result.put("tanaInfo", ptsInfoTemp.get("data"));
 
         // 同一棚名称の棚パータンListを取得
@@ -215,20 +216,20 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         //          制約別のtana_cntの降順で制約別tana_cnt＋１
         //          残り棚数が0の場合、終了 ❊ループが終了し、残棚数が残す場合は存在しないはず
         // 基本パターンに紐付け棚パターンCDをもらう
-        Integer basicPatternCd = 0;
-        BigDecimal basicTannaNum = new BigDecimal(0);
+        Integer basicPatternCd;
+        BigDecimal basicTannaNum;
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = priorityAllSaveDto.getCompanyCd();
         Integer priorityAllCd = priorityAllSaveDto.getPriorityAllCd();
         Integer priorityOrderCd = priorityAllSaveDto.getPriorityOrderCd();
         // 同一棚名称の棚パータンListを取得
-        List<PriorityAllPatternListVO> info = new ArrayList<>();
+        List<PriorityAllPatternListVO> info;
         // 基本パターンの制約List
-        List<WorkPriorityAllRestrictResult> basicRestrictList = new ArrayList<>();
+        List<WorkPriorityAllRestrictResult> basicRestrictList;
         // 全パターンの制約List
-        List<PriorityAllRestrictDto> allRestrictDtoList = new ArrayList<>();
+        List<PriorityAllRestrictDto> allRestrictDtoList;
         // 全パターンのRelationList
-        List<WorkPriorityAllRestrictRelation> allRelationsList = new ArrayList<>();
+        List<WorkPriorityAllRestrictRelation> allRelationsList;
 
         workPriorityAllResultDataMapper.deleteWKTableResultData(companyCd, priorityAllCd, authorCd);
 
@@ -244,7 +245,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 List<ShelfPtsDataTanamst> tanaList = shelfPtsDataTanamstMapper.selectByPatternCd(pattern.getShelfPatternCd().longValue());
 
                 // 全パターン制約一覧作成 workPriorityAllRestrict
-                allRestrictDtoList = makeWKRestrictList(tanaList, pattern, basicRestrictList, priorityAllCd, companyCd, authorCd, basicTannaNum);
+                allRestrictDtoList = makeWKRestrictList(pattern, basicRestrictList, priorityAllCd, companyCd, authorCd, basicTannaNum);
                 // 全パターンのRelation一覧作成
                 allRelationsList = makeWKRelationList(allRestrictDtoList, tanaList, priorityAllCd, companyCd, authorCd,pattern.getShelfPatternCd());
 
@@ -268,7 +269,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                     String[] strResult = Data.get("data").toString().split("@");
                     String[] strSplit = null;
                     List<PriorityAllResultDataDto> list = new ArrayList<>();
-                    PriorityAllResultDataDto orderResultData = null;
+                    PriorityAllResultDataDto orderResultData;
                     for (int i = 0; i < strResult.length; i++) {
                         orderResultData = new PriorityAllResultDataDto();
                         strSplit = strResult[i].split(" ");
@@ -311,7 +312,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
                 }
                 workPriorityAllResultDataMapper.updateFace(resultDatas);
-                //todo：最小face数需要计算
                 this.setJan(companyCd, authorCd, priorityAllCd, priorityOrderCd, pattern.getShelfPatternCd(), minFaceNum);
                 //保存pts到临时表里
                 priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
@@ -341,8 +341,8 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 commonMstService.commSetJan(partitionFlag, partitionVal, taiData,
                         workPriorityOrderResultData, workPriorityOrderRestrictRelations, minFace);
 
-        for (String taiTanaKey : finalSetJanResultData.keySet()) {
-            List<PriorityOrderResultDataDto> resultDataDtos = finalSetJanResultData.get(taiTanaKey);
+        for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : finalSetJanResultData.entrySet()) {
+            List<PriorityOrderResultDataDto> resultDataDtos = entry.getValue();
             workPriorityAllResultDataMapper.updateTaiTanaBatch(companyCd, priorityAllCd, shelfPatternCd, authorCd, resultDataDtos);
         }
 
@@ -412,11 +412,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      * @param priorityAllCd
      * @param patternCd
      * @return
-     * TODO 0321 Chenke
      */
     @Override
     public Map<String, Object> getPriorityPtsInfo(String companyCd, Integer priorityAllCd, Integer patternCd) {
-        return null;
+        return priorityAllPtsService.getPtsDetailData(patternCd,companyCd,priorityAllCd);
     }
 
     @Override
@@ -430,7 +429,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
     /**
      * 基本パターンの制約により各パターンの制約一覧を作成
-     * @param tanaList
      * @param pattern
      * @param basicRestrictList
      * @param priorityAllCd
@@ -439,7 +437,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      * @param basicTannaNum
      * @return
      */
-    private List<PriorityAllRestrictDto> makeWKRestrictList(List<ShelfPtsDataTanamst> tanaList, PriorityAllPatternListVO pattern
+    private List<PriorityAllRestrictDto> makeWKRestrictList(PriorityAllPatternListVO pattern
             , List<WorkPriorityAllRestrictResult> basicRestrictList, Integer priorityAllCd
             , String companyCd, String  authorCd, BigDecimal basicTannaNum) {
         List<PriorityAllRestrictDto> allRestrictDtoList = new ArrayList<>();
@@ -498,19 +496,18 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             // 棚数が多い制約から棚追加
             for(PriorityAllRestrictDto allRestrict : allRestrictDtoList) {
                 BigDecimal remainTanaCnt = new BigDecimal(pattern.getTanaCnt()).subtract(allTanaNum);
-                if(remainTanaCnt.compareTo(BigDecimal.ZERO)==0){
+                if(remainTanaCnt.compareTo(BigDecimal.ZERO)!=0){
                     //没有剩余的tana数，直接结束
-                    break;
-                }
-                logger.info("基本{}, 扩缩后{}", allRestrict.getBasicTanaCnt(), allRestrict.getTanaCnt());
-                if (remainTanaCnt.compareTo(new BigDecimal(1)) < 0) {
-                    allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(BigDecimal.valueOf(0.5)));
-                    allRestrict.setSkuCnt(allRestrict.getSkuCnt() + BigDecimal.valueOf(skuCountPerPattan/2).setScale(0, BigDecimal.ROUND_CEILING).intValue());
-                    break;
-                } else {
-                    allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(new BigDecimal(1)));
-                    allRestrict.setSkuCnt(allRestrict.getSkuCnt() + skuCountPerPattan.intValue());
-                    allTanaNum = allTanaNum.add(new BigDecimal(1));
+                    logger.info("基本{}, 扩缩后{}", allRestrict.getBasicTanaCnt(), allRestrict.getTanaCnt());
+                    if (remainTanaCnt.compareTo(new BigDecimal(1)) < 0) {
+                        allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(BigDecimal.valueOf(0.5)));
+                        allRestrict.setSkuCnt(allRestrict.getSkuCnt() + BigDecimal.valueOf(skuCountPerPattan/2).setScale(0, RoundingMode.CEILING).intValue());
+                        break;
+                    } else {
+                        allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(new BigDecimal(1)));
+                        allRestrict.setSkuCnt(allRestrict.getSkuCnt() + skuCountPerPattan.intValue());
+                        allTanaNum = allTanaNum.add(new BigDecimal(1));
+                    }
                 }
             }
         }

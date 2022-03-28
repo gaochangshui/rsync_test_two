@@ -66,11 +66,11 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         //临时表中的ptscd
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
 
-        PriorityAllPtsDataDto priorityOrderPtsDataDto = PriorityAllPtsDataDto.PriorityAllPtsDataDtoBuilder.aPriorityAllPtsDataDto()
-                .withPriorityAllCd(priorityAllCd)
-                .withOldPtsCd(ptsCd)
-                .withCompanyCd(companyCd)
-                .withAuthorCd(authorCd).build();
+        PriorityAllPtsDataDto priorityOrderPtsDataDto = new PriorityAllPtsDataDto();
+        priorityOrderPtsDataDto.setPriorityAllCd(priorityAllCd);
+        priorityOrderPtsDataDto.setOldPtsCd(ptsCd);
+        priorityOrderPtsDataDto.setCompanyCd(companyCd);
+        priorityOrderPtsDataDto.setAuthorCd(authorCd);
 
         if(Optional.ofNullable(shelfPtsData).isPresent()){
             Integer oldPtsCd = shelfPtsData.getId();
