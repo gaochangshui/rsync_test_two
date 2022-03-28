@@ -1,7 +1,7 @@
 package com.trechina.planocycle.service.Impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.*;
@@ -522,6 +522,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     public Map<String, Object> preCalculation(String companyCd, Long patternCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         int isUnset = 0;
         String authorCd = (String) session.getAttribute("aud");
+        String getZokusei = "getZokusei";
+        String setZokusei = "setZokusei";
+
         // 清空work表
         workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
         workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
@@ -564,10 +567,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 fullTaiSet = fullTaiSetOptional.get();
                 // [1,10]
                 for (int i = 1; i <= 10; i++) {
-                    zokusei = (String) clazz.getMethod("getZokusei" + i).invoke(fullTaiSet);
+                    zokusei = (String) clazz.getMethod(getZokusei + i).invoke(fullTaiSet);
                     // 属性不为空就覆盖上去
                     if (zokusei != null) {
-                        clazz.getMethod("setZokusei" + i, String.class).invoke(restrictSet, zokusei);
+                        clazz.getMethod(setZokusei + i, String.class).invoke(restrictSet, zokusei);
                     }
                 }
             }
@@ -581,10 +584,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 fullTanaSet = fullTanaSetOptional.get();
                 // [1,10]
                 for (int i = 1; i <= 10; i++) {
-                    zokusei = (String) clazz.getMethod("getZokusei" + i).invoke(fullTanaSet);
+                    zokusei = (String) clazz.getMethod(getZokusei + i).invoke(fullTanaSet);
                     // 属性不为空就覆盖上去
                     if (zokusei != null) {
-                        clazz.getMethod("setZokusei" + i, String.class).invoke(restrictSet, zokusei);
+                        clazz.getMethod(setZokusei + i, String.class).invoke(restrictSet, zokusei);
                     }
                 }
             }
@@ -610,13 +613,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                     for (int i = 0; i < halfSetList.size(); i++) {
                         int tanaType = halfSetList.get(i).getTanaType();
                         for (int j = 1; j <= 10; j++) {
-                            zokusei = (String) clazz.getMethod("getZokusei" + j).invoke(halfSetList.get(i));
+                            zokusei = (String) clazz.getMethod(getZokusei + j).invoke(halfSetList.get(i));
                             // 属性不为空就覆盖上去
                             if (zokusei != null) {
                                 if (tanaType == 1) {
-                                    clazz.getMethod("setZokusei" + j, String.class).invoke(halfRestrictSet1, zokusei);
+                                    clazz.getMethod(setZokusei + j, String.class).invoke(halfRestrictSet1, zokusei);
                                 } else {
-                                    clazz.getMethod("setZokusei" + j, String.class).invoke(halfRestrictSet2, zokusei);
+                                    clazz.getMethod(setZokusei + j, String.class).invoke(halfRestrictSet2, zokusei);
                                 }
                             }
                         }
@@ -714,8 +717,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //JSONObject.toJSONString(keyExtractor.apply(t)) 是为了解决null参数和对象比较的问题
         //在Stream distinct()中使用了支持null为key的hashSet来进行处理 java/util/stream/DistinctOps.java:90  但是没有解决对象比较的问题
         //所以虽然序列化消耗性能但是也没有更好的办法
-        Predicate<T> predicate = t -> skipListMap.putIfAbsent(JSONObject.toJSONString(keyExtractor.apply(t)), Boolean.TRUE) == null;
-        return predicate;
+        return t -> skipListMap.putIfAbsent(JSON.toJSONString(keyExtractor.apply(t)), Boolean.TRUE) == null;
     }
 
     /**
