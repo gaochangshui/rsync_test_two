@@ -117,7 +117,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     public Map<String, Object> getPriorityOrderList(String companyCd) {
         String aud = session.getAttribute("aud").toString();
         List<TableNameDto> resultInfo = priorityOrderMstMapper.getTableNameByCompanyCd(companyCd, aud);
-        logger.info("基本パターンList："+resultInfo);
+        logger.info("基本パターンList：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
 
@@ -150,7 +150,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      * 自動計算する前にデータを一時テーブルに保存
      *
      * @param priorityAllSaveDto@return
-     * TODO:0318 2200866
      */
     @Override
     public Integer saveWKAllPatternData(PriorityAllSaveDto priorityAllSaveDto) {
@@ -169,9 +168,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
     /**
      * 全パータン計算
-     * TODO:2200866
      * @return
-     * TODO:0319 21 23 2200866
      */
     @Override
     public Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto) {

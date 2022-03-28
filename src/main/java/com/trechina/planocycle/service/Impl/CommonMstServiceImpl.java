@@ -30,8 +30,8 @@ public class CommonMstServiceImpl implements CommonMstService {
     }
 
     @Override
-    public Map<String, Object> getAreaForShelfName(Integer ShelfNameCd) {
-        List<Areas> areasList = areasMapper.selectForShelfName(ShelfNameCd);
+    public Map<String, Object> getAreaForShelfName(Integer shelfNameCd) {
+        List<Areas> areasList = areasMapper.selectForShelfName(shelfNameCd);
         return ResultMaps.result(ResultEnum.SUCCESS,areasList);
     }
 

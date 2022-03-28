@@ -48,9 +48,9 @@ public class ShelfNameServiceImpl implements ShelfNameService {
      */
     @Override
     public Map<String, Object> getShelfNameInfo(String companyCd) {
-        logger.info("获取棚名称信息的参数："+companyCd);
+        logger.info("获取棚名称信息的参数：{}",companyCd);
         List<ShelfNameDataVO> resultInfo = shelfNameMstMapper.selectShelfNameInfo(companyCd);
-        logger.info("获取棚名称信息的返回值："+resultInfo);
+        logger.info("获取棚名称信息的返回值：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
 
@@ -62,7 +62,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setShelfName(ShelfNameDto shelfNameDto) {
-        logger.info("保存棚名称信息的参数："+shelfNameDto);
+        logger.info("保存棚名称信息的参数：{}",shelfNameDto);
         // check名称 同一个企业名称不能重复
         Integer resultNum = shelfNameMstMapper.selectDistinctName(shelfNameDto);
         if (resultNum!=null){
@@ -74,7 +74,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         shelfNameMst.setShelfName(shelfNameDto.getShelfName());
         shelfNameMst.setConpanyCd(shelfNameDto.getCompanyCd());
         shelfNameMst.setAuthorCd(authorCd);
-        logger.info("保存棚名称信息转换后的参数："+shelfNameMst);
+        logger.info("保存棚名称信息转换后的参数：{}",shelfNameMst);
         Integer resultInfo = shelfNameMstMapper.insert(shelfNameMst);
         //获取用户id
 
@@ -85,10 +85,10 @@ public class ShelfNameServiceImpl implements ShelfNameService {
             shelfNameArea.setShelfNameCd(shelfNameMst.getId());
             list.add(shelfNameArea);
         });
-        logger.info("保存棚名称信息转换后的area参数："+list);
+        logger.info("保存棚名称信息转换后的area参数：{}",list);
 
         shelfNameAreaService.setShelfNameArea(list,authorCd);
-        logger.info("保存棚名称信息保存后返回的信息："+resultInfo);
+        logger.info("保存棚名称信息保存后返回的信息：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
     /**
@@ -99,7 +99,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> updateShelfName(ShelfNameDto shelfNameDto) {
-        logger.info("修改棚名称信息的参数："+shelfNameDto);
+        logger.info("修改棚名称信息的参数：{}",shelfNameDto);
         // check名称 同一个企业名称不能重复
         Integer resultNum = shelfNameMstMapper.selectDistinctName(shelfNameDto);
         if (resultNum!=null && !resultNum.equals(shelfNameDto.getId())){
@@ -116,12 +116,12 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         shelfNameMst.setShelfName(shelfNameDto.getShelfName());
         shelfNameMst.setConpanyCd(shelfNameDto.getCompanyCd());
         shelfNameMst.setAuthorCd(authorCd);
-        logger.info("修改棚名称信息转换后的参数："+shelfNameMst);
+        logger.info("修改棚名称信息转换后的参数：{}",shelfNameMst);
         int resultInfo = shelfNameMstMapper.update(shelfNameMst);
-        logger.info("修改棚名称信息后返回的信息："+resultInfo);
+        logger.info("修改棚名称信息后返回的信息：{}",resultInfo);
         //获取shelfName关联的Area
         List<Integer> getShelfNameArea = shelfNameAreaService.getShelfNameArea(shelfNameMst.getId(),shelfNameMst.getConpanyCd());
-        logger.info("shelfName关联的所有Area："+getShelfNameArea);
+        logger.info("shelfName关联的所有Area：{}",getShelfNameArea);
         //数据库中和修改重复数据
         shelfNameDto.getArea().forEach(item->{
             for (Integer area : getShelfNameArea) {
@@ -143,7 +143,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
                 shelfNameArea.setShelfNameCd(shelfNameMst.getId());
                 delList.add(shelfNameArea);
             });
-            logger.info("删除棚名称信息转换后的area参数："+delList);
+            logger.info("删除棚名称信息转换后的area参数：{}",delList);
             //删除关联的area
             shelfNameAreaService.delAreaCd(deleteAreaList,shelfNameDto.getId(),authorCd);
             //查询棚名称下的棚pattern
@@ -164,11 +164,11 @@ public class ShelfNameServiceImpl implements ShelfNameService {
                 shelfNameArea.setShelfNameCd(shelfNameMst.getId());
                 setList.add(shelfNameArea);
             });
-            logger.info("添加棚名称信息转换后的area参数：" + setList);
+            logger.info("添加棚名称信息转换后的area参数：{}", setList);
             //添加关联的area
             Map<String, Object> setAreaInfo = shelfNameAreaService.setShelfNameArea(setList, authorCd);
 
-            logger.info("添加棚名称信息保存后返回的信息："+setAreaInfo);
+            logger.info("添加棚名称信息保存后返回的信息：{}",setAreaInfo);
         }
 
 
@@ -182,9 +182,9 @@ public class ShelfNameServiceImpl implements ShelfNameService {
      */
     @Override
     public Map<String, Object> getShelfName(String companyCd) {
-        logger.info("获取棚名称Name的参数："+companyCd);
+        logger.info("获取棚名称Name的参数：{}",companyCd);
         List<ShelfNameVO> resultInfo = shelfNameMstMapper.selectShelfName(companyCd);
-        logger.info("获取棚名称Name的返回值："+resultInfo);
+        logger.info("获取棚名称Name的返回值：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
     /**
@@ -195,7 +195,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> delShelfNameInfo(JSONObject jsonObject) {
-        logger.info("删除棚名称Name的参数："+jsonObject.toString());
+        logger.info("删除棚名称Name的参数：{}",jsonObject.toString());
         //获取创建者cd
         String authorCd = session.getAttribute("aud").toString();
         // 删除棚名称
@@ -204,7 +204,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         // 查询要删掉的棚patternid
         List<Integer> patternId = shelfNameMstMapper.selectPatternCd(id);
         patternId.forEach(item->{
-            logger.info("棚patternid"+patternId);
+            logger.info("棚patternid{}",patternId);
             Map<String,Integer> patternMap =new HashMap<>();
             Map<String,Object> paraMap =new HashMap<>();
             patternMap.put("id",item);

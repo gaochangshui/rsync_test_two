@@ -546,7 +546,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         Optional<WorkPriorityOrderRestrictSet> fullTanaSetOptional;
         WorkPriorityOrderRestrictSet fullTanaSet = null;
         // 半段制约
-        WorkPriorityOrderRestrictSet halfTanaSet = null;
         String zokusei = null;
         // 3.1 查出半段设定的台段
         List<WorkPriorityOrderRestrictSet> halfRestrictSetList = workRestrictSetList.stream()
@@ -759,7 +758,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             }
             for (ProductPowerDataDto productPowerDatum : productPowerData) {
                 newList.add(productPowerDatum);
-                if (newList.size() % 1000 == 0 && newList.size() > 0) {
+                if (newList.size() % 1000 == 0 && !newList.isEmpty()) {
                     workPriorityOrderResultDataMapper.setResultDataList(newList, workPriorityOrderRestrictResult.getRestrictCd(), companyCd, authorCd, priorityOrderCd);
                     newList.clear();
 
