@@ -2,12 +2,15 @@ package com.trechina.planocycle.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
+import com.trechina.planocycle.entity.vo.PriorityAllVO;
+import com.trechina.planocycle.entity.vo.PtsCsvVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.service.PriorityAllMstService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
@@ -78,6 +81,7 @@ public class PriorityAllMstController {
 
     /**
      * PTSダンロード api⑤
+     * @see ShelfPtsController#downloadPtsCsv(PtsCsvVO, HttpServletResponse)
      * @param companyCd
      * @return
      */
@@ -88,6 +92,7 @@ public class PriorityAllMstController {
 
     /**
      * PTS一括ダンロード api⑥
+     * @see PriorityAllPtsController#batchDownloadPtsData(PriorityAllVO, HttpServletResponse)
      * @param companyCd
      * @return
      */

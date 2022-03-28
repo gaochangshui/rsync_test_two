@@ -958,7 +958,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             return resultCgi;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("", e);
         }
         return null;
     }

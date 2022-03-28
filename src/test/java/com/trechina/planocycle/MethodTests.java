@@ -11,6 +11,8 @@ import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +31,7 @@ import java.util.List;
 public class MethodTests {
     @Autowired
     private PriorityOrderMstAttrSortService priorityOrderMstAttrSortService;
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Test
     @Disabled
@@ -57,10 +60,8 @@ public class MethodTests {
             public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
                 try {
                     return new BigDecimal(String.valueOf(getMethod.invoke(o1))).compareTo(new BigDecimal(String.valueOf(getMethod.invoke(o2))));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    return 0;
-                } catch (InvocationTargetException e) {
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    logger.error("", e);
                     return 0;
                 }
             }

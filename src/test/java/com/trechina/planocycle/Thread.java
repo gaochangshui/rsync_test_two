@@ -1,5 +1,8 @@
 package com.trechina.planocycle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -54,6 +57,8 @@ public class Thread {
     private List<String> list;
     private CountDownLatch begin;
     private CountDownLatch end;
+    private static Logger logger = LoggerFactory.getLogger(Thread.class);
+
     public MyThread(List<String> list,CountDownLatch begin,CountDownLatch end){
         this.list = list;
         this.begin = begin;
@@ -70,7 +75,8 @@ public class Thread {
                 }
                 begin.await();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("", e);
+                java.lang.Thread.currentThread().interrupt();
             }finally {
                end.countDown();
             }
