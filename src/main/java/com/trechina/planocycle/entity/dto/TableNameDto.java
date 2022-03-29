@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 
 public class TableNameDto {
-    private String id;
+    private Integer id;
 
     private String fileName;
 
@@ -15,11 +15,11 @@ public class TableNameDto {
 
     private String authorName;
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

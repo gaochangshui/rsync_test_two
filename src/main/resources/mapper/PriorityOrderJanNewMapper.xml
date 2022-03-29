@@ -136,7 +136,18 @@
         from planocycle.product_power_mst_data datas
         where datas.classify_big = #{item.zokusei1} and datas.classify_middle = #{item.zokusei2} and datas.classify_small = #{item.zokusei3}
         and product_power_cd = #{productPowerCd} and datas.jan != #{item.janCd}
-        order by rank_result
+        and not exists (select jan_new from planocycle.work_priority_order_jan_new janNew where janNew.jan_new = datas.jan
+                        and janNew.author_cd = #{authorCd} and janNew.company_cd = #{item.companyCd} and janNew.priority_order_cd = #{item.priorityOrderCd}
+        )
+        union
+        select janNew.jan_new,mst.jan_nm, scat1cd_val,scat2cd_val,scat3cd_val,scat4cd_val,janNew.jan_rank as rank
+        from planocycle.work_priority_order_jan_new janNew
+                 left join
+             masterdb.jan_mst mst
+             on mst.jan_cd = janNew.jan_new
+        where janNew.company_cd = #{item.companyCd} and janNew.author_cd=#{authorCd} and janNew.priority_order_cd = #{item.priorityOrderCd} and janNew.jan_new != #{item.janCd}
+        order by rank
+
     </select>
     <select id="getJanNewInfo" resultType="com.trechina.planocycle.entity.vo.JanMstPlanocycleVo">
         select jan_cd as janCd,jan_nm as janName,tanka,tanni,width,height,depth,scatnm,scat1cd as zokusei1,scat2cd as zokusei2,scat3cd as zokusei3

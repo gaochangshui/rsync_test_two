@@ -174,15 +174,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     public Map<String, Object> getSimilarity(PriorityOrderJanNewDto priorityOrderJanNewVO) {
         String aud = session.getAttribute("aud").toString();
         Integer productPowerCd = productPowerMstMapper.getProductPowerCd(priorityOrderJanNewVO.getCompanyCd(), aud,priorityOrderJanNewVO.getPriorityOrderCd());
-        List<PriorityOrderJanNewDto> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, priorityOrderJanNewVO);
-        List<PriorityOrderJanNewDto> janNew = priorityOrderJanNewMapper.getJanNew(priorityOrderJanNewVO.getCompanyCd(), aud, priorityOrderJanNewVO.getPriorityOrderCd());
-        for (PriorityOrderJanNewDto productPowerDatum : productPowerData) {
-            for (PriorityOrderJanNewDto priorityOrderJanNewDto : janNew) {
-                if (productPowerDatum.getJanCd().equals(priorityOrderJanNewDto.getJanCd())){
-                    productPowerDatum.setRank(priorityOrderJanNewDto.getRank());
-                }
-            }
-        }
+        List<PriorityOrderJanNewDto> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, priorityOrderJanNewVO,aud);
+
 
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerData);
     }

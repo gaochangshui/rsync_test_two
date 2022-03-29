@@ -277,38 +277,46 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                         list.add(orderResultData);
                     }
                     workPriorityAllResultDataMapper.update(list,companyCd,authorCd,priorityAllCd,pattern.getShelfPatternCd());
-                }else {
-                    continue;
                 }
+                List<PriorityAllResultDataDto> resultDatas = workPriorityAllResultDataMapper.getResultDatas(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
                 //获取旧pts的平均值，最大值最小值
                 FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(pattern.getShelfPatternCd());
                 Integer minFaceNum = faceNum.getFaceMinNum();
-                DecimalFormat df = new DecimalFormat("#.00");
-                //获取salesCntAvg并保留两位小数
-                Double avgSalesCunt = workPriorityAllResultDataMapper.getAvgSalesCunt(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
-                String format = df.format(avgSalesCunt);
-                avgSalesCunt = Double.valueOf(format);
-                List<PriorityAllResultDataDto> resultDatas = workPriorityAllResultDataMapper.getResultDatas(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
-                Double d = null;
-                for (PriorityAllResultDataDto resultData : resultDatas) {
-                    resultData.setPriorityAllCd(priorityAllCd);
-                    resultData.setCompanyCd(companyCd);
-                    resultData.setShelfPatternCd(pattern.getShelfPatternCd());
-                    if (resultData.getSalesCnt() != null) {
-                        d = resultData.getSalesCnt() * faceNum.getFaceAvgNum() / avgSalesCunt;
+                if (Data.get("data") != null && Data.get("data") != "") {
 
-                        if (d > faceNum.getFaceMaxNum()) {
-                            resultData.setFaceNum(Integer.valueOf(faceNum.getFaceMaxNum()));
-                        } else if (d < faceNum.getFaceMinNum()) {
-                            resultData.setFaceNum(Integer.valueOf(faceNum.getFaceMinNum()));
+                    DecimalFormat df = new DecimalFormat("#.00");
+                    //获取salesCntAvg并保留两位小数
+                    Double avgSalesCunt = workPriorityAllResultDataMapper.getAvgSalesCunt(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
+                    String format = df.format(avgSalesCunt);
+                    avgSalesCunt = Double.valueOf(format);
+                    Double d = null;
+                    for (PriorityAllResultDataDto resultData : resultDatas) {
+                        resultData.setPriorityAllCd(priorityAllCd);
+                        resultData.setCompanyCd(companyCd);
+                        resultData.setShelfPatternCd(pattern.getShelfPatternCd());
+                        if (resultData.getSalesCnt() != null) {
+                            d = resultData.getSalesCnt() * faceNum.getFaceAvgNum() / avgSalesCunt;
+
+                            if (d > faceNum.getFaceMaxNum()) {
+                                resultData.setFaceNum(Integer.valueOf(faceNum.getFaceMaxNum()));
+                            } else if (d < faceNum.getFaceMinNum()) {
+                                resultData.setFaceNum(Integer.valueOf(faceNum.getFaceMinNum()));
+                            } else {
+                                resultData.setFaceNum(d.intValue());
+                            }
+
                         } else {
-                            resultData.setFaceNum(d.intValue());
+                            resultData.setFaceNum(Integer.valueOf(faceNum.getFaceMinNum()));
                         }
 
-                    } else {
-                        resultData.setFaceNum(Integer.valueOf(faceNum.getFaceMinNum()));
                     }
-
+                }else {
+                    for (PriorityAllResultDataDto resultData : resultDatas) {
+                        resultData.setPriorityAllCd(priorityAllCd);
+                        resultData.setCompanyCd(companyCd);
+                        resultData.setShelfPatternCd(pattern.getShelfPatternCd());
+                        resultData.setFaceNum(minFaceNum);
+                    }
                 }
                 workPriorityAllResultDataMapper.updateFace(resultDatas);
                 this.setJan(companyCd, authorCd, priorityAllCd, priorityOrderCd, pattern.getShelfPatternCd(), minFaceNum);
