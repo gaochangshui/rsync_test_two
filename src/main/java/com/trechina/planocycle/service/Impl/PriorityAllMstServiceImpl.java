@@ -129,9 +129,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      */
     @Override
     public Map<String, Object> getAllPatternData(String companyCd, Integer priorityAllCd, Integer priorityOrderCd) {
-
+        String aud = session.getAttribute("aud").toString();
         // 基本パターンに紐付け棚パターンCDをもらう
         Integer patternCd = priorityAllMstMapper.getPatternCdBYPriorityCd(companyCd, priorityOrderCd);
+        priorityAllMstMapper.deleteWKTableShelfs(companyCd, priorityAllCd, aud);
         // 棚パターンのPTS基本情報をもらう
         Map<String, Object> ptsInfoTemp = shelfPtsService.getTaiNumTanaNum(patternCd,priorityOrderCd);
         if ((Integer)ptsInfoTemp.get("code") != 101) {
@@ -141,7 +142,8 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         result.put("tanaInfo", ptsInfoTemp.get("data"));
 
         // 同一棚名称の棚パータンListを取得
-        List<PriorityAllPatternListVO> info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, patternCd);
+
+        List<PriorityAllPatternListVO> info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, patternCd,aud);
         result.put("ptsInfo", info);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
@@ -233,7 +235,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         try {
             basicPatternCd = priorityAllMstMapper.getPatternCdBYPriorityCd(companyCd, priorityOrderCd);
             basicTannaNum = new BigDecimal(shelfPtsDataMapper.getTanaNum(basicPatternCd));
-            info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, basicPatternCd);
+            info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, basicPatternCd,authorCd);
             basicRestrictList = priorityOrderRestrictResultMapper.getPriorityOrderRestrictAll(companyCd, priorityOrderCd);
             // 全パターンのList
             List<PriorityAllPatternListVO> checkedInfo = info.stream().filter(vo->vo.getCheckFlag()==1).collect(Collectors.toList());

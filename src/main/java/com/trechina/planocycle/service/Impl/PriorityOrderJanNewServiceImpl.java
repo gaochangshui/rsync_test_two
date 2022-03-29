@@ -171,11 +171,25 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      * @return
      */
     @Override
-    public Map<String, Object> getSimilarity(PriorityOrderJanNewDto priorityOrderJanNewVO) {
+    public Map<String, Object> getSimilarity(PriorityOrderJanNewDto priorityOrderJanNewVO) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String aud = session.getAttribute("aud").toString();
         Integer productPowerCd = productPowerMstMapper.getProductPowerCd(priorityOrderJanNewVO.getCompanyCd(), aud,priorityOrderJanNewVO.getPriorityOrderCd());
         List<PriorityOrderJanNewDto> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, priorityOrderJanNewVO,aud);
+        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
+        Class clazz = PriorityOrderJanNewDto.class;
+        for (int i = 1; i <= 4; i++) {
+            Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
 
+            Method setMethod = clazz.getMethod("set"+"Zokusei"+i, String.class);
+            for (PriorityOrderJanNewDto priorityOrderJanNewDto : productPowerData) {
+                for (PriorityOrderAttrValueDto attrValue : attrValues) {
+                    if (getMethod.invoke(priorityOrderJanNewDto)!=null&&getMethod.invoke(priorityOrderJanNewDto).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
+                        setMethod.invoke(priorityOrderJanNewDto,attrValue.getNm());
+                    }
+
+                }
+            }
+        }
 
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerData);
     }

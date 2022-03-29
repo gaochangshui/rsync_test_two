@@ -56,7 +56,7 @@ public class PriorityOrderJanNewController {
      * @return
      */
     @PostMapping("getSimilarity")
-    public Map<String, Object> getSimilarity(@RequestBody PriorityOrderJanNewDto priorityOrderJanNewDto)  {
+    public Map<String, Object> getSimilarity(@RequestBody PriorityOrderJanNewDto priorityOrderJanNewDto) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return priorityOrderJanNewService.getSimilarity(priorityOrderJanNewDto);
     }
 

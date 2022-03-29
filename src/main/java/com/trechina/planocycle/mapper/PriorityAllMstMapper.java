@@ -31,7 +31,7 @@ public interface PriorityAllMstMapper {
      * @param patternCd
      * @return
      */
-    List<PriorityAllPatternListVO> getAllPatternData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("patternCd") Integer patternCd);
+    List<PriorityAllPatternListVO> getAllPatternData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("patternCd") Integer patternCd,@Param("authorCd")String aud);
 
     void deleteWKTableMst(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
     void deleteWKTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
