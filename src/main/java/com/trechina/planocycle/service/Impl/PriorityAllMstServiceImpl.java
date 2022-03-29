@@ -366,7 +366,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     public Map<String, Object> savePriorityAll(String companyCd, Integer priorityAllCd,String priorityAllName) {
         String aud = session.getAttribute("aud").toString();
         Integer cd = priorityAllMstMapper.selectPriorityAllName(priorityAllName, companyCd);
-        if (cd != null && cd.equals(priorityAllCd) ){
+        if (cd != null && !cd.equals(priorityAllCd) ){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
         ProductPowerNumGenerator p = new ProductPowerNumGenerator();
