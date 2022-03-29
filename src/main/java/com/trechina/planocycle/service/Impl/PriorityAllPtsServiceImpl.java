@@ -241,13 +241,13 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
 
         String[] janHeaders = shelfPtsDataVersion.getJanHeader().split(",");
         csvWriter.writeRow(janHeaders);
-        for (ShelfPtsDataJandata ptsDataJandatum : shelfPtsDataJandata) {
-            List<String> janData = Lists.newArrayList(ptsDataJandatum.getTaiCd() + "",
-                    ptsDataJandatum.getTanaCd() + "", ptsDataJandatum.getTanapositionCd() + "", ptsDataJandatum.getJan() + "",
-                    ptsDataJandatum.getFaceCount() + "", ptsDataJandatum.getFaceMen() + "", ptsDataJandatum.getFaceKaiten() + "",
-                    ptsDataJandatum.getTumiagesu() + "",
-                    Optional.ofNullable(ptsDataJandatum.getZaikosu()).orElse(0) + "", Optional.ofNullable(ptsDataJandatum.getFaceDisplayflg()).orElse(0) + "",
-                    Optional.ofNullable(ptsDataJandatum.getFacePosition()).orElse(0) + "", Optional.ofNullable(ptsDataJandatum.getDepthDisplayNum()).orElse(0) + "");
+        for (ShelfPtsDataJandata ptsDataJandata : shelfPtsDataJandata) {
+            List<String> janData = Lists.newArrayList(ptsDataJandata.getTaiCd() + "",
+                    ptsDataJandata.getTanaCd() + "", ptsDataJandata.getTanapositionCd() + "", ptsDataJandata.getJan() + "",
+                    ptsDataJandata.getFaceCount() + "", ptsDataJandata.getFaceMen() + "", ptsDataJandata.getFaceKaiten() + "",
+                    ptsDataJandata.getTumiagesu() + "",
+                    Optional.ofNullable(ptsDataJandata.getZaikosu()).orElse(0) + "", Optional.ofNullable(ptsDataJandata.getFaceDisplayflg()).orElse(0) + "",
+                    Optional.ofNullable(ptsDataJandata.getFacePosition()).orElse(0) + "", Optional.ofNullable(ptsDataJandata.getDepthDisplayNum()).orElse(0) + "");
             csvWriter.writeRow(janData.subList(0, janHeaders.length));
         }
 
