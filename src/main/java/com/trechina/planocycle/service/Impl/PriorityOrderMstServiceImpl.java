@@ -728,6 +728,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         // TODO: 2200866
 
 
+
         String authorCd = session.getAttribute("aud").toString();
 
 
@@ -859,7 +860,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         List<WorkPriorityOrderResultData> reorder1 = null;
         if (split.length == 1) {
             //workPriorityOrderResultDataMapper.getReorder(companyCd,aud,priorityOrderCd,split[0],null)
-            reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud, priorityOrderCd, split[0], null);
+          //  reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud, priorityOrderCd, split[0], null);
             reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, aud,productPowerCd, priorityOrderCd, split[0], null);
 
         } else {
@@ -872,11 +873,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //for (PriorityOrderJanNewDto priorityOrderJanNewDto : reorder) {
         //    priorityOrderJanNewDto.setRank(i++);
         //}
-        //int j = 1;
-        //for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder1) {
-        //    workPriorityOrderResultData.setResultRank(j++);
-        //
-        //}
+        int j = 1;
+        for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder1) {
+            workPriorityOrderResultData.setResultRank(j++);
+
+        }
 
         workPriorityOrderResultDataMapper.setSortRank(reorder1, companyCd, aud, priorityOrderCd);
        // workPriorityOrderSortRankMapper.delete(companyCd, aud, priorityOrderCd);

@@ -161,6 +161,13 @@
         where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
             and author_cd=#{authorCd}
     </select>
+    <select id="getJanNameClass" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
+        select jan_cd as janNew,jan_nm as janName,scat1cd_val,scat2cd_val,scat3cd_val,scat4cd_val from masterdb.jan_mst_planocycle
+        where company_cd = #{companyCd} and jan_cd in
+        <foreach collection="janNew" separator="," item="item" open="(" close=")">
+            trim(#{item})
+        </foreach>
+    </select>
     <delete id="deleteByAuthorCd">
         delete from planocycle.priority_order_jan_new where
         company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

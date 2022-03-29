@@ -59,7 +59,7 @@
                 on janMst.jan_cd = datas.jan
                 where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}) a
 
-                inner join
+                left join
                 (select ${sortName1},avg(rank_result) aavg from (select  datas.jan ,janMst.jan_nm,
                 janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.rank_result
                 from planocycle.product_power_mst_data datas
@@ -69,7 +69,7 @@
                 ) b
                 on a.${sortName1}=b.${sortName1}
                 <if test="sortName2 !=null">
-                  inner join
+                  left join
                   (select ${sortName2},avg(rank_result) aavg from (select  datas.jan ,janMst.jan_nm,
                   janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.rank_result
                   from planocycle.product_power_mst_data datas
@@ -79,7 +79,7 @@
                   ) c
                   on a.${sortName2}=c.${sortName2}
                 </if>
-    where  EXISTS(select jan_cd from planocycle.work_priority_order_result_data d where a.jan = d.jan_cd and d.company_cd = #{companyCd} and d.author_cd = #{authorCd} and d.priority_order_cd =#{priorityOrderCd} )
+    where  EXISTS(select jan_cd from planocycle.work_priority_order_result_data d where a.jan = d.jan_cd and d.company_cd = #{companyCd} and d.author_cd = #{authorCd} and d.priority_order_cd =#{priorityOrderCd})
 
   </select>
   <select id="getAttrRank" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
@@ -407,12 +407,12 @@
                                                            restrict_cd, sku_rank, adopt_flag,
                                                            face, face_sku, irisu,
                                                            tai_cd, tana_cd, tana_type,
-                                                           face_keisan,sales_cnt,face_fact)
+                                                           face_keisan,sales_cnt,face_fact,sort_rank)
       select company_cd, #{authorCd}, priority_order_cd, jan_cd,
                                                    restrict_cd, sku_rank, adopt_flag,
                                                    face, face_sku, irisu,
                                                    tai_cd, tana_cd, tana_type,
-                                                   face_keisan,sales_cnt,face_fact
+                                                   face_keisan,sales_cnt,face_fact,sort_rank
         from planocycle.priority_order_result_data
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and priority_order_cd = #{priorityOrderCd}
