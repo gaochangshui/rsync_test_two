@@ -98,16 +98,20 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         listDisparitStr.toArray(array);
         Class clazz = PriorityOrderJanNewVO.class;
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
-        List<PriorityOrderJanNewVO> janNameClass = priorityOrderJanNewMapper.getJanNameClass(array, companyCd);
-        List listNew1 = new ArrayList();
-        for (PriorityOrderJanNewVO nameClass : janNameClass) {
-            priorityOrderJanNewVOList.add(nameClass);
-            listNew1.add(nameClass.getJanNew());
+        String [] result=null;
+        if(array.length>0) {
+            List<PriorityOrderJanNewVO> janNameClass = priorityOrderJanNewMapper.getJanNameClass(array, companyCd);
+            List listNew1 = new ArrayList();
+            for (PriorityOrderJanNewVO nameClass : janNameClass) {
+                priorityOrderJanNewVOList.add(nameClass);
+                listNew1.add(nameClass.getJanNew());
+            }
+            List<String> strings = Arrays.asList(array);
+            List<String> lists = ListDisparityUtils.getListDisparitStr(strings, listNew1);
+            result = new String[lists.size()];
+            lists.toArray(result);
         }
-        List<String> strings = Arrays.asList(array);
-        List<String> lists = ListDisparityUtils.getListDisparitStr(strings, listNew1);
-        String [] result = new String[lists.size()];
-        lists.toArray(result);
+
         for (int i = 1; i <= 4; i++) {
             Method getMethod = clazz.getMethod("get"+"Scat"+i+"cdVal");
             Method setMethod = clazz.getMethod("set"+"Scat"+i+"cdVal", String.class);
@@ -135,8 +139,12 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
             priorityOrderJanNewDtos.add(priorityOrderJanNewDto);
         }
         Map<String,Object> map = new HashMap<>();
+        if (array.length==0){
+            map.put("array",result);
+        }else {
+            map.put("array",result);
+        }
 
-        map.put("array",result);
         map.put("priorityOrderJanNewVOList",priorityOrderJanNewDtos);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
