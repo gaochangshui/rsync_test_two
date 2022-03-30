@@ -238,13 +238,15 @@ public class CommonMstServiceImpl implements CommonMstService {
         //根据台进行分组遍历
         Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTai = workPriorityOrderResultData.stream()
                 .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTaiCd, LinkedHashMap::new, Collectors.toList()));
+        Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTana = null;
+        List<WorkPriorityOrderResultDataDto> workPriorityOrderResultDataDtos = null;
 
         for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entrySet : workPriorityOrderResultDataByTai.entrySet()) {
             Integer taiCd = entrySet.getKey();
 
-            List<WorkPriorityOrderResultDataDto> workPriorityOrderResultDataDtos = workPriorityOrderResultDataByTai.get(taiCd);
+            workPriorityOrderResultDataDtos = workPriorityOrderResultDataByTai.get(taiCd);
             //根据棚进行分组遍历
-            Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTana = workPriorityOrderResultDataDtos.stream()
+            workPriorityOrderResultDataByTana = workPriorityOrderResultDataDtos.stream()
                     .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTanaCd, LinkedHashMap::new, Collectors.toList()));
             for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entry : workPriorityOrderResultDataByTana.entrySet()) {
                 //同一个棚，序号从1开始累加，下一个棚重新从1开始加
