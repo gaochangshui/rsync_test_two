@@ -55,13 +55,9 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("CompanyList");
         Object resultInfo = "";
-        try {
-            String result = cgiUtil.getCgi(path+session.getAttribute("inCharge")+"&mode=kigyolist",(String) session.getAttribute("MSPACEDGOURDLP"));
-            logger.info(result);
-            resultInfo = JSON.parse(result);
-        } catch (IOException e) {
-            logger.info("报错:",e);
-        }
+        String result = cgiUtil.getCgi(path+session.getAttribute("inCharge")+"&mode=kigyolist",(String) session.getAttribute("MSPACEDGOURDLP"));
+        logger.info(result);
+        resultInfo = JSON.parse(result);
 
         logger.info("获取企业信息：{}",resultInfo);
 
@@ -223,15 +219,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
      */
     @Override
     public Map<String, Object> getChanelInfo() {
-        try {
-            ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-            String pathInfo = resourceBundle.getString("ChannelList");
-            String result=cgiUtil.getCgi(pathInfo,(String) session.getAttribute("MSPACEDGOURDLP"));
-            return ResultMaps.result(ResultEnum.SUCCESS, JSON.parse(result));
-        } catch (IOException e) {
-            logger.info("报错:",e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+        String pathInfo = resourceBundle.getString("ChannelList");
+        String result=cgiUtil.getCgi(pathInfo,(String) session.getAttribute("MSPACEDGOURDLP"));
+        return ResultMaps.result(ResultEnum.SUCCESS, JSON.parse(result));
     }
 
     /**
@@ -240,15 +231,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
      */
     @Override
     public Map<String, Object> getPrefectureInfo() {
-        try {
-            ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-            String pathInfo = resourceBundle.getString("PlaceList");
-            String result=cgiUtil.getCgi(pathInfo,(String) session.getAttribute("MSPACEDGOURDLP"));
-            return ResultMaps.result(ResultEnum.SUCCESS, JSON.parse(result));
-        } catch (IOException e) {
-            logger.info("报错:",e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+        String pathInfo = resourceBundle.getString("PlaceList");
+        String result=cgiUtil.getCgi(pathInfo,(String) session.getAttribute("MSPACEDGOURDLP"));
+        return ResultMaps.result(ResultEnum.SUCCESS, JSON.parse(result));
     }
 
     /**
@@ -305,20 +291,15 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
 
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
 
-        try {
-            ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-            String path = resourceBundle.getString("ProductPowerData");
-            String result = null;
-            result = cgiUtil.postCgi(path,productPowerDataForCgiDto,tokenInfo);
-            logger.info("taskid返回：{}",result);
-            String queryPath = resourceBundle.getString("TaskQuery");
-            // 带着taskid，再次请求cgi获取运行状态/数据
-            Map<String,Object> Data = cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-            return true;
-        } catch (IOException e) {
-            logger.info("报错:",e);
-            return false;
-        }
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+        String path = resourceBundle.getString("ProductPowerData");
+        String result = null;
+        result = cgiUtil.postCgi(path,productPowerDataForCgiDto,tokenInfo);
+        logger.info("taskid返回：{}",result);
+        String queryPath = resourceBundle.getString("TaskQuery");
+        // 带着taskid，再次请求cgi获取运行状态/数据
+        Map<String,Object> Data = cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
+        return true;
 
     }
 //TODO:

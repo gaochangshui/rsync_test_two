@@ -197,17 +197,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerDataForCgiDto.setProductPowerNo(productPowerNo);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("保存文件的时候调用cgi的参数{}", productPowerDataForCgiDto);
-        try {
-            //递归调用cgi，首先去taskid
-            String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
-            logger.info("taskId返回：{}", result);
-            //带着taskId，再次请求cgi获取运行状态/数据
-            Map<String, Object> Data = cgiUtil.postCgiLoop(cgiUtil.setPath("TaskQuery"), result, tokenInfo);
-            logger.info("保存文件的时候调用cgi返回的数据：{}", Data);
-        } catch (IOException e) {
-            logger.info("保存文件的时候调用cgi报错：", e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        //递归调用cgi，首先去taskid
+        String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
+        logger.info("taskId返回：{}", result);
+        //带着taskId，再次请求cgi获取运行状态/数据
+        Map<String, Object> Data = cgiUtil.postCgiLoop(cgiUtil.setPath("TaskQuery"), result, tokenInfo);
+        logger.info("保存文件的时候调用cgi返回的数据：{}", Data);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -235,14 +230,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("调用cgi获取data的参数：{}", productPowerDataForCgiDto);
-        try {
-            String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
-            logger.info("taskId返回：{}", result);
-            return ResultMaps.result(ResultEnum.SUCCESS, result);
-        } catch (IOException e) {
-            logger.info("获取商品力点数表taskid数据报错：", e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
+        logger.info("taskId返回：{}", result);
+        return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 
     /**
@@ -277,14 +267,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerDataForCgiDto.setUsercd(aud);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("调用cgi获取data的参数：{}", productPowerDataForCgiDto);
-        try {
-            String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
-            logger.info("taskId返回：{}", result);
-            return ResultMaps.result(ResultEnum.SUCCESS, result);
-        } catch (IOException e) {
-            logger.info("获取商品力点数表taskid数据报错：", e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
+        logger.info("taskId返回：{}", result);
+        return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 
     @Override

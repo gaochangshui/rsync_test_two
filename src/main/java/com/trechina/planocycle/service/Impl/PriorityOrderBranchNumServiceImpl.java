@@ -61,23 +61,18 @@ public class PriorityOrderBranchNumServiceImpl implements PriorityOrderBranchNum
         priorityOrderDataForCgiDto.setMode("priority_jan_storecnt");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("调用priority_jan_storecnt的参数{}", priorityOrderDataForCgiDto);
-        try {
-            String result = cgiUtil.postCgi(pathInfo, priorityOrderDataForCgiDto, tokenInfo);
-            logger.info("返回priority_jan_storecnt处理结果{}",result);
-            String queryPath = resourceBundle.getString("TaskQuery");
-            // 带着taskid，再次请求cgi获取运行状态/数据
-            Map<String,Object> Data = cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-            logger.info("调用priority_jan_storecnt的结果{}", Data);
-            JSONArray jsonArray = JSONArray.parseArray(String.valueOf(Data.get("data")));
-            logger.info("转json后：{}",jsonArray.toString());
-            if (!jsonArray.isEmpty()){
-                priorityOrderCommodityMustMapper.deletePriorityBranchNum(companyCd,priorityOrderCd);
+        String result = cgiUtil.postCgi(pathInfo, priorityOrderDataForCgiDto, tokenInfo);
+        logger.info("返回priority_jan_storecnt处理结果{}",result);
+        String queryPath = resourceBundle.getString("TaskQuery");
+        // 带着taskid，再次请求cgi获取运行状态/数据
+        Map<String,Object> Data = cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
+        logger.info("调用priority_jan_storecnt的结果{}", Data);
+        JSONArray jsonArray = JSONArray.parseArray(String.valueOf(Data.get("data")));
+        logger.info("转json后：{}",jsonArray.toString());
+        if (!jsonArray.isEmpty()){
+            priorityOrderCommodityMustMapper.deletePriorityBranchNum(companyCd,priorityOrderCd);
 
-                priorityOrderCommodityMustMapper.insertPriorityBranchNum(jsonArray,companyCd,priorityOrderCd);
-            }
-        } catch (IOException e) {
-            logger.info("报错:",e);
-            throw new BussinessException("报错");
+            priorityOrderCommodityMustMapper.insertPriorityBranchNum(jsonArray,companyCd,priorityOrderCd);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

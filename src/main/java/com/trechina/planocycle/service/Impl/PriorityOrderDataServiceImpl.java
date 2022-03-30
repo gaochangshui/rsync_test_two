@@ -85,19 +85,14 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
             priorityOrderDataForCgiDto.setMode("priority_shoki");
             String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
             logger.info("调用cgi获取优先顺位表的参数：{}",priorityOrderDataForCgiDto);
-            try {
-                //递归调用cgi，首先去taskid
-                String result = cgiUtil.postCgi(path,priorityOrderDataForCgiDto,tokenInfo);
-                logger.info("taskId返回：{}",result);
-                String queryPath = resourceBundle.getString("TaskQuery");
-                //带着taskId，再次请求cgi获取运行状态/数据
-                Data =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-                logger.info("优先顺位表cgi返回数据：{}",Data);
+            //递归调用cgi，首先去taskid
+            String result = cgiUtil.postCgi(path,priorityOrderDataForCgiDto,tokenInfo);
+            logger.info("taskId返回：{}",result);
+            String queryPath = resourceBundle.getString("TaskQuery");
+            //带着taskId，再次请求cgi获取运行状态/数据
+            Data =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
+            logger.info("优先顺位表cgi返回数据：{}",Data);
 
-            } catch (IOException e) {
-                logger.info("获取优先顺位表数据报错：",e);
-                return ResultMaps.result(ResultEnum.FAILURE);
-            }
         }
 
         if (Data.get("data") !=null) {

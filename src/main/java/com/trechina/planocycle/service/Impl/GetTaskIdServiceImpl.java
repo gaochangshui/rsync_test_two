@@ -36,13 +36,8 @@ public class GetTaskIdServiceImpl implements GetTaskIdService {
         String uuid = UUID.randomUUID().toString();
         String tokenInfo = String.valueOf(session.getAttribute("MSPACEDGOURDLP"));
         para.put("guid",uuid);
-        try {
-            String result = cgiUtil.postCgi(path,para,tokenInfo);
-            logger.info("获取taskid共同方法返回：{}",result);
-            return ResultMaps.result(ResultEnum.SUCCESS,result);
-        } catch (IOException e) {
-            logger.info("获取taskid共同方法报错：",e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        String result = cgiUtil.postCgi(path,para,tokenInfo);
+        logger.info("获取taskid共同方法返回：{}",result);
+        return ResultMaps.result(ResultEnum.SUCCESS,result);
     }
 }

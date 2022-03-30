@@ -150,21 +150,16 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
         logger.info("保存jan rank{}",productPowerDataForCgiSave);
         //递归调用cgi，首先获取taskid
-        try {
-            ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-            String path = resourceBundle.getString("ProductPowerData");
-            String result = null;
-            logger.info("携带参数：{}", productPowerDataForCgiSave);
-            result = cgiUtil.postCgi(path, productPowerDataForCgiSave, tokenInfo);
-            logger.info("taskid返回--保存jan rank：{}", result);
-            String queryPath = resourceBundle.getString("TaskQuery");
-            // 带着taskid，再次请求cgi获取运行状态/数据
-            Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-            logger.info("保存jan rank{}",Data);
-        } catch (IOException e) {
-            logger.info("保存期间、表示项目、weight所有参数报错--保存jan rank",e);
-            throw new RuntimeException("保存期间、表示项目、weight所有参数报错--保存jan rank");
-        }
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+        String path = resourceBundle.getString("ProductPowerData");
+        String result = null;
+        logger.info("携带参数：{}", productPowerDataForCgiSave);
+        result = cgiUtil.postCgi(path, productPowerDataForCgiSave, tokenInfo);
+        logger.info("taskid返回--保存jan rank：{}", result);
+        String queryPath = resourceBundle.getString("TaskQuery");
+        // 带着taskid，再次请求cgi获取运行状态/数据
+        Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
+        logger.info("保存jan rank{}",Data);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -240,20 +235,15 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
             //调用cgi 删除预备表示项目
             //递归调用cgi，首先获取taskid
-            try {
-                ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-                String path = resourceBundle.getString("ProductPowerData");
-                cgiUtils cgiUtil = new cgiUtils();
-                String result = null;
-                result = cgiUtil.postCgi(path, productPowerDataForCgiDto, tokenInfo);
-                logger.info("taskid返回删除 yobi：{}", result);
-                String queryPath = resourceBundle.getString("TaskQuery");
-                // 带着taskid，再次请求cgi获取运行状态/数据
-                Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-            } catch (IOException e) {
-                logger.info("保存期间、表示项目、weight所有参数报错--删除 yobi",e);
-                return ResultMaps.result(ResultEnum.FAILURE);
-            }
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+        String path = resourceBundle.getString("ProductPowerData");
+        cgiUtils cgiUtil = new cgiUtils();
+        String result = null;
+        result = cgiUtil.postCgi(path, productPowerDataForCgiDto, tokenInfo);
+        logger.info("taskid返回删除 yobi：{}", result);
+        String queryPath = resourceBundle.getString("TaskQuery");
+        // 带着taskid，再次请求cgi获取运行状态/数据
+        Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
