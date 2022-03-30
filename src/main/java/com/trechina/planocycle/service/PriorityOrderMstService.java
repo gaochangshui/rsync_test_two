@@ -117,5 +117,5 @@ public interface PriorityOrderMstService {
 
     Map<String,Object> deletePriorityOrderAll( PriorityOrderMstVO priorityOrderMstVO);
 
-
+    Map<String,Object> getVariousMst(String companyCd,Integer priorityOrderCd,Integer flag) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException;
 }

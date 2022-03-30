@@ -1125,12 +1125,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, workPriorityOrderMst.getProductPowerCd());
         Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, workPriorityOrderMst.getProductPowerCd());
         productPowerInfo.setSku(skuNum);
-        //获取janNew信息
-        Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
-        ////获取janCut信息
-        List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd);
-        //获取jan变信息
-        List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd,priorityOrderCd);
+        ////获取janNew信息
+        //Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
+        //////获取janCut信息
+        //List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd);
+        ////获取jan变信息
+        //List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd,priorityOrderCd);
         //获取商品详细信息
         List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd);
         map.put("workPriorityOrderMst",workPriorityOrderMst);
@@ -1142,9 +1142,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         map.put("restrictData",restrictData.get("data"));
         map.put("ptsDetailData",ptsDetailData.get("data"));
         map.put("productPowerInfo",productPowerInfo);
-        map.put("priorityOrderJanNew",priorityOrderJanNew.get("data"));
-        map.put("priorityOrderJanCut",priorityOrderJanCut);
-        map.put("priorityOrderJanReplace",priorityOrderJanReplace);
+        //map.put("priorityOrderJanNew",priorityOrderJanNew.get("data"));
+        //map.put("priorityOrderJanCut",priorityOrderJanCut);
+        //map.put("priorityOrderJanReplace",priorityOrderJanReplace);
         map.put("janNewInfo",janNewInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
@@ -1193,6 +1193,29 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //删除space表
         priorityOrderSpaceMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public Map<String, Object> getVariousMst(String companyCd, Integer priorityOrderCd, Integer flag) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        String aud = session.getAttribute("aud").toString();
+        //商品力点数表信息
+        WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd, aud);
+        if (flag == 0) {
+            //获取janNew信息
+            Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
+            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanNew.get("data"));
+        }
+        if (flag == 2) {
+            ////获取janCut信息
+            List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd, priorityOrderCd);
+            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCut);
+        }
+        if (flag == 1) {
+            //获取jan变信息
+            List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd, priorityOrderCd);
+            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplace);
+        }
+        return null;
     }
 
 
