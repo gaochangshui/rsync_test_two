@@ -53,4 +53,6 @@ public interface PriorityOrderMstMapper {
     int selectByPriorityOrderCd(@Param("priorityOrderCd") Integer priorityOrderCd);
     PriorityOrderMst selectOrderMstByPriorityOrderCd(@Param("priorityOrderCd") Integer priorityOrderCd);
     int updateOrderName(@Param("priorityOrderCd") Integer priorityOrderCd, @Param("priorityOrderName") String priorityOrderName);
+    //临时表存
+    int setPartition(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd,@Param("authorCd")String authorCd,@Param("partition")Integer Partition );
 }

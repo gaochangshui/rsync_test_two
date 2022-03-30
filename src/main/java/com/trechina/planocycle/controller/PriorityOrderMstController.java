@@ -105,8 +105,8 @@ public class PriorityOrderMstController {
      */
     // TODO: 2200866
     @GetMapping("/autoCalculation")
-    public Map<String,Object> autoCalculation(String companyCd,Integer priorityOrderCd){
-        return priorityOrderMstService.autoCalculation(companyCd,priorityOrderCd);
+    public Map<String,Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition){
+        return priorityOrderMstService.autoCalculation(companyCd,priorityOrderCd,partition);
     }
 
     /**

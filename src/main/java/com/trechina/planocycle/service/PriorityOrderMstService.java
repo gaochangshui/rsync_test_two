@@ -83,7 +83,7 @@ public interface PriorityOrderMstService {
      * 自动计算
      * @return
      */
-    Map<String, Object> autoCalculation(String companyCd,Integer priorityOrderCd);
+    Map<String, Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition);
 
     /**
      * 重新计算rank排序
