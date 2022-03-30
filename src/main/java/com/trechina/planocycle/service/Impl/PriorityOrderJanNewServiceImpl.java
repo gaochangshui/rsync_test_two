@@ -140,7 +140,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         }
         Map<String,Object> map = new HashMap<>();
         if (array.length==0){
-            map.put("array",result);
+            map.put("array",array);
         }else {
             map.put("array",result);
         }
