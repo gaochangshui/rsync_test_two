@@ -6,6 +6,7 @@ import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
 import com.trechina.planocycle.entity.vo.PriorityOrderCommodityVO;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.exception.BussinessException;
 import com.trechina.planocycle.mapper.PriorityOrderBranchNumMapper;
 import com.trechina.planocycle.mapper.PriorityOrderCommodityMustMapper;
 import com.trechina.planocycle.mapper.PriorityOrderCommodityNotMapper;
@@ -76,7 +77,7 @@ public class PriorityOrderBranchNumServiceImpl implements PriorityOrderBranchNum
             }
         } catch (IOException e) {
             logger.info("报错:",e);
-            return ResultMaps.result(ResultEnum.FAILURE);
+            throw new BussinessException("报错");
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

@@ -6,6 +6,7 @@ import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.exception.BussinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -194,7 +195,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         } catch (Exception e) {
             logger.info("报错:{}", e.getMessage());
             logger.error("保存优先顺位表报错：{}", e.getMessage());
-            return ResultMaps.result(ResultEnum.FAILURE);
+            throw new BussinessException("保存优先顺位表报错");
         }
     }
 
@@ -491,6 +492,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             logger.info("删除smart优先顺位表信息：{}", result);
         } catch (IOException e) {
             logger.info("报错:{}", e.getMessage());
+            throw new BussinessException("报错");
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

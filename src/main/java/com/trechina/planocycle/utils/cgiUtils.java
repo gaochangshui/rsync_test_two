@@ -14,6 +14,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 @Component
 public class cgiUtils {
@@ -90,6 +91,11 @@ public class cgiUtils {
      * @return
      */
     public  Map<String, Object> postCgiOfWeb(String path,String taskid, String tokenInfo){
+        InputStream in = null;
+        InputStream buffer = null;
+        BufferedReader reader = null;
+        InputStreamReader inputStreamReader = null;
+
         try{
             StringBuilder builder = null;
             URL url =new URL(smartPath+path);
@@ -106,10 +112,11 @@ public class cgiUtils {
             os.write(JSON.toJSONBytes(para));
             Integer statusCode = connection.getResponseCode();
 
-            InputStream in =connection.getInputStream();
-            InputStream buffer =new BufferedInputStream(in);
+            in =connection.getInputStream();
+            buffer =new BufferedInputStream(in);
 
-            BufferedReader reader =new BufferedReader(new InputStreamReader(buffer));
+            inputStreamReader = new InputStreamReader(buffer);
+            reader =new BufferedReader(inputStreamReader);
             String read;
             builder = new StringBuilder();
             while ((read = reader.readLine()) !=null){
@@ -135,15 +142,29 @@ public class cgiUtils {
             else{
                 return ResultMaps.result(ResultEnum.SUCCESS,builder.toString());
             }
-        } catch (ProtocolException e) {
-            logger.info("cgi调用报错："+e);
-            return ResultMaps.result(ResultEnum.FAILURE,null);
-        } catch (MalformedURLException e) {
-            logger.info("cgi调用报错："+e);
-            return ResultMaps.result(ResultEnum.FAILURE,null);
         } catch (IOException e) {
-            logger.info("cgi调用报错："+e);
+            logger.info("cgi调用报错：", e);
             return ResultMaps.result(ResultEnum.FAILURE,null);
+        } finally {
+            try {
+                if(Objects.nonNull(in)){
+                    in.close();
+                }
+
+                if(Objects.nonNull(buffer)){
+                    buffer.close();
+                }
+
+                if(Objects.nonNull(inputStreamReader)){
+                    inputStreamReader.close();
+                }
+
+                if(Objects.nonNull(reader)){
+                    reader.close();
+                }
+            } catch (IOException e) {
+                logger.info("io关闭异常：",e);
+            }
         }
     }
 

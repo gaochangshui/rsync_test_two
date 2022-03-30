@@ -25,10 +25,8 @@ import org.springframework.web.util.UriUtils;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import javax.swing.plaf.ProgressBarUI;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -39,6 +37,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -142,15 +141,15 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             logger.info("mkdir:{}",isMkdir);
         }
 
+        zipFileName = MessageFormat.format("全パターン{0}.zip", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(zipFileName, "utf-8"));
+        response.setHeader("Content-Disposition", format);
+        response.setHeader(HttpHeaders.CONTENT_TYPE, "application/zip");
+
         ServletOutputStream outputStream = response.getOutputStream();
+
         try(ZipOutputStream zos = new ZipOutputStream(outputStream);
             WritableByteChannel writableByteChannel = Channels.newChannel(zos)) {
-            zipFileName = MessageFormat.format("全パターン{0}.zip", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
-
-            String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(zipFileName, "utf-8"));
-            response.setHeader("Content-Disposition", format);
-            response.setHeader(HttpHeaders.CONTENT_TYPE, "application/zip");
-
             for (ShelfPtsData ptsData : shelfPtsDataList) {
                 Integer ptsCd = ptsData.getId();
                 String fileName = ptsData.getFileName();
@@ -161,21 +160,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
                 List<ShelfPtsDataJandata> shelfPtsDataJandata = priorityAllPtsMapper.selectAllJandataByPtsCd(companyCd, ptsCd);
 
                 String filePath = this.generateCsv2File(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, fileParentPath, fileName);
-                zos.putNextEntry(new ZipEntry(fileName));
-
-                try(FileInputStream fis = new FileInputStream(filePath);
-                    ReadableByteChannel readableByteChannel = Channels.newChannel(fis)){
-                    byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-                    writableByteChannel.write(ByteBuffer.wrap(bom));
-
-                    ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
-                    while (readableByteChannel.read(byteBuffer)!=-1){
-                        byteBuffer.clear();
-                        writableByteChannel.write(byteBuffer);
-                        byteBuffer.flip();
-                    }
-                }
-
+                this.writeZip(filePath, writableByteChannel);
                 zos.closeEntry();
             }
 
@@ -184,8 +169,25 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             logger.error("", e);
         } finally {
             outputStream.close();
-
             this.deleteDir(new File(fileParentPath));
+        }
+    }
+
+    private void writeZip(String filePath, WritableByteChannel writableByteChannel){
+        try(FileInputStream fis = new FileInputStream(filePath);
+            ReadableByteChannel readableByteChannel = Channels.newChannel(fis)) {
+
+            byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+            writableByteChannel.write(ByteBuffer.wrap(bom));
+
+            ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+            while (readableByteChannel.read(byteBuffer)!=-1){
+                byteBuffer.clear();
+                writableByteChannel.write(byteBuffer);
+                byteBuffer.flip();
+            }
+        } catch (IOException e) {
+            logger.error("写zip文件失败", e);
         }
     }
 

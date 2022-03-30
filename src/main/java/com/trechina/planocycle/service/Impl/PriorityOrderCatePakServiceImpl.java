@@ -5,6 +5,7 @@ import com.trechina.planocycle.entity.po.PriorityOrderCatepak;
 import com.trechina.planocycle.entity.po.PriorityOrderCatepakAttribute;
 import com.trechina.planocycle.entity.vo.PriorityOrderCatePakVO;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.exception.BussinessException;
 import com.trechina.planocycle.mapper.PriorityOrderCatepakAttributeMapper;
 import com.trechina.planocycle.mapper.PriorityOrderCatepakMapper;
 import com.trechina.planocycle.service.PriorityOrderCatePakService;
@@ -136,7 +137,7 @@ public class PriorityOrderCatePakServiceImpl implements PriorityOrderCatePakServ
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
             logger.info("保存カテパケ拡縮报错:",e);
-            return ResultMaps.result(ResultEnum.FAILURE);
+            throw new BussinessException("保存カテパケ拡縮报错");
         }
     }
 

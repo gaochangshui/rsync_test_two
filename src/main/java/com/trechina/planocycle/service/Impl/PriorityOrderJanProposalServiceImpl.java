@@ -6,6 +6,7 @@ import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanProposal;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanProposalVO;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.exception.BussinessException;
 import com.trechina.planocycle.mapper.PriorityOrderDataMapper;
 import com.trechina.planocycle.mapper.PriorityOrderJanProposalMapper;
 import com.trechina.planocycle.service.PriorityOrderJanProposalService;
@@ -107,7 +108,7 @@ public class PriorityOrderJanProposalServiceImpl implements PriorityOrderJanProp
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderJanProposal(List<PriorityOrderJanProposal> priorityOrderJanProposal) {
-        logger.info("修改jan变提案list的参数："+priorityOrderJanProposal);
+        logger.info("修改jan变提案list的参数：{}",priorityOrderJanProposal);
         try {
             dataConverUtils dataConverUtil = new dataConverUtils();
             String companyCd = priorityOrderJanProposal.get(0).getCompanyCd();
@@ -115,7 +116,7 @@ public class PriorityOrderJanProposalServiceImpl implements PriorityOrderJanProp
             //处理参数
             List<PriorityOrderJanProposal> proposals = dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderJanProposal.class,
                     priorityOrderJanProposal,companyCd,priorityOrderCd);
-            logger.info("修改jan变提案list的处理完后的参数："+proposals);
+            logger.info("修改jan变提案list的处理完后的参数：{}",proposals);
             priorityOrderJanProposalMapper.updateByPrimaryKey(proposals);
 
             // 修改后反映到主表
@@ -123,8 +124,8 @@ public class PriorityOrderJanProposalServiceImpl implements PriorityOrderJanProp
                     "public.priorityorder"+session.getAttribute("aud").toString());
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
-            logger.info("修改jan变提案list报错："+e);
-            return ResultMaps.result(ResultEnum.FAILURE);
+            logger.info("修改jan变提案list报错：",e);
+            throw new BussinessException("修改jan变提案list报错");
         }
     }
 

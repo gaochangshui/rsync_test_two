@@ -163,7 +163,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             logger.info("保存jan rank{}",Data);
         } catch (IOException e) {
             logger.info("保存期间、表示项目、weight所有参数报错--保存jan rank",e);
-            return ResultMaps.result(ResultEnum.FAILURE);
+            throw new RuntimeException("保存期间、表示项目、weight所有参数报错--保存jan rank");
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
