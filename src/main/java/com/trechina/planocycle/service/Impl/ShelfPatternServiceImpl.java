@@ -175,7 +175,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
 
         }catch (Exception e) {
             logger.error(e.toString());
-            return ResultMaps.result(ResultEnum.FAILURE);
+            throw new BussinessException(e.getMessage());
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

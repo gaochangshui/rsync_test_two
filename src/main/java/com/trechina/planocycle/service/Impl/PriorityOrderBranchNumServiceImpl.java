@@ -165,7 +165,7 @@ public class PriorityOrderBranchNumServiceImpl implements PriorityOrderBranchNum
            }
         } catch (Exception e) {
             logger.error("保存必须商品list：",e);
-            return ResultMaps.result(ResultEnum.FAILURE);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -224,7 +224,7 @@ public class PriorityOrderBranchNumServiceImpl implements PriorityOrderBranchNum
             }
         } catch (Exception e) {
             logger.error("保存不可商品list：",e);
-            return ResultMaps.result(ResultEnum.FAILURE);
+            throw new BussinessException(e.getMessage());
         }
     }
 
