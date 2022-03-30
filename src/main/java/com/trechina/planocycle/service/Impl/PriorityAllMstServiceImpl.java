@@ -324,8 +324,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                     }
                 }
                 workPriorityAllResultDataMapper.updateFace(resultDatas);
-                //保存pts到临时表里
-                priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
 
                 /**
                  * 放置商品
@@ -347,6 +345,9 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                     List<PriorityOrderResultDataDto> resultDataDtos = entry.getValue();
                     workPriorityAllResultDataMapper.updateTaiTanaBatch(companyCd, priorityAllCd, pattern.getShelfPatternCd(), authorCd, resultDataDtos);
                 }
+
+                //保存pts到临时表里
+                priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
             }
         } catch(Exception ex) {
             logger.error("", ex);
