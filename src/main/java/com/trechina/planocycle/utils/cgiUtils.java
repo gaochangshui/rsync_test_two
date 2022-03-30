@@ -46,7 +46,6 @@ public class cgiUtils {
             while ((read = reader.readLine()) !=null){
                 builder.append(read);
             }
-            in.close();
             return builder.toString();
         }catch (Exception e){
             logger.error("io异常", e);
@@ -62,7 +61,7 @@ public class cgiUtils {
                     reader.close();
                 }
             }catch (Exception e){
-                logger.error("io关闭异常");
+                logger.error("io关闭异常", e);
             }
         }
 
@@ -237,6 +236,10 @@ public class cgiUtils {
      * @throws IOException
      */
     public  Map<String, Object> postCgiLoop(String path,String taskid, String tokenInfo) {
+        InputStream in = null;
+        InputStream buffer = null;
+        BufferedReader reader = null;
+
         try{
             URL url =new URL(smartPath+path);
             Boolean result  = true;
@@ -257,10 +260,9 @@ public class cgiUtils {
                 os.write(JSON.toJSONBytes(para));
                 Integer statusCode = connection.getResponseCode();
 
-                InputStream in =connection.getInputStream();
-                InputStream buffer =new BufferedInputStream(in);
-
-                BufferedReader reader =new BufferedReader(new InputStreamReader(buffer));
+                in =connection.getInputStream();
+                buffer =new BufferedInputStream(in);
+                reader =new BufferedReader(new InputStreamReader(buffer));
                 String read;
                 builder = new StringBuilder();
                 while ((read = reader.readLine()) !=null){
@@ -270,9 +272,8 @@ public class cgiUtils {
                     return ResultMaps.result(ResultEnum.SIZEISZERO,"");
                 }
                 builder = new StringBuilder(builder.substring(0,builder.length()-1));
-                in.close();
                 count+=1;
-                logger.info("cgiQueryTask statusCode,reqult："+statusCode+","+builder.toString());
+                logger.info("cgiQueryTask statusCode,reqult：{},{}",statusCode,builder);
                 if(statusCode == 200) {
                     break;
                 } else  {
@@ -299,6 +300,23 @@ public class cgiUtils {
         } catch (InterruptedException e){
             Thread.currentThread().interrupt();
             return ResultMaps.result(ResultEnum.FAILURE,null);
+        } finally {
+            try{
+                if(Objects.nonNull(in)){
+                    in.close();
+                }
+
+                if(Objects.nonNull(buffer)){
+                    buffer.close();
+                }
+
+                if(Objects.nonNull(reader)){
+                    reader.close();
+                }
+            }catch (Exception e){
+                logger.error("io关闭异常", e);
+            }
+
         }
     }
 

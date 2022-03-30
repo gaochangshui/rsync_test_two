@@ -402,41 +402,39 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 
     public void generateCsv(ShelfPtsDataVersion shelfPtsDataVersion, List<ShelfPtsDataTaimst> shelfPtsDataTaimst,
                             List<ShelfPtsDataTanamst> shelfPtsDataTanamst,  List<ShelfPtsDataJandata> shelfPtsDataJandata, PrintWriter printWriter){
-        CsvWriter csvWriter = CsvWriter.builder().build(printWriter);
-        csvWriter.writeRow(Lists.newArrayList(shelfPtsDataVersion.getCommoninfo(),
-                shelfPtsDataVersion.getVersioninfo(), shelfPtsDataVersion.getOutflg()));
-        csvWriter.writeRow(shelfPtsDataVersion.getModename());
-        csvWriter.writeRow(shelfPtsDataVersion.getTaiHeader().split(","));
+        try(CsvWriter csvWriter = CsvWriter.builder().build(printWriter)) {
+            csvWriter.writeRow(Lists.newArrayList(shelfPtsDataVersion.getCommoninfo(),
+                    shelfPtsDataVersion.getVersioninfo(), shelfPtsDataVersion.getOutflg()));
+            csvWriter.writeRow(shelfPtsDataVersion.getModename());
+            csvWriter.writeRow(shelfPtsDataVersion.getTaiHeader().split(","));
 
-        for (ShelfPtsDataTaimst ptsDataTaimst : shelfPtsDataTaimst) {
-            csvWriter.writeRow(Lists.newArrayList(ptsDataTaimst.getTaiCd()+"",
-                    ptsDataTaimst.getTaiHeight()+"", ptsDataTaimst.getTaiWidth()+"", ptsDataTaimst.getTaiDepth()+"",
-                    Optional.ofNullable(ptsDataTaimst.getTaiName()).orElse("")));
-        }
+            for (ShelfPtsDataTaimst ptsDataTaimst : shelfPtsDataTaimst) {
+                csvWriter.writeRow(Lists.newArrayList(ptsDataTaimst.getTaiCd() + "",
+                        ptsDataTaimst.getTaiHeight() + "", ptsDataTaimst.getTaiWidth() + "", ptsDataTaimst.getTaiDepth() + "",
+                        Optional.ofNullable(ptsDataTaimst.getTaiName()).orElse("")));
+            }
 
-        csvWriter.writeRow(shelfPtsDataVersion.getTanaHeader().split(","));
-        for (ShelfPtsDataTanamst ptsDataTanamst : shelfPtsDataTanamst) {
-            csvWriter.writeRow(Lists.newArrayList(ptsDataTanamst.getTaiCd()+"",
-                    ptsDataTanamst.getTanaCd()+"", ptsDataTanamst.getTanaHeight()+"", ptsDataTanamst.getTanaWidth()+"",
-                    ptsDataTanamst.getTanaDepth()+"", ptsDataTanamst.getTanaThickness()+"", ptsDataTanamst.getTanaType()+""));
-        }
+            csvWriter.writeRow(shelfPtsDataVersion.getTanaHeader().split(","));
+            for (ShelfPtsDataTanamst ptsDataTanamst : shelfPtsDataTanamst) {
+                csvWriter.writeRow(Lists.newArrayList(ptsDataTanamst.getTaiCd() + "",
+                        ptsDataTanamst.getTanaCd() + "", ptsDataTanamst.getTanaHeight() + "", ptsDataTanamst.getTanaWidth() + "",
+                        ptsDataTanamst.getTanaDepth() + "", ptsDataTanamst.getTanaThickness() + "", ptsDataTanamst.getTanaType() + ""));
+            }
 
-        String[] janHeaders = shelfPtsDataVersion.getJanHeader().split(",");
-        csvWriter.writeRow(janHeaders);
-        for (ShelfPtsDataJandata ptsDataJandatum : shelfPtsDataJandata) {
-            List<String> janData = Lists.newArrayList(ptsDataJandatum.getTaiCd() + "",
-                    ptsDataJandatum.getTanaCd() + "", ptsDataJandatum.getTanapositionCd() + "", ptsDataJandatum.getJan() + "",
-                    ptsDataJandatum.getFaceCount() + "", ptsDataJandatum.getFaceMen() + "", ptsDataJandatum.getFaceKaiten() + "",
-                    ptsDataJandatum.getTumiagesu() + "",
-                    Optional.ofNullable(ptsDataJandatum.getZaikosu()).orElse(0) + "", Optional.ofNullable(ptsDataJandatum.getFaceDisplayflg()).orElse(0) + "",
-                    Optional.ofNullable(ptsDataJandatum.getFacePosition()).orElse(0) + "", Optional.ofNullable(ptsDataJandatum.getDepthDisplayNum()).orElse(0) + "");
-            csvWriter.writeRow(janData.subList(0, janHeaders.length));
-        }
-
-        try {
-            csvWriter.close();
+            String[] janHeaders = shelfPtsDataVersion.getJanHeader().split(",");
+            csvWriter.writeRow(janHeaders);
+            List<String> janData = null;
+            for (ShelfPtsDataJandata ptsDataJandata : shelfPtsDataJandata) {
+                janData = Lists.newArrayList(ptsDataJandata.getTaiCd() + "",
+                        ptsDataJandata.getTanaCd() + "", ptsDataJandata.getTanapositionCd() + "", ptsDataJandata.getJan() + "",
+                        ptsDataJandata.getFaceCount() + "", ptsDataJandata.getFaceMen() + "", ptsDataJandata.getFaceKaiten() + "",
+                        ptsDataJandata.getTumiagesu() + "",
+                        Optional.ofNullable(ptsDataJandata.getZaikosu()).orElse(0) + "", Optional.ofNullable(ptsDataJandata.getFaceDisplayflg()).orElse(0) + "",
+                        Optional.ofNullable(ptsDataJandata.getFacePosition()).orElse(0) + "", Optional.ofNullable(ptsDataJandata.getDepthDisplayNum()).orElse(0) + "");
+                csvWriter.writeRow(janData.subList(0, janHeaders.length));
+            }
         } catch (IOException e) {
-            logger.error("csv writer 关闭异常",e);
+            logger.error("", e);
         }
     }
     /**

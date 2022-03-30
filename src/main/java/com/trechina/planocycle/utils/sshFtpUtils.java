@@ -68,22 +68,41 @@ public class sshFtpUtils {
      * 下载url方式的文件
      * @return
      */
-    public  byte[] downLoafCgi(String path,String tokenInfo) throws IOException {
+    public  byte[] downLoafCgi(String path,String tokenInfo) {
         //打开URLConnection进行读取
-        URL url = new URL(path);
-        URLConnection connection = url.openConnection();
-        connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
-        InputStream in = connection.getInputStream();
+        InputStream in = null;
         ByteArrayOutputStream os = null;
-        byte[] buff = new byte[1024];
-        int len = 0;
-        os = new ByteArrayOutputStream();
-        while ((len = in.read(buff)) != -1) {
-            os.write(buff, 0, len);
+
+        try{
+            URL url = new URL(path);
+            URLConnection connection = url.openConnection();
+            connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
+            in = connection.getInputStream();
+            byte[] buff = new byte[1024];
+            int len = 0;
+            os = new ByteArrayOutputStream();
+            while ((len = in.read(buff)) != -1) {
+                os.write(buff, 0, len);
+            }
+
+            return os.toByteArray();
+        }catch (Exception e){
+            logger.error("",e);
+        } finally {
+            try {
+                if(Objects.nonNull(in)){
+                    in.close();
+                }
+
+                if(Objects.nonNull(os)){
+                    os.close();
+                }
+            }catch (Exception e){
+                logger.error("io关闭异常", e);
+            }
         }
 
-        in.close();
-        return os.toByteArray();
+        return null;
     }
 
     public String getFile(String remoteFile, String localTargetDirectory, HttpServletResponse response) {
@@ -111,7 +130,6 @@ public class sshFtpUtils {
                         downFile.flush();
                         outputStream.flush();
                     }
-                    is.close();
                     connection.close();
                     return "传送成功";
                 } else {
@@ -125,6 +143,9 @@ public class sshFtpUtils {
             try {
                 if(Objects.nonNull(outputStream)){
                     outputStream.close();
+                }
+                if(Objects.nonNull(is)){
+                    is.close();
                 }
             } catch (IOException e) {
                 logger.error("报错",e);

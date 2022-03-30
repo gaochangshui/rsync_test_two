@@ -55,6 +55,11 @@ public class CommonMstServiceImpl implements CommonMstService {
         Map<Long, List<WorkPriorityOrderRestrictRelation>> relationByGroup = workPriorityOrderRestrictRelations
                 .stream().collect(Collectors.groupingBy(WorkPriorityOrderRestrictRelation::getRestrictCd, LinkedHashMap::new, Collectors.toList()));
 
+        List<WorkPriorityOrderRestrictRelation> relationValue = null;
+        List<PriorityOrderResultDataDto> relationSorted = null;
+        PriorityOrderResultDataDto priorityOrderResultData = null;
+        List<PriorityOrderResultDataDto> resultData = null;
+
         for (Map.Entry<Long, List<WorkPriorityOrderRestrictRelation>> relationEntry : relationByGroup.entrySet()) {
             Long relationCd = relationEntry.getKey();
             //记录商品放到哪里了-同一个制约的商品可能不同的台、段
@@ -62,13 +67,12 @@ public class CommonMstServiceImpl implements CommonMstService {
 
             //符合当前制约条件商品按rank排序
             //如果sortrank为null就只按skurank排序
-            List<PriorityOrderResultDataDto> relationSorted = workPriorityOrderResultData
+            relationSorted = workPriorityOrderResultData
                     .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
                     .sorted(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank, Comparator.nullsFirst(Long::compareTo))
                             .thenComparingLong(PriorityOrderResultDataDto::getSortRank)).collect(Collectors.toList());
 
-            List<WorkPriorityOrderRestrictRelation> relationValue = relationEntry.getValue();
-
+            relationValue = relationEntry.getValue();
             for (WorkPriorityOrderRestrictRelation workPriorityOrderRestrictRelation : relationValue) {
                 Integer taiCd = workPriorityOrderRestrictRelation.getTaiCd();
                 Integer tanaCd = workPriorityOrderRestrictRelation.getTanaCd();
@@ -96,7 +100,7 @@ public class CommonMstServiceImpl implements CommonMstService {
 
                 //放置商品
                 for (int i = setResultDataIndex; i < relationSorted.size(); i++) {
-                    PriorityOrderResultDataDto priorityOrderResultData = relationSorted.get(i);
+                    priorityOrderResultData = relationSorted.get(i);
 
                     Long faceSku = Optional.ofNullable(priorityOrderResultData.getFaceSku()).orElse(1L);
                     Long janWidth = Optional.ofNullable(priorityOrderResultData.getJanWidth()).orElse(0L);
@@ -119,13 +123,13 @@ public class CommonMstServiceImpl implements CommonMstService {
                         priorityOrderResultData.setAdoptFlag(1);
                         priorityOrderResultData.setTanaType((int) tanaType);
 
-                        List<PriorityOrderResultDataDto> resultData = finalSetJanResultData.getOrDefault(taiTanaKey, new ArrayList<>());
+                        resultData = finalSetJanResultData.getOrDefault(taiTanaKey, new ArrayList<>());
                         resultData.add(priorityOrderResultData);
                         finalSetJanResultData.put(taiTanaKey, resultData);
 
                         usedWidth += janTotalWidth;
                     } else {
-                        List<PriorityOrderResultDataDto> resultData = finalSetJanResultData.getOrDefault(taiTanaKey, new ArrayList<>());
+                        resultData = finalSetJanResultData.getOrDefault(taiTanaKey, new ArrayList<>());
                         if(this.isSetJanByCutFace(resultData, width, usedWidth, partitionVal, minFace, priorityOrderResultData)){
                             priorityOrderResultData.setTaiCd(taiCd);
                             priorityOrderResultData.setTanaType((int) tanaType);
@@ -201,8 +205,9 @@ public class CommonMstServiceImpl implements CommonMstService {
 
             //按照最小face进行放置，需要多少宽度（需要考虑有隔板的情况）+剩下没用的宽度
             long needWidth = targetResultData.getJanWidth() * minFace + partitionVal;
+            PriorityOrderResultDataDto currentResultData = null;
             for (int i = resultDataDtoByIrisu.size()-1; i >= 0 ; i--) {
-                PriorityOrderResultDataDto currentResultData = resultDataDtoByIrisu.get(i);
+                currentResultData = resultDataDtoByIrisu.get(i);
                 Long faceFact = currentResultData.getFaceFact();
 
                 //小于等于最小face不能再cut了
@@ -233,13 +238,15 @@ public class CommonMstServiceImpl implements CommonMstService {
         //根据台进行分组遍历
         Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTai = workPriorityOrderResultData.stream()
                 .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTaiCd, LinkedHashMap::new, Collectors.toList()));
+        Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTana = null;
+        List<WorkPriorityOrderResultDataDto> workPriorityOrderResultDataDtos = null;
 
         for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entrySet : workPriorityOrderResultDataByTai.entrySet()) {
             Integer taiCd = entrySet.getKey();
 
-            List<WorkPriorityOrderResultDataDto> workPriorityOrderResultDataDtos = workPriorityOrderResultDataByTai.get(taiCd);
+            workPriorityOrderResultDataDtos = workPriorityOrderResultDataByTai.get(taiCd);
             //根据棚进行分组遍历
-            Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTana = workPriorityOrderResultDataDtos.stream()
+            workPriorityOrderResultDataByTana = workPriorityOrderResultDataDtos.stream()
                     .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTanaCd, LinkedHashMap::new, Collectors.toList()));
             for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entry : workPriorityOrderResultDataByTana.entrySet()) {
                 //同一个棚，序号从1开始累加，下一个棚重新从1开始加
