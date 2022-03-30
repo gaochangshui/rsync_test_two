@@ -65,7 +65,7 @@ public class PriorityOrderJanCardServiceImpl implements PriorityOrderJanCardServ
            priorityOrderCd = orderJanCard.getPriorityOrderCd();
         }
                 priorityOrderJanCardMapper.workDelete(companyCd,priorityOrderCd,authorCd);
-        if (priorityOrderJanCard.get(0).getCompanyCd()!=null){
+        if (priorityOrderJanCard.get(0).getJanCd()!=null){
                 priorityOrderJanCardMapper.insert(priorityOrderJanCard,authorCd);
                 }
         return ResultMaps.result(ResultEnum.SUCCESS);
