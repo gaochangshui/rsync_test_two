@@ -26,3 +26,11 @@
 20220330 14:34:45.989  [http-nio-8383-exec-2] INFO  com.trechina.planocycle.service.Impl.PriorityOrderJanNewServiceImpl.getPriorityOrderJanNew():60 - 获取新规商品list返回结果集b：[]
 20220330 14:36:59.379  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
 20220330 14:36:59.383  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.
+20220330 15:59:11.028  [http-nio-8383-exec-5] INFO  com.trechina.planocycle.service.Impl.CommodityScoreMasterServiceImpl.getEnterpriseInfo():59 - [ {"F1":"0001","F2":"トライアル","F3":"0001","F4":"トライアル"}, {"F1":"0002","F2":"ライフ関東","F3":"0002","F4":"ライフ関東"} ]
+20220330 15:59:11.062  [http-nio-8383-exec-5] INFO  com.trechina.planocycle.service.Impl.CommodityScoreMasterServiceImpl.getEnterpriseInfo():62 - 获取企业信息：[{"F1":"0001","F2":"トライアル","F3":"0001","F4":"トライアル"},{"F1":"0002","F2":"ライフ関東","F3":"0002","F4":"ライフ関東"}]
+20220330 15:59:17.474  [http-nio-8383-exec-8] INFO  com.trechina.planocycle.service.Impl.PriorityOrderJanNewServiceImpl.getPriorityOrderJanNew():58 - 获取新规商品list参数：0001,3563
+20220330 15:59:17.543  [http-nio-8383-exec-8] INFO  com.trechina.planocycle.service.Impl.PriorityOrderJanNewServiceImpl.getPriorityOrderJanNew():60 - 获取新规商品list返回结果集b：[]
+20220330 15:59:38.969  [http-nio-8383-exec-8] INFO  com.trechina.planocycle.service.Impl.UserServiceImpl.getUserCd():22 - 登录的社员号：10215814
+20220330 16:01:38.068  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=1m23s480ms640µs600ns).
+20220330 16:01:41.907  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
+20220330 16:01:41.911  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.

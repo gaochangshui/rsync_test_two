@@ -35,10 +35,10 @@
         values
             <foreach collection="list" item="item" separator=",">
                 (trim(#{companyCd}),trim(#{item.janCd}),trim(#{item.janName}),trim(#{item.tanka}) :: integer,trim(#{item.tanni})
-                ,trim(#{item.width}) :: integer,trim(#{item.height}) :: integer,trim(#{item.zokusei1}),trim(#{item.zokusei2}),trim(#{item.zokusei3}),trim(#{item.zokusei4})
+                ,trim(#{item.width}) :: integer,trim(#{item.height}) :: integer,lpad(trim(#{item.zokusei1}),4,'0'),lpad(trim(#{item.zokusei2}),4,'0'),lpad(trim(#{item.zokusei3}),4,'0'),lpad(trim(#{item.zokusei4}),4,'0')
                 ,trim(#{item.scatnm}),trim(#{item.zokusei5}),trim(#{item.zokusei8}),trim(#{item.zokusei9})
-                ,trim(#{item.zokusei1}),trim(#{item.zokusei1}) || '_' || trim(#{item.zokusei2}),trim(#{item.zokusei1}) || '_' || trim(#{item.zokusei2}) || '_' || trim(#{item.zokusei3}),
-                 trim(#{item.zokusei1}) || '_' || trim(#{item.zokusei2}) || '_' || trim(#{item.zokusei3}) || '_' || trim(#{item.zokusei4}),trim(#{item.zokusei6} ):: integer
+                ,lpad(trim(#{item.zokusei1}),4,'0'),lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0'),lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0') || '_' || lpad(trim(#{item.zokusei3}),4,'0'),
+                lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0') || '_' || lpad(trim(#{item.zokusei3}),4,'0') || '_' || lpad(trim(#{item.zokusei4}),4,'0'),trim(#{item.zokusei6} ):: integer
                  ,trim(#{item.zokusei7}):: integer ,trim(#{item.depth}) :: integer
                 )
             </foreach>
@@ -68,7 +68,14 @@
                  left join  masterdb.jan_mst jans
                 on news.jan_new = jans.jan_cd
         where news.company_cd = #{companyCd,jdbcType=VARCHAR}
-          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and jans.jan_nm is not null
+        union
+        select news.jan_new as janCd,jans.jan_nm as janName,jans.scat1cd_val as zokusei1,jans.scat2cd_val as zokusei2,scat3cd_val as zokusei3,scat4cd_val as zokusei4,news.jan_rank as rank
+        from planocycle.work_priority_order_jan_new news
+                 left join  masterdb.jan_mst_planocycle jans
+                            on news.jan_new = jans.jan_cd
+        where news.company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and jans.jan_nm is not null
 
   </select>
     <select id="selectJanNewNotExistsMst" resultType="map">
@@ -140,12 +147,38 @@
                         and janNew.author_cd = #{authorCd} and janNew.company_cd = #{item.companyCd} and janNew.priority_order_cd = #{item.priorityOrderCd}
         )
         union
-        select janNew.jan_new as janCd,mst.jan_nm as janName, scat1cd_val as zokusei1,scat2cd_val as zokusei2,scat3cd_val as zokusei3,scat4cd_val as zokusei4,janNew.jan_rank as rank
+        select janNew.jan_new as janCd,mst.jan_nm as janName, data1.nm as zokusei1,data2.nm as zokusei2,data3.nm as zokusei3,scat4cd_val as zokusei4,janNew.jan_rank as rank
         from planocycle.work_priority_order_jan_new janNew
                  left join
              masterdb.jan_mst mst
              on mst.jan_cd = janNew.jan_new
+                 left join masterdb.zokusei_mst_data data1
+                           on mst.scat1cd_val = data1.val
+                 left join masterdb.zokusei_mst_data data2
+                           on mst.scat2cd_val = data2.val
+                 left join masterdb.zokusei_mst_data data3
+                           on mst.scat3cd_val = data3.val
+                 left join masterdb.zokusei_mst_data data4
+                           on  mst.scat4cd_val = data4.val
         where janNew.company_cd = #{item.companyCd} and janNew.author_cd=#{authorCd} and janNew.priority_order_cd = #{item.priorityOrderCd} and janNew.jan_new != #{item.janCd}
+            and data1.nm = #{item.zokusei1} and data2.nm = #{item.zokusei2} and data3.nm = #{item.zokusei3}
+        union
+        select
+            janNew.jan_new as janCd,mst.jan_nm as janName, data1.nm as zokusei1,data2.nm as zokusei2,data3.nm as zokusei3,scat4cd_val as zokusei4,janNew.jan_rank as rank
+        from planocycle.work_priority_order_jan_new janNew
+                 left join
+             masterdb.jan_mst_planocycle mst
+             on mst.jan_cd = janNew.jan_new
+                 left join masterdb.zokusei_mst_data data1
+                           on mst.scat1cd_val = data1.val
+                 left join masterdb.zokusei_mst_data data2
+                           on mst.scat2cd_val = data2.val
+                 left join masterdb.zokusei_mst_data data3
+                           on mst.scat3cd_val = data3.val
+                 left join masterdb.zokusei_mst_data data4
+                           on  mst.scat4cd_val = data4.val
+        where janNew.company_cd = #{item.companyCd} and janNew.author_cd=#{authorCd} and janNew.priority_order_cd = #{item.priorityOrderCd} and janNew.jan_new != #{item.janCd}
+          and data1.nm = #{item.zokusei1} and data2.nm = #{item.zokusei2} and data3.nm = #{item.zokusei3}
         order by rank
 
     </select>

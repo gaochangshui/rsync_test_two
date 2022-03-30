@@ -205,7 +205,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                 productPowerDatum.setZokusei4(productForWork.getZokusei4());
             }
         }
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
+        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
         Class clazz = PriorityOrderJanNewDto.class;
         for (int i = 1; i <= 4; i++) {
             Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
