@@ -196,7 +196,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                     String filenames = "";
                     if (file != null && file.getOriginalFilename() != null) {
                         filenames = ("" + file.getOriginalFilename()).replace(" ", "*");
-                        if (filenames.indexOf(".csv") > -1) {
+                        if (filenames.contains(".csv")) {
                             excelPutPath(file, path + filenames);
                             File file1 = new File(path + filenames);
                             logger.info("文件存放完成");
@@ -232,7 +232,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                         lineNum += 1;
                                     }
                                     // 数据分段
-                                    if (line.indexOf("台番号") > -1) {
+                                    if (line.contains("台番号")) {
                                         titleNum += 1;
                                         if (titleNum == 1) {
                                             ptsDataVersion.setTaiHeader(line);
@@ -346,66 +346,61 @@ public class FilesOperationServiceImpl implements FilesOperationService {
         judgeExistsPath(productDownPath);
         String files = productDownPath + "productFile.csv";
         String excelFiles = productDownPath + "productExcel.xlsx";
+        InputStream is = null;
         //存放文件
-        try {
+        try(DataInputStream in = new DataInputStream(new FileInputStream(files));
+            InputStreamReader inputStreamReader = new InputStreamReader(in, StandardCharsets.UTF_8);
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            OutputStream outputStream = response.getOutputStream();
+            FileOutputStream fos = new FileOutputStream(excelFiles)) {
             excelPutPath(multipartFile, files);
             //读取csv写入excel
-            try (DataInputStream in = new DataInputStream(new FileInputStream(files));) {
-                InputStreamReader inputStreamReader = new InputStreamReader(in, StandardCharsets.UTF_8);
-                try (BufferedReader reader = new BufferedReader(inputStreamReader);) {
-                    String line = null;
-                    try (XSSFWorkbook workbook = new XSSFWorkbook();) {
-                        XSSFSheet sheet = workbook.createSheet("商品力点数表");
-                        XSSFRow row = null;
-                        XSSFCell cell = null;
-                        for (int i = 0; (line = reader.readLine()) != null; i++) {
-                            row = sheet.createRow(i);
-                            if (i == 0) {
-                                line = line.replace("\"", "");
-                                line = line.substring(1, line.length());
-                            }
-                            String[] item = line.split(",");
-                            for (int j = 0; j < item.length; j++) {
-                                cell = row.createCell(j);
-                                cell.setCellValue(item[j]);
-                            }
-                        }
-                        FileOutputStream fos = new FileOutputStream(excelFiles);
-                        workbook.write(fos);
-                        try {
-                            response.setContentType("application/Octet-stream");
-                            response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode("商品力点数表", "UTF-8") + ".xlsx");
-                        } catch (UnsupportedEncodingException e) {
-                            logger.info("csv转excel报错:{}", e.getMessage());
-                        }
-                        File fileExcel = new File(excelFiles);
-                        OutputStream outputStream = response.getOutputStream();
-                        try (InputStream is = new FileInputStream(fileExcel);) {
-                            // 构造一个长度为1024的字节数组
-                            byte[] buffer = new byte[1024];
-                            int len = 0;
-                            while ((len = is.read(buffer)) != -1) {
-                                outputStream.write(buffer, 0, len);
-                                outputStream.flush();
-                            }
-                            outputStream.close();
-                            fos.close();
-                            inputStreamReader.close();
-                            File fileCsv = new File(files);
-                            if (!fileCsv.delete()) {
-                                logger.info("文件删除失败");
-                            }
-                            if (!fileExcel.delete()) {
-                                logger.info("文件删除失败");
-                            }
-                        }
-
-                    }
-
+            String line = null;
+            XSSFSheet sheet = workbook.createSheet("商品力点数表");
+            XSSFRow row = null;
+            XSSFCell cell = null;
+            for (int i = 0; (line = reader.readLine()) != null; i++) {
+                row = sheet.createRow(i);
+                if (i == 0) {
+                    line = line.replace("\"", "");
+                    line = line.substring(1);
                 }
+                String[] item = line.split(",");
+                for (int j = 0; j < item.length; j++) {
+                    cell = row.createCell(j);
+                    cell.setCellValue(item[j]);
+                }
+            }
+            workbook.write(fos);
+            response.setContentType("application/Octet-stream");
+            response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode("商品力点数表", "UTF-8") + ".xlsx");
+            File fileExcel = new File(excelFiles);
+            is = new FileInputStream(fileExcel);
+            // 构造一个长度为1024的字节数组
+            byte[] buffer = new byte[1024];
+            int len = 0;
+            while ((len = is.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, len);
+                outputStream.flush();
+            }
+            File fileCsv = new File(files);
+            if (!fileCsv.delete()) {
+                logger.info("文件删除失败");
+            }
+            if (!fileExcel.delete()) {
+                logger.info("文件删除失败");
             }
         } catch (IOException e) {
             logger.info("csv转excel报错2:{}", e.getMessage());
+        } finally {
+            if (is!=null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return Collections.emptyMap();
     }
