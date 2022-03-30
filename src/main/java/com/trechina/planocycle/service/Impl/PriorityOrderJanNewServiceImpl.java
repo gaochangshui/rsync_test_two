@@ -195,6 +195,16 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         String aud = session.getAttribute("aud").toString();
         Integer productPowerCd = productPowerMstMapper.getProductPowerCd(priorityOrderJanNewVO.getCompanyCd(), aud,priorityOrderJanNewVO.getPriorityOrderCd());
         List<PriorityOrderJanNewDto> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, priorityOrderJanNewVO,aud);
+        for (PriorityOrderJanNewDto productPowerDatum : productPowerData) {
+            if (productPowerDatum.getJanName() == null){
+                PriorityOrderJanNewDto productForWork = priorityOrderJanNewMapper.getProductForWork(productPowerDatum, priorityOrderJanNewVO.getCompanyCd());
+                productPowerDatum.setJanName(productForWork.getJanName());
+                productPowerDatum.setZokusei1(productForWork.getZokusei1());
+                productPowerDatum.setZokusei2(productForWork.getZokusei2());
+                productPowerDatum.setZokusei3(productForWork.getZokusei3());
+                productPowerDatum.setZokusei4(productForWork.getZokusei4());
+            }
+        }
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
         Class clazz = PriorityOrderJanNewDto.class;
         for (int i = 1; i <= 4; i++) {
