@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -349,8 +348,14 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                     }
                 });
                 int j = 0;
+                BigDecimal z=new BigDecimal(0);
                 for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
-                    setMethod.invoke(productPowerMstData, ++j);
+                    if (new BigDecimal(String.valueOf(getMethod.invoke(productPowerMstData))).compareTo(z) == 0) {
+                        setMethod.invoke(productPowerMstData, j);
+                    }else {
+                        setMethod.invoke(productPowerMstData, ++j);
+                    }
+                      z = new BigDecimal(String.valueOf(getMethod.invoke(productPowerMstData)));
                 }
             }
         }
@@ -399,10 +404,17 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                     return o1.getRankNum().compareTo(o2.getRankNum());
                 }
             });
-        int i=1;
+        int i = 0 ;
+        int x = 0;
         if (productPowerMstDataList.size()>0) {
             for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
-                productPowerMstData.setRankResult(i++);
+                if (x==productPowerMstData.getRankNum()) {
+                    productPowerMstData.setRankResult(i);
+                }else {
+                    productPowerMstData.setRankResult(++i);
+                }
+                x = productPowerMstData.getRankNum();
+
             }
 
 
