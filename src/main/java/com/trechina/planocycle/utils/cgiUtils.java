@@ -93,9 +93,9 @@ public class cgiUtils {
             connection.setDoInput(true);
             connection.setRequestProperty("Content-Type","application/json;charset=UTF-8");
 
-            in =connection.getInputStream();
             os = connection.getOutputStream();
             os.write(JSON.toJSONBytes(cla));
+            in =connection.getInputStream();
 
             buffer =new BufferedInputStream(in);
             reader =new BufferedReader(new InputStreamReader(buffer));
