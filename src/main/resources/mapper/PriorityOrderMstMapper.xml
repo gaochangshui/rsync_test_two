@@ -111,4 +111,14 @@
     update planocycle.priority_order_mst set priority_order_name=#{priorityOrderName} where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     and deleteflg=0
   </update>
+    <update id="setPartition">
+      update planocycle.work_priority_order_mst set
+        <if test="partition != null">
+          partition_val = #{partition} , partition_flag = 0
+        </if>
+        <if test="partition == null">
+          partition_val = 0 , partition_flag = 1
+        </if>
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd = #{authorCd}
+    </update>
 </mapper>

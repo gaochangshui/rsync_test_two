@@ -722,7 +722,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd) {
+    public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd,Integer partition) {
         // TODO: 2200866
 
 
@@ -733,7 +733,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, authorCd, priorityOrderCd);
         Integer patternCd = productPowerMstMapper.getpatternCd(companyCd, authorCd, priorityOrderCd);
         Integer minFaceNum = 1;
-
+        //将隔板厚度和是否使用隔板存起来
+        priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition);
         //先按照社员号删掉work表的数据
         workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
         //获取制约条件

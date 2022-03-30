@@ -102,7 +102,9 @@
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
   <select id="getWorkPriorityOrderMst" resultType="com.trechina.planocycle.entity.vo.WorkPriorityOrderMstEditVo">
-    select product_power_cd as productPowerCd,shelf_pattern_cd as shelfPatternCd,attribute1 as attrA,attribute2 as attrB,area_name_cd as areaNameCd from planocycle.work_priority_order_mst
+    select product_power_cd as productPowerCd,shelf_pattern_cd as shelfPatternCd,attribute1 as attrA,attribute2 as attrB,area_name_cd as areaNameCd
+         ,partition_flag as partitionFlag,partition_val as partitionVal
+    from planocycle.work_priority_order_mst
     where priority_order_cd = #{priorityOrderCd} and company_cd = #{companyCd} and author_cd = #{authorCd}
   </select>
     <select id="getShelfName" resultType="java.lang.Integer">
