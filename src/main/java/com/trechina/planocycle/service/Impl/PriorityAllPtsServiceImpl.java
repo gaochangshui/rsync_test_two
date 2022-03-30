@@ -25,19 +25,16 @@ import org.springframework.web.util.UriUtils;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.swing.plaf.ProgressBarUI;
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -148,8 +145,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
 
         ServletOutputStream outputStream = response.getOutputStream();
 
-        try(ZipOutputStream zos = new ZipOutputStream(outputStream);
-            WritableByteChannel writableByteChannel = Channels.newChannel(zos)) {
+        try(ZipOutputStream zos = new ZipOutputStream(outputStream)) {
             for (ShelfPtsData ptsData : shelfPtsDataList) {
                 Integer ptsCd = ptsData.getId();
                 String fileName = ptsData.getFileName();
@@ -160,8 +156,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
                 List<ShelfPtsDataJandata> shelfPtsDataJandata = priorityAllPtsMapper.selectAllJandataByPtsCd(companyCd, ptsCd);
 
                 String filePath = this.generateCsv2File(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, fileParentPath, fileName);
-                this.writeZip(filePath, writableByteChannel);
-                zos.closeEntry();
+                this.writeZip(filePath, zos, fileName);
             }
 
             zos.flush();
@@ -173,19 +168,18 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         }
     }
 
-    private void writeZip(String filePath, WritableByteChannel writableByteChannel){
-        try(FileInputStream fis = new FileInputStream(filePath);
-            ReadableByteChannel readableByteChannel = Channels.newChannel(fis)) {
-
+    private void writeZip(String filePath, ZipOutputStream zos, String fileName){
+        try(FileInputStream fis = new FileInputStream(filePath)) {
+            zos.putNextEntry(new ZipEntry(fileName));
             byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-            writableByteChannel.write(ByteBuffer.wrap(bom));
+            zos.write(bom);
 
-            ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
-            while (readableByteChannel.read(byteBuffer)!=-1){
-                byteBuffer.clear();
-                writableByteChannel.write(byteBuffer);
-                byteBuffer.flip();
+            byte[] bytes = new byte[1024];
+            int len;
+            while ((len = fis.read(bytes))!=-1){
+                zos.write(bytes, 0, len);
             }
+            zos.closeEntry();
         } catch (IOException e) {
             logger.error("写zip文件失败", e);
         }
@@ -217,46 +211,44 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
      */
     public String generateCsv2File(ShelfPtsDataVersion shelfPtsDataVersion, List<ShelfPtsDataTaimst> shelfPtsDataTaimst,
                             List<ShelfPtsDataTanamst> shelfPtsDataTanamst, List<ShelfPtsDataJandata> shelfPtsDataJandata,
-                                   String fileParentPath, String fileName) throws IOException {
+                                   String fileParentPath, String fileName) {
         String filePath = Joiner.on(File.separator).join(Lists.newArrayList(fileParentPath, fileName));
         logger.info("file path: {}", fileParentPath);
 
-        CsvWriter csvWriter = CsvWriter.builder()
-                .build(new FileWriter(filePath));
-        csvWriter.writeRow(Lists.newArrayList(shelfPtsDataVersion.getCommoninfo(),
-                shelfPtsDataVersion.getVersioninfo(), shelfPtsDataVersion.getOutflg()));
-        csvWriter.writeRow(shelfPtsDataVersion.getModename());
-        csvWriter.writeRow(shelfPtsDataVersion.getTaiHeader().split(","));
+        try(FileWriter fileWriter = new FileWriter(filePath);
+            CsvWriter csvWriter = CsvWriter.builder().build(fileWriter)){
+            csvWriter.writeRow(Lists.newArrayList(shelfPtsDataVersion.getCommoninfo(),
+                    shelfPtsDataVersion.getVersioninfo(), shelfPtsDataVersion.getOutflg()));
+            csvWriter.writeRow(shelfPtsDataVersion.getModename());
+            csvWriter.writeRow(shelfPtsDataVersion.getTaiHeader().split(","));
 
-        for (ShelfPtsDataTaimst ptsDataTaimst : shelfPtsDataTaimst) {
-            csvWriter.writeRow(Lists.newArrayList(ptsDataTaimst.getTaiCd()+"",
-                    ptsDataTaimst.getTaiHeight()+"", ptsDataTaimst.getTaiWidth()+"", ptsDataTaimst.getTaiDepth()+"",
-                    Optional.ofNullable(ptsDataTaimst.getTaiName()).orElse("")));
-        }
+            for (ShelfPtsDataTaimst ptsDataTaimst : shelfPtsDataTaimst) {
+                csvWriter.writeRow(Lists.newArrayList(ptsDataTaimst.getTaiCd()+"",
+                        ptsDataTaimst.getTaiHeight()+"", ptsDataTaimst.getTaiWidth()+"", ptsDataTaimst.getTaiDepth()+"",
+                        Optional.ofNullable(ptsDataTaimst.getTaiName()).orElse("")));
+            }
 
-        csvWriter.writeRow(shelfPtsDataVersion.getTanaHeader().split(","));
-        for (ShelfPtsDataTanamst ptsDataTanamst : shelfPtsDataTanamst) {
-            csvWriter.writeRow(Lists.newArrayList(ptsDataTanamst.getTaiCd()+"",
-                    ptsDataTanamst.getTanaCd()+"", ptsDataTanamst.getTanaHeight()+"", ptsDataTanamst.getTanaWidth()+"",
-                    ptsDataTanamst.getTanaDepth()+"", ptsDataTanamst.getTanaThickness()+"", ptsDataTanamst.getTanaType()+""));
-        }
+            csvWriter.writeRow(shelfPtsDataVersion.getTanaHeader().split(","));
+            for (ShelfPtsDataTanamst ptsDataTanamst : shelfPtsDataTanamst) {
+                csvWriter.writeRow(Lists.newArrayList(ptsDataTanamst.getTaiCd()+"",
+                        ptsDataTanamst.getTanaCd()+"", ptsDataTanamst.getTanaHeight()+"", ptsDataTanamst.getTanaWidth()+"",
+                        ptsDataTanamst.getTanaDepth()+"", ptsDataTanamst.getTanaThickness()+"", ptsDataTanamst.getTanaType()+""));
+            }
 
-        String[] janHeaders = shelfPtsDataVersion.getJanHeader().split(",");
-        csvWriter.writeRow(janHeaders);
-        for (ShelfPtsDataJandata ptsDataJandata : shelfPtsDataJandata) {
-            List<String> janData = Lists.newArrayList(ptsDataJandata.getTaiCd() + "",
-                    ptsDataJandata.getTanaCd() + "", ptsDataJandata.getTanapositionCd() + "", ptsDataJandata.getJan() + "",
-                    ptsDataJandata.getFaceCount() + "", ptsDataJandata.getFaceMen() + "", ptsDataJandata.getFaceKaiten() + "",
-                    ptsDataJandata.getTumiagesu() + "",
-                    Optional.ofNullable(ptsDataJandata.getZaikosu()).orElse(0) + "", Optional.ofNullable(ptsDataJandata.getFaceDisplayflg()).orElse(0) + "",
-                    Optional.ofNullable(ptsDataJandata.getFacePosition()).orElse(0) + "", Optional.ofNullable(ptsDataJandata.getDepthDisplayNum()).orElse(0) + "");
-            csvWriter.writeRow(janData.subList(0, janHeaders.length));
-        }
+            String[] janHeaders = shelfPtsDataVersion.getJanHeader().split(",");
+            csvWriter.writeRow(janHeaders);
+            for (ShelfPtsDataJandata ptsDataJandata : shelfPtsDataJandata) {
+                List<String> janData = Lists.newArrayList(ptsDataJandata.getTaiCd() + "",
+                        ptsDataJandata.getTanaCd() + "", ptsDataJandata.getTanapositionCd() + "", ptsDataJandata.getJan() + "",
+                        ptsDataJandata.getFaceCount() + "", ptsDataJandata.getFaceMen() + "", ptsDataJandata.getFaceKaiten() + "",
+                        ptsDataJandata.getTumiagesu() + "",
+                        Optional.ofNullable(ptsDataJandata.getZaikosu()).orElse(0) + "", Optional.ofNullable(ptsDataJandata.getFaceDisplayflg()).orElse(0) + "",
+                        Optional.ofNullable(ptsDataJandata.getFacePosition()).orElse(0) + "", Optional.ofNullable(ptsDataJandata.getDepthDisplayNum()).orElse(0) + "");
+                csvWriter.writeRow(janData.subList(0, janHeaders.length));
+            }
 
-        try {
-            csvWriter.close();
-        } catch (IOException e) {
-            logger.error("csv writer 关闭异常",e);
+        }catch (IOException e) {
+            logger.error("csv writer 关闭异常", e);
         }
 
         return filePath;
