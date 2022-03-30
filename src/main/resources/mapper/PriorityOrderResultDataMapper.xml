@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.PriorityOrderResultDataMapper">
   <insert id="insertBySelect">
-    insert into planocycle.priority_order_result_data(priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,
+    insert into planocycle.priority_order_result_data(priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,sort_rank,
     adopt_flag,face,face_sku,irisu,tai_cd,tana_cd,tana_type,face_keisan,face_fact,author_cd,editer_cd,create_time,edit_time)
-    select priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,
+    select priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,sort_rank,
     adopt_flag,face,face_sku,irisu,tai_cd,tana_cd,tana_type,face_keisan,face_fact,author_cd,author_cd,
     now(), now()
     from planocycle.work_priority_order_result_data

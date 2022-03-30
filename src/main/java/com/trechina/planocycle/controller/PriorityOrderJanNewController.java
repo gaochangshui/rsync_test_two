@@ -46,8 +46,8 @@ public class PriorityOrderJanNewController {
      *
      */
     @GetMapping("getPriorityOrderJanNewInfo")
-    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        return priorityOrderJanNewService.getPriorityOrderJanNewInfo(janCd);
+    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        return priorityOrderJanNewService.getPriorityOrderJanNewInfo(janCd,companyCd);
     }
 
     /**
