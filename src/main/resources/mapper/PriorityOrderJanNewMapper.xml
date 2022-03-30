@@ -140,7 +140,7 @@
                         and janNew.author_cd = #{authorCd} and janNew.company_cd = #{item.companyCd} and janNew.priority_order_cd = #{item.priorityOrderCd}
         )
         union
-        select janNew.jan_new,mst.jan_nm, scat1cd_val,scat2cd_val,scat3cd_val,scat4cd_val,janNew.jan_rank as rank
+        select janNew.jan_new as janCd,mst.jan_nm as janName, scat1cd_val as zokusei1,scat2cd_val as zokusei2,scat3cd_val as zokusei3,scat4cd_val as zokusei4,janNew.jan_rank as rank
         from planocycle.work_priority_order_jan_new janNew
                  left join
              masterdb.jan_mst mst
@@ -168,6 +168,11 @@
             trim(#{item})
         </foreach>
     </select>
+    <select id="getProductForWork" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
+        select jan_cd as janCd,jan_nm as janName, scat1cd_val as zokusei1,scat2cd_val as zokusei2,scat3cd_val as zokusei3,scat4cd_val as zokusei4
+        from masterdb.jan_mst_planocycle
+        where jan_cd = #{item.janCd} and company_cd = #{companyCd}
+</select>
     <delete id="deleteByAuthorCd">
         delete from planocycle.priority_order_jan_new where
         company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
