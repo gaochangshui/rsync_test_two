@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class sshFtpUtils {
@@ -25,8 +26,8 @@ public class sshFtpUtils {
     private SCPInputStream is = null;
 
     public String pushFile(String localFile,String remotePath){
-        try {
-            File file = new File(localFile);
+        File file = new File(localFile);
+        try(FileInputStream fileInputStream = new FileInputStream(file);) {
             logger.info("ssh服务器参数：{},{}",localFile,remotePath);
             Connection connection = getConnection();
             boolean auth = connection.authenticateWithPassword(user,pw);
@@ -37,16 +38,14 @@ public class sshFtpUtils {
                 logger.info("开始put");
                 os = client.put(file.getName(),file.length(),remotePath,null);
                 logger.info("开始write");
-                try(FileInputStream fileInputStream = new FileInputStream(file);){
-                    int i;
-                    byte[] b =new byte[4096];
-                    while((i=fileInputStream.read(b))!=-1){
-                        os.write(b,0,i);
-                    }
-                    os.flush();
-                    connection.close();
-                    return "传送成功";
+                int i;
+                byte[] b =new byte[4096];
+                while((i=fileInputStream.read(b))!=-1){
+                    os.write(b,0,i);
                 }
+                os.flush();
+                connection.close();
+                return "传送成功";
             }
             else {
                 return "传送失败";
@@ -88,7 +87,11 @@ public class sshFtpUtils {
     }
 
     public String getFile(String remoteFile, String localTargetDirectory, HttpServletResponse response) {
-        try{
+        File file = new File(localTargetDirectory);
+        OutputStream outputStream = null;
+
+        try(FileOutputStream downFile = new FileOutputStream(file)){
+                outputStream = response.getOutputStream();
                 Connection connection = getConnection();
                 boolean auth = connection.authenticateWithPassword(user,pw);
                 logger.info("ssh服务器身份验证返回值：{}",auth);
@@ -96,25 +99,20 @@ public class sshFtpUtils {
                     logger.info("验证成功");
                     SCPClient client =new SCPClient(connection);
                     is = client.get(remoteFile);
-                    File file = new File(localTargetDirectory);
                     if(!file.createNewFile()){
                         return "传送失败";
                     }
-                    try(FileOutputStream downFile = new FileOutputStream(file);){
-                        OutputStream outputStream = response.getOutputStream();
-                        // 构造一个长度为1024的字节数组
-                        byte[] buffer = new byte[1024];
-                        int len = 0;
-                        while ((len = is.read(buffer)) != -1){
-                            downFile.write(buffer,0,len);
-                            outputStream.write(buffer,0,len);
-                            downFile.flush();
-                            outputStream.flush();
-                        }
-                        outputStream.close();
-                        is.close();
-                        connection.close();
+                    // 构造一个长度为1024的字节数组
+                    byte[] buffer = new byte[1024];
+                    int len = 0;
+                    while ((len = is.read(buffer)) != -1){
+                        downFile.write(buffer,0,len);
+                        outputStream.write(buffer,0,len);
+                        downFile.flush();
+                        outputStream.flush();
                     }
+                    is.close();
+                    connection.close();
                     return "传送成功";
                 } else {
                     return "传送失败";
@@ -123,6 +121,14 @@ public class sshFtpUtils {
             } catch (IOException e) {
             logger.info("报错:",e);
             return "链接失败";
+        } finally {
+            try {
+                if(Objects.nonNull(outputStream)){
+                    outputStream.close();
+                }
+            } catch (IOException e) {
+                logger.error("报错",e);
+            }
         }
     }
 

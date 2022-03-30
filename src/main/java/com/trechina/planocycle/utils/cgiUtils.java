@@ -29,20 +29,44 @@ public class cgiUtils {
      * @throws IOException
      */
     ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-    public  String getCgi(String path,String tokenInfo) throws IOException {
-        URL url =new URL(smartPath+path);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
-        InputStream in =connection.getInputStream();
-        InputStream buffer =new BufferedInputStream(in);
-        BufferedReader reader =new BufferedReader(new InputStreamReader(buffer));
-        String read;
-        StringBuilder builder = new StringBuilder();
-        while ((read = reader.readLine()) !=null){
-            builder.append(read);
+    public  String getCgi(String path,String tokenInfo) {
+        InputStream in = null;
+        InputStream buffer = null;
+        BufferedReader reader = null;
+
+        try {
+            URL url =new URL(smartPath+path);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
+            in =connection.getInputStream();
+            buffer =new BufferedInputStream(in);
+            reader =new BufferedReader(new InputStreamReader(buffer));
+            String read;
+            StringBuilder builder = new StringBuilder();
+            while ((read = reader.readLine()) !=null){
+                builder.append(read);
+            }
+            in.close();
+            return builder.toString();
+        }catch (Exception e){
+            logger.error("io异常", e);
+        }finally {
+            try {
+                if(Objects.nonNull(in)){
+                    in.close();
+                }
+                if(Objects.nonNull(buffer)){
+                    buffer.close();
+                }
+                if(Objects.nonNull(reader)){
+                    reader.close();
+                }
+            }catch (Exception e){
+                logger.error("io关闭异常");
+            }
         }
-        in.close();
-        return builder.toString();
+
+        return "";
     }
 
     /**
@@ -54,27 +78,57 @@ public class cgiUtils {
      * @return
      * @throws IOException
      */
-    public <U> String  postCgi(String path, U cla, String tokenInfo) throws IOException {
-        URL url =new URL(smartPath+path);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-        connection.setDoInput(true);
-        connection.setRequestProperty("Content-Type","application/json;charset=UTF-8");
+    public <U> String  postCgi(String path, U cla, String tokenInfo) {
+        OutputStream os = null;
+        BufferedReader reader = null;
+        InputStream in = null;
+        InputStream buffer = null;
 
-        OutputStream os = connection.getOutputStream();
-        os.write(JSON.toJSONBytes(cla));
-        InputStream in =connection.getInputStream();
-        InputStream buffer =new BufferedInputStream(in);
-        BufferedReader reader =new BufferedReader(new InputStreamReader(buffer));
-        String read;
-        StringBuilder builder = new StringBuilder();
-        while ((read = reader.readLine()) !=null){
-            builder.append(read);
+        try{
+            URL url =new URL(smartPath+path);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestProperty("Content-Type","application/json;charset=UTF-8");
+
+            in =connection.getInputStream();
+            os = connection.getOutputStream();
+            os.write(JSON.toJSONBytes(cla));
+
+            buffer =new BufferedInputStream(in);
+            reader =new BufferedReader(new InputStreamReader(buffer));
+            String read;
+            StringBuilder builder = new StringBuilder();
+            while ((read = reader.readLine()) !=null){
+                builder.append(read);
+            }
+            return builder.toString();
+        }catch (Exception e){
+            logger.error("io异常", e);
+        }finally {
+            try {
+                if(Objects.nonNull(in)){
+                    in.close();
+                }
+
+                if(Objects.nonNull(buffer)){
+                    buffer.close();
+                }
+
+                if(Objects.nonNull(reader)){
+                    reader.close();
+                }
+
+                if(Objects.nonNull(os)){
+                    os.close();
+                }
+            } catch (IOException e) {
+                logger.error("io关闭异常", e);
+            }
         }
-        in.close();
-        return builder.toString();
+        return "";
     }
 
     public String setPath(String key){

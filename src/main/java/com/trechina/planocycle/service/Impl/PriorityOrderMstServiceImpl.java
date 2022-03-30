@@ -287,20 +287,16 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("PriorityOrderData");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        try {
-            Map<String, Object> resultCgi = new HashMap<>();
-            //递归调用cgi，首先去taskid
-            String result = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
-            logger.info("taskId返回：{}", result);
-            String queryPath = resourceBundle.getString("TaskQuery");
-            //带着taskId，再次请求cgi获取运行状态/数据
-            resultCgi = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-            logger.info("保存优先顺位表结果：{}", resultCgi);
-            return resultCgi;
+        Map<String, Object> resultCgi = new HashMap<>();
+        //递归调用cgi，首先去taskid
+        String result = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
+        logger.info("taskId返回：{}", result);
+        String queryPath = resourceBundle.getString("TaskQuery");
+        //带着taskId，再次请求cgi获取运行状态/数据
+        resultCgi = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
+        logger.info("保存优先顺位表结果：{}", resultCgi);
+        return resultCgi;
 
-        } catch (IOException e) {
-            return null;
-        }
     }
 
 
@@ -387,23 +383,20 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         priorityOrderPtsDownDto.setShelfPatternNoNm(resultShelf.replace(" ", "*"));
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         Map<String, Object> ptsPath = new HashMap<>();
-        try {
-            //递归调用cgi，首先去taskid
-            String result = cgiUtil.postCgi(path, priorityOrderPtsDownDto, tokenInfo);
-            logger.info("taskId返回：{}", result);
-            String queryPath = resourceBundle.getString("TaskQuery");
-            //带着taskId，再次请求cgi获取运行状态/数据
-            ptsPath = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-            logger.info("pts路径返回数据：{}", ptsPath);
+        //递归调用cgi，首先去taskid
+        String result = cgiUtil.postCgi(path, priorityOrderPtsDownDto, tokenInfo);
+        logger.info("taskId返回：{}", result);
+        String queryPath = resourceBundle.getString("TaskQuery");
+        //带着taskId，再次请求cgi获取运行状态/数据
+        ptsPath = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
+        logger.info("pts路径返回数据：{}", ptsPath);
 
-        } catch (IOException e) {
-            logger.info("报错:",e);
-        }
         String filePath = ptsPath.get("data").toString();
         if (filePath.length() > 1) {
             String[] fileName = filePath.split("/");
 
             sshFtpUtils sshFtp = new sshFtpUtils();
+            OutputStream outputStream = null;
             try {
                 logger.info("pts全路径输出：{},{}", ptsDownPath, ptsPath.get("data"));
                 byte[] files = sshFtp.downLoafCgi(ptsDownPath + ptsPath.get("data").toString(), tokenInfo);
@@ -411,11 +404,18 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 response.setContentType("application/Octet-stream");
                 logger.info("finename:{}", fileName[fileName.length - 1]);
                 response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName[fileName.length - 1], "UTF-8"));
-                OutputStream outputStream = response.getOutputStream();
+                outputStream = response.getOutputStream();
                 outputStream.write(files);
-                outputStream.close();
             } catch (IOException e) {
                 logger.info("获取pts文件下载报错{}", e.getMessage());
+            } finally {
+                if(Objects.nonNull(outputStream)){
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        logger.error("io流关闭异常", e);
+                    }
+                }
             }
         }
         logger.info("下载成功");
@@ -484,16 +484,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         //递归调用cgi，首先去taskid
         String resultJan = null;
-        try {
-            resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
-            logger.info("taskId返回：{}", resultJan);
-            //带着taskId，再次请求cgi获取运行状态/数据
-            Map<String, Object> result = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
-            logger.info("删除smart优先顺位表信息：{}", result);
-        } catch (IOException e) {
-            logger.info("报错:{}", e.getMessage());
-            throw new BussinessException("报错");
-        }
+        resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
+        logger.info("taskId返回：{}", resultJan);
+        //带着taskId，再次请求cgi获取运行状态/数据
+        Map<String, Object> result = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
+        logger.info("删除smart优先顺位表信息：{}", result);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -725,10 +720,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      *
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd) {
         // TODO: 2200866
-
 
 
         String authorCd = session.getAttribute("aud").toString();
@@ -834,7 +829,29 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //按照属性重新排序
         this.getReorder(companyCd, priorityOrderCd,productPowerCd);
         //摆放商品
-        this.setJan(companyCd, authorCd, priorityOrderCd, minFaceNum);
+        WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
+
+        if (shelfPatternCd == null) {
+            logger.info("shelfPatternCd:{}不存在", shelfPatternCd);
+        }
+
+        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.getResultJans(companyCd, authorCd, priorityOrderCd);
+        List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(shelfPatternCd.intValue());
+
+        Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
+        Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
+
+        Map<String, List<PriorityOrderResultDataDto>> finalSetJanResultData =
+                commonMstService.commSetJan(partitionFlag, partitionVal, taiData,
+                        workPriorityOrderResultData, workPriorityOrderRestrictRelations, minFaceNum);
+
+        for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : finalSetJanResultData.entrySet()) {
+            String taiTanaKey = entry.getKey();
+            List<PriorityOrderResultDataDto> resultDataDtos = finalSetJanResultData.get(taiTanaKey);
+            workPriorityOrderResultDataMapper.updateTaiTanaBatch(companyCd, priorityOrderCd, authorCd, resultDataDtos);
+        }
 
         //保存pts到临时表里
         shelfPtsService.saveWorkPtsData(companyCd, authorCd, priorityOrderCd);
@@ -949,21 +966,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("PriorityOrderData");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        try {
-            Map<String, Object> resultCgi = new HashMap<>();
-            //递归调用cgi，首先去taskid
-            String result = cgiUtil.postCgi(path, priorityOrderJanCgiDto, tokenInfo);
-            logger.info("taskId返回：{}", result);
-            String queryPath = resourceBundle.getString("TaskQuery");
-            //带着taskId，再次请求cgi获取运行状态/数据
-            resultCgi = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-            logger.info("保存优先顺位表结果：{}", resultCgi);
-            return resultCgi;
-
-        } catch (IOException e) {
-            logger.error("", e);
-        }
-        return null;
+        Map<String, Object> resultCgi = new HashMap<>();
+        //递归调用cgi，首先去taskid
+        String result = cgiUtil.postCgi(path, priorityOrderJanCgiDto, tokenInfo);
+        logger.info("taskId返回：{}", result);
+        String queryPath = resourceBundle.getString("TaskQuery");
+        //带着taskId，再次请求cgi获取运行状态/数据
+        resultCgi = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
+        logger.info("保存优先顺位表结果：{}", resultCgi);
+        return resultCgi;
     }
 
 
@@ -1048,38 +1059,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    /**
-     * 放置商品
-     */
-    @Override
-    public boolean setJan(String companyCd, String authorCd, Integer priorityOrderCd, Integer minFace) {
-        WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
-
-        if (shelfPatternCd == null) {
-            logger.info("shelfPatternCd:{}不存在", shelfPatternCd);
-            return false;
-        }
-
-        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.getResultJans(companyCd, authorCd, priorityOrderCd);
-        List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(shelfPatternCd.intValue());
-
-        Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
-        Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
-
-        Map<String, List<PriorityOrderResultDataDto>> finalSetJanResultData =
-                commonMstService.commSetJan(partitionFlag, partitionVal, taiData,
-                        workPriorityOrderResultData, workPriorityOrderRestrictRelations, minFace);
-
-        for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : finalSetJanResultData.entrySet()) {
-            String taiTanaKey = entry.getKey();
-            List<PriorityOrderResultDataDto> resultDataDtos = finalSetJanResultData.get(taiTanaKey);
-            workPriorityOrderResultDataMapper.updateTaiTanaBatch(companyCd, priorityOrderCd, authorCd, resultDataDtos);
-        }
-
-        return true;
-    }
 
     //TODO:10215814
     @Override

@@ -6,6 +6,7 @@ import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.exception.BussinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
@@ -173,6 +175,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto) {
         // 基本パータンの制約により各棚パターンの制約を作成する
         // １．基本台数、基本棚数により新棚の制約を割合で保存　「work_priority_all_restrict」
@@ -324,39 +327,36 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 this.setJan(companyCd, authorCd, priorityAllCd, priorityOrderCd, pattern.getShelfPatternCd(), minFaceNum);
                 //保存pts到临时表里
                 priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
+
+                /**
+                 * 放置商品
+                 */
+                PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
+
+                List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityAllRestrictRelationMapper.selectByAuthorCd(companyCd, priorityAllCd, authorCd, pattern.getShelfPatternCd());
+                List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityAllResultDataMapper.getResultJans(companyCd, priorityAllCd,authorCd,pattern.getShelfPatternCd());
+                List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(pattern.getShelfPatternCd());
+
+                Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
+                Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
+
+                Map<String, List<PriorityOrderResultDataDto>> finalSetJanResultData =
+                        commonMstService.commSetJan(partitionFlag, partitionVal, taiData,
+                                workPriorityOrderResultData, workPriorityOrderRestrictRelations, minFaceNum);
+
+                for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : finalSetJanResultData.entrySet()) {
+                    List<PriorityOrderResultDataDto> resultDataDtos = entry.getValue();
+                    workPriorityAllResultDataMapper.updateTaiTanaBatch(companyCd, priorityAllCd, pattern.getShelfPatternCd(), authorCd, resultDataDtos);
+                }
             }
         } catch(Exception ex) {
             logger.error("", ex);
-            return ResultMaps.result(ResultEnum.FAILURE, ex.getMessage());
+            throw new BussinessException("自动计算失败");
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS, "計算成功しました。");
     }
 
-
-
-    @Override
-    public boolean setJan(String companyCd, String authorCd, Integer priorityAllCd, Integer priorityOrderCd, Integer shelfPatternCd, Integer minFace) {
-        PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
-
-        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityAllRestrictRelationMapper.selectByAuthorCd(companyCd, priorityAllCd, authorCd, shelfPatternCd);
-        List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityAllResultDataMapper.getResultJans(companyCd, priorityAllCd,authorCd,shelfPatternCd);
-        List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(shelfPatternCd);
-
-        Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
-        Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
-
-        Map<String, List<PriorityOrderResultDataDto>> finalSetJanResultData =
-                commonMstService.commSetJan(partitionFlag, partitionVal, taiData,
-                        workPriorityOrderResultData, workPriorityOrderRestrictRelations, minFace);
-
-        for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : finalSetJanResultData.entrySet()) {
-            List<PriorityOrderResultDataDto> resultDataDtos = entry.getValue();
-            workPriorityAllResultDataMapper.updateTaiTanaBatch(companyCd, priorityAllCd, shelfPatternCd, authorCd, resultDataDtos);
-        }
-
-        return true;
-    }
     /**
      * 保存
      * @param companyCd

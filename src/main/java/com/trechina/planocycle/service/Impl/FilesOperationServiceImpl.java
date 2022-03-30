@@ -182,6 +182,9 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     @Override
     public Map<String, Object> CsvUploadMulti(MultipartFile[] multipartFileList, String path, String companyCd, String projectIds,
                                               String bucketNames) {
+        InputStreamReader inputStreamReader = null;
+        BufferedReader bufferedReader = null;
+
         try {
             if (multipartFileList != null && multipartFileList.length > 0) {
                 // 不存在会创建路径
@@ -205,72 +208,69 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                 logger.info("设置读文件失败");
                             }
 
-                            InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file1), "Shift_Jis");
+                            inputStreamReader = new InputStreamReader(new FileInputStream(file1), "Shift_Jis");
                             //
                             ShelfPtsDataVersion ptsDataVersion = new ShelfPtsDataVersion();
                             ptsDataVersion.setCompanyCd(companyCd);
                             List<String[]> arrList1 = new ArrayList<>();
                             List<String[]> arrList2 = new ArrayList<>();
                             List<String[]> arrList3 = new ArrayList<>();
-                            try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader);) {
-                                String line = "";
-                                int lineNum = 1;
-                                int titleNum = 0;
-                                while ((line = bufferedReader.readLine()) != null) {
-                                    if (lineNum == 1) {
-                                        logger.info("第一行信息{}", line);
-                                        String[] arr = line.split(",");
-                                        if (!arr[1].equals("V3.0") && !arr[1].equals("V2.0")) {
-                                            logger.info("不包含3.0和2.0");
-                                            return ResultMaps.result(ResultEnum.FILEVERSIONFAILURE);
-                                        }
-                                        ptsDataVersion.setCommoninfo(arr[0]);
-                                        ptsDataVersion.setVersioninfo(arr[1]);
-                                        ptsDataVersion.setOutflg(arr[2]);
-                                        lineNum += 1;
-                                    } else if (lineNum == 2) {
-                                        ptsDataVersion.setModename(line);
-                                        lineNum += 1;
+                            bufferedReader = new BufferedReader(inputStreamReader);
+                            String line = "";
+                            int lineNum = 1;
+                            int titleNum = 0;
+                            while ((line = bufferedReader.readLine()) != null) {
+                                if (lineNum == 1) {
+                                    logger.info("第一行信息{}", line);
+                                    String[] arr = line.split(",");
+                                    if (!arr[1].equals("V3.0") && !arr[1].equals("V2.0")) {
+                                        logger.info("不包含3.0和2.0");
+                                        return ResultMaps.result(ResultEnum.FILEVERSIONFAILURE);
                                     }
-                                    // 数据分段
-                                    if (line.contains("台番号")) {
-                                        titleNum += 1;
-                                        if (titleNum == 1) {
-                                            ptsDataVersion.setTaiHeader(line);
-                                        } else if (titleNum == 2) {
-                                            ptsDataVersion.setTanaHeader(line);
-                                        } else if (titleNum == 3) {
-                                            ptsDataVersion.setJanHeader(line);
-                                        }
-                                    } else {
-                                        String[] lineArr = line.split(",");
-                                        if (titleNum == 1) {
-                                            arr1 = new String[5];
-                                            Arrays.fill(arr1, null);
-                                            System.arraycopy(lineArr, 0, arr1, 0, lineArr.length);
-                                            arrList1.add(arr1);
-                                        } else if (titleNum == 2) {
-                                            arr2 = new String[7];
-                                            Arrays.fill(arr2, null);
-                                            System.arraycopy(lineArr, 0, arr2, 0, lineArr.length);
-                                            arrList2.add(arr2);
-                                        } else if (titleNum == 3) {
-                                            arr3 = new String[12];
-                                            Arrays.fill(arr3, null);
-                                            System.arraycopy(lineArr, 0, arr3, 0, lineArr.length);
-                                            arrList3.add(arr3);
-                                        }
+                                    ptsDataVersion.setCommoninfo(arr[0]);
+                                    ptsDataVersion.setVersioninfo(arr[1]);
+                                    ptsDataVersion.setOutflg(arr[2]);
+                                    lineNum += 1;
+                                } else if (lineNum == 2) {
+                                    ptsDataVersion.setModename(line);
+                                    lineNum += 1;
+                                }
+                                // 数据分段
+                                if (line.contains("台番号")) {
+                                    titleNum += 1;
+                                    if (titleNum == 1) {
+                                        ptsDataVersion.setTaiHeader(line);
+                                    } else if (titleNum == 2) {
+                                        ptsDataVersion.setTanaHeader(line);
+                                    } else if (titleNum == 3) {
+                                        ptsDataVersion.setJanHeader(line);
+                                    }
+                                } else {
+                                    String[] lineArr = line.split(",");
+                                    if (titleNum == 1) {
+                                        arr1 = new String[5];
+                                        Arrays.fill(arr1, null);
+                                        System.arraycopy(lineArr, 0, arr1, 0, lineArr.length);
+                                        arrList1.add(arr1);
+                                    } else if (titleNum == 2) {
+                                        arr2 = new String[7];
+                                        Arrays.fill(arr2, null);
+                                        System.arraycopy(lineArr, 0, arr2, 0, lineArr.length);
+                                        arrList2.add(arr2);
+                                    } else if (titleNum == 3) {
+                                        arr3 = new String[12];
+                                        Arrays.fill(arr3, null);
+                                        System.arraycopy(lineArr, 0, arr3, 0, lineArr.length);
+                                        arrList3.add(arr3);
                                     }
                                 }
-                                if (titleNum != 3) {
-                                    logger.info("没有三组台番号");
-                                    return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
-                                }
-
-                                inputStreamReader.close();
-                                logger.info("check完成，开始链接服务器");
-
                             }
+                            if (titleNum != 3) {
+                                logger.info("没有三组台番号");
+                                return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
+                            }
+
+                            logger.info("check完成，开始链接服务器");
 
                             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
 
@@ -331,6 +331,18 @@ public class FilesOperationServiceImpl implements FilesOperationService {
         } catch (IOException e) {
             logger.info("报错,上传文件报错：{}", e.getMessage());
             throw new BussinessException("报错,上传文件报错：{}");
+        } finally {
+            try{
+                if(Objects.nonNull(bufferedReader)){
+                    bufferedReader.close();
+                }
+                if(Objects.nonNull(inputStreamReader)){
+                    inputStreamReader.close();
+                }
+            }catch (Exception e){
+                logger.error("io关闭异常", e);
+            }
+
         }
     }
 
