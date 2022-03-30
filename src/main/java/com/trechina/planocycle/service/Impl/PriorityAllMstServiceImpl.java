@@ -324,7 +324,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                     }
                 }
                 workPriorityAllResultDataMapper.updateFace(resultDatas);
-                this.setJan(companyCd, authorCd, priorityAllCd, priorityOrderCd, pattern.getShelfPatternCd(), minFaceNum);
                 //保存pts到临时表里
                 priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
 
