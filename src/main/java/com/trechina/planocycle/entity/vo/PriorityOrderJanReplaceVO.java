@@ -4,7 +4,7 @@ public class PriorityOrderJanReplaceVO {
     private String janCd;
     private String janNew;
     private String janName;
-
+    private String janNewName;
     public String getJanCd() {
         return janCd;
     }
@@ -29,12 +29,21 @@ public class PriorityOrderJanReplaceVO {
         this.janName = janName;
     }
 
+    public String getJanNewName() {
+        return janNewName;
+    }
+
+    public void setJanNewName(String janNewName) {
+        this.janNewName = janNewName;
+    }
+
     @Override
     public String toString() {
         return "PriorityOrderJanReplaceVO{" +
-                "janOld='" + janCd + '\'' +
+                "janCd='" + janCd + '\'' +
                 ", janNew='" + janNew + '\'' +
                 ", janName='" + janName + '\'' +
+                ", janNewName='" + janNewName + '\'' +
                 '}';
     }
 }

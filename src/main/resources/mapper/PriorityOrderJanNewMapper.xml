@@ -63,20 +63,18 @@
     </delete>
 
     <select id="selectJanNew" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
-        select news.jan_new as janCd,jans.jan_nm as janName,jans.scat1cd_val as zokusei1,jans.scat2cd_val as zokusei2,scat3cd_val as zokusei3,scat4cd_val as zokusei4,news.jan_rank as rank
+        select news.jan_new as janCd, COALESCE(jans.jan_nm, mstpl.jan_nm) as janName,COALESCE(jans.scat1cd_val, mstpl.scat1cd_val) as zokusei1
+             ,COALESCE(jans.scat2cd_val, mstpl.scat2cd_val) as zokusei2
+             ,COALESCE(jans.scat3cd_val, mstpl.scat3cd_val) as zokusei3,COALESCE(jans.scat4cd_val, mstpl.scat4cd_val) as zokusei4,news.jan_rank as rank
         from planocycle.work_priority_order_jan_new news
                  left join  masterdb.jan_mst jans
                 on news.jan_new = jans.jan_cd
+        left join masterdb.jan_mst_planocycle mstpl
+                  on news.jan_new = mstpl.jan_cd
         where news.company_cd = #{companyCd,jdbcType=VARCHAR}
-          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and jans.jan_nm is not null
-        union
-        select news.jan_new as janCd,jans.jan_nm as janName,jans.scat1cd_val as zokusei1,jans.scat2cd_val as zokusei2,scat3cd_val as zokusei3,scat4cd_val as zokusei4,news.jan_rank as rank
-        from planocycle.work_priority_order_jan_new news
-                 left join  masterdb.jan_mst_planocycle jans
-                            on news.jan_new = jans.jan_cd
-        where news.company_cd = #{companyCd,jdbcType=VARCHAR}
-          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and jans.jan_nm is not null
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
 
+        order by janCd
   </select>
     <select id="selectJanNewNotExistsMst" resultType="map">
         select '' as jan_old,news.jan_new,'' as sku
@@ -187,6 +185,7 @@
              ,scat4cd as zokusei4,pkg as zokusei5,kikaku as zokusei6,irisu as zokusei7,alcohol as zokusei8,brand as zokusei9
         from masterdb.jan_mst_planocycle
         where company_cd = #{companyCd}
+        order by jan_cd
     </select>
     <select id="getJanNew" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
         SELECT jan_New as janCd,jan_rank as rank

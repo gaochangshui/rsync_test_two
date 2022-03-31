@@ -68,7 +68,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      */
     @Override
     public Map<String, Object> addPriorityAllData(JSONObject jsonObject) {
-        try{
+        //try{
 
             String authorCd = session.getAttribute("aud").toString();
             String companyCd = jsonObject.get("companyCd").toString();
@@ -79,12 +79,25 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             priorityAllMstMapper.deleteWKTableRestrict(companyCd, priorityAllCd, authorCd);
             workPriorityAllRestrictRelationMapper.deleteWKTableRelation(companyCd, priorityAllCd, authorCd);
             priorityAllMstMapper.deleteWKTableResult(companyCd, priorityAllCd, authorCd);
-            priorityAllMstMapper.deleteWKTablePtsTai(companyCd, priorityAllCd, authorCd);
-            priorityAllMstMapper.deleteWKTablePtsTana(companyCd, priorityAllCd, authorCd);
-            priorityAllMstMapper.deleteWKTablePtsJans(companyCd, priorityAllCd, authorCd);
-            priorityAllMstMapper.deleteWKTablePtsData(companyCd, priorityAllCd, authorCd);
             priorityAllMstMapper.deleteWKTablePtsRelation(companyCd, priorityAllCd, authorCd);
-            priorityAllMstMapper.deleteWKTablePtsVersion(companyCd, priorityAllCd, authorCd);
+           if (priorityAllCd != 0) {
+               String ptsCd = priorityAllMstMapper.getPtsCd(companyCd, priorityAllCd, authorCd);
+
+               String[] split = ptsCd.split(",");
+               int[] array = Arrays.asList(split).stream().mapToInt(Integer::parseInt).toArray();
+               priorityAllMstMapper.deleteWKTablePtsTai(companyCd, array, authorCd);
+               priorityAllMstMapper.deleteWKTablePtsTana(companyCd, array, authorCd);
+               priorityAllMstMapper.deleteWKTablePtsJans(companyCd, array, authorCd);
+               priorityAllMstMapper.deleteWKTablePtsData(companyCd, array, authorCd);
+               priorityAllMstMapper.deleteWKTablePtsVersion(companyCd, array, authorCd);
+           }else {
+               priorityAllMstMapper.delWKTablePtsTai(companyCd, priorityAllCd, authorCd);
+               priorityAllMstMapper.delWKTablePtsTana(companyCd, priorityAllCd, authorCd);
+               priorityAllMstMapper.delWKTablePtsJans(companyCd, priorityAllCd, authorCd);
+               priorityAllMstMapper.delWKTablePtsData(companyCd, priorityAllCd, authorCd);
+               priorityAllMstMapper.delWKTablePtsVersion(companyCd, priorityAllCd, authorCd);
+           }
+
 
 
             if (priorityAllCd != 0) {
@@ -97,6 +110,9 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 priorityAllMstMapper.copyWKTablePtsTai(companyCd, priorityAllCd, authorCd);
                 priorityAllMstMapper.copyWKTablePtsTana(companyCd, priorityAllCd, authorCd);
                 priorityAllMstMapper.copyWKTablePtsJans(companyCd, priorityAllCd, authorCd);
+                priorityAllMstMapper.copyWKTablePtsData(companyCd, priorityAllCd, authorCd);
+                priorityAllMstMapper.copyWKTablePtsVersion(companyCd, priorityAllCd, authorCd);
+
                 Integer priorityOrderCd = priorityAllMstMapper.getPriorityOrderCd(priorityAllCd, companyCd, authorCd);
                 Map<String, Object> allPatternData = getAllPatternData(companyCd, priorityAllCd, priorityOrderCd);
                 Map <String ,Object> map = new HashMap<>();
@@ -105,9 +121,9 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 return ResultMaps.result(ResultEnum.SUCCESS,map);
             }
             return ResultMaps.result(ResultEnum.SUCCESS, null);
-        } catch (Exception ex) {
-            return ResultMaps.result(ResultEnum.FAILURE, "新規作成失敗しました。");
-        }
+      //  } catch (Exception ex) {
+        //    return ResultMaps.result(ResultEnum.FAILURE, "新規作成失敗しました。");
+     //   }
     }
 
     /**
@@ -134,7 +150,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         String aud = session.getAttribute("aud").toString();
         // 基本パターンに紐付け棚パターンCDをもらう
         Integer patternCd = priorityAllMstMapper.getPatternCdBYPriorityCd(companyCd, priorityOrderCd);
-        priorityAllMstMapper.deleteWKTableShelfs(companyCd, priorityAllCd, aud);
+        if(priorityAllCd == 0){
+            priorityAllMstMapper.deleteWKTableShelfs(companyCd, priorityAllCd, aud);
+
+        }
         // 棚パターンのPTS基本情報をもらう
         Map<String, Object> ptsInfoTemp = shelfPtsService.getTaiNumTanaNum(patternCd,priorityOrderCd);
         if ((Integer)ptsInfoTemp.get("code") != 101) {
