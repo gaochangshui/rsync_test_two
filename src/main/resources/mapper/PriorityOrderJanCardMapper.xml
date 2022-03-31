@@ -26,10 +26,12 @@
             and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <select id="selectJanCard" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanCardVO">
-        select cut.jan_cd,mst.jan_nm as janName  from planocycle.work_priority_order_cut  cut
-                                                          left join masterdb.jan_mst mst
-                                                                    on cut.jan_cd = mst.jan_cd
-        where priority_order_cd= #{priorityOrderCd} and company_cd = #{companyCd}
+        select cut.jan_cd, COALESCE(mst.jan_nm, mstpl.jan_nm) as janName from planocycle.work_priority_order_cut  cut
+                left join masterdb.jan_mst mst
+                   on cut.jan_cd = mst.jan_cd
+                left join  masterdb.jan_mst_planocycle mstpl
+                    on cut.jan_cd = mstpl.jan_cd
+        where cut.priority_order_cd= #{priorityOrderCd} and cut.company_cd = #{companyCd}
         order by jan_cd
     </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanCard">

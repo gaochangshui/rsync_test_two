@@ -4,7 +4,7 @@ public class PriorityOrderJanReplaceVO {
     private String janCd;
     private String janNew;
     private String janName;
-
+    private String janNewName;
     public String getJanCd() {
         return janCd;
     }
