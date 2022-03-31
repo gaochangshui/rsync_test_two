@@ -76,7 +76,7 @@
                             on news.jan_new = jans.jan_cd
         where news.company_cd = #{companyCd,jdbcType=VARCHAR}
           and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and jans.jan_nm is not null
-        order by jan_new
+        order by janCd
   </select>
     <select id="selectJanNewNotExistsMst" resultType="map">
         select '' as jan_old,news.jan_new,'' as sku
