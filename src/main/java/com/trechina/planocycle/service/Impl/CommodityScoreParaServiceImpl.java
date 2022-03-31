@@ -350,6 +350,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 int j = 0;
                 BigDecimal z=new BigDecimal(0);
                 for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
+
                     if (new BigDecimal(String.valueOf(getMethod.invoke(productPowerMstData))).compareTo(z) == 0) {
                         setMethod.invoke(productPowerMstData, j);
                     }else {
