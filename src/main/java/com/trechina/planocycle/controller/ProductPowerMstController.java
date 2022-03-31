@@ -1,6 +1,6 @@
 package com.trechina.planocycle.controller;
 
-import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
+import com.trechina.planocycle.entity.vo.ProductPowerVO;
 import com.trechina.planocycle.service.ProductPowerMstService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +50,7 @@ public class ProductPowerMstController {
      * @return
      */
     @PostMapping("downloadProductPowerInfo")
-    public void downloadProductPowerInfo(@RequestBody ProductPowerPrimaryKeyVO productPowerPrimaryKeyVO, HttpServletResponse response){
-        powerMstService.downloadProductPowerInfo(productPowerPrimaryKeyVO.getCompanyCd(),productPowerPrimaryKeyVO.getProductPowerCd(),response);
+    public void downloadProductPowerInfo(@RequestBody ProductPowerVO productPowerVO, HttpServletResponse response){
+        powerMstService.downloadProductPowerInfo(productPowerVO.getCompanyCd(),productPowerVO.getProductPowerNo(),response);
     }
 }

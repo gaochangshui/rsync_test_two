@@ -1,31 +1,41 @@
 package com.trechina.planocycle.service.Impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerParamVo;
 import com.trechina.planocycle.entity.vo.ProductPowerMstVo;
 import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import com.trechina.planocycle.enums.CustomerLabelEnum;
 import com.trechina.planocycle.enums.PosLabelEnum;
+import com.trechina.planocycle.enums.ProductPowerHeaderEnum;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.mapper.PriorityAllMstMapper;
+import com.trechina.planocycle.mapper.PriorityOrderMstMapper;
+import com.trechina.planocycle.mapper.ProductPowerDataMapper;
+import com.trechina.planocycle.mapper.ProductPowerMstMapper;
 import com.trechina.planocycle.service.ProductPowerMstService;
 import com.trechina.planocycle.utils.ExcelUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductPowerMstServiceImpl implements ProductPowerMstService {
@@ -74,89 +84,104 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
     @Override
     public void downloadProductPowerInfo(String companyCd, Integer productPowerCd, HttpServletResponse response) {
-        //查询出所需要的表头
+        //必要なヘッダーを検索
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerCd);
+        //顧客グループ
         String customerValue = param.getCustomerValue();
+        //予備項目
         String prepareValue = param.getPrepareValue();
+        //POS項目
         String posValue = param.getPosValue();
+        String rangWeight = param.getRangWeight();
+        Set<String> weightKeys = JSON.parseObject(rangWeight).keySet();
 
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, productPowerCd);
         List<ProductPowerMstData> allData = productPowerDataMapper.getAllData(companyCd, productPowerCd);
 
-        Map<String, List<String>> columnsByClassify = new LinkedHashMap<>(4);
-        columnsByClassify.put("", Lists.newArrayList("jan", "skuName"));
-        columnsByClassify.put("商品分類", Lists.newArrayList("classifyBig", "classifyMiddle", "classifySmall", "classifyFine"));
-        columnsByClassify.put("POS项目", Lists.newArrayList());
-        columnsByClassify.put("POS项目Rank", Lists.newArrayList());
-        columnsByClassify.put("顧客グループ", Lists.newArrayList());
-        columnsByClassify.put("顧客グループRank", Lists.newArrayList());
-        columnsByClassify.put("予備项目", Lists.newArrayList());
-        columnsByClassify.put("rank", Lists.newArrayList("rankResult"));
+        //表示するカラムに対応するフィールド名
+        Map<String, List<String>> columnsByClassify = new LinkedHashMap<>(10);
+        columnsByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("jan", "skuName"));
+        columnsByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), Lists.newArrayList("classifyBig", "classifyMiddle", "classifySmall", "classifyFine"));
+        columnsByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.PREPARE_RANK.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.RANK.getName(), Lists.newArrayList("rankResult"));
+        //表示する列に対応するヘッダー
+        Map<String, List<String>> headersByClassify = new LinkedHashMap<>(10);
+        headersByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("JANコード", "商品名"));
+        headersByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), Lists.newArrayList("大分類", "中分類", "小分類", "細分類"));
+        headersByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.PREPARE_RANK.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.RANK.getName(), Lists.newArrayList("Rank"));
 
-        Map<String, List<String>> headersByClassify = new LinkedHashMap<>(4);
-        headersByClassify.put("", Lists.newArrayList("JANコード", "商品名"));
-        headersByClassify.put("商品分類", Lists.newArrayList("大分類", "中分類", "小分類", "細分類"));
-        headersByClassify.put("POS项目", Lists.newArrayList());
-        headersByClassify.put("POS项目Rank", Lists.newArrayList());
-        headersByClassify.put("顧客グループ", Lists.newArrayList());
-        headersByClassify.put("顧客グループRank", Lists.newArrayList());
-        headersByClassify.put("予備项目", Lists.newArrayList());
-        headersByClassify.put("予備项目Rank", Lists.newArrayList());
-        headersByClassify.put("rank", Lists.newArrayList("Rank"));
+        if(!Strings.isNullOrEmpty(customerValue)){
+            String[] customerValues = customerValue.split(",");
 
-        String[] customerValues = customerValue.split(",");
-        String[] prepareValues = prepareValue.split(",");
-        String[] posValues = posValue.split(",");
-
-        if(!"".equals(customerValue) && customerValues.length>0){
             for (String code : customerValues) {
                 CustomerLabelEnum customerLabelByCode = CustomerLabelEnum.getCustomerLabelByCode(Integer.valueOf(code));
-                List<String> customer = headersByClassify.get("顧客グループ");
+                List<String> customer = headersByClassify.get(ProductPowerHeaderEnum.CUSTOMER.getName());
                 customer.add(customerLabelByCode.getLable());
 
-                List<String> customerRank = headersByClassify.get("顧客グループRank");
-                customerRank.add(customerLabelByCode.getLable()+"Rank");
-
-                List<String> customerColumn = columnsByClassify.get("顧客グループ");
+                List<String> customerColumn = columnsByClassify.get(ProductPowerHeaderEnum.CUSTOMER.getName());
                 customerColumn.add(customerLabelByCode.getColumnName());
 
-                List<String> customerRankColumn = columnsByClassify.get("顧客グループRank");
-                customerRankColumn.add(customerLabelByCode.getColumnRankName());
+                if(weightKeys.contains(customerLabelByCode.getColumnName())){
+                    List<String> customerRank = headersByClassify.get(ProductPowerHeaderEnum.CUSTOMER_RANK.getName());
+                    customerRank.add(customerLabelByCode.getLable()+"Rank");
+
+                    List<String> customerRankColumn = columnsByClassify.get(ProductPowerHeaderEnum.CUSTOMER_RANK.getName());
+                    customerRankColumn.add(customerLabelByCode.getColumnRankName());
+                }
             }
         }
 
-        if(!"".equals(posValue) && posValues.length>0){
+        if(!Strings.isNullOrEmpty(posValue)){
+            String[] posValues = posValue.split(",");
+
             for (String code : posValues) {
                 PosLabelEnum posLabelByCode = PosLabelEnum.getPosLabelByCode(Integer.valueOf(code));
-                List<String> customer = headersByClassify.get("POS项目");
+                List<String> customer = headersByClassify.get(ProductPowerHeaderEnum.POS.getName());
                 customer.add(posLabelByCode.getLable());
 
-                List<String> customerRank = headersByClassify.get("POS项目Rank");
-                customerRank.add(posLabelByCode.getLable()+"Rank");
-
-                List<String> customerColumn = columnsByClassify.get("POS项目");
+                List<String> customerColumn = columnsByClassify.get(ProductPowerHeaderEnum.POS.getName());
                 customerColumn.add(posLabelByCode.getColumnName());
 
-                List<String> customerRankColumn = columnsByClassify.get("POS项目Rank");
-                customerRankColumn.add(posLabelByCode.getColumnRankName());
+                if(weightKeys.contains(posLabelByCode.getColumnName())){
+                    List<String> customerRank = headersByClassify.get(ProductPowerHeaderEnum.POS_RANK.getName());
+                    customerRank.add(posLabelByCode.getLable()+"Rank");
+
+                    List<String> customerRankColumn = columnsByClassify.get(ProductPowerHeaderEnum.POS_RANK.getName());
+                    customerRankColumn.add(posLabelByCode.getColumnRankName());
+                }
             }
         }
 
-        if(!"".equals(prepareValue) && prepareValues.length>0){
+        if(!Strings.isNullOrEmpty(prepareValue)){
             List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(productPowerCd, companyCd);
             for (ReserveMstVo reserveMstVo : reserve) {
-                List<String> customer = headersByClassify.get("予備项目");
+                List<String> customer = headersByClassify.get(ProductPowerHeaderEnum.PREPARE.getName());
                 customer.add(reserveMstVo.getDataName());
-                List<String> customerRank = headersByClassify.get("予備项目Rank");
-                customerRank.add(reserveMstVo.getDataName());
 
                 String valueCd = reserveMstVo.getValueCd()+"";
-                String valueNo = valueCd.substring(valueCd.length() - 3);
+                String valueNo = valueCd.substring(valueCd.length() - 2);
 
-                List<String> customerColumn = columnsByClassify.get("予備项目");
+                List<String> customerColumn = columnsByClassify.get(ProductPowerHeaderEnum.PREPARE.getName());
                 customerColumn.add("item"+Integer.parseInt(valueNo));
-                List<String> customerRankColumn = columnsByClassify.get("予備项目Rank");
-                customerRankColumn.add("item"+Integer.parseInt(valueNo)+"Rank");
+
+                if(weightKeys.contains("item"+Integer.parseInt(valueNo))){
+                    List<String> customerRank = headersByClassify.get(ProductPowerHeaderEnum.PREPARE_RANK.getName());
+                    customerRank.add(reserveMstVo.getDataName()+"Rank");
+
+                    List<String> customerRankColumn = columnsByClassify.get(ProductPowerHeaderEnum.PREPARE_RANK.getName());
+                    customerRankColumn.add("item"+Integer.parseInt(valueNo)+"Rank");
+                }
             }
         }
 
