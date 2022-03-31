@@ -7,6 +7,7 @@ public class PriorityOrderAttrValue {
     private String val;
     private String type;
     private String attrName;
+    private String classifyName;
     private List<PriorityOrderAttrValue> children;
     private Boolean show = true;
 
@@ -42,13 +43,20 @@ public class PriorityOrderAttrValue {
         this.attrName = attrName;
     }
 
+    public String getClassifyName() {
+        return classifyName;
+    }
+
+    public void setClassifyName(String classifyName) {
+        this.classifyName = classifyName;
+    }
+
     public List<PriorityOrderAttrValue> getChildren() {
         return children;
     }
 
     public void setChildren(List<PriorityOrderAttrValue> children) {
         this.children = children;
-
     }
 
     public Boolean getShow() {
@@ -62,10 +70,11 @@ public class PriorityOrderAttrValue {
     @Override
     public String toString() {
         return "PriorityOrderAttrValue{" +
-                "attrCd=" + attrCd +
+                "attrCd='" + attrCd + '\'' +
                 ", val='" + val + '\'' +
                 ", type='" + type + '\'' +
                 ", attrName='" + attrName + '\'' +
+                ", classifyName='" + classifyName + '\'' +
                 ", children=" + children +
                 ", show=" + show +
                 '}';
