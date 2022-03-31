@@ -101,6 +101,8 @@
          ,ct3.val as scat3cd,ct3.nm as scat3nm
          ,ct4.val as scat4cd,ct4.nm as scat4nm
     from masterdb.zokusei_mst_data ct1
+        left join masterdb.zokusei_mst mst1
+        on
            left join masterdb.zokusei_mst_data ct2
                      on ct1.val = ct2.val_parent
                        and ct2.zokusei_id  = 2
