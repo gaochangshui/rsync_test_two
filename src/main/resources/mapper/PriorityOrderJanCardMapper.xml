@@ -30,6 +30,7 @@
                                                           left join masterdb.jan_mst mst
                                                                     on cut.jan_cd = mst.jan_cd
         where priority_order_cd= #{priorityOrderCd} and company_cd = #{companyCd}
+        order by jan_cd
     </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanCard">
     insert into planocycle.work_priority_order_cut (company_cd, priority_order_cd, jan_cd,author_cd

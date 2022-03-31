@@ -227,19 +227,28 @@
     </delete>
     <delete id="deleteWKTablePtsTai">
         delete from planocycle.work_priority_all_pts_tai
-        where priority_all_cd = #{priorityAllCd}
+        where pts_cd in
+        <foreach collection="ptsCd" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         and company_cd = #{companyCd,jdbcType=VARCHAR}
         and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteWKTablePtsTana">
         delete from planocycle.work_priority_all_pts_tana
-        where priority_all_cd = #{priorityAllCd}
+        where pts_cd in
+        <foreach collection="ptsCd" item="item" open="(" close=")" separator=",">
+        #{item}
+        </foreach>
         and company_cd = #{companyCd,jdbcType=VARCHAR}
         and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteWKTablePtsJans">
         delete from planocycle.work_priority_all_pts_jans
-        where priority_all_cd = #{priorityAllCd}
+        where pts_cd in
+        <foreach collection="ptsCd" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         and company_cd = #{companyCd,jdbcType=VARCHAR}
         and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
@@ -305,7 +314,10 @@
     </delete>
     <delete id="deleteWKTablePtsData">
         delete from planocycle.work_priority_all_pts_data
-        where priority_all_cd = #{priorityAllCd}
+        where id in
+        <foreach collection="ptsCd" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
           and company_cd = #{companyCd,jdbcType=VARCHAR}
           and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
@@ -317,9 +329,42 @@
     </delete>
     <delete id="deleteWKTablePtsVersion">
         delete from planocycle.work_priority_all_pts_data_version
-        where priority_all_cd = #{priorityAllCd}
+        where pts_cd in
+        <foreach collection="ptsCd" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
           and company_cd = #{companyCd,jdbcType=VARCHAR}
           and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <delete id="delWKTablePtsTai">
+        delete from planocycle.work_priority_all_pts_tai
+        where priority_all_cd = #{priorityAllCd}
+        and company_cd = #{companyCd,jdbcType=VARCHAR}
+        and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <delete id="delWKTablePtsTana">
+        delete from planocycle.work_priority_all_pts_tana
+        where  priority_all_cd = #{priorityAllCd}
+        and company_cd = #{companyCd,jdbcType=VARCHAR}
+        and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <delete id="delWKTablePtsJans">
+        delete from planocycle.work_priority_all_pts_jans
+        where priority_all_cd = #{priorityAllCd}
+        and company_cd = #{companyCd,jdbcType=VARCHAR}
+        and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <delete id="delWKTablePtsData">
+        delete from planocycle.work_priority_all_pts_data
+        where priority_all_cd = #{priorityAllCd}
+        and company_cd = #{companyCd,jdbcType=VARCHAR}
+        and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <delete id="delWKTablePtsVersion">
+        delete from planocycle.work_priority_all_pts_data_version
+        where priority_all_cd = #{priorityAllCd}
+        and company_cd = #{companyCd,jdbcType=VARCHAR}
+        and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <update id="deleteMst">
         update planocycle.priority_all_mst set deleteflg = 1 where priority_all_cd = #{priorityAllCd}
@@ -452,7 +497,8 @@
         and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="copyWKTablePtsVersion">
-        insert into planocycle.work_priority_all_pts_data_version
+        insert into planocycle.work_priority_all_pts_data_version(priority_all_cd,company_cd,author_cd,pts_cd,commoninfo,versioninfo,outflg,modename,tai_header,tana_header
+                                                                 ,jan_header,deleteflg,shelf_pattern_cd)
         select priority_all_cd,company_cd,author_cd,pts_cd,commoninfo,versioninfo,outflg,modename,tai_header,tana_header
             ,jan_header,deleteflg,shelf_pattern_cd
         from planocycle.priority_all_pts_data_version
@@ -520,5 +566,10 @@
     </select>
     <select id="selectPriorityAllName" resultType="java.lang.Integer">
         select priority_all_cd from planocycle.priority_all_mst where company_cd = #{companyCd} and priority_all_name = #{priorityAllName} and deleteflg = 0
+    </select>
+    <select id="getPtsCd" resultType="java.lang.String">
+       select  array_to_string(array_agg(DISTINCT id),',')
+        from planocycle.priority_all_pts_data
+        where company_cd = #{companyCd} and priority_all_cd = #{priorityAllCd} and  author_cd = #{authorCd} and deleteflg = 0
     </select>
 </mapper>

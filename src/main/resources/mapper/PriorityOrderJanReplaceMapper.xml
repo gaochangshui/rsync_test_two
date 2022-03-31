@@ -29,6 +29,7 @@
     left join masterdb.jan_mst mst
     on jan.jan_old  = mst.jan_cd
     where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    order by jan_old
   </select>
   <select id="selectJanDistinct" resultType="java.lang.String">
     select array_to_string(array_agg(jan),',') from masterdb.jans
