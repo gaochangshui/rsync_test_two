@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -329,8 +330,9 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 return ResultMaps.result(ResultEnum.FAILURE);
             }
         } catch (IOException e) {
-            logger.info("报错,上传文件报错：{}", e.getMessage());
-            throw new BussinessException("报错,上传文件报错：{}");
+            logger.error("报错,上传文件报错：{}", e.getMessage(), e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultMaps.result(ResultEnum.FAILURE);
         } finally {
             try{
                 if(Objects.nonNull(bufferedReader)){
@@ -466,6 +468,9 @@ public class FilesOperationServiceImpl implements FilesOperationService {
      */
     public static void excelPutPath(MultipartFile file, String csvPath) throws IOException {
         File resultFile = new File(csvPath);
+        if (resultFile.exists()) {
+            resultFile.mkdirs();
+        }
         file.transferTo(resultFile);
     }
 
