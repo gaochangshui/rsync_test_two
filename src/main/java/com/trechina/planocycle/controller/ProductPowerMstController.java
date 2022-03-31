@@ -1,11 +1,11 @@
 package com.trechina.planocycle.controller;
 
+import com.trechina.planocycle.entity.vo.ProductPowerVO;
 import com.trechina.planocycle.service.ProductPowerMstService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @RestController
@@ -42,5 +42,15 @@ public class ProductPowerMstController {
     @GetMapping("getProductPowerInfo")
     public Map<String,Object> getProductPowerInfo(String companyCd ,Integer productPowerCd,Integer priorityOrderCd){
         return powerMstService.getProductPowerInfo(companyCd,productPowerCd,priorityOrderCd);
+    }
+
+
+    /**
+     * 获取商品力点数表数据excel download
+     * @return
+     */
+    @PostMapping("downloadProductPowerInfo")
+    public void downloadProductPowerInfo(@RequestBody ProductPowerVO productPowerVO, HttpServletResponse response){
+        powerMstService.downloadProductPowerInfo(productPowerVO.getCompanyCd(),productPowerVO.getProductPowerNo(),response);
     }
 }

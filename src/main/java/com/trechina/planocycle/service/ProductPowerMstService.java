@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 public interface ProductPowerMstService {
@@ -17,4 +18,6 @@ public interface ProductPowerMstService {
     Map<String,Object> getProductPowerTable(String companyCd);
 
      Map<String,Object> getProductPowerInfo(String companyCd ,Integer productPowerCd,Integer priorityOrderCd);
+
+    void downloadProductPowerInfo(String companyCd, Integer productPowerCd, HttpServletResponse response);
 }
