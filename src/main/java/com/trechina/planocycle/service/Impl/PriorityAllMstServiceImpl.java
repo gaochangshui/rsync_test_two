@@ -185,7 +185,11 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         workPriorityAllRestrictRelationMapper.deleteWKTableRelation(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
         priorityAllMstMapper.insertWKTableMst(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd, priorityAllSaveDto.getPriorityOrderCd());
         priorityAllMstMapper.insertWKTableShelfs(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd, priorityAllSaveDto.getPatterns());
-
+        priorityAllMstMapper.delWKTablePtsTai(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
+        priorityAllMstMapper.delWKTablePtsTana(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
+        priorityAllMstMapper.delWKTablePtsJans(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
+        priorityAllMstMapper.delWKTablePtsData(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
+        priorityAllMstMapper.delWKTablePtsVersion(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
         return 0;
     }
 
@@ -433,6 +437,18 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 priorityAllMstMapper.setNewFinalTablePtsJans(companyCd,p.getId(),aud);
                 priorityAllMstMapper.setNewFinalTablePtsData(companyCd,p.getId(),aud);
                 priorityAllMstMapper.setNewFinalTablePtsVersion(companyCd,p.getId(),aud);
+
+                priorityAllMstMapper.delWKTablePtsTai(companyCd, priorityAllCd, aud);
+                priorityAllMstMapper.delWKTablePtsTana(companyCd, priorityAllCd, aud);
+                priorityAllMstMapper.delWKTablePtsJans(companyCd, priorityAllCd, aud);
+                priorityAllMstMapper.delWKTablePtsData(companyCd, priorityAllCd, aud);
+                priorityAllMstMapper.delWKTablePtsVersion(companyCd, priorityAllCd, aud);
+
+                priorityAllMstMapper.copyWKTablePtsTai(companyCd, p.getId(), aud);
+                priorityAllMstMapper.copyWKTablePtsTana(companyCd, p.getId(), aud);
+                priorityAllMstMapper.copyWKTablePtsJans(companyCd, p.getId(), aud);
+                priorityAllMstMapper.copyWKTablePtsData(companyCd, p.getId(), aud);
+                priorityAllMstMapper.copyWKTablePtsVersion(companyCd, p.getId(), aud);
                 return ResultMaps.result(ResultEnum.SUCCESS,p.getId());
             }
 

@@ -80,6 +80,7 @@
         from
         planocycle.work_priority_all_pts_tai taiMst
         where pts_cd = #{id}
+        order by tai_cd
     </select>
     <select id="getTanaData" resultType="com.trechina.planocycle.entity.vo.PtsTanaVo">
         select
@@ -87,6 +88,7 @@
         from
         planocycle.work_priority_all_pts_tana tanaMst
         where pts_cd = #{id}
+        order by tai_cd,tana_cd
     </select>
     <select id="getJanData"  resultType="com.trechina.planocycle.entity.vo.PtsJanDataVo">
         select
@@ -95,6 +97,7 @@
         from
         planocycle.work_priority_all_pts_jans janData
         where pts_cd = #{id}
+        order by tai_cd,tana_cd,tanaposition_cd
     </select>
     <select id="getPtsDetailData" resultType="com.trechina.planocycle.entity.vo.PtsDetailDataVo">
         select ptsVersion.tai_header,ptsVersion.tana_header,ptsVersion.jan_header,ptsVersion.modename,ptsVersion.commoninfo,ptsVersion.versioninfo,ptsVersion.outflg,
