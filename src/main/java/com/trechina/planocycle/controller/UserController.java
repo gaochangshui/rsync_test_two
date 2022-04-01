@@ -15,7 +15,7 @@ public class UserController {
     private UserService userService;
 
     /**
-     * 获取用户信息（目前只有usercd）
+     * ユーザー情報の取得(現在usercdのみ)
      * @return
      */
     @GetMapping("/getUserInfo")
@@ -24,7 +24,7 @@ public class UserController {
     }
 
     /**
-     * 退出 清空session
+     * クリアセッションを終了
      * @return
      */
     @GetMapping("/logOut")

@@ -28,8 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -66,14 +64,14 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     private PriorityAllPtsMapper priorityAllPtsMapper;
 
     /**
-     * 获取棚割pts信息
+     * 棚割pts情報の取得
      *
      * @param companyCd
      * @return
      */
     @Override
     public Map<String, Object> getShelfPtsInfo(String companyCd, Integer rangFlag, String areaList) {
-        logger.info("获取棚割pts信息参数：{},{}",companyCd,areaList);
+        logger.info("棚割pts情報パラメータの取得：{},{}",companyCd,areaList);
         String[] strArr = areaList.split(",");
         List<Integer> list = new ArrayList<>();
         if (strArr.length > 0 && !areaList.equals("")) {
@@ -81,14 +79,14 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 list.add(Integer.valueOf(strArr[i]));
             }
         }
-        logger.info("处理area信息：{}", list);
+        logger.info("area情報の処理：{}", list);
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.selectByPrimaryKey(companyCd, rangFlag, list);
-        logger.info("返回棚割pts信息的值：{}", shelfPtsData);
+        logger.info("棚割pts情報の値を返す：{}", shelfPtsData);
         return ResultMaps.result(ResultEnum.SUCCESS, shelfPtsData);
     }
 
     /**
-     * 保存棚割pts数据
+     * 棚割pts情報の保存
      *
      * @param shelfPtsDto
      * @return
@@ -97,17 +95,17 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     public Map<String, Object> setShelfPtsInfo(ShelfPtsDto shelfPtsDto, Integer flg) {
         String authorCd = httpSession.getAttribute("aud").toString();
         Date now = Calendar.getInstance().getTime();
-        logger.info("保存棚割pts数据的参数：{}", shelfPtsDto);
+        logger.info("棚割ptsデータのパラメータを保存する：{}", shelfPtsDto);
         ShelfPtsData shelfPtsData = new ShelfPtsData();
         shelfPtsData.setConpanyCd(shelfPtsDto.getCompanyCd());
         shelfPtsData.setFileName(shelfPtsDto.getFileName());
         shelfPtsData.setAuthorcd(authorCd);
         shelfPtsDataMapper.insert(shelfPtsData);
-        logger.info("保存后的参数：{}", shelfPtsData);
+        logger.info("保存後のパラメータ：{}", shelfPtsData);
         if (flg == 0) {
-            // 查询patternid
+            // check patternid
             String[] ptsKeyList = shelfPtsData.getFileName().split("_");
-            logger.info("返回的ptskey：{}", ptsKeyList);
+            logger.info("戻るptskey：{}", ptsKeyList);
 
             String ptsKey = "";
             if (ptsKeyList.length > 3) {
@@ -117,13 +115,13 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             } else {
                 ptsKey = "__";
             }
-            logger.info("手动组合的ptskey：{}", ptsKey);
+            logger.info("手動で組み合わせたptskey：{}", ptsKey);
             List<Integer> patternIdList = shelfPatternService.getpatternIdOfPtsKey(ptsKey.substring(0, ptsKey.length() - 1));
-            logger.info("根据组合的ptskey找patternid：{}", patternIdList.toString());
+            logger.info("組み合わせのptskeyによってpatternidを探します：{}", patternIdList.toString());
             if (!patternIdList.isEmpty()) {
                 Integer patternId = patternIdList.get(0);
-                logger.info("用到的patternid：{}", patternId);
-                logger.info("用到的patternid：{}", patternId);
+                logger.info("使用されるpatternid：{}", patternId);
+                logger.info("使用されるpatternid：{}", patternId);
                 // 清空patternid
                 shelfPtsDataMapper.updateSingle(patternId, authorCd);
                 shelfPtsDataMapper.updatePtsHistoryFlgSingle(patternId, authorCd);
@@ -144,7 +142,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     /**
-     * pts关联pattern
+     * pts関連pattern
      *
      * @param shelfPtsJoinPatternDto
      * @return
@@ -152,7 +150,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> saveShelfPts(List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto) {
-        logger.info("ptd关联pattern的参数:{}", shelfPtsJoinPatternDto);
+        logger.info("ptd関連patternのパラメータ:{}", shelfPtsJoinPatternDto);
         // 修改有效无效flg 有效1 无效0 全改为0
         // 修改表数据
         // shujucheck
@@ -170,9 +168,10 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 if (existsCount == 0) {
                     shelfPtsDataMapper.insertPtsHistory(item, authorCd);
                 } else {
-                    // 更新表
+                    // テーブルの更新
                     shelfPtsDataMapper.updatePtsHistory(item, authorCd);
-                    // 插入表
+                    //
+                    //テーブルの挿入
                 }
             }
         });
@@ -180,7 +179,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     /**
-     * pettern别pts关联pattern
+     * 棚pattern別pts関連pattern
      *
      * @param shelfPtsJoinPatternDto
      * @return
@@ -188,13 +187,13 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> saveShelfPtsOfPattern(List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto) {
-        logger.info("ptd关联pattern的参数:{}", shelfPtsJoinPatternDto);
-        // 修改有效无效flg 有效1 无效0 全改为0
-        // 表数据都职位空
+        logger.info("ptd関連patternのパラメータ:{}", shelfPtsJoinPatternDto);
+        // 有効無効flg有効1無効0を変更してすべて0に変更
+        // テーブルデータのすべてのポジションが空です
         shelfPtsDataMapper.updateAll(shelfPtsJoinPatternDto);
-        // shujucheck
+        // 社員番号check
         String authorCd = httpSession.getAttribute("aud").toString();
-        // 修改表数据
+        // テーブルデータの変更
         shelfPtsDataMapper.updateByPrimaryKeyOfPattern(shelfPtsJoinPatternDto);
         shelfPtsDataMapper.updatePtsHistoryFlg(shelfPtsJoinPatternDto);
         shelfPtsJoinPatternDto.forEach(item -> {
@@ -213,7 +212,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     /**
-     * 删除棚割pts信息
+     * 棚割pts情報の削除
      *
      * @param
      * @return
@@ -234,7 +233,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     /**
-     * 获取棚pattern关联的pts的棚/段数
+     * 棚pattern関連ptsの棚/セグメント数を取得
      *
      * @param patternCd
      * @return
@@ -293,6 +292,13 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         return ResultMaps.result(ResultEnum.SUCCESS,taiTanaNum);
     }
 
+    /**
+     * 棚pattern関連ptsの詳細の取得
+     * @param patternCd
+     * @param companyCd
+     * @param priorityOrderCd
+     * @return
+     */
     @Override
     public Map<String, Object> getPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd) {
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
@@ -314,7 +320,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 
 
     /**
-     * 陈列顺设定添加
+     * 陳列順設定追加
      * @param workPriorityOrderSort
      * @return
      */
@@ -333,7 +339,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
     /**
-     * 陈列顺设定展示
+     * 陳列順設定展示
      * @param companyCd
      * @return
      */
@@ -345,6 +351,12 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         return ResultMaps.result(ResultEnum.SUCCESS,displayList);
     }
 
+    /**
+     * csvファイルのダウンロード
+     * @param ptsCsvVO
+     * @param response
+     * @throws IOException
+     */
     @Override
     public void downloadPtsCsv(PtsCsvVO ptsCsvVO, HttpServletResponse response) throws IOException {
         String authorCd = httpSession.getAttribute("aud").toString();
@@ -520,7 +532,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 
 
     /**
-     * 获取棚pattern关联过的csv履历数据
+     * 棚pattern関連csv履歴データの取得
      *
      * @param companyCd
      * @return
@@ -532,7 +544,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     /**
-     * 棚pattern关联pts的下拉框数据
+     * 棚pattern関連ptsのドロップダウンボックスデータ
      *
      * @param companyCd
      * @return
@@ -544,7 +556,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     /**
-     * 获取棚pattern别的pts信息
+     * 棚pattern別pts情報の取得
      *
      * @param companyCd
      * @param rangFlag

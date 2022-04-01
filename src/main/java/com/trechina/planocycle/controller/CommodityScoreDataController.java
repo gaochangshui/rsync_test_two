@@ -89,16 +89,5 @@ public class CommodityScoreDataController {
         return commodityScoreDataService.getDBCommodityScoreData(companyCd, productPowerCd);
     }
 
-    /**
-     * 获取商品力点数表关联的优先顺位表的个数
-     *
-     * @param companyCd
-     * @param productPowerCd
-     * @return
-     */
-    @GetMapping("")
-    public Map<String, Object> get(String companyCd, Integer productPowerCd) {
-        return null;
-    }
 
 }

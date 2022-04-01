@@ -21,7 +21,7 @@ public class ShelfPtsController {
     private ShelfPtsService shelfPtsService;
 
     /**
-     * 获取棚割pts信息
+     * 棚割pts情報の取得
      *
      * @param companyCd
      * @return
@@ -32,7 +32,8 @@ public class ShelfPtsController {
     }
 
     /**
-     * 保存棚割pts信息
+     *
+     * 棚割pts情報の保存
      *
      * @param shelfPtsDto
      * @return
@@ -43,7 +44,8 @@ public class ShelfPtsController {
     }
 
     /**
-     * pts关联pattern
+     *
+     * pts関連pattern
      *
      * @param shelfPtsJoinPatternDto
      * @return
@@ -54,7 +56,7 @@ public class ShelfPtsController {
     }
 
     /**
-     * 棚pattern别pts关联pattern
+     * 棚pattern別pts関連pattern
      *
      * @param shelfPtsJoinPatternDto
      * @return
@@ -65,7 +67,7 @@ public class ShelfPtsController {
     }
 
     /**
-     * 获取棚pattern关联过的csv履历数据
+     * 棚pattern関連csv履歴データの取得
      *
      * @param companyCd
      * @return
@@ -76,7 +78,7 @@ public class ShelfPtsController {
     }
 
     /**
-     * 棚pattern关联pts的下拉框数据
+     * 棚pattern関連ptsのドロップダウンボックスデータ
      *
      * @param companyCd
      * @return
@@ -87,7 +89,7 @@ public class ShelfPtsController {
     }
 
     /**
-     * 获取棚pattern别的pts信息
+     * 棚pattern別pts情報の取得
      *
      * @param companyCd
      * @param rangFlag
@@ -100,7 +102,7 @@ public class ShelfPtsController {
     }
 
     /**
-     * 删除棚割pts信息
+     * 棚割pts情報の削除
      *
      * @param
      * @return
@@ -111,7 +113,7 @@ public class ShelfPtsController {
     }
 
     /**
-     * 获取棚pattern关联的pts的棚/段数
+     * 棚pattern関連ptsの棚/セグメント数を取得
      */
 
     @GetMapping("getTaiNumTanaNum")
@@ -120,7 +122,7 @@ public class ShelfPtsController {
 
     }
     /**
-     * 获取棚pattern 关联pts的详细信息
+     * 棚pattern関連ptsの詳細の取得
      * @param patternCd
      * @return
      */
@@ -131,7 +133,7 @@ public class ShelfPtsController {
     }
 
     /**
-     * 陈列顺设定添加
+     * 陳列順設定追加
      * @param workPriorityOrderSort
      * @return
      */
@@ -141,7 +143,7 @@ public class ShelfPtsController {
 
     }
     /**
-     * 陈列顺设定展示
+     * 陳列順設定展示
      * @param companyCd
      * @return
      */
@@ -152,7 +154,7 @@ public class ShelfPtsController {
     }
 
     /**
-     * 下载csv文件
+     * csvファイルのダウンロード
      * @param ptsCsvVO
      * @return
      */

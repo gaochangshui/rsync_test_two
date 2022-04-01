@@ -35,10 +35,32 @@
         values
             <foreach collection="list" item="item" separator=",">
                 (trim(#{companyCd}),trim(#{item.janCd}),trim(#{item.janName}),trim(#{item.tanka}) :: integer,trim(#{item.tanni})
-                ,trim(#{item.width}) :: integer,trim(#{item.height}) :: integer,lpad(trim(#{item.zokusei1}),4,'0'),lpad(trim(#{item.zokusei2}),4,'0'),lpad(trim(#{item.zokusei3}),4,'0'),lpad(trim(#{item.zokusei4}),4,'0')
+                ,trim(#{item.width}) :: integer,trim(#{item.height}) :: integer,
+                 lpad(trim(#{item.zokusei1}),4,'0'),
+                 lpad(trim(#{item.zokusei2}),4,'0'),
+                lpad(trim(#{item.zokusei3}),4,'0'),
+                 <choose>
+                   <when test="item.zokusei4 != null and item.zokusei4 != ''">
+                       lpad(trim(#{item.zokusei4}),4,'0')
+                   </when>
+                    <otherwise>
+                        null
+                    </otherwise>
+                 </choose>
                 ,trim(#{item.scatnm}),trim(#{item.zokusei5}),trim(#{item.zokusei8}),trim(#{item.zokusei9})
-                ,lpad(trim(#{item.zokusei1}),4,'0'),lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0'),lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0') || '_' || lpad(trim(#{item.zokusei3}),4,'0'),
-                lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0') || '_' || lpad(trim(#{item.zokusei3}),4,'0') || '_' || lpad(trim(#{item.zokusei4}),4,'0'),trim(#{item.zokusei6} ):: integer
+                ,lpad(trim(#{item.zokusei1}),4,'0'),
+                 lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0'),
+                 lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0') || '_' || lpad(trim(#{item.zokusei3}),4,'0'),
+                 <choose>
+                     <when test="item.zokusei4 != null and item.zokusei4 != item.zokusei4">
+                         lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0') || '_' || lpad(trim(#{item.zokusei3}),4,'0') || '_' || lpad(trim(#{item.zokusei4}),4,'0')
+
+                     </when>
+                     <otherwise>
+                         null
+                     </otherwise>
+                 </choose>
+                ,trim(#{item.zokusei6} ):: integer
                  ,trim(#{item.zokusei7}):: integer ,trim(#{item.depth}) :: integer
                 )
             </foreach>

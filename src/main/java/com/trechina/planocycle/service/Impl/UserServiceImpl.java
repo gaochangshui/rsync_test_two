@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
     private HttpSession session;
     @Override
     public Map<String, Object> getUserCd() {
-        logger.info("登录的社员号：{}",session.getAttribute("aud"));
+        logger.info("登録した社員番号：{}",session.getAttribute("aud"));
         return ResultMaps.result(ResultEnum.SUCCESS,session.getAttribute("aud"));
     }
 
