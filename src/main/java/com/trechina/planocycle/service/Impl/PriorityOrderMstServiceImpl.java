@@ -911,6 +911,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      * @param companyCd
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteWorkTable(String companyCd, Integer priorityOrderCd) {
         String authorCd = session.getAttribute("aud").toString();
@@ -1170,7 +1171,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
-
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> deletePriorityOrderAll(PriorityOrderMstVO priorityOrderMstVO) {
         String aud = session.getAttribute("aud").toString();

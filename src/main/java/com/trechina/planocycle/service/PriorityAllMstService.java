@@ -54,7 +54,11 @@ public interface PriorityAllMstService {
      * @return
      */
     Map<String, Object> getPriorityPtsInfo(String companyCd, Integer priorityAllCd, Integer patternCd);
-
+    /**
+     * 删除 api⑦
+     * @param priorityAllSaveDto
+     * @return
+     */
 
     Map<String, Object> deletePriorityAll( PriorityAllSaveDto priorityAllSaveDto);
 
