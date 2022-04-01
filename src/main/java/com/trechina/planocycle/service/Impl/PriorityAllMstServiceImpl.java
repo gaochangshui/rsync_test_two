@@ -90,14 +90,12 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                priorityAllMstMapper.deleteWKTablePtsJans(companyCd, array, authorCd);
                priorityAllMstMapper.deleteWKTablePtsData(companyCd, array, authorCd);
                priorityAllMstMapper.deleteWKTablePtsVersion(companyCd, array, authorCd);
-           }else {
+           }
                priorityAllMstMapper.delWKTablePtsTai(companyCd, priorityAllCd, authorCd);
                priorityAllMstMapper.delWKTablePtsTana(companyCd, priorityAllCd, authorCd);
                priorityAllMstMapper.delWKTablePtsJans(companyCd, priorityAllCd, authorCd);
                priorityAllMstMapper.delWKTablePtsData(companyCd, priorityAllCd, authorCd);
                priorityAllMstMapper.delWKTablePtsVersion(companyCd, priorityAllCd, authorCd);
-           }
-
 
 
             if (priorityAllCd != 0) {

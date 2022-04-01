@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -177,34 +176,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);
     }
 
-    /**
-     * 保存文件的时候调用cgi
-     *
-     * @param companyCd
-     * @param filename
-     * @param datacd
-     * @return
-     */
-    @Override
-    public Map<String, Object> getAttrFileSaveForCgi(String companyCd, String filename, String datacd,
-                                                     Integer productPowerNo, String dataNm) {
-        // 从cgi获取数据
-        String uuid = UUID.randomUUID().toString();
-        ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
-        productPowerDataForCgiDto.setCompany(companyCd);
-        productPowerDataForCgiDto.setMode("yobi_shori");
-        productPowerDataForCgiDto.setGuid(uuid);
-        productPowerDataForCgiDto.setProductPowerNo(productPowerNo);
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("保存文件的时候调用cgi的参数{}", productPowerDataForCgiDto);
-        //递归调用cgi，首先去taskid
-        String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
-        logger.info("taskId返回：{}", result);
-        //带着taskId，再次请求cgi获取运行状态/数据
-        Map<String, Object> Data = cgiUtil.postCgiLoop(cgiUtil.setPath("TaskQuery"), result, tokenInfo);
-        logger.info("保存文件的时候调用cgi返回的数据：{}", Data);
-        return ResultMaps.result(ResultEnum.SUCCESS);
-    }
 
     /**
      * 获取商品力点数表taskid
@@ -270,16 +241,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
         logger.info("taskId返回：{}", result);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
-    }
-
-    @Override
-    public Map<String, Object> getDBCommodityScoreData(String companyCd, Integer productPowerCd) {
-        String authorCd = session.getAttribute("aud").toString();
-        productPowerDataMapper.deleteWKSyokika(companyCd, authorCd);
-        productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
-        List<ProductPowerMstData> productPowerMstData = productPowerDataMapper.getProductPowerMstData(companyCd, productPowerCd);
-
-        return ResultMaps.result(ResultEnum.SUCCESS, productPowerMstData);
     }
 
 

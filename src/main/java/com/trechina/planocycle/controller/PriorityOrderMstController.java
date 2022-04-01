@@ -3,7 +3,6 @@ package com.trechina.planocycle.controller;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
 import com.trechina.planocycle.entity.vo.PriorityOrderMstVO;
-import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -84,16 +83,14 @@ public class PriorityOrderMstController {
         return priorityOrderMstService.getPtsFileDownLoad(priorityOrderPtsDownDto,response,ptsDownPath);
     }
 
+
     /**
-     * 删除所有优先顺位表信息
-     * @param primaryKeyVO
+     * S自动计算-Step1
+     * @param companyCd
+     * @param patternCd
+     * @param priorityOrderCd
      * @return
      */
-    @DeleteMapping("/delPriorityOrderAllInfo")
-    public Map<String,Object> delPriorityOrderAllInfo(@RequestBody PriorityOrderPrimaryKeyVO primaryKeyVO){
-        return priorityOrderMstService.delPriorityOrderAllInfo(primaryKeyVO);
-    }
-
     @GetMapping("/preCalculation")
     public Map<String, Object> preCalculation(String companyCd, Long patternCd,Integer priorityOrderCd ) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return priorityOrderMstService.preCalculation(companyCd, patternCd,priorityOrderCd);
@@ -149,6 +146,14 @@ public class PriorityOrderMstController {
         return priorityOrderMstService.deletePriorityOrderAll(priorityOrderMstVO);
     }
 
+    /**
+     * 各种mst展示
+     * @param companyCd
+     * @param priorityOrderCd
+     * @param flag
+     * @return
+
+     */
     @GetMapping("/getVariousMst")
     public Map<String,Object> getVariousMst(String companyCd,Integer priorityOrderCd,Integer flag) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return priorityOrderMstService.getVariousMst(companyCd,priorityOrderCd,flag);

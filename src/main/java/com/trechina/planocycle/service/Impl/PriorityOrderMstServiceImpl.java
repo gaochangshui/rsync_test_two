@@ -61,11 +61,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Autowired
     private PriorityOrderJanCardService priorityOrderJanCardService;
     @Autowired
-    private PriorityOrderCatePakService priorityOrderCatePakService;
-    @Autowired
     private PriorityOrderJanProposalService priorityOrderJanProposalService;
-    @Autowired
-    private PriorityOrderBranchNumService priorityOrderBranchNumService;
     @Autowired
     private PriorityOrderJanAttributeMapper priorityOrderJanAttributeMapper;
     @Autowired
@@ -436,61 +432,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return ResultMaps.result(ResultEnum.SUCCESS, productPowerCd);
     }
 
-    /**
-     * 删除所有优先顺位表信息
-     *
-     * @param primaryKeyVO
-     * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public Map<String, Object> delPriorityOrderAllInfo(PriorityOrderPrimaryKeyVO primaryKeyVO) {
-        String companyCd = primaryKeyVO.getCompanyCd();
-        Integer priorityOrderCd = primaryKeyVO.getPriorityOrderCd();
-        // 删除主表
-        delPriorityOrderMst(primaryKeyVO);
-        // 删除jan变list
-        priorityOrderJanReplaceService.delJanReplaceInfo(companyCd, priorityOrderCd);
-        // 删除新规商品list
-        priorityOrderJanNewService.delriorityOrderJanNewInfo(companyCd, priorityOrderCd);
-        // 删除card商品list
-        priorityOrderJanCardService.delPriorityOrderJanCardInfo(companyCd, priorityOrderCd);
-        // 删除catepak扩缩
-        priorityOrderCatePakService.delPriorityOrderCatePakInfo(companyCd, priorityOrderCd);
-        priorityOrderCatePakService.delPriorityOrderCatePakAttrInfo(companyCd, priorityOrderCd);
-        // 删除jan变提案list
-        priorityOrderJanProposalService.delPriorityOrderJanProposalInfo(companyCd, priorityOrderCd);
-        // 删除必须和不可和中间表
-        priorityOrderBranchNumService.delPriorityOrderCommodityMustInfo(companyCd, priorityOrderCd);
-        priorityOrderBranchNumService.delPriorityOrderCommodityNotInfo(companyCd, priorityOrderCd);
-        priorityOrderBranchNumService.delPriorityOrderBranchNumInfo(companyCd, priorityOrderCd);
-        // 删除数据的排序
-        priorityOrderMstAttrSortService.delPriorityAttrSortInfo(companyCd, priorityOrderCd);
-        // 删除jannew的属性列
-        priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
-        // 删除棚pattern关联信息
-        priorityOrderPatternMapper.deleteforid(priorityOrderCd);
-        // 删除smart数据
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("PriorityOrderData");
-        String queryPath = resourceBundle.getString("TaskQuery");
-        PriorityOrderDataForCgiDto priorityOrderDataForCgiDto = new PriorityOrderDataForCgiDto();
-        // 调用cgi拿jan变提案list的数据
-        String uuids = UUID.randomUUID().toString();
-        priorityOrderDataForCgiDto.setMode("priority_delete");
-        priorityOrderDataForCgiDto.setGuid(uuids);
-        priorityOrderDataForCgiDto.setCompany(companyCd);
-        priorityOrderDataForCgiDto.setPriorityNO(priorityOrderCd);
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        //递归调用cgi，首先去taskid
-        String resultJan = null;
-        resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
-        logger.info("taskId返回：{}", resultJan);
-        //带着taskId，再次请求cgi获取运行状态/数据
-        Map<String, Object> result = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
-        logger.info("删除smart优先顺位表信息：{}", result);
-        return ResultMaps.result(ResultEnum.SUCCESS);
-    }
 
     /**
      * 根据productpowercd查询关联的优先顺位表cd
@@ -514,6 +455,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return priorityOrderMstMapper.deleteByPrimaryKey(primaryKeyVO.getCompanyCd(), primaryKeyVO.getPriorityOrderCd());
     }
 
+    /**
+     * S自动计算-Step1
+     * @param companyCd
+     * @param patternCd
+     * @param priorityOrderCd
+     * @return
+     */
     @Override
     public Map<String, Object> preCalculation(String companyCd, Long patternCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         int isUnset = 0;

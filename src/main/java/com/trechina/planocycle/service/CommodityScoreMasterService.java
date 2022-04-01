@@ -35,29 +35,14 @@ public interface CommodityScoreMasterService {
      */
     Map<String,Object> setCommodityList(ProductCdAndNameDto productPowerName);
 
-    /**
-     * 保存商品力点数表的参数接口
-     * @param productPowerParamMst
-     * @return
-     */
-    Map<String, Object> setCommodityParam(ProductPowerParamMst productPowerParamMst);
+
 
     /**
      * 获取Chanel信息接口
      * @return
      */
     Map<String, Object> getChanelInfo();
-    /**
-     * 获取都道府県接口
-     * @return
-     */
-    Map<String, Object> getPrefectureInfo();
-    /**
-     * 如果参数有改动，就删除这个模板的参数接口
-     * @param productPowerParamMst
-     * @return
-     */
-    Map<String, Object> delCommodityParam(ProductPowerParamMst productPowerParamMst);
+
 
     void productPowerParamAttr(String conpanyCd, Integer productPowerCd, Map<String, Object> result);
 

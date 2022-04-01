@@ -1,7 +1,6 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
-import com.trechina.planocycle.entity.po.ProductPowerParamMst;
 import com.trechina.planocycle.service.CommodityScoreMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -48,15 +47,7 @@ public class CommodityScoreMasterController {
     public Map<String,Object> setCommodityList(@RequestBody ProductCdAndNameDto productPowerName) {
         return commodityScoreMasterService.setCommodityList(productPowerName);
     }
-    /**
-     * 商品力点数のパラメータを保存
-     * @param productPowerParamMst
-     * @return
-     */
-    @PutMapping("/setCommodityParam")
-    public Map<String,Object> setCommodityParam(@RequestBody ProductPowerParamMst productPowerParamMst) {
-        return commodityScoreMasterService.setCommodityParam(productPowerParamMst);
-    }
+
 
     /**
      * Chanel情報の取得
@@ -67,24 +58,7 @@ public class CommodityScoreMasterController {
         return commodityScoreMasterService.getChanelInfo();
     }
 
-    /**
-     * 取得都道府県
-     * @return
-     */
-    @GetMapping("/getPrefectureInfo")
-    public Map<String,Object> getPrefectureInfo() {
-        return commodityScoreMasterService.getPrefectureInfo();
-    }
 
-    /**
-     * パラメータが変更された場合は、このテンプレートのパラメータを削除します。
-     * @param productPowerParamMst
-     * @return
-     */
-    @PostMapping("/delCommodityParam")
-    public Map<String,Object> delCommodityParam(@RequestBody ProductPowerParamMst productPowerParamMst){
-        return commodityScoreMasterService.delCommodityParam(productPowerParamMst);
-    }
 
     /**
      * 編集はすべてのパラメータを返します

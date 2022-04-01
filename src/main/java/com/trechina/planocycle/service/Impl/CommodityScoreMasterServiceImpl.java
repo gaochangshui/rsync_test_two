@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -200,18 +199,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     }
 
 
-    /**
-     * 保存商品力点数list模板的参数
-     * @param productPowerParamMst
-     * @return
-     */
-    @Override
-    public Map<String, Object> setCommodityParam(ProductPowerParamMst productPowerParamMst) {
-        logger.info("商品力点数list模板的参数：{}",productPowerParamMst);
-        String aud = session.getAttribute("aud").toString();
-        productPowerParamMstMapper.insert(productPowerParamMst,aud);
-        return ResultMaps.result(ResultEnum.SUCCESS);
-    }
 
     /**
      * 获取chanel信息
@@ -225,41 +212,9 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         return ResultMaps.result(ResultEnum.SUCCESS, JSON.parse(result));
     }
 
-    /**
-     * 获取都道府县
-     * @return
-     */
-    @Override
-    public Map<String, Object> getPrefectureInfo() {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String pathInfo = resourceBundle.getString("PlaceList");
-        String result=cgiUtil.getCgi(pathInfo,(String) session.getAttribute("MSPACEDGOURDLP"));
-        return ResultMaps.result(ResultEnum.SUCCESS, JSON.parse(result));
-    }
 
-    /**
-     * 如果由改动会删除所有保存过的参数
-     * @param productPowerParamMst
-     * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public Map<String, Object> delCommodityParam(ProductPowerParamMst productPowerParamMst) {
-        logger.info("如果有改动就删除商品力点数list模板的参数：{}",productPowerParamMst);
 
-        Integer resuleNum = productPowerParamMstMapper.deleteCommofityParamForChange(productPowerParamMst);
-        logger.info("改动结果：{}",resuleNum);
-        // 删除了step1参数才删除表示项目和weight设定
-        if (resuleNum>0){
-            // 重置为1，给前台使用，1代表有改动，0代表没改动
-            resuleNum = 1;
-            boolean result = delSmartData(productPowerParamMst);
-            if (!result) {
-                return ResultMaps.result(ResultEnum.FAILURE);
-            }
-        }
-        return ResultMaps.result(ResultEnum.SUCCESS,resuleNum);
-    }
+
 
     @Override
     public boolean delSmartData(ProductPowerParamMst productPowerParamMst) {

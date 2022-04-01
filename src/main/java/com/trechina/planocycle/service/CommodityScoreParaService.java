@@ -25,21 +25,9 @@ public interface CommodityScoreParaService {
      */
     Map<String,Object> setCommodityScorePare(ProductPowerParam productPowerParam);
 
-    /**
-     * 获取weight参数
-     * @param conpanyCd
-     * @param productPowerCd
-     * @return
-     */
-    Map<String,Object> getCommodityScoreWeight(String conpanyCd, Integer productPowerCd);
 
-    /**
-     * 获取表示项目的预备项目参数
-     * @param conpanyCd
-     * @param productPowerCd
-     * @return
-     */
-    Map<String,Object> getCommodityScorePrePara(String conpanyCd, Integer productPowerCd);
+
+
 
     /**
      * 删除商品力点数表所有信息

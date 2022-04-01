@@ -62,43 +62,6 @@ public class CommodityScoreDataController {
         return commodityScoreDataService.getCommodityScoreGroupTaskId(productPowerDataForCgiDto);
     }
 
-    /**
-     * @param companyCd
-     * @param filename
-     * @param datacd
-     * @param productPowerNo
-     * @param dataNm
-     * @return
-     */
-    @GetMapping("/getAttrFileSaveForCgi")
-    public Map<String, Object> getAttrFileSaveForCgi(String companyCd, String filename, String datacd,
-                                                     Integer productPowerNo, String dataNm) {
-        return commodityScoreDataService.getAttrFileSaveForCgi(companyCd, filename, datacd, productPowerNo, dataNm);
-    }
 
-
-    /**
-     * 編集時に最終テーブルのdataを取得する
-     *
-     * @param companyCd
-     * @param productPowerCd
-     * @return
-     */
-    @GetMapping("getDBCommodityScoreData")
-    public Map<String, Object> getDBCommodityScoreData(String companyCd, Integer productPowerCd) {
-        return commodityScoreDataService.getDBCommodityScoreData(companyCd, productPowerCd);
-    }
-
-    /**
-     * 商品力ポイントテーブルに関連付けられた優先順位テーブルの個数を取得する
-     *
-     * @param companyCd
-     * @param productPowerCd
-     * @return
-     */
-    @GetMapping("")
-    public Map<String, Object> get(String companyCd, Integer productPowerCd) {
-        return null;
-    }
 
 }
