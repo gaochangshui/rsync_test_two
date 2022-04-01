@@ -397,7 +397,7 @@
       update planocycle.work_priority_order_result_data
       <set>
 
-        face_keisan = #{item.faceNum} ::numeric
+        face_fact = #{item.faceNum} ::numeric
       </set>
       where jan_cd = #{item.janCd} ::varchar and company_cd = #{item.companyCd} and author_cd = #{authorCd} and priority_order_cd = #{item.priorityOrderCd}
     </foreach>

@@ -96,7 +96,7 @@
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
   <select id="selectByAuthorCd" resultMap="BaseResultMap">
-    select shelf_pattern_cd
+    select shelf_pattern_cd,partition_flag,partition_val
     from planocycle.work_priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

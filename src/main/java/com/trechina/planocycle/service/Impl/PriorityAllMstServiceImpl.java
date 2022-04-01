@@ -174,22 +174,28 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      *
      * @param priorityAllSaveDto@return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Integer saveWKAllPatternData(PriorityAllSaveDto priorityAllSaveDto) {
         String authorCd = session.getAttribute("aud").toString();
         // mstテーブル
-        priorityAllMstMapper.deleteWKTableMst(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-        // shelfsテーブル
-        priorityAllMstMapper.deleteWKTableShelfs(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-        workPriorityAllRestrictMapper.deleteWKTableRestrict(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd());
-        workPriorityAllRestrictRelationMapper.deleteWKTableRelation(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-        priorityAllMstMapper.insertWKTableMst(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd, priorityAllSaveDto.getPriorityOrderCd());
-        priorityAllMstMapper.insertWKTableShelfs(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd, priorityAllSaveDto.getPatterns());
-        priorityAllMstMapper.delWKTablePtsTai(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-        priorityAllMstMapper.delWKTablePtsTana(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-        priorityAllMstMapper.delWKTablePtsJans(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-        priorityAllMstMapper.delWKTablePtsData(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-        priorityAllMstMapper.delWKTablePtsVersion(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
+        try {
+            priorityAllMstMapper.deleteWKTableMst(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
+            // shelfsテーブル
+            priorityAllMstMapper.deleteWKTableShelfs(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
+            workPriorityAllRestrictMapper.deleteWKTableRestrict(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd());
+            workPriorityAllRestrictRelationMapper.deleteWKTableRelation(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
+            priorityAllMstMapper.insertWKTableMst(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd, priorityAllSaveDto.getPriorityOrderCd());
+            priorityAllMstMapper.insertWKTableShelfs(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd, priorityAllSaveDto.getPatterns());
+            priorityAllMstMapper.delWKTablePtsTai(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
+            priorityAllMstMapper.delWKTablePtsTana(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
+            priorityAllMstMapper.delWKTablePtsJans(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
+            priorityAllMstMapper.delWKTablePtsData(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
+            priorityAllMstMapper.delWKTablePtsVersion(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
+        } catch (Exception e) {
+            logger.error("全patternの保存に失敗しました:{}",e.getMessage());
+            return 1;
+        }
         return 0;
     }
 
@@ -456,7 +462,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
 
         }catch (Exception ex){
-            logger.error("", ex);
+            logger.error("全patternの保存に失敗しました:{}", ex);
             throw new BussinessException(ex.getMessage());
         }
 
@@ -475,13 +481,23 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         return priorityAllPtsService.getPtsDetailData(patternCd,companyCd,priorityAllCd);
     }
 
+    /**
+     * 删除 api⑦
+     * @param priorityAllSaveDto
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> deletePriorityAll( PriorityAllSaveDto priorityAllSaveDto) {
         String aud = session.getAttribute("aud").toString();
         String companyCd = priorityAllSaveDto.getCompanyCd();
         Integer priorityAllCd = priorityAllSaveDto.getPriorityAllCd();
-        priorityAllMstMapper.deleteMst(companyCd,priorityAllCd,aud);
-        return null;
+        try {
+            priorityAllMstMapper.deleteMst(companyCd,priorityAllCd,aud);
+        } catch (Exception e) {
+            logger.error("全patternの削除に失敗しました:{}",e.getMessage());
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
