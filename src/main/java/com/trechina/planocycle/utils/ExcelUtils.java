@@ -18,7 +18,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ExcelUtils {
-    private final Logger logger = LoggerFactory.getLogger(ExcelUtils.class);
+    private ExcelUtils(){}
+
+    private static final Logger logger = LoggerFactory.getLogger(ExcelUtils.class);
 
     public static <T> void generateExcel(Map<String, List<String>> headersByClassify,
                                          Map<String, List<String>> columnsByClassify, List<T> allData,
@@ -57,10 +59,10 @@ public class ExcelUtils {
                     colIndex+=headers.size();
 
                     //セルを結合しない2行目の列
-                    for (int i = 0; i < headers.size(); i++) {
+                    for (String header : headers) {
                         XSSFCell headerCell = headerRow.createCell(headerColIndex);
                         headerCell.setCellType(CellType.STRING);
-                        headerCell.setCellValue(headers.get(i));
+                        headerCell.setCellValue(header);
 
                         headerColIndex++;
                     }
@@ -106,7 +108,7 @@ public class ExcelUtils {
 
             workbook.write(outputStream);
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error("", e);
         }
     }
 }
