@@ -14,7 +14,7 @@ public class CommodityScoreMasterController {
     @Autowired
     private CommodityScoreMasterService commodityScoreMasterService;
     /**
-     * 获取企业信息
+     * 企業情報の取得
      * @return
      */
     @GetMapping("/getEnterpriseInfo")
@@ -22,14 +22,14 @@ public class CommodityScoreMasterController {
         return commodityScoreMasterService.getEnterpriseInfo();
     }
     /**
-     * 获取企业cd关联的商品力点数List
+     * 企業cd関連商品力点数リスト取得
      * @param conpanyCd
      * @return
      */
     @GetMapping("/getCommodityListInfo")
     public Map<String,Object> getCommodityListInfo(String conpanyCd) { return commodityScoreMasterService.getCommodityListInfo(conpanyCd);}
     /**
-     * 获取商品力点数的参数
+     * 商品力点数のパラメータを取得する
      * @param conpanyCd
      * @param productPowerCd
      * @return
@@ -40,7 +40,7 @@ public class CommodityScoreMasterController {
     }
 
     /**
-     * 保存商品力点数表的模板名
+     * 商品力点数表のテンプレート名を保存する
      * @param productPowerName
      * @return
      */
@@ -49,7 +49,7 @@ public class CommodityScoreMasterController {
         return commodityScoreMasterService.setCommodityList(productPowerName);
     }
     /**
-     * 保存商品力点数的参数
+     * 商品力点数のパラメータを保存
      * @param productPowerParamMst
      * @return
      */
@@ -59,7 +59,7 @@ public class CommodityScoreMasterController {
     }
 
     /**
-     * 获取Chanel信息
+     * Chanel情報の取得
      * @return
      */
     @GetMapping("/getChanelInfo")
@@ -68,7 +68,7 @@ public class CommodityScoreMasterController {
     }
 
     /**
-     * 获取都道府県
+     * 取得都道府県
      * @return
      */
     @GetMapping("/getPrefectureInfo")
@@ -77,7 +77,7 @@ public class CommodityScoreMasterController {
     }
 
     /**
-     * 如果参数有改动，就删除这个模板的参数
+     * パラメータが変更された場合は、このテンプレートのパラメータを削除します。
      * @param productPowerParamMst
      * @return
      */
@@ -87,7 +87,7 @@ public class CommodityScoreMasterController {
     }
 
     /**
-     * 编辑返回所有参数
+     * 編集はすべてのパラメータを返します
      * @param companyCd
      * @param productPowerNo
      * @return

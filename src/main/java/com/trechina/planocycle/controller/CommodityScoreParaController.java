@@ -24,7 +24,7 @@ public class CommodityScoreParaController {
     private FilesOperationService filesOperationService;
 
     /**
-     * 获取表示项目的参数
+     * アイテムを表すパラメータの取得
      *
      * @param conpanyCd
      * @param productPowerCd
@@ -37,7 +37,7 @@ public class CommodityScoreParaController {
     }
 
     /**
-     * 保存s1期间、表示项目、预备项目、weight所有参数,删除预备项目,基本pos数据
+     * s 1期間、表示項目、予備項目、weightのすべてのパラメータを保存し、予備項目、基本posデータを削除する
      *
      * @param
      * @return
@@ -49,7 +49,7 @@ public class CommodityScoreParaController {
     }
 
     /**
-     * 获取weight参数
+     * weightパラメータの取得
      *
      * @param conpanyCd
      * @param productPowerCd
@@ -61,7 +61,7 @@ public class CommodityScoreParaController {
     }
 
     /**
-     * 获取表示项目的预备项目参数
+     * プロジェクトを表す予備プロジェクトパラメータの取得
      *
      * @param conpanyCd
      * @param productPowerCd
@@ -73,7 +73,7 @@ public class CommodityScoreParaController {
     }
 
     /**
-     * 删除商品力点数表所有信息
+     * 商品力点表のすべての情報を削除
      *
      * @param primaryKeyVO
      * @return
@@ -84,7 +84,7 @@ public class CommodityScoreParaController {
     }
 
     /**
-     * 预备项目上传保存到数据库
+     * プロジェクトのアップロードをデータベースに保存する
      * @param multipartFile
      * @param companyCd
      * @param dataCd
@@ -99,7 +99,7 @@ public class CommodityScoreParaController {
     }
 
     /**
-     * 调用cgi删除预备项目
+     * cgiを呼び出して予備項目を削除
      *
      * @param productPowerReserveMst
      * @return
@@ -110,7 +110,7 @@ public class CommodityScoreParaController {
     }
 
     /**
-     * 计算rank
+     * 計算rank
      */
     @PostMapping("rankCalculate")
     public Map<String,Object> rankCalculate(@RequestBody RankCalculateVo rankCalculateVo) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -120,7 +120,7 @@ public class CommodityScoreParaController {
 
 
     /**
-     * 预备项目删除
+     * プロジェクト削除の準備
      */
 
     @DeleteMapping("deleteReserve")

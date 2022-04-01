@@ -15,7 +15,7 @@ public class CommodityScoreDataController {
     private CommodityScoreDataService commodityScoreDataService;
 
     /**
-     * 获取商品力点数表基本数据
+     * 商品力点数表の基本データの取得
      *
      * @param taskID
      * @return
@@ -27,7 +27,7 @@ public class CommodityScoreDataController {
     }
 
     /**
-     * 获取商品力点数表基本数据
+     * 商品力点数表の基本データの取得
      *
      * @param productPowerDataForCgiDto
      * @return
@@ -39,7 +39,7 @@ public class CommodityScoreDataController {
     }
 
     /**
-     * 获取商品力点数表Group数据
+     * 商品力点数表Groupデータの取得
      *
      * @param taskID
      * @return
@@ -51,7 +51,7 @@ public class CommodityScoreDataController {
     }
 
     /**
-     * 获取商品力点数表Group数据
+     * 商品力点数表Groupデータの取得
      *
      * @param productPowerDataForCgiDto
      * @return
@@ -78,7 +78,7 @@ public class CommodityScoreDataController {
 
 
     /**
-     * 编辑时获取最终表里的data
+     * 編集時に最終テーブルのdataを取得する
      *
      * @param companyCd
      * @param productPowerCd
@@ -90,7 +90,7 @@ public class CommodityScoreDataController {
     }
 
     /**
-     * 获取商品力点数表关联的优先顺位表的个数
+     * 商品力ポイントテーブルに関連付けられた優先順位テーブルの個数を取得する
      *
      * @param companyCd
      * @param productPowerCd

@@ -15,7 +15,7 @@ public class PriorityAllPtsController {
     @Autowired
     private PriorityAllPtsService priorityAllPtsService;
     /**
-     * 获取pts详情接口
+     * pts詳細インタフェースの取得
      * @param patternCd
      * @return
      */
@@ -26,7 +26,7 @@ public class PriorityAllPtsController {
     }
 
     /**
-     * 打包下载全pattern的pts文件
+     * 全patternのptsファイルをパッケージしてダウンロードします
      * @return
      */
     @PostMapping("batchDownloadPtsData")

@@ -18,7 +18,7 @@ public class PriorityOrderJanNewController {
     private PriorityOrderJanNewService priorityOrderJanNewService;
 
     /**
-     * 获取新规商品list
+     * 新規商品リスト取得
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -29,18 +29,17 @@ public class PriorityOrderJanNewController {
     }
 
     /**
-     * work表保存新规商品list
+     * ワークシート保存新規商品リスト
      * @param
      * @return
      */
-    //TODO:保存新规商品list
     @PostMapping("/setPriorityOrderJanNew")
     public Map<String,Object> setPriorityOrderJanNew(@RequestBody List<PriorityOrderJanNew> priorityOrderJanNew){
         return priorityOrderJanNewService.setPriorityOrderJanNew(priorityOrderJanNew);
     }
 
     /**
-     * 获取新规jan的名字分类
+     * 新しいjanの名前分類を取得
      * @param
      * @return
      *
@@ -51,7 +50,7 @@ public class PriorityOrderJanNewController {
     }
 
     /**
-     * 根据分类去商品力点数表抽同类商品
+     * 分類によって商品の力点数表を除いて同類の商品を抽出する
      * @param
      * @return
      */
@@ -61,7 +60,7 @@ public class PriorityOrderJanNewController {
     }
 
     /**
-     * 新规不存在商品详细信息
+     * 商品詳細は新規では存在しません
      * @param
      * @return
      */
@@ -71,7 +70,7 @@ public class PriorityOrderJanNewController {
     }
 
     /**
-     * 查询不存在商品详细信息
+     * 存在しない商品の詳細を調べる
      * @param
      * @return
      */

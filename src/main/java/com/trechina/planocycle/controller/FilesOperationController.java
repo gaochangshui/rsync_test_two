@@ -31,7 +31,7 @@ public class FilesOperationController {
     String productDownPath;
 
     /**
-     * 上传csv文件
+     * csvファイルのアップロード
      * @param multipartFile
      * @return
      * @throws IOException
@@ -46,7 +46,7 @@ public class FilesOperationController {
     }
 
     /**
-     * 上传多个csv文件
+     * 複数のcsvファイルをアップロード
      * @param multipartFileList
      * @return
      */

@@ -15,7 +15,7 @@ public class PriorityOrderJanReplaceControloer {
     private PriorityOrderJanReplaceService priorityOrderJanReplaceService;
 
     /**
-     * 获取jan变list的信息
+     * jan変listの情報の取得
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -26,7 +26,7 @@ public class PriorityOrderJanReplaceControloer {
     }
 
     /**
-     * 保存jan变list的信息（全删全插）
+     * jan変listの情報を保存(全削除全挿入)
      * @param priorityOrderJanReplace
      * @return
      */

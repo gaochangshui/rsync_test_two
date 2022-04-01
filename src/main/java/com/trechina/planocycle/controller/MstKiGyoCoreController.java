@@ -15,7 +15,7 @@ public class MstKiGyoCoreController {
     @Autowired
     private MstKiGyoCoreService mstKiGyoCoreService;
     /**
-     * 获取企业的共通部品参数
+     * 企業共通部品パラメータ取得
      * @param companyCd
      * @return
      */

@@ -16,7 +16,7 @@ public class PriorityOrderDataController {
     private PriorityOrderDataService priorityOrderDataService;
 
     /**
-     * 获取优先顺位表数据
+     * 優先順位表データの取得
      * @param priorityOrderDataForCgiDto
      * @return
      */
@@ -26,7 +26,7 @@ public class PriorityOrderDataController {
     }
 
     /**
-     * rank属性排序+优先顺位表反应按钮抽出数据
+     * rank属性ソート+優先順位表反応ボタン抽出データ
      * @param colNameList
      * @return
      */
@@ -36,7 +36,7 @@ public class PriorityOrderDataController {
     }
 
     /**
-     * 获取属性列名的名称
+     * 属性列名の取得
      * @param productPowerCd
      * @return
      */
