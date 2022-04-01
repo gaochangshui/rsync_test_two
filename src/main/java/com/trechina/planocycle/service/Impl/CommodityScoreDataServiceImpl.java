@@ -37,7 +37,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
 
     /**
-     * 通过smart获取商品力点数表基本pos数据
+     * smartによる商品力点数表基本posデータの取得
      *
      * @param taskID
      * @return
@@ -46,14 +46,14 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     public Map<String, Object> getCommodityScoreData(String taskID, String companyCd) {
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         List strList = new ArrayList();
-        // 带着taskId，再次请求cgi获取运行状态/数据
+        // taskIdを持って、再度cgiに運転状態/データの取得を要求する
         Map<String, Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
         if ("9".equals(Data.get("data"))){
             return Data;
         }
         logger.info("商品力点数表web版cgi返回数据：{}", Data);
         String authorCd = session.getAttribute("aud").toString();
-        // 返回的数据是字符串，处理成二维数组
+        // 返されるデータは文字列で、2 D配列に処理されます。
         if (Data.get("data") != null) {
             String[] strResult = Data.get("data").toString().split("@");
             String[] strSplit = null;
@@ -89,7 +89,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     }
 
     /**
-     * 获取顾客group数据
+     * 顧客グループデータの取得
      *
      * @param taskID
      * @return
@@ -97,18 +97,18 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Override
     public Map<String, Object> getCommodityScoreGroupData(String taskID, String companyCd) {
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        //获取用户id
+        //ユーザーIDの取得
         String authorCd = session.getAttribute("aud").toString();
         if (!taskID.equals("1")) {
 
             List strList = new ArrayList();
-            // 带着taskId，再次请求cgi获取运行状态/数据
+            // taskIdを持って、再度cgiに運転状態/データの取得を要求する
             Map<String, Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
             if (Data.get("data").equals("9")){
                 return Data;
             }
             logger.info("商品力点数表web版cgi返回数据：{}", Data);
-            // 返回的数据是字符串，处理成二维数组
+            // 返されるデータは文字列で、2 D配列に処理されます。
             if (Data.get("data") != null && Data.get("data") != "") {
                 String[] strResult = Data.get("data").toString().split("@");
                 String[] strSplit = null;
@@ -123,7 +123,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     }
                     arr[a] = session.getAttribute("aud").toString();
                     System.arraycopy(strSplit, 0, arr, 0, a);
-                    //数据过大1000存一次
+                    //データが大きすぎて1回1000保存
                     if (i % 1000 == 0 && i >= 1000) {
                         productPowerDataMapper.insertGroup(strList);
                         strList.clear();
