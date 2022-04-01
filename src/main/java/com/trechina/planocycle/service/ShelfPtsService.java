@@ -13,21 +13,21 @@ import java.util.Map;
 
 public interface ShelfPtsService {
     /**
-     * 获取棚割pts信息
+     * 棚割pts情報の取得
      * @param companyCd
      * @return
      */
     Map<String,Object> getShelfPtsInfo(String companyCd,Integer rangFlag,String areaList);
 
     /**
-     * 保存棚割pts信息
+     * 棚割pts情報の保存
      * @param shelfPtsDto
      * @return
      */
     Map<String,Object> setShelfPtsInfo(ShelfPtsDto shelfPtsDto,Integer flg);
 
     /**
-     * pts关联pattern
+     * pts関連pattern
      * @param shelfPtsJoinPatternDto
      * @return
      */
@@ -49,21 +49,21 @@ public interface ShelfPtsService {
     void saveFinalPtsData(String companyCd, String authorCd, Integer priorityOrderCd);
 
     /**
-     * 获取棚pattern关联过的csv履历数据
+     * 棚pattern関連csv履歴データの取得
      * @param companyCd
      * @return
      */
     Map<String, Object> getHistoryData(String companyCd);
 
     /**
-     * 棚pattern关联pts的下拉框数据
+     * 棚pattern関連ptsのドロップダウンボックスデータ
      * @param companyCd
      * @return
      */
     Map<String, Object> getPtsName(String companyCd);
 
     /**
-     * 获取棚pattern别的pts信息
+     * 棚pattern別pts情報の取得
      * @param companyCd
      * @param rangFlag
      * @param areaList
@@ -72,44 +72,50 @@ public interface ShelfPtsService {
     Map<String, Object> getPtsInfoOfPattern(String companyCd, Integer rangFlag, String areaList);
 
     /**
-     * 棚pattern别pts关联pattern
+     * 棚pattern別pts関連pattern
      * @param shelfPtsJoinPatternDto
      * @return
      */
     Map<String, Object> saveShelfPtsOfPattern(List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto);
     /**
-     * 删除棚割pts信息
+     * 棚割pts情報の削除
      * @param
      * @return
      */
      Map<String,Object> delShelfPtsInfo(JSONObject jsonObject);
 
     /**
-     * 获取棚pattern关联的pts的棚/段数
+     *棚pattern関連ptsの棚/セグメント数を取得
      * @param patternCd
      * @return
      */
       Map<String,Object> getTaiNumTanaNum(Integer patternCd,Integer priorityOrderCd);
     /**
-     * 获取棚pattern 关联pts的详细信息
+     * 棚pattern関連ptsの詳細の取得
      * @param patternCd
      * @return
      */
       Map<String,Object> getPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd);
 
     /**
-     * 陈列顺设定添加
+     * 陳列順設定追加
      * @param workPriorityOrderSort
      * @return
      */
     Map<String,Object> setDisplay( List<WorkPriorityOrderSort> workPriorityOrderSort);
     /**
-     * 陈列顺设定展示
+     * 陳列順設定展示
      * @param companyCd
      * @return
      */
 
     Map<String,Object> getDisplay( String companyCd,Integer priorityOrderCd);
 
+    /**
+     * csvファイルのダウンロード
+     * @param ptsCsvVO
+     * @param response
+     * @throws IOException
+     */
     void downloadPtsCsv(PtsCsvVO ptsCsvVO, HttpServletResponse response) throws IOException;
 }
