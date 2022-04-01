@@ -3,7 +3,6 @@ package com.trechina.planocycle.service;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
 import com.trechina.planocycle.entity.vo.PriorityOrderMstVO;
-import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
@@ -63,12 +62,6 @@ public interface PriorityOrderMstService {
      */
     Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd);
 
-    /**
-     * 删除所有优先顺位表信息
-     * @param primaryKeyVO
-     * @return
-     */
-    Map<String, Object> delPriorityOrderAllInfo(PriorityOrderPrimaryKeyVO primaryKeyVO);
 
     /**
      * 根据productpowercd查询关联的优先顺位表cd
@@ -78,6 +71,13 @@ public interface PriorityOrderMstService {
      */
     String selPriorityOrderCdForProdCd(String companyCd,Integer productPowerCd);
 
+    /**
+     * S自动计算-Step1
+     * @param companyCd
+     * @param patternCd
+     * @param priorityOrderCd
+     * @return
+     */
     Map<String, Object> preCalculation(String companyCd, Long patternCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     /**
      * 自动计算

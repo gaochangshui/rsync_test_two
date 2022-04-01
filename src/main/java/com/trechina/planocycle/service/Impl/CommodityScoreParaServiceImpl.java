@@ -162,29 +162,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    /**
-     * 获取weight参数
-     * @param conpanyCd
-     * @param productPowerCd
-     * @return
-     */
-    @Override
-    public Map<String, Object> getCommodityScoreWeight(String conpanyCd, Integer productPowerCd) {
-        List<ProductPowerWeight> productPowerWeights = productPowerWeightMapper.selectByPrimaryKey(conpanyCd,productPowerCd);
-        return ResultMaps.result(ResultEnum.SUCCESS,productPowerWeights);
-    }
 
-    /**
-     * 获取表示项目的预备项目参数
-     * @param conpanyCd
-     * @param productPowerCd
-     * @return
-     */
-    @Override
-    public Map<String, Object> getCommodityScorePrePara(String conpanyCd, Integer productPowerCd) {
-        List<ProductPowerReserveMst> productPowerReserveMsts = productPowerReserveMstMapper.selectByPrimaryKey(conpanyCd,productPowerCd);
-        return ResultMaps.result(ResultEnum.SUCCESS,productPowerReserveMsts);
-    }
+
 
     /**
      * 删除商品力点数表所有信息+优先顺位表所有信息

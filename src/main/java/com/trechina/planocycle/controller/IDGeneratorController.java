@@ -32,7 +32,10 @@ public class IDGeneratorController {
         return idGeneratorService.productPowerNumGenerator();
     }
 
-
+    /**
+     * 全pattern自動取號
+     * @return
+     */
     @GetMapping("/getPriorityAllID")
     public Map<String,Object> PriorityAllID(){
         return idGeneratorService.priorityAllID();
