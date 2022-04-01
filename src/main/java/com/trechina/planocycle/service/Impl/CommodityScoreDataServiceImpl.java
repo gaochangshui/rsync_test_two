@@ -178,7 +178,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     }
 
     /**
-     * 保存文件的时候调用cgi
+     * ファイルを保存するときにcgiを呼び出す
      *
      * @param companyCd
      * @param filename
@@ -188,7 +188,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Override
     public Map<String, Object> getAttrFileSaveForCgi(String companyCd, String filename, String datacd,
                                                      Integer productPowerNo, String dataNm) {
-        // 从cgi获取数据
+        // cgiからデータを取得する
         String uuid = UUID.randomUUID().toString();
         ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
         productPowerDataForCgiDto.setCompany(companyCd);
@@ -197,17 +197,17 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerDataForCgiDto.setProductPowerNo(productPowerNo);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("保存文件的时候调用cgi的参数{}", productPowerDataForCgiDto);
-        //递归调用cgi，首先去taskid
+        //再帰的にcgiを呼び出して、まずtaskidに行きます
         String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
         logger.info("taskId返回：{}", result);
-        //带着taskId，再次请求cgi获取运行状态/数据
+        //taskIdを持って、再度cgiに運転状態/データの取得を要求する
         Map<String, Object> Data = cgiUtil.postCgiLoop(cgiUtil.setPath("TaskQuery"), result, tokenInfo);
         logger.info("保存文件的时候调用cgi返回的数据：{}", Data);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
-     * 获取商品力点数表taskid
+     * 商品力点数表taskidを取得する
      *
      * @param productPowerDataForCgiDto
      * @return
@@ -236,7 +236,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     }
 
     /**
-     * 获取商品力点数表顾客Grouptaskid
+     * 商品パワーポイントリストを取得するお客様Grouptaskid
      *
      * @param productPowerDataForCgiDto
      * @return
@@ -284,7 +284,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
 
     /**
-     * 多线程插入pos基本数据
+     * マルチスレッド挿入pos基本データ
      */
     class MyThread implements Runnable {
         private List list;
@@ -327,7 +327,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         ExecutorService executor = Executors.newFixedThreadPool(runSize);
         CountDownLatch begin = new CountDownLatch(1);
         CountDownLatch end = new CountDownLatch(runSize);
-        //循环线程
+        //ループスレッド
         for (int i = 0; i < runSize; i++) {
             if ((i + 1) == runSize) {
                 int startIndex = i * count;

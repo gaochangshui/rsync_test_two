@@ -47,7 +47,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Autowired
     private cgiUtils cgiUtil;
     /**
-     * 获取企业信息
+     * 企業情報の取得
      * @return
      */
     @Override
@@ -65,7 +65,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     }
 
     /**
-     * 获取企业cd关联的商品力点数List
+     * 企業cd関連商品力点数リスト取得
      * @param conpanyCd
      * @return
      */
@@ -77,7 +77,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     }
 
     /**
-     * 获取商品力点数的参数
+     * 商品力点数のパラメータを取得する
      * @param conpanyCd
      * @param productPowerCd
      * @return
@@ -99,7 +99,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     public void productPowerParamAttr(String conpanyCd, Integer productPowerCd, Map<String, Object> result) {
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd, productPowerCd);
         logger.info("获取动态列返回值：{}",productOrderParamAttrVO);
-        //遍历动态列
+        //動的列の遍歴
         if (productOrderParamAttrVO !=null && !productOrderParamAttrVO.getAttr().equals("")){
             String[] attrList = productOrderParamAttrVO.getAttr().split(",");
             String[] attrKey;
@@ -114,7 +114,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     public void productPowerParamAttrName(String conpanyCd, Integer productPowerCd, Map<String, Object> result) {
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectAttrName(conpanyCd, productPowerCd);
         logger.info("获取动态列返回值：{}",productOrderParamAttrVO);
-        //遍历动态列
+        //動的列の遍歴
         if (productOrderParamAttrVO !=null && !productOrderParamAttrVO.getAttr().equals("")){
             String[] attrList = productOrderParamAttrVO.getAttr().split(",");
             String[] attrKey;
@@ -132,7 +132,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     }
 
     /**
-     * 获取商品力点数表的属性和品目信息，用于优先顺位表
+     * 商品力点数表の属性と品目情報を取得し、優先順位表に使用する
      *
      * @param productOrderCd
      * @return
@@ -144,7 +144,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
 
 
     /**
-     * 保存商品力点数表模板名
+     * 商品力点表テンプレート名の保存
      * @param productPowerName
      * @return
      */
@@ -152,7 +152,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public Map<String, Object> setCommodityList(ProductCdAndNameDto productPowerName) {
         logger.info("商品力点数名保存参数：{}", productPowerName);
-        // 判断名字是否重复
+        // 名前が重複しているかどうかを判断する
 
         Integer resultName = productPowerMstMapper.selectExistsName(productPowerName.getProductPowerName(),
                 productPowerName.getConpanyCd(),productPowerName.getProductPowerNo());
