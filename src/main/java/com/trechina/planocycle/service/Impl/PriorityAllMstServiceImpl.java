@@ -420,6 +420,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 priorityAllMstMapper.setFinalTablePtsJans(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.setFinalTablePtsData(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.setFinalTablePtsVersion(companyCd,priorityAllCd,aud);
+                return ResultMaps.result(ResultEnum.SUCCESS,priorityAllCd);
 
             }else {
 
@@ -459,7 +460,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             throw new BussinessException(ex.getMessage());
         }
 
-        return ResultMaps.result(ResultEnum.SUCCESS);
+
     }
 
     /**
