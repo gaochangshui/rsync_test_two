@@ -21,6 +21,9 @@ import com.trechina.planocycle.mapper.ProductPowerMstMapper;
 import com.trechina.planocycle.service.ProductPowerMstService;
 import com.trechina.planocycle.utils.ExcelUtils;
 import com.trechina.planocycle.utils.ResultMaps;
+import org.apache.juli.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -49,6 +52,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     private ProductPowerDataMapper productPowerDataMapper;
     @Autowired
     HttpSession session;
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Override
     public Map<String, Object> getTableName(String companyCd) {
         String aud = session.getAttribute("aud").toString();
@@ -195,13 +199,13 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             ExcelUtils.generateExcel(headersByClassify, columnsByClassify, allData, outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("", e);
         } finally {
             if(Objects.nonNull(outputStream)){
                 try {
                     outputStream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("io关闭异常", e);
                 }
             }
         }
