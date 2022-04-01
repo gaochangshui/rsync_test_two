@@ -329,8 +329,8 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             } else {
                 return ResultMaps.result(ResultEnum.FAILURE);
             }
-        } catch (IOException e) {
-            logger.error("报错,上传文件报错：{}", e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("报错,上传文件报错：{}", e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultMaps.result(ResultEnum.FAILURE);
         } finally {
