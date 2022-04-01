@@ -27,7 +27,10 @@ import org.springframework.web.util.UriUtils;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -390,18 +393,20 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 
         response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=utf-8");
 
-        PrintWriter printWriter = response.getWriter();
-        //为了解决excel打开乱码的问题
-        byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-        printWriter.write(new String(bom));
-
+        OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_16LE);
         String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
         response.setHeader("Content-Disposition", format);
-        this.generateCsv(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, printWriter);
+
+        //为了解决excel打开乱码的问题
+        byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+        writer.write(new String(bom));
+        writer.flush();
+
+        this.generateCsv(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, writer);
     }
 
     public void generateCsv(ShelfPtsDataVersion shelfPtsDataVersion, List<ShelfPtsDataTaimst> shelfPtsDataTaimst,
-                            List<ShelfPtsDataTanamst> shelfPtsDataTanamst,  List<ShelfPtsDataJandata> shelfPtsDataJandata, PrintWriter printWriter){
+                            List<ShelfPtsDataTanamst> shelfPtsDataTanamst,  List<ShelfPtsDataJandata> shelfPtsDataJandata, OutputStreamWriter printWriter){
         try(CsvWriter csvWriter = CsvWriter.builder().build(printWriter)) {
             csvWriter.writeRow(Lists.newArrayList(shelfPtsDataVersion.getCommoninfo(),
                     shelfPtsDataVersion.getVersioninfo(), shelfPtsDataVersion.getOutflg()));
