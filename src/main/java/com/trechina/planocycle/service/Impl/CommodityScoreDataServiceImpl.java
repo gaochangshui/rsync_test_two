@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -177,37 +176,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);
     }
 
-    /**
-     * ファイルを保存するときにcgiを呼び出す
-     *
-     * @param companyCd
-     * @param filename
-     * @param datacd
-     * @return
-     */
-    @Override
-    public Map<String, Object> getAttrFileSaveForCgi(String companyCd, String filename, String datacd,
-                                                     Integer productPowerNo, String dataNm) {
-        // cgiからデータを取得する
-        String uuid = UUID.randomUUID().toString();
-        ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
-        productPowerDataForCgiDto.setCompany(companyCd);
-        productPowerDataForCgiDto.setMode("yobi_shori");
-        productPowerDataForCgiDto.setGuid(uuid);
-        productPowerDataForCgiDto.setProductPowerNo(productPowerNo);
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("保存文件的时候调用cgi的参数{}", productPowerDataForCgiDto);
-        //再帰的にcgiを呼び出して、まずtaskidに行きます
-        String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
-        logger.info("taskId返回：{}", result);
-        //taskIdを持って、再度cgiに運転状態/データの取得を要求する
-        Map<String, Object> Data = cgiUtil.postCgiLoop(cgiUtil.setPath("TaskQuery"), result, tokenInfo);
-        logger.info("保存文件的时候调用cgi返回的数据：{}", Data);
-        return ResultMaps.result(ResultEnum.SUCCESS);
-    }
 
     /**
-     * 商品力点数表taskidを取得する
+     * 获取商品力点数表taskid
      *
      * @param productPowerDataForCgiDto
      * @return
@@ -236,7 +207,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     }
 
     /**
-     * 商品パワーポイントリストを取得するお客様Grouptaskid
+     * 获取商品力点数表顾客Grouptaskid
      *
      * @param productPowerDataForCgiDto
      * @return
@@ -272,19 +243,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 
-    @Override
-    public Map<String, Object> getDBCommodityScoreData(String companyCd, Integer productPowerCd) {
-        String authorCd = session.getAttribute("aud").toString();
-        productPowerDataMapper.deleteWKSyokika(companyCd, authorCd);
-        productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
-        List<ProductPowerMstData> productPowerMstData = productPowerDataMapper.getProductPowerMstData(companyCd, productPowerCd);
-
-        return ResultMaps.result(ResultEnum.SUCCESS, productPowerMstData);
-    }
-
 
     /**
-     * マルチスレッド挿入pos基本データ
+     * 多线程插入pos基本数据
      */
     class MyThread implements Runnable {
         private List list;
@@ -327,7 +288,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         ExecutorService executor = Executors.newFixedThreadPool(runSize);
         CountDownLatch begin = new CountDownLatch(1);
         CountDownLatch end = new CountDownLatch(runSize);
-        //ループスレッド
+        //循环线程
         for (int i = 0; i < runSize; i++) {
             if ((i + 1) == runSize) {
                 int startIndex = i * count;
