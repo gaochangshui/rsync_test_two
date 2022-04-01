@@ -1,12 +1,8 @@
-package com.trechina.planocycle.service.Impl;
+package com.trechina.planocycle.service.impl;
 
-import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.utils.ResultMaps;
 import org.junit.Test;
 
 import java.io.*;
-
-import static org.junit.Assert.*;
 
 public class FilesOperationServiceImplTest {
 

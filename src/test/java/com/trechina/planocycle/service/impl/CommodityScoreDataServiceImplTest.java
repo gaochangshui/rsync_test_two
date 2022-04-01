@@ -1,14 +1,7 @@
-package com.trechina.planocycle.service.Impl;
+package com.trechina.planocycle.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class CommodityScoreDataServiceImplTest {

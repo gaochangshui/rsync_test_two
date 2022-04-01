@@ -1,10 +1,6 @@
-package com.trechina.planocycle.service.Impl;
+package com.trechina.planocycle.service.impl;
 
 import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class CommodityScoreMasterServiceImplTest {
 

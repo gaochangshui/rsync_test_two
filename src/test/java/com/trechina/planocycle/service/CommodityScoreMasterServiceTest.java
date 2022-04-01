@@ -1,13 +1,11 @@
 package com.trechina.planocycle.service;
 
-import com.trechina.planocycle.service.Impl.CommodityScoreMasterServiceImpl;
+import com.trechina.planocycle.service.impl.CommodityScoreMasterServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
-
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

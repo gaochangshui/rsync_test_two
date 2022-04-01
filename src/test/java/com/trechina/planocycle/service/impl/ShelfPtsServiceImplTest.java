@@ -1,4 +1,4 @@
-package com.trechina.planocycle.service.Impl;
+package com.trechina.planocycle.service.impl;
 
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import org.junit.Test;
@@ -9,7 +9,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpSession;
 
-import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ShelfPtsServiceImplTest {
