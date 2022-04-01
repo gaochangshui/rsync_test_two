@@ -40,6 +40,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.*;
 
 @Service
@@ -332,6 +333,10 @@ public class FilesOperationServiceImpl implements FilesOperationService {
         } catch (Exception e) {
             logger.error("报错,上传文件报错：{}", e.getMessage(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+            if(e instanceof SQLException){
+                return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
+            }
             return ResultMaps.result(ResultEnum.FAILURE);
         } finally {
             try{
