@@ -103,10 +103,10 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         columnsByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("jan", "skuName"));
         columnsByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), Lists.newArrayList("classifyBig", "classifyMiddle", "classifySmall", "classifyFine"));
         columnsByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
-        columnsByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
-        columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.PREPARE_RANK.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.RANK.getName(), Lists.newArrayList("rankResult"));
         //表示する列に対応するヘッダー
@@ -114,10 +114,10 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         headersByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("JANコード", "商品名"));
         headersByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), Lists.newArrayList("大分類", "中分類", "小分類", "細分類"));
         headersByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
-        headersByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
-        headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.PREPARE_RANK.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.RANK.getName(), Lists.newArrayList("Rank"));
 
