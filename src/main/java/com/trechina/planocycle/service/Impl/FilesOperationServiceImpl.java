@@ -22,6 +22,7 @@ import com.trechina.planocycle.service.FilesOperationService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -330,7 +331,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 return ResultMaps.result(ResultEnum.FAILURE);
             }
         } catch (Exception e) {
-            logger.error("报错,上传文件报错：{}", e.getMessage());
+            logger.error("报错,上传文件报错：{}", e.getMessage(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultMaps.result(ResultEnum.FAILURE);
         } finally {
@@ -471,7 +472,8 @@ public class FilesOperationServiceImpl implements FilesOperationService {
         if (resultFile.exists()) {
             resultFile.mkdirs();
         }
-        file.transferTo(resultFile);
+//        file.transferTo(resultFile);
+        FileUtils.copyInputStreamToFile(file.getInputStream(), resultFile);
     }
 
     /**
