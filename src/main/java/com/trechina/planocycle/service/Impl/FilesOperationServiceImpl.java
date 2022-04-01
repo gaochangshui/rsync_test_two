@@ -29,6 +29,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -40,7 +41,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 import java.util.*;
 
 @Service
@@ -334,7 +334,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             logger.error("报错,上传文件报错：{}", e.getMessage(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
-            if(e instanceof SQLException){
+            if(e instanceof DataIntegrityViolationException){
                 return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
             }
             return ResultMaps.result(ResultEnum.FAILURE);
