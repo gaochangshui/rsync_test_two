@@ -327,6 +327,7 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
       planocycle.shelf_pts_data_jandata janData
       on ptsData."id" =  janData.pts_cd
     where ptsData.shelf_pattern_cd = #{patternCd}
+    order by janData.tai_cd,janData.tana_cd,janData.tanaposition_cd
   </select>
   <select id="getDisplay" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderSort">
     select sort.zokusei_id,sort.sort_num,mst.zokusei_nm as zokuseiName
