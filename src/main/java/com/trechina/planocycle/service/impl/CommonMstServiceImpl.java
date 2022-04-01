@@ -1,4 +1,4 @@
-package com.trechina.planocycle.service.Impl;
+package com.trechina.planocycle.service.impl;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;

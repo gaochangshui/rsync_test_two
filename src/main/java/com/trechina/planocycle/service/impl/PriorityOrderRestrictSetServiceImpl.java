@@ -1,4 +1,4 @@
-package com.trechina.planocycle.service.Impl;
+package com.trechina.planocycle.service.impl;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
 import com.trechina.planocycle.entity.po.PriorityOderAttrSet;
