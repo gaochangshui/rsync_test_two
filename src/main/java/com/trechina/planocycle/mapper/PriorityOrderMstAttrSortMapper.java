@@ -21,41 +21,41 @@ public interface PriorityOrderMstAttrSortMapper {
 
     List<PriorityOrderMstAttrSort> selectByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
-    //跟据属性获取type值
+    //属性に従ってtype値を取得
     int getAttrType(@Param("attrId") Integer attrId);
 
-    //跟据属性获取sort
+    //コンプライアンス属性取得sort
     int getAttrSort(@Param("attrId") Integer attrId);
 
-    //跟据属性获取tableName
+    //属性に従ってtableNameを取得
     String getAttrTableName(@Param("attrId") Integer attrId);
 
-    //获取属性列表
+    //属性リストの取得
     List<PriorityOrderAttrListVo> getAttribute();
-    //获取陈列设定属性列表
+    //陳列設定属性リストの取得
     List<PriorityOrderAttrListVo> getAttributeSort();
 
     List<PriorityOrderAttrListVo> getAttrValue(@Param("attr1") Integer zokuseiId,@Param("ptsCd")Integer ptsCd);
 
     List<PriorityOrderAttrVO> getAttrValue5(@Param("attr1") Integer a1cd,@Param("ptsCd")Integer ptsCd);
 
-    //获取商品分类属性结构
+    //商品分類属性構造の取得
     List<PriorityOrderAttrValue> getGoodsAttrTree();
 
     //商品分類以外の属性数
     List<PriorityOrderAttrValueVo> getAttr();
 
-    //根据zokuseiId获取对应的属性和属性类型
+    //zookuseiIdに基づいて対応する属性と属性タイプを取得する
     List<PriorityOrderAttrValue> getAttrValues(@Param("zokuseiId") Integer zokuseiId);
 
 
-    //根据对应的属性获取对应的face
+    //対応する属性に基づいて対応するfaceを取得する
     Integer getfeceNum(@Param("janCol1") String janCol1, @Param("janCol2") String janCol2, @Param("attrValue1") String attrValue1, @Param("attrValue2") String attrValue2, @Param("patternCd") Integer patternCd);
-    //根据对应的属性获取对应的face
+    //対応する属性に基づいて対応するfaceを取得する
     List<PriorityOrderAttrFaceNum> getfeceNum1(@Param("janCol1") String janCol1, @Param("janCol2") String janCol2,@Param("patternCd") Integer patternCd);
-    //根据zokuseiId获取对应的col
+    //zookuseiIdに基づいて対応するcolを取得する
     String getAttrCol(@Param("zokuseiId") Integer zokuseiId);
-    //获取work表属性1/2对应的面积
+    //ワークテーブルのプロパティ1/2に対応する面積を取得
 
     List<PriorityOrderAttrVO> getEditAttributeArea(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 

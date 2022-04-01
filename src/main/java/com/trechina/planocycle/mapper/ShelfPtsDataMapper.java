@@ -57,28 +57,28 @@ public interface ShelfPtsDataMapper {
 
     //pts台数
     Integer getTaiNum(@Param("patternCd")Integer patternCd);
-    //pts总段数
+    //pts総セグメント数
     Integer getTanaNum(@Param("patternCd")Integer patternCd);
     //face数
     Integer getFaceNum(@Param("patternCd")Integer patternCd);
-    //新face数
+    //新しいface数
     Integer getNewFaceNum(@Param("priorityOrderCd")Integer priorityOrderCd);
     //sku数
     Integer getSkuNum(@Param("patternCd")Integer patternCd);
-    //新sku数
+    //新しいsku数
     Integer getNewSkuNum(@Param("priorityOrderCd")Integer priorityOrderCd);
-    //获取棚名称
+    //ハウス名の取得
     String getPengName(@Param("patternCd")Integer patternCd);
-    //获取棚pattern名称
+    //棚pattern名の取得
     String getPatternName(@Param("patternCd")Integer ternCd);
 
     Integer getpatternCd(@Param("priorityOrderCd")Integer priorityOrderCd);
 
     //header/列名
     PtsDetailDataVo getPtsDetailData(@Param("patternCd")Integer patternCd);
-    //新header/列名
+    //新しいヘッダー/列名
     PtsDetailDataVo getPtsNewDetailData(@Param("priorityOrderCd")Integer priorityOrderCd);
-    //获取ptsCd
+    //ptsCdの取得
     Integer getPtsCd(@Param("patternCd")Integer patternCd);
 
     //获取tai信息

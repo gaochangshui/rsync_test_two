@@ -79,7 +79,7 @@ public interface PriorityAllMstMapper {
     void deleteFinalTablePtsRelation(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
     void deleteFinalTablePtsVersion(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
 
-    //临时表修改
+    //テンポラリ・テーブルの変更
     void setFinalTableMst(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd,@Param("priorityAllName")String priorityAllName);
     void setFinalTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
     void setFinalTableRestrict(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
@@ -107,9 +107,9 @@ public interface PriorityAllMstMapper {
     void setNewFinalTablePtsVersion(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
 
 
-    //删除接口
+    //インタフェースの削除
     int deleteMst(@Param("companyCd")String companyCd,@Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
 
-    //check名字
+    //チェック名
     Integer selectPriorityAllName(@Param("priorityAllName")String priorityAllName,@Param("companyCd")String companyCd);
 }

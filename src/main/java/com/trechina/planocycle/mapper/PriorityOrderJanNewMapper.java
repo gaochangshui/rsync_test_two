@@ -48,12 +48,12 @@ public interface PriorityOrderJanNewMapper {
 
 
 
-    //新规不存在商品的基本信息
+    //商品の基本情報は存在しません
     int setJanNewInfo(@Param("list") List<JanMstPlanocycleVo> janMstPlanocycleVo,@Param("companyCd")String companyCd);
-    //删除work表信息
+    //ワークシート情報の削除
     int deleteJanNewInfo(@Param("companyCd")String companyCd);
 
 
-    //展示work表信息
+    //ワークシート情報の表示
     List<JanMstPlanocycleVo> getJanNewInfo(@Param("companyCd")String companyCd);
 }

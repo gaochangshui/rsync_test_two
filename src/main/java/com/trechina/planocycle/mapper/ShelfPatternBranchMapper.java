@@ -18,7 +18,6 @@ public interface ShelfPatternBranchMapper {
 
     int deleteBranchCd (@Param("branchList")List<String> branchList, @Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd")String authorCd);
 
-    //恢复删除数据
     Integer setDelFlg(@Param("branch")String branch,@Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd")String authorCd);
 
 }

@@ -11,33 +11,33 @@ import java.util.List;
 @Mapper
 public interface ProductPowerDataMapper {
 
-    //临时表work_product_power_syokika
+    //テンポラリ・テーブルワークproduct_power_syokika
     int deleteWKSyokika(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 
-    //smart数据存到临时表
+    //smartデータをテンポラリ・テーブルに保存
     int insert(@Param("keyNameList") List<String[]> keyNameList);
 
-    //最终表存到临时表
+    //最終テーブルをテンポラリ・テーブルに保存
     int insertWkSyokikaForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
-    //临时表数据返回页面
+    //テンポラリ・テーブル・データの戻りページ
     List<ProductPowerMstData> selectWKSyokika(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 
-    //临时表所有
+    //テンポラリ・テーブルのすべて
 
     int deleteWKKokyaku(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 
-    //smart数据存到临时表
+    //smartデータをテンポラリ・テーブルに保存
     int insertGroup(@Param("keyNameList") List<List<String>> keyNameList);
 
-    //最终表存到临时表
+    //最終テーブルをテンポラリ・テーブルに保存
     int insertWkKokyakuForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
-    //临时表数据返回页面
+    //テンポラリ・テーブル・データの戻りページ
     List<ProductPowerMstData> selectWKKokyaku(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
 
 
-    //临时表yobilitem和data
+    //テンポラリ・テーブルyobilitemとdata
     int deleteWKYobiiiternCd(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("valueCd") Integer valueCd);
 
     int deleteWKYobiiitern(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
@@ -48,14 +48,14 @@ public interface ProductPowerDataMapper {
 
     List<WKYobiiiternData> selectWKYobiiiternData(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
 
-    //smart数据存到临时表
+    //smartデータをテンポラリ・テーブルに保存
     Integer getWKYobiiiternSort(@Param("companyCd") String companyCd, @Param("aud") String aud);
 
     int insertYobilitem(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("dataCd") Integer valueCd, @Param("itemName") String itemName, @Param("dataSort") Integer dataSort);
 
     int insertYobilitemData(@Param("dataList") List<WorkProductPowerReserveData> dataList);
 
-    //最终表存到临时表
+    //最終テーブルをテンポラリ・テーブルに保存
     int setWkSyokikaForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
     int setWkGroupForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
@@ -66,7 +66,7 @@ public interface ProductPowerDataMapper {
 
     int setWkDataForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
-    //最终表删除
+    //最終テーブルの削除
     int deleteSyokika(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
     int deleteGroup(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
@@ -77,7 +77,7 @@ public interface ProductPowerDataMapper {
 
     int deleteRankData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
-    //最终表物理删除
+    //最終テーブル物理削除{{さいしゅうてーぶる:ぶつりてきさくじょ}}
     int phyDeleteSyokika(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
     int phyDeleteGroup(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
@@ -87,12 +87,12 @@ public interface ProductPowerDataMapper {
     int phyDeleteYobiiiternData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
 
-    //最终表查询
+    //最終テーブルクエリー
     List<ProductPowerSyokika> selectSyokika(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
     List<ProductPowerMstData> getProductPowerMstData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
-    //临时表转到最终表
+    //テンポラリ・テーブルを最終テーブルに移動
     int endSyokikaForWK(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
     int endGroupForWK(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
@@ -101,7 +101,7 @@ public interface ProductPowerDataMapper {
 
     int endYobiiiternDataForWk(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
-    //查询最终表的数量
+    //クエリの最終テーブル数
     Integer syokikaPowerCdNum(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
     Integer groupPowerCdNum(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
@@ -109,8 +109,8 @@ public interface ProductPowerDataMapper {
     Integer yobiiiternPowerCdNum(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
 
-    //rank计算
-    //三表汇合一表
+    //rank計算
+    //三表合流一表
 
 
     int deleteWKData(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);

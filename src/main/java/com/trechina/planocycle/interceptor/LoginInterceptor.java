@@ -22,7 +22,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse response, Object o) throws Exception{
         Cookie[] cookies = httpServletRequest.getCookies();
         String token = "";
-        //获取token
+        //tokenの取得
         if (cookies == null) {
             returnJson(response,ResultMaps.result(ResultEnum.NOTFOUNTCOOKIE));
             return false;
@@ -41,7 +41,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         jwtUtils util= new jwtUtils();
         JSONObject jwtInfo=util.getJwtInfo(token);
 //        httpSession.setAttribute("exp",jwtInfo.get("exp"));
-        // 判断token过期时间
+        // tokenの有効期限の判断
         int time = (int) (System.currentTimeMillis() / 1000);
         int tokenTime = (int) jwtInfo.get("exp");
         if(time>tokenTime){
@@ -49,7 +49,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        // 记录session
+        // レコードセッション
         HttpSession httpSession = httpServletRequest.getSession();
         httpSession.setAttribute("aud",jwtInfo.get("aud"));
         httpSession.setAttribute("inCharge",jwtInfo.get("incharge"));

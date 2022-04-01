@@ -30,7 +30,7 @@ public interface PriorityOrderMstMapper {
     String selectPriorityOrderCdForProdCd(String companyCd, Integer productPowerCd);
 
     /**
-     * 逻辑删除，更新delete_flag=1
+     * 論理削除、delete_の更新flag=1
      * @param companyCd
      * @param authorCd
      * @param priorityOrderCd
@@ -39,7 +39,7 @@ public interface PriorityOrderMstMapper {
     int logicDeleteByPriorityOrderCd(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 
     /**
-     * 从work临时表中查询数据插入到实际表中
+     * ワークテンポラリ・テーブルからクエリー・データを実際のテーブルに挿入
      * @param companyCd
      * @param authorCd
      * @param priorityOrderCd
@@ -53,6 +53,6 @@ public interface PriorityOrderMstMapper {
     int selectByPriorityOrderCd(@Param("priorityOrderCd") Integer priorityOrderCd);
     PriorityOrderMst selectOrderMstByPriorityOrderCd(@Param("priorityOrderCd") Integer priorityOrderCd);
     int updateOrderName(@Param("priorityOrderCd") Integer priorityOrderCd, @Param("priorityOrderName") String priorityOrderName);
-    //临时表存
+    //テンポラリ・テーブル・ストア
     int setPartition(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd,@Param("authorCd")String authorCd,@Param("partition")Integer Partition );
 }

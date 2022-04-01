@@ -16,7 +16,7 @@ public interface PriorityOrderJanCardMapper {
     List<PriorityOrderJanCardVO> selectJanCard(String companyCd, Integer priorityOrderCd);
 
     int insert(@Param("lists") List<PriorityOrderJanCard> record,@Param("authorCd")String authorCd);
-    //将最终表数据转到临时表
+    //最終テーブルデータをテンポラリ・テーブルに移動
     int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
 
     int deleteByAuthorCd(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);

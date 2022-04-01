@@ -16,6 +16,6 @@ public interface ShelfNameAreaMapper {
 
     int deleteAreaCd(@Param("areaCd") List<Integer> areaCd, @Param("shelfNameCd") Integer shelfNameCd, @Param("authorCd") String authorCd);
 
-    //恢复删除数据
+    //削除データの復元
     Integer setDelFlg(@Param("areaCd") Integer areaCd, @Param("shelfNameCd") Integer shelfNameCd, @Param("authorCd") String authorCd);
 }

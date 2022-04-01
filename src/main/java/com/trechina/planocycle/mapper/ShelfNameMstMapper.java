@@ -15,28 +15,28 @@ import java.util.List;
 public interface ShelfNameMstMapper {
 
     /**
-     * 保存棚名称信息
+     * ハウス名情報の保存
      * @param
      * @return
      */
     int insert(ShelfNameMst record);
 
     /**
-     * 修改棚名称信息
+     * 小屋名情報の変更
      * @param
      * @return
      */
     int update( ShelfNameMst record);
 
     /**
-     * 获取棚名称信息
+     * 棚名情報の取得
      * @param conpanyCd
      * @return
      */
     List<ShelfNameDataVO> selectShelfNameInfo(@Param("conpanyCd") String conpanyCd);
 
     /**
-     * 获取棚名称 Master
+     * ハウス名を取得Master
      * @param conpanyCd
      * @return
      */
