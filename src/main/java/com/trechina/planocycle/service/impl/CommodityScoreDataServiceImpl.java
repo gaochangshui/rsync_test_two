@@ -129,7 +129,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     }
                     strList.add(arr);
                 }
-                if (strList.size() > 0) {
+                if (!strList.isEmpty()) {
                     productPowerDataMapper.insertGroup(strList);
                 }
             } else if ("".equals(Data.get("data"))) {

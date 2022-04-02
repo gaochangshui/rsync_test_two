@@ -20,7 +20,7 @@ public class PriorityOrderJanNew {
     }
 
     public void setCompanyCd(String companyCd) {
-        this.companyCd = companyCd == null ? null : companyCd.trim();
+        this.companyCd = companyCd;
     }
 
     public Integer getPriorityOrderCd() {
@@ -36,7 +36,7 @@ public class PriorityOrderJanNew {
     }
 
     public void setJanNew(String janNew) {
-        this.janNew = janNew == null ? null : janNew.trim();
+        this.janNew = janNew;
     }
 
     public Integer getRank() {
@@ -47,12 +47,12 @@ public class PriorityOrderJanNew {
         this.rank = rank;
     }
 
-    public Integer getBranchnum() {
+    public Integer getBranchNum() {
         return branchNum;
     }
 
-    public void setBranchnum(Integer branchnum) {
-        this.branchNum = branchnum;
+    public void setBranchNum(Integer branchNum) {
+        this.branchNum = branchNum;
     }
 
     public BigDecimal getBranchAccount() {
@@ -61,14 +61,6 @@ public class PriorityOrderJanNew {
 
     public void setBranchAccount(BigDecimal branchAccount) {
         this.branchAccount = branchAccount;
-    }
-
-    public Integer getBranchNum() {
-        return branchNum;
-    }
-
-    public void setBranchNum(Integer branchNum) {
-        this.branchNum = branchNum;
     }
 
     @Override

@@ -143,7 +143,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             List<Integer> deleteAreaList = ListDisparityUtils.getListDisparit(getShelfPatternArea, shelfPatternDto.getArea());
             //areaの集合を追加するには
             List<Integer> setAreaList = ListDisparityUtils.getListDisparit( shelfPatternDto.getArea(),getShelfPatternArea);
-            if (deleteAreaList.size()>0){
+            if (!deleteAreaList.isEmpty()){
                 deleteAreaList.forEach(item -> {
                     ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
                     shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());
@@ -160,7 +160,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 logger.info("削除棚名称信息保存后返回的信息：{}",deleteAreaCdInfo);
 
             }
-            if (setAreaList.size()>0) {
+            if (!setAreaList.isEmpty()) {
                 setAreaList.forEach(item -> {
                     ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
                     shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());
@@ -246,7 +246,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         //areaの集合を追加するには
         List<String> setBranchList = ListDisparityUtils.getListDisparitStr( shelfPatternBranchVO.getBranchCd(),getShelfPatternBranch);
 
-      if (delBranchList.size()>0){
+      if (!delBranchList.isEmpty()){
           delBranchList.forEach(item->{
               ShelfPatternBranch shelfPatternBranch = new ShelfPatternBranch();
               shelfPatternBranch.setShelfPattrenCd(shelfPatternBranchVO.getShelfPatternCd());
@@ -260,7 +260,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
 
       }
 
-      if (setBranchList.size()>0){
+      if (!setBranchList.isEmpty()){
           setBranchList.forEach(item->{
               ShelfPatternBranch shelfPatternBranch = new ShelfPatternBranch();
               shelfPatternBranch.setShelfPattrenCd(shelfPatternBranchVO.getShelfPatternCd());
