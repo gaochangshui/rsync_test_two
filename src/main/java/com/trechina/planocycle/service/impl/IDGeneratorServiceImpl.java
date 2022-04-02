@@ -34,7 +34,7 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
         PriorityOrderNumGenerator priorityOrderNumGenerator = new PriorityOrderNumGenerator();
         priorityOrderNumGenerator.setUsercd(session.getAttribute("aud").toString());
         Integer id = priorityOrderNumGeneratorMapper.insert(priorityOrderNumGenerator);
-        logger.info("優先順位表自動取号："+priorityOrderNumGenerator.getId());
+        logger.info("優先順位表自動取号：{}",priorityOrderNumGenerator.getId());
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderNumGenerator.getId());
     }
 
@@ -46,7 +46,7 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
         ProductPowerNumGenerator productPowerNumGenerator = new ProductPowerNumGenerator();
         productPowerNumGenerator.setUsercd(session.getAttribute("aud").toString());
         Integer id =productPowerNumGeneratorMapper.insert(productPowerNumGenerator);
-        logger.info("商品力点数表取号："+productPowerNumGenerator.getId());
+        logger.info("商品力点数表取号：{}",productPowerNumGenerator.getId());
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerNumGenerator);
     }
     /**
