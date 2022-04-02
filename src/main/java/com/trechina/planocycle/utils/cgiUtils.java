@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +19,7 @@ public class cgiUtils {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Value("${smartUrlPath}")
     public String smartPath;
+    private String textFormat ="application/json;charset=UTF-8";
 
     /**
      * get調用cgi
@@ -90,7 +89,7 @@ public class cgiUtils {
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.setDoInput(true);
-            connection.setRequestProperty("Content-Type","application/json;charset=UTF-8");
+            connection.setRequestProperty("Content-Type",textFormat);
 
             os = connection.getOutputStream();
             os.write(JSON.toJSONBytes(cla));
@@ -157,7 +156,7 @@ public class cgiUtils {
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.setDoInput(true);
-            connection.setRequestProperty("Content-Type","application/json;charset=UTF-8");
+            connection.setRequestProperty("Content-Type",textFormat);
 
             OutputStream os = connection.getOutputStream();
             Map<String,String> para = new HashMap<>();
@@ -252,7 +251,7 @@ public class cgiUtils {
                 connection.setRequestMethod("POST");
                 connection.setDoOutput(true);
                 connection.setDoInput(true);
-                connection.setRequestProperty("Content-Type","application/json;charset=UTF-8");
+                connection.setRequestProperty("Content-Type",textFormat);
 
                 OutputStream os = connection.getOutputStream();
                 Map<String,String> para = new HashMap<>();
