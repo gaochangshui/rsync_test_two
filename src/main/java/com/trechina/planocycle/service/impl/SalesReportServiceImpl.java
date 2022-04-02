@@ -27,7 +27,7 @@ public class SalesReportServiceImpl implements SalesReportService {
     private static final String FINAL_MSPACEDGOURDLP = "MSPACEDGOURDLP";
 
     /**
-     * 获取棚别实际数据
+     * 棚別実績データの取得
      * @param taskID
      * @return
      */
@@ -48,7 +48,7 @@ public class SalesReportServiceImpl implements SalesReportService {
     }
 
     /**
-     * 获取商品别实际数据
+     * 商品別実績データの取得
      *
      * @param taskID
      * @return
@@ -68,7 +68,7 @@ public class SalesReportServiceImpl implements SalesReportService {
     }
 
     /**
-     * 获取单jan别实际数据
+     * 単一jan別の実際のデータの取得
      *
      * @param taskID
      * @return
