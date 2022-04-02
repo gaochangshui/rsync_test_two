@@ -11,20 +11,20 @@ import java.util.Map;
 public interface CommonMstService {
 
     /**
-     * 获取Area Master信息
+     * Area Master情報の取得
      * @return
      */
     Map<String,Object> getAreaInfo(String companyCd);
 
     /**
-     * 根据棚名称cd取area
+     * 棚名cdよりareaを取る
      * @param ShelfNameCd
      * @return
      */
     Map<String,Object> getAreaForShelfName(Integer ShelfNameCd);
 
     /**
-     * 放置商品的通用逻辑，基本和全パターン一样
+     * 商品を置く一般的なロジックは、基本的には全パタンと同じです
      * @return
      */
     Map<String, List<PriorityOrderResultDataDto>> commSetJan(Short partitionFlag, Short partitionVal,

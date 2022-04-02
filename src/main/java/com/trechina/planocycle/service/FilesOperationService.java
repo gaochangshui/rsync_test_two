@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface FilesOperationService {
     /**
-     * csv上传接口
+     * csvアップロードインタフェース
      *
      * @param multipartFile
      * @return
@@ -22,7 +22,7 @@ public interface FilesOperationService {
                                        String projectIds, String bucketNames);
 
     /**
-     * csv转excel，并下载
+     * csvはexcelを回転して、そしてダウンロードします
      *
      * @param multipartFile
      * @return

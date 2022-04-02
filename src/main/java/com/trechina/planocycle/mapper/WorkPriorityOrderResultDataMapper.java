@@ -40,21 +40,21 @@ public interface WorkPriorityOrderResultDataMapper {
 
     List<WorkPriorityOrderResultData>  getResultDatas(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    //重新计算rank
+    //再計算rank
     List<WorkPriorityOrderResultData> getReorder(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("productPowerCd")Integer productPowerCd,
                                                  @Param("priorityOrderCd")Integer priorityOrderCd,@Param("sortName1")String sortName1,
                                                  @Param("sortName2")String sortName2);
 
-    //获取属性排名
+    //属性ランキングの取得
     List<PriorityOrderJanNewDto> getAttrRank(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd, @Param("sortName1")String sortName1,
                                              @Param("sortName2")String sortName2);
 
     List<PriorityOrderResultDataDto>  getResultJans(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
-    //批量更新最终rank
+    //最終rankの一括更新
      int  setSortRank(@Param("list")List<WorkPriorityOrderResultData> list,@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 
     /**
-     * 批量更新jan的放置位置信息
+     * janの配置位置情報を一括更新
      * @param list
      * @return
      */
@@ -62,6 +62,6 @@ public interface WorkPriorityOrderResultDataMapper {
 
     int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd")String authorCd);
 
-    //用户编辑faceNum
+    //ユーザ編集faceNum
     int updateFaceNum(@Param("list") List<PriorityOrderRestrictJanDto> list,@Param("authorCd")String authorCd);
 }

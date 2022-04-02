@@ -8,7 +8,7 @@ import java.util.Map;
 public interface CommodityScoreDataService {
 
     /**
-     * 获取商品力点数表基本数据
+     * 商品力点数表の基本データの取得
      *
      * @param taskID
      * @return
@@ -16,7 +16,7 @@ public interface CommodityScoreDataService {
     Map<String, Object> getCommodityScoreData(String taskID, String companyCd);
 
     /**
-     * 获取商品力点数表顾客Group数据
+     * 商品力点数表顧客Groupデータ取得
      *
      * @param taskID
      * @return
@@ -25,7 +25,7 @@ public interface CommodityScoreDataService {
 
 
     /**
-     * 获取商品力点数表基本taskid
+     * 商品力点数表基本taskidを取得する
      *
      * @param productPowerDataForCgiDto
      * @return
@@ -33,7 +33,7 @@ public interface CommodityScoreDataService {
     Map<String, Object> getCommodityScoreTaskId(ProductPowerDataForCgiDto productPowerDataForCgiDto);
 
     /**
-     * 获取商品力点数表顾客Grouptaskid
+     * 商品パワーポイントリストを取得するお客様Grouptaskid
      *
      * @param productPowerDataForCgiDto
      * @return

@@ -12,7 +12,7 @@ import java.util.Map;
 
 public interface CommodityScoreParaService {
     /**
-     * 获取表示项目参数
+     * 表示項目パラメータの取得
      * @param conpanyCd
      * @param productPowerCd
      * @return
@@ -20,7 +20,7 @@ public interface CommodityScoreParaService {
     Map<String,Object> getCommodityScorePara(String conpanyCd, Integer productPowerCd );
 
     /**
-     * 保存表示项目参数,weight参数，step1期间参数
+     * 表示項目パラメータの保存,Weightパラメータ，Step 1期間パラメータ
      * @return
      */
     Map<String,Object> setCommodityScorePare(ProductPowerParam productPowerParam);
@@ -30,7 +30,7 @@ public interface CommodityScoreParaService {
 
 
     /**
-     * 删除商品力点数表所有信息
+     * 商品力点表のすべての情報を削除
      * @param primaryKeyVO
      * @return
      */
@@ -61,7 +61,7 @@ public interface CommodityScoreParaService {
     Map<String,Object>  rankCalculate( RankCalculateVo rankCalculateVo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
     /**
-     * 删除reserve
+     * reserveの削除
      * @return
      */
      Map<String,Object> deleteReserve(JSONObject jsonObject);
