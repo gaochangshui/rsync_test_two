@@ -31,7 +31,7 @@ public class sshFtpUtils {
             logger.info("ssh server参数：{},{}",localFile,remotePath);
             Connection connection = getConnection();
             boolean auth = connection.authenticateWithPassword(user,pw);
-            logger.info("ssh server身份验証返回値：{}",auth);
+            logger.info("ssh server認証返回値：{}",auth);
             if (auth) {
                 logger.info("検証成功");
                 SCPClient client =new SCPClient(connection);
@@ -69,7 +69,7 @@ public class sshFtpUtils {
      * @return
      */
     public  byte[] downLoafCgi(String path,String tokenInfo) {
-        //打開URLConnection进行读取
+        //打開URLConnection進行読み取り
         InputStream in = null;
         ByteArrayOutputStream os = null;
 
@@ -113,7 +113,7 @@ public class sshFtpUtils {
                 outputStream = response.getOutputStream();
                 Connection connection = getConnection();
                 boolean auth = connection.authenticateWithPassword(user,pw);
-                logger.info("ssh server身份検証返回値：{}",auth);
+                logger.info("ssh server身分検証返回値：{}",auth);
                 if (auth) {
                     logger.info("検証成功");
                     SCPClient client =new SCPClient(connection);

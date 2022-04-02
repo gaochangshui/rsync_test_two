@@ -151,7 +151,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Override
     public Map<String, Object> saveShelfPts(List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto) {
         logger.info("ptd関連patternのパラメータ:{}", shelfPtsJoinPatternDto);
-        // 修改有效无效flg 有效1 无效0 全改为0
+        // 修改有效无效flg 有效1 无效0 変更为0
         // 修改表数据
         // shujucheck
 //        if (shelfPtsDataMapper.checkPtsData(shelfPtsJoinPatternDto) == 0) {
@@ -221,7 +221,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     public Map<String, Object> delShelfPtsInfo(JSONObject jsonObject) {
         if (((Map) jsonObject.get("param")).get("id") != null) {
             Integer id = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("id")));
-            //つかむ取用户id
+            //つかむ取authorid
             String authorCd = httpSession.getAttribute("aud").toString();
 
             shelfPtsDataMapper.delShelfPtsInfo(id, authorCd);
@@ -565,7 +565,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      */
     @Override
     public Map<String, Object> getPtsInfoOfPattern(String companyCd, Integer rangFlag, String areaList) {
-        logger.info("つかむ取棚pattern别的pts信息参数：{},{}", companyCd, areaList);
+        logger.info("つかむ取棚pattern別的pts信息参数：{},{}", companyCd, areaList);
         String[] strArr = areaList.split(",");
         List<Integer> list = new ArrayList<>();
         if (strArr.length > 0 && !areaList.equals("")) {
@@ -573,7 +573,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 list.add(Integer.valueOf(strArr[i]));
             }
         }
-        logger.info("处理area信息：{}", list);
+        logger.info("処理area信息：{}", list);
         List<ShelfPtsData> shelfPtsNameVOList = shelfPtsDataMapper.selectPtsInfoOfPattern(companyCd, rangFlag, list);
         return ResultMaps.result(ResultEnum.SUCCESS, shelfPtsNameVOList);
     }

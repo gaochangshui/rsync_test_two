@@ -221,7 +221,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
-                    logger.error("io閉じる异常", e);
+                    logger.error("io閉じる異常", e);
                 }
             }
         }

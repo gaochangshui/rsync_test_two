@@ -196,7 +196,7 @@ public class cgiUtils {
                 return ResultMaps.result(ResultEnum.SUCCESS,builder.toString());
             }
         } catch (IOException e) {
-            logger.info("cgi調用报错：", e);
+            logger.info("cgi調用error：", e);
             return ResultMaps.result(ResultEnum.FAILURE,null);
         } finally {
             try {
@@ -222,7 +222,7 @@ public class cgiUtils {
     }
 
     /**
-     * 递归調用cgi
+     * 再帰調用cgi
      *                  通を過ぎて返回的code判断是否成功
      *                  statusCode:200 調用成功，結束循環
      *                  否則根据一下flag告知前端錯誤情况

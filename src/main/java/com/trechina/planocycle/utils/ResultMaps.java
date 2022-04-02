@@ -7,7 +7,7 @@ import java.util.Map;
 
 public final class ResultMaps {
     /**
-     * 返回带数据
+     * 返回数据
      * @param resultEnum
      * @param data
      * @return
@@ -21,7 +21,7 @@ public final class ResultMaps {
     }
 
     /**
-     * 返回不带数据
+     * 返回いいえ数据
      * @param resultEnum
      * @return
      */
