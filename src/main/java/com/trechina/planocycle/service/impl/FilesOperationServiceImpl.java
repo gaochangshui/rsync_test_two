@@ -207,7 +207,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                             File file1 = new File(path + filenames);
                             logger.info("文件存放完成");
                             if (!file1.setReadable(true)) {
-                                logger.info("设置读文件失敗");
+                                logger.info("設定読文件失敗");
                             }
 
                             inputStreamReader = new InputStreamReader(new FileInputStream(file1), "Shift_Jis");
@@ -268,11 +268,11 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                 }
                             }
                             if (titleNum != 3) {
-                                logger.info("没有三组台番号");
+                                logger.info("没有三組台番号");
                                 return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
                             }
 
-                            logger.info("check完成，开始链接服务器");
+                            logger.info("check完成，開始connect server");
 
                             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
 
@@ -305,17 +305,17 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                             getPtsCsvCgiDto.setMode("pts_shori");
                             getPtsCsvCgiDto.setPtsIdCsvNm(ptsId + "@" + filenames);
                             getPtsCsvCgiDto.setGuid(uuid);
-                            logger.info("调用pts_shori的参数{}", getPtsCsvCgiDto);
+                            logger.info("調用pts_shori的参数{}", getPtsCsvCgiDto);
 
                             ResourceBundle resource = ResourceBundle.getBundle("pathConfig");
                             String paths = resource.getString("PtsUploadData");
                             String result = null;
                             result = cgiUtil.postCgi(paths, getPtsCsvCgiDto, tokenInfo);
-                            logger.info("taskid返回pts文件处理：{}", result);
+                            logger.info("taskid返回pts文件処理：{}", result);
                             String queryPath = resourceBundle.getString("TaskQuery");
                             // taskidを持って、再度cgiに運転状態/データの取得を要求する
                             Map<String, Object> data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-                            logger.info("调用pts_shori的结果{}", data);
+                            logger.info("調用pts_shori的結果{}", data);
                         }
                     }
                 }
@@ -325,7 +325,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 return ResultMaps.result(ResultEnum.FAILURE);
             }
         } catch (Exception e) {
-            logger.error("error,上传文件：{}", e.getMessage(), e);
+            logger.error("error,上伝文件：{}", e.getMessage(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
             if(e instanceof DataIntegrityViolationException){
@@ -341,7 +341,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                     inputStreamReader.close();
                 }
             }catch (Exception e){
-                logger.error("io閉じる异常", e);
+                logger.error("io閉じる異常", e);
             }
 
         }
@@ -405,7 +405,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 logger.info("文件削除失敗");
             }
         } catch (IOException e) {
-            logger.info("csv转excel报错2:{}", e.getMessage());
+            logger.info("csv転送excel error2:{}", e.getMessage());
         } finally {
             if (is!=null) {
                 try {

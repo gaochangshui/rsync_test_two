@@ -512,7 +512,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             , String companyCd, String  authorCd, BigDecimal basicTannaNum) {
         List<PriorityAllRestrictDto> allRestrictDtoList = new ArrayList<>();
 
-        //基本パターン的face数扩大三倍取商品（基本パターン已同期修改）
+        //基本パターン的face数拡大三倍取商品（基本パターン已同期修改）
         Long skuCountPer = skuCountPerPattan*3;
 
         // チェックされたパターン
@@ -568,7 +568,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 BigDecimal remainTanaCnt = new BigDecimal(pattern.getTanaCnt()).subtract(allTanaNum);
                 if(remainTanaCnt.compareTo(BigDecimal.ZERO)!=0){
                     //残りのtana数がなく、そのまま終了
-                    logger.info("基本{}, 扩缩后{}", allRestrict.getBasicTanaCnt(), allRestrict.getTanaCnt());
+                    logger.info("基本{}, 拡縮后{}", allRestrict.getBasicTanaCnt(), allRestrict.getTanaCnt());
                     if (remainTanaCnt.compareTo(new BigDecimal(1)) < 0) {
                         allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(BigDecimal.valueOf(0.5)));
                         allRestrict.setSkuCnt(allRestrict.getSkuCnt() + BigDecimal.valueOf(skuCountPer/2).setScale(0, RoundingMode.CEILING).intValue());

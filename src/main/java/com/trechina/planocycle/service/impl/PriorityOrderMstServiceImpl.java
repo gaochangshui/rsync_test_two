@@ -118,9 +118,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public Map<String, Object> getPriorityOrderList(String companyCd) {
-        logger.info("つかむ取优先順位表参数：{}", companyCd);
+        logger.info("つかむ取優先順位表参数：{}", companyCd);
         List<PriorityOrderMst> priorityOrderMstList = priorityOrderMstMapper.selectByPrimaryKey(companyCd);
-        logger.info("つかむ取优先順位表返回値：{}", priorityOrderMstList);
+        logger.info("つかむ取優先順位表返回値：{}", priorityOrderMstList);
         return ResultMaps.result(ResultEnum.SUCCESS, priorityOrderMstList);
     }
 
@@ -147,9 +147,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd) {
-        logger.info("根据优先順位表cdつかむ取商品力点数表cd的参数{}", priorityOrderCd);
+        logger.info("根据優先順位表cdつかむ取商品力点数表cd的参数{}", priorityOrderCd);
         Map<String, Object> productPowerCd = priorityOrderMstMapper.selectProductPowerCd(priorityOrderCd);
-        logger.info("根据优先順位表cdつかむ取商品力点数表cd的返回値{}", priorityOrderCd);
+        logger.info("根据優先順位表cdつかむ取商品力点数表cd的返回値{}", priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS, productPowerCd);
     }
 
@@ -299,7 +299,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 .filter(obj -> Boolean.TRUE.equals(obj.checkCondition()))
                 .collect(Collectors.toList());
         if (!unsetList.isEmpty()) {
-            logger.error("{}台段没有设置制约条件", unsetList.size());
+            logger.error("{}台段没有設定制約条件", unsetList.size());
             isUnset = 1;
         }
 
@@ -622,7 +622,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         priorityOrderJanCgiDto.setCompany(companyCd);
         priorityOrderJanCgiDto.setShelfPatternNo(shelfPatternNo);
         priorityOrderJanCgiDto.setUsercd(authorCd);
-        logger.info("計算给FaceKeisancgi的参数{}", priorityOrderJanCgiDto);
+        logger.info("計算FaceKeisancgi的参数{}", priorityOrderJanCgiDto);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("PriorityOrderData");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
@@ -633,7 +633,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String queryPath = resourceBundle.getString("TaskQuery");
         //taskIdを持って、再度cgiに運転状態/データの取得を要求する
         resultCgi = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-        logger.info("保存优先順位表结果：{}", resultCgi);
+        logger.info("保存優先順位表結果：{}", resultCgi);
         return resultCgi;
     }
 
@@ -711,7 +711,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 //            priorityOrderJanReplaceMapper.workDelete(companyCd, authorCd, priorityOrderCd);
 //            priorityOrderJanCardMapper.workDelete(companyCd, priorityOrderCd, authorCd);
         } catch (Exception exception) {
-            logger.error("保存临时表数据到实际表报错", exception);
+            logger.error("保存work data到final表 error", exception);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultMaps.result(ResultEnum.FAILURE);
         }
@@ -889,7 +889,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCut);
         }
         if (flag == 1) {
-            //取得jan变情報
+            //取得jan変情報
             List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd, priorityOrderCd);
             return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplace);
         }

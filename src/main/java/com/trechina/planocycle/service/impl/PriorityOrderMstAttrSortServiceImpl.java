@@ -55,7 +55,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityAttrSort(List<PriorityOrderMstAttrSort> priorityOrderMstAttrSort) {
-        logger.info("保存优先順位表排序的参数{}", priorityOrderMstAttrSort);
+        logger.info("保存優先順位表排序的参数{}", priorityOrderMstAttrSort);
         if (!priorityOrderMstAttrSort.isEmpty()) {
             priorityOrderMstAttrSortMapper.deleteByPrimaryKey(priorityOrderMstAttrSort.get(0).getCompanyCd(), priorityOrderMstAttrSort.get(0).getPriorityOrderCd());
             priorityOrderMstAttrSortMapper.insert(priorityOrderMstAttrSort);
@@ -236,7 +236,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         for (PriorityOrderAttrVO priorityOrderAttrVO : attrList) {
             priorityOrderAttrVO.setRank(i++);
         }
-        logger.info("属性所有组合为：{}", attrList);
+        logger.info("属性所有組合为：{}", attrList);
         return ResultMaps.result(ResultEnum.SUCCESS, attrList);
     }
 
