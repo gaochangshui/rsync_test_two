@@ -253,7 +253,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         logger.info("taskid返回：{}",result);
         String queryPath = resourceBundle.getString("TaskQuery");
         // taskidを持って、再度cgiに運転状態/データの取得を要求する
-        Map<String,Object> Data = cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
+        Map<String,Object> data = cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
         return true;
 
     }

@@ -132,8 +132,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public Map<String, Object> getPriorityOrderExistsFlg(String companyCd) {
-        //List<String> companyCd = Arrays.asList(session.getAttribute("inCharge").toString().split(","));
-
         int result = priorityOrderMstMapper.selectPriorityOrderCount(companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
@@ -700,18 +698,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             shelfPtsService.saveFinalPtsData(companyCd, authorCd, priorityOrderCd);
 
 
-            //テンポラリ・テーブルのデータの削除
-//            workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderSortMapper.delete(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderSortRankMapper.delete(companyCd, authorCd, priorityOrderCd);
-//            priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
-//            priorityOrderJanReplaceMapper.workDelete(companyCd, authorCd, priorityOrderCd);
-//            priorityOrderJanCardMapper.workDelete(companyCd, priorityOrderCd, authorCd);
         } catch (Exception exception) {
             logger.error("保存臨時表数据到實際表報錯", exception);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
