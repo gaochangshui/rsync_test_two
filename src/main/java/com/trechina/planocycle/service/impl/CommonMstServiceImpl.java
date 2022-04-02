@@ -40,17 +40,17 @@ public class CommonMstServiceImpl implements CommonMstService {
         List<PtsTaiVo> taiData, List<PriorityOrderResultDataDto> workPriorityOrderResultData,
         List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations, Integer minFace) {
         /**
-         * 根据tai_tana分类存放已经分配好的商品list
+         * tai_によるとtanaは割り当てられた商品リストを分類して保管します
          */
         Map<String, List<PriorityOrderResultDataDto>> finalSetJanResultData = new HashMap<>();
 
         if (partitionFlag == 0) {
-            //没隔板的情况
+            //仕切りがない場合
             partitionVal = 0;
         }
 
         /**
-         * 根据制约条件进行分组进行摆放
+         * 制約条件に従ってグループ分けして配置する
          */
         Map<Long, List<WorkPriorityOrderRestrictRelation>> relationByGroup = workPriorityOrderRestrictRelations
                 .stream().collect(Collectors.groupingBy(WorkPriorityOrderRestrictRelation::getRestrictCd, LinkedHashMap::new, Collectors.toList()));
@@ -62,11 +62,11 @@ public class CommonMstServiceImpl implements CommonMstService {
 
         for (Map.Entry<Long, List<WorkPriorityOrderRestrictRelation>> relationEntry : relationByGroup.entrySet()) {
             Long relationCd = relationEntry.getKey();
-            //记录商品放到哪里了-同一个制约的商品可能不同的台、段
+            //商品がどこに置かれたかを記録する-同じ制約の商品が異なる台、段
             int setResultDataIndex = 0;
 
-            //符合当前制约条件商品按rank排序
-            //如果sortrank为null就只按skurank排序
+            //現在の制約条件に合致する商品はrankでソートする
+            //sortrankがnullの場合skurankのみでソート
             relationSorted = workPriorityOrderResultData
                     .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
                     .sorted(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank, Comparator.nullsFirst(Long::compareTo))
@@ -78,7 +78,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 Integer tanaCd = workPriorityOrderRestrictRelation.getTanaCd();
                 short tanaType = workPriorityOrderRestrictRelation.getTanaType();
 
-                //分类key，同一类的商品进行减face数处理
+                //分類key、同一類の商品はface数を減らす処理を行う
                 String taiTanaKey = taiCd + "_" + tanaCd + "_" + tanaType;
 
                 Optional<PtsTaiVo> taiInfo = taiData.stream().filter(ptsTaiVo -> taiCd.equals(ptsTaiVo.getTaiCd())).findFirst();
@@ -89,16 +89,16 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
 
                 Integer taiWidth = taiInfo.get().getTaiWidth();
-                //台或半段的宽度, 已使用的宽度
+                //テーブルまたはセグメントの幅、使用済みの幅
                 double width = taiWidth;
                 double usedWidth = 0;
 
                 if (tanaType != 0) {
-                    //半段的根据具体位置段的宽度放置
+                    //セグメントの幅は、特定の位置セグメントの幅に応じて配置されます。
                     width = taiWidth / 2.0;
                 }
 
-                //放置商品
+                //商品を置く
                 for (int i = setResultDataIndex; i < relationSorted.size(); i++) {
                     priorityOrderResultData = relationSorted.get(i);
 
@@ -106,7 +106,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     Long janWidth = Optional.ofNullable(priorityOrderResultData.getJanWidth()).orElse(0L);
                     Long face = priorityOrderResultData.getFace();
 
-                    //商品宽度null或者0时使用默认宽度67mm，faceSku>1的需要乘以faceSku
+                    //商品幅nullまたは0の場合はデフォルト幅67 mm、faceSku>1の必要にfaceSkuを乗じます
                     if (janWidth == 0) {
                         janWidth = 67 * faceSku;
                     }
@@ -114,7 +114,7 @@ public class CommonMstServiceImpl implements CommonMstService {
 
                     long janTotalWidth = janWidth * face + partitionVal;
                     if (janTotalWidth + usedWidth <= width) {
-                        //根据face数进行摆放可以放开
+                        //face数に応じて並べて離すことができます
                         setResultDataIndex = i + 1;
 
                         priorityOrderResultData.setFaceFact(face);
@@ -137,12 +137,11 @@ public class CommonMstServiceImpl implements CommonMstService {
                             priorityOrderResultData.setTanaCd(tanaCd);
 
                             setResultDataIndex = i + 1;
-                            //更新已用宽度
                             resultData.add(priorityOrderResultData);
                             finalSetJanResultData.put(taiTanaKey, resultData);
                         }
 
-                        //根据face数进行摆放放不开，直接不放，结束该位置的摆放
+                        //face数に応じて並べても離せず、そのまま置かず、その位置の並べ替えを終了します
                         break;
                     }
                 }
@@ -154,65 +153,65 @@ public class CommonMstServiceImpl implements CommonMstService {
 
 
     /**
-     * 通过cut face数是否能放下
-     * 逻辑：第一步：先对要放置的商品进行face数-1
-     *          1.如果face数*商品宽度能放下就放，记下实际存放的face数
-     *          2.放不下，走第二步
-     *      第二步：对同一台棚区分(taiCd_tanaCd_tanaType)中的商品list倒序进行cut face判断
-     *          1.如果没有入数irisu=1的商品则不进行cut，直接结束
-     *          2.如果有入数irisu=1，倒序遍历商品list，进行face数-1
-     *              3.如果face数*宽度能放下就放，记下实际存放的face数
-     *              4.无法放下，结束，该位置不放了
-     * @param resultDataDtoList 同台棚区分的商品list
-     * @param targetResultData 要放置的商品
-     * @param width 当前台棚区分的宽度
-     * @param usedWidth 当前台棚区分的已用宽度
+     * cut face数で置けるかどうか
+     * ろんり：最初のステップ：先に置く商品に対してface数-1を行います
+     *          1.face数*商品幅が置けば置いて、実際に保管しているface数をメモします
+     *          2.手放せない
+     *      ステップ2：同一棚区分(taiCd_tanaCd_tanaType)における商品リストの逆順についてcut face判定を行う
+     *          1.入数irisu=1の商品がなければcutを行わず、そのまま終了
+     *          2.入数irisu=1がある場合は、商品リストを逆順に巡回し、face数-1を行います
+     *              3.face数*幅が置けば置いて、実際に保管しているface数をメモします
+     *              4.置くことができなくて、终わって、この位置は放しません
+     * @param resultDataDtoList スタンド別商品リスト
+     * @param targetResultData 置くべき商品
+     * @param width 現在の棚区分の幅
+     * @param usedWidth 現在の棚区分の使用済み幅
      * @param minFace 最小face数
-     * @param partitionVal 隔板宽度
-     * @return true放，false不放
+     * @param partitionVal スペーサ幅
+     * @return true放す，false放さない
      */
     private boolean isSetJanByCutFace(List<PriorityOrderResultDataDto> resultDataDtoList, double width, double usedWidth, long partitionVal,
                                       long minFace, PriorityOrderResultDataDto targetResultData){
         Long face = targetResultData.getFace();
         Long janWidth = targetResultData.getJanWidth();
 
-        //剩下可用的宽度（需要考虑有隔板的情况）
+        //使用可能な幅が残ります(仕切りがある場合を考慮する必要があります)
         double remainderWidth = width - usedWidth;
-        //通过cut目标商品的face数是否能放下
+        //カットでターゲット商品のface数を落とせますか？
         boolean isSetByCut = false;
 
-        //先看要放的商品一个一个的减能不能放下
+        //まず置く商品を1つ1つ下げていくかどうかを見てみましょう
         for (Long i = face - 1; i >= minFace; i--) {
             if((janWidth * i + partitionVal) <= remainderWidth){
-                //能放下
+                //置くことができる
                 isSetByCut = true;
-                //保存实际的face数
+                //実際のface数を保存
                 targetResultData.setFaceFact(i);
                 break;
             }
         }
 
         if(!isSetByCut){
-            //通过cut目标商品的face数不能放下
-            //只处理入数=1的，不等于1的不进行cut
+            //カットで対象商品のface数を落とすことはできません
+            //入数=1のもののみを処理し、1に等しくないものはcutを行わない
             List<PriorityOrderResultDataDto> resultDataDtoByIrisu = resultDataDtoList.stream()
                     .filter(data-> 1 == data.getIrisu()).collect(Collectors.toList());
 
             if(resultDataDtoByIrisu.isEmpty()){
-                //没有符合条件的无法cut
+                //条件を満たさないとcutできない
                 return false;
             }
 
-            //按照最小face进行放置，需要多少宽度（需要考虑有隔板的情况）+剩下没用的宽度
+            //最小faceで放置すると、どのくらいの幅が必要か(仕切りがある場合を考慮する必要がある)+残りの無駄な幅
             long needWidth = targetResultData.getJanWidth() * minFace + partitionVal;
             PriorityOrderResultDataDto currentResultData = null;
             for (int i = resultDataDtoByIrisu.size()-1; i >= 0 ; i--) {
                 currentResultData = resultDataDtoByIrisu.get(i);
                 Long faceFact = currentResultData.getFaceFact();
 
-                //小于等于最小face不能再cut了
-                //当前商品减一个face数，能不能放下目标商品
-                //cut 1 个face的宽度再加剩下的宽度是否能满足目标上面放置需要的宽度
+                //最小face以下ではcutできません
+                //現在の商品は1つのface数を減らして、目標の商品を置くことができますか
+                //Cut 1つのfaceの幅に残りの幅を加えてターゲットの上に置くのに必要な幅を満たすことができるかどうか
                 if(faceFact > minFace && currentResultData.getJanWidth() + remainderWidth >= needWidth){
                     currentResultData.setFaceFact(faceFact -  1);
                     targetResultData.setFaceFact(minFace);
@@ -226,16 +225,16 @@ public class CommonMstServiceImpl implements CommonMstService {
     }
 
     /**
-     * 先按照台遍历再遍历棚，同一个棚的商品从左到右的顺序从1开始进行标号，棚变了，重新标号
+     * まず台遍歴してから棚を遍歴し、同じ棚の商品は左から右の順に1からラベルを付け、棚が変わり、ラベルを付け直す
      *
      * @param workPriorityOrderResultData
      * @return
      */
     @Override
     public List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData) {
-        //有棚位置的resultdata数据
+        //ハウス位置のresultdataデータ
         List<WorkPriorityOrderResultDataDto> positionResultData = new ArrayList<>(workPriorityOrderResultData.size());
-        //根据台进行分组遍历
+        //テーブルに基づいてグループを分けて巡回する
         Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTai = workPriorityOrderResultData.stream()
                 .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTaiCd, LinkedHashMap::new, Collectors.toList()));
         Map<Integer, List<WorkPriorityOrderResultDataDto>> workPriorityOrderResultDataByTana = null;
@@ -245,11 +244,11 @@ public class CommonMstServiceImpl implements CommonMstService {
             Integer taiCd = entrySet.getKey();
 
             workPriorityOrderResultDataDtos = workPriorityOrderResultDataByTai.get(taiCd);
-            //根据棚进行分组遍历
+            //小屋によってグループを分けて遍歴する
             workPriorityOrderResultDataByTana = workPriorityOrderResultDataDtos.stream()
                     .collect(Collectors.groupingBy(WorkPriorityOrderResultDataDto::getTanaCd, LinkedHashMap::new, Collectors.toList()));
             for (Map.Entry<Integer, List<WorkPriorityOrderResultDataDto>> entry : workPriorityOrderResultDataByTana.entrySet()) {
-                //同一个棚，序号从1开始累加，下一个棚重新从1开始加
+                //同じ棚で、番号が1から加算され、次の棚で再び1から加算されます。
                 Integer tantaPositionCd=0;
                 Integer tanaCd = entry.getKey();
 

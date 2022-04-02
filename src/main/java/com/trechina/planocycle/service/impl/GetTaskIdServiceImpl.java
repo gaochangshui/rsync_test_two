@@ -22,7 +22,7 @@ public class GetTaskIdServiceImpl implements GetTaskIdService {
     @Autowired
     private cgiUtils cgiUtil;
     /**
-     * 访问cgi获取taskid
+     * cgiにアクセスしてtaskidを取得
      * @param para
      * @return
      */
@@ -30,7 +30,7 @@ public class GetTaskIdServiceImpl implements GetTaskIdService {
     public Map<String, Object> getTaskId(Map<String, Object> para) {
         logger.info("获取taskid共同方法接收到的参数：{}",para.toString());
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        // mode就是path地址的key
+        // modeはpathアドレスのkeyです
         String path = resourceBundle.getString(para.get("mode").toString());
         String uuid = UUID.randomUUID().toString();
         String tokenInfo = String.valueOf(session.getAttribute("MSPACEDGOURDLP"));

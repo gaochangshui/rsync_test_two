@@ -15,7 +15,7 @@ public class MstKiGyoCoreServiceImpl implements MstKiGyoCoreService {
     @Autowired
     private MstKiGyoCoreMapper mstKiGyoCoreMapper;
     /**
-     * 获取企业的共通部品参数
+     * 企業共通部品パラメータ取得
      * @param companyCd
      * @return
      */

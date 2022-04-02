@@ -62,7 +62,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     private ShelfPtsDataJandataMapper shelfPtsDataJandataMapper;
 
     /**
-     * 单文件上传
+     * 単一ファイルのアップロード
      *
      * @param multipartFile
      * @param path
@@ -79,9 +79,9 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                     names = multipartFile.getOriginalFilename();
                 }
                 if (names != null && names.indexOf(".csv") > -1) {
-                    // 不存在会创建路径
+                    // パスが作成されません
                     judgeExistsPath(path);
-                    //存放文件
+                    //ファイルを保存
                     excelPutPath(multipartFile, path + fileName);
                     ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
                     fileSaveRemote(path, companyCd, fileName, resourceBundle.getString("ProductCsvPath"),
@@ -157,7 +157,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             ptsDataJandata.setTaiCd(stringToInteger(data[0]));
             ptsDataJandata.setTanaCd(stringToInteger(data[01]));
             ptsDataJandata.setTanapositionCd(stringToInteger(data[2]));
-            // Jan为空的时候，数据库存null
+            // Janが空の場合、データ在庫null
             ptsDataJandata.setJan("".equals(data[3]) ? null : data[3]);
             ptsDataJandata.setFaceCount(stringToInteger(data[4]));
             ptsDataJandata.setFaceMen(stringToInteger(data[5]));
@@ -189,11 +189,11 @@ public class FilesOperationServiceImpl implements FilesOperationService {
 
         try {
             if (multipartFileList != null && multipartFileList.length > 0) {
-                // 不存在会创建路径
+                // パスが作成されません
                 judgeExistsPath(path);
                 String authorCd = session.getAttribute("aud").toString();
                 Date now = Calendar.getInstance().getTime();
-                //存放文件 // 文件内容check
+                //ファイルを保存 // ファイル内容チェック
                 String[] arr1;
                 String[] arr2;
                 String[] arr3;
@@ -237,7 +237,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                     ptsDataVersion.setModename(line);
                                     lineNum += 1;
                                 }
-                                // 数据分段
+                                // データセグメント
                                 if (line.contains("台番号")) {
                                     titleNum += 1;
                                     if (titleNum == 1) {
@@ -276,12 +276,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
 
                             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
 
-                            //
-
-                            // :TODO 屏蔽掉了往GCP上传文件的部分
-//                            fileSaveRemote(path, companyCd, filenames, resourceBundle.getString("PtsCsvPath"),
-//                                    projectIds, bucketNames);
-                            // 保存pts信息
+                            // pts情報の保存
                             ShelfPtsDto shelfPtsDto = new ShelfPtsDto();
                             shelfPtsDto.setCompanyCd(companyCd);
                             shelfPtsDto.setFileName(filenames);
@@ -289,7 +284,6 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                             Map<String, Object> res = shelfPtsService.setShelfPtsInfo(shelfPtsDto, 0);
                             Integer ptsId = (Integer) res.get("data");
                             ptsDataVersion.setPtsCd(ptsId);
-                            //
                             shelfPtsDataVersionMapper.insert(ptsDataVersion);
                             List<ShelfPtsDataTaimst> dataTaimstList = convertArrayToTaimstList(arrList1, ptsId, companyCd, authorCd, now);
 
@@ -303,7 +297,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
 
                             shelfPtsDataJandataMapper.insertAll(dataJandataList);
 
-                            // 返回id
+                            // idを返す
                             String uuid = UUID.randomUUID().toString();
                             String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
                             GetPtsCsvCgiDto getPtsCsvCgiDto = new GetPtsCsvCgiDto();
@@ -319,7 +313,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                             result = cgiUtil.postCgi(paths, getPtsCsvCgiDto, tokenInfo);
                             logger.info("taskid返回pts文件处理：{}", result);
                             String queryPath = resourceBundle.getString("TaskQuery");
-                            // 带着taskid，再次请求cgi获取运行状态/数据
+                            // taskidを持って、再度cgiに運転状態/データの取得を要求する
                             Map<String, Object> data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
                             logger.info("调用pts_shori的结果{}", data);
                         }
@@ -354,7 +348,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     }
 
     /**
-     * csv转excel，并下载
+     * csvはexcelを回転して、そしてダウンロードします
      *
      * @param multipartFile
      * @return
@@ -362,12 +356,12 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     @Override
     public Map<String, Object> csvConvertExcelDowlLoad(MultipartFile multipartFile, String productDownPath, HttpServletResponse response) {
         logger.info("a{}", multipartFile.getSize());
-        // 不存在会创建路径
+        // パスが作成されません
         judgeExistsPath(productDownPath);
         String files = productDownPath + "productFile.csv";
         String excelFiles = productDownPath + "productExcel.xlsx";
         InputStream is = null;
-        //存放文件
+        //ファイルを保存
         try(DataInputStream in = new DataInputStream(new FileInputStream(files));
             InputStreamReader inputStreamReader = new InputStreamReader(in, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(inputStreamReader);
@@ -375,7 +369,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             OutputStream outputStream = response.getOutputStream();
             FileOutputStream fos = new FileOutputStream(excelFiles)) {
             excelPutPath(multipartFile, files);
-            //读取csv写入excel
+            //csv書き込みexcelの読み取り
             String line = null;
             XSSFSheet sheet = workbook.createSheet("商品力点数表");
             XSSFRow row = null;
@@ -397,7 +391,6 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode("商品力点数表", "UTF-8") + ".xlsx");
             File fileExcel = new File(excelFiles);
             is = new FileInputStream(fileExcel);
-            // 构造一个长度为1024的字节数组
             byte[] buffer = new byte[1024];
             int len = 0;
             while ((len = is.read(buffer)) != -1) {
@@ -426,7 +419,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     }
 
     /**
-     * 文件保存到服务器
+     * ファイルをサーバに保存
      *
      * @param path
      * @param companyCd
@@ -437,7 +430,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                 String bucketNames) throws IOException {
         String remotePath = remotePaths;
         remotePath = remotePath.replace("COMPANYCD", companyCd);
-        // 存放文件--数据桶版本
+        // ファイルの保存--バケツのバージョン
         // The ID of your GCP project
         String projectId = projectIds;
         // The ID of your GCS bucket
@@ -458,7 +451,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     }
 
     /**
-     * 判断文件路径是否存在
+     * ファイルパスが存在するかどうかを判断
      */
     public boolean judgeExistsPath(String csvPath) {
         boolean res = true;
@@ -469,7 +462,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     }
 
     /**
-     * 文件存放
+     * ファイルの保存
      */
     public static void excelPutPath(MultipartFile file, String csvPath) throws IOException {
         File resultFile = new File(csvPath);
@@ -481,7 +474,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     }
 
     /**
-     * 将csv文件转成字符串数组集合
+     * csvファイルを文字列配列セットに変換する
      *
      * @param multipartFile
      * @return
@@ -492,7 +485,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             return Collections.emptyList();
         }
         List<String[]> result = new ArrayList<>();
-        //起手转成字符流
+        //キャラクタフローへのハンドオーバ
         InputStream is = null;
         InputStreamReader isReader = null;
         BufferedReader br = null;
@@ -500,7 +493,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             is = multipartFile.getInputStream();
             isReader = new InputStreamReader(is, StandardCharsets.UTF_8);
             br = new BufferedReader(isReader);
-            //循环逐行读取
+            //ループ逐行読み出し
             while (br.ready()) {
                 result.add(br.readLine().split(","));
             }

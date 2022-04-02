@@ -284,15 +284,15 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 workPriorityAllRestrictMapper.insertWKTableRestrict(allRestrictDtoList);
 
 
-                //从基本パターンresult_data中查询出来存到work_all_priority_result_data中(face、台棚放置数据不存)
+                //从基本パターンresult_data中ワークに保存するクエリーall_priority_result_data中（face、架台放置データ不保存）
                 workPriorityAllResultDataMapper.insertWKTableResultData(companyCd, priorityAllCd, priorityOrderCd, authorCd, pattern.getShelfPatternCd());
-                //获取pattern对应的jan
+                //pattern対応janの取得
                 String resultDataList = workPriorityAllResultDataMapper.getJans(pattern.getShelfPatternCd(), companyCd, priorityAllCd,authorCd);
                 if (resultDataList == null) {
                     return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
                 }
                 String[] array = resultDataList.split(",");
-                //调用smt计算推荐face数
+                //smtを呼び出して推奨face数を計算する
                 Map<String, Object> Data = priorityOrderMstService.getFaceKeisanForCgi(array, companyCd,  pattern.getShelfPatternCd(), authorCd);
                 if (Data.get("data") != null && Data.get("data") != "") {
                     String[] strResult = Data.get("data").toString().split("@");
@@ -311,13 +311,13 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                     workPriorityAllResultDataMapper.update(list,companyCd,authorCd,priorityAllCd,pattern.getShelfPatternCd());
                 }
                 List<PriorityAllResultDataDto> resultDatas = workPriorityAllResultDataMapper.getResultDatas(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
-                //获取旧pts的平均值，最大值最小值
+                //古いptsの平均値、最大値最小値を取得
                 FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(pattern.getShelfPatternCd());
                 Integer minFaceNum = faceNum.getFaceMinNum();
                 if (Data.get("data") != null && Data.get("data") != "") {
 
                     DecimalFormat df = new DecimalFormat("#.00");
-                    //获取salesCntAvg并保留两位小数
+                    //salescntAvgを取得し、小数点を2桁保持
                     Double avgSalesCunt = workPriorityAllResultDataMapper.getAvgSalesCunt(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
                     String format = df.format(avgSalesCunt);
                     avgSalesCunt = Double.valueOf(format);
@@ -353,7 +353,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 workPriorityAllResultDataMapper.updateFace(resultDatas);
 
                 /**
-                 * 放置商品
+                 * 商品を置く
                  */
                 PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
 
@@ -373,7 +373,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                     workPriorityAllResultDataMapper.updateTaiTanaBatch(companyCd, priorityAllCd, pattern.getShelfPatternCd(), authorCd, resultDataDtos);
                 }
 
-                //保存pts到临时表里
+                //ptsを一時テーブルに保存
                 priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
             }
         } catch(Exception ex) {
@@ -480,7 +480,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     }
 
     /**
-     * 删除 api⑦
+     * 削除 api⑦
      * @param priorityAllSaveDto
      * @return
      */
@@ -568,7 +568,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             for(PriorityAllRestrictDto allRestrict : allRestrictDtoList) {
                 BigDecimal remainTanaCnt = new BigDecimal(pattern.getTanaCnt()).subtract(allTanaNum);
                 if(remainTanaCnt.compareTo(BigDecimal.ZERO)!=0){
-                    //没有剩余的tana数，直接结束
+                    //残りのtana数がなく、そのまま終了
                     logger.info("基本{}, 扩缩后{}", allRestrict.getBasicTanaCnt(), allRestrict.getTanaCnt());
                     if (remainTanaCnt.compareTo(new BigDecimal(1)) < 0) {
                         allRestrict.setTanaCnt(allRestrict.getTanaCnt().add(BigDecimal.valueOf(0.5)));

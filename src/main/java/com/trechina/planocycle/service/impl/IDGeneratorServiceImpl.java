@@ -25,7 +25,7 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
     @Autowired
     private ProductPowerNumGeneratorMapper productPowerNumGeneratorMapper;
     /**
-     * 自动采号，并返回
+     * 自動採番、および戻る
      *
      * @return
      */
@@ -39,7 +39,7 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
     }
 
     /**
-     * 商品力点数表自动采号，并返回
+     * 商品力点数表自動採号、そして戻り
      */
     @Override
     public Map<String, Object> productPowerNumGenerator() {
