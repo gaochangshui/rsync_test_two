@@ -16,7 +16,7 @@ public class ShelfPatternAreaServiceImpl implements ShelfPatternAreaService {
     @Autowired
     private ShelfPatternAreaMapper shelfPatternAreaMapper;
     /**
-     * 保存shelfPattern关联的area
+     * shelfPattern関連のareaを保存
      *
      * @param shelfPatternArea
      * @return
@@ -28,7 +28,7 @@ public class ShelfPatternAreaServiceImpl implements ShelfPatternAreaService {
     }
 
     /**
-     * 删除shelfPattern关联的area
+     * shelfPattern関連areaの削除
      *
      * @param id
      * @return
