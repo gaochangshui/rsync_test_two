@@ -81,18 +81,18 @@ public interface ShelfPtsDataMapper {
     //ptsCdの取得
     Integer getPtsCd(@Param("patternCd")Integer patternCd);
 
-    //获取tai信息
+    //取得tai情報
     List<PtsTaiVo> getTaiData(@Param("patternCd")Integer patternCd);
-    //获取新tai信息
+    //取得新tai情報
     List<PtsTaiVo> getNewTaiData(@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    //获取tana信息
+    //取得tana情報
     List<PtsTanaVo> getTanaData(@Param("patternCd")Integer patternCd);
-    //获取新tana信息
+    //取得新tana情報
     List<PtsTanaVo> getNewTanaData(@Param("priorityOrderCd")Integer priorityOrderCd);
-    //获取janData信息
+    //取得janData情報
     List<PtsJanDataVo> getJanData(@Param("patternCd")Integer patternCd);
-    //获取旧janData信息
+    //取得旧janData情報
     List<PtsJanDataVo> getNewJanData(@Param("priorityOrderCd")Integer priorityOrderCd);
 
     int setDisplay(@Param("list")List< WorkPriorityOrderSort> workPriorityOrderSort,@Param("authorCd")String authorCd);
@@ -114,7 +114,7 @@ public interface ShelfPtsDataMapper {
                              @Param("id") Integer id, @Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 
     int deletePtsTaimst(@Param("ptsCd")Integer ptsCd);
-    //删除临时表的Data
+    //削除テンポラリ・テーブルのData
     int deleteWorkPtsTaimst(@Param("ptsCd")Integer ptsCd);
 
     int deletePtsTanamst(@Param("ptsCd")Integer ptsCd);
@@ -123,7 +123,7 @@ public interface ShelfPtsDataMapper {
 
     int deletePtsData(@Param("ptsCd")Integer ptsCd);
 
-    //删除临时表的Data
+    //削除テンポラリ・テーブルのData
     int deleteWorkPtsData(@Param("ptsCd")Integer ptsCd);
 
     int deletePtsDataJandata(@Param("ptsCd")Integer ptsCd);
@@ -148,7 +148,7 @@ public interface ShelfPtsDataMapper {
     Integer getNewId(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
 
-    //删除最终表data
+    //削除最终表data
     int deleteFinalPtsData(@Param("ptsCd")Integer ptsCd);
     int deleteFinalPtsTaimst(@Param("ptsCd")Integer ptsCd);
     int deleteFinalPtsTanamst(@Param("ptsCd")Integer ptsCd);
