@@ -13,14 +13,6 @@ import java.util.Map;
 
 public interface PriorityOrderMstAttrSortService {
 
-    /**
-     * 获取既存数据的排序
-     *
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
-    Map<String, Object> getPriorityAttrSort(String companyCd, Integer priorityOrderCd);
 
 
     /**

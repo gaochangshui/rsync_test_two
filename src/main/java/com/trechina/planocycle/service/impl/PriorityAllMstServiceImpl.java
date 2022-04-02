@@ -68,7 +68,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      */
     @Override
     public Map<String, Object> addPriorityAllData(JSONObject jsonObject) {
-        //try{
+        try{
 
             String authorCd = session.getAttribute("aud").toString();
             String companyCd = jsonObject.get("companyCd").toString();
@@ -119,9 +119,9 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 return ResultMaps.result(ResultEnum.SUCCESS,map);
             }
             return ResultMaps.result(ResultEnum.SUCCESS, null);
-      //  } catch (Exception ex) {
-        //    return ResultMaps.result(ResultEnum.FAILURE, "新規作成失敗しました。");
-     //   }
+        } catch (Exception ex) {
+            return ResultMaps.result(ResultEnum.FAILURE, "新規作成失敗しました。");
+        }
     }
 
     /**
@@ -389,7 +389,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      * @param companyCd
      * @param priorityAllCd
      * @return
-     * TODO:0321 liuxinyu
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -429,9 +428,9 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             }else {
 
                 p.setUsercd(session.getAttribute("aud").toString());
-                int id = priorityAllNumGeneratorMapper.insert(p);
+                 priorityAllNumGeneratorMapper.insert(p);
 
-                logger.info("全pattern表自动取号："+p.getId());
+                logger.info("全pattern表自动取号:{}",p.getId());
                 priorityAllMstMapper.setNewFinalTableMst(companyCd,p.getId(),aud,priorityAllName);
                 priorityAllMstMapper.setNewFinalTableShelfs(companyCd,p.getId(),aud);
                 priorityAllMstMapper.setNewFinalTableRestrict(companyCd,p.getId(),aud);

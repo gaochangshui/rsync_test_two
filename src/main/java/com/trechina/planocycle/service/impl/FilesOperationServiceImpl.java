@@ -182,7 +182,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> CsvUploadMulti(MultipartFile[] multipartFileList, String path, String companyCd, String projectIds,
+    public Map<String, Object> csvUploadMulti(MultipartFile[] multipartFileList, String path, String companyCd, String projectIds,
                                               String bucketNames) {
         InputStreamReader inputStreamReader = null;
         BufferedReader bufferedReader = null;

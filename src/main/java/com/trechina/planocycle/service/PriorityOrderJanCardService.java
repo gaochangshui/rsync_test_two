@@ -21,11 +21,5 @@ public interface PriorityOrderJanCardService {
      */
     Map<String,Object> setPriorityOrderJanCard(List<PriorityOrderJanCard> priorityOrderJanCard);
 
-    /**
-     * 删除card商品list
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
-    Integer delPriorityOrderJanCardInfo(String companyCd,Integer priorityOrderCd);
+
 }

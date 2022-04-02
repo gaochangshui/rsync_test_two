@@ -11,8 +11,6 @@ import java.util.List;
 @Mapper
 public interface PriorityAllMstMapper {
 
-    int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd);
-
     List<TableNameDto> getTableNameByCompanyCd(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 
     /**

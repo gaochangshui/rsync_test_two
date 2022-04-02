@@ -108,7 +108,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     public Map<String, Object> setCommodityScorePare(ProductPowerParam productPowerParam) {
         String authorCd = session.getAttribute("aud").toString();
 
-        logger.info("保存期间、表示项目、weight所有参数"+productPowerParam);
+        logger.info("保存期间、表示项目、weight所有参数:{}",productPowerParam);
         String conpanyCd = productPowerParam.getCompany();
         Integer productPowerCd = productPowerParam.getProductPowerNo();
 
@@ -265,7 +265,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         String authorCd = session.getAttribute("aud").toString();
         productPowerDataMapper.deleteWKData(rankCalculateVo.getCompanyCd(),authorCd);
 
-        System.out.println(rankCalculateVo);
         List<ProductPowerMstData> productPowerMstDataList = productPowerDataMapper.selectWKKokyaku(authorCd,rankCalculateVo.getCompanyCd());
         List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData(authorCd,rankCalculateVo.getCompanyCd());
 
@@ -385,13 +384,13 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
 
             int o = 0;
-            List<ProductPowerMstData> list = new ArrayList<ProductPowerMstData>();
+            List<ProductPowerMstData> list = new ArrayList();
             for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
                 o++;
                 list.add(productPowerMstData);
                 if (o % 200 == 0 && o >= 200) {
                     int z = productPowerDataMapper.setWKData(list, authorCd, rankCalculateVo.getCompanyCd());
-                    logger.info("插入条数"+z);
+                    logger.info("插入条数:{}");
 
                     list.clear();
                 }
@@ -399,7 +398,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             }
             if (list.size()>0) {
                 int z = productPowerDataMapper.setWKData(list, authorCd, rankCalculateVo.getCompanyCd());
-                logger.info("插入条数"+z);
+                logger.info("插入条数:{}",z);
             }
         }
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerMstDataList);

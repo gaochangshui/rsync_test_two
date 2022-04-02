@@ -454,48 +454,7 @@
             (#{priorityAllCd}, #{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{list})
         </foreach>
     </insert>
-    <insert id="insertWKTableRestrict">
-        insert into planocycle.work_priority_all_restrict
-        select priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd from planocycle.priority_all_restrict
-        where priority_all_cd = #{priorityAllCd}
-        and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
-    </insert>
-    <insert id="insertWKTableRelation">
-        insert into planocycle.work_priority_all_restrict_relation
-        select priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd from planocycle.priority_all_restrict_relation
-        where priority_all_cd = #{priorityAllCd}
-        and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
-    </insert>
-    <insert id="insertWKTableResult">
-        insert into planocycle.work_priority_all_result_data
-        select priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd from planocycle.priority_all_result_data
-        where priority_all_cd = #{priorityAllCd}
-        and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
-    </insert>
-    <insert id="insertWKTablePtsTai">
-        insert into planocycle.work_priority_all_pts_tai
-        select priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd from planocycle.priority_all_pts_tai
-        where priority_all_cd = #{priorityAllCd}
-        and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
-    </insert>
-    <insert id="insertWKTablePtsTana">
-        insert into planocycle.work_priority_all_pts_tana
-        select priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd from planocycle.priority_all_pts_tana
-        where priority_all_cd = #{priorityAllCd}
-        and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
-    </insert>
-    <insert id="insertWKTablePtsJans">
-        insert into planocycle.work_priority_all_pts_jans
-        select priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd from planocycle.priority_all_pts_jans
-        where priority_all_cd = #{priorityAllCd}
-        and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
-    </insert>
+
     <insert id="copyWKTablePtsVersion">
         insert into planocycle.work_priority_all_pts_data_version(priority_all_cd,company_cd,author_cd,pts_cd,commoninfo,versioninfo,outflg,modename,tai_header,tana_header
                                                                  ,jan_header,deleteflg,shelf_pattern_cd)

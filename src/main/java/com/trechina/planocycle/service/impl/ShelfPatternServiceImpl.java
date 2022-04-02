@@ -76,10 +76,10 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         shelfPatternMst.setMaintainerCd(session.getAttribute("aud").toString());
         //获取用户id
         String authorCd = session.getAttribute("aud").toString();
-        logger.info("保存pattern信息转换后的参数："+shelfPatternMst);
+        logger.info("保存pattern信息转换后的参数：{}",shelfPatternMst);
         try {
             Integer resultInfo = shelfPatternMstMapper.insert(shelfPatternMst);
-            logger.info("保存棚名称信息保存后返回的信息：" + resultInfo);
+            logger.info("保存棚名称信息保存后返回的信息：{}" ,resultInfo);
 
             shelfPatternDto.getArea().forEach(item -> {
                 ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
@@ -89,7 +89,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 shelfPatternArea.setAreacd(item);
                 list.add(shelfPatternArea);
             });
-            logger.info("保存pattern信息转换后的area参数："+list);
+            logger.info("保存pattern信息转换后的area参数：{}",list);
             shelfPatternAreaService.setShelfPatternArea(list,authorCd);
         } catch (Exception e) {
             logger.error(e.toString());
@@ -105,7 +105,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> updateShelfPatternInfo(ShelfPatternDto shelfPatternDto) {
-        logger.info("修改棚pattern信息的参数："+shelfPatternDto);
+        logger.info("修改棚pattern信息的参数：{}",shelfPatternDto);
         // 名称check 同一个棚名称棚パータン名唯一
         List<Integer> resultNum = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
         if (resultNum!=null &&resultNum.size()>1){
@@ -124,13 +124,13 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         shelfPatternMst.setMaintainerCd(session.getAttribute("aud").toString());
         //获取用户id
         String authorCd = session.getAttribute("aud").toString();
-        logger.info("修改pattern信息转换后的参数："+shelfPatternMst);
+        logger.info("修改pattern信息转换后的参数：{}",shelfPatternMst);
         try {
             int resultInfo = shelfPatternMstMapper.update(shelfPatternMst);
-            logger.info("保存棚名称信息保存后返回的信息：" + resultInfo);
+            logger.info("保存棚名称信息保存后返回的信息：{}" , resultInfo);
             //获取棚pattern关联的Area
             List<Integer> getShelfPatternArea = shelfPatternAreaService.getShelfPatternArea(shelfPatternMst.getShelfPatternCd(),shelfPatternMst.getConpanyCd());
-            logger.info("棚pattern关联的所有Area：" + getShelfPatternArea);
+            logger.info("棚pattern关联的所有Area：{}" , getShelfPatternArea);
             //数据库中修改重复数据
             shelfPatternDto.getArea().forEach(item->{
                 for (Integer area : getShelfPatternArea) {
@@ -152,12 +152,12 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
 
                     delList.add(shelfPatternArea);
                 });
-                logger.info("删除棚pattern信息转换后的area参数："+delList);
+                logger.info("删除棚pattern信息转换后的area参数：{}",delList);
 
                 // 删除棚pattern关联的area
-                logger.info("删除棚pattern信息的area参数：" + deleteAreaList);
+                logger.info("删除棚pattern信息的area参数：{}" , deleteAreaList);
                 int deleteAreaCdInfo = shelfPatternAreaService.deleteAreaCd(deleteAreaList, shelfPatternDto.getShelfPatternCd(), authorCd);
-                logger.info("删除棚名称信息保存后返回的信息："+deleteAreaCdInfo);
+                logger.info("删除棚名称信息保存后返回的信息：{}",deleteAreaCdInfo);
 
             }
             if (setAreaList.size()>0) {
@@ -168,9 +168,9 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                     shelfPatternArea.setAreacd(item);
                     setList.add(shelfPatternArea);
                 });
-                logger.info("添加棚pattern信息转换后的area参数：" + setList);
+                logger.info("添加棚pattern信息转换后的area参数：{}" , setList);
                 Map<String, Object> setAreaInfo = shelfPatternAreaService.setShelfPatternArea(setList, authorCd);
-                logger.info("修改棚名称信息保存后返回的信息："+setAreaInfo);
+                logger.info("修改棚名称信息保存后返回的信息：{}",setAreaInfo);
             }
 
         }catch (Exception e) {

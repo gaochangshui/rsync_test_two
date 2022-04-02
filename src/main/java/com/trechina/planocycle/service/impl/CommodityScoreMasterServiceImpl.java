@@ -257,6 +257,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         return true;
 
     }
+//TODO:
     @Override
     public Map<String, Object> getAllDataOrParam(String companyCd, Integer productPowerNo) {
         String aud = session.getAttribute("aud").toString();

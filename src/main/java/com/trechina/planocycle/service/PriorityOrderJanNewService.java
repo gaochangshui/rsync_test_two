@@ -33,13 +33,7 @@ public interface PriorityOrderJanNewService {
      */
     Map<String,Object> setPriorityOrderJanNew(List<PriorityOrderJanNew> priorityOrderJanNew);
 
-    /**
-     * 删除新规商品list
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
-    Integer delriorityOrderJanNewInfo(String companyCd,Integer priorityOrderCd);
+
     /**
      * 根据分类去商品力点数表抽同类商品
      * @param

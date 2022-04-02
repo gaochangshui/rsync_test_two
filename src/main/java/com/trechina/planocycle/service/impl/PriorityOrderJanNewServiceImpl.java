@@ -1,10 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
-import com.trechina.planocycle.entity.po.PriorityOrderJanAttribute;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
 import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
@@ -23,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -40,8 +36,6 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Autowired
     private PriorityOrderJanReplaceService priorityOrderJanReplaceService;
     @Autowired
-    private PriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
-    @Autowired
     private PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
     @Autowired
     private ProductPowerMstMapper productPowerMstMapper;
@@ -55,9 +49,9 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Override
     public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-            logger.info("获取新规商品list参数："+companyCd+","+priorityOrderCd);
+            logger.info("获取新规商品list参数：{}{}{}",companyCd,",",priorityOrderCd);
             List<PriorityOrderJanNewDto> priorityOrderJanNewVOS = priorityOrderJanNewMapper.selectJanNew(companyCd,priorityOrderCd);
-            logger.info("获取新规商品list返回结果集b："+priorityOrderJanNewVOS);
+            logger.info("获取新规商品list返回结果集b：{}",priorityOrderJanNewVOS);
             List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
             Class clazz = PriorityOrderJanNewDto.class;
         for (int i = 1; i <= 4; i++) {
@@ -67,9 +61,9 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                 for (PriorityOrderJanNewDto priorityOrderJanNewVO : priorityOrderJanNewVOS) {
                     if (getMethod.invoke(priorityOrderJanNewVO)!=null && getMethod.invoke(priorityOrderJanNewVO).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
                         setMethod.invoke(priorityOrderJanNewVO,attrValue.getNm());
-                    }else{
-
                     }
+
+
                 }
             }
         }
@@ -119,8 +113,6 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                 for (PriorityOrderJanNewVO priorityOrderJanNewVO : priorityOrderJanNewVOList) {
                     if (getMethod.invoke(priorityOrderJanNewVO)!=null && getMethod.invoke(priorityOrderJanNewVO).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
                         setMethod.invoke(priorityOrderJanNewVO,attrValue.getNm());
-                    }else{
-
                     }
                 }
 
@@ -174,17 +166,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
             return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    /**
-     * 新規商品リストの削除
-     *
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
-    @Override
-    public Integer delriorityOrderJanNewInfo(String companyCd, Integer priorityOrderCd) {
-        return priorityOrderJanNewMapper.delete(companyCd,priorityOrderCd);
-    }
+
     /**
      * 分類によって商品の力点数表を除いて同類の商品を抽出する
      * @param priorityOrderJanNewVO
@@ -248,127 +230,4 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         return ResultMaps.result(ResultEnum.SUCCESS,janNewInfo);
     }
 
-    private String dataSave(JSONArray jsonArray, List<PriorityOrderJanNew> janNewList,
-                          List<PriorityOrderJanAttribute> janAttributeList, String companyCd,
-                          Integer priorityOrderCd,String notExistsJan) {
-        String janInfo = priorityOrderJanReplaceService.getJanInfo();
-        List<String> list= Arrays.asList(janInfo.split(","));
-        for (int i = 0; i < jsonArray.size(); i++) {
-            if(list.indexOf(((HashMap) jsonArray.get(i)).get("janNew"))==-1){
-                notExistsJan += ((HashMap) jsonArray.get(i)).get("janNew")+",";
-            } else {
-                // jannewプライマリテーブルを構築するパラメータ
-                janNew(janNewList, companyCd, priorityOrderCd, (HashMap) jsonArray.get(i));
-                // janダイナミックプロパティ列を構築するパラメータ
-                janAttr(janAttributeList, companyCd, priorityOrderCd, (HashMap) jsonArray.get(i));
-            }
-        }
-        logger.info("保存新规商品list主表处理完后的参数："+ janNewList.toString());
-        logger.info("保存新规商品list动态属性列处理完后的参数："+ janAttributeList.toString());
-        //フル挿入
-        if (janNewList.size()>0){
-            priorityOrderJanAttributeMapper.insert(janAttributeList);
-            //すべてのjannew修正配荷店舗数を検索
-            List<Map<String,Object>> maps = priorityOrderJanNewMapper.selectJanNewOrAttr(companyCd,priorityOrderCd);
-            maps.forEach(item -> {
-                String[] attrName = item.get("attr").toString().split(",");
-                String sel = "";
-                for (int i = 1; i <= attrName.length; i++) {
-                    if (i==attrName.length){
-                        sel += "mulit_attr='"+attrName[i-1]+"',";
-                    }else{
-                        sel += "attr"+i+"='"+attrName[i-1]+"',";
-                    }
-                }
-                sel+= "rank_upd='"+item.get("rank")+"'";
-                List<String> colValueList = Arrays.asList(sel.split(","));
-                String branchNum = priorityOrderCatepakAttributeMapper.selectForTempTable(colValueList,"public.priorityorder"+session.getAttribute("aud").toString());
-                logger.info("查询定番店铺数"+branchNum);
-                if (branchNum!=null){
-                    priorityOrderJanNewMapper.updateBranchNum(Integer.valueOf(item.get("priority_order_cd").toString()),
-                            item.get("jan_new").toString(),Integer.valueOf(branchNum));
-                } else {
-                    priorityOrderJanNewMapper.updateBranchNum(Integer.valueOf(item.get("priority_order_cd").toString()),
-                            item.get("jan_new").toString(),0);
-                }
-            });
-
-        }
-        return notExistsJan;
-    }
-
-    private void notExistsData(String companyCd, Integer priorityOrderCd) {
-        List<Map<String,Object>> priorityOrderData =  priorityOrderJanNewMapper.selectJanNewNotExistsMst(companyCd, priorityOrderCd,
-                "public.priorityorder"+session.getAttribute("aud").toString());
-        logger.info("不存在的数据"+priorityOrderData.toString());
-        //結果セットを巡回して動的列を分割
-        if (priorityOrderData.size()>0) {
-            priorityOrderData.forEach(item->{
-                String[] attrList = item.get("attr").toString().split(",");
-                String[] valList;
-                for (int i = 0; i < attrList.length-1; i++) {
-                    valList = attrList[i].split(":");
-                   item.put("attr"+valList[0],valList[1]);
-                }
-                // 10番目の属性をマルチ属性の列名に変更
-                item.put("mulit_attr",attrList[attrList.length-1].split(":")[1]);
-                item.remove("attr");
-                // skuはjanでjananmeをクエリーします
-                String janName = priorityOrderDataMapper.selectJanName(item.get("jan_new").toString());
-                item.remove("sku");
-                item.put("sku", janName);
-            });
-        //存在しないデータをプライマリテーブルに挿入
-        PriorityOrderDataServiceImpl priorityOrderDataService= new PriorityOrderDataServiceImpl();
-        List<Map<String,String>> keyNameList = new ArrayList<>();
-        //ヘッダーの生成
-        JSONArray priJsonArray = (JSONArray) JSONObject.toJSON(priorityOrderData);
-        priorityOrderDataService.colNameList(priJsonArray,keyNameList);
-        //データの挿入
-
-        priorityOrderDataMapper.insert(priJsonArray,keyNameList,"public.priorityorder"+session.getAttribute("aud").toString());
-
-        }
-    }
-
-    /**
-     * jannewプライマリテーブルを構築するパラメータ
-     * @param janAttributeList
-     * @param companyCd
-     * @param priorityOrderCd
-     * @param item
-     */
-    private void janAttr(List<PriorityOrderJanAttribute> janAttributeList, String companyCd, Integer priorityOrderCd, HashMap item) {
-        for (Object key : item.keySet()){
-            // ダイナミックプロパティリスト
-            PriorityOrderJanAttribute priorityOrderJanAttribute = new PriorityOrderJanAttribute();
-            priorityOrderJanAttribute.setCompanyCd(companyCd);
-            priorityOrderJanAttribute.setPriorityOrderCd(priorityOrderCd);
-            priorityOrderJanAttribute.setJanNew(String.valueOf(item.get("janNew")));
-            if (key.toString().indexOf("attr")>-1) {
-                priorityOrderJanAttribute.setAttrCd(Integer.valueOf(key.toString().replace("attr","")));
-                priorityOrderJanAttribute.setAttrValue(String.valueOf(item.get(key)));
-                janAttributeList.add(priorityOrderJanAttribute);
-
-            }
-        }
-    }
-
-    /**
-     * janダイナミックプロパティ列を構築するパラメータ
-     * @param janNewList
-     * @param companyCd
-     * @param priorityOrderCd
-     * @param item
-     */
-    private void janNew(List<PriorityOrderJanNew> janNewList, String companyCd, Integer priorityOrderCd, HashMap item) {
-        // 新規商品リスト
-        PriorityOrderJanNew priorityOrderJanNew = new PriorityOrderJanNew();
-        priorityOrderJanNew.setCompanyCd(companyCd);
-        priorityOrderJanNew.setPriorityOrderCd(priorityOrderCd);
-        priorityOrderJanNew.setJanNew(String.valueOf(item.get("janNew")));
-        priorityOrderJanNew.setRank(Integer.valueOf(String.valueOf(item.get("rank"))) );
-        priorityOrderJanNew.setBranchAccount(BigDecimal.valueOf(Double.valueOf(String.valueOf(item.get("branchAccount")))));
-        janNewList.add(priorityOrderJanNew);
-    }
 }
