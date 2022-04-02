@@ -293,9 +293,9 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 }
                 String[] array = resultDataList.split(",");
                 //smtを呼び出して推奨face数を計算する
-                Map<String, Object> Data = priorityOrderMstService.getFaceKeisanForCgi(array, companyCd,  pattern.getShelfPatternCd(), authorCd);
-                if (Data.get("data") != null && Data.get("data") != "") {
-                    String[] strResult = Data.get("data").toString().split("@");
+                Map<String, Object> data = priorityOrderMstService.getFaceKeisanForCgi(array, companyCd,  pattern.getShelfPatternCd(), authorCd);
+                if (data.get("data") != null && data.get("data") != "") {
+                    String[] strResult = data.get("data").toString().split("@");
                     String[] strSplit = null;
                     List<PriorityAllResultDataDto> list = new ArrayList<>();
                     PriorityAllResultDataDto orderResultData;
@@ -314,7 +314,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 //古いptsの平均値、最大値最小値を取得
                 FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(pattern.getShelfPatternCd());
                 Integer minFaceNum = faceNum.getFaceMinNum();
-                if (Data.get("data") != null && Data.get("data") != "") {
+                if (data.get("data") != null && data.get("data") != "") {
 
                     DecimalFormat df = new DecimalFormat("#.00");
                     //salescntAvgを取得し、小数点を2桁保持
@@ -466,7 +466,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
 
         }catch (Exception ex){
-            logger.error("全patternの保存に失敗しました:{}", ex);
+            logger.error("全patternの保存に失敗しました:", ex);
             throw new BusinessException(ex.getMessage());
         }
 

@@ -469,7 +469,6 @@ public class FilesOperationServiceImpl implements FilesOperationService {
         if (resultFile.exists()) {
             resultFile.mkdirs();
         }
-//        file.transferTo(resultFile);
         FileUtils.copyInputStreamToFile(file.getInputStream(), resultFile);
     }
 
@@ -486,41 +485,15 @@ public class FilesOperationServiceImpl implements FilesOperationService {
         }
         List<String[]> result = new ArrayList<>();
         //キャラクタフローへのハンドオーバ
-        InputStream is = null;
-        InputStreamReader isReader = null;
-        BufferedReader br = null;
-        try {
-            is = multipartFile.getInputStream();
-            isReader = new InputStreamReader(is, StandardCharsets.UTF_8);
-            br = new BufferedReader(isReader);
+        try(InputStream is = multipartFile.getInputStream();
+            InputStreamReader isReader = new InputStreamReader(is, StandardCharsets.UTF_8);
+            BufferedReader br = new BufferedReader(isReader)) {
             //ループ逐行読み出し
             while (br.ready()) {
                 result.add(br.readLine().split(","));
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    logger.error(e.getMessage());
-                }
-            }
-            if (isReader != null) {
-                try {
-                    isReader.close();
-                } catch (IOException e) {
-                    logger.error(e.getMessage());
-                }
-            }
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    logger.error(e.getMessage());
-                }
-            }
         }
         return result;
     }

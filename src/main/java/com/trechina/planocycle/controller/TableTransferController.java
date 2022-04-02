@@ -16,7 +16,7 @@ public class TableTransferController {
      * @return -1 失敗  >0成功
      */
     @GetMapping("getAreasTransfer")
-    public int AreasTransfer() {
+    public int areasTransfer() {
         return tableTransferService.getAreasTransfer();
     }
 
@@ -25,7 +25,7 @@ public class TableTransferController {
      * @return -1 失敗  >-1成功
      */
     @GetMapping("getBranchsTransfer")
-    public int BranchsTransfer() {
+    public int branchsTransfer() {
         return tableTransferService.getBranchsTransfer();
     }
 
@@ -34,7 +34,7 @@ public class TableTransferController {
      * @return -1 失敗  >0成功
      */
     @GetMapping("getJansTransfer")
-    public int JansTransfer() {
+    public int jansTransfer() {
         return tableTransferService.getJansTransfer();
     }
 
@@ -43,7 +43,7 @@ public class TableTransferController {
      * @return -1 失敗  >0成功
      */
     @GetMapping("getAttrTransfer")
-    public int AttrTransfer() {
+    public int attrTransfer() {
         return tableTransferService.getAttrTransfer();
     }
 }

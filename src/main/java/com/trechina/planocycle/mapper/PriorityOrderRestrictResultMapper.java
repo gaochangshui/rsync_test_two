@@ -2,7 +2,6 @@ package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.PriorityOrderRestrictResult;
 import com.trechina.planocycle.entity.po.WorkPriorityAllRestrictResult;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictResult;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

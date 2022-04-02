@@ -189,7 +189,7 @@
     </select>
     <select id="selectJanName" resultType="java.lang.String">
         select janname from masterdb.jans
-        where jan = #{jan_new}
+        where jan = #{janNew}
     </select>
 
     <insert id="insert" >

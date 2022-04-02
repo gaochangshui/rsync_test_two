@@ -204,9 +204,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         ShelfPatternBranchVO shelfPatternBranchVO=new ShelfPatternBranchVO();
         List<String> branchList = new ArrayList<>();
         if (!list.isEmpty()) {
-            list.forEach(item -> {
-                branchList.add(String.valueOf(item.getBranch()));
-            });
+            list.forEach(item -> branchList.add(String.valueOf(item.getBranch())));
             shelfPatternBranchVO.setBranchCd(branchList);
             shelfPatternBranchVO.setShelfPatternCd(list.get(0).getShelfPattrenCd());
             shelfPatternBranchVO.setStartTime(list.get(0).getStartTime());

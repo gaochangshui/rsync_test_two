@@ -62,7 +62,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
 
 
-        List<PriorityOrderRestDto> list = new ArrayList();
+        List<PriorityOrderRestDto> list = new ArrayList<>();
         PriorityOrderRestDto priorityOrderRestDto =null;
         Class c = PriorityOrderRestrictDto.class;
         for (PriorityOrderRestrictDto restrictDatum : restrictData) {
@@ -103,7 +103,6 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         Class clazz = PriorityOrderRestrictJanDto.class;
         for (int i = 1; i <= 10; i++) {
             Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
-            Method getMethodName = clazz.getMethod("get"+"ZokuseiName"+i);
             Method setMethod = clazz.getMethod("set"+"ZokuseiName"+i, String.class);
             for (PriorityOrderRestrictJanDto priorityOrderRestrictJanDto : restrictJans) {
                 for (PriorityOrderAttrValueDto attrValue : attrValues) {
