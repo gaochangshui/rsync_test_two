@@ -154,8 +154,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         // 名前が重複しているかどうかを判断する
 
         Integer resultName = productPowerMstMapper.selectExistsName(productPowerName.getProductPowerName(),
-                productPowerName.getConpanyCd(),productPowerName.getProductPowerNo());
-        Integer resultNum = productPowerMstMapper.selectUpdExistsName(productPowerName.getConpanyCd(), productPowerName.getProductPowerNo());
+                productPowerName.getCompanyCd(),productPowerName.getProductPowerNo());
+        Integer resultNum = productPowerMstMapper.selectUpdExistsName(productPowerName.getCompanyCd(), productPowerName.getProductPowerNo());
         if (resultName == 0 && resultNum < 1){
             insertMasterInfo(productPowerName);
             return ResultMaps.result(ResultEnum.SUCCESS);
@@ -175,7 +175,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
 
     private void insertMasterInfo(ProductCdAndNameDto productPowerName) {
         ProductPowerMst productPowerMst = new ProductPowerMst();
-        productPowerMst.setConpanyCd(productPowerName.getConpanyCd());
+        productPowerMst.setConpanyCd(productPowerName.getCompanyCd());
         productPowerMst.setProductPowerCd(productPowerName.getProductPowerNo());
         productPowerMst.setProductPowerName(productPowerName.getProductPowerName());
 
@@ -188,7 +188,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     }
     private void updateMasterInfo(ProductCdAndNameDto productPowerName) {
         ProductPowerMst productPowerMst = new ProductPowerMst();
-        productPowerMst.setConpanyCd(productPowerName.getConpanyCd());
+        productPowerMst.setConpanyCd(productPowerName.getCompanyCd());
         productPowerMst.setProductPowerCd(productPowerName.getProductPowerNo());
         productPowerMst.setProductPowerName(productPowerName.getProductPowerName());
 
