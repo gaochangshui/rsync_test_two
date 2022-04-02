@@ -325,7 +325,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 return ResultMaps.result(ResultEnum.FAILURE);
             }
         } catch (Exception e) {
-            logger.error("报错,上传文件报错：{}", e.getMessage(), e);
+            logger.error("error,上传文件：{}", e.getMessage(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
             if(e instanceof DataIntegrityViolationException){

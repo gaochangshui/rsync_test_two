@@ -23,7 +23,7 @@ public class cgiUtils {
     public String smartPath;
 
     /**
-     * get调用cgi
+     * get調用cgi
      * @param path
      * @return
      * @throws IOException
@@ -48,7 +48,7 @@ public class cgiUtils {
             }
             return builder.toString();
         }catch (Exception e){
-            logger.error("io异常", e);
+            logger.error("io異常", e);
         }finally {
             try {
                 if(Objects.nonNull(in)){
@@ -61,7 +61,7 @@ public class cgiUtils {
                     reader.close();
                 }
             }catch (Exception e){
-                logger.error("io閉じる异常", e);
+                logger.error("io閉じる異常", e);
             }
         }
 
@@ -69,7 +69,7 @@ public class cgiUtils {
     }
 
     /**
-     * post调用cgi
+     * post調用cgi
      * @param path
      * @param cla
      * @param tokenInfo
@@ -105,7 +105,7 @@ public class cgiUtils {
             }
             return builder.toString();
         }catch (Exception e){
-            logger.error("io异常", e);
+            logger.error("io異常", e);
         }finally {
             try {
                 if(Objects.nonNull(in)){
@@ -124,7 +124,7 @@ public class cgiUtils {
                     os.close();
                 }
             } catch (IOException e) {
-                logger.error("io閉じる异常", e);
+                logger.error("io閉じる異常", e);
             }
         }
         return "";
@@ -137,7 +137,7 @@ public class cgiUtils {
     }
 
     /**
-     * 递归调用cgi（web版）
+     * 再帰調用cgi（web版）
      * @param path
      * @param taskid
      * @param tokenInfo
@@ -196,7 +196,7 @@ public class cgiUtils {
                 return ResultMaps.result(ResultEnum.SUCCESS,builder.toString());
             }
         } catch (IOException e) {
-            logger.info("cgi调用报错：", e);
+            logger.info("cgi調用报错：", e);
             return ResultMaps.result(ResultEnum.FAILURE,null);
         } finally {
             try {
@@ -216,19 +216,19 @@ public class cgiUtils {
                     reader.close();
                 }
             } catch (IOException e) {
-                logger.info("io閉じる异常：",e);
+                logger.info("io閉じる異常：",e);
             }
         }
     }
 
     /**
-     * 递归调用cgi
-     *                  通を過ぎて返回的状态码判断是否成功
-     *                  statusCode:200 调用成功，结束循环
-     *                  否则根据一下flag告知前端错误情况
-     *                  2：超时
-     *                  3：手动取消
-     *                  4：cgi报错
+     * 递归調用cgi
+     *                  通を過ぎて返回的code判断是否成功
+     *                  statusCode:200 調用成功，結束循環
+     *                  否則根据一下flag告知前端錯誤情况
+     *                  2：超時
+     *                  3：手動取消
+     *                  4：cgi error
      *                  9：数据抽取中，等待30秒再次抽取。
      *
      * @param path
@@ -314,7 +314,7 @@ public class cgiUtils {
                     reader.close();
                 }
             }catch (Exception e){
-                logger.error("io閉じる异常", e);
+                logger.error("io閉じる異常", e);
             }
 
         }
