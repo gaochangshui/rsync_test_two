@@ -41,7 +41,7 @@ public class PriorityOrderJanProposalServiceImpl implements PriorityOrderJanProp
     private cgiUtils cgiUtil;
 
     /**
-     * 获取jan变提案list
+     * jan変提案リストの取得
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -68,12 +68,12 @@ public class PriorityOrderJanProposalServiceImpl implements PriorityOrderJanProp
     }
 
     /**
-     * 从cgi拿jan变提案list数据 写到postgre
+     * cgiからjan変提案リストデータをpostgreに書く
      * @throws IOException
      */
     public void janProposalData(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd) throws IOException {
             PriorityOrderDataForCgiDto priorityOrderDataForCgiDto = new PriorityOrderDataForCgiDto();
-            // 调用cgi拿jan变提案list的数据
+            // cgiがjan変提案リストのデータを呼び出す
             String uuids = UUID.randomUUID().toString();
             priorityOrderDataForCgiDto.setMode("priority_jan_motion");
             priorityOrderDataForCgiDto.setGuid(uuids);
@@ -85,22 +85,22 @@ public class PriorityOrderJanProposalServiceImpl implements PriorityOrderJanProp
             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
             String path = resourceBundle.getString("PriorityOrderData");
             String queryPath = resourceBundle.getString("TaskQuery");
-            //递归调用cgi，首先去taskid
+            //再帰的にcgiを呼び出して、まずtaskidに行きます
             String resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
             logger.info("taskId返回：" + resultJan);
-            //带着taskId，再次请求cgi获取运行状态/数据
+            //taskIdを持って、再度cgiに運転状態/データの取得を要求する
             Map<String, Object> DataJan = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
             logger.info("jan变提案list cgi返回数据：" + DataJan);
             if (!DataJan.get("data").equals("[ ]")) {
                 JSONArray datasJan = (JSONArray) JSON.parse(DataJan.get("data").toString());
-                //保存jan变提案list数据
+                //jan変提案リストデータの保存
                 priorityOrderJanProposalService.savePriorityOrderJanProposal(datasJan,companyCd,priorityOrderCd);
             }
     }
 
 
     /**
-     * 修改jan变提案list的flag
+     * jan変提案リストのflagを修正
      *
      * @param priorityOrderJanProposal
      * @return
@@ -113,13 +113,13 @@ public class PriorityOrderJanProposalServiceImpl implements PriorityOrderJanProp
             dataConverUtils dataConverUtil = new dataConverUtils();
             String companyCd = priorityOrderJanProposal.get(0).getCompanyCd();
             Integer priorityOrderCd = priorityOrderJanProposal.get(0).getPriorityOrderCd();
-            //处理参数
+            //処理パラメータ
             List<PriorityOrderJanProposal> proposals = dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderJanProposal.class,
                     priorityOrderJanProposal,companyCd,priorityOrderCd);
             logger.info("修改jan变提案list的处理完后的参数：{}",proposals);
             priorityOrderJanProposalMapper.updateByPrimaryKey(proposals);
 
-            // 修改后反映到主表
+            // 変更後にプライマリ・テーブルに反映
             priorityOrderDataMapper.updatePriorityOrderDataForProp(companyCd,priorityOrderCd,
                     "public.priorityorder"+session.getAttribute("aud").toString());
             return ResultMaps.result(ResultEnum.SUCCESS);
@@ -130,7 +130,7 @@ public class PriorityOrderJanProposalServiceImpl implements PriorityOrderJanProp
     }
 
     /**
-     * 保存cgi返回的jan提案list
+     * cgiが返すjan提案リストを保存
      *
      * @param jsonArray
      * @return
@@ -142,7 +142,7 @@ public class PriorityOrderJanProposalServiceImpl implements PriorityOrderJanProp
     }
 
     /**
-     * 删除jan变提案list
+     * jan変提案リストの削除
      *
      * @param companyCd
      * @param priorityOrderCd

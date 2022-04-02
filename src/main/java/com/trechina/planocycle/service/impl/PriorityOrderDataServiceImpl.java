@@ -40,17 +40,17 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
     @Autowired
     private cgiUtils cgiUtil;
     /**
-     * 优先顺位表初期设定数据
+     * 優先順位表初期設定データ
      *
      * @param priorityOrderDataForCgiDto
      * @return
      */
     @Override
     public Map<String, Object> getPriorityOrderData(PriorityOrderDataForCgiDto priorityOrderDataForCgiDto) {
-        // 从cgi获取数据
+        // cgiからデータを取得する
         logger.info("优先顺位表初期设定数据参数{}",priorityOrderDataForCgiDto);
         Map<String,Object> Data = new HashMap<>();
-        //没有下面这俩参数代表直接跳转画面，有既存数据
+        //没次の2つのパラメータは直接ジャンプ画面を表しておらず、既存のデータがあります。
         if (priorityOrderDataForCgiDto.getMode().equals("priority_data")){
             PriorityOrderMstDto priorityOrderMstDto = new PriorityOrderMstDto();
             priorityOrderMstDto.setCompanyCd(priorityOrderDataForCgiDto.getCompany());
@@ -66,15 +66,11 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
             Data = priorityOrderMstService.priorityDataWRFlag(priorityOrderMstDto,new String[0],"read");
             logger.info("优先顺位表既存cgi返回数据："+Data);
         } else {
-            // 初始化数据
+            // イニシャルデータ
             String uuid = UUID.randomUUID().toString();
             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
             String path = resourceBundle.getString("PriorityOrderData");
             priorityOrderDataForCgiDto.setGuid(uuid);
-            // 获取品名和商品cd
-//            ProductOrderAttrAndItemVO productOrderAttrAndItemVO = commodityScoreMasterService.getAttrAndItmemInfo(
-//                    priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getProductPowerNo()
-//            );
             ProductOrderAttrAndItemVO productOrderAttrAndItemVO = productPowerParamMstMapper.selectAttrAndValue(
                     priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getProductPowerNo());
             priorityOrderDataForCgiDto.setAttributeCd(productOrderAttrAndItemVO.getAttrStr());
@@ -84,11 +80,11 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
             priorityOrderDataForCgiDto.setMode("priority_shoki");
             String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
             logger.info("调用cgi获取优先顺位表的参数：{}",priorityOrderDataForCgiDto);
-            //递归调用cgi，首先去taskid
+            //再帰的にcgiを呼び出して、まずtaskidに行きます
             String result = cgiUtil.postCgi(path,priorityOrderDataForCgiDto,tokenInfo);
             logger.info("taskId返回：{}",result);
             String queryPath = resourceBundle.getString("TaskQuery");
-            //带着taskId，再次请求cgi获取运行状态/数据
+            //taskIdを持って、再度cgiに運転状態/データの取得を要求する
             Data =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
             logger.info("优先顺位表cgi返回数据：{}",Data);
 
@@ -96,8 +92,7 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
 
         if (Data.get("data") !=null) {
             JSONArray datas = priorityOrderData((JSONArray) JSONArray.parse(Data.get("data").toString()));
-            //janProposalData(priorityOrderDataForCgiDto, path, cgiUtils, tokenInfo, queryPath);
-            //查询
+            //検索
             List<Map<String,Object>> results = priorityOrderDataMapper.selectTempData(priorityOrderDataForCgiDto.getOrderCol(),
                     "public.priorityorder"+session.getAttribute("aud").toString());
             results.forEach(item->{
@@ -128,7 +123,7 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
             return Data;
         }
     }
-    // 查询属性名
+    // クエリー属性名
     @Override
     public List<Map<String,Object>> getAttrName(Integer productPowerCd){
         return priorityOrderDataMapper.selectPriorityAttrName(productPowerCd);
@@ -137,21 +132,19 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
 
 
     private JSONArray priorityOrderData(JSONArray datas) {
-        // 保存数据为临时表
-//        JSONArray datas = new JSONArray(Data);
         List<Map<String,String>> keyNameList = new ArrayList<>();
-        //拿到表头
+        //時計のねじをとる
         colNameList(datas, keyNameList);
         logger.info("打印创建临时表前的表头{}", keyNameList);
         logger.info(keyNameList.toString());
 
-        //临时存数据的实体表 priorityorder+社员号
+        //データを一時保存するエンティティ・テーブル priorityorder+社員番号
         String tablename = "public.priorityorder"+session.getAttribute("aud").toString();
         logger.info("创建的表名{}",tablename);
-        //初始化建表
+        //初期化テーブル
         priorityOrderDataMapper.dropTempData(tablename);
         priorityOrderDataMapper.updateTempData(keyNameList,tablename);
-        //写数据
+        //データの書き込み
         priorityOrderDataMapper.insert(datas,keyNameList,tablename);
         return datas;
     }
@@ -159,14 +152,14 @@ public class PriorityOrderDataServiceImpl implements PriorityOrderDataService {
 
 
     /**
-     * 优先顺位表反应按钮抽出数据
+     * 優先順位表反応ボタン抽出データ
      * @param colNameList
      * @return
      */
     @Override
     public Map<String, Object> getPriorityOrderDataUpd(List<String> colNameList,Integer priorityOrderCd) {
         logger.info("优先顺位表反应按钮抽出数据参数{}",colNameList);
-        // 获取所有列名
+        // すべてのカラム名を取得
         List<String> colName = priorityOrderDataMapper.selectTempColName("priorityorder"+session.getAttribute("aud").toString());
 
         logger.info("优先顺位表临时表抽出表头{}",colName);
