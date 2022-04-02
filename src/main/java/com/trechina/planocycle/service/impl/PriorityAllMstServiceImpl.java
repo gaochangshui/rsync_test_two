@@ -378,7 +378,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             }
         } catch(Exception ex) {
             logger.error("", ex);
-            throw new BusinessException("自动计算失败");
+            throw new BusinessException("自动計算失敗");
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS, "計算成功しました。");

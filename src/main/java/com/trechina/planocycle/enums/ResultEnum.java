@@ -3,19 +3,19 @@ package com.trechina.planocycle.enums;
 public enum ResultEnum {
     SUCCESS(101,"成功"),
     FAILURE(202,"失敗"),
-    TIMEOUT(10001,"login timeout"),
-    NOTFOUNTCOOKIE(10002,"cookie not found"),
-    CGITIEMOUT(20002,"cgi timeout"),
-    CGICANCEL(20003,"cgi手動cancel"),
-    CGIERROR(20004,"cgi error"),
-    SIZEISZERO(20005,"data is empty"),
-    NAMEISEXISTS(30001,"名前は既に存在します"),
-    NOTDATAS(30002,"no data"),
-    JANNOTESISTS(30003,"jan does not exist"),
-    FILEVERSIONFAILURE(40001,"wrong file version"),
-    FILECONTENTFAILURE(40002,"incorrect file content"),
-    DATAISTOOLARGE(40003,"too much data"),
-    JANCDINEXISTENCE(50004,"jan does not exist");
+    TIMEOUT(10001,"登录超时"),
+    NOTFOUNTCOOKIE(10002,"找不到cookie信息"),
+    CGITIEMOUT(20002,"cgi调用超时"),
+    CGICANCEL(20003,"cgi手动取消"),
+    CGIERROR(20004,"cgi报错"),
+    SIZEISZERO(20005,"数据为空"),
+    NAMEISEXISTS(30001,"名称已经存在"),
+    NOTDATAS(30002,"没有数据"),
+    JANNOTESISTS(30003,"jan不存在"),
+    FILEVERSIONFAILURE(40001,"文件版本不はい"),
+    FILECONTENTFAILURE(40002,"文件内容不はい"),
+    DATAISTOOLARGE(40003,"数据量を過ぎて大"),
+    JANCDINEXISTENCE(50004,"JAN不存在");
 
     private Integer code;
     private String msg;

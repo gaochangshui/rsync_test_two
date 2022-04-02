@@ -144,7 +144,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         List<ProductPowerMstData> kokyakuList = productPowerDataMapper.selectWKKokyaku(authorCd, companyCd);
         logger.info("pos基本信息和顾客信息：{}", kokyakuList);
         List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData(authorCd, companyCd);
-        logger.info("预备项目：{}", kokyakuList);
+        logger.info("预备プロジェクト：{}", kokyakuList);
 
         if (wkYobiiiternDataList.isEmpty()) {
             return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);

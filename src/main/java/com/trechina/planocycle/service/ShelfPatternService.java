@@ -29,7 +29,7 @@ public interface ShelfPatternService {
      */
     Map<String,Object> updateShelfPatternInfo(ShelfPatternDto shelfPatternDto);
     /**
-     * 通过棚名称棚pattern
+     * 通を過ぎて棚名称棚pattern
      * @param companyCd
      * @param shelfNameCd
      * @return

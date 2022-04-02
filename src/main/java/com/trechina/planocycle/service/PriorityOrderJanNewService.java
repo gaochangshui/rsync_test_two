@@ -18,7 +18,7 @@ public interface PriorityOrderJanNewService {
      */
     Map<String,Object> getPriorityOrderJanNew(String companyCd,Integer priorityOrderCd, Integer productPowerNo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     /**
-     * つかむ取新规jan的名字分类
+     * つかむ取新规jan的名字分クラス
      * @param janNew
      * @return
      *
@@ -35,7 +35,7 @@ public interface PriorityOrderJanNewService {
 
 
     /**
-     * 根据分类去商品力点数表抽同类商品
+     * 根据分クラス去商品力点数表抽同クラス商品
      * @param
      * @return
      */

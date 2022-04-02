@@ -59,7 +59,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Override
     public Map<String, Object> getCommodityScorePara(String conpanyCd, Integer productPowerCd) {
         List<ProductPowerShowMst> productPowerShowMstList = productPowerShowMstMapper.selectByPrimaryKey(productPowerCd,conpanyCd);
-        logger.info("つかむ取表示项目参数：{}",productPowerShowMstList);
+        logger.info("つかむ取表示プロジェクト参数：{}",productPowerShowMstList);
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd,productPowerCd);
         logger.info("つかむ取动态列参数：{}",productOrderParamAttrVO);
         //フロントエンドを作成するためのデータフォーマット
@@ -108,7 +108,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     public Map<String, Object> setCommodityScorePare(ProductPowerParam productPowerParam) {
         String authorCd = session.getAttribute("aud").toString();
 
-        logger.info("保存期间、表示项目、weight所有参数:{}",productPowerParam);
+        logger.info("保存期间、表示プロジェクト、weight所有参数:{}",productPowerParam);
         String conpanyCd = productPowerParam.getCompany();
         Integer productPowerCd = productPowerParam.getProductPowerNo();
 
@@ -182,7 +182,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     }
 
     /**
-     * 调用cgi削除预备项目
+     * 调用cgi削除预备プロジェクト
      *
      * @param productPowerReserveMst
      * @return

@@ -22,7 +22,7 @@ spring:
       pool-name: DatebookHikariCP
       # 此属性控制池中连接的最长生命周期，値0表示无限生命周期，默认1800000即30分钟
       max-lifetime: 1800000
-      # 数据库连接超时时间,默认30秒，即30000
+      # database连接超时时间,默认30秒，即30000
       connection-timeout: 60000
       connection-test-query: SELECT 1
   servlet:
@@ -45,5 +45,5 @@ bucketNames: ${bucketNames}
 ptsDownPath: ${ptsDownPath}
 productDownPath: ${productDownPath}
 smartUrlPath: ${smartUrlPath}
-# 每个台棚按照有13个品类计算
+# 每个台棚按照有13个品クラス計算
 skuPerPattan: 13
