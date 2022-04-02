@@ -16,7 +16,7 @@ public class PriorityOrderRestrictSetController {
     PriorityOrderRestrictSetService priorityOrderRestrictSetService;
 
     /**
-     * 台/段对应属性的增删改
+     * テーブル/セグメント対応属性の追加削除
      * @param priorityOderAttrSet
      * @return
      */
@@ -27,7 +27,7 @@ public class PriorityOrderRestrictSetController {
     }
 
     /**
-     *获取每个台/段对应的属性
+     *各ステージ/セグメントに対応するプロパティの取得
      * @param companyCd
      * @return
      */

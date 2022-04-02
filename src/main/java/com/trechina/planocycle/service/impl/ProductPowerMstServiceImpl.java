@@ -46,6 +46,11 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     @Autowired
     HttpSession session;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    /**
+     * 企業cdによる商品力点数表一覧の取得
+     * @param companyCd
+     * @return
+     */
     @Override
     public Map<String, Object> getTableName(String companyCd) {
         String aud = session.getAttribute("aud").toString();
@@ -59,6 +64,11 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         return ResultMaps.result(ResultEnum.SUCCESS,tableNameMap);
     }
 
+    /**
+     * mst基本情報の取得
+     * @param companyCd
+     * @return
+     */
     @Override
     public Map<String, Object> getProductPowerTable(String companyCd) {
         String aud = session.getAttribute("aud").toString();
@@ -67,6 +77,13 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
     }
 
+    /**
+     * 商品力点数表一覧データの取得
+     * @param companyCd
+     * @param productPowerCd
+     * @param priorityOrderCd
+     * @return
+     */
     @Override
     public Map<String, Object> getProductPowerInfo(String companyCd, Integer productPowerCd,Integer priorityOrderCd) {
         String authorCd = session.getAttribute("aud").toString();
@@ -79,6 +96,12 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerInfo);
     }
 
+    /**
+     * 商品力点数表データを取得excel download
+     * @param companyCd
+     * @param productPowerCd
+     * @param response
+     */
     @Override
     public void downloadProductPowerInfo(String companyCd, Integer productPowerCd, HttpServletResponse response) {
         //必要なヘッダーを検索

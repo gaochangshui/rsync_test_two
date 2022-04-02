@@ -19,7 +19,7 @@ public class SalesReportController {
     private ShelfNameService shelfNameService;
 
     /**
-     * 获取棚名称和棚pattern的树形结构
+     * 棚名と棚patternのツリー構造の取得
      * @param companyCd
      * @return
      */
@@ -29,7 +29,7 @@ public class SalesReportController {
     }
 
     /**
-     * 获取棚别实际数据
+     * 棚別実績データの取得
      * @param taskID
      * @return
      */
@@ -39,7 +39,7 @@ public class SalesReportController {
     }
 
     /**
-     * 获取商品别实际数据
+     * 商品別実績データの取得
      * @param taskID
      * @return
      */
@@ -49,7 +49,7 @@ public class SalesReportController {
     }
 
     /**
-     * 获取单jan别的数据
+     * 単一janの他のデータの取得
      * @param taskID
      * @param startDay
      * @param endDay

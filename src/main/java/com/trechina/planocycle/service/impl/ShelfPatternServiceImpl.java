@@ -46,9 +46,9 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
      */
     @Override
     public Map<String, Object> getShelfPatternInfo(String companyCd) {
-        logger.info("获取棚pattern信息的参数：{}",companyCd);
+        logger.info("棚pattern情報のパラメータの取得：{}",companyCd);
         List<ShelfPatternMst> resultInfo = shelfPatternMstMapper.selectByPrimaryKey(companyCd);
-        logger.info("获取棚pattern信息的返回值：{}",resultInfo);
+        logger.info("棚pattern情報の戻り値の取得：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
 
@@ -60,8 +60,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setShelfPatternInfo(ShelfPatternDto shelfPatternDto) {
-        logger.info("保存棚pattern信息的参数：{}",shelfPatternDto);
-        // 名称check同じ棚名棚パタン名唯一
+        logger.info("棚pattern情報を保存するパラメータ：{}",shelfPatternDto);
+        // 名称check 同一个棚名称棚パータン名唯一
         List<Integer> result = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
         if (result!=null && !result.isEmpty()){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
@@ -74,12 +74,12 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         shelfPatternMst.setPtsRelationID(shelfPatternDto.getPtsRelationID());
         shelfPatternMst.setAuthorCd(session.getAttribute("aud").toString());
         shelfPatternMst.setMaintainerCd(session.getAttribute("aud").toString());
-        //ユーザーIDの取得
+        //获取用户id
         String authorCd = session.getAttribute("aud").toString();
-        logger.info("保存pattern信息转换后的参数：{}",shelfPatternMst);
+        logger.info("pattern情報変換後のパラメータを保存：{}",shelfPatternMst);
         try {
             Integer resultInfo = shelfPatternMstMapper.insert(shelfPatternMst);
-            logger.info("保存棚名称信息保存后返回的信息：{}" ,resultInfo);
+            logger.info("保存棚名情報保存後に戻る情報：{}" ,resultInfo);
 
             shelfPatternDto.getArea().forEach(item -> {
                 ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
@@ -89,7 +89,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 shelfPatternArea.setAreacd(item);
                 list.add(shelfPatternArea);
             });
-            logger.info("保存pattern信息转换后的area参数：{}",list);
+            logger.info("pattern情報変換後のareaパラメータを保存：{}",list);
             shelfPatternAreaService.setShelfPatternArea(list,authorCd);
         } catch (Exception e) {
             logger.error(e.toString());
@@ -105,8 +105,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> updateShelfPatternInfo(ShelfPatternDto shelfPatternDto) {
-        logger.info("修改棚pattern信息的参数：{}",shelfPatternDto);
-        // 名称check 同じ棚名棚パタン名唯一
+        logger.info("棚pattern情報のパラメータの変更：{}",shelfPatternDto);
+        // 名称check 同一个棚名称棚パータン名唯一
         List<Integer> resultNum = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
         if (resultNum!=null &&resultNum.size()>1){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
@@ -128,10 +128,10 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         try {
             int resultInfo = shelfPatternMstMapper.update(shelfPatternMst);
             logger.info("保存棚名称信息保存后返回的信息：{}" , resultInfo);
-            //棚pattern関連Areaの取得
+            //获取棚pattern关联的Area
             List<Integer> getShelfPatternArea = shelfPatternAreaService.getShelfPatternArea(shelfPatternMst.getShelfPatternCd(),shelfPatternMst.getConpanyCd());
             logger.info("棚pattern关联的所有Area：{}" , getShelfPatternArea);
-            //データベース内の重複データの変更
+            //数据库中修改重复数据
             shelfPatternDto.getArea().forEach(item->{
                 for (Integer area : getShelfPatternArea) {
                     if (item.equals(area)){
@@ -154,7 +154,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 });
                 logger.info("删除棚pattern信息转换后的area参数：{}",delList);
 
-                // 棚pattern関連areaの削除
+                // 删除棚pattern关联的area
                 logger.info("删除棚pattern信息的area参数：{}" , deleteAreaList);
                 int deleteAreaCdInfo = shelfPatternAreaService.deleteAreaCd(deleteAreaList, shelfPatternDto.getShelfPatternCd(), authorCd);
                 logger.info("删除棚名称信息保存后返回的信息：{}",deleteAreaCdInfo);
@@ -180,7 +180,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    /**棚名棚を通る
+    /**通过棚名称棚pattern
      * @param companyCd
      * @param shelfNameCd
      * @return
@@ -218,7 +218,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     }
 
     /**
-     * 保存棚pattern関連のお店cd
+     * 保存棚patternのお店cd
      * @param shelfPatternBranchVO
      * @return
      */
@@ -277,7 +277,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     }
 
     /**
-     * すべてのpatternのnameを取得
+     * すべての棚patternのnameを取得
      * @param companyCd
      * @return
      */
@@ -330,7 +330,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     }
 
     /**
-     * shelfPatternの取得 1@棚パータン名称１,2@棚パータン名称2 書式文字列
+     * 获取shelfPattern 1@棚パータン名称１,2@棚パータン名称2 格式的字符串
      *
      * @param shelfPatternNo
      * @return
@@ -342,7 +342,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     }
 
     /**
-     * ptsKeyによるpatternidの取得
+     * 根据ptsKey获取patternid
      *
      * @param ptsKey
      * @return

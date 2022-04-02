@@ -27,6 +27,7 @@ public class ShelfPatternController {
     }
 
     /**
+     *
      * 保存棚pattern情報
      *
      * @param shelfPatternDto
@@ -82,7 +83,7 @@ public class ShelfPatternController {
     }
 
     /**
-     * 店舗に関連付けられた棚patternのnameを取得（优先顺位表用）
+     * 店舗に関連付けられた棚patternのnameを取得（優先順位表用）
      *
      * @param companyCd
      * @return

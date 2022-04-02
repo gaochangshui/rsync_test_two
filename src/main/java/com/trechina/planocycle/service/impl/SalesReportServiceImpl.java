@@ -68,7 +68,7 @@ public class SalesReportServiceImpl implements SalesReportService {
     }
 
     /**
-     * 単一jan別の実際のデータの取得
+     * 単一janの他のデータの取得
      *
      * @param taskID
      * @return

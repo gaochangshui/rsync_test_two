@@ -21,7 +21,7 @@ public class PriorityOrderShelfDataController {
 
 
     /**
-     * 新规时获取基本パタ制約别信息
+     * 新规では基本的なパター制约に関する情报を入手
      * @param companyCd
      * @return
      */
@@ -31,7 +31,7 @@ public class PriorityOrderShelfDataController {
     }
 
     /**
-     * 新规时获取基本パタ制約别jan详细信息
+     * 新规では基本パター制约别janの详细情报を取得
      * @param
      * @return
      */
@@ -42,7 +42,7 @@ public class PriorityOrderShelfDataController {
     }
 
     /**
-     * 新规时获取基本パタ台棚别信息
+     * 新规では基本的なパター棚别の情报を取得
      * @param companyCd
      * @return
      */
@@ -51,7 +51,7 @@ public class PriorityOrderShelfDataController {
         return  priorityOrderShelfDataService.getPlatformShedData(companyCd,priorityOrderCd);
     }
     /**
-     * 新规时获取基本パタ台棚别jans详细信息
+     * 新规では基本的なパタ台棚别jansの详细情报を入手
      * @param priorityOrderPlatformShedDto
      * @return
      */
@@ -61,7 +61,7 @@ public class PriorityOrderShelfDataController {
     }
 
     /**
-     * 保存faceNum
+     * faceNumの保存
      * @param priorityOrderRestrictJanDto
      * @return
      */

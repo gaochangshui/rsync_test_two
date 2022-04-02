@@ -204,7 +204,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         WorkPriorityOrderRestrictSet restrictSet = null;
         WorkPriorityOrderRestrictSet halfRestrictSet1 = null;
         WorkPriorityOrderRestrictSet halfRestrictSet2 = null;
-        // ぜんだいせいやく
+        // 整台制約
         Optional<WorkPriorityOrderRestrictSet> fullTaiSetOptional;
         WorkPriorityOrderRestrictSet fullTaiSet = null;
         // セグメント制約
@@ -719,7 +719,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-
+    /**
+     * 編集時にすべての情報を表示
+     * @param companyCd
+     * @param priorityOrderCd
+     * @return
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
     @Override
     public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Integer id = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);
@@ -798,6 +806,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
+    /**
+     * 編集時にptsの名前が存在するかどうかを確認
+     * @param priorityOrderMstVO
+     * @return
+     */
     @Override
     public Map<String, Object> checkOrderName(PriorityOrderMstVO priorityOrderMstVO) {
         String priorityOrderName = priorityOrderMstVO.getPriorityOrderName();
@@ -819,6 +832,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
+
+    /**
+     * 基本パターン削除
+     * @param priorityOrderMstVO
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> deletePriorityOrderAll(PriorityOrderMstVO priorityOrderMstVO) {
@@ -844,6 +863,16 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
+    /**
+     * 各種mst展示
+     * @param companyCd
+     * @param priorityOrderCd
+     * @param flag
+     * @return
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
     @Override
     public Map<String, Object> getVariousMst(String companyCd, Integer priorityOrderCd, Integer flag) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         String aud = session.getAttribute("aud").toString();

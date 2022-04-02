@@ -390,7 +390,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 list.add(productPowerMstData);
                 if (o % 200 == 0 && o >= 200) {
                     int z = productPowerDataMapper.setWKData(list, authorCd, rankCalculateVo.getCompanyCd());
-                    logger.info("插入条数:{}");
+                    logger.info("插入条数:{}",z);
 
                     list.clear();
                 }

@@ -63,7 +63,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
     @Override
     public Map<String, Object> setShelfName(ShelfNameDto shelfNameDto) {
         logger.info("保存棚名称信息的参数：{}",shelfNameDto);
-        // check名 同じ企業名を繰り返すことはできません
+        // check名同じ企業名を繰り返すことはできません
         Integer resultNum = shelfNameMstMapper.selectDistinctName(shelfNameDto);
         if (resultNum!=null){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
@@ -100,7 +100,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
     @Override
     public Map<String, Object> updateShelfName(ShelfNameDto shelfNameDto) {
         logger.info("修改棚名称信息的参数：{}",shelfNameDto);
-        // check名 同じ企業名を繰り返すことはできません
+        // check名同じ企業名を繰り返すことはできません
         Integer resultNum = shelfNameMstMapper.selectDistinctName(shelfNameDto);
         if (resultNum!=null && !resultNum.equals(shelfNameDto.getId())){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
@@ -176,7 +176,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
     }
 
     /**
-     * 获取棚名称Name
+     * 棚名を取得Name
      * @param companyCd
      * @return
      */
@@ -188,7 +188,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
     /**
-     * 删除棚名称
+     * 小屋名の削除
      * @param jsonObject
      * @return
      */
@@ -201,7 +201,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         // 小屋名の削除
         Integer id = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("id")));
         shelfNameMstMapper.deleteShelfNameInfo(id,authorCd);
-        // 削除する棚patternidを検索
+        // 削除する棚patternIdを検索
         List<Integer> patternId = shelfNameMstMapper.selectPatternCd(id);
         patternId.forEach(item->{
             logger.info("棚patternid{}",patternId);
@@ -229,7 +229,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
     }
 
     /**
-     * 棚名と棚patternのプロパティ構造の取得
+     * 単一テーブルハウス名情報を取得し、取得ハウス名とハウスpatternのプロパティ構造を変更します。
      *
      * @param companyCd
      * @return

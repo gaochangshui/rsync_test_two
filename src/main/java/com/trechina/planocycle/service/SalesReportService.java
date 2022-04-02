@@ -5,21 +5,21 @@ import java.util.Map;
 public interface SalesReportService {
 
     /**
-     * 获取棚别实际数据
+     * 棚別実績データの取得
      * @param taskID
      * @return
      */
     Map<String, Object> getShelfReportInfo(String taskID);
 
     /**
-     * 获取商品别实际数据
+     * 商品別実績データの取得
      * @param taskID
      * @return
      */
     Map<String, Object> getProductReportInfo(String taskID);
 
     /**
-     * 获取单jan别实际数据
+     * 単一janの他のデータの取得
      * @param taskID
      * @return
      */

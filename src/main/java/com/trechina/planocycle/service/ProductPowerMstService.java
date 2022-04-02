@@ -5,19 +5,32 @@ import java.util.Map;
 
 public interface ProductPowerMstService {
     /**
-     * 根据企业cd获取商品力点数表/基本pattern一览
+     * 企業cdによる商品力点数表一覧の取得
      * @param companyCd
      * @return
      */
     Map<String,Object> getTableName(String companyCd);
     /**
-     * 根据企业cd获取商品力点数表一览
+     * mst基本情報の取得
      * @param companyCd
      * @return
      */
     Map<String,Object> getProductPowerTable(String companyCd);
 
+    /**
+     * 商品力点数表一覧データの取得
+     * @param companyCd
+     * @param productPowerCd
+     * @param priorityOrderCd
+     * @return
+     */
      Map<String,Object> getProductPowerInfo(String companyCd ,Integer productPowerCd,Integer priorityOrderCd);
 
+    /**
+     * 商品力点数表データを取得excel download
+     * @param companyCd
+     * @param productPowerCd
+     * @param response
+     */
     void downloadProductPowerInfo(String companyCd, Integer productPowerCd, HttpServletResponse response);
 }
