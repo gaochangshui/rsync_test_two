@@ -26,7 +26,7 @@ public class PriorityOrderJanReplaceServiceImpl implements PriorityOrderJanRepla
     @Autowired
     private PriorityOrderDataMapper priorityOrderDataMapper;
     /**
-     * 获取jan变的信息
+     * jan変の情報を取得する
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -41,7 +41,7 @@ public class PriorityOrderJanReplaceServiceImpl implements PriorityOrderJanRepla
     }
 
     /**
-     * 保存jan变的信息
+     * jan変の情報を保存
      *
      * @param priorityOrderJanReplace
      * @return
@@ -71,7 +71,7 @@ public class PriorityOrderJanReplaceServiceImpl implements PriorityOrderJanRepla
     }
 
     /**
-     * 删除jan变list
+     * 削除jan変list
      *
      * @param companyCd
      * @param priorityOrderCd
