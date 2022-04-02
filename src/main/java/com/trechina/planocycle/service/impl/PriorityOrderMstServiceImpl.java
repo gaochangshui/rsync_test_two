@@ -441,9 +441,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
         String[] array = resultDataList.split(",");
         //cgiを呼び出す
-        Map<String, Object> Data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd);
-        if (Data.get("data") != null && Data.get("data") != "") {
-            String[] strResult = Data.get("data").toString().split("@");
+        Map<String, Object> data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd);
+        if (data.get("data") != null && data.get("data") != "") {
+            String[] strResult = data.get("data").toString().split("@");
             String[] strSplit = null;
             List<WorkPriorityOrderResultData> list = new ArrayList<>();
             WorkPriorityOrderResultData orderResultData = null;
@@ -491,7 +491,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             }
             workPriorityOrderResultDataMapper.updateFace(resultDatas, companyCd, authorCd);
         } else {
-            return Data;
+            return data;
         }
         //属性別に並べ替える
         this.getReorder(companyCd, priorityOrderCd,productPowerCd);

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class jwtUtils {
@@ -16,17 +17,14 @@ public class jwtUtils {
     public jwtUtils() {
         String systemKey=System.getenv("JWT_KEY");
         if(systemKey==null) {
-            //throw new RuntimeException("JWT_KEY is not found");
             systemKey="3Ys7Oi3Ou7Tw7To9Vm5Zn2Sg7Jf2Tm3Z";
         }
         key = new SecretKeySpec(systemKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
-        //key = new SecretKeySpec(ConfigUtil.getPros().getProperty("jwtSecretKey").getBytes(), SignatureAlgorithm.HS256.getJcaName());
     }
-    public Claims parseJWT(String jwt) throws Exception{
-        Claims claims = Jwts.parser()
+    public Claims parseJWT(String jwt) {
+        return Jwts.parser()
                 .setSigningKey(key)
                 .parseClaimsJws(jwt).getBody();
-        return claims;
     }
     public JSONObject getJwtInfo(String jwt) {
         JSONObject json = null;
@@ -36,7 +34,7 @@ public class jwtUtils {
             return null;
         }
         try {
-            json = new JSONObject(new String(decoder.decode(temp[1]), "UTF-8"));
+            json = new JSONObject(new String(decoder.decode(temp[1]), StandardCharsets.UTF_8));
         } catch (Exception e) {
             logger.error("getJwtInto error ：" + e);
         }
