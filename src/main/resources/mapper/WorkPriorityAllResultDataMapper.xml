@@ -42,7 +42,7 @@
         where priority_all_cd = #{priorityAllCd} and company_cd = #{companyCd} and shelf_patten_cd = #{patternCd} and author_cd = #{authorCd}
     </select>
     <select id="getResultDatas" resultType="com.trechina.planocycle.entity.dto.PriorityAllResultDataDto">
-        select jan_cd ,sales_cnt as salesCnt
+        select jan_cd ,sales_cnt
         from planocycle.work_priority_all_result_data
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and author_cd = #{authorCd,jdbcType=VARCHAR}

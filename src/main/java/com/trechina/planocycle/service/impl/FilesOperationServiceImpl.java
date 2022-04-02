@@ -207,7 +207,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                             File file1 = new File(path + filenames);
                             logger.info("文件存放完成");
                             if (!file1.setReadable(true)) {
-                                logger.info("设置读文件失敗");
+                                logger.info("設定读文件失敗");
                             }
 
                             inputStreamReader = new InputStreamReader(new FileInputStream(file1), "Shift_Jis");
@@ -272,7 +272,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                 return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
                             }
 
-                            logger.info("check完成，开始链接服务器");
+                            logger.info("check完成，开始チェーン接服務器");
 
                             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
 

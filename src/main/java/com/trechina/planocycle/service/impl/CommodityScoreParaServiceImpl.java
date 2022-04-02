@@ -173,7 +173,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> delCommodityScoreAllInfo(ProductPowerPrimaryKeyVO primaryKeyVO) {
-        logger.info("参数为：{}",primaryKeyVO);
+        logger.info("参数はい：{}",primaryKeyVO);
         ProductPowerParamMst productPowerParamMst = new ProductPowerParamMst();
         productPowerParamMst.setConpanyCd(primaryKeyVO.getCompanyCd());
         productPowerParamMst.setProductPowerCd(primaryKeyVO.getProductPowerCd());

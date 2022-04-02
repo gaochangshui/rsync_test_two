@@ -14,7 +14,7 @@ public interface CommodityScoreMasterService {
     Map<String,Object> getEnterpriseInfo();
 
     /**
-     * つかむ取企業cd关联的商品力点数List接口
+     * つかむ取企業cd関連付け的商品力点数List接口
      * @param conpanyCd
      * @return
      */

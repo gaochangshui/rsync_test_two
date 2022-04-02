@@ -21,7 +21,7 @@ public class PriorityOrderMstAttrSortController {
         return priorityOrderMstAttrSortService.getAttribute();
     }
     /**
-     * 陈列设定つかむ取属性1和属性2
+     * 陈列設定つかむ取属性1和属性2
      */
 @GetMapping("/getAttributeSort")
     public Map<String,Object> getAttributeSort(){

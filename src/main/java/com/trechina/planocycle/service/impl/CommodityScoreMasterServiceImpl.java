@@ -71,7 +71,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public Map<String, Object> getCommodityListInfo(String conpanyCd) {
         List<CommodityListInfoVO> resultInfo = productPowerMstMapper.selectCommodityList(conpanyCd);
-        logger.info("つかむ取企业cd关联的商品力点数List：{}",resultInfo);
+        logger.info("つかむ取企业cd関連付け的商品力点数List：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
 
@@ -220,7 +220,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     public boolean delSmartData(ProductPowerParamMst productPowerParamMst) {
         String authorCd = session.getAttribute("aud").toString();
         String authorName = (String) session.getAttribute("aud");
-        logger.info("参数为:{}",productPowerParamMst);
+        logger.info("参数はい:{}",productPowerParamMst);
         String uuid = UUID.randomUUID().toString();
         //商品力点数mst表削除
         productPowerMstMapper.delete(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd,authorName);

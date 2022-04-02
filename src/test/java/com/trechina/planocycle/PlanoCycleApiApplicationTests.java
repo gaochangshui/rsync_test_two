@@ -1,5 +1,6 @@
 package com.trechina.planocycle;
 
+import com.trechina.planocycle.entity.dto.PriorityAllResultDataDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderMstService;
@@ -50,6 +51,8 @@ class PlanoCycleApiApplicationTests {
     WorkPriorityOrderRestrictSetMapper workPriorityOrderRestrictSetMapper;
     @Autowired
     PriorityOrderJanNewMapper priorityOrderJanNewMapper;
+    @Autowired
+    WorkPriorityAllResultDataMapper workPriorityAllResultDataMapper;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
@@ -119,7 +122,8 @@ class PlanoCycleApiApplicationTests {
 
     @Test
     void test6() {
-
+        List<PriorityAllResultDataDto> resultDatas = workPriorityAllResultDataMapper.getResultDatas("0001", "10215814", 0, 80);
+        resultDatas.stream().forEach(System.out::println);
     }
 
     public  void test7(){}

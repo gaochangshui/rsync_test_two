@@ -43,7 +43,7 @@ public class CommodityScoreMasterController {
      * @param productPowerName
      * @return
      */
-    @PutMapping ("/setCommodityList")
+    @PostMapping ("/setCommodityList")
     public Map<String,Object> setCommodityList(@RequestBody ProductCdAndNameDto productPowerName) {
         return commodityScoreMasterService.setCommodityList(productPowerName);
     }

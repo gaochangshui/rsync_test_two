@@ -7,21 +7,21 @@ import java.util.Map;
 
 public interface ShelfPatternAreaService {
     /**
-     * 保存shelfPattern关联的area
+     * 保存shelfPattern関連付け的area
      * @param shelfPatternArea
      * @return
      */
     Map<String,Object> setShelfPatternArea(List<ShelfPatternArea> shelfPatternArea,String authorCd);
 
     /**
-     * 削除shelfPattern关联的area
+     * 削除shelfPattern関連付け的area
      * @param id
      * @return
      */
     Integer delShelfPatternArea(Integer id,String authorCd);
 
     /**
-     * 查询shelfPattern关联的area
+     * 查询shelfPattern関連付け的area
      * @param id
      *  @return
      */

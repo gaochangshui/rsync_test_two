@@ -28,10 +28,10 @@ public class sshFtpUtils {
     public String pushFile(String localFile,String remotePath){
         File file = new File(localFile);
         try(FileInputStream fileInputStream = new FileInputStream(file);) {
-            logger.info("ssh服务器参数：{},{}",localFile,remotePath);
+            logger.info("ssh服務器参数：{},{}",localFile,remotePath);
             Connection connection = getConnection();
             boolean auth = connection.authenticateWithPassword(user,pw);
-            logger.info("ssh服务器身份验证返回値：{}",auth);
+            logger.info("ssh服務器身份验证返回値：{}",auth);
             if (auth) {
                 logger.info("验证成功");
                 SCPClient client =new SCPClient(connection);
@@ -52,15 +52,15 @@ public class sshFtpUtils {
             }
         } catch (IOException e) {
             logger.info("报错:",e);
-            return "链接失敗";
+            return "チェーン接失敗";
         }
     }
 
     private Connection getConnection() throws IOException {
-        logger.info("开始ssh服务器");
+        logger.info("开始ssh服務器");
         Connection connection = new Connection(ip);
         connection.connect();
-        logger.info("链接成功");
+        logger.info("チェーン接成功");
         return connection;
     }
 
@@ -113,7 +113,7 @@ public class sshFtpUtils {
                 outputStream = response.getOutputStream();
                 Connection connection = getConnection();
                 boolean auth = connection.authenticateWithPassword(user,pw);
-                logger.info("ssh服务器身份验证返回値：{}",auth);
+                logger.info("ssh服務器身份验证返回値：{}",auth);
                 if (auth) {
                     logger.info("验证成功");
                     SCPClient client =new SCPClient(connection);
@@ -121,7 +121,7 @@ public class sshFtpUtils {
                     if(!file.createNewFile()){
                         return "传送失敗";
                     }
-                    // 构造一个长度为1024的字节数组
+                    // 构造一个长度はい1024的字节数组
                     byte[] buffer = new byte[1024];
                     int len = 0;
                     while ((len = is.read(buffer)) != -1){
@@ -138,7 +138,7 @@ public class sshFtpUtils {
 
             } catch (IOException e) {
             logger.info("报错:",e);
-            return "链接失敗";
+            return "チェーン接失敗";
         } finally {
             try {
                 if(Objects.nonNull(outputStream)){

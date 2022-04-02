@@ -1,20 +1,17 @@
 package com.trechina.planocycle.service;
 
-import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
+import com.trechina.planocycle.mapper.WorkPriorityAllResultDataMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Map;
-
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class CommodityScoreDataServiceTest {
 
     @Autowired
     private CommodityScoreDataService commodityScoreDataService;
+    @Autowired
+    private WorkPriorityAllResultDataMapper workPriorityAllResultDataMapper;
     @Before
     public void setUp() throws Exception {
     }
@@ -31,6 +28,7 @@ public class CommodityScoreDataServiceTest {
 //        productPowerDataForCgiDto.setMode("shoki_data");
 //        Map<String,Object> result = commodityScoreDataService.getCommodityScoreData(productPowerDataForCgiDto);
 //        assertEquals(result.get("code"),101);
+
     }
 
     @Test

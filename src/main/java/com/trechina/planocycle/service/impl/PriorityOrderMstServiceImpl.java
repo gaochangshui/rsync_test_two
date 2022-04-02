@@ -299,7 +299,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 .filter(obj -> Boolean.TRUE.equals(obj.checkCondition()))
                 .collect(Collectors.toList());
         if (!unsetList.isEmpty()) {
-            logger.error("{}台段没有设置制约条件", unsetList.size());
+            logger.error("{}台段没有設定制约条件", unsetList.size());
             isUnset = 1;
         }
 

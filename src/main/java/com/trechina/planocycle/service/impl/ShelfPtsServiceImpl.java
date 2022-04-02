@@ -151,7 +151,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Override
     public Map<String, Object> saveShelfPts(List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto) {
         logger.info("ptd関連patternのパラメータ:{}", shelfPtsJoinPatternDto);
-        // 修改有效无效flg 有效1 无效0 全改为0
+        // 修改有效无效flg 有效1 无效0 全改はい0
         // 修改表数据
         // shujucheck
 //        if (shelfPtsDataMapper.checkPtsData(shelfPtsJoinPatternDto) == 0) {

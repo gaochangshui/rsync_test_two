@@ -75,12 +75,12 @@ public class SalesReportServiceImpl implements SalesReportService {
      */
     @Override
     public Map<String, Object> getJanReportDetailInfo(String taskID,String startDay,String endDay) {
-        logger.info("つかむ取单jan别实际数据参数：{}开始日,{}结束日,{}",taskID,startDay,endDay);
+        logger.info("つかむ取シングルjan别实际数据参数：{}开始日,{}结束日,{}",taskID,startDay,endDay);
         String tokenInfo = String.valueOf(session.getAttribute(FINAL_MSPACEDGOURDLP));
         ResourceBundle resourceBundle = ResourceBundle.getBundle(FINAL_PATH_CONFIG);
         String path = resourceBundle.getString(FINAL_TASK_QUERY);
         Map<String,Object> result =  cgiUtil.postCgiOfWeb(path,taskID,tokenInfo);
-        logger.info("つかむ取单jan别实际数据参数cgi返回数据：{}",result.toString());
+        logger.info("つかむ取シングルjan别实际数据参数cgi返回数据：{}",result.toString());
         if(!"9".equals(result.get("data"))){
             JSONArray jsonArray = JSON.parseArray(result.get("data").toString().replaceAll(" ", ""));
             if (!jsonArray.isEmpty()) {

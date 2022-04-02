@@ -79,12 +79,12 @@ public class PriorityAllMstController {
 
     /**
      * 保存＆更新 api⑦
-     * @param companyCd
+     * @param priorityAllSaveDto
      * @return
      */
-    @GetMapping("/savePriorityAllData")
-    public Map<String, Object> savePriorityAllData(String companyCd, Integer priorityAllCd,String priorityAllName){
-        return priorityAllMstService.savePriorityAll(companyCd, priorityAllCd,priorityAllName);
+    @PostMapping("/savePriorityAllData")
+    public Map<String, Object> savePriorityAllData(@RequestBody PriorityAllSaveDto priorityAllSaveDto){
+        return priorityAllMstService.savePriorityAll(priorityAllSaveDto);
     }
 
 
