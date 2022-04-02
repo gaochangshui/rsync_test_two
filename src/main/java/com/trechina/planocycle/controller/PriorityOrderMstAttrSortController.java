@@ -12,16 +12,6 @@ import java.util.Map;
 public class PriorityOrderMstAttrSortController {
     @Autowired
     private PriorityOrderMstAttrSortService priorityOrderMstAttrSortService;
-    /**
-     * 获取既存数据的排序
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
-    @GetMapping("/getPriorityOrderMstAttrSort")
-   public Map<String,Object> getPriorityAttrSort(String companyCd, Integer priorityOrderCd){
-       return priorityOrderMstAttrSortService.getPriorityAttrSort(companyCd,priorityOrderCd);
-   }
 
     /**
      *获取属性1和属性2

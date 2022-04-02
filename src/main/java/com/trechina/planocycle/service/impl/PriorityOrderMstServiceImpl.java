@@ -1,17 +1,14 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.exception.BussinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
-import com.trechina.planocycle.utils.sshFtpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -21,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
@@ -60,8 +54,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private PriorityOrderJanNewService priorityOrderJanNewService;
     @Autowired
     private PriorityOrderJanCardService priorityOrderJanCardService;
-    @Autowired
-    private PriorityOrderJanProposalService priorityOrderJanProposalService;
     @Autowired
     private PriorityOrderJanAttributeMapper priorityOrderJanAttributeMapper;
     @Autowired
@@ -133,170 +125,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
     /**
-     * 保存优先顺位表参数
-     *
-     * @param priorityOrderMstDto
-     * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public Map<String, Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) {
-        logger.info("保存优先顺位表参数{}", priorityOrderMstDto);
-        // check优先顺位表名称
-        Integer count = priorityOrderPatternMapper.selectByPriorityOrderName(priorityOrderMstDto.getCompanyCd(),
-                priorityOrderMstDto.getPriorityOrderName(),
-                priorityOrderMstDto.getPriorityOrderCd());
-        if (count > 0) {
-            return ResultMaps.result(ResultEnum.NAMEISEXISTS);
-        }
-        // 把参数处理成两个表的的数据，insert
-        try {
-            logger.info("保存优先顺位表参数：{}", priorityOrderMstDto);
-            PriorityOrderMst priorityOrderMst = new PriorityOrderMst();
-            priorityOrderMst.setCompanyCd(priorityOrderMstDto.getCompanyCd());
-            priorityOrderMst.setPriorityOrderCd(priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderMst.setPriorityOrderName(priorityOrderMstDto.getPriorityOrderName());
-            priorityOrderMst.setProductPowerCd(priorityOrderMstDto.getProductPowerCd());
-            logger.info("保存优先顺位表mst表要保存的数据：{}", priorityOrderMst);
-            priorityOrderMstMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderMstMapper.insert(priorityOrderMst);
-            List<PriorityOrderPattern> priorityOrderPatternList = new ArrayList<>();
-            String[] shelfPatternList = priorityOrderMstDto.getShelfPatternCd().split(",");
-            for (int i = 0; i < shelfPatternList.length; i++) {
-                PriorityOrderPattern priorityOrderPattern = new PriorityOrderPattern();
-                priorityOrderPattern.setCompanyCd(priorityOrderMstDto.getCompanyCd());
-                priorityOrderPattern.setPriorityOrderCd(priorityOrderMstDto.getPriorityOrderCd());
-                priorityOrderPattern.setShelfPatternCd(Integer.valueOf(shelfPatternList[i]));
-                priorityOrderPatternList.add(priorityOrderPattern);
-            }
-            logger.info("保存优先顺位表pattert表要保存的数据：{}", priorityOrderPatternList);
-            priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderPatternMapper.insert(priorityOrderPatternList);
-            // 处理属性保存
-            List<Map<String, Object>> array = (List<Map<String, Object>>) JSONArray.parse(priorityOrderMstDto.getRankAttributeList());
-            attrSave(priorityOrderMstDto, array);
-            String attrInfo = "";
-            for (int i = 1; i <= array.size(); i++) {
-                if (i < array.size()) {
-                    attrInfo += array.get(i - 1).get("cd") + ",";
-                } else {
-                    attrInfo += "13,";
-                }
-            }
-            String attrFinalInfo = attrInfo.substring(0, attrInfo.length() - 1);
-            priorityOrderMstDto.setAttributeCd(attrFinalInfo);
-            // 调用cgi保存数据
-            cgiSave(priorityOrderMstDto);
-            return ResultMaps.result(ResultEnum.SUCCESS);
-        } catch (Exception e) {
-            logger.info("报错:{}", e.getMessage());
-            logger.error("保存优先顺位表报错：{}", e.getMessage());
-            throw new BussinessException("保存优先顺位表报错");
-        }
-    }
-
-    // 调用cgi保存数据
-    private void cgiSave(PriorityOrderMstDto priorityOrderMstDto) {
-        JSONArray jsonArray = (JSONArray) JSONArray.parse(String.valueOf(priorityOrderMstDto.getPriorityData()).replace(" ", ""));
-        String[] res = new String[jsonArray.size()];
-
-        for (int i = 0; i < jsonArray.size(); i++) {
-            String rowStr = "";
-            Map<String, Object> rowMaps = (Map<String, Object>) jsonArray.get(i);
-            rowStr += ((Map) jsonArray.get(i)).get("jan_old").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("jan_old") + " ";
-            rowStr += ((Map) jsonArray.get(i)).get("jan_new").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("jan_new") + " ";
-
-            Object[] listKey = rowMaps.keySet().stream().sorted().toArray();
-            for (int z = 0; z < listKey.length; z++) {
-                if (listKey[z].toString().indexOf("attr") > -1) {
-                    rowStr += ((Map) jsonArray.get(i)).get(listKey[z]) + " ";
-                }
-            }
-            rowStr += ((Map) jsonArray.get(i)).get("pos_amount").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("pos_amount") + " ";
-            rowStr += ((Map) jsonArray.get(i)).get("pos_before_rate").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("pos_before_rate") + " ";
-            rowStr += ((Map) jsonArray.get(i)).get("branch_amount").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("branch_amount") + " ";
-            rowStr += ((Map) jsonArray.get(i)).get("unit_price").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("unit_price") + " ";
-            rowStr += ((Map) jsonArray.get(i)).get("unit_before_diff").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("unit_before_diff") + " ";
-            rowStr += ((Map) jsonArray.get(i)).get("rank").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("rank") + " ";
-            rowStr += ((Map) jsonArray.get(i)).get("branch_num").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("branch_num") + " ";
-            rowStr += ((Map) jsonArray.get(i)).get("rank_prop").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("rank_prop") + " ";
-            rowStr += ((Map) jsonArray.get(i)).get("rank_upd").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("rank_upd") + " ";
-            rowStr += ((Map) jsonArray.get(i)).get("branch_num_upd").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("branch_num_upd") + " ";
-            rowStr += ((Map) jsonArray.get(i)).get("pos_amount_upd").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("pos_amount_upd") + " ";
-            rowStr += ((Map) jsonArray.get(i)).get("difference").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("difference") + " ";
-            rowStr += ((Map) jsonArray.get(i)).get("sale_forecast").toString().trim().isEmpty() ? "_" : ((Map) jsonArray.get(i)).get("sale_forecast");
-            res[i] = rowStr;
-        }
-
-        String wirteReadFlag = "write";
-        Map<String, Object> results = priorityDataWRFlag(priorityOrderMstDto, res, wirteReadFlag);
-    }
-
-    // 处理属性保存
-    private void attrSave(PriorityOrderMstDto priorityOrderMstDto, List<Map<String, Object>> array) {
-
-        logger.info("获取rankAttributeCdList{}", array);
-        List<PriorityOrderMstAttrSort> priorityOrderMstAttrSortList = new ArrayList<>();
-        for (int i = 0; i < array.size(); i++) {
-            PriorityOrderMstAttrSort priorityOrderMstAttrSort = new PriorityOrderMstAttrSort();
-            priorityOrderMstAttrSort.setCompanyCd(priorityOrderMstDto.getCompanyCd());
-            priorityOrderMstAttrSort.setPriorityOrderCd(priorityOrderMstDto.getPriorityOrderCd());
-            if (array.get(i).get("value").toString().equals("mulit_attr")) {
-                priorityOrderMstAttrSort.setValue(array.size());
-                priorityOrderMstAttrSort.setCd(13);
-            } else {
-                priorityOrderMstAttrSort.setValue(Integer.valueOf(array.get(i).get("value").toString()));
-                priorityOrderMstAttrSort.setCd(Integer.valueOf(array.get(i).get("cd").toString()));
-            }
-            if (array.get(i).get("sort").toString().equals("")) {
-                priorityOrderMstAttrSort.setSort(0);
-            } else {
-                priorityOrderMstAttrSort.setSort(Integer.valueOf(array.get(i).get("sort").toString()));
-            }
-            priorityOrderMstAttrSortList.add(priorityOrderMstAttrSort);
-        }
-        priorityOrderMstAttrSortService.setPriorityAttrSort(priorityOrderMstAttrSortList);
-    }
-
-    /**
-     * 读写priorityorderData
-     *
-     * @param priorityOrderMstDto
-     * @param res
-     * @param wirteReadFlag
-     * @return
-     */
-    @Override
-    public Map<String, Object> priorityDataWRFlag(PriorityOrderMstDto priorityOrderMstDto, String[] res, String wirteReadFlag) {
-        PriorityOrderDataForCgiDto priorityOrderDataForCgiDto = new PriorityOrderDataForCgiDto();
-        priorityOrderDataForCgiDto.setCompany(priorityOrderMstDto.getCompanyCd());
-        String uuid = UUID.randomUUID().toString();
-        priorityOrderDataForCgiDto.setGuid(uuid);
-        priorityOrderDataForCgiDto.setMode("priority_data");
-        priorityOrderDataForCgiDto.setPriorityNO(priorityOrderMstDto.getPriorityOrderCd());
-        priorityOrderDataForCgiDto.setWriteReadFlag(wirteReadFlag);
-        priorityOrderDataForCgiDto.setAttributeCd(priorityOrderMstDto.getAttributeCd());
-        if (wirteReadFlag.equals("write")) {
-            priorityOrderDataForCgiDto.setDataArray(res);
-        }
-        logger.info("保存优先顺位表给cgi的参数{}", priorityOrderDataForCgiDto);
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("PriorityOrderData");
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        Map<String, Object> resultCgi = new HashMap<>();
-        //递归调用cgi，首先去taskid
-        String result = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
-        logger.info("taskId返回：{}", result);
-        String queryPath = resourceBundle.getString("TaskQuery");
-        //带着taskId，再次请求cgi获取运行状态/数据
-        resultCgi = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-        logger.info("保存优先顺位表结果：{}", resultCgi);
-        return resultCgi;
-
-    }
-
-
-    /**
      * 获取登录这所在企业是否有优先顺位表
      *
      * @return
@@ -309,114 +137,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 
-    /**
-     * 优先顺位表获取rank属性的动态列
-     *
-     * @param companyCd
-     * @param productPowerCd
-     * @return
-     */
-    @Override
-    public Map<String, Object> getRankAttr(String companyCd, Integer productPowerCd) {
-        logger.info("优先顺位表获取rank属性的动态列：{},{}", companyCd, productPowerCd);
-        Map<String, Object> result = new HashMap<>();
-        commodityScoreMasterService.productPowerParamAttrName(companyCd, productPowerCd, result);
-        return ResultMaps.result(ResultEnum.SUCCESS, result);
-    }
 
-    /**
-     * 获取pts文件下载
-     *
-     * @param priorityOrderPtsDownDto
-     * @param response
-     * @return
-     */
-    @Override
-    public Map<String, Object> getPtsFileDownLoad(PriorityOrderPtsDownDto priorityOrderPtsDownDto, HttpServletResponse response, String ptsDownPath) {
-        logger.info("获取pts出力参数:{}", priorityOrderPtsDownDto);
-        // 从cgi获取数据
-        String uuid = UUID.randomUUID().toString();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("PriorityOrderData");
-        priorityOrderPtsDownDto.setGuid(uuid);
-        // rankAttributeCd
-        List<Map<String, Object>> array = (List<Map<String, Object>>) JSONArray.parse(priorityOrderPtsDownDto.getRankAttributeList());
-        String rankInfo = "";
-        String attrInfo = "";
-        StringBuilder rankInfoBuilder = new StringBuilder();
-        StringBuilder attrInfoBuilder = new StringBuilder();
-        String sortStr = "";
-        String sort = "";
-        for (int i = 1; i <= array.size(); i++) {
-            for (int j = 0; j < array.size(); j++) {
-                sortStr = String.valueOf(array.get(j).get("sort"));
-                if (sortStr.equals("")) {
-                    sort = "0";
-                } else {
-                    sort = sortStr;
-                }
-                if (String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i == array.size()) {
-                    rankInfoBuilder.append(array.get(j).get("cd") + "_" + i + "_" + sort + ",");
-                    attrInfoBuilder.append("13,");
-                } else {
-                    if (!String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i == Integer.valueOf(String.valueOf(array.get(j).get("value")))) {
-                        rankInfo += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
-                        attrInfo += array.get(j).get("cd") + ",";
-                    }
-                }
-            }
-        }
-        rankInfo = rankInfo + rankInfoBuilder.toString();
-        attrInfo = attrInfo + attrInfoBuilder.toString();
-        String rankFinalInfo = rankInfo.substring(0, rankInfo.length() - 1);
-        String attrFinalInfo = attrInfo.substring(0, attrInfo.length() - 1);
-        logger.info("处理完的rankAttributeCd{}", rankFinalInfo);
-        priorityOrderPtsDownDto.setAttributeCd(attrFinalInfo);
-        priorityOrderPtsDownDto.setRankAttributeCd(rankFinalInfo);
-        // shelfPatternNoNm
-        String resultShelf = shelfPatternService.getShePatternNoNm(priorityOrderPtsDownDto.getShelfPatternNo());
-        logger.info("抽出完的shelfPatternNoNm{}", resultShelf);
-        priorityOrderPtsDownDto.setShelfPatternNoNm(resultShelf.replace(" ", "*"));
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        Map<String, Object> ptsPath = new HashMap<>();
-        //递归调用cgi，首先去taskid
-        String result = cgiUtil.postCgi(path, priorityOrderPtsDownDto, tokenInfo);
-        logger.info("taskId返回：{}", result);
-        String queryPath = resourceBundle.getString("TaskQuery");
-        //带着taskId，再次请求cgi获取运行状态/数据
-        ptsPath = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-        logger.info("pts路径返回数据：{}", ptsPath);
-
-        String filePath = ptsPath.get("data").toString();
-        if (filePath.length() > 1) {
-            String[] fileName = filePath.split("/");
-
-            sshFtpUtils sshFtp = new sshFtpUtils();
-            OutputStream outputStream = null;
-            try {
-                logger.info("pts全路径输出：{},{}", ptsDownPath, ptsPath.get("data"));
-                byte[] files = sshFtp.downLoafCgi(ptsDownPath + ptsPath.get("data").toString(), tokenInfo);
-                logger.info("files byte:{}", files);
-                response.setContentType("application/Octet-stream");
-                logger.info("finename:{}", fileName[fileName.length - 1]);
-                response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName[fileName.length - 1], "UTF-8"));
-                outputStream = response.getOutputStream();
-                outputStream.write(files);
-            } catch (IOException e) {
-                logger.info("获取pts文件下载报错{}", e.getMessage());
-            } finally {
-                if(Objects.nonNull(outputStream)){
-                    try {
-                        outputStream.close();
-                    } catch (IOException e) {
-                        logger.error("io流关闭异常", e);
-                    }
-                }
-            }
-        }
-        logger.info("下载成功");
-        return null;
-    }
 
     /**
      * 根据优先顺位表cd获取商品力点数表cd
@@ -671,7 +392,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd,Integer partition) {
-        // TODO: 2200866
 
 
         String authorCd = session.getAttribute("aud").toString();
@@ -827,20 +547,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         List<PriorityOrderJanNewDto> reorder = null;
         List<WorkPriorityOrderResultData> reorder1 = null;
         if (split.length == 1) {
-            //workPriorityOrderResultDataMapper.getReorder(companyCd,aud,priorityOrderCd,split[0],null)
-          //  reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud, priorityOrderCd, split[0], null);
+
             reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, aud,productPowerCd, priorityOrderCd, split[0], null);
 
         } else {
-           // reorder = workPriorityOrderResultDataMapper.getAttrRank(companyCd, aud, priorityOrderCd, split[0], split[1]);
+
             reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, aud,productPowerCd, priorityOrderCd, split[0], split[1]);
 
 
         }
-        //int i = 1;
-        //for (PriorityOrderJanNewDto priorityOrderJanNewDto : reorder) {
-        //    priorityOrderJanNewDto.setRank(i++);
-        //}
         int j = 1;
         for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder1) {
             workPriorityOrderResultData.setResultRank(j++);
@@ -848,8 +563,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
 
         workPriorityOrderResultDataMapper.setSortRank(reorder1, companyCd, aud, priorityOrderCd);
-       // workPriorityOrderSortRankMapper.delete(companyCd, aud, priorityOrderCd);
-     //   workPriorityOrderSortRankMapper.insert(companyCd, reorder, aud, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS, reorder);
     }
 
@@ -916,7 +629,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("PriorityOrderData");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        Map<String, Object> resultCgi = new HashMap<>();
+        Map<String, Object> resultCgi = null;
         //递归调用cgi，首先去taskid
         String result = cgiUtil.postCgi(path, priorityOrderJanCgiDto, tokenInfo);
         logger.info("taskId返回：{}", result);
@@ -1010,7 +723,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
 
-    //TODO:10215814
     @Override
     public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Integer id = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);
@@ -1074,12 +786,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, workPriorityOrderMst.getProductPowerCd());
         Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, workPriorityOrderMst.getProductPowerCd());
         productPowerInfo.setSku(skuNum);
-        ////获取janNew信息
-        //Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
-        //////获取janCut信息
-        //List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd);
-        ////获取jan变信息
-        //List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd,priorityOrderCd);
         //获取商品详细信息
         List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd);
         map.put("workPriorityOrderMst",workPriorityOrderMst);
@@ -1091,9 +797,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         map.put("restrictData",restrictData.get("data"));
         map.put("ptsDetailData",ptsDetailData.get("data"));
         map.put("productPowerInfo",productPowerInfo);
-        //map.put("priorityOrderJanNew",priorityOrderJanNew.get("data"));
-        //map.put("priorityOrderJanCut",priorityOrderJanCut);
-        //map.put("priorityOrderJanReplace",priorityOrderJanReplace);
         map.put("janNewInfo",janNewInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
@@ -1164,7 +867,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd, priorityOrderCd);
             return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplace);
         }
-        return null;
+        return ResultMaps.result(ResultEnum.FAILURE);
     }
 
 

@@ -39,9 +39,9 @@ public class PriorityOrderJanCardServiceImpl implements PriorityOrderJanCardServ
      */
     @Override
     public Map<String, Object> getPriorityOrderJanCard(String companyCd, Integer priorityOrderCd) {
-        logger.info("获取card商品list参数:"+companyCd+","+priorityOrderCd);
+        logger.info("获取card商品list参数:{}{}{}",companyCd,",",priorityOrderCd);
         List<PriorityOrderJanCardVO> priorityOrderJanCardVOS = priorityOrderJanCardMapper.selectJanCard(companyCd, priorityOrderCd);
-        logger.info("获取card商品list返回值："+priorityOrderJanCardVOS);
+        logger.info("获取card商品list返回值：{}",priorityOrderJanCardVOS);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCardVOS);
     }
 
@@ -54,7 +54,7 @@ public class PriorityOrderJanCardServiceImpl implements PriorityOrderJanCardServ
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderJanCard(List<PriorityOrderJanCard> priorityOrderJanCard) {
-        logger.info("保存card商品list的参数："+priorityOrderJanCard);
+        logger.info("保存card商品list的参数：{}",priorityOrderJanCard);
 
         String authorCd = session.getAttribute("aud").toString();
         String companyCd=null;
@@ -72,15 +72,5 @@ public class PriorityOrderJanCardServiceImpl implements PriorityOrderJanCardServ
 
     }
 
-    /**
-     * 删除card商品list
-     *
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
-    @Override
-    public Integer delPriorityOrderJanCardInfo(String companyCd, Integer priorityOrderCd) {
-        return priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-    }
+
 }

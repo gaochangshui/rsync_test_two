@@ -37,7 +37,7 @@ public class FilesOperationController {
      * @throws IOException
      */
     @PostMapping("/CsvUpload")
-    public Map<String,Object> CsvUpload(@RequestParam("file")MultipartFile multipartFile,
+    public Map<String,Object> csvUpload(@RequestParam("file")MultipartFile multipartFile,
             @RequestParam("item")String filename,@RequestParam("companyCd") String companyCd) throws IOException {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("csvPathCommodityPower")+session.getAttribute("aud").toString()+"/";
@@ -51,11 +51,11 @@ public class FilesOperationController {
      * @return
      */
     @PostMapping("/csvUploadMulti")
-    public Map<String,Object> CsvUploadShelf(@RequestParam("file") MultipartFile[] multipartFileList,
+    public Map<String,Object> csvUploadShelf(@RequestParam("file") MultipartFile[] multipartFileList,
                                              @RequestParam("companyCd") String companyCd) {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("csvPathShelf")+session.getAttribute("aud").toString()+"/";
-        return filesOperationService.CsvUploadMulti(multipartFileList,path,companyCd,projectIds,bucketNames);
+        return filesOperationService.csvUploadMulti(multipartFileList,path,companyCd,projectIds,bucketNames);
     }
 
     /**

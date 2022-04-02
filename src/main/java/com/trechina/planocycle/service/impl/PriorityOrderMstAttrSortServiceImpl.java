@@ -44,30 +44,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     @Autowired
     private WorkPriorityOrderRestrictSetMapper workPriorityOrderRestrictSetMapper;
 
-    /**
-     * 获取既存数据的排序
-     *
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
-    @Override
-    public Map<String, Object> getPriorityAttrSort(String companyCd, Integer priorityOrderCd) {
-        List<PriorityOrderMstAttrSort> resultInfo = priorityOrderMstAttrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
-        List<Map<String, Object>> result = new ArrayList<>();
-        resultInfo.forEach(item -> {
-            Map<String, Object> maps = new HashMap<>();
-            if (item.getCd() == 13 && item.getValue() == resultInfo.size()) {
-                maps.put("value", "mulit_attr");
-            } else {
-                maps.put("value", item.getValue().toString());
-            }
-            maps.put("cd", item.getCd().toString());
-            maps.put("sort", item.getSort());
-            result.add(maps);
-        });
-        return ResultMaps.result(ResultEnum.SUCCESS, result);
-    }
+
 
     /**
      * 保存数据的排序

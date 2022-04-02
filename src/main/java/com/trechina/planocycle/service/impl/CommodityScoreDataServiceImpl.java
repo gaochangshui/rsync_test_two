@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StopWatch;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Field;
@@ -261,20 +260,19 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         @Override
         public void run() {
-            StopWatch stopWatch = null;
+
             try {
-                stopWatch = new StopWatch();
-                stopWatch.start("开始");
+
 
                 productPowerDataMapper.insert(list);
                 begin.await();
-                stopWatch.stop();
+
             } catch (InterruptedException e) {
                 logger.error("", e);
                 Thread.currentThread().interrupt();
             } finally {
                 end.countDown();
-                logger.info("执行时间为：{}", stopWatch.prettyPrint());
+
             }
 
         }

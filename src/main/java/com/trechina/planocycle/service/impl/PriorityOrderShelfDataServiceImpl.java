@@ -86,31 +86,6 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             list.add(priorityOrderRestDto);
         }
 
-        //Class c = PriorityOrderRestrictDto.class;
-        //Class d = PriorityOrderRestDto.class;
-        //PriorityOrderRestDto priorityOrderRestDto = null;
-        //for (PriorityOrderRestrictDto restrictDatum : restrictData) {
-        //    priorityOrderRestDto = new PriorityOrderRestDto();
-        //    for (int i = 1; i <= 10; i++) {
-        //        Method getMethod = c.getMethod("get"+"Zokusei"+i);
-        //        Method getName = c.getMethod("get"+"Zokusei"+i);
-        //        Method getSkuNum = c.getMethod("get"+"Zokusei"+i);
-        //        Method getFaceNum = c.getMethod("get"+"Zokusei"+i);
-        //        for (int j = 1; j < 4 ; j++) {
-        //            Method setMethodVal = c.getMethod("set"+"restrict1"+j);
-        //            Method setMethodName = c.getMethod("set"+"restrictName1"+j);
-        //            Method setMethodSkuNum = c.getMethod("set"+"skuNum");
-        //            Method setMethodFaceNum = c.getMethod("set"+"faceNum");
-        //            if (getMethod.invoke(restrictDatum)!=null && getMethod.invoke(restrictDatum)!=""){
-        //                //setMethodVal.invoke(,attrValue.getNm());
-        //            }
-        //        }
-        //
-        //
-        //
-        //    }
-        //
-        //}
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
     /**
@@ -161,7 +136,6 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Override
     public Map<String, Object> getPlatformShedJans(PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-        //String aud = "10212159";
         String aud = session.getAttribute("aud").toString();
         List<PriorityOrderRestrictJanDto> platformShedJans = priorityOrderShelfDataMapper.getPlatformShedJans(priorityOrderPlatformShedDto,aud);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();

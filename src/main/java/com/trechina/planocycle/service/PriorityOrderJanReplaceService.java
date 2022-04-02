@@ -23,11 +23,5 @@ public interface PriorityOrderJanReplaceService {
 
     String getJanInfo();
 
-    /**
-     * 删除jan变list
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
-    Integer delJanReplaceInfo(String companyCd,Integer priorityOrderCd);
+
 }

@@ -37,7 +37,7 @@ public class IDGeneratorController {
      * @return
      */
     @GetMapping("/getPriorityAllID")
-    public Map<String,Object> PriorityAllID(){
+    public Map<String,Object> priorityAllID(){
         return idGeneratorService.priorityAllID();
     }
 }
