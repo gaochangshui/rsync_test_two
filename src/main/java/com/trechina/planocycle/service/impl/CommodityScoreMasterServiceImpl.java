@@ -201,7 +201,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
 
 
     /**
-     * 获取chanel信息
+     * chanel情報の取得
      * @return
      */
     @Override
@@ -224,16 +224,16 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         String uuid = UUID.randomUUID().toString();
         //商品力点数mst表删除
         productPowerMstMapper.delete(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd,authorName);
-      //参数删除
+      //パラメータ削除
     productPowerParamMstMapper.deleteCommofityParam(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
-        //基本数据删除
+        //基本データ削除
         productPowerDataMapper.deleteSyokika(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
-        //顾客group删除
+        //顧客グループ削除
         productPowerDataMapper.deleteGroup(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
-         //预备项目Data删除
+         //予備項目Data削除
         productPowerDataMapper.deleteYobiiitern(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
         productPowerDataMapper.deleteYobiiiternData(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
-        //rank总表删除
+        //rankスプレッドシート削除
         productPowerDataMapper.deleteRankData(productPowerParamMst.getConpanyCd(),productPowerParamMst.getProductPowerCd(),authorCd);
 
 
@@ -252,12 +252,12 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         result = cgiUtil.postCgi(path,productPowerDataForCgiDto,tokenInfo);
         logger.info("taskid返回：{}",result);
         String queryPath = resourceBundle.getString("TaskQuery");
-        // 带着taskid，再次请求cgi获取运行状态/数据
+        // taskidを持って、再度cgiに運転状態/データの取得を要求する
         Map<String,Object> Data = cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
         return true;
 
     }
-
+//TODO:
     @Override
     public Map<String, Object> getAllDataOrParam(String companyCd, Integer productPowerNo) {
         String aud = session.getAttribute("aud").toString();

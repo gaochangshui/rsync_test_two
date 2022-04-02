@@ -31,7 +31,7 @@ public class PriorityOrderJanCardServiceImpl implements PriorityOrderJanCardServ
     @Autowired
     private PriorityOrderDataMapper priorityOrderDataMapper;
     /**
-     * 获取card商品list
+     * card商品リストを取得
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -46,7 +46,7 @@ public class PriorityOrderJanCardServiceImpl implements PriorityOrderJanCardServ
     }
 
     /**
-     * 保存card商品list
+     * card商品リストの保存
      *
      * @param priorityOrderJanCard
      * @return

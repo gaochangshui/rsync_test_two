@@ -57,14 +57,14 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
 
     @Override
     public void saveWorkPtsData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd) {
-        //查询出所有采纳了的商品，按照台棚进行排序，标记商品在棚上的位置
+        //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
         List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData = priorityAllMstMapper.selectByAuthorCd(companyCd, authorCd, priorityAllCd, patternCd);
         List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(workPriorityOrderResultData);
 
-        //查出已有的新pts，先删掉再保存
-        //新pts中已有数据的ptsCd
+        //既存の新しいptsを検出し,削除してから保存する
+        //新しいptsにデータがあるptsCd
         ShelfPtsData shelfPtsData = priorityAllPtsMapper.selectWorkPtsCdByAuthorCd(companyCd, authorCd, priorityAllCd, patternCd);
-        //临时表中的ptscd
+        //テンポラリ・テーブルのptscd
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
 
         PriorityAllPtsDataDto priorityOrderPtsDataDto = new PriorityAllPtsDataDto();
@@ -84,9 +84,9 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
 
         ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
         String modeName = shelfPtsDataVersion.getModename();
-        //modeName作为下载pts的文件名
+        //modeNameはptsをダウンロードするファイル名として
         priorityOrderPtsDataDto.setFileName(modeName+"_"+patternCd+"_new.csv");
-        //从已有的pts中查询出数据
+        //既存のptsからデータをクエリーする
         priorityAllPtsMapper.insertPtsData(priorityOrderPtsDataDto);
         Integer id = priorityOrderPtsDataDto.getId();
         priorityAllPtsMapper.insertPtsTaimst(ptsCd, id, authorCd, priorityAllCd, patternCd);
@@ -189,12 +189,12 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         try {
             if (dir.isDirectory()) {
                 String[] children = dir.list();
-                //递归删除目录中的子目录下
+                //ディレクトリ内のサブディレクトリを再帰的に削除
                 for (int i=0; i<children.length; i++) {
                     Files.deleteIfExists(new File(dir, children[i]).getAbsoluteFile().toPath());
                 }
             }
-            // 目录此时为空，可以删除
+            // ディレクトリが空です，削除可能
             Files.deleteIfExists(dir.getAbsoluteFile().toPath());
         } catch (IOException e) {
             logger.error("", e);
@@ -202,12 +202,12 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
     }
 
     /**
-     * 生成pts到文件
+     * ptsをファイルに生成
      * @param shelfPtsDataVersion
      * @param shelfPtsDataTaimst
      * @param shelfPtsDataTanamst
      * @param shelfPtsDataJandata
-     * @return 返回csv文件的路径
+     * @return csvファイルのパスを返す
      */
     public String generateCsv2File(ShelfPtsDataVersion shelfPtsDataVersion, List<ShelfPtsDataTaimst> shelfPtsDataTaimst,
                             List<ShelfPtsDataTanamst> shelfPtsDataTanamst, List<ShelfPtsDataJandata> shelfPtsDataJandata,

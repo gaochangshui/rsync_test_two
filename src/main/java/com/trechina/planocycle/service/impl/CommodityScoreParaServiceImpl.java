@@ -51,7 +51,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Autowired
     private cgiUtils cgiUtil;
     /**
-     * 获取表示项目所有参数
+     * 表示項目のすべてのパラメータを取得
      * @param conpanyCd
      * @param productPowerCd
      * @return
@@ -62,10 +62,10 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         logger.info("获取表示项目参数：{}",productPowerShowMstList);
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd,productPowerCd);
         logger.info("获取动态列参数：{}",productOrderParamAttrVO);
-        //构造前端用的数据格式
+        //フロントエンドを作成するためのデータフォーマット
         List<String> marketList = new ArrayList<>();
         List<String> posList = new ArrayList<>();
-        //遍历数据库返回值所有的行，组合成市场的list和pos的list
+        //データベースの戻り値のすべてのローを巡り、市場のlistとposのlistに組み合わせる
         productPowerShowMstList.forEach(item -> {
             if (item.getMarketPosFlag() == 1) {
                 marketList.add(item.getDataCd());
@@ -74,7 +74,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             }
         });
        try {
-           //遍历动态列
+           //動的列の遍歴
            String[] attrList= productOrderParamAttrVO.getAttr().split(",");
            String[] attrKey;
            Map<String,Object> result = new HashMap<>();
@@ -91,7 +91,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
            jsonArray.add(result);
            jsonArray.add(attrMap);
            logger.info("动态列返回：{}", jsonArray);
-           //返回
            return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
        }catch (Exception e) {
            logger.info(e.toString());
@@ -100,7 +99,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     }
 
     /**
-     * 保存期间、表示项目、weight所有参数
+     * 保存期間、表示項目、weightのすべてのパラメータ
      * @param
      * @return
      */
@@ -113,25 +112,25 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         String conpanyCd = productPowerParam.getCompany();
         Integer productPowerCd = productPowerParam.getProductPowerNo();
 
-        //将临时表里的保存到最终表里
-        //pos基本数据
-            //修改保存  物理删除插入
+        //テンポラリ・テーブルの最終テーブルへの保存
+        //pos基本データ
+            //物理削除挿入の保存の変更
             productPowerDataMapper.phyDeleteSyokika(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.endSyokikaForWK(conpanyCd, productPowerCd, authorCd);
 
-            //修改保存  物理删除插入
+            //物理削除挿入の保存の変更
             productPowerDataMapper.phyDeleteGroup(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.endGroupForWK(conpanyCd, productPowerCd, authorCd);
 
-            //修改保存  物理删除插入
+            //物理削除挿入の保存の変更
             productPowerDataMapper.phyDeleteYobiiitern(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.phyDeleteYobiiiternData(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.endYobiiiternForWk(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.endYobiiiternDataForWk(conpanyCd,productPowerCd,authorCd);
-            //修改保存  物理删除插入
+            //物理削除挿入の保存の変更
             productPowerDataMapper.deleteData(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.setData(productPowerCd,authorCd,conpanyCd);
-            //期间参数删除 插入
+            //期間パラメータ削除挿入{{きかんぱらめーた:さくじょそうにゅう}}
             String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
             productPowerParamMstMapper.deleteParam(conpanyCd,productPowerCd);
             productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd);
@@ -148,7 +147,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         productPowerDataForCgiSave.setProductPowerNo(productPowerParam.getProductPowerNo());
 
         logger.info("保存jan rank{}",productPowerDataForCgiSave);
-        //递归调用cgi，首先获取taskid
+        //再帰呼び出しcgi，まずtaskidを取得する
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("ProductPowerData");
         String result = null;
@@ -156,7 +155,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         result = cgiUtil.postCgi(path, productPowerDataForCgiSave, tokenInfo);
         logger.info("taskid返回--保存jan rank：{}", result);
         String queryPath = resourceBundle.getString("TaskQuery");
-        // 带着taskid，再次请求cgi获取运行状态/数据
+        // 带着taskid，再度cgiに運転状態/データの取得を要求する
         Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
         logger.info("保存jan rank{}",Data);
         return ResultMaps.result(ResultEnum.SUCCESS);
@@ -166,7 +165,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
 
     /**
-     * 删除商品力点数表所有信息+优先顺位表所有信息
+     * 商品力点表のすべての情報+優先順位表のすべての情報を削除
      *
      * @param primaryKeyVO
      * @return
@@ -179,19 +178,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         productPowerParamMst.setConpanyCd(primaryKeyVO.getCompanyCd());
         productPowerParamMst.setProductPowerCd(primaryKeyVO.getProductPowerCd());
         commodityScoreMasterService.delSmartData(productPowerParamMst);
-       /* // 根据productpowercd查询相关联的优先顺位表，循环把优先顺位表全删掉
-        String result = priorityOrderMstService.selPriorityOrderCdForProdCd(primaryKeyVO.getCompanyCd(),primaryKeyVO.getProductPowerCd());
-        if (result!=null) {
-            String[] resultArr = result.split(",");
-            if (resultArr.length > 0) {
-                for (int i = 0; i < resultArr.length; i++) {
-                    PriorityOrderPrimaryKeyVO priorityOrderPrimaryKeyVO = new PriorityOrderPrimaryKeyVO();
-                    priorityOrderPrimaryKeyVO.setCompanyCd(primaryKeyVO.getCompanyCd());
-                    priorityOrderPrimaryKeyVO.setPriorityOrderCd(Integer.valueOf(resultArr[i]));
-                    priorityOrderMstService.delPriorityOrderAllInfo(priorityOrderPrimaryKeyVO);
-                }
-            }
-        }*/
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -203,7 +189,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      */
     @Override
     public Map<String, Object> delYoBi(ProductPowerReserveMst productPowerReserveMst) {
-        //处理ProductPowerReserv
+        //ProductPowerReservの処理
             ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
             productPowerDataForCgiDto.setMode("yobi_delete");
             productPowerDataForCgiDto.setCompany(productPowerReserveMst.getConpanyCd());
@@ -211,8 +197,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
 
             String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-            //调用cgi 删除预备表示项目
-            //递归调用cgi，首先获取taskid
+            //cgiを呼び出して予備表示項目を削除
+            //再帰的にcgiを呼び出し、まずtaskidを取得する
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("ProductPowerData");
         cgiUtils cgiUtil = new cgiUtils();
@@ -220,7 +206,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         result = cgiUtil.postCgi(path, productPowerDataForCgiDto, tokenInfo);
         logger.info("taskid返回删除 yobi：{}", result);
         String queryPath = resourceBundle.getString("TaskQuery");
-        // 带着taskid，再次请求cgi获取运行状态/数据
+        // taskidを持って、再度cgiに運転状態/データの取得を要求する
         Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
@@ -229,7 +215,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         String authorCd = session.getAttribute("aud").toString();
         List<WorkProductPowerReserveData> result = new ArrayList<>();
         WorkProductPowerReserveData reserveData = null;
-        // 第一行是标题
+        // 最初の行は見出しです
         for (int i = 1; i < datas.size(); i++) {
             String[] data = datas.get(i);
             reserveData = new WorkProductPowerReserveData();
@@ -270,7 +256,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     }
 
     /**
-     * rank计算
+     * rank計算
      * @param rankCalculateVo
      * @return
      */
@@ -429,7 +415,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     }
 
     /**
-     * 物理删除期间参数
+     * 物理削除期間パラメータ
      * @param conpanyCd
      * @param productPowerCd
      * @return
@@ -440,7 +426,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     }
 
     /**
-     * 物理删除表示项目
+     * 物理削除表示項目
      * @param conpanyCd
      * @param productPowerCd
      * @return
@@ -451,7 +437,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     }
 
     /**
-     * 物理删除预备表示项目
+     * 物理的に予備表示項目を削除
      * @param conpanyCd
      * @param productPowerCd
      * @return
@@ -462,7 +448,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     }
 
     /**
-     * 物理删除weight
+     * 物理削除weight
      * @param conpanyCd
      * @param productPowerCd
      * @return

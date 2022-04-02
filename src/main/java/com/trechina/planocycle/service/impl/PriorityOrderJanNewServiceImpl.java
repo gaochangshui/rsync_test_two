@@ -40,7 +40,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Autowired
     private ProductPowerMstMapper productPowerMstMapper;
     /**
-     * 获取新规janList
+     * 新規janListの取得
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -70,7 +70,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanNewVOS);
     }
     /**
-     * 获取新规jan的名字分类
+     * 新しいjanの名前分類を取得
      * @param
      * @return
      *
@@ -142,7 +142,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     }
 
     /**
-     * work表保存新规商品list
+     * ワークシート保存新規商品リスト
      *
      * @param
      * @return
@@ -168,7 +168,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
 
 
     /**
-     * 根据分类去商品力点数表抽同类商品
+     * 分類によって商品の力点数表を除いて同類の商品を抽出する
      * @param priorityOrderJanNewVO
      * @return
      */
@@ -206,7 +206,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerData);
     }
     /**
-     * 新规不存在商品详细信息
+     * 商品詳細は新規では存在しません
      * @param janMstPlanocycleVo
      * @return
      */
@@ -220,7 +220,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
     /**
-     * 展示不存在商品详细信息
+     * 商品詳細は表示されません
      * @param
      * @return
      */
