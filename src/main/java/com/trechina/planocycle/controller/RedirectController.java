@@ -13,7 +13,7 @@ import java.io.IOException;
 public class RedirectController {
 
     @Value("${SystemPath}")
-    private String SystemPaths;
+    private String systemPaths;
     /**
      * cclinkリダイレクト用
      * @param pathName
@@ -22,6 +22,6 @@ public class RedirectController {
     @PostMapping ("/getRedirectUrl")
     public void getRedirectUrl(String pathName,  HttpServletResponse response) throws IOException {
         String[] path = pathName.split("\\?");
-        response.sendRedirect(SystemPaths+path[0]);
+        response.sendRedirect(systemPaths +path[0]);
     }
 }
