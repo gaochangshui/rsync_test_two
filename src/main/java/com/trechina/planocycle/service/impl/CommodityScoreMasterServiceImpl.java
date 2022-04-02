@@ -58,7 +58,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         logger.info(result);
         resultInfo = JSON.parse(result);
 
-        logger.info("获取企业信息：{}",resultInfo);
+        logger.info("つかむ取企业信息：{}",resultInfo);
 
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
@@ -71,7 +71,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public Map<String, Object> getCommodityListInfo(String conpanyCd) {
         List<CommodityListInfoVO> resultInfo = productPowerMstMapper.selectCommodityList(conpanyCd);
-        logger.info("获取企业cd关联的商品力点数List：{}",resultInfo);
+        logger.info("つかむ取企业cd关联的商品力点数List：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
 
@@ -86,7 +86,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         JSONArray jsonArray = new JSONArray();
         Map<String, Object> result = new HashMap<>();
         ProductPowerParamMst resultInfo = productPowerParamMstMapper.selectCommodityParam(conpanyCd,productPowerCd);
-        logger.info("获取商品力点数参数返回值：{}",resultInfo);
+        logger.info("つかむ取商品力点数参数返回値：{}",resultInfo);
         productPowerParamAttr(conpanyCd, productPowerCd, result);
 
         jsonArray.add(resultInfo);
@@ -97,7 +97,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public void productPowerParamAttr(String conpanyCd, Integer productPowerCd, Map<String, Object> result) {
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd, productPowerCd);
-        logger.info("获取动态列返回值：{}",productOrderParamAttrVO);
+        logger.info("つかむ取动态列返回値：{}",productOrderParamAttrVO);
         //動的列の遍歴
         if (productOrderParamAttrVO !=null && !productOrderParamAttrVO.getAttr().equals("")){
             String[] attrList = productOrderParamAttrVO.getAttr().split(",");
@@ -112,7 +112,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public void productPowerParamAttrName(String conpanyCd, Integer productPowerCd, Map<String, Object> result) {
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectAttrName(conpanyCd, productPowerCd);
-        logger.info("获取动态列返回值：{}",productOrderParamAttrVO);
+        logger.info("つかむ取动态列返回値：{}",productOrderParamAttrVO);
         //動的列の遍歴
         if (productOrderParamAttrVO !=null && !productOrderParamAttrVO.getAttr().equals("")){
             String[] attrList = productOrderParamAttrVO.getAttr().split(",");
@@ -222,7 +222,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         String authorName = (String) session.getAttribute("aud");
         logger.info("参数为:{}",productPowerParamMst);
         String uuid = UUID.randomUUID().toString();
-        //商品力点数mst表删除
+        //商品力点数mst表削除
         productPowerMstMapper.delete(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd,authorName);
       //パラメータ削除
     productPowerParamMstMapper.deleteCommofityParam(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);

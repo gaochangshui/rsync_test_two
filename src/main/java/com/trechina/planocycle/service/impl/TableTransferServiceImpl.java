@@ -29,7 +29,7 @@ public class TableTransferServiceImpl implements TableTransferService {
             int updateResult = areasMapper.updateTransfer();
             return updateResult;
         } catch (Exception e){
-            throw new BussinessException("更新失败");
+            throw new BussinessException("更新失敗");
         }
     }
     @Transactional(rollbackFor = Exception.class)
@@ -40,7 +40,7 @@ public class TableTransferServiceImpl implements TableTransferService {
             int updateResult = branchsMapper.updateTransfer();
             return updateResult;
         } catch (Exception e) {
-            throw new BussinessException("更新失败");
+            throw new BussinessException("更新失敗");
         }
     }
     @Transactional(rollbackFor = Exception.class)
@@ -51,7 +51,7 @@ public class TableTransferServiceImpl implements TableTransferService {
             int updateResult = jansMapper.updateTransfer();
             return updateResult;
         } catch (Exception e) {
-            throw new BussinessException("更新失败");
+            throw new BussinessException("更新失敗");
         }
     }
     @Transactional(rollbackFor = Exception.class)
@@ -62,7 +62,7 @@ public class TableTransferServiceImpl implements TableTransferService {
             int updateResule = attributeMapper.updateTransfer();
             return updateResule;
         } catch (Exception e) {
-            throw new BussinessException("更新失败");
+            throw new BussinessException("更新失敗");
         }
     }
 }

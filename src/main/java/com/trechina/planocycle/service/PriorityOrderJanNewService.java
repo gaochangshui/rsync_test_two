@@ -11,14 +11,14 @@ import java.util.Map;
 
 public interface PriorityOrderJanNewService {
     /**
-     * 获取新规janlist
+     * つかむ取新规janlist
      * @param companyCd
      * @param priorityOrderCd
      * @return
      */
     Map<String,Object> getPriorityOrderJanNew(String companyCd,Integer priorityOrderCd, Integer productPowerNo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     /**
-     * 获取新规jan的名字分类
+     * つかむ取新规jan的名字分类
      * @param janNew
      * @return
      *

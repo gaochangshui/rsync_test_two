@@ -221,7 +221,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     public Map<String, Object> delShelfPtsInfo(JSONObject jsonObject) {
         if (((Map) jsonObject.get("param")).get("id") != null) {
             Integer id = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("id")));
-            //获取用户id
+            //つかむ取用户id
             String authorCd = httpSession.getAttribute("aud").toString();
 
             shelfPtsDataMapper.delShelfPtsInfo(id, authorCd);
@@ -565,7 +565,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      */
     @Override
     public Map<String, Object> getPtsInfoOfPattern(String companyCd, Integer rangFlag, String areaList) {
-        logger.info("获取棚pattern别的pts信息参数：{},{}", companyCd, areaList);
+        logger.info("つかむ取棚pattern别的pts信息参数：{},{}", companyCd, areaList);
         String[] strArr = areaList.split(",");
         List<Integer> list = new ArrayList<>();
         if (strArr.length > 0 && !areaList.equals("")) {

@@ -8,20 +8,20 @@ import java.util.Map;
 
 public interface CommodityScoreMasterService {
     /**
-     * 获取企业信息接口
+     * つかむ取企业信息接口
      * @return
      */
     Map<String,Object> getEnterpriseInfo();
 
     /**
-     * 获取企业cd关联的商品力点数List接口
+     * つかむ取企业cd关联的商品力点数List接口
      * @param conpanyCd
      * @return
      */
     Map<String,Object> getCommodityListInfo(String conpanyCd);
 
     /**
-     * 获取商品力点数的参数接口
+     * つかむ取商品力点数的参数接口
      * @param conpanyCd
      * @param productPowerCd
      * @return
@@ -38,7 +38,7 @@ public interface CommodityScoreMasterService {
 
 
     /**
-     * 获取Chanel信息接口
+     * つかむ取Chanel信息接口
      * @return
      */
     Map<String, Object> getChanelInfo();
@@ -49,14 +49,14 @@ public interface CommodityScoreMasterService {
     void productPowerParamAttrName(String conpanyCd, Integer productPowerCd, Map<String, Object> result);
 
     /**
-     * 获取商品力点数表的属性和品目信息，用于优先顺位表
+     * つかむ取商品力点数表的属性和品目信息，用于优先順位表
      * @param productOrderCd
      * @return
      */
     ProductOrderAttrAndItemVO getAttrAndItmemInfo(String companyCd, Integer productOrderCd);
 
     /**
-     * 删除商品力点数表信息
+     * 削除商品力点数表信息
      * @param productPowerParamMst
      * @return
      */
@@ -64,7 +64,7 @@ public interface CommodityScoreMasterService {
     boolean delSmartData(ProductPowerParamMst productPowerParamMst);
 
     /**
-     * 编辑时，获取商品里点数表参数
+     * 编辑时，つかむ取商品里点数表参数
      */
     public Map<String,Object> getAllDataOrParam(String companyCd,Integer productPowerNo);
 }

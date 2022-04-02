@@ -14,7 +14,7 @@ public interface ShelfPatternAreaService {
     Map<String,Object> setShelfPatternArea(List<ShelfPatternArea> shelfPatternArea,String authorCd);
 
     /**
-     * 删除shelfPattern关联的area
+     * 削除shelfPattern关联的area
      * @param id
      * @return
      */
@@ -29,7 +29,7 @@ public interface ShelfPatternAreaService {
 
     int deleteAreaCd (List<Integer> areaCd, Integer shelfPatternCd,String authorCd);
 
-    //恢复删除数据
+    //恢复削除数据
     Integer setDelFlg(Integer areaCd, Integer shelfPatternCd,String authorCd);
 
 

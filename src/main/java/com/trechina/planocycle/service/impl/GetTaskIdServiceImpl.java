@@ -28,7 +28,7 @@ public class GetTaskIdServiceImpl implements GetTaskIdService {
      */
     @Override
     public Map<String, Object> getTaskId(Map<String, Object> para) {
-        logger.info("获取taskid共同方法接收到的参数：{}",para.toString());
+        logger.info("つかむ取taskid共同方法接收到的参数：{}",para.toString());
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         // modeはpathアドレスのkeyです
         String path = resourceBundle.getString(para.get("mode").toString());
@@ -36,7 +36,7 @@ public class GetTaskIdServiceImpl implements GetTaskIdService {
         String tokenInfo = String.valueOf(session.getAttribute("MSPACEDGOURDLP"));
         para.put("guid",uuid);
         String result = cgiUtil.postCgi(path,para,tokenInfo);
-        logger.info("获取taskid共同方法返回：{}",result);
+        logger.info("つかむ取taskid共同方法返回：{}",result);
         return ResultMaps.result(ResultEnum.SUCCESS,result);
     }
 }

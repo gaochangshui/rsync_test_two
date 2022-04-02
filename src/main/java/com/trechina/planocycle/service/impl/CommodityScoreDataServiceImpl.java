@@ -199,7 +199,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             productPowerDataForCgiDto.setRecentlyFlag("WEEK");
         }
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("调用cgi获取data的参数：{}", productPowerDataForCgiDto);
+        logger.info("调用cgiつかむ取data的参数：{}", productPowerDataForCgiDto);
         String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
         logger.info("taskId返回：{}", result);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
@@ -236,7 +236,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
         productPowerDataForCgiDto.setUsercd(aud);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("调用cgi获取data的参数：{}", productPowerDataForCgiDto);
+        logger.info("调用cgiつかむ取data的参数：{}", productPowerDataForCgiDto);
         String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
         logger.info("taskId返回：{}", result);
         return ResultMaps.result(ResultEnum.SUCCESS, result);

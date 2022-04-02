@@ -118,9 +118,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public Map<String, Object> getPriorityOrderList(String companyCd) {
-        logger.info("获取优先顺位表参数：{}", companyCd);
+        logger.info("つかむ取优先順位表参数：{}", companyCd);
         List<PriorityOrderMst> priorityOrderMstList = priorityOrderMstMapper.selectByPrimaryKey(companyCd);
-        logger.info("获取优先顺位表返回值：{}", priorityOrderMstList);
+        logger.info("つかむ取优先順位表返回値：{}", priorityOrderMstList);
         return ResultMaps.result(ResultEnum.SUCCESS, priorityOrderMstList);
     }
 
@@ -147,9 +147,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd) {
-        logger.info("根据优先顺位表cd获取商品力点数表cd的参数{}", priorityOrderCd);
+        logger.info("根据优先順位表cdつかむ取商品力点数表cd的参数{}", priorityOrderCd);
         Map<String, Object> productPowerCd = priorityOrderMstMapper.selectProductPowerCd(priorityOrderCd);
-        logger.info("根据优先顺位表cd获取商品力点数表cd的返回值{}", priorityOrderCd);
+        logger.info("根据优先順位表cdつかむ取商品力点数表cd的返回値{}", priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS, productPowerCd);
     }
 
@@ -633,7 +633,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String queryPath = resourceBundle.getString("TaskQuery");
         //taskIdを持って、再度cgiに運転状態/データの取得を要求する
         resultCgi = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-        logger.info("保存优先顺位表结果：{}", resultCgi);
+        logger.info("保存优先順位表结果：{}", resultCgi);
         return resultCgi;
     }
 

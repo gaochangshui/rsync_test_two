@@ -24,7 +24,7 @@ public interface PriorityOrderMstAttrSortService {
     Map<String, Object> setPriorityAttrSort(List<PriorityOrderMstAttrSort> priorityOrderMstAttrSort);
 
     /**
-     * 删除数据的排序
+     * 削除数据的排序
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -33,16 +33,16 @@ public interface PriorityOrderMstAttrSortService {
     Integer delPriorityAttrSortInfo(String companyCd, Integer priorityOrderCd);
 
     /**
-     * 获取属性1和属性2
+     * つかむ取属性1和属性2
      */
     Map<String, Object> getAttribute();
     /**
-     * 陈列设定获取属性1和属性2
+     * 陈列设定つかむ取属性1和属性2
      */
     Map<String, Object> getAttributeSort();
 
     /**
-     * 获取属性的分类及商品分类列表
+     * つかむ取属性的分类及商品分类列表
      */
     Map<String, Object> getAttributeList();
 
@@ -53,7 +53,7 @@ public interface PriorityOrderMstAttrSortService {
     Map<String, Object> getAttributeArea(Integer patternCd, Integer attr1, Integer attr2);
 
     /**
-     *编辑时获取属性1属性2组合对应的面积
+     *编辑时つかむ取属性1属性2组合对应的面积
      */
     Map<String,Object> getEditAttributeArea(String companyCd);
 

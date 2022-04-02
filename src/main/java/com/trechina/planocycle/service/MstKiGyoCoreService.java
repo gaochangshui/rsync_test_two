@@ -4,7 +4,7 @@ import java.util.Map;
 
 public interface MstKiGyoCoreService {
     /**
-     * 获取企业的共通部品参数
+     * つかむ取企业的共通部品参数
      * @param companyCd
      * @return
      */

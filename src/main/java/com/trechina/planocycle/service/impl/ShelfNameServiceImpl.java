@@ -48,9 +48,9 @@ public class ShelfNameServiceImpl implements ShelfNameService {
      */
     @Override
     public Map<String, Object> getShelfNameInfo(String companyCd) {
-        logger.info("获取棚名称信息的参数：{}",companyCd);
+        logger.info("つかむ取棚名称信息的参数：{}",companyCd);
         List<ShelfNameDataVO> resultInfo = shelfNameMstMapper.selectShelfNameInfo(companyCd);
-        logger.info("获取棚名称信息的返回值：{}",resultInfo);
+        logger.info("つかむ取棚名称信息的返回値：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
 
@@ -143,7 +143,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
                 shelfNameArea.setShelfNameCd(shelfNameMst.getId());
                 delList.add(shelfNameArea);
             });
-            logger.info("删除棚名称信息转换后的area参数：{}",delList);
+            logger.info("削除棚名称信息转换后的area参数：{}",delList);
             //関連するareaを削除
             shelfNameAreaService.delAreaCd(deleteAreaList,shelfNameDto.getId(),authorCd);
             //検索棚名の下の棚pattern
@@ -182,9 +182,9 @@ public class ShelfNameServiceImpl implements ShelfNameService {
      */
     @Override
     public Map<String, Object> getShelfName(String companyCd) {
-        logger.info("获取棚名称Name的参数：{}",companyCd);
+        logger.info("つかむ取棚名称Name的参数：{}",companyCd);
         List<ShelfNameVO> resultInfo = shelfNameMstMapper.selectShelfName(companyCd);
-        logger.info("获取棚名称Name的返回值：{}",resultInfo);
+        logger.info("つかむ取棚名称Name的返回値：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
     /**
@@ -195,7 +195,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> delShelfNameInfo(JSONObject jsonObject) {
-        logger.info("删除棚名称Name的参数：{}",jsonObject.toString());
+        logger.info("削除棚名称Name的参数：{}",jsonObject.toString());
         //作成者cdの取得
         String authorCd = session.getAttribute("aud").toString();
         // 小屋名の削除

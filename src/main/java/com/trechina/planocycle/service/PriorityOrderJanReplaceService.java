@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface PriorityOrderJanReplaceService {
     /**
-     * 获取jan变的信息
+     * つかむ取jan变的信息
      * @param companyCd
      * @param priorityOrderCd
      * @return
