@@ -83,7 +83,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
         List<ProductPowerMstData> syokikaList = productPowerDataMapper.selectWKSyokika(companyCd, authorCd);
 
-        logger.info("返回pos基本信息はい{}", syokikaList);
+        logger.info("返回pos基本情報はい{}", syokikaList);
         return ResultMaps.result(ResultEnum.SUCCESS, syokikaList);
     }
 
@@ -142,9 +142,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         }
         List<ProductPowerMstData> kokyakuList = productPowerDataMapper.selectWKKokyaku(authorCd, companyCd);
-        logger.info("pos基本信息和顾客信息：{}", kokyakuList);
+        logger.info("pos基本情報和顾客情報：{}", kokyakuList);
         List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData(authorCd, companyCd);
-        logger.info("预备プロジェクト：{}", kokyakuList);
+        logger.info("準備プロジェクト：{}", kokyakuList);
 
         if (wkYobiiiternDataList.isEmpty()) {
             return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);
@@ -199,7 +199,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             productPowerDataForCgiDto.setRecentlyFlag("WEEK");
         }
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("调用cgiつかむ取data的参数：{}", productPowerDataForCgiDto);
+        logger.info("調用cgiつかむ取data的参数：{}", productPowerDataForCgiDto);
         String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
         logger.info("taskId返回：{}", result);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
@@ -236,7 +236,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
         productPowerDataForCgiDto.setUsercd(aud);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("调用cgiつかむ取data的参数：{}", productPowerDataForCgiDto);
+        logger.info("調用cgiつかむ取data的参数：{}", productPowerDataForCgiDto);
         String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
         logger.info("taskId返回：{}", result);
         return ResultMaps.result(ResultEnum.SUCCESS, result);

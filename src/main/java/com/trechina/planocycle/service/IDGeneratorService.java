@@ -4,13 +4,13 @@ import java.util.Map;
 
 public interface IDGeneratorService {
     /**
-     * 优先順位表自动采号，并返回
+     * 優先順位表自动采号，并返回
      * @return
      */
     Map<String,Object> priorityOrderNumGenerator();
 
     /**
-     * 商品力点数表自动采号，并返回
+     * 商品力点数表自動采号，并返回
      */
     Map<String,Object> productPowerNumGenerator();
     /**

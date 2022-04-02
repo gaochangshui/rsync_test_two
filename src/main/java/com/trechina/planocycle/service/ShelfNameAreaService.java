@@ -21,7 +21,7 @@ public interface ShelfNameAreaService {
     Integer delShelfNameArea(Integer id,String authorCd);
 
     /**
-     * 查询shelfName関連付け的area
+     * 検索shelfName関連付け的area
      * @param id
      *  @return
      */
@@ -35,7 +35,7 @@ public interface ShelfNameAreaService {
     Integer delAreaCd(List<Integer> areaCd,Integer id,String authorCd);
 
     /**
-     * 恢复削除数据
+     * 恢復削除数据
      */
     Integer setDelFlg(Integer areaCd,Integer id ,String authorCd);
 }

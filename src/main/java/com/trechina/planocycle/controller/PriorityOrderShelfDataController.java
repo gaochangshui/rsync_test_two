@@ -51,7 +51,7 @@ public class PriorityOrderShelfDataController {
         return  priorityOrderShelfDataService.getPlatformShedData(companyCd,priorityOrderCd);
     }
     /**
-     * 新規では基本的なパタ台棚別jansの详细情報を入手
+     * 新規では基本的なパタ台棚別jansの詳細情報を入手
      * @param priorityOrderPlatformShedDto
      * @return
      */
