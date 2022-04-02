@@ -222,7 +222,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         String authorName = (String) session.getAttribute("aud");
         logger.info("参数为:{}",productPowerParamMst);
         String uuid = UUID.randomUUID().toString();
-        //商品力点数mst表删除
+        //商品力点数mst表削除
         productPowerMstMapper.delete(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd,authorName);
       //パラメータ削除
     productPowerParamMstMapper.deleteCommofityParam(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);

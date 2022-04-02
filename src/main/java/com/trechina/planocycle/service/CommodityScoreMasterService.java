@@ -56,7 +56,7 @@ public interface CommodityScoreMasterService {
     ProductOrderAttrAndItemVO getAttrAndItmemInfo(String companyCd, Integer productOrderCd);
 
     /**
-     * 删除商品力点数表信息
+     * 削除商品力点数表信息
      * @param productPowerParamMst
      * @return
      */

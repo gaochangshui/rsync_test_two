@@ -399,10 +399,10 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             }
             File fileCsv = new File(files);
             if (!fileCsv.delete()) {
-                logger.info("文件删除失败");
+                logger.info("文件削除失败");
             }
             if (!fileExcel.delete()) {
-                logger.info("文件删除失败");
+                logger.info("文件削除失败");
             }
         } catch (IOException e) {
             logger.info("csv转excel报错2:{}", e.getMessage());
@@ -446,7 +446,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
         storage.create(blobInfo, Files.readAllBytes(Paths.get(filePath)));
         File delFile = new File(path + fileName);
         if (!delFile.delete()) {
-            logger.info("删除文件失败");
+            logger.info("削除文件失败");
         }
     }
 

@@ -182,7 +182,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     }
 
     /**
-     * 调用cgi删除预备项目
+     * 调用cgi削除预备项目
      *
      * @param productPowerReserveMst
      * @return
@@ -204,7 +204,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         cgiUtils cgiUtil = new cgiUtils();
         String result = null;
         result = cgiUtil.postCgi(path, productPowerDataForCgiDto, tokenInfo);
-        logger.info("taskid返回删除 yobi：{}", result);
+        logger.info("taskid返回削除 yobi：{}", result);
         String queryPath = resourceBundle.getString("TaskQuery");
         // taskidを持って、再度cgiに運転状態/データの取得を要求する
         Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);

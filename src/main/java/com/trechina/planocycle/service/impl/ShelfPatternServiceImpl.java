@@ -10,7 +10,7 @@ import com.trechina.planocycle.entity.vo.ShelfPatternBranchVO;
 import com.trechina.planocycle.entity.vo.ShelfPatternNameVO;
 import com.trechina.planocycle.entity.vo.ShelfPatternTreeVO;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.exception.BussinessException;
+import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.ShelfPatternBranchMapper;
 import com.trechina.planocycle.mapper.ShelfPatternMstMapper;
 import com.trechina.planocycle.service.ShelfPatternAreaService;
@@ -93,7 +93,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             shelfPatternAreaService.setShelfPatternArea(list,authorCd);
         } catch (Exception e) {
             logger.error(e.toString());
-            throw new BussinessException(e.toString());
+            throw new BusinessException(e.toString());
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
@@ -175,7 +175,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
 
         }catch (Exception e) {
             logger.error(e.toString());
-            throw new BussinessException(e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

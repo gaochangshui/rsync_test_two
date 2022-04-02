@@ -143,7 +143,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
                 shelfNameArea.setShelfNameCd(shelfNameMst.getId());
                 delList.add(shelfNameArea);
             });
-            logger.info("删除棚名称信息转换后的area参数：{}",delList);
+            logger.info("削除棚名称信息转换后的area参数：{}",delList);
             //関連するareaを削除
             shelfNameAreaService.delAreaCd(deleteAreaList,shelfNameDto.getId(),authorCd);
             //検索棚名の下の棚pattern

@@ -12,8 +12,8 @@ public class TableTransferController {
     @Autowired
     private TableTransferService tableTransferService;
     /**
-     * 传输Areas表信息
-     * @return -1 失败  >0成功
+     * 伝送Areas表情報
+     * @return -1 失敗  >0成功
      */
     @GetMapping("getAreasTransfer")
     public int AreasTransfer() {
@@ -21,8 +21,8 @@ public class TableTransferController {
     }
 
     /**
-     * 传输Branchs表信息
-     * @return -1 失败  >-1成功
+     * 伝送Branchs表情報
+     * @return -1 失敗  >-1成功
      */
     @GetMapping("getBranchsTransfer")
     public int BranchsTransfer() {
@@ -30,8 +30,8 @@ public class TableTransferController {
     }
 
     /**
-     * 传输Jans表信息
-     * @return -1 失败  >0成功
+     * 伝送Jans表情報
+     * @return -1 失敗  >0成功
      */
     @GetMapping("getJansTransfer")
     public int JansTransfer() {
@@ -39,8 +39,8 @@ public class TableTransferController {
     }
 
     /**
-     * 传输Attr表信息
-     * @return -1 失败  >0成功
+     * 伝送Attr表情報
+     * @return -1 失敗  >0成功
      */
     @GetMapping("getAttrTransfer")
     public int AttrTransfer() {

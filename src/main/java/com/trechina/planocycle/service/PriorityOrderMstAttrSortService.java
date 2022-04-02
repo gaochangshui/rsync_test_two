@@ -24,7 +24,7 @@ public interface PriorityOrderMstAttrSortService {
     Map<String, Object> setPriorityAttrSort(List<PriorityOrderMstAttrSort> priorityOrderMstAttrSort);
 
     /**
-     * 删除数据的排序
+     * 削除数据的排序
      *
      * @param companyCd
      * @param priorityOrderCd

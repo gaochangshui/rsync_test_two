@@ -1,6 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
-import com.trechina.planocycle.exception.BussinessException;
+import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.AreasMapper;
 import com.trechina.planocycle.mapper.AttributeMapper;
 import com.trechina.planocycle.mapper.BranchsMapper;
@@ -29,7 +29,7 @@ public class TableTransferServiceImpl implements TableTransferService {
             int updateResult = areasMapper.updateTransfer();
             return updateResult;
         } catch (Exception e){
-            throw new BussinessException("更新失败");
+            throw new BusinessException("更新失败");
         }
     }
     @Transactional(rollbackFor = Exception.class)
@@ -40,7 +40,7 @@ public class TableTransferServiceImpl implements TableTransferService {
             int updateResult = branchsMapper.updateTransfer();
             return updateResult;
         } catch (Exception e) {
-            throw new BussinessException("更新失败");
+            throw new BusinessException("更新失败");
         }
     }
     @Transactional(rollbackFor = Exception.class)
@@ -51,7 +51,7 @@ public class TableTransferServiceImpl implements TableTransferService {
             int updateResult = jansMapper.updateTransfer();
             return updateResult;
         } catch (Exception e) {
-            throw new BussinessException("更新失败");
+            throw new BusinessException("更新失败");
         }
     }
     @Transactional(rollbackFor = Exception.class)
@@ -62,7 +62,7 @@ public class TableTransferServiceImpl implements TableTransferService {
             int updateResule = attributeMapper.updateTransfer();
             return updateResule;
         } catch (Exception e) {
-            throw new BussinessException("更新失败");
+            throw new BusinessException("更新失败");
         }
     }
 }

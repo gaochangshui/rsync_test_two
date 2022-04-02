@@ -24,7 +24,7 @@ public class CommonMstController {
     }
 
     /**
-     * 取得棚name相关的エリア
+     * 取得棚name関連的エリア
      * @param shelfNameCd
      * @return
      */

@@ -21,7 +21,7 @@ public class PriorityOrderShelfDataController {
 
 
     /**
-     * 新规では基本的なパター制约に関する情报を入手
+     * 新规では基本的なパター制約に関する情報を入手
      * @param companyCd
      * @return
      */
@@ -31,7 +31,7 @@ public class PriorityOrderShelfDataController {
     }
 
     /**
-     * 新规では基本パター制约别janの详细情报を取得
+     * 新规では基本パター制約别janの详细情報を取得
      * @param
      * @return
      */
