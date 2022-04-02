@@ -324,6 +324,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                     Double d = null;
                     for (PriorityAllResultDataDto resultData : resultDatas) {
                         resultData.setPriorityAllCd(priorityAllCd);
+                        resultData.setAuthorCd(authorCd);
                         resultData.setCompanyCd(companyCd);
                         resultData.setShelfPatternCd(pattern.getShelfPatternCd());
                         if (resultData.getSalesCnt() != null) {
@@ -339,6 +340,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
                         } else {
                             resultData.setFaceNum(faceNum.getFaceMinNum());
+
                         }
 
                     }
