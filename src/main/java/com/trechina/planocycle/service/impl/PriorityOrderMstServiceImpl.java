@@ -84,7 +84,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private PriorityOrderJanReplaceMapper priorityOrderJanReplaceMapper;
     @Autowired
     private PriorityOrderJanCardMapper priorityOrderJanCardMapper;
-
+    @Autowired
+    private PriorityOrderMstService priorityOrderMstService;
     @Autowired
     private cgiUtils cgiUtil;
     @Autowired
@@ -572,7 +573,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteWorkTable(String companyCd, Integer priorityOrderCd) {
+    public  void  deleteWorkTable(String companyCd, Integer priorityOrderCd) {
         String authorCd = session.getAttribute("aud").toString();
 
         workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
@@ -733,7 +734,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Integer id = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);
         String aud = session.getAttribute("aud").toString();
-        this.deleteWorkTable(companyCd, priorityOrderCd);
+        priorityOrderMstService.deleteWorkTable(companyCd, priorityOrderCd);
         priorityOrderJanCardMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         priorityOrderJanReplaceMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         priorityOrderJanNewMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
