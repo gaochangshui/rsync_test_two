@@ -55,14 +55,14 @@ public interface PriorityOrderMstService {
     Map<String, Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition);
 
     /**
-     * 重新计算rank排序
+     * 重新計算rank排序
      * @param companyCd
      * @return
      */
     Map<String, Object>getReorder(String companyCd,Integer priorityOrderCd,Integer productPowerCd);
 
     /**
-     * 新规时清空对应临时表所有信息
+     * 新规时清空対応临时表所有信息
      * @param companyCd
      * @return
      */

@@ -19,7 +19,7 @@ public class Test {
 
                 }
 
-                System.out.println("输入内容" + buffer);
+                System.out.println("負ける入内容" + buffer);
             }
         } catch (IOException e) {
             logger.error("",e);

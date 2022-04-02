@@ -42,18 +42,18 @@ public interface PriorityOrderMstAttrSortService {
     Map<String, Object> getAttributeSort();
 
     /**
-     * つかむ取属性的分类及商品分类列表
+     * つかむ取属性的分クラス及商品分クラス列表
      */
     Map<String, Object> getAttributeList();
 
 
     /**
-     * 计算属性1属性2组合对应的面积
+     * 計算属性1属性2组合対応的面积
      */
     Map<String, Object> getAttributeArea(Integer patternCd, Integer attr1, Integer attr2);
 
     /**
-     *编辑时つかむ取属性1属性2组合对应的面积
+     *编辑时つかむ取属性1属性2组合対応的面积
      */
     Map<String,Object> getEditAttributeArea(String companyCd);
 

@@ -22,18 +22,18 @@
     <property name="maxFileSize" value="100MB" />
     <!-- 文档保留天数 -->
     <property name="maxHistory" value="90" />
-    <!-- 文档保留总大小 -->
+    <!-- 文档保留総大小 -->
     <property name="totalSizeCap" value="10GB" />
 
 
-    <!-- 系统服务日志 -->
+    <!-- 系統服务日志 -->
     <appender name="FILE"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_HOME}/${SRVNAME}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- daily rollover -->
             <fileNamePattern>${LOG_BACK_HOME}/%d{yyyy-MM-dd}/${SRVNAME}.%d{HH}.%i.log.gz</fileNamePattern>
-            <!-- 单个日志文件最多 100MB, 90天的日志周期，最大不能超过10GB -->
+            <!-- 单个日志文件最多 100MB, 90天的日志周期，最大不能超を過ぎて10GB -->
             <maxFileSize>${maxFileSize}</maxFileSize>
             <maxHistory>${maxHistory}</maxHistory>
             <totalSizeCap>${totalSizeCap}</totalSizeCap>

@@ -131,7 +131,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             //つかむ取棚pattern关联的Area
             List<Integer> getShelfPatternArea = shelfPatternAreaService.getShelfPatternArea(shelfPatternMst.getShelfPatternCd(),shelfPatternMst.getConpanyCd());
             logger.info("棚pattern关联的所有Area：{}" , getShelfPatternArea);
-            //数据库中修改重复数据
+            //database中修改重复数据
             shelfPatternDto.getArea().forEach(item->{
                 for (Integer area : getShelfPatternArea) {
                     if (item.equals(area)){
@@ -180,7 +180,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    /**通过棚名称棚pattern
+    /**通を過ぎて棚名称棚pattern
      * @param companyCd
      * @param shelfNameCd
      * @return
@@ -210,7 +210,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             shelfPatternBranchVO.setBranchCd(branchList);
             shelfPatternBranchVO.setShelfPatternCd(list.get(0).getShelfPattrenCd());
             shelfPatternBranchVO.setStartTime(list.get(0).getStartTime());
-            logger.info("つかむ取棚pattern关联的店cd转换类型后：{}",shelfPatternBranchVO);
+            logger.info("つかむ取棚pattern关联的店cd转换クラス型后：{}",shelfPatternBranchVO);
             return ResultMaps.result(ResultEnum.SUCCESS,shelfPatternBranchVO);
         }else {
             return ResultMaps.result(ResultEnum.SUCCESS,null);

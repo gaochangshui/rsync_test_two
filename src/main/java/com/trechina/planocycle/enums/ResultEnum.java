@@ -12,9 +12,9 @@ public enum ResultEnum {
     NAMEISEXISTS(30001,"名称已经存在"),
     NOTDATAS(30002,"没有数据"),
     JANNOTESISTS(30003,"jan不存在"),
-    FILEVERSIONFAILURE(40001,"文件版本不对"),
-    FILECONTENTFAILURE(40002,"文件内容不对"),
-    DATAISTOOLARGE(40003,"数据量过大"),
+    FILEVERSIONFAILURE(40001,"文件版本不はい"),
+    FILECONTENTFAILURE(40002,"文件内容不はい"),
+    DATAISTOOLARGE(40003,"数据量を過ぎて大"),
     JANCDINEXISTENCE(50004,"JAN不存在");
 
     private Integer code;
