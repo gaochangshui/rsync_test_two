@@ -62,7 +62,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
 
 
-        List<PriorityOrderRestDto> list = new ArrayList();
+        List<PriorityOrderRestDto> list = new ArrayList<>();
         PriorityOrderRestDto priorityOrderRestDto =null;
         Class c = PriorityOrderRestrictDto.class;
         for (PriorityOrderRestrictDto restrictDatum : restrictData) {

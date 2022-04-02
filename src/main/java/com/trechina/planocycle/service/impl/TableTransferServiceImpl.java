@@ -26,8 +26,7 @@ public class TableTransferServiceImpl implements TableTransferService {
     public int getAreasTransfer() {
         try {
             areasMapper.delete();
-            int updateResult = areasMapper.updateTransfer();
-            return updateResult;
+            return areasMapper.updateTransfer();
         } catch (Exception e){
             throw new BusinessException("更新失敗");
         }
@@ -37,8 +36,7 @@ public class TableTransferServiceImpl implements TableTransferService {
     public int getBranchsTransfer() {
         try {
             branchsMapper.deleteByPrimaryKey();
-            int updateResult = branchsMapper.updateTransfer();
-            return updateResult;
+            return branchsMapper.updateTransfer();
         } catch (Exception e) {
             throw new BusinessException("更新失敗");
         }
@@ -48,8 +46,7 @@ public class TableTransferServiceImpl implements TableTransferService {
     public int getJansTransfer() {
         try {
             jansMapper.deleteByPrimaryKey();
-            int updateResult = jansMapper.updateTransfer();
-            return updateResult;
+            return jansMapper.updateTransfer();
         } catch (Exception e) {
             throw new BusinessException("更新失敗");
         }
@@ -59,8 +56,7 @@ public class TableTransferServiceImpl implements TableTransferService {
     public int getAttrTransfer() {
         try{
             attributeMapper.deleteByPrimaryKey();
-            int updateResule = attributeMapper.updateTransfer();
-            return updateResule;
+            return attributeMapper.updateTransfer();
         } catch (Exception e) {
             throw new BusinessException("更新失敗");
         }
