@@ -48,7 +48,7 @@ public interface PriorityOrderMstAttrSortService {
 
 
     /**
-     * 計算属性1属性2組合対応的面积
+     * 計算属性1属性2組合対応的面積
      */
     Map<String, Object> getAttributeArea(Integer patternCd, Integer attr1, Integer attr2);
 
