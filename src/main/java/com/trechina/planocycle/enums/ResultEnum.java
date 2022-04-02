@@ -7,7 +7,7 @@ public enum ResultEnum {
     NOTFOUNTCOOKIE(10002,"找不到cookie信息"),
     CGITIEMOUT(20002,"cgi調用超时"),
     CGICANCEL(20003,"cgi手動取消"),
-    CGIERROR(20004,"cgiエラー"),
+    CGIERROR(20004,"cgi報錯"),
     SIZEISZERO(20005,"数据はい空"),
     NAMEISEXISTS(30001,"名称已経存在"),
     NOTDATAS(30002,"没有数据"),
