@@ -817,8 +817,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     public Map<String, Object> checkOrderName(PriorityOrderMstVO priorityOrderMstVO) {
         String priorityOrderName = priorityOrderMstVO.getPriorityOrderName();
         Integer priorityOrderCd = priorityOrderMstVO.getPriorityOrderCd();
+        String companyCd = priorityOrderMstVO.getCompanyCd();
+        String authorCd = session.getAttribute("aud").toString();
 
-        Integer orderNameCount = priorityOrderMstMapper.selectByOrderName(priorityOrderName);
+        Integer orderNameCount = priorityOrderMstMapper.selectByOrderName(priorityOrderName, companyCd, authorCd);
         int isEdit = priorityOrderMstMapper.selectByPriorityOrderCd(priorityOrderCd);
 
         if (isEdit > 0) {
