@@ -151,11 +151,11 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("ProductPowerData");
         String result = null;
-        logger.info("携帶参数：{}", productPowerDataForCgiSave);
+        logger.info("携帯参数：{}", productPowerDataForCgiSave);
         result = cgiUtil.postCgi(path, productPowerDataForCgiSave, tokenInfo);
         logger.info("taskid返回--保存jan rank：{}", result);
         String queryPath = resourceBundle.getString("TaskQuery");
-        // 帶着taskid，再度cgiに運転状態/データの取得を要求する
+        // 帯着taskid，再度cgiに運転状態/データの取得を要求する
         Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
         logger.info("保存jan rank{}",Data);
         return ResultMaps.result(ResultEnum.SUCCESS);
