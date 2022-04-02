@@ -712,7 +712,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 //            priorityOrderJanReplaceMapper.workDelete(companyCd, authorCd, priorityOrderCd);
 //            priorityOrderJanCardMapper.workDelete(companyCd, priorityOrderCd, authorCd);
         } catch (Exception exception) {
-            logger.error("保存临时表数据到实际表报错", exception);
+            logger.error("保存临時表数据到实际表报错", exception);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultMaps.result(ResultEnum.FAILURE);
         }

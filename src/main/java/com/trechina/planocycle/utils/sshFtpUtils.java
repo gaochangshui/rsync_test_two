@@ -31,7 +31,7 @@ public class sshFtpUtils {
             logger.info("ssh服務器参数：{},{}",localFile,remotePath);
             Connection connection = getConnection();
             boolean auth = connection.authenticateWithPassword(user,pw);
-            logger.info("ssh服務器身份验证返回値：{}",auth);
+            logger.info("ssh服務器身分驗證返回値：{}",auth);
             if (auth) {
                 logger.info("検証成功");
                 SCPClient client =new SCPClient(connection);
@@ -57,7 +57,7 @@ public class sshFtpUtils {
     }
 
     private Connection getConnection() throws IOException {
-        logger.info("开始ssh服務器");
+        logger.info("開始ssh服務器");
         Connection connection = new Connection(ip);
         connection.connect();
         logger.info("connect成功");
@@ -113,7 +113,7 @@ public class sshFtpUtils {
                 outputStream = response.getOutputStream();
                 Connection connection = getConnection();
                 boolean auth = connection.authenticateWithPassword(user,pw);
-                logger.info("ssh服務器身份验证返回値：{}",auth);
+                logger.info("ssh服務器身分驗證返回値：{}",auth);
                 if (auth) {
                     logger.info("検証成功");
                     SCPClient client =new SCPClient(connection);
@@ -121,7 +121,7 @@ public class sshFtpUtils {
                     if(!file.createNewFile()){
                         return "転送失敗";
                     }
-                    // 构造一个长度はい1024的字节数组
+                    // 構造一个長い度はい1024的字節数組
                     byte[] buffer = new byte[1024];
                     int len = 0;
                     while ((len = is.read(buffer)) != -1){

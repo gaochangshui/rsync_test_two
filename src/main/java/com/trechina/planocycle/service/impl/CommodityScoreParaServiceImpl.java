@@ -108,7 +108,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     public Map<String, Object> setCommodityScorePare(ProductPowerParam productPowerParam) {
         String authorCd = session.getAttribute("aud").toString();
 
-        logger.info("保存期间、表示プロジェクト、weight所有参数:{}",productPowerParam);
+        logger.info("保存期間、表示プロジェクト、weight所有参数:{}",productPowerParam);
         String conpanyCd = productPowerParam.getCompany();
         Integer productPowerCd = productPowerParam.getProductPowerNo();
 
