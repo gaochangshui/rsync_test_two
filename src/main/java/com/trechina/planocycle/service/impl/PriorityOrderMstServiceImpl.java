@@ -500,6 +500,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         if (shelfPatternCd == null) {
             logger.info("shelfPatternCd:{}不存在", shelfPatternCd);
+            return ResultMaps.result(ResultEnum.FAILURE);
         }
 
         List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
