@@ -409,7 +409,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
         response.setHeader("Content-Disposition", format);
 
-        //为了解决excel打开乱码的问题
+        //EXcelが文字化けしを開く問題を解決するために
         byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
         writer.write(new String(bom));
         writer.flush();
@@ -455,7 +455,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         }
     }
     /**
-     * 保存pts数据到临时表里
+     * ptsデータを一時テーブルに保存
      * @param companyCd
      * @param authorCd
      * @param priorityOrderCd
@@ -465,14 +465,14 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
 
-        //查询出所有采纳了的商品，按照台棚进行排序，标记商品在棚上的位置
+        //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
         List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(workPriorityOrderResultData);
 
-        //查出已有的新pts，先删掉再保存
-        //新pts中已有数据的ptsCd
+        //既存の新しいptsを検出し,削除してから保存する
+        //新しいptsにデータがあるptsCd
         ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectWorkPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
-        //临时表中的ptscd
+        //テンポラリ・テーブルのptscd
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
 
         PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
@@ -492,9 +492,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 
         ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
         String modeName = shelfPtsDataVersion.getModename();
-        //modeName作为下载pts的文件名
+        //modeNameはptsをダウンロードするファイル名として
         priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
-        //从已有的pts中查询出数据
+        //既存のptsからデータをクエリーする
         shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
         Integer id = priorityOrderPtsDataDto.getId();
         shelfPtsDataMapper.insertPtsTaimst(ptsCd, id, authorCd);
@@ -506,7 +506,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         }
     }
     /**
-     * 保存pts数据到最终表里
+     * ptsデータを最終テーブルに保存
      * @param companyCd
      * @param authorCd
      * @param priorityOrderCd

@@ -111,7 +111,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private PriorityOrderShelfDataService priorityOrderShelfDataService;
 
     /**
-     * 获取优先顺位表list
+     * 優先順位テーブルリストの取得
      *
      * @param companyCd
      * @return
@@ -125,7 +125,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
     /**
-     * 获取登录这所在企业是否有优先顺位表
+     * 登録者がいる企業に優先順位表があるかどうかを調べる
      *
      * @return
      */
@@ -140,7 +140,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
 
     /**
-     * 根据优先顺位表cd获取商品力点数表cd
+     * 優先順位表cdに基づいて商品力点数表cdを取得する
      *
      * @param priorityOrderCd
      * @return
@@ -177,7 +177,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
     /**
-     * S自动计算-Step1
+     * S自動計算-STEP 1
      * @param companyCd
      * @param patternCd
      * @param priorityOrderCd
@@ -190,21 +190,21 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String getZokusei = "getZokusei";
         String setZokusei = "setZokusei";
 
-        // 清空work表
+        // ワークシートを空にする
         workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
         workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        // 1.通过patternCd查找pts的台段详情
+        // 1.patternCdによるptsのステージ詳細の検索
         List<ShelfPtsDataTanamst> tanamstList = shelfPtsDataTanamstMapper.selectByPatternCd(patternCd);
 
-        // 2.获取制约条件
+        // 2.制約条件の取得
         List<WorkPriorityOrderRestrictSet> workRestrictSetList = workPriorityOrderRestrictSetMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
 
-        // 3.将整台、段制约条件放到台段上
+        // 3.ステージ全体、セグメント制約条件をステージセグメントに置く
         List<WorkPriorityOrderRestrictSet> resultList = new ArrayList<>();
         WorkPriorityOrderRestrictSet restrictSet = null;
         WorkPriorityOrderRestrictSet halfRestrictSet1 = null;
         WorkPriorityOrderRestrictSet halfRestrictSet2 = null;
-        // 整台制约
+        // 整台制約
         Optional<WorkPriorityOrderRestrictSet> fullTaiSetOptional;
         WorkPriorityOrderRestrictSet fullTaiSet = null;
         // 整段制约
@@ -385,7 +385,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
     /**
-     * 自动计算
+     * 自動計算
      *
      * @return
      */
@@ -642,7 +642,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
 
     /**
-     * 保存所有work_priority_order_xxxx到表到实际表中
+     * 最終保存
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -722,7 +722,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-
+    /**
+     * 編集時にすべての情報を表示
+     * @param companyCd
+     * @param priorityOrderCd
+     * @return
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
     @Override
     public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Integer id = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);
@@ -801,6 +809,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
+    /**
+     * 編集時にptsの名前が存在するかどうかを確認
+     * @param priorityOrderMstVO
+     * @return
+     */
     @Override
     public Map<String, Object> checkOrderName(PriorityOrderMstVO priorityOrderMstVO) {
         String priorityOrderName = priorityOrderMstVO.getPriorityOrderName();
@@ -822,6 +835,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
+
+    /**
+     * 基本パターン削除
+     * @param priorityOrderMstVO
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> deletePriorityOrderAll(PriorityOrderMstVO priorityOrderMstVO) {
@@ -847,6 +866,16 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
+    /**
+     * 各種mst展示
+     * @param companyCd
+     * @param priorityOrderCd
+     * @param flag
+     * @return
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
     @Override
     public Map<String, Object> getVariousMst(String companyCd, Integer priorityOrderCd, Integer flag) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         String aud = session.getAttribute("aud").toString();

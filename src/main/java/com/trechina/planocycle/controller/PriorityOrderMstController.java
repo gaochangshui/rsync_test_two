@@ -20,7 +20,7 @@ public class PriorityOrderMstController {
     String ptsDownPath;
 
     /**
-     * 获取优先顺位表list
+     * 優先順位テーブルリストの取得
      * @param companyCd
      * @return
      */
@@ -32,7 +32,7 @@ public class PriorityOrderMstController {
 
 
     /**
-     * 查询登陆者所在企业有没有优先顺位表
+     * 登録者がいる企業に優先順位表があるかどうかを調べる
      * @return
      */
     @GetMapping("/getPriorityOrderExistsFlg")
@@ -43,7 +43,7 @@ public class PriorityOrderMstController {
 
 
     /**
-     * 根据优先顺位表cd获取商品力点数表cd
+     * 優先順位表cdに基づいて商品力点数表cdを取得する
      * @param priorityOrderCd
      * @return
      */
@@ -54,7 +54,7 @@ public class PriorityOrderMstController {
 
 
     /**
-     * S自动计算-Step1
+     * S自動計算-STEP 1
      * @param companyCd
      * @param patternCd
      * @param priorityOrderCd
@@ -66,7 +66,7 @@ public class PriorityOrderMstController {
     }
 
     /**
-     * 自动计算
+     * 自動計算
      * @return
      */
     @GetMapping("/autoCalculation")
@@ -75,7 +75,7 @@ public class PriorityOrderMstController {
     }
 
     /**
-     * 编辑时展示所有信息
+     * 編集時にすべての情報を表示
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -86,7 +86,7 @@ public class PriorityOrderMstController {
     }
 
     /**
-     * 最终保存
+     * 最終保存
      * @param primaryKeyVO
      * @return
      */
@@ -96,7 +96,7 @@ public class PriorityOrderMstController {
     }
 
     /**
-     * 编辑时校验pts的名字是否存在
+     * 編集時にptsの名前が存在するかどうかを確認
      * @return
      */
     @PostMapping("/checkOrderName")
@@ -105,7 +105,7 @@ public class PriorityOrderMstController {
     }
 
     /**
-     * 基本パターン删除
+     * 基本パターン削除
      * @param priorityOrderMstVO
      * @return
      */
@@ -115,7 +115,7 @@ public class PriorityOrderMstController {
     }
 
     /**
-     * 各种mst展示
+     * 各種mst展示
      * @param companyCd
      * @param priorityOrderCd
      * @param flag

@@ -15,7 +15,7 @@ public class ShelfNameController {
     private ShelfNameService shelfNameService;
 
     /**
-     * 获取棚名称信息
+     * 棚名情報の取得
      *
      * @param companyCd
      * @return
@@ -26,7 +26,7 @@ public class ShelfNameController {
     }
 
     /**
-     * 获取棚名称Name
+     * 棚名を取得Name
      *
      * @param companyCd
      * @return
@@ -37,7 +37,7 @@ public class ShelfNameController {
     }
 
     /**
-     * 保存棚名称信息
+     * ハウス名情報の保存
      *
      * @param shelfNameDto
      * @return
@@ -48,7 +48,7 @@ public class ShelfNameController {
     }
 
     /**
-     * 修改棚名称信息
+     * 小屋名情報の変更
      */
     @PostMapping("/updateShelfNameInfo")
     public Map<String, Object> updateShelfNameInfo(@RequestBody ShelfNameDto shelfNameDto) {
@@ -56,7 +56,7 @@ public class ShelfNameController {
     }
 
     /**
-     * 删除棚名称
+     * 小屋名の削除
      *
      * @param jsonObject
      * @return
@@ -67,7 +67,7 @@ public class ShelfNameController {
     }
 
     /**
-     * 获取单表棚名称信息，用于修改
+     * 変更用のシングル・テーブル・ハウス名情報の取得
      *
      * @param id
      * @return

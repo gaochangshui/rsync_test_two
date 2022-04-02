@@ -16,7 +16,7 @@ public class ShelfPatternController {
     private ShelfPatternService shelfPatternService;
 
     /**
-     * 获取棚pattern信息
+     * 棚pattern情報の取得
      *
      * @param companyCd
      * @return
@@ -27,7 +27,8 @@ public class ShelfPatternController {
     }
 
     /**
-     * 保存棚pattern信息
+     *
+     * 保存棚pattern情報
      *
      * @param shelfPatternDto
      * @return
@@ -38,7 +39,7 @@ public class ShelfPatternController {
     }
 
     /**
-     * 修改棚pattern信息
+     * 修正棚pattern情報
      *
      * @param shelfPatternDto
      * @return
@@ -49,7 +50,7 @@ public class ShelfPatternController {
     }
 
     /**
-     * 获取棚pattern关联的店cd
+     * 棚pattern関連店cdを取得
      *
      * @param shelfPattrenCd
      * @return
@@ -60,7 +61,7 @@ public class ShelfPatternController {
     }
 
     /**
-     * 保存棚pattern的店cd
+     * 保存棚patternのお店cd
      *
      * @param shelfPatternBranchVO
      * @return
@@ -71,7 +72,7 @@ public class ShelfPatternController {
     }
 
     /**
-     * 获取所有棚pattern的name
+     * すべての棚patternのnameを取得
      *
      * @param companyCd
      * @return
@@ -82,7 +83,7 @@ public class ShelfPatternController {
     }
 
     /**
-     * 获取关联了店铺的棚pattern的name（优先顺位表用）
+     * 店舗に関連付けられた棚patternのnameを取得（優先順位表用）
      *
      * @param companyCd
      * @return
@@ -93,7 +94,7 @@ public class ShelfPatternController {
     }
 
     /**
-     * 删除棚pattern
+     * 棚の削除
      *
      * @param jsonObject
      * @return
@@ -104,7 +105,7 @@ public class ShelfPatternController {
     }
 
     /**
-     * 根据area获取棚名称和棚pattern
+     * areaに基づいて棚名と棚patternを取得
      */
     @GetMapping("getShelfPatternForArea")
     public Map<String, Object> getShelfPatternForArea(@RequestParam("companyCd") String companyCd, @RequestParam("areaCds") int[] areaCds) {

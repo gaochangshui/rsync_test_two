@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ResourceBundle;
 
 @RestController
 @RequestMapping("/planoCycle/Redirect")
@@ -16,7 +15,7 @@ public class RedirectController {
     @Value("${SystemPath}")
     private String SystemPaths;
     /**
-     * 用于cclink 重定向
+     * cclinkリダイレクト用
      * @param pathName
      * @return
      */

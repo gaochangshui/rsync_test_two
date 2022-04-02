@@ -23,6 +23,11 @@ public class PriorityOrderRestrictSetServiceImpl implements PriorityOrderRestric
     @Autowired
     private HttpSession session;
 
+    /**
+     * テーブル/セグメント対応属性の追加削除
+     * @param priorityOderAttrSet
+     * @return
+     */
     @Override
     public Map<String, Object> setPriorityOrderRestrict(PriorityOderAttrSet priorityOderAttrSet) {
         String authorCd = session.getAttribute("aud").toString();
@@ -32,9 +37,18 @@ public class PriorityOrderRestrictSetServiceImpl implements PriorityOrderRestric
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
+    /**
+     * 各ステージ/セグメントに対応するプロパティの取得
+     * @param companyCd
+     * @param priorityOrderCd
+     * @return
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
     @Override
     public Map<String, Object> getAttrDisplay(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        //获取社员号
+        //社員番号の取得
         String authorCd = session.getAttribute("aud").toString();
         List<PriorityOrderRestrictSet> priorityOrderRestrict = priorityOrderRestrictSetMapper.getPriorityOrderRestrict(companyCd, authorCd,priorityOrderCd);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();

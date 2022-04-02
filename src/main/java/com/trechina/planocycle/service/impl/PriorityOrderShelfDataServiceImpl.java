@@ -31,7 +31,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     private HttpSession session;
 
     /**
-     * 新规时获取基本パタ制约别信息
+     * 新规では基本的なパター制约に関する情报を入手
      * @param companyCd
      * @return
      */
@@ -89,7 +89,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
     /**
-     * 新规时获取基本パタ制约别jan详细信息
+     * 新规では基本パター制约别janの详细情报を取得
      * @param
      * @return
      */
@@ -118,7 +118,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     }
 
     /**
-     * 新规时获取基本パタ台棚别信息
+     * 新规では基本的なパター棚别の情报を取得
      * @param companyCd
      * @return
      */
@@ -129,7 +129,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         return ResultMaps.result(ResultEnum.SUCCESS,platformShedData);
     }
     /**
-     * 新规时获取基本パタ台棚别jans详细信息
+     * 新规では基本的なパタ台棚别jansの详细情报を入手
      * @param priorityOrderPlatformShedDto
      * @return
      */
@@ -155,7 +155,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         return ResultMaps.result(ResultEnum.SUCCESS,platformShedJans);
     }
     /**
-     * 保存faceNum
+     * faceNumの保存
      * @param priorityOrderRestrictJanDto
      * @return
      */

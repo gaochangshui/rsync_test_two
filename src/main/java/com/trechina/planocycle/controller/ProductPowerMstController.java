@@ -14,7 +14,7 @@ public class ProductPowerMstController {
     @Autowired
     private ProductPowerMstService powerMstService;
     /**
-     * 根据企业cd获取商品力点数表一览
+     * 企業cdによる商品力点数表一覧の取得
      * @param companyCd
      * @return
      */
@@ -24,7 +24,7 @@ public class ProductPowerMstController {
     }
 
     /**
-     *
+     *mst基本情報の取得
      * @param companyCd
      * @return
      */
@@ -34,7 +34,7 @@ public class ProductPowerMstController {
     }
 
     /**
-     * 获取商品力点数表一览数据
+     * 商品力点数表一覧データの取得
      * @param companyCd
      * @param productPowerCd
      * @return
@@ -46,7 +46,7 @@ public class ProductPowerMstController {
 
 
     /**
-     * 获取商品力点数表数据excel download
+     * 商品力点数表データを取得excel download
      * @return
      */
     @PostMapping("downloadProductPowerInfo")

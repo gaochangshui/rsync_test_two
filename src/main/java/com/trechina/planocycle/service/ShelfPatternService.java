@@ -10,20 +10,20 @@ import java.util.Map;
 public interface ShelfPatternService {
 
     /**
-     * 获取棚pattern信息
+     * 棚pattern情報の取得
      * @param companyCd
      * @return
      */
     Map<String,Object> getShelfPatternInfo(String companyCd);
 
     /**
-     * 保存棚pattren信息
+     * 保存棚pattern情報
      * @param shelfPatternDto
      * @return
      */
     Map<String,Object> setShelfPatternInfo(ShelfPatternDto shelfPatternDto);
     /**
-     * 修改棚pattren信息
+     * 修正棚pattern情報
      * @param shelfPatternDto
      * @return
      */
@@ -38,34 +38,34 @@ public interface ShelfPatternService {
 
 
     /**
-     * 获取棚pattren关联的店cd
+     * 棚pattern関連店cdを取得
      * @param shelfPatternCd
      * @return
      */
     Map<String,Object> getShelfPatternBranch(Integer shelfPatternCd);
 
     /**
-     * 保存棚pattern的店cd
+     * 保存棚patternのお店cd
      * @param shelfPatternBranchVO
      * @return
      */
     Map<String,Object> setShelfPatternBranch(ShelfPatternBranchVO shelfPatternBranchVO);
 
     /**
-     * 获取所有棚pattern的name
+     * すべての棚patternのnameを取得
      * @param companyCd
      * @return
      */
     Map<String,Object> getShelfPatternName(String companyCd);
 
     /**
-     * 获取关联了店铺的棚pattern的name（优先顺位表用）
+     * 店舗に関連付けられた棚patternのnameを取得（優先順位表用）
      * @param companyCd
      * @return
      */
     Map<String,Object> getShelfPatternNameBranch(String companyCd);
     /**
-     * 删除棚pattern
+     * 棚の削除
      * @param jsonObject
      * @return
      */
@@ -79,14 +79,14 @@ public interface ShelfPatternService {
     String getShePatternNoNm(String shelfPatternNo);
 
     /**
-     * 根据ptsKey获取patternid
+     * ptsKeyによるpatternidの取得
      * @param ptsKey
      * @return
      */
     List<Integer> getpatternIdOfPtsKey(String ptsKey);
 
     /**
-     * 根据area获取棚名称和棚pattern
+     * areaに基づいて棚名と棚patternを取得
      * @param companyCd
      * @param areaCds
      * @return
