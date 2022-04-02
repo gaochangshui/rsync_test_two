@@ -125,7 +125,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
     /**
-     * 登録者がいる企業に優先順位表があるかどうかを調べる
+     * この企業に優先順位表があるかどうかを取得します。
      *
      * @return
      */
@@ -155,7 +155,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
 
     /**
-     * 根据productpowercd查询关联的优先顺位表cd
+     * Productpowercdクエリに関連付けられた優先順位テーブルcd
      *
      * @param companyCd
      * @param productPowerCd
@@ -167,7 +167,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
     /**
-     * 优先顺位表主表信息删除
+     * 優先順位表マスターテーブル情報削除
      *
      * @param primaryKeyVO
      * @return
@@ -207,15 +207,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         // 整台制約
         Optional<WorkPriorityOrderRestrictSet> fullTaiSetOptional;
         WorkPriorityOrderRestrictSet fullTaiSet = null;
-        // 整段制约
+        // セグメント制約
         Optional<WorkPriorityOrderRestrictSet> fullTanaSetOptional;
         WorkPriorityOrderRestrictSet fullTanaSet = null;
-        // 半段制约
+        // はんだんせいやく
         String zokusei = null;
-        // 3.1 查出半段设定的台段
+        // 3.1 ハーフセグメント設定のステージセグメントを検出
         List<WorkPriorityOrderRestrictSet> halfRestrictSetList = workRestrictSetList.stream()
                 .filter(obj -> obj.getTanaType() == 1 || obj.getTanaType() == 2).collect(Collectors.toList());
-        // 3.2 循环台段数据
+        // 3.2 ループセグメントデータ
         Class<?> clazz = WorkPriorityOrderRestrictSet.class;
         for (ShelfPtsDataTanamst tanamst : tanamstList) {
             restrictSet = new WorkPriorityOrderRestrictSet();
@@ -224,7 +224,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             restrictSet.setTaiCd(tanamst.getTaiCd());
             restrictSet.setTanaCd(tanamst.getTanaCd());
             restrictSet.setTanaType((short) 0);
-            // 3.2.1 整台制约
+            // 3.2.1 ぜんだいせいやく
             fullTaiSetOptional = workRestrictSetList.stream()
                     .filter(obj -> obj.getTaiCd().equals(tanamst.getTaiCd()) && obj.getTanaCd().equals(0)).findFirst();
             if (fullTaiSetOptional.isPresent()) {
@@ -232,13 +232,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 // [1,10]
                 for (int i = 1; i <= 10; i++) {
                     zokusei = (String) clazz.getMethod(getZokusei + i).invoke(fullTaiSet);
-                    // 属性不为空就覆盖上去
+                    // 属性が空でない場合は上書きします
                     if (zokusei != null) {
                         clazz.getMethod(setZokusei + i, String.class).invoke(restrictSet, zokusei);
                     }
                 }
             }
-            // 3.2.2 整段制约
+            // 3.2.2 セグメント制約
             fullTanaSetOptional = workRestrictSetList.stream()
                     .filter(obj -> obj.getTaiCd().equals(tanamst.getTaiCd())
                             && obj.getTanaCd().equals(tanamst.getTanaCd())
@@ -249,13 +249,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 // [1,10]
                 for (int i = 1; i <= 10; i++) {
                     zokusei = (String) clazz.getMethod(getZokusei + i).invoke(fullTanaSet);
-                    // 属性不为空就覆盖上去
+                    // 属性が空でない場合は上書きします
                     if (zokusei != null) {
                         clazz.getMethod(setZokusei + i, String.class).invoke(restrictSet, zokusei);
                     }
                 }
             }
-            // 3.2.3 有半段制约
+            // 3.2.3 はんだんせいやくがある
 
             if (halfRestrictSetList.isEmpty()) {
                 resultList.add(restrictSet);
@@ -266,7 +266,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 if (halfSetList.isEmpty()) {
                     resultList.add(restrictSet);
                 } else {
-                    // 不通过循环创建 两个半段是因为有可能只设置了一个半段。
+                    // ループによって2つのセグメントが作成されないのは、1つのセグメントのみが設定されている可能性があるからです。
                     halfRestrictSet1 = new WorkPriorityOrderRestrictSet();
                     halfRestrictSet2 = new WorkPriorityOrderRestrictSet();
                     BeanUtils.copyProperties(restrictSet, halfRestrictSet1);
@@ -278,7 +278,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                         int tanaType = halfSetList.get(i).getTanaType();
                         for (int j = 1; j <= 10; j++) {
                             zokusei = (String) clazz.getMethod(getZokusei + j).invoke(halfSetList.get(i));
-                            // 属性不为空就覆盖上去
+                            // 属性が空でない場合は上書きします
                             if (zokusei != null) {
                                 if (tanaType == 1) {
                                     clazz.getMethod(setZokusei + j, String.class).invoke(halfRestrictSet1, zokusei);
@@ -294,7 +294,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 }
             }
         }
-        // 判断台段是否有没有设定条件的
+        // ステージセグメントに条件が設定されているか否かを判断する
         List<WorkPriorityOrderRestrictSet> unsetList = resultList.stream()
                 .filter(obj -> Boolean.TRUE.equals(obj.checkCondition()))
                 .collect(Collectors.toList());
@@ -303,7 +303,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             isUnset = 1;
         }
 
-        // 去重获取唯一条件
+        // 一意の条件の再取得
         List<WorkPriorityOrderRestrictSet> distinctList = resultList.stream().filter(distinctByKey(obj -> Stream.of(obj.getZokusei1(), obj.getZokusei2(), obj.getZokusei3(), obj.getZokusei4()
                 , obj.getZokusei5(), obj.getZokusei6(), obj.getZokusei7(), obj.getZokusei8(), obj.getZokusei9(), obj.getZokusei10()).toArray())).collect(Collectors.toList());
         if (!distinctList.isEmpty()) {
@@ -332,7 +332,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             }
 
 
-            // 将台段和条件进行关联
+            // ステージセグメントと条件を関連付ける
             List<WorkPriorityOrderRestrictRelation> orderRestrictRelationList = new ArrayList<>();
             WorkPriorityOrderRestrictRelation orderRestrictRelation = null;
             Optional<WorkPriorityOrderRestrictResult> resultOptional;
@@ -345,16 +345,16 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
                 orderRestrictRelation.setTaiCd(set.getTaiCd());
                 orderRestrictRelation.setTanaCd(set.getTanaCd());
                 orderRestrictRelation.setTanaType(set.getTanaType());
-                // 从制约条件列表中检索相符的制约
+                // 制約条件リストから該当する制約を検索
                 String condition = set.getCondition();
                 resultOptional = orderResultDataList.stream().filter(obj -> condition.equals(obj.getCondition())).findFirst();
                 if (resultOptional.isPresent()) {
                     restrictResult = resultOptional.get();
                     orderRestrictRelation.setRestrictCd(restrictResult.getRestrictCd());
-                    // 台棚数量累加
+                    // 棚数積算
                     long tanaCnt = restrictResult.getTanaCnt() + 1;
                     restrictResult.setTanaCnt(tanaCnt);
-                    //每个棚固定13个品类, 扩大三倍取商品，全パターン直接用这些商品
+                    //棚ごとに13品目を固定し、3倍に拡大して商品を取り、全パタンで直接使用する。
                     restrictResult.setSkuCnt(tanaCnt * skuCountPerPattan * 3);
                 }
 
@@ -368,19 +368,16 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
     /**
-     * 用于对象去重
+     * オブジェクトの重量除去に使用
      *
-     * @param keyExtractor 需要去重的属性
+     * @param keyExtractor デウェイトが必要なプロパティ
      * @param <T>
      * @return
      */
     private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        //记录已有对象或者属性
+        //既存のオブジェクトまたは属性を記録
         ConcurrentSkipListMap<Object, Boolean> skipListMap = new ConcurrentSkipListMap<>();
-        //获取对象的属性值,且使用putIfAbsent判断存在则不添加到map而且返回数值不存在则添加返回null,value恒定为true
-        //JSONObject.toJSONString(keyExtractor.apply(t)) 是为了解决null参数和对象比较的问题
-        //在Stream distinct()中使用了支持null为key的hashSet来进行处理 java/util/stream/DistinctOps.java:90  但是没有解决对象比较的问题
-        //所以虽然序列化消耗性能但是也没有更好的办法
+        //だからシーケンス化は性能を消耗するがもっと良い方法はない。
         return t -> skipListMap.putIfAbsent(JSON.toJSONString(keyExtractor.apply(t)), Boolean.TRUE) == null;
     }
 
@@ -397,17 +394,17 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String authorCd = session.getAttribute("aud").toString();
 
 
-        //获取商品力点数表cd
+        //商品力点数表cdを取得する
         Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, authorCd, priorityOrderCd);
         Integer patternCd = productPowerMstMapper.getpatternCd(companyCd, authorCd, priorityOrderCd);
         Integer minFaceNum = 1;
-        //将隔板厚度和是否使用隔板存起来
+        //仕切り板の厚さと仕切り板を使用して保存するかどうか
         priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition);
-        //先按照社员号删掉work表的数据
+        //まず社員番号に従ってワークシートのデータを削除します
         workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
-        //获取制约条件
+        //制約条件の取得
         List<WorkPriorityOrderRestrictResult> resultList = workPriorityOrderRestrictResultMapper.getResultList(companyCd, authorCd, priorityOrderCd);
-        // 1.通过制约条件查找符合条件的商品
+        // 1.制約条件で該当商品を探す
         for (WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult : resultList) {
             List<ProductPowerDataDto> newList = new ArrayList<>();
             workPriorityOrderRestrictResult.setPriorityOrderCd(priorityOrderCd);
@@ -442,7 +439,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
         }
         String[] array = resultDataList.split(",");
-        //调用cgi
+        //cgiを呼び出す
         Map<String, Object> Data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd);
         if (Data.get("data") != null && Data.get("data") != "") {
             String[] strResult = Data.get("data").toString().split("@");
@@ -461,11 +458,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             workPriorityOrderResultDataMapper.update(list, companyCd, authorCd, priorityOrderCd);
 
 
-            //获取旧pts的平均值，最大值最小值
+            //古いptsの平均値、最大値最小値を取得
             FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(patternCd);
             minFaceNum = faceNum.getFaceMinNum();
             DecimalFormat df = new DecimalFormat("#.00");
-            //获取salesCntAvg并保留两位小数
+            //salescntAvgを取得し、小数点を2桁保持
             Double salesCntAvg = productPowerMstMapper.getSalesCntAvg(companyCd, authorCd, priorityOrderCd);
             String format = df.format(salesCntAvg);
             salesCntAvg = Double.valueOf(format);
@@ -495,9 +492,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         } else {
             return Data;
         }
-        //按照属性重新排序
+        //属性別に並べ替える
         this.getReorder(companyCd, priorityOrderCd,productPowerCd);
-        //摆放商品
+        //商品を並べる
         WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
 
@@ -522,7 +519,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             workPriorityOrderResultDataMapper.updateTaiTanaBatch(companyCd, priorityOrderCd, authorCd, resultDataDtos);
         }
 
-        //保存pts到临时表里
+        //ptsを一時テーブルに保存
         shelfPtsService.saveWorkPtsData(companyCd, authorCd, priorityOrderCd);
 
 
@@ -530,7 +527,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
     /**
-     * 重新计算rank排序
+     * rankソートの再計算
      *
      * @param companyCd
      * @return
@@ -567,7 +564,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
     /**
-     * 新规时清空对应临时表所有信息
+     * 新規作成時に対応するテンポラリ・テーブルのすべての情報をクリア
      *
      * @param companyCd
      * @return
@@ -578,37 +575,37 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String authorCd = session.getAttribute("aud").toString();
 
         workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        //清空RestrictRelation表
+        //RestrictRelationテーブルをクリア
         workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        //清空RestrictResult表
+        //RestrictResultテーブルをクリア
         workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        //清空RestrictSet表
+        //RestrictSetテーブルをクリア
         workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        //清空ResultData表
+        //ResultDataテーブルをクリア
         workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
-        //清空Space表
+        //スペーステーブルをクリア
         workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        //清空Sort表
+        //Sortテーブルをクリア
         workPriorityOrderSortMapper.delete(companyCd, authorCd, priorityOrderCd);
-        //清空SortRank表
+        //SortRankテーブルをクリア
         workPriorityOrderSortRankMapper.delete(companyCd, authorCd, priorityOrderCd);
-        //清空janNew表
+        //janNewテーブルをクリア
         priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
-        //清空jan_replace
+        //クリアjan_replace
         priorityOrderJanReplaceMapper.workDelete(companyCd, authorCd, priorityOrderCd);
-        //清空work_priority_order_cut表
+        //クリアワーク_priority_order_Cutテーブル
         priorityOrderJanCardMapper.workDelete(companyCd, priorityOrderCd, authorCd);
-        //获取ptsCd
+        //ptsCdの取得
         Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
-        //清空work_priority_order_pts_data
+        //クリアワーク_priority_order_pts_data
         shelfPtsDataMapper.deletePtsData(id);
-        //清空work_priority_order_pts_data_taimst
+        //クリアワーク_priority_order_pts_data_taimst
         shelfPtsDataMapper.deletePtsTaimst(id);
-        //清空work_priority_order_pts_data_tanamst
+        //クリアワーク_priority_order_pts_data_tanamst
         shelfPtsDataMapper.deletePtsTanamst(id);
-        //清空work_priority_order_pts_data_version
+        //クリアワーク_priority_order_pts_data_version
         shelfPtsDataMapper.deletePtsVersion(id);
-        //清空work_priority_order_pts_data_jandata
+        //クリアワーク_priority_order_pts_data_jandata
         shelfPtsDataMapper.deletePtsDataJandata(id);
 
 
@@ -630,11 +627,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String path = resourceBundle.getString("PriorityOrderData");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         Map<String, Object> resultCgi = null;
-        //递归调用cgi，首先去taskid
+        //再帰的にcgiを呼び出して、まずtaskidに行きます
         String result = cgiUtil.postCgi(path, priorityOrderJanCgiDto, tokenInfo);
         logger.info("taskId返回：{}", result);
         String queryPath = resourceBundle.getString("TaskQuery");
-        //带着taskId，再次请求cgi获取运行状态/数据
+        //taskIdを持って、再度cgiに運転状態/データの取得を要求する
         resultCgi = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
         logger.info("保存优先顺位表结果：{}", resultCgi);
         return resultCgi;
@@ -642,7 +639,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
 
     /**
-     * 最終保存
+     * taskIdを持って、再度cgiに運転状態/データの取得を要求する
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -653,55 +650,55 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String priorityOrderName = primaryKeyVO.getPriorityOrderName();
 
         try {
-            //保存OrderMst，删除原数据
+            //OrderMstを保存し、元のデータを削除
             priorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderMstMapper.insertBySelect(companyCd, authorCd, priorityOrderCd, priorityOrderName);
 
-            //保存OrderRestrictRelation，删除原数据
+            //OrderRestrictRelationを保存し、元のデータを削除
             priorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderRestrictRelationMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
-            //保存OrderRestrictResult，删除原数据
+            //OrderRestrictResultを保存し、元のデータを削除
             priorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderRestrictResultMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
-            //保存OrderRestrictSet，删除原数据
+            //OrderRestrictSetを保存し、元のデータを削除
             priorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderRestrictSetMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
-            //保存ResultData，删除原数据
+            //ResultDataの保存、元のデータの削除
             priorityOrderResultDataMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderResultDataMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
-            //保存Space，删除原数据
+            //スペースの保存、元のデータの削除
             priorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderSpaceMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
-            //保存cut，删除原数据
+            //cutを保存し、元のデータを削除
             priorityOrderJanCardMapper.deleteByAuthorCd(companyCd, priorityOrderCd, authorCd);
             priorityOrderJanCardMapper.insertBySelect(companyCd, priorityOrderCd, authorCd);
 
-            //保存jan_new，删除原数据
+            //jan_を保存新、元データの削除
             priorityOrderJanNewMapper.deleteByAuthorCd(companyCd, priorityOrderCd, authorCd);
             priorityOrderJanNewMapper.insertBySelect(companyCd, priorityOrderCd, authorCd);
 
-            //保存jan_replace，删除原数据
+            //jan_を保存replace,元のデータを削除する
             priorityOrderJanReplaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderJanReplaceMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
-            //保存sort，删除原数据
+            //sortを保存し、元のデータを削除
             priorityOrderSortMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderSortMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
-            //保存sort_rank，删除原数据
+            //sort_を保存rank、元のデータを削除
             priorityOrderSortRankMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderSortRankMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
-            //保存pts数据
+            //ptsデータの保存
             shelfPtsService.saveFinalPtsData(companyCd, authorCd, priorityOrderCd);
 
 
-            //删除临时表中的数据
+            //テンポラリ・テーブルのデータの削除
 //            workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
 //            workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
 //            workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
@@ -748,7 +745,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderSortRankMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         workPriorityOrderSpaceMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
 
-        //获取ptsId
+        //ptsIdの取得
 
         shelfPtsDataMapper.insertWorkPtsData(companyCd, aud, priorityOrderCd);
         shelfPtsDataMapper.insertWorkPtsTaiData(companyCd, aud, id);
@@ -756,15 +753,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         shelfPtsDataMapper.insertWorkPtsVersionData(companyCd, aud, id);
         shelfPtsDataMapper.insertWorkPtsJanData(companyCd, aud, id);
         Map<String, Object> map = new HashMap<>();
-        //主表信息
+        //プライマリ・テーブル情報
         WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd, aud);
         Integer shelfCd = workPriorityOrderMstMapper.getShelfName(workPriorityOrderMst.getShelfPatternCd().intValue());
         workPriorityOrderMst.setShelfCd(shelfCd);
 
 
-        //space信息
+        //スペース情報
         List<PriorityOrderAttrVO> workPriorityOrderSpace = priorityOrderSpaceMapper.workPriorityOrderSpace(companyCd, aud, priorityOrderCd);
-        //set表信息
+        //setテーブル情報
         List<PriorityOrderRestrictSet> workPriorityOrderRestrictSet = priorityOrderRestrictSetMapper.getPriorityOrderRestrict(companyCd, aud, priorityOrderCd);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
         Class clazz = PriorityOrderRestrictSet.class;
@@ -780,21 +777,21 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             }
         }
 
-        //商品力点数表信息
+        //商品力点数表情報
         Map<String, Object> taiNumTanaNum = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue(), priorityOrderCd);
-        //获取陈列顺信息
+        //陳列順情報の取得
         List<WorkPriorityOrderSortVo> workPriorityOrderSort = shelfPtsDataMapper.getDisplays(companyCd, aud, priorityOrderCd);
-        //获取基本台棚别信息
+        //基本スタンド別情報の取得
         List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getPlatformShedData(companyCd, aud, priorityOrderCd);
-        //获取基本制约别信息
+        //基本制約別情報の取得
         Map<String, Object> restrictData = priorityOrderShelfDataService.getRestrictData(companyCd, priorityOrderCd);
-        //获取pts详细数据信息
+        //pts詳細の取得
         Map<String, Object> ptsDetailData = shelfPtsService.getPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue(), companyCd, priorityOrderCd);
-        //商品力信息
+        //商品力情報
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, workPriorityOrderMst.getProductPowerCd());
         Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, workPriorityOrderMst.getProductPowerCd());
         productPowerInfo.setSku(skuNum);
-        //获取商品详细信息
+        //商品の詳細
         List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd);
         map.put("workPriorityOrderMst",workPriorityOrderMst);
         map.put("workPriorityOrderSpace",workPriorityOrderSpace);
@@ -823,12 +820,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         int isEdit = priorityOrderMstMapper.selectByPriorityOrderCd(priorityOrderCd);
 
         if (isEdit > 0) {
-            //编辑-更新名字
+            //編集→名前の更新
             priorityOrderMstMapper.updateOrderName(priorityOrderCd, priorityOrderName);
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
 
-        //新规
+        //新しいルール
         if(orderNameCount>0){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
@@ -847,21 +844,21 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String aud = session.getAttribute("aud").toString();
         String companyCd = priorityOrderMstVO.getCompanyCd();
         Integer priorityOrderCd = priorityOrderMstVO.getPriorityOrderCd();
-        //删除mst表
+        //mstテーブルの削除
         priorityOrderMstMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
-        //删除relation
+        //削除relation
         priorityOrderRestrictRelationMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
-        //删除result表
+        //削除result表
         priorityOrderRestrictResultMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
-        //删除set表
+        //削除set表
         priorityOrderRestrictSetMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
-        //删除data表
+        //削除data表
         priorityOrderResultDataMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
-        //删除sort表
+        //削除sort表
         priorityOrderSortMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
-        //删除rank表
+        //削除rank表
         priorityOrderSortRankMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
-        //删除space表
+        //削除space表
         priorityOrderSpaceMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
@@ -879,20 +876,20 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Override
     public Map<String, Object> getVariousMst(String companyCd, Integer priorityOrderCd, Integer flag) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         String aud = session.getAttribute("aud").toString();
-        //商品力点数表信息
+        //商品力点数表情報
         WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd, aud);
         if (flag == 0) {
-            //获取janNew信息
+            //取得janNew情報
             Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
             return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanNew.get("data"));
         }
         if (flag == 2) {
-            ////获取janCut信息
+            ////取得janCut情報
             List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd, priorityOrderCd);
             return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCut);
         }
         if (flag == 1) {
-            //获取jan变信息
+            //取得jan变情報
             List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd, priorityOrderCd);
             return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplace);
         }

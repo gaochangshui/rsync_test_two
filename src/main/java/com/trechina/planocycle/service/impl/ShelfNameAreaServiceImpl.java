@@ -17,7 +17,7 @@ public class ShelfNameAreaServiceImpl implements ShelfNameAreaService {
     private ShelfNameAreaMapper shelfNameAreaMapper;
 
     /**
-     * 保存shelfpattern关联的area
+     * shelfpattern関連areaの保存
      *
      * @param shelfNameArea
      * @return
@@ -29,7 +29,7 @@ public class ShelfNameAreaServiceImpl implements ShelfNameAreaService {
     }
 
     /**
-     * 删除shelfName关联的area
+     * shelfNameに関連付けられたareaを削除
      *
      * @param id
      * @return

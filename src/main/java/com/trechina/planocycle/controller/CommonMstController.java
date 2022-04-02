@@ -15,7 +15,7 @@ public class CommonMstController {
     private CommonMstService commonMstService;
 
     /**
-     * 获取エリア
+     * 取得エリア
      * @return
      */
     @GetMapping("/getAreaInfo")
@@ -24,7 +24,7 @@ public class CommonMstController {
     }
 
     /**
-     * 获取棚name相关的エリア
+     * 取得棚name相关的エリア
      * @param shelfNameCd
      * @return
      */
