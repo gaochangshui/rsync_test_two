@@ -8,20 +8,20 @@ import java.util.Map;
 
 public interface CommodityScoreMasterService {
     /**
-     * 获取企业信息接口
+     * 取得企業情報
      * @return
      */
     Map<String,Object> getEnterpriseInfo();
 
     /**
-     * 获取企业cd关联的商品力点数List接口
+     * 取得企業cd关联の商品力点数List
      * @param conpanyCd
      * @return
      */
     Map<String,Object> getCommodityListInfo(String conpanyCd);
 
     /**
-     * 获取商品力点数的参数接口
+     * 取得商品力点数の参数
      * @param conpanyCd
      * @param productPowerCd
      * @return
@@ -29,7 +29,7 @@ public interface CommodityScoreMasterService {
     Map<String,Object> getCommodityParam(String conpanyCd,Integer productPowerCd);
 
     /**
-     * 保存商品力地拿鼠标的模板名接口
+     * 保存商品力地拿鼠标の模板名
      * @param productPowerName
      * @return
      */
@@ -38,7 +38,7 @@ public interface CommodityScoreMasterService {
 
 
     /**
-     * 获取Chanel信息接口
+     * 取得Chanel情報
      * @return
      */
     Map<String, Object> getChanelInfo();
@@ -49,14 +49,14 @@ public interface CommodityScoreMasterService {
     void productPowerParamAttrName(String conpanyCd, Integer productPowerCd, Map<String, Object> result);
 
     /**
-     * 获取商品力点数表的属性和品目信息，用于优先顺位表
+     * 商品力点数表の属性と品目情報を取得し、優先順位表に使用する
      * @param productOrderCd
      * @return
      */
     ProductOrderAttrAndItemVO getAttrAndItmemInfo(String companyCd, Integer productOrderCd);
 
     /**
-     * 削除商品力点数表信息
+     * 削除商品力点数表情報
      * @param productPowerParamMst
      * @return
      */
@@ -64,7 +64,7 @@ public interface CommodityScoreMasterService {
     boolean delSmartData(ProductPowerParamMst productPowerParamMst);
 
     /**
-     * 编辑时，获取商品里点数表参数
+     * 編集，取得商品力点数表参数
      */
     public Map<String,Object> getAllDataOrParam(String companyCd,Integer productPowerNo);
 }
