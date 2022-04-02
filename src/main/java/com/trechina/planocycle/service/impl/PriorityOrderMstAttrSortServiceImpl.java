@@ -47,7 +47,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
 
     /**
-     * 保存数据的排序
+     * データのソートの保存
      *
      * @param priorityOrderMstAttrSort
      * @return
@@ -64,7 +64,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     }
 
     /**
-     * 删除数据的排序
+     * データのソートの削除
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -76,7 +76,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     }
 
     /**
-     * 获取属性1和属性2
+     * 属性1と属性2の取得
      */
     @Override
     public Map<String, Object> getAttribute() {
@@ -85,7 +85,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     }
 
     /**
-     * 陈列设定获取属性1和属性2
+     * 陳列設定取得属性1と属性2
      */
     @Override
     public Map<String, Object> getAttributeSort() {
@@ -94,7 +94,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     }
 
     /**
-     * 获取属性的分类及商品分类列表
+     * 属性の分類および商品分類リストの取得
      */
     @Override
     public Map<String, Object> getAttributeList() {
@@ -124,7 +124,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
 
     /**
-     * 获取属性1属性2组合对应的面积
+     * 属性1属性2の組合せに対応する面積を取得
      */
     @Override
     public Map<String, Object> getAttributeArea(Integer patternCd, Integer attr1, Integer attr2) {
@@ -285,7 +285,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         }
 
 
-        // 3.space转化为制约条件
+        // 3.spaceが制約条件に変換
         workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd, dto.getPriorityOrderCd());
         List<ShelfPtsDataTanamst> ptsDataTanamstList = shelfPtsDataTanamstMapper.selectByPatternCd(shelfPatternCd);
         List<ShelfPtsDataTanaCount> tanaCountList = shelfPtsDataTanamstMapper.ptsTanaCountByTai(shelfPatternCd);
@@ -299,17 +299,17 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             workPriorityOrderRestrictSetMapper.insertAll(restrictSetList);
         }
 
-        //获取ptsCd
+        //ptsCdの取得
         Integer id = shelfPtsDataMapper.getId(companyCd, dto.getPriorityOrderCd());
-        //清空work_priority_order_pts_data
+        //クリアワーク_priority_order_pts_data
         shelfPtsDataMapper.deletePtsData(id);
-        //清空work_priority_order_pts_data_taimst
+        //クリアワーク_priority_order_pts_data_taimst
         shelfPtsDataMapper.deletePtsTaimst(id);
-        //清空work_priority_order_pts_data_tanamst
+        //クリアワーク_priority_order_pts_data_tanamst
         shelfPtsDataMapper.deletePtsTanamst(id);
-        //清空work_priority_order_pts_data_version
+        //クリアワーク_priority_order_pts_data_version
         shelfPtsDataMapper.deletePtsVersion(id);
-        //清空work_priority_order_pts_data_jandata
+        //クリアワーク_priority_order_pts_data_jandata
         shelfPtsDataMapper.deletePtsDataJandata(id);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
@@ -354,19 +354,19 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         Class<?> clazz = WorkPriorityOrderRestrictSet.class;
         Method setAttrMethod1 = clazz.getMethod("setZokusei" + attr1, String.class);
         Method setAttrMethod2 = clazz.getMethod("setZokusei" + attr2, String.class);
-        // 创建一个设置对应属性的公共对象
+        // 対応するプロパティを設定する共通オブジェクトを作成
         WorkPriorityOrderRestrictSet tmpRestrictSet = null;
 
-        // 按照rank排序
+        // rankでソート
         dataList = dataList.stream().sorted(Comparator.comparing(PriorityOrderAttrVO::getRank)).collect(Collectors.toList());
         for (PriorityOrderAttrVO vo : dataList) {
             // 商品数
             pattan = vo.getTanaPattan();
             if (pattan == null || pattan == 0) {
-                // 属性不占段
+                // 属性はセグメントを占めません
                 continue;
             }
-            // 创建属性制约的临时值
+            // 属性制約の一時値の作成
             tmpRestrictSet = new WorkPriorityOrderRestrictSet();
             tmpRestrictSet.setCompanyCd(companyCd);
             tmpRestrictSet.setAuthorCd(authorCd);
@@ -376,58 +376,58 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             setAttrMethod2.invoke(tmpRestrictSet, vo.getAttrBCd());
 
             for (ShelfPtsDataTanaCount tanaCount : tanaCountList) {
-                // 台中棚的序号并不是连续的，有可能是1,2,3,6,7
+                // 台中棚の番号は連続ではなく、1,2,3,6,7の可能性があります
                 Integer[] tanaCdArray = ptsDataTanamstList.stream()
                         .filter(obj -> tanaCount.getTaiCd().equals(obj.getTaiCd()))
                         .map(ShelfPtsDataTanamst::getTanaCd)
                         .sorted().toArray(Integer[]::new);
-                // 判断台是否有空余
+                // 判断台に空きがあるかどうか
                 if ((tanaCount.getTanaCount() - tanaCount.getTanaUsedCount()) > 0) {
                     if (tanaCount.getTanaUsedCount() == 0) {
-                        // 空台（台上什么属性也没有）
+                        // 空き台(台には何の属性もありません)
                         if (pattan >= tanaCount.getTanaCount()) {
-                            // 商品占用的棚数可以占满台
+                            // 商品の占有棚数は満席となっております
                             pattan -= tanaCount.getTanaCount();
                             tanaCount.setTanaUsedCount(tanaCount.getTanaCount());
-                            //## 整台制约条件
+                            //## 全台制約条件
                             restrictSetList.addAll(packageRestrict(0, 0, tanaCdArray, tanaCount.getTaiCd(), tmpRestrictSet));
                             if (pattan <= 0) {
-                                // 商品还有，继续下一个台
-                                // 商品没有，继续下一个商品
+                                // 商品はあと、次の台に続きます
+                                // 商品はございませんが、次の商品に続きます
                                 break;
                             }
                         } else {
-                            // 商品占用部分台
+                            // 商品占有部分台
                             tanaCount.setTanaUsedCount(pattan);
-                            //## 段制约条件
+                            //## セグメント制約条件
                             restrictSetList.addAll(packageRestrict(0, pattan, tanaCdArray, tanaCount.getTaiCd(), tmpRestrictSet));
-                            // 跳出循环，继续下一个商品
+                            // ループを飛び出して、次の商品を続けます
                             break;
                         }
                     } else {
-                        // 台已经放了部分商品了
+                        // 台にはすでに一部の商品が置いてあります
                         if (pattan >= (tanaCount.getTanaCount() - tanaCount.getTanaUsedCount())) {
-                            // 商品占用的棚数可以占满台
-                            //## 段制约条件：从上一次接着放
+                            // 商品の占有棚数は満席となっております
+                            //## 段制約条件：前回から続く
                             restrictSetList.addAll(packageRestrict(tanaCount.getTanaUsedCount(), tanaCount.getTanaCount(), tanaCdArray, tanaCount.getTaiCd(), tmpRestrictSet));
                             pattan -= (tanaCount.getTanaCount() - tanaCount.getTanaUsedCount());
                             tanaCount.setTanaUsedCount(tanaCount.getTanaCount());
                             if (pattan <= 0) {
-                                // 商品还有，继续下一个台
-                                // 商品没有，继续下一个商品
+                                // 商品はあと、次の台に続きます
+                                // 商品はございませんが、次の商品に続きます
                                 break;
                             }
                         } else {
-                            // 商品占用部分台
-                            //## 段制约条件：从上一次接着放
+                            // 商品占有部分台
+                            //## 段制約条件：前回から続く
                             restrictSetList.addAll(packageRestrict(tanaCount.getTanaUsedCount(), tanaCount.getTanaUsedCount() + pattan, tanaCdArray, tanaCount.getTaiCd(), tmpRestrictSet));
                             tanaCount.setTanaUsedCount(tanaCount.getTanaUsedCount() + pattan);
-                            // 跳出循环，继续下一个商品
+                            // ループを飛び出して、次の商品を続けます
                             break;
                         }
                     }
                 }
-                // 台满了，直接跳过
+                // 台がいっぱいになったので,直接スキップした。
             }
         }
         return restrictSetList;
