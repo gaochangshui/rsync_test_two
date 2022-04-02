@@ -21,7 +21,7 @@ public interface ShelfPatternAreaService {
     Integer delShelfPatternArea(Integer id,String authorCd);
 
     /**
-     * 查询shelfPattern関連付け的area
+     * 検索shelfPattern関連付け的area
      * @param id
      *  @return
      */
@@ -29,7 +29,7 @@ public interface ShelfPatternAreaService {
 
     int deleteAreaCd (List<Integer> areaCd, Integer shelfPatternCd,String authorCd);
 
-    //恢复削除数据
+    //恢復削除数据
     Integer setDelFlg(Integer areaCd, Integer shelfPatternCd,String authorCd);
 
 

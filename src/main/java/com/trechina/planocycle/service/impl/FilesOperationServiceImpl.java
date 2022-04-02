@@ -411,7 +411,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 try {
                     is.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("io close error", e);
                 }
             }
         }

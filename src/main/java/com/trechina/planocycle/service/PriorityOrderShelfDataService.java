@@ -18,19 +18,19 @@ public interface PriorityOrderShelfDataService {
     Map<String,Object> getRestrictData(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
     /**
-     * 新規では基本パター制約别janの詳細情報を取得
+     * 新規では基本パター制約別janの詳細情報を取得
      * @param
      * @return
      */
     Map<String,Object> getRestrictJans( PriorityOrderRestDto priorityOrderRestDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     /**
-     * 新規では基本的なパター棚别の情報を取得
+     * 新規では基本的なパター棚別の情報を取得
      * @param companyCd
      * @return
      */
     Map<String,Object> getPlatformShedData(String companyCd,Integer priorityOrderCd);
     /**
-     * 新規では基本的なパタ台棚别jansの詳細情報を入手
+     * 新規では基本的なパタ台棚別jansの詳細情報を入手
      * @param priorityOrderPlatformShedDto
      * @return
      */

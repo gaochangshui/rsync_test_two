@@ -83,7 +83,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
         List<ProductPowerMstData> syokikaList = productPowerDataMapper.selectWKSyokika(companyCd, authorCd);
 
-        logger.info("返回pos基本信息はい{}", syokikaList);
+        logger.info("返回pos基本情報はい{}", syokikaList);
         return ResultMaps.result(ResultEnum.SUCCESS, syokikaList);
     }
 
@@ -142,9 +142,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         }
         List<ProductPowerMstData> kokyakuList = productPowerDataMapper.selectWKKokyaku(authorCd, companyCd);
-        logger.info("pos基本信息和顾客信息：{}", kokyakuList);
+        logger.info("pos基本情報和顾客情報：{}", kokyakuList);
         List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData(authorCd, companyCd);
-        logger.info("预备プロジェクト：{}", kokyakuList);
+        logger.info("準備プロジェクト：{}", kokyakuList);
 
         if (wkYobiiiternDataList.isEmpty()) {
             return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);
