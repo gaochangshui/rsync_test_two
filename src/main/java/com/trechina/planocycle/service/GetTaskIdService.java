@@ -4,7 +4,7 @@ import java.util.Map;
 
 public interface GetTaskIdService {
     /**
-     * 访问cgiつかむ取taskid
+     * cgiつかむ取taskid
      * @param para
      * @return
      */
