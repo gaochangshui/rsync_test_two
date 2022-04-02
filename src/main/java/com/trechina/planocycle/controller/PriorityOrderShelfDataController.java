@@ -31,7 +31,7 @@ public class PriorityOrderShelfDataController {
     }
 
     /**
-     * 新規では基本パター制約別janの详细情報を取得
+     * 新規では基本パター制約別janの詳細情報を取得
      * @param
      * @return
      */

@@ -4,7 +4,7 @@ import java.util.Map;
 
 public interface IDGeneratorService {
     /**
-     * 優先順位表自动采号，并返回
+     * 優先順位表自動采号，并返回
      * @return
      */
     Map<String,Object> priorityOrderNumGenerator();

@@ -58,7 +58,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         logger.info(result);
         resultInfo = JSON.parse(result);
 
-        logger.info("つかむ取企业信息：{}",resultInfo);
+        logger.info("つかむ取企業信息：{}",resultInfo);
 
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
@@ -71,7 +71,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public Map<String, Object> getCommodityListInfo(String conpanyCd) {
         List<CommodityListInfoVO> resultInfo = productPowerMstMapper.selectCommodityList(conpanyCd);
-        logger.info("つかむ取企业cd関連付け的商品力点数List：{}",resultInfo);
+        logger.info("つかむ取企業cd関連付け的商品力点数List：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
 
@@ -97,7 +97,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public void productPowerParamAttr(String conpanyCd, Integer productPowerCd, Map<String, Object> result) {
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd, productPowerCd);
-        logger.info("つかむ取动态列返回値：{}",productOrderParamAttrVO);
+        logger.info("つかむ取動態列返回値：{}",productOrderParamAttrVO);
         //動的列の遍歴
         if (productOrderParamAttrVO !=null && !productOrderParamAttrVO.getAttr().equals("")){
             String[] attrList = productOrderParamAttrVO.getAttr().split(",");
@@ -112,7 +112,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public void productPowerParamAttrName(String conpanyCd, Integer productPowerCd, Map<String, Object> result) {
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectAttrName(conpanyCd, productPowerCd);
-        logger.info("つかむ取动态列返回値：{}",productOrderParamAttrVO);
+        logger.info("つかむ取動態列返回値：{}",productOrderParamAttrVO);
         //動的列の遍歴
         if (productOrderParamAttrVO !=null && !productOrderParamAttrVO.getAttr().equals("")){
             String[] attrList = productOrderParamAttrVO.getAttr().split(",");
