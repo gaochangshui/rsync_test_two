@@ -11,14 +11,14 @@ import java.util.Map;
 public interface PriorityOrderShelfDataService {
 
     /**
-     * 新规时获取基本パタ制约别信息
+     * 新规时获取基本パタ制約别信息
      * @param companyCd
      * @return
      */
     Map<String,Object> getRestrictData(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
     /**
-     * 新规时获取基本パタ制约别jan详细信息
+     * 新规时获取基本パタ制約别jan详细信息
      * @param
      * @return
      */
