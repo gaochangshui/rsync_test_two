@@ -21,7 +21,7 @@ public class ProductPowerMstData {
     private BigDecimal pdCompareNum= new BigDecimal("0.00");
     private BigDecimal pdBranchCompareAmount= new BigDecimal("0.00");
     private BigDecimal pdBranchCompareNum= new BigDecimal("0.00");
-    // 顾客group
+    // 顧客グループ
     private BigDecimal gdPosAmount= new BigDecimal("0.00");
     private BigDecimal gdPosNum= new BigDecimal("0.00");
     private BigDecimal gdBranchAmount= new BigDecimal("0.00");
@@ -30,7 +30,7 @@ public class ProductPowerMstData {
     private BigDecimal gdCompareNum= new BigDecimal("0.00");
     private BigDecimal gdBranchCompareAmount= new BigDecimal("0.00");
     private BigDecimal gdBranchCompareNum= new BigDecimal("0.00");
-    // 项目
+    // プロジェクト
     private BigDecimal item1= new BigDecimal("0.00");
     private BigDecimal item2= new BigDecimal("0.00");
     private BigDecimal item3= new BigDecimal("0.00");

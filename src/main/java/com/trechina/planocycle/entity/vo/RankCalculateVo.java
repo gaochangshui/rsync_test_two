@@ -12,7 +12,7 @@ public class RankCalculateVo {
     private Integer pdCompareNum =0;
     private Integer pdBranchCompareAmount =0;
     private Integer pdBranchCompareNum =0;
-    // 顾客group
+    // 顧客グループ
     private Integer gdPosAmount =0;
     private Integer gdPosNum =0;
     private Integer gdBranchAmount=0;

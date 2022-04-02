@@ -3,7 +3,7 @@ package com.trechina.planocycle.entity.po;
 import java.math.BigDecimal;
 
 /**
- * 顾客group
+ * 顧客グループ
  *
  */
 public class ProductPowerKokyaku {
