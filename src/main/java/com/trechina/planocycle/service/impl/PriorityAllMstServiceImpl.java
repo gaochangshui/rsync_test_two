@@ -401,7 +401,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         String priorityAllName = priorityAllSaveDto.getPriorityAllName();
         String companyCd = priorityAllSaveDto.getCompanyCd();
         Integer priorityAllCd = priorityAllSaveDto.getPriorityAllCd();
-        Integer cd = priorityAllMstMapper.selectPriorityAllName(priorityAllName, companyCd);
+        Integer cd = priorityAllMstMapper.selectPriorityAllName(priorityAllName, companyCd,aud);
         if (cd != null && !cd.equals(priorityAllCd) ){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
