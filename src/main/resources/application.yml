@@ -15,7 +15,7 @@ spring:
       minimum-idle: 10
       # 連接池最大連接数，默認是10
       maximum-pool-size: 30
-      # 此属性控制从池返回的連接的默認自动提交行はい,默認値：true
+      # 此属性控制从池返回的連接的默認自動提交行はい,默認値：true
       auto-commit: true
       # 空閑連接存活最大時間，默認600000（10分時計）
       idle-timeout: 30000

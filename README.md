@@ -19,7 +19,7 @@ fileSaveRemote方法,切换物理机代码
 # PriorityOrderMstServiceImpl.java 文件  --无效
 # getPtsFileDownLoad方法，切换物理机代码
 
-# 本地调试環境変量
+# 本地調试環境変量
 ```$xslt
 PLANO_URL=jdbc:postgresql://10.100.1.161:54332/PLANOCYCLE?characterEncoding=UTF-8&useSSL=false
 PLANO_USERNAME=admin

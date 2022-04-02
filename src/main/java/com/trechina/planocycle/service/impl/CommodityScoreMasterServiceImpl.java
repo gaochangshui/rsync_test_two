@@ -97,7 +97,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public void productPowerParamAttr(String conpanyCd, Integer productPowerCd, Map<String, Object> result) {
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd, productPowerCd);
-        logger.info("つかむ取动态列返回値：{}",productOrderParamAttrVO);
+        logger.info("つかむ取動态列返回値：{}",productOrderParamAttrVO);
         //動的列の遍歴
         if (productOrderParamAttrVO !=null && !productOrderParamAttrVO.getAttr().equals("")){
             String[] attrList = productOrderParamAttrVO.getAttr().split(",");
@@ -112,7 +112,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public void productPowerParamAttrName(String conpanyCd, Integer productPowerCd, Map<String, Object> result) {
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectAttrName(conpanyCd, productPowerCd);
-        logger.info("つかむ取动态列返回値：{}",productOrderParamAttrVO);
+        logger.info("つかむ取動态列返回値：{}",productOrderParamAttrVO);
         //動的列の遍歴
         if (productOrderParamAttrVO !=null && !productOrderParamAttrVO.getAttr().equals("")){
             String[] attrList = productOrderParamAttrVO.getAttr().split(",");

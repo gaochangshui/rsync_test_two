@@ -34,7 +34,7 @@ public interface ShelfPtsService {
     Map<String,Object> saveShelfPts(List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto);
 
     /**
-     * 保存pts数据到临時表里
+     * 保存pts数据到臨時表里
      * @param companyCd
      * @param authorCd
      * @param priorityOrderCd

@@ -182,7 +182,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     }
 
     /**
-     * 调用cgi削除準備プロジェクト
+     * 調用cgi削除準備プロジェクト
      *
      * @param productPowerReserveMst
      * @return
