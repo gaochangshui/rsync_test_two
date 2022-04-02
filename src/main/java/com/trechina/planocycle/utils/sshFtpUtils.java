@@ -33,11 +33,11 @@ public class sshFtpUtils {
             boolean auth = connection.authenticateWithPassword(user,pw);
             logger.info("ssh服務器身份验证返回値：{}",auth);
             if (auth) {
-                logger.info("验证成功");
+                logger.info("検証成功");
                 SCPClient client =new SCPClient(connection);
-                logger.info("开始put");
+                logger.info("開始put");
                 os = client.put(file.getName(),file.length(),remotePath,null);
-                logger.info("开始write");
+                logger.info("開始write");
                 int i;
                 byte[] b =new byte[4096];
                 while((i=fileInputStream.read(b))!=-1){
@@ -45,14 +45,14 @@ public class sshFtpUtils {
                 }
                 os.flush();
                 connection.close();
-                return "传送成功";
+                return "転送成功";
             }
             else {
-                return "传送失敗";
+                return "転送失敗";
             }
         } catch (IOException e) {
-            logger.info("报错:",e);
-            return "チェーン接失敗";
+            logger.info("error:",e);
+            return "connect失敗";
         }
     }
 
@@ -60,7 +60,7 @@ public class sshFtpUtils {
         logger.info("开始ssh服務器");
         Connection connection = new Connection(ip);
         connection.connect();
-        logger.info("チェーン接成功");
+        logger.info("connect成功");
         return connection;
     }
 
@@ -69,7 +69,7 @@ public class sshFtpUtils {
      * @return
      */
     public  byte[] downLoafCgi(String path,String tokenInfo) {
-        //打开URLConnection进行读取
+        //打開URLConnection進行読み取り
         InputStream in = null;
         ByteArrayOutputStream os = null;
 
@@ -98,7 +98,7 @@ public class sshFtpUtils {
                     os.close();
                 }
             }catch (Exception e){
-                logger.error("io閉じる异常", e);
+                logger.error("io閉じる異常", e);
             }
         }
 
@@ -115,11 +115,11 @@ public class sshFtpUtils {
                 boolean auth = connection.authenticateWithPassword(user,pw);
                 logger.info("ssh服務器身份验证返回値：{}",auth);
                 if (auth) {
-                    logger.info("验证成功");
+                    logger.info("検証成功");
                     SCPClient client =new SCPClient(connection);
                     is = client.get(remoteFile);
                     if(!file.createNewFile()){
-                        return "传送失敗";
+                        return "転送失敗";
                     }
                     // 构造一个长度はい1024的字节数组
                     byte[] buffer = new byte[1024];
@@ -131,14 +131,14 @@ public class sshFtpUtils {
                         outputStream.flush();
                     }
                     connection.close();
-                    return "传送成功";
+                    return "転送成功";
                 } else {
-                    return "传送失敗";
+                    return "転送失敗";
                 }
 
             } catch (IOException e) {
-            logger.info("报错:",e);
-            return "チェーン接失敗";
+            logger.info("error:",e);
+            return "connect失敗";
         } finally {
             try {
                 if(Objects.nonNull(outputStream)){
@@ -148,7 +148,7 @@ public class sshFtpUtils {
                     is.close();
                 }
             } catch (IOException e) {
-                logger.error("报错",e);
+                logger.error("error",e);
             }
         }
     }

@@ -6,8 +6,8 @@ import java.util.List;
 
 public class dataConverUtils {
     /**
-     * 用来处理优先順位表各种mst信息插入的数据转换
-     * 因はい插入的代码完全一致，只有模板クラス参数不一致，統一接收不同模板クラス，处理完数据后返回。
+     * 用来処理優先順位表各種mst信息插入的数据convert
+     * なぜなら插入的code完全一致，只有模板クラス参数不一致，統一接收不同模板クラス，処理完数据后返回。
      * @param cla
      * @param companyCd
      * @param priorityOrderCd

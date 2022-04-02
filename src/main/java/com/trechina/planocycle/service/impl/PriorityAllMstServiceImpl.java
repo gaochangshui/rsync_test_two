@@ -380,7 +380,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             }
         } catch(Exception ex) {
             logger.error("", ex);
-            throw new BusinessException("自动計算失敗");
+            throw new BusinessException("自動計算失敗");
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS, "計算成功しました。");
@@ -435,7 +435,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 p.setUsercd(session.getAttribute("aud").toString());
                  priorityAllNumGeneratorMapper.insert(p);
 
-                logger.info("全pattern表自动取号:{}",p.getId());
+                logger.info("全pattern表自動取号:{}",p.getId());
                 priorityAllMstMapper.setNewFinalTableMst(companyCd,p.getId(),aud,priorityAllName);
                 priorityAllMstMapper.setNewFinalTableShelfs(companyCd,p.getId(),aud);
                 priorityAllMstMapper.setNewFinalTableRestrict(companyCd,p.getId(),aud);
@@ -517,7 +517,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             , String companyCd, String  authorCd, BigDecimal basicTannaNum) {
         List<PriorityAllRestrictDto> allRestrictDtoList = new ArrayList<>();
 
-        //基本パターン的face数扩大三倍取商品（基本パターン已同步修改）
+        //基本パターン的face数扩大三倍取商品（基本パターン已同期修改）
         Long skuCountPer = skuCountPerPattan*3;
 
         // チェックされたパターン
@@ -552,10 +552,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
             if(basicTanaCnt.compareTo(BigDecimal.valueOf(0.5))==0) {
                 allSet.setTanaCnt(BigDecimal.valueOf(0.5));
-                logger.info("扩/缩后：{}", 0.5);
+                logger.info("拡/縮后：{}", 0.5);
             } else {
                 allSet.setTanaCnt(new BigDecimal(tmpTanaCnt));
-                logger.info("扩/缩后：{}", tmpTanaCnt);
+                logger.info("拡/縮后：{}", tmpTanaCnt);
             }
 
             allSet.setSkuCnt(allSet.getTanaCnt().multiply(new BigDecimal(skuCountPer)).intValue());

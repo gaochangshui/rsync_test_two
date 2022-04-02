@@ -248,7 +248,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             }
 
         }catch (IOException e) {
-            logger.error("csv writer 閉じる异常", e);
+            logger.error("csv writer 閉じる異常", e);
         }
 
         return filePath;

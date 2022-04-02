@@ -65,7 +65,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         try (PrintWriter writer = response.getWriter()) {
             writer.print(new JSONObject(result));
         } catch (IOException e) {
-            logger.info("报错:"+e);
+            logger.info("error:"+e);
         }
 
     }

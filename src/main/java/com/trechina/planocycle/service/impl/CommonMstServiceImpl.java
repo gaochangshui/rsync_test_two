@@ -161,7 +161,7 @@ public class CommonMstServiceImpl implements CommonMstService {
      *          1.入数irisu=1の商品がなければcutを行わず、そのまま終了
      *          2.入数irisu=1がある場合は、商品リストを逆順に巡回し、face数-1を行います
      *              3.face数*幅が置けば置いて、実際に保管しているface数をメモします
-     *              4.置くことができなくて、终わって、この位置は放しません
+     *              4.置くことができなくて、終わって、この位置は放しません
      * @param resultDataDtoList スタンド別商品リスト
      * @param targetResultData 置くべき商品
      * @param width 現在の棚区分の幅

@@ -34,7 +34,7 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
         PriorityOrderNumGenerator priorityOrderNumGenerator = new PriorityOrderNumGenerator();
         priorityOrderNumGenerator.setUsercd(session.getAttribute("aud").toString());
         Integer id = priorityOrderNumGeneratorMapper.insert(priorityOrderNumGenerator);
-        logger.info("优先順位表自动取号："+priorityOrderNumGenerator.getId());
+        logger.info("優先順位表自動取号："+priorityOrderNumGenerator.getId());
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderNumGenerator.getId());
     }
 

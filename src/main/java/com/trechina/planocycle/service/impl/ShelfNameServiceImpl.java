@@ -74,7 +74,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         shelfNameMst.setShelfName(shelfNameDto.getShelfName());
         shelfNameMst.setConpanyCd(shelfNameDto.getCompanyCd());
         shelfNameMst.setAuthorCd(authorCd);
-        logger.info("保存棚名称信息转换后的参数：{}",shelfNameMst);
+        logger.info("保存棚名称信息変換后的参数：{}",shelfNameMst);
         Integer resultInfo = shelfNameMstMapper.insert(shelfNameMst);
         //ユーザーIDの取得
 
@@ -85,7 +85,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
             shelfNameArea.setShelfNameCd(shelfNameMst.getId());
             list.add(shelfNameArea);
         });
-        logger.info("保存棚名称信息转换后的area参数：{}",list);
+        logger.info("保存棚名称信息変換后的area参数：{}",list);
 
         shelfNameAreaService.setShelfNameArea(list,authorCd);
         logger.info("保存棚名称信息保存后返回的信息：{}",resultInfo);
@@ -116,7 +116,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         shelfNameMst.setShelfName(shelfNameDto.getShelfName());
         shelfNameMst.setConpanyCd(shelfNameDto.getCompanyCd());
         shelfNameMst.setAuthorCd(authorCd);
-        logger.info("修改棚名称信息转换后的参数：{}",shelfNameMst);
+        logger.info("修改棚名称信息変換后的参数：{}",shelfNameMst);
         int resultInfo = shelfNameMstMapper.update(shelfNameMst);
         logger.info("修改棚名称信息后返回的信息：{}",resultInfo);
         //shelfName関連Areaの取得
@@ -143,7 +143,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
                 shelfNameArea.setShelfNameCd(shelfNameMst.getId());
                 delList.add(shelfNameArea);
             });
-            logger.info("削除棚名称信息转换后的area参数：{}",delList);
+            logger.info("削除棚名称信息変換后的area参数：{}",delList);
             //関連するareaを削除
             shelfNameAreaService.delAreaCd(deleteAreaList,shelfNameDto.getId(),authorCd);
             //検索棚名の下の棚pattern
@@ -164,7 +164,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
                 shelfNameArea.setShelfNameCd(shelfNameMst.getId());
                 setList.add(shelfNameArea);
             });
-            logger.info("添加棚名称信息转换后的area参数：{}", setList);
+            logger.info("添加棚名称信息変換后的area参数：{}", setList);
             //関連するareaを追加
             Map<String, Object> setAreaInfo = shelfNameAreaService.setShelfNameArea(setList, authorCd);
 
