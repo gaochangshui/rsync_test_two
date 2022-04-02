@@ -2,7 +2,7 @@ package com.trechina.planocycle.entity.dto;
 
 public class PriorityAllResultDataDto extends PriorityOrderResultDataDto {
     private Integer shelfPatternCd;
-    private Double sales_cnt;
+    private Double salesCnt;
     private Integer priorityAllCd;
     private Integer faceNum;
     private String companyCd;
@@ -16,12 +16,14 @@ public class PriorityAllResultDataDto extends PriorityOrderResultDataDto {
         this.shelfPatternCd = shelfPatternCd;
     }
 
-    public Double getSales_cnt() {
-        return sales_cnt;
+    @Override
+    public Double getSalesCnt() {
+        return salesCnt;
     }
 
-    public void setSales_cnt(Double sales_cnt) {
-        this.sales_cnt = sales_cnt;
+    @Override
+    public void setSalesCnt(Double salesCnt) {
+        this.salesCnt = salesCnt;
     }
 
     public Integer getPriorityAllCd() {
@@ -58,5 +60,17 @@ public class PriorityAllResultDataDto extends PriorityOrderResultDataDto {
     @Override
     public void setJanCd(String janCd) {
         this.janCd = janCd;
+    }
+
+    @Override
+    public String toString() {
+        return "PriorityAllResultDataDto{" +
+                "shelfPatternCd=" + shelfPatternCd +
+                ", salesCnt=" + salesCnt +
+                ", priorityAllCd=" + priorityAllCd +
+                ", faceNum=" + faceNum +
+                ", companyCd='" + companyCd + '\'' +
+                ", janCd='" + janCd + '\'' +
+                '}';
     }
 }

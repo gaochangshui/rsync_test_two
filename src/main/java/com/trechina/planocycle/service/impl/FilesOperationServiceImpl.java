@@ -272,7 +272,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                 return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
                             }
 
-                            logger.info("check完成，開始connect server");
+                            logger.info("check完成，開始チェーン服務器");
 
                             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
 
@@ -325,7 +325,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 return ResultMaps.result(ResultEnum.FAILURE);
             }
         } catch (Exception e) {
-            logger.error("error,上伝文件：{}", e.getMessage(), e);
+            logger.error("error,上传文件：{}", e.getMessage(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
             if(e instanceof DataIntegrityViolationException){
@@ -341,7 +341,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                     inputStreamReader.close();
                 }
             }catch (Exception e){
-                logger.error("io閉じる異常", e);
+                logger.error("io閉じる异常", e);
             }
 
         }
@@ -405,7 +405,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 logger.info("文件削除失敗");
             }
         } catch (IOException e) {
-            logger.info("csv転送excel error2:{}", e.getMessage());
+            logger.info("csv转excel报错2:{}", e.getMessage());
         } finally {
             if (is!=null) {
                 try {

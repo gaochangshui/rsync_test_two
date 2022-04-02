@@ -236,7 +236,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         for (PriorityOrderAttrVO priorityOrderAttrVO : attrList) {
             priorityOrderAttrVO.setRank(i++);
         }
-        logger.info("属性所有組合为：{}", attrList);
+        logger.info("属性所有組合はい：{}", attrList);
         return ResultMaps.result(ResultEnum.SUCCESS, attrList);
     }
 

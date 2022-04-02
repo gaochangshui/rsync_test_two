@@ -121,7 +121,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         logger.info("修改棚名称信息后返回的信息：{}",resultInfo);
         //shelfName関連Areaの取得
         List<Integer> getShelfNameArea = shelfNameAreaService.getShelfNameArea(shelfNameMst.getId(),shelfNameMst.getConpanyCd());
-        logger.info("shelfName関連的所有Area：{}",getShelfNameArea);
+        logger.info("shelfName関連付け的所有Area：{}",getShelfNameArea);
         //データベースと重複データの変更
         shelfNameDto.getArea().forEach(item->{
             for (Integer area : getShelfNameArea) {

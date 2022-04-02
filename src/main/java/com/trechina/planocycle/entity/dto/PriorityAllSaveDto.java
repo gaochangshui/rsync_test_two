@@ -7,6 +7,7 @@ public class PriorityAllSaveDto {
     private Integer priorityAllCd;
     private Integer priorityOrderCd;
     private List<Integer> patterns;
+    private String priorityAllName;
 
     public String getCompanyCd() {
         return companyCd;
@@ -36,7 +37,16 @@ public class PriorityAllSaveDto {
         return patterns;
     }
 
+    public String getPriorityAllName() {
+        return priorityAllName;
+    }
+
+    public void setPriorityAllName(String priorityAllName) {
+        this.priorityAllName = priorityAllName;
+    }
+
     public void setPatterns(List<Integer> patterns) {
+
         this.patterns = patterns;
     }
 }

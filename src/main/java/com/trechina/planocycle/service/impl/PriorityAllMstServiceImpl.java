@@ -348,8 +348,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                         resultData.setCompanyCd(companyCd);
                         resultData.setShelfPatternCd(pattern.getShelfPatternCd());
                         resultData.setFaceNum(minFaceNum);
+                        resultData.setAuthorCd(authorCd);
                     }
                 }
+
                 workPriorityAllResultDataMapper.updateFace(resultDatas);
 
                 /**
@@ -386,14 +388,17 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
     /**
      * 保存
-     * @param companyCd
-     * @param priorityAllCd
+     * @param
+     * @param
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> savePriorityAll(String companyCd, Integer priorityAllCd,String priorityAllName) {
+    public Map<String, Object> savePriorityAll(PriorityAllSaveDto priorityAllSaveDto) {
         String aud = session.getAttribute("aud").toString();
+        String priorityAllName = priorityAllSaveDto.getPriorityAllName();
+        String companyCd = priorityAllSaveDto.getCompanyCd();
+        Integer priorityAllCd = priorityAllSaveDto.getPriorityAllCd();
         Integer cd = priorityAllMstMapper.selectPriorityAllName(priorityAllName, companyCd);
         if (cd != null && !cd.equals(priorityAllCd) ){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);

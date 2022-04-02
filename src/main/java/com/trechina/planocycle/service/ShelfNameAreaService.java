@@ -7,21 +7,21 @@ import java.util.Map;
 
 public interface ShelfNameAreaService {
     /**
-     * 保存shelfName关联的area
+     * 保存shelfName関連付け的area
      * @param shelfNameArea
      * @return
      */
     Map<String,Object> setShelfNameArea(List<ShelfNameArea> shelfNameArea,String authorCd);
 
     /**
-     * 削除shelfName关联的area
+     * 削除shelfName関連付け的area
      * @param id
      * @return
      */
     Integer delShelfNameArea(Integer id,String authorCd);
 
     /**
-     * 查询shelfName关联的area
+     * 查询shelfName関連付け的area
      * @param id
      *  @return
      */

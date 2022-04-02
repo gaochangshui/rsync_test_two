@@ -83,7 +83,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
         List<ProductPowerMstData> syokikaList = productPowerDataMapper.selectWKSyokika(companyCd, authorCd);
 
-        logger.info("返回pos基本信息为{}", syokikaList);
+        logger.info("返回pos基本信息はい{}", syokikaList);
         return ResultMaps.result(ResultEnum.SUCCESS, syokikaList);
     }
 

@@ -37,7 +37,7 @@ public interface PriorityOrderMstAttrSortService {
      */
     Map<String, Object> getAttribute();
     /**
-     * 陈列设定つかむ取属性1和属性2
+     * 陈列設定つかむ取属性1和属性2
      */
     Map<String, Object> getAttributeSort();
 
