@@ -16,13 +16,13 @@ public class ScheduleTask {
     private TableTransferService tableTransferService;
     @Scheduled(cron = "0 0 6 * * ?")
     public void MasterInfoSync(){
-        logger.info("定时调度任务--attr表同步开始");
+        logger.info("定時調度任務--attr表同期開始");
         tableTransferService.getAttrTransfer();
-        logger.info("定时调度任务--area表同步开始");
+        logger.info("定時調度任務--area表同期開始");
         tableTransferService.getAreasTransfer();
-        logger.info("定时调度任务--branch表同步开始");
+        logger.info("定時調度任務--branch表同期開始");
         tableTransferService.getBranchsTransfer();
-        logger.info("定时调度任务--jan表同步开始");
+        logger.info("定時調度任務--jan表同期開始");
         tableTransferService.getJansTransfer();
     }
 }
