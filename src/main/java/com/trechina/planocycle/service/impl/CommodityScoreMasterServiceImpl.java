@@ -292,7 +292,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setSeasonStTime(param.getSeasonStTime());
         powerParam.setYearFlag(param.getYearFlag());
         List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(productPowerNo, companyCd);
-        List list = new ArrayList();
+        List<Object> list = new ArrayList();
         list.add(allData);
         list.add(powerParam);
         list.add(reserve);

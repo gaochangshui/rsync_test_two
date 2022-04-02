@@ -134,7 +134,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         List<Integer> deleteAreaList = ListDisparityUtils.getListDisparit(getShelfNameArea, shelfNameDto.getArea());
         //areaの集合を追加するには
         List<Integer> setAreaList = ListDisparityUtils.getListDisparit( shelfNameDto.getArea(),getShelfNameArea);
-        if (deleteAreaList.size()>0) {
+        if (!deleteAreaList.isEmpty()) {
             deleteAreaList.forEach(item -> {
 
                 ShelfNameArea shelfNameArea = new ShelfNameArea();
@@ -150,13 +150,13 @@ public class ShelfNameServiceImpl implements ShelfNameService {
             List<Integer> shelfPatternList = shelfPatternService.getShelfPattern(shelfNameDto.getCompanyCd(), shelfNameDto.getId());
             //小屋patternの下のareaを削除
             if (shelfPatternList!=null) {
-                shelfPatternList.forEach(item -> {
-                    shelfPatternAreaService.deleteAreaCd(deleteAreaList, item, authorCd);
-                });
+                shelfPatternList.forEach(item ->
+                    shelfPatternAreaService.deleteAreaCd(deleteAreaList, item, authorCd)
+                );
             }
 
         }
-        if (setAreaList.size()>0) {
+        if (!setAreaList.isEmpty()) {
             setAreaList.forEach(item -> {
                 ShelfNameArea shelfNameArea = new ShelfNameArea();
                 shelfNameArea.setCompanyCd(shelfNameDto.getCompanyCd());
