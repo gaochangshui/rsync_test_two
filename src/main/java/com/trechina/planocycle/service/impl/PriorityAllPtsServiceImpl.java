@@ -181,7 +181,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             }
             zos.closeEntry();
         } catch (IOException e) {
-            logger.error("写zip文件失败", e);
+            logger.error("写zip文件失敗", e);
         }
     }
 
@@ -248,7 +248,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             }
 
         }catch (IOException e) {
-            logger.error("csv writer 关闭异常", e);
+            logger.error("csv writer 閉じる异常", e);
         }
 
         return filePath;

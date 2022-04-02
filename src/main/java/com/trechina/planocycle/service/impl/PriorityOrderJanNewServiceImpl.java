@@ -49,9 +49,9 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Override
     public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-            logger.info("获取新规商品list参数：{}{}{}",companyCd,",",priorityOrderCd);
+            logger.info("つかむ取新规商品list参数：{}{}{}",companyCd,",",priorityOrderCd);
             List<PriorityOrderJanNewDto> priorityOrderJanNewVOS = priorityOrderJanNewMapper.selectJanNew(companyCd,priorityOrderCd);
-            logger.info("获取新规商品list返回结果集b：{}",priorityOrderJanNewVOS);
+            logger.info("つかむ取新规商品list返回结果集b：{}",priorityOrderJanNewVOS);
             List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
             Class clazz = PriorityOrderJanNewDto.class;
         for (int i = 1; i <= 4; i++) {

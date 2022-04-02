@@ -207,7 +207,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                             File file1 = new File(path + filenames);
                             logger.info("文件存放完成");
                             if (!file1.setReadable(true)) {
-                                logger.info("设置读文件失败");
+                                logger.info("设置读文件失敗");
                             }
 
                             inputStreamReader = new InputStreamReader(new FileInputStream(file1), "Shift_Jis");
@@ -341,7 +341,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                     inputStreamReader.close();
                 }
             }catch (Exception e){
-                logger.error("io关闭异常", e);
+                logger.error("io閉じる异常", e);
             }
 
         }
@@ -399,10 +399,10 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             }
             File fileCsv = new File(files);
             if (!fileCsv.delete()) {
-                logger.info("文件削除失败");
+                logger.info("文件削除失敗");
             }
             if (!fileExcel.delete()) {
-                logger.info("文件削除失败");
+                logger.info("文件削除失敗");
             }
         } catch (IOException e) {
             logger.info("csv转excel报错2:{}", e.getMessage());
@@ -446,7 +446,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
         storage.create(blobInfo, Files.readAllBytes(Paths.get(filePath)));
         File delFile = new File(path + fileName);
         if (!delFile.delete()) {
-            logger.info("削除文件失败");
+            logger.info("削除文件失敗");
         }
     }
 

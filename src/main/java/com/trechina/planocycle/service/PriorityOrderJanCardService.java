@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface PriorityOrderJanCardService {
     /**
-     * 获取card商品list
+     * つかむ取card商品list
      * @param companyCd
      * @param priorityOrderCd
      * @return

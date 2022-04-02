@@ -14,21 +14,21 @@ public class PriorityOrderMstAttrSortController {
     private PriorityOrderMstAttrSortService priorityOrderMstAttrSortService;
 
     /**
-     *取得属性1と属性2
+     *つかむ取属性1和属性2
      */
     @GetMapping("/getAttribute")
     public Map<String,Object> getAttribute(){
         return priorityOrderMstAttrSortService.getAttribute();
     }
     /**
-     * 陳列設定取得属性1と属性2
+     * 陈列设定つかむ取属性1和属性2
      */
 @GetMapping("/getAttributeSort")
     public Map<String,Object> getAttributeSort(){
         return priorityOrderMstAttrSortService.getAttributeSort();
     }
     /**
-     *新規計算属性1属性2の组合せに対応する面積
+     *新规计算属性1属性2组合对应的面积
      */
     @GetMapping("/getAttributeArea")
     public Map<String,Object> getAttributeArea(Integer patternCd,Integer attr1,Integer attr2){
@@ -36,7 +36,7 @@ public class PriorityOrderMstAttrSortController {
     }
 
     /**
-     *編集時に取得する属性1属性2の組み合わせに対応する面積
+     *编辑时つかむ取属性1属性2组合对应的面积
      */
     @GetMapping("getEditAttributeArea")
     public Map<String,Object> getEditAttributeArea(String companyCd){
@@ -45,7 +45,7 @@ public class PriorityOrderMstAttrSortController {
 
 
     /**
-     * 属性の分類および商品分類リストの取得
+     * つかむ取属性的分类及商品分类列表
      */
     @GetMapping("/getAttributeList")
     public Map<String,Object> getAttributeList(){

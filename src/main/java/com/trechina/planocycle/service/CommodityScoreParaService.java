@@ -43,7 +43,16 @@ public interface CommodityScoreParaService {
      */
     Map<String, Object> delYoBi(ProductPowerReserveMst productPowerReserveMst);
 
-    Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd,String dataName,Integer valueCd);
+    /**
+     * プロジェクトのアップロードをデータベースに保存する
+     * @param data
+     * @param companyCd
+     * @param dataCd
+     * @param dataName
+     * @param valueCd
+     * @return
+     */
+    Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd, String dataName, Integer valueCd);
     /**
      * rank計算
      * @param rankCalculateVo

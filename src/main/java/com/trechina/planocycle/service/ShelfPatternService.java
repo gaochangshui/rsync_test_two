@@ -72,7 +72,7 @@ public interface ShelfPatternService {
     Map<String, Object> delShelfPatternInfo(JSONObject jsonObject);
 
     /**
-     * 获取shelfPattern 1@棚パータン名称１,2@棚パータン名称2 格式的字符串
+     * つかむ取shelfPattern 1@棚パータン名称１,2@棚パータン名称2 格式的字符串
      * @param shelfPatternNo
      * @return
      */

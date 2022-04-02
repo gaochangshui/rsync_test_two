@@ -59,9 +59,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Override
     public Map<String, Object> getCommodityScorePara(String conpanyCd, Integer productPowerCd) {
         List<ProductPowerShowMst> productPowerShowMstList = productPowerShowMstMapper.selectByPrimaryKey(productPowerCd,conpanyCd);
-        logger.info("获取表示项目参数：{}",productPowerShowMstList);
+        logger.info("つかむ取表示项目参数：{}",productPowerShowMstList);
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd,productPowerCd);
-        logger.info("获取动态列参数：{}",productOrderParamAttrVO);
+        logger.info("つかむ取动态列参数：{}",productOrderParamAttrVO);
         //フロントエンドを作成するためのデータフォーマット
         List<String> marketList = new ArrayList<>();
         List<String> posList = new ArrayList<>();

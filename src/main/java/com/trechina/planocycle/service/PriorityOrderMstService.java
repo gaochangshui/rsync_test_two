@@ -33,7 +33,7 @@ public interface PriorityOrderMstService {
 
 
     /**
-     * 根据productpowercd查询关联的优先顺位表cd
+     * 根据productpowercd查询关联的优先順位表cd
      * @param companyCd
      * @param productPowerCd
      * @return

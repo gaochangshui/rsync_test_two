@@ -61,7 +61,7 @@ public class cgiUtils {
                     reader.close();
                 }
             }catch (Exception e){
-                logger.error("io关闭异常", e);
+                logger.error("io閉じる异常", e);
             }
         }
 
@@ -124,7 +124,7 @@ public class cgiUtils {
                     os.close();
                 }
             } catch (IOException e) {
-                logger.error("io关闭异常", e);
+                logger.error("io閉じる异常", e);
             }
         }
         return "";
@@ -216,7 +216,7 @@ public class cgiUtils {
                     reader.close();
                 }
             } catch (IOException e) {
-                logger.info("io关闭异常：",e);
+                logger.info("io閉じる异常：",e);
             }
         }
     }
@@ -314,7 +314,7 @@ public class cgiUtils {
                     reader.close();
                 }
             }catch (Exception e){
-                logger.error("io关闭异常", e);
+                logger.error("io閉じる异常", e);
             }
 
         }

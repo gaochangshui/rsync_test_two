@@ -12,7 +12,7 @@ public class TableTransferController {
     @Autowired
     private TableTransferService tableTransferService;
     /**
-     * 伝送Areas表情報
+     * Areasテーブル情報の転送
      * @return -1 失敗  >0成功
      */
     @GetMapping("getAreasTransfer")
@@ -21,7 +21,7 @@ public class TableTransferController {
     }
 
     /**
-     * 伝送Branchs表情報
+     * Branchsテーブル情報の転送
      * @return -1 失敗  >-1成功
      */
     @GetMapping("getBranchsTransfer")
@@ -30,7 +30,7 @@ public class TableTransferController {
     }
 
     /**
-     * 伝送Jans表情報
+     * Jansテーブル情報の転送
      * @return -1 失敗  >0成功
      */
     @GetMapping("getJansTransfer")
@@ -39,7 +39,7 @@ public class TableTransferController {
     }
 
     /**
-     * 伝送Attr表情報
+     * Attrテーブル情報の転送
      * @return -1 失敗  >0成功
      */
     @GetMapping("getAttrTransfer")

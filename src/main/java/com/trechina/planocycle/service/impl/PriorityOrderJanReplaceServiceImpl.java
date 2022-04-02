@@ -34,9 +34,9 @@ public class PriorityOrderJanReplaceServiceImpl implements PriorityOrderJanRepla
      */
     @Override
     public Map<String, Object> getPriorityOrderJanInfo(String companyCd, Integer priorityOrderCd) {
-        logger.info("获取jan变的信息参数：{}{}{}",companyCd,",",priorityOrderCd);
+        logger.info("つかむ取jan变的信息参数：{}{}{}",companyCd,",",priorityOrderCd);
         List<PriorityOrderJanReplaceVO> priorityOrderJanReplaceVOList = priorityOrderJanReplaceMapper.selectJanInfo(companyCd,priorityOrderCd);
-        logger.info("获取jan变的信息返回值：{}",priorityOrderJanReplaceVOList);
+        logger.info("つかむ取jan变的信息返回値：{}",priorityOrderJanReplaceVOList);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplaceVOList);
     }
 

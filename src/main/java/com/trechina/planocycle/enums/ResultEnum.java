@@ -2,7 +2,7 @@ package com.trechina.planocycle.enums;
 
 public enum ResultEnum {
     SUCCESS(101,"成功"),
-    FAILURE(202,"失败"),
+    FAILURE(202,"失敗"),
     TIMEOUT(10001,"登录超时"),
     NOTFOUNTCOOKIE(10002,"找不到cookie信息"),
     CGITIEMOUT(20002,"cgi调用超时"),
