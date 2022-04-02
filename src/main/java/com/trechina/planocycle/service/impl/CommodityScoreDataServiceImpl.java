@@ -46,15 +46,15 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         List strList = new ArrayList();
         // taskIdを持って、再度cgiに運転状態/データの取得を要求する
-        Map<String, Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
-        if ("9".equals(Data.get("data"))){
-            return Data;
+        Map<String, Object> data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
+        if ("9".equals(data.get("data"))){
+            return data;
         }
-        logger.info("商品力点数表web版cgi返回数据：{}", Data);
+        logger.info("商品力点数表web版cgi返回数据：{}", data);
         String authorCd = session.getAttribute("aud").toString();
         // 返されるデータは文字列で、2 D配列に処理されます。
-        if (Data.get("data") != null) {
-            String[] strResult = Data.get("data").toString().split("@");
+        if (data.get("data") != null) {
+            String[] strResult = data.get("data").toString().split("@");
             String[] strSplit = null;
             String[] arr;
             int a = 1;
@@ -73,7 +73,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 strList.add(arr);
             }
         } else {
-            return Data;
+            return data;
         }
         try {
             exec(strList);
@@ -102,14 +102,14 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
             List strList = new ArrayList();
             // taskIdを持って、再度cgiに運転状態/データの取得を要求する
-            Map<String, Object> Data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
-            if (Data.get("data").equals("9")){
-                return Data;
+            Map<String, Object> data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
+            if (data.get("data").equals("9")){
+                return data;
             }
-            logger.info("商品力点数表web版cgi返回数据：{}", Data);
+            logger.info("商品力点数表web版cgi返回数据：{}", data);
             // 返されるデータは文字列で、2 D配列に処理されます。
-            if (Data.get("data") != null && Data.get("data") != "") {
-                String[] strResult = Data.get("data").toString().split("@");
+            if (data.get("data") != null && data.get("data") != "") {
+                String[] strResult = data.get("data").toString().split("@");
                 String[] strSplit = null;
                 String[] arr;
                 int a = 1;
@@ -132,11 +132,11 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 if (!strList.isEmpty()) {
                     productPowerDataMapper.insertGroup(strList);
                 }
-            } else if ("".equals(Data.get("data"))) {
+            } else if ("".equals(data.get("data"))) {
                 productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
             } else {
 
-                return Data;
+                return data;
             }
 
 
@@ -159,9 +159,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             Field field = w.getDeclaredField("item" + i);
                             field.setAccessible(true);
                             field.set(item, wkYobiiiternData.getDataValue());
-                        } catch (NoSuchFieldException e) {
-                            e.printStackTrace();
-                        } catch (IllegalAccessException e) {
+                        } catch (NoSuchFieldException | IllegalAccessException e) {
                             e.printStackTrace();
                         }
 

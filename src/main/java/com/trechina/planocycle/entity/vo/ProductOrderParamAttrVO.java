@@ -1,7 +1,5 @@
 package com.trechina.planocycle.entity.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 public class ProductOrderParamAttrVO {
     private String conpanyCd;
 

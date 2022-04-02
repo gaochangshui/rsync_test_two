@@ -156,8 +156,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         logger.info("taskid返回--保存jan rank：{}", result);
         String queryPath = resourceBundle.getString("TaskQuery");
         // 帯着taskid，再度cgiに運転状態/データの取得を要求する
-        Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-        logger.info("保存jan rank{}",Data);
+        Map<String, Object> data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
+        logger.info("保存jan rank{}",data);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -207,7 +207,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         logger.info("taskid返回削除 yobi：{}", result);
         String queryPath = resourceBundle.getString("TaskQuery");
         // taskidを持って、再度cgiに運転状態/データの取得を要求する
-        Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
+        Map<String, Object> data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -278,9 +278,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                             Field field = w.getDeclaredField("item"+i);
                             field.setAccessible(true);
                             field.set(item,wkYobiiiternData.getDataValue());
-                        } catch (NoSuchFieldException e) {
-                            e.printStackTrace();
-                        } catch (IllegalAccessException e) {
+                        } catch (NoSuchFieldException | IllegalAccessException e) {
                             e.printStackTrace();
                         }
 
@@ -304,9 +302,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                     public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
                         try {
                             return new BigDecimal(String.valueOf(getMethod.invoke(o2))).compareTo(new BigDecimal(String.valueOf(getMethod.invoke(o1))));
-                        } catch (IllegalAccessException e) {
-                            return 0;
-                        } catch (InvocationTargetException e) {
+                        } catch (IllegalAccessException | InvocationTargetException e) {
                             return 0;
                         }
                     }

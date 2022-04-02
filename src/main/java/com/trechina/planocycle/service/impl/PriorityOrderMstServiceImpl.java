@@ -132,8 +132,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public Map<String, Object> getPriorityOrderExistsFlg(String companyCd) {
-        //List<String> companyCd = Arrays.asList(session.getAttribute("inCharge").toString().split(","));
-
         int result = priorityOrderMstMapper.selectPriorityOrderCount(companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
@@ -441,9 +439,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
         String[] array = resultDataList.split(",");
         //cgiを呼び出す
-        Map<String, Object> Data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd);
-        if (Data.get("data") != null && Data.get("data") != "") {
-            String[] strResult = Data.get("data").toString().split("@");
+        Map<String, Object> data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd);
+        if (data.get("data") != null && data.get("data") != "") {
+            String[] strResult = data.get("data").toString().split("@");
             String[] strSplit = null;
             List<WorkPriorityOrderResultData> list = new ArrayList<>();
             WorkPriorityOrderResultData orderResultData = null;
@@ -491,7 +489,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             }
             workPriorityOrderResultDataMapper.updateFace(resultDatas, companyCd, authorCd);
         } else {
-            return Data;
+            return data;
         }
         //属性別に並べ替える
         this.getReorder(companyCd, priorityOrderCd,productPowerCd);
@@ -700,18 +698,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             shelfPtsService.saveFinalPtsData(companyCd, authorCd, priorityOrderCd);
 
 
-            //テンポラリ・テーブルのデータの削除
-//            workPriorityOrderMstMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderRestrictRelationMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderRestrictResultMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderRestrictSetMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderSortMapper.delete(companyCd, authorCd, priorityOrderCd);
-//            workPriorityOrderSortRankMapper.delete(companyCd, authorCd, priorityOrderCd);
-//            priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
-//            priorityOrderJanReplaceMapper.workDelete(companyCd, authorCd, priorityOrderCd);
-//            priorityOrderJanCardMapper.workDelete(companyCd, priorityOrderCd, authorCd);
         } catch (Exception exception) {
             logger.error("保存臨時表数据到實際表報錯", exception);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

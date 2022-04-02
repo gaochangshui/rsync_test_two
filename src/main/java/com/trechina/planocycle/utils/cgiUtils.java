@@ -1,6 +1,7 @@
 package com.trechina.planocycle.utils;
 
 import com.alibaba.fastjson.JSON;
+import org.springframework.http.HttpHeaders;
 import com.trechina.planocycle.enums.ResultEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +90,7 @@ public class cgiUtils {
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.setDoInput(true);
-            connection.setRequestProperty("Content-Type",textFormat);
+            connection.setRequestProperty(HttpHeaders.CONTENT_TYPE,textFormat);
 
             os = connection.getOutputStream();
             os.write(JSON.toJSONBytes(cla));
@@ -178,7 +179,7 @@ public class cgiUtils {
                 return ResultMaps.result(ResultEnum.SIZEISZERO,"");
             }
             builder = new StringBuilder(builder.substring(0,builder.length()-1));
-            logger.info("postCgiOfWeb statusCode,reqult："+statusCode+","+builder.toString());
+            logger.info("postCgiOfWeb statusCode,reqult：{},{}",statusCode, builder);
             in.close();
             if (builder.toString().equals("2")) {
                 return ResultMaps.result(ResultEnum.CGITIEMOUT,null);
@@ -242,7 +243,6 @@ public class cgiUtils {
         try{
             URL url =new URL(smartPath+path);
             Boolean result  = true;
-            int count =0;
             StringBuilder builder = null;
             while (result) {
                 Thread.sleep(10*1_000L);
@@ -271,7 +271,6 @@ public class cgiUtils {
                     return ResultMaps.result(ResultEnum.SIZEISZERO,"");
                 }
                 builder = new StringBuilder(builder.substring(0,builder.length()-1));
-                count+=1;
                 logger.info("cgiQueryTask statusCode,reqult：{},{}",statusCode,builder);
                 if(statusCode == 200) {
                     break;
