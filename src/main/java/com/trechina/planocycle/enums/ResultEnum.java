@@ -5,7 +5,7 @@ public enum ResultEnum {
     FAILURE(202,"失敗"),
     TIMEOUT(10001,"登録超時"),
     NOTFOUNTCOOKIE(10002,"找不到cookie信息"),
-    CGITIEMOUT(20002,"cgi調用超时"),
+    CGITIEMOUT(20002,"cgi調用超時"),
     CGICANCEL(20003,"cgi手動取消"),
     CGIERROR(20004,"cgi報錯"),
     SIZEISZERO(20005,"数据はい空"),

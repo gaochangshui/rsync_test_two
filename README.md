@@ -3,7 +3,7 @@
 cloud
 # pathConfig.properties 文件注释cloud 打開dev+163
 按注释切换代码
-# FilesOperationServiceImpl.java 文件 --pts上传和動态表示プロジェクト文件上传共通
+# FilesOperationServiceImpl.java 文件 --pts上傳和動態表示プロジェクト文件上傳共通
 fileSaveRemote方法,切换数据桶代码
 # PriorityOrderMstServiceImpl.java 文件 --无效
 # getPtsFileDownLoad方法，切换数据桶代码

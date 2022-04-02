@@ -61,7 +61,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         List<ProductPowerShowMst> productPowerShowMstList = productPowerShowMstMapper.selectByPrimaryKey(productPowerCd,conpanyCd);
         logger.info("つかむ取表示プロジェクト参数：{}",productPowerShowMstList);
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd,productPowerCd);
-        logger.info("つかむ取動态列参数：{}",productOrderParamAttrVO);
+        logger.info("つかむ取動態列参数：{}",productOrderParamAttrVO);
         //フロントエンドを作成するためのデータフォーマット
         List<String> marketList = new ArrayList<>();
         List<String> posList = new ArrayList<>();
@@ -90,7 +90,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
            }
            jsonArray.add(result);
            jsonArray.add(attrMap);
-           logger.info("動态列返回：{}", jsonArray);
+           logger.info("動態列返回：{}", jsonArray);
            return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
        }catch (Exception e) {
            logger.info(e.toString());
@@ -151,11 +151,11 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("ProductPowerData");
         String result = null;
-        logger.info("携带参数：{}", productPowerDataForCgiSave);
+        logger.info("携帶参数：{}", productPowerDataForCgiSave);
         result = cgiUtil.postCgi(path, productPowerDataForCgiSave, tokenInfo);
         logger.info("taskid返回--保存jan rank：{}", result);
         String queryPath = resourceBundle.getString("TaskQuery");
-        // 带着taskid，再度cgiに運転状態/データの取得を要求する
+        // 帶着taskid，再度cgiに運転状態/データの取得を要求する
         Map<String, Object> Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
         logger.info("保存jan rank{}",Data);
         return ResultMaps.result(ResultEnum.SUCCESS);
