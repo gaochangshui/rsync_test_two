@@ -268,11 +268,11 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                                 }
                             }
                             if (titleNum != 3) {
-                                logger.info("没有三组台番号");
+                                logger.info("没有三組台番号");
                                 return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
                             }
 
-                            logger.info("check完成，开始チェーン接服務器");
+                            logger.info("check完成，開始チェーン接服務器");
 
                             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
 

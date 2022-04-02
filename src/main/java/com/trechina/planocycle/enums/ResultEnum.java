@@ -3,9 +3,9 @@ package com.trechina.planocycle.enums;
 public enum ResultEnum {
     SUCCESS(101,"成功"),
     FAILURE(202,"失敗"),
-    TIMEOUT(10001,"登录超时"),
+    TIMEOUT(10001,"登录超時"),
     NOTFOUNTCOOKIE(10002,"找不到cookie信息"),
-    CGITIEMOUT(20002,"cgi调用超时"),
+    CGITIEMOUT(20002,"cgi调用超時"),
     CGICANCEL(20003,"cgi手动取消"),
     CGIERROR(20004,"cgi报错"),
     SIZEISZERO(20005,"数据はい空"),

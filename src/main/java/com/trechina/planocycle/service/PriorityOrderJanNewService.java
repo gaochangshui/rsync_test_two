@@ -41,13 +41,13 @@ public interface PriorityOrderJanNewService {
      */
     Map<String, Object> getSimilarity(PriorityOrderJanNewDto priorityOrderJanNewDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     /**
-     * 新规不存在商品详细信息
+     * 新规不存在商品详細信息
      * @param janMstPlanocycleVo
      * @return
      */
     Map<String,Object>setJanNewInfo(@RequestBody List<JanMstPlanocycleVo> janMstPlanocycleVo);
     /**
-     * 查询不存在商品详细信息
+     * 查询不存在商品详細信息
      * @param
      * @return
      */

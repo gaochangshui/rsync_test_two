@@ -48,12 +48,12 @@ public interface PriorityOrderMstAttrSortService {
 
 
     /**
-     * 計算属性1属性2组合対応的面积
+     * 計算属性1属性2組合対応的面积
      */
     Map<String, Object> getAttributeArea(Integer patternCd, Integer attr1, Integer attr2);
 
     /**
-     *编辑时つかむ取属性1属性2组合対応的面积
+     *编辑時つかむ取属性1属性2組合対応的面积
      */
     Map<String,Object> getEditAttributeArea(String companyCd);
 

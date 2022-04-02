@@ -89,7 +89,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
     /**
-     * 新规では基本パター制約别janの详细情報を取得
+     * 新规では基本パター制約别janの详細情報を取得
      * @param
      * @return
      */
@@ -129,7 +129,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         return ResultMaps.result(ResultEnum.SUCCESS,platformShedData);
     }
     /**
-     * 新规では基本的なパタ台棚别jansの详细情報を入手
+     * 新规では基本的なパタ台棚别jansの详細情報を入手
      * @param priorityOrderPlatformShedDto
      * @return
      */

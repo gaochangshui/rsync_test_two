@@ -711,7 +711,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 //            priorityOrderJanReplaceMapper.workDelete(companyCd, authorCd, priorityOrderCd);
 //            priorityOrderJanCardMapper.workDelete(companyCd, priorityOrderCd, authorCd);
         } catch (Exception exception) {
-            logger.error("保存临时表数据到实际表报错", exception);
+            logger.error("保存临時表数据到实际表报错", exception);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultMaps.result(ResultEnum.FAILURE);
         }
@@ -889,7 +889,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCut);
         }
         if (flag == 1) {
-            //取得jan变情報
+            //取得jan変情報
             List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd, priorityOrderCd);
             return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplace);
         }
