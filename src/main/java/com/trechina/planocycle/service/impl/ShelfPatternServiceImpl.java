@@ -131,7 +131,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             //つかむ取棚pattern関連的Area
             List<Integer> getShelfPatternArea = shelfPatternAreaService.getShelfPatternArea(shelfPatternMst.getShelfPatternCd(),shelfPatternMst.getConpanyCd());
             logger.info("棚pattern関連的所有Area：{}" , getShelfPatternArea);
-            //database中修改重复数据
+            //database中修改重複数据
             shelfPatternDto.getArea().forEach(item->{
                 for (Integer area : getShelfPatternArea) {
                     if (item.equals(area)){

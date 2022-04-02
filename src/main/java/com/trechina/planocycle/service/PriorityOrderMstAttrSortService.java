@@ -37,7 +37,7 @@ public interface PriorityOrderMstAttrSortService {
      */
     Map<String, Object> getAttribute();
     /**
-     * 陈列設定つかむ取属性1和属性2
+     * 陳列設定つかむ取属性1和属性2
      */
     Map<String, Object> getAttributeSort();
 
@@ -48,12 +48,12 @@ public interface PriorityOrderMstAttrSortService {
 
 
     /**
-     * 計算属性1属性2組合対応的面积
+     * 計算属性1属性2組合対応的面積
      */
     Map<String, Object> getAttributeArea(Integer patternCd, Integer attr1, Integer attr2);
 
     /**
-     *编辑時つかむ取属性1属性2組合対応的面积
+     *編集つかむ取属性1属性2組合対応的面積
      */
     Map<String,Object> getEditAttributeArea(String companyCd);
 

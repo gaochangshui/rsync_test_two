@@ -61,7 +61,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         List<ProductPowerShowMst> productPowerShowMstList = productPowerShowMstMapper.selectByPrimaryKey(productPowerCd,conpanyCd);
         logger.info("つかむ取表示プロジェクト参数：{}",productPowerShowMstList);
         ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd,productPowerCd);
-        logger.info("つかむ取动态列参数：{}",productOrderParamAttrVO);
+        logger.info("つかむ取動态列参数：{}",productOrderParamAttrVO);
         //フロントエンドを作成するためのデータフォーマット
         List<String> marketList = new ArrayList<>();
         List<String> posList = new ArrayList<>();
@@ -90,7 +90,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
            }
            jsonArray.add(result);
            jsonArray.add(attrMap);
-           logger.info("动态列返回：{}", jsonArray);
+           logger.info("動态列返回：{}", jsonArray);
            return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
        }catch (Exception e) {
            logger.info(e.toString());
@@ -182,7 +182,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     }
 
     /**
-     * 调用cgi削除预备プロジェクト
+     * 调用cgi削除準備プロジェクト
      *
      * @param productPowerReserveMst
      * @return

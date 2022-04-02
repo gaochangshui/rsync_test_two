@@ -29,7 +29,7 @@ public interface CommodityScoreMasterService {
     Map<String,Object> getCommodityParam(String conpanyCd,Integer productPowerCd);
 
     /**
-     * 保存商品力地拿鼠标的模板名接口
+     * 保存商品力点数的模板名接口
      * @param productPowerName
      * @return
      */
@@ -49,7 +49,7 @@ public interface CommodityScoreMasterService {
     void productPowerParamAttrName(String conpanyCd, Integer productPowerCd, Map<String, Object> result);
 
     /**
-     * つかむ取商品力点数表的属性和品目情報，用于优先順位表
+     * つかむ取商品力点数表的属性和品目情報，用于優先順位表
      * @param productOrderCd
      * @return
      */
@@ -64,7 +64,7 @@ public interface CommodityScoreMasterService {
     boolean delSmartData(ProductPowerParamMst productPowerParamMst);
 
     /**
-     * 编辑時，つかむ取商品里点数表参数
+     * 編集，つかむ取商品里点数表参数
      */
     public Map<String,Object> getAllDataOrParam(String companyCd,Integer productPowerNo);
 }

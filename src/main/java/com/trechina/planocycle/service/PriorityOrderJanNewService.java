@@ -11,14 +11,14 @@ import java.util.Map;
 
 public interface PriorityOrderJanNewService {
     /**
-     * つかむ取新规janlist
+     * つかむ取新規janlist
      * @param companyCd
      * @param priorityOrderCd
      * @return
      */
     Map<String,Object> getPriorityOrderJanNew(String companyCd,Integer priorityOrderCd, Integer productPowerNo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     /**
-     * つかむ取新规jan的名字分クラス
+     * つかむ取新規jan的名字分クラス
      * @param janNew
      * @return
      *
@@ -27,7 +27,7 @@ public interface PriorityOrderJanNewService {
     Map<String,Object> getPriorityOrderJanNewInfo(String[] janNew,String companyCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
     /**
-     *保存新规商品list
+     *保存新規商品list
      * @param
      * @return
      */
@@ -41,13 +41,13 @@ public interface PriorityOrderJanNewService {
      */
     Map<String, Object> getSimilarity(PriorityOrderJanNewDto priorityOrderJanNewDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     /**
-     * 新规不存在商品详細信息
+     * 新規不存在商品詳細情報
      * @param janMstPlanocycleVo
      * @return
      */
     Map<String,Object>setJanNewInfo(@RequestBody List<JanMstPlanocycleVo> janMstPlanocycleVo);
     /**
-     * 查询不存在商品详細信息
+     * 検索不存在商品詳細情報
      * @param
      * @return
      */

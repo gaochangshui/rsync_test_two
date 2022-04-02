@@ -118,9 +118,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public Map<String, Object> getPriorityOrderList(String companyCd) {
-        logger.info("つかむ取优先順位表参数：{}", companyCd);
+        logger.info("つかむ取優先順位表参数：{}", companyCd);
         List<PriorityOrderMst> priorityOrderMstList = priorityOrderMstMapper.selectByPrimaryKey(companyCd);
-        logger.info("つかむ取优先順位表返回値：{}", priorityOrderMstList);
+        logger.info("つかむ取優先順位表返回値：{}", priorityOrderMstList);
         return ResultMaps.result(ResultEnum.SUCCESS, priorityOrderMstList);
     }
 
