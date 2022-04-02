@@ -178,7 +178,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
 
     /**
-     * 获取商品力点数表taskid
+     * 商品力点数表taskidを取得する
      *
      * @param productPowerDataForCgiDto
      * @return
@@ -207,7 +207,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     }
 
     /**
-     * 获取商品力点数表顾客Grouptaskid
+     * 商品パワーポイントリストを取得するお客様Grouptaskid
      *
      * @param productPowerDataForCgiDto
      * @return
@@ -245,7 +245,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
 
     /**
-     * 多线程插入pos基本数据
+     * マルチスレッド挿入pos基本データ
      */
     class MyThread implements Runnable {
         private List list;
@@ -288,7 +288,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         ExecutorService executor = Executors.newFixedThreadPool(runSize);
         CountDownLatch begin = new CountDownLatch(1);
         CountDownLatch end = new CountDownLatch(runSize);
-        //循环线程
+        //ループスレッド
         for (int i = 0; i < runSize; i++) {
             if ((i + 1) == runSize) {
                 int startIndex = i * count;
