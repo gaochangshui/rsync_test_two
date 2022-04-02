@@ -101,7 +101,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <!--添加配置跳を過ぎて测试-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -110,13 +109,11 @@
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
-            <!--添加配置跳を過ぎて测试-->
             <plugin>
                     <groupId>org.mybatis.generator</groupId>
                     <artifactId>mybatis-generator-maven-plugin</artifactId>
                     <version>1.4.0</version>
                     <configuration>
-                        <!--配置文件的位置-->
                         <configurationFile>src/main/resources/mybatis-generator-config.xml</configurationFile>
                         <verbose>true</verbose>
                         <overwrite>true</overwrite>

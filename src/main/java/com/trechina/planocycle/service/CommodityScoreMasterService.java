@@ -8,13 +8,13 @@ import java.util.Map;
 
 public interface CommodityScoreMasterService {
     /**
-     * つかむ取企业信息接口
+     * つかむ取企業情報接口
      * @return
      */
     Map<String,Object> getEnterpriseInfo();
 
     /**
-     * つかむ取企业cd关联的商品力点数List接口
+     * つかむ取企業cd关联的商品力点数List接口
      * @param conpanyCd
      * @return
      */
@@ -38,7 +38,7 @@ public interface CommodityScoreMasterService {
 
 
     /**
-     * つかむ取Chanel信息接口
+     * つかむ取Chanel情報接口
      * @return
      */
     Map<String, Object> getChanelInfo();
@@ -49,14 +49,14 @@ public interface CommodityScoreMasterService {
     void productPowerParamAttrName(String conpanyCd, Integer productPowerCd, Map<String, Object> result);
 
     /**
-     * つかむ取商品力点数表的属性和品目信息，用于优先順位表
+     * つかむ取商品力点数表的属性和品目情報，用于优先順位表
      * @param productOrderCd
      * @return
      */
     ProductOrderAttrAndItemVO getAttrAndItmemInfo(String companyCd, Integer productOrderCd);
 
     /**
-     * 削除商品力点数表信息
+     * 削除商品力点数表情報
      * @param productPowerParamMst
      * @return
      */

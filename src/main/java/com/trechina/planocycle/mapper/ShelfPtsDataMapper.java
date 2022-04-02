@@ -148,14 +148,14 @@ public interface ShelfPtsDataMapper {
     Integer getNewId(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
 
-    //削除最终表data
+    //削除最終表data
     int deleteFinalPtsData(@Param("ptsCd")Integer ptsCd);
     int deleteFinalPtsTaimst(@Param("ptsCd")Integer ptsCd);
     int deleteFinalPtsTanamst(@Param("ptsCd")Integer ptsCd);
     int deleteFinalPtsVersion(@Param("ptsCd")Integer ptsCd);
     int deleteFinalPtsDataJandata(@Param("ptsCd")Integer ptsCd);
 
-    //从最终表转到临时表
+    //从最終表移動临时表
     int insertWorkPtsData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
     int insertWorkPtsTaiData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
     int insertWorkPtsTanaData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);

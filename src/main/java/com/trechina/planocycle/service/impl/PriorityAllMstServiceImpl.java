@@ -6,7 +6,7 @@ import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.exception.BussinessException;
+import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -378,7 +378,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             }
         } catch(Exception ex) {
             logger.error("", ex);
-            throw new BussinessException("自动計算失敗");
+            throw new BusinessException("自动計算失敗");
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS, "計算成功しました。");
@@ -460,7 +460,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
         }catch (Exception ex){
             logger.error("全patternの保存に失敗しました:{}", ex);
-            throw new BussinessException(ex.getMessage());
+            throw new BusinessException(ex.getMessage());
         }
 
 
