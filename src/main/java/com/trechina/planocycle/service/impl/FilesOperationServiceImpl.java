@@ -177,7 +177,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     }
 
     private Integer stringToInteger(String str) {
-        return str == null ? null : Integer.valueOf(str);
+        return str == null ? null : Integer.valueOf(str.trim());
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -222,6 +222,10 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                             int lineNum = 1;
                             int titleNum = 0;
                             while ((line = bufferedReader.readLine()) != null) {
+                                if(line.startsWith(",") || line.replaceAll(",*", "").equals("")){
+                                    logger.info("无效的行,{}", line);
+                                    continue;
+                                }
                                 if (lineNum == 1) {
                                     logger.info("第一行信息{}", line);
                                     String[] arr = line.split(",");
