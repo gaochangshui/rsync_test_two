@@ -806,7 +806,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String companyCd = priorityOrderMstVO.getCompanyCd();
         String authorCd = session.getAttribute("aud").toString();
 
-        Integer orderNameCount = priorityOrderMstMapper.selectByOrderName(priorityOrderName, authorCd);
+        Integer orderNameCount = priorityOrderMstMapper.selectByOrderName(priorityOrderName, companyCd, authorCd);
         int isEdit = priorityOrderMstMapper.selectByPriorityOrderCd(priorityOrderCd);
 
         if (isEdit > 0) {

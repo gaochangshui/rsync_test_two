@@ -100,7 +100,7 @@
   </insert>
   <select id="selectByOrderName" resultType="int">
       select count(*) from planocycle.priority_order_mst where priority_order_name=#{priorityOrderName} and deleteflg=0
-    and author_cd=#{authorCd}
+    and author_cd=#{authorCd} and company_cd=#{companyCd}
   </select>
   <select id="selectByPriorityOrderCd" resultType="int">
     select count(*) from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and deleteflg=0
