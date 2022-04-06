@@ -198,7 +198,7 @@
     and not exists (select jan from planocycle.work_priority_order_jan_new jans where mstData.jan = jans.jan_new and  janNews.priority_order_cd = #{item.priorityOrderCd}
         and janNews.company_cd = #{item.companyCd})
     union all
-    select janNew.jan_new,COALESCE(janMst.jan_nm,mstpl.jan_nm),null,COALESCE(janMst.brand,mstpl.brand),
+    select janNew.jan_new,COALESCE(janMst.jan_nm,mstpl.jan_nm) ,null,COALESCE(janMst.brand,mstpl.brand),
     COALESCE(janMst.kikaku,mstpl.kikaku),COALESCE(janMst.pkg,mstpl.pkg),COALESCE(janMst.irisu,mstpl.irisu),COALESCE(janMst.alcohol,mstpl.alcohol)
            ,COALESCE(janMst.scat1cd_val,mstpl.scat1cd_val),COALESCE(janMst.scat2cd_val,mstpl.scat2cd_val),COALESCE(janMst.scat3cd_val,mstpl.scat3cd_val)
          ,COALESCE(janMst.scat4cd_val,mstpl.scat4cd_val),janNew.jan_rank,null,1 as datasort

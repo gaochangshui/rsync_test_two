@@ -29,7 +29,7 @@
         order by tai_cd,tana_cd
     </select>
     <select id="getRestrictJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto">
-        select datas.jan_cd as janCd,COALESCE(jans.jan_nm,mstpl.jan_nm) as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, jans.irisu as zokusei7,COALESCE(jans.pkg,mstpl.pkg) as zokusei5,
+        select datas.jan_cd as janCd,COALESCE(jans.jan_nm,mstpl.jan_nm) as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, COALESCE(jans.irisu,mstpl.irisu) as zokusei7,COALESCE(jans.pkg,mstpl.pkg) as zokusei5,
                COALESCE(jans.alcohol,mstpl.alcohol)  as zokusei8,COALESCE(jans.brand,mstpl.brand) as zokusei9,COALESCE(jans.kikaku,mstpl.kikaku) as zokusei6,
                COALESCE(jans.scat1cd_val,mstpl.scat1cd_val) as zokusei1,COALESCE(jans.scat2cd_val,mstpl.scat2cd_val) as zokusei2,COALESCE(jans.scat3cd_val,mstpl.scat3cd_val) as zokusei3
                ,COALESCE(jans.scat4cd_val,mstpl.scat4cd_val) as zokusei4,
@@ -50,7 +50,7 @@
 
     </select>
     <select id="getPlatformShedJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto">
-        select DISTINCT datas.jan_cd as janCd,COALESCE(jans.jan_nm,mstpl.jan_nm) as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd,  jans.irisu as zokusei7,COALESCE(jans.pkg,mstpl.pkg) as zokusei5,
+        select DISTINCT datas.jan_cd as janCd,COALESCE(jans.jan_nm,mstpl.jan_nm) as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd,  COALESCE(jans.irisu,mstpl.irisu) as zokusei7,COALESCE(jans.pkg,mstpl.pkg) as zokusei5,
                         COALESCE(jans.alcohol,mstpl.alcohol)  as zokusei8,COALESCE(jans.brand,mstpl.brand) as zokusei9,COALESCE(jans.kikaku,mstpl.kikaku) as zokusei6,
                         COALESCE(jans.scat1cd_val,mstpl.scat1cd_val) as zokusei1,COALESCE(jans.scat2cd_val,mstpl.scat2cd_val) as zokusei2,COALESCE(jans.scat3cd_val,mstpl.scat3cd_val) as zokusei3
                 ,COALESCE(jans.scat4cd_val,mstpl.scat4cd_val) as zokusei4,
