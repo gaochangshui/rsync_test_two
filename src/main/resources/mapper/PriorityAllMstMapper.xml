@@ -366,8 +366,53 @@
         and company_cd = #{companyCd,jdbcType=VARCHAR}
         and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
+    <update id="deletePtsVersion">
+        update planocycle.priority_all_pts_data_version set deleteflg = 1 , editer_cd = #{authorCd} , edit_time = now() where priority_all_cd = #{priorityAllCd}
+                                                                                                                               and company_cd = #{companyCd,jdbcType=VARCHAR}
+                                                                                                                               and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </update>
+    <update id="deletePtsRelation">
+        update planocycle.priority_all_restrict_relation set deleteflg = 1 , editer_cd = #{authorCd} , edit_time = now() where priority_all_cd = #{priorityAllCd}
+                                                                                                                      and company_cd = #{companyCd,jdbcType=VARCHAR}
+                                                                                                                      and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </update>
+    <update id="deletePtsData">
+        update planocycle.priority_all_pts_data set deleteflg = 1 , editer_cd = #{authorCd} , edit_time = now() where priority_all_cd = #{priorityAllCd}
+                                                                                                                      and company_cd = #{companyCd,jdbcType=VARCHAR}
+                                                                                                                      and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </update>
+    <update id="deletePtsJans">
+        update planocycle.priority_all_pts_jans set deleteflg = 1 , editer_cd = #{authorCd} , edit_time = now() where priority_all_cd = #{priorityAllCd}
+                                                                                                                      and company_cd = #{companyCd,jdbcType=VARCHAR}
+                                                                                                                      and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </update>
+    <update id="deletePtsTana">
+        update planocycle.priority_all_pts_tana set deleteflg = 1 , editer_cd = #{authorCd} , edit_time = now() where priority_all_cd = #{priorityAllCd}
+                                                                                                                     and company_cd = #{companyCd,jdbcType=VARCHAR}
+                                                                                                                     and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </update>
+    <update id="deletePtsTai">
+        update planocycle.priority_all_pts_tai set deleteflg = 1 , editer_cd = #{authorCd} , edit_time = now() where priority_all_cd = #{priorityAllCd}
+                                                                                                                         and company_cd = #{companyCd,jdbcType=VARCHAR}
+                                                                                                                         and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </update>
+    <update id="deleteResult">
+        update planocycle.priority_all_result_data set deleteflg = 1 , editer_cd = #{authorCd} , edit_time = now() where priority_all_cd = #{priorityAllCd}
+                                                                                                                      and company_cd = #{companyCd,jdbcType=VARCHAR}
+                                                                                                                      and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </update>
+    <update id="deleteRestrict">
+        update planocycle.priority_all_restrict  set deleteflg = 1 , editer_cd = #{authorCd} , edit_time = now() where priority_all_cd = #{priorityAllCd}
+                                                                    and company_cd = #{companyCd,jdbcType=VARCHAR}
+                                                                    and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </update>
+    <update id="deleteShelfs">
+        update planocycle.priority_all_shelfs set deleteflg = 1 , editer_cd = #{authorCd} , edit_time = now() where priority_all_cd = #{priorityAllCd}
+                                                                  and company_cd = #{companyCd,jdbcType=VARCHAR}
+                                                                  and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </update>
     <update id="deleteMst">
-        update planocycle.priority_all_mst set deleteflg = 1 where priority_all_cd = #{priorityAllCd}
+        update planocycle.priority_all_mst set deleteflg = 1 , editer_cd = #{authorCd} , edit_time = now() where priority_all_cd = #{priorityAllCd}
                                                                and company_cd = #{companyCd,jdbcType=VARCHAR}
                                                                and author_cd = #{authorCd,jdbcType=VARCHAR}
     </update>

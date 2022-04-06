@@ -498,8 +498,18 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         Integer priorityAllCd = priorityAllSaveDto.getPriorityAllCd();
         try {
             priorityAllMstMapper.deleteMst(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deleteShelfs(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deleteRestrict(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deleteResult(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deletePtsTai(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deletePtsTana(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deletePtsJans(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deletePtsData(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deletePtsRelation(companyCd,priorityAllCd,aud);
+            priorityAllMstMapper.deletePtsVersion(companyCd,priorityAllCd,aud);
         } catch (Exception e) {
             logger.error("全patternの削除に失敗しました:{}",e.getMessage());
+            return ResultMaps.result(ResultEnum.FAILURE);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
