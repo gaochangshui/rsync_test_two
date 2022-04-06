@@ -29,6 +29,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +61,8 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     private ShelfPtsDataTanamstMapper shelfPtsDataTanamstMapper;
     @Autowired
     private ShelfPtsDataJandataMapper shelfPtsDataJandataMapper;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     /**
      * 単一ファイルのアップロード
@@ -180,7 +183,6 @@ public class FilesOperationServiceImpl implements FilesOperationService {
         return str == null ? null : Integer.valueOf(str.trim());
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> csvUploadMulti(MultipartFile[] multipartFileList, String path, String companyCd, String projectIds,
                                               String bucketNames) {
@@ -288,18 +290,8 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                             Map<String, Object> res = shelfPtsService.setShelfPtsInfo(shelfPtsDto, 0);
                             Integer ptsId = (Integer) res.get("data");
                             ptsDataVersion.setPtsCd(ptsId);
-                            shelfPtsDataVersionMapper.insert(ptsDataVersion);
-                            List<ShelfPtsDataTaimst> dataTaimstList = convertArrayToTaimstList(arrList1, ptsId, companyCd, authorCd, now);
-
-                            List<ShelfPtsDataTanamst> dataTanamstList = convertArrayToTanamstList(arrList2, ptsId, companyCd, authorCd, now);
-
-                            List<ShelfPtsDataJandata> dataJandataList = convertArrayToJanList(arrList3, ptsId, companyCd, authorCd, now);
-
-                            shelfPtsDataTaimstMapper.insertAll(dataTaimstList);
-
-                            shelfPtsDataTanamstMapper.insertAll(dataTanamstList);
-
-                            shelfPtsDataJandataMapper.insertAll(dataJandataList);
+                            FilesOperationService filesOperationService = applicationContext.getBean(FilesOperationService.class);
+                            filesOperationService.savePtsData(ptsDataVersion, arrList1, arrList2, arrList3, ptsId, companyCd, authorCd, now);
 
                             // idを返す
                             String uuid = UUID.randomUUID().toString();
@@ -349,6 +341,24 @@ public class FilesOperationServiceImpl implements FilesOperationService {
             }
 
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void savePtsData(ShelfPtsDataVersion ptsDataVersion, List<String[]> arrList1,
+                            List<String[]> arrList2, List<String[]> arrList3, Integer ptsId, String companyCd, String authorCd, Date now){
+        shelfPtsDataVersionMapper.insert(ptsDataVersion);
+        List<ShelfPtsDataTaimst> dataTaimstList = convertArrayToTaimstList(arrList1, ptsId, companyCd, authorCd, now);
+
+        List<ShelfPtsDataTanamst> dataTanamstList = convertArrayToTanamstList(arrList2, ptsId, companyCd, authorCd, now);
+
+        List<ShelfPtsDataJandata> dataJandataList = convertArrayToJanList(arrList3, ptsId, companyCd, authorCd, now);
+
+        shelfPtsDataTaimstMapper.insertAll(dataTaimstList);
+
+        shelfPtsDataTanamstMapper.insertAll(dataTanamstList);
+
+        shelfPtsDataJandataMapper.insertAll(dataJandataList);
     }
 
     /**
