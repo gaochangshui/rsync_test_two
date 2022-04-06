@@ -279,7 +279,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                             field.setAccessible(true);
                             field.set(item,wkYobiiiternData.getDataValue());
                         } catch (NoSuchFieldException | IllegalAccessException e) {
-                            e.printStackTrace();
+                            logger.error("", e);
                         }
 
                     }
@@ -297,14 +297,11 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             Method setMethod = clazz.getMethod("set"+column+"Rank", Integer.class);
             Method rClassMethod = rClass.getMethod("get"+column);
             if ( 0!=(Integer) rClassMethod.invoke(rankCalculateVo)) {
-                Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
-                    @Override
-                    public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
-                        try {
-                            return new BigDecimal(String.valueOf(getMethod.invoke(o2))).compareTo(new BigDecimal(String.valueOf(getMethod.invoke(o1))));
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            return 0;
-                        }
+                Collections.sort(productPowerMstDataList, (o1, o2) -> {
+                    try {
+                        return new BigDecimal(String.valueOf(getMethod.invoke(o2))).compareTo(new BigDecimal(String.valueOf(getMethod.invoke(o1))));
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        return 0;
                     }
                 });
                 int j = 0;
