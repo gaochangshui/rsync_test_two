@@ -160,7 +160,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             field.setAccessible(true);
                             field.set(item, wkYobiiiternData.getDataValue());
                         } catch (NoSuchFieldException | IllegalAccessException e) {
-                            e.printStackTrace();
+                            logger.error("", e);
                         }
 
                     }
