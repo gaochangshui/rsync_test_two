@@ -29,9 +29,10 @@
         order by tai_cd,tana_cd
     </select>
     <select id="getRestrictJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto">
-        select datas.jan_cd as janCd,jans.jan_nm as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, jans.irisu as zokusei7,jans.pkg as zokusei5,
-               jans.alcohol as zokusei8,jans.brand as zokusei9,jans.kikaku as zokusei6,
-               jans.scat1cd_val as zokusei1,jans.scat2cd_val as zokusei2,jans.scat3cd_val as zokusei3,jans.scat4cd_val as zokusei4,
+        select datas.jan_cd as janCd,COALESCE(jans.jan_nm,mstpl.jan_nm) as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, jans.irisu as zokusei7,COALESCE(jans.pkg,mstpl.pkg) as zokusei5,
+               COALESCE(jans.alcohol,mstpl.alcohol)  as zokusei8,COALESCE(jans.brand,mstpl.brand) as zokusei9,COALESCE(jans.kikaku,mstpl.kikaku) as zokusei6,
+               COALESCE(jans.scat1cd_val,mstpl.scat1cd_val) as zokusei1,COALESCE(jans.scat2cd_val,mstpl.scat2cd_val) as zokusei2,COALESCE(jans.scat3cd_val,mstpl.scat3cd_val) as zokusei3
+               ,COALESCE(jans.scat4cd_val,mstpl.scat4cd_val) as zokusei4,
                datas.tana_type as restrictType,sku_rank as rank,datas.face_fact as faceNum
         from  planocycle.work_priority_order_result_data datas
                 left join planocycle.work_priority_order_restrict_result rmst
@@ -40,6 +41,8 @@
                             and rmst.priority_order_cd = #{item.priorityOrderCd}
                 left join masterdb.jan_mst jans
                         on jans.jan_cd = datas.jan_cd
+                left join masterdb.jan_mst_planocycle mstpl
+                          on mstpl.jan_cd = datas.jan_cd
 
             where   datas.restrict_cd = #{item.restrictCd} and datas.company_cd = #{item.companyCd} and datas.author_cd = #{authorCd} and datas.adopt_flag=1
             and datas.priority_order_cd = #{item.priorityOrderCd}
@@ -47,15 +50,18 @@
 
     </select>
     <select id="getPlatformShedJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto">
-        select DISTINCT datas.jan_cd as janCd,jans.jan_nm as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, jans.irisu as zokusei7,jans.pkg as zokusei5,
-               jans.alcohol as zokusei8,jans.brand as zokusei9,jans.kikaku as zokusei6,
-               jans.scat1cd_val as zokusei1,jans.scat2cd_val as zokusei2,jans.scat3cd_val as zokusei3,jans.scat4cd_val as zokusei4,
+        select DISTINCT datas.jan_cd as janCd,COALESCE(jans.jan_nm,mstpl.jan_nm) as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd,  jans.irisu as zokusei7,COALESCE(jans.pkg,mstpl.pkg) as zokusei5,
+                        COALESCE(jans.alcohol,mstpl.alcohol)  as zokusei8,COALESCE(jans.brand,mstpl.brand) as zokusei9,COALESCE(jans.kikaku,mstpl.kikaku) as zokusei6,
+                        COALESCE(jans.scat1cd_val,mstpl.scat1cd_val) as zokusei1,COALESCE(jans.scat2cd_val,mstpl.scat2cd_val) as zokusei2,COALESCE(jans.scat3cd_val,mstpl.scat3cd_val) as zokusei3
+                ,COALESCE(jans.scat4cd_val,mstpl.scat4cd_val) as zokusei4,
                datas.tana_type as restrictType,sku_rank as rank,datas.face_fact as faceNum
         from  planocycle.work_priority_order_result_data datas
                   left join planocycle.work_priority_order_restrict_result rmst
                             on rmst.restrict_cd = datas.restrict_cd
                   left join masterdb.jan_mst jans
                             on jans.jan_cd = datas.jan_cd
+                  left join masterdb.jan_mst_planocycle mstpl
+                            on mstpl.jan_cd = datas.jan_cd
         where datas.tai_cd = #{item.taiCd} and datas.tana_cd = #{item.tanaCd} and datas.tana_type = #{item.tanaType}
         and datas.company_cd = #{item.companyCd} and datas.author_cd =#{authorCd} and datas.priority_order_cd = #{item.priorityOrderCd}
         order by sku_rank

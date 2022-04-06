@@ -52,7 +52,7 @@
                  lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0'),
                  lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0') || '_' || lpad(trim(#{item.zokusei3}),4,'0'),
                  <choose>
-                     <when test="item.zokusei4 != null and item.zokusei4 != item.zokusei4">
+                     <when test="item.zokusei4 != null and item.zokusei4 != ''">
                          lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0') || '_' || lpad(trim(#{item.zokusei3}),4,'0') || '_' || lpad(trim(#{item.zokusei4}),4,'0')
 
                      </when>
