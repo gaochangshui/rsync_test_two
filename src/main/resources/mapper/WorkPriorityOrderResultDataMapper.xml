@@ -333,10 +333,12 @@
     select restrict_cd restrictCd,tai_cd taiCd,tana_cd tanaCd,tana_type tanaType,sku_rank skuRank,
     COALESCE(jan.irisu, jan2.irisu) irisu,data.jan_cd janCd,
     face_sku faceSku,face_keisan faceKeisan,face,adopt_flag adoptFlag,
-    COALESCE(jan.width, jan2.width) as janWidth,COALESCE(jan.height, jan2.height) janHeight, sort_rank sortRank
+    COALESCE(jan.width, jan2.width) as janWidth,COALESCE(jan.height, jan2.height) janHeight, sort_rank sortRank,
+    case when jan3.jan_new is null then 2 else 1 end newRank
     from planocycle.work_priority_order_result_data data
     left join masterdb.jan_mst jan on data.jan_cd=jan.jan_cd
     left join masterdb.jan_mst_planocycle jan2 on data.jan_cd=jan2.jan_cd and jan2.company_cd=#{companyCd}
+    left join planocycle.work_priority_order_jan_new jan3 on data.jan_cd=jan3.jan_new
     where data.company_cd=#{companyCd} and data.author_cd=#{authorCd} and data.priority_order_cd=#{priorityOrderCd}
   </select>
   <update id="updateTaiTanaBatch">

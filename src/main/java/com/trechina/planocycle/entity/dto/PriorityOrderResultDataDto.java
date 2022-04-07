@@ -11,6 +11,8 @@ public class PriorityOrderResultDataDto {
 
     private Long skuRank;
 
+    private Long newRank;
+
     private Long sortRank;
 
     private Integer adoptFlag;
@@ -36,6 +38,14 @@ public class PriorityOrderResultDataDto {
 
     private Long janWidth;
     private Long janHeight;
+
+    public Long getNewRank() {
+        return newRank;
+    }
+
+    public void setNewRank(Long newRank) {
+        this.newRank = newRank;
+    }
 
     public Long getFaceFact() {
         return faceFact;
