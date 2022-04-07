@@ -362,7 +362,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
 
                 List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityAllRestrictRelationMapper.selectByAuthorCd(companyCd, priorityAllCd, authorCd, pattern.getShelfPatternCd());
-                List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityAllResultDataMapper.getResultJans(companyCd, priorityAllCd,authorCd,pattern.getShelfPatternCd());
+                List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityAllResultDataMapper.getResultJans(companyCd, priorityAllCd,authorCd,pattern.getShelfPatternCd(), priorityOrderCd);
                 List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(pattern.getShelfPatternCd());
 
                 Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
