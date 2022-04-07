@@ -131,4 +131,7 @@ public interface ProductPowerDataMapper {
     Integer getParamCount(ProductPowerGroupDataForCgiDto productPowerParamVo);
 
     List<ReserveMstVo> getReserve(@Param("productPowerCd") Integer productPowerCd, @Param("companyCd") String companyCd);
+
+    List<ReserveMstVo> getCheckedReserve(@Param("productPowerCd") Integer productPowerCd, @Param("companyCd") String companyCd,
+             @Param("checkedCodeList") String[] checkedCodeList);
 }

@@ -184,7 +184,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         }
 
         if(!Strings.isNullOrEmpty(prepareValue)){
-            List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(productPowerCd, companyCd);
+            String[] prepareValues = prepareValue.split(",");
+            List<ReserveMstVo> reserve = productPowerDataMapper.getCheckedReserve(productPowerCd, companyCd, prepareValues);
             for (ReserveMstVo reserveMstVo : reserve) {
                 List<String> customer = headersByClassify.get(ProductPowerHeaderEnum.PREPARE.getName());
                 customer.add(reserveMstVo.getDataName());
