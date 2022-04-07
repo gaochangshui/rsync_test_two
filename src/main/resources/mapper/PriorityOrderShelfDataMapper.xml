@@ -25,6 +25,7 @@
             GROUP BY tai_cd,tana_cd,tana_type) datas
 
                            on datas.tai_cd = relation.tai_cd and datas.tana_cd = relation.tana_cd and relation.tana_type = datas.tana_type
+
         where  relation.company_cd = #{companyCd} and relation.author_cd = #{authorCd} and relation.priority_order_cd =#{priorityOrderCd}
         order by tai_cd,tana_cd
     </select>
@@ -33,7 +34,7 @@
                COALESCE(jans.alcohol,mstpl.alcohol)  as zokusei8,COALESCE(jans.brand,mstpl.brand) as zokusei9,COALESCE(jans.kikaku,mstpl.kikaku) as zokusei6,
                COALESCE(jans.scat1cd_val,mstpl.scat1cd_val) as zokusei1,COALESCE(jans.scat2cd_val,mstpl.scat2cd_val) as zokusei2,COALESCE(jans.scat3cd_val,mstpl.scat3cd_val) as zokusei3
                ,COALESCE(jans.scat4cd_val,mstpl.scat4cd_val) as zokusei4,
-               datas.tana_type as restrictType,sku_rank as rank,datas.face_fact as faceNum
+               datas.tana_type as restrictType,sku_rank as rank,datas.face_fact as faceNum, case when janNew.jan_new is null then 2 else 1 end newRank
         from  planocycle.work_priority_order_result_data datas
                 left join planocycle.work_priority_order_restrict_result rmst
                         on rmst.restrict_cd = datas.restrict_cd
@@ -43,10 +44,11 @@
                         on jans.jan_cd = datas.jan_cd
                 left join masterdb.jan_mst_planocycle mstpl
                           on mstpl.jan_cd = datas.jan_cd
-
+                left join planocycle.work_priority_order_jan_new janNew
+                            on datas.jan_cd = janNew.jan_new and janNew.priority_order_cd = datas.priority_order_cd and datas.company_cd = janNew.company_cd
             where   datas.restrict_cd = #{item.restrictCd} and datas.company_cd = #{item.companyCd} and datas.author_cd = #{authorCd} and datas.adopt_flag=1
             and datas.priority_order_cd = #{item.priorityOrderCd}
-            order by sku_rank
+            order by sku_rank,newRank
 
     </select>
     <select id="getPlatformShedJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto">
@@ -54,7 +56,7 @@
                         COALESCE(jans.alcohol,mstpl.alcohol)  as zokusei8,COALESCE(jans.brand,mstpl.brand) as zokusei9,COALESCE(jans.kikaku,mstpl.kikaku) as zokusei6,
                         COALESCE(jans.scat1cd_val,mstpl.scat1cd_val) as zokusei1,COALESCE(jans.scat2cd_val,mstpl.scat2cd_val) as zokusei2,COALESCE(jans.scat3cd_val,mstpl.scat3cd_val) as zokusei3
                 ,COALESCE(jans.scat4cd_val,mstpl.scat4cd_val) as zokusei4,
-               datas.tana_type as restrictType,sku_rank as rank,datas.face_fact as faceNum
+               datas.tana_type as restrictType,sku_rank as rank,datas.face_fact as faceNum,case when janNew.jan_new is null then 2 else 1 end newRank
         from  planocycle.work_priority_order_result_data datas
                   left join planocycle.work_priority_order_restrict_result rmst
                             on rmst.restrict_cd = datas.restrict_cd
@@ -62,8 +64,10 @@
                             on jans.jan_cd = datas.jan_cd
                   left join masterdb.jan_mst_planocycle mstpl
                             on mstpl.jan_cd = datas.jan_cd
+                  left join planocycle.work_priority_order_jan_new janNew
+                            on datas.jan_cd = janNew.jan_new and janNew.priority_order_cd = datas.priority_order_cd and datas.company_cd = janNew.company_cd
         where datas.tai_cd = #{item.taiCd} and datas.tana_cd = #{item.tanaCd} and datas.tana_type = #{item.tanaType}
         and datas.company_cd = #{item.companyCd} and datas.author_cd =#{authorCd} and datas.priority_order_cd = #{item.priorityOrderCd}
-        order by sku_rank
+        order by sku_rank,newRank
     </select>
 </mapper>

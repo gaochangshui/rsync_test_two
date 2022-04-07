@@ -98,12 +98,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         //ユーザーIDの取得
         String authorCd = session.getAttribute("aud").toString();
-        if (!taskID.equals("1")) {
+        if (!"1".equals(taskID)) {
 
             List strList = new ArrayList();
             // taskIdを持って、再度cgiに運転状態/データの取得を要求する
             Map<String, Object> data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
-            if (data.get("data").equals("9")){
+            if ("9".equals(data.get("data"))){
                 return data;
             }
             logger.info("商品力点数表web版cgi返回数据：{}", data);
