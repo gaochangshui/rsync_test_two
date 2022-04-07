@@ -231,7 +231,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
         }
         logger.info("attrList:{}", attrList);
-        Collections.sort(attrList, (o1, o2) -> o2.getExistingZoning().compareTo(o1.getExistingZoning()));
+        attrList.sort((o1, o2) -> o2.getExistingZoning().compareTo(o1.getExistingZoning()));
         int i = 1;
         for (PriorityOrderAttrVO priorityOrderAttrVO : attrList) {
             priorityOrderAttrVO.setRank(i++);

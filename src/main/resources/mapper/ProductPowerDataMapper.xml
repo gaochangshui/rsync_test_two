@@ -413,6 +413,7 @@
         select jan,sku_name,pos_amount,classify_big,classify_middle,classify_small,classify_fine,
                pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num
         from planocycle.work_product_power_syokika where company_cd=#{companyCd} and author_cd=#{authorCd}
+        order by jan
     </select>
     <select id="selectWKKokyaku" resultMap="allMap">
         select s.jan as jan,s.sku_name as skuName,k.pos_amount as gPosAmount,k.pos_num as gPosNum,k.branch_amount as gBranchAmount,
@@ -425,6 +426,7 @@
         from  planocycle.work_product_power_syokika s left join planocycle.work_product_power_kokyaku k
                 on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd
         where  s.author_cd=#{authorCd} and s.company_cd = #{companyCd}
+        order by jan
     </select>
     <select id="getProductPowerMstData" resultType="com.trechina.planocycle.entity.po.ProductPowerMstData">
         select * from planocycle.product_power_mst_data where company_cd=#{companyCd} and product_power_cd=#{productPowerCd} and deleteflg=0

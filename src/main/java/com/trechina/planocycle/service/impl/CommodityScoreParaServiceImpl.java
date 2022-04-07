@@ -297,7 +297,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             Method setMethod = clazz.getMethod("set"+column+"Rank", Integer.class);
             Method rClassMethod = rClass.getMethod("get"+column);
             if ( 0!=(Integer) rClassMethod.invoke(rankCalculateVo)) {
-                Collections.sort(productPowerMstDataList, (o1, o2) -> {
+                productPowerMstDataList.sort((o1, o2) -> {
                     try {
                         return new BigDecimal(String.valueOf(getMethod.invoke(o2))).compareTo(new BigDecimal(String.valueOf(getMethod.invoke(o1))));
                     } catch (IllegalAccessException | InvocationTargetException e) {
@@ -355,16 +355,10 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
 
 
-            Collections.sort(productPowerMstDataList, new Comparator<ProductPowerMstData>() {
-                @Override
-                public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
-
-                    return o1.getRankNum().compareTo(o2.getRankNum());
-                }
-            });
+            productPowerMstDataList.sort(Comparator.comparing(ProductPowerMstData::getRankNum).thenComparing(ProductPowerMstData::getJan));
         int i = 0 ;
         int x = 0;
-        if (productPowerMstDataList.size()>0) {
+        if (!productPowerMstDataList.isEmpty()) {
             for (ProductPowerMstData productPowerMstData : productPowerMstDataList) {
                 if (x==productPowerMstData.getRankNum()) {
                     productPowerMstData.setRankResult(i);
