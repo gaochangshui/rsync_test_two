@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 @SpringBootTest
@@ -55,22 +54,19 @@ public class MethodTests {
         Method setMethod = clazz.getMethod("set" + column + "Rank");
 
 
-        Collections.sort(dataList, new Comparator<ProductPowerMstData>() {
-            @Override
-            public int compare(ProductPowerMstData o1, ProductPowerMstData o2) {
-                try {
-                    return new BigDecimal(String.valueOf(getMethod.invoke(o1))).compareTo(new BigDecimal(String.valueOf(getMethod.invoke(o2))));
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    logger.error("", e);
-                    return 0;
-                }
+        dataList.sort((o1, o2) -> {
+            try {
+                return new BigDecimal(String.valueOf(getMethod.invoke(o1))).compareTo(new BigDecimal(String.valueOf(getMethod.invoke(o2))));
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                logger.error("", e);
+                return 0;
             }
         });
 
 
         int i = 1;
         for (ProductPowerMstData productPowerMstData : dataList) {
-            setMethod.invoke(productPowerMstData, i + 1);
+            setMethod.invoke(productPowerMstData, i+1);
         }
     }
 

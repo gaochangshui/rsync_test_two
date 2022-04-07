@@ -9,6 +9,7 @@ import com.trechina.planocycle.service.PriorityOrderShelfDataService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
@@ -158,6 +159,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
      * @param priorityOrderRestrictJanDto
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setFaceNumForData(List<PriorityOrderRestrictJanDto> priorityOrderRestrictJanDto) {
         String authorCd = session.getAttribute("aud").toString();

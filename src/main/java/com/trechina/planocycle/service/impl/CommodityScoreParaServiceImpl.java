@@ -187,6 +187,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      * @param productPowerReserveMst
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> delYoBi(ProductPowerReserveMst productPowerReserveMst) {
         //ProductPowerReservの処理
@@ -229,6 +230,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         return result;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd,String dataName,Integer valueCd) {
         //
@@ -260,6 +262,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      * @param rankCalculateVo
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> rankCalculate(RankCalculateVo rankCalculateVo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String authorCd = session.getAttribute("aud").toString();
@@ -391,6 +394,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerMstDataList);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> deleteReserve(JSONObject jsonObject) {
         String aud = session.getAttribute("aud").toString();

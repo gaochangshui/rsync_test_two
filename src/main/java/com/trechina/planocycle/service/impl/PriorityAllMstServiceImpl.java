@@ -66,6 +66,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      *
      * @param jsonObject@return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> addPriorityAllData(JSONObject jsonObject) {
         try{

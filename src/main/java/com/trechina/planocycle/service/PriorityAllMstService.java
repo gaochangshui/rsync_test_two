@@ -36,7 +36,11 @@ public interface PriorityAllMstService {
      */
     Integer saveWKAllPatternData(PriorityAllSaveDto priorityAllSaveDto);
 
-
+    /**
+     * 自動計算Main api③
+     * @param priorityAllSaveDto
+     * @return
+     */
     Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto);
 
 

@@ -91,6 +91,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      * @param shelfPtsDto
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setShelfPtsInfo(ShelfPtsDto shelfPtsDto, Integer flg) {
         String authorCd = httpSession.getAttribute("aud").toString();
@@ -217,6 +218,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      * @param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> delShelfPtsInfo(JSONObject jsonObject) {
         if (((Map) jsonObject.get("param")).get("id") != null) {
@@ -324,6 +326,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      * @param workPriorityOrderSort
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setDisplay(List<WorkPriorityOrderSort> workPriorityOrderSort) {
         String aud = httpSession.getAttribute("aud").toString();

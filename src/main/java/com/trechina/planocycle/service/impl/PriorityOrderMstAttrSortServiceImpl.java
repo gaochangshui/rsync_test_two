@@ -240,6 +240,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         return ResultMaps.result(ResultEnum.SUCCESS, attrList);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setAttribute(PriorityOrderSpaceDto dto) {
 
@@ -343,7 +344,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         return restrictSetList;
     }
 
-
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public List<WorkPriorityOrderRestrictSet> setRestrict(List<PriorityOrderAttrVO> dataList, List<ShelfPtsDataTanamst> ptsDataTanamstList, List<ShelfPtsDataTanaCount> tanaCountList,
                                                           Short attr1, Short attr2, String companyCd, String authorCd, Integer priorityOrderCd)

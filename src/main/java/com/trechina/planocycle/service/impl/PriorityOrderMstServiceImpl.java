@@ -182,6 +182,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      * @param priorityOrderCd
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> preCalculation(String companyCd, Long patternCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         int isUnset = 0;
@@ -716,6 +717,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      * @throws InvocationTargetException
      * @throws IllegalAccessException
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Integer id = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);

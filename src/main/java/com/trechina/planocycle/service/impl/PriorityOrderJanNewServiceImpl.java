@@ -210,6 +210,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      * @param janMstPlanocycleVo
      * @return
      */
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setJanNewInfo(List<JanMstPlanocycleVo> janMstPlanocycleVo) {
         String companyCd = janMstPlanocycleVo.get(0).getCompanyCd();

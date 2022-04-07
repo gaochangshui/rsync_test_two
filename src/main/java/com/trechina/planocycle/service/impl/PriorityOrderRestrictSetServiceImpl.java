@@ -9,6 +9,7 @@ import com.trechina.planocycle.service.PriorityOrderRestrictSetService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
@@ -28,6 +29,7 @@ public class PriorityOrderRestrictSetServiceImpl implements PriorityOrderRestric
      * @param priorityOderAttrSet
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderRestrict(PriorityOderAttrSet priorityOderAttrSet) {
         String authorCd = session.getAttribute("aud").toString();
