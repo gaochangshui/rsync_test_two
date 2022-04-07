@@ -521,6 +521,15 @@
         where company_cd=#{companyCd} and product_power_cd = #{productPowerCd}
         order by data_sort asc
     </select>
+    <select id="getCheckedReserve" resultMap="reserveMap">
+        select data_cd,data_name from planocycle.product_power_reserve_mst
+        where company_cd=#{companyCd} and product_power_cd = #{productPowerCd}
+        and data_cd in
+        <foreach collection="checkedCodeList" index="index" item="item" open="(" close=")" separator=",">
+            #{item}::Integer
+        </foreach>
+        order by data_sort asc
+    </select>
     <select id="getParamCount" resultType="java.lang.Integer">
         select count(1)
         from planocycle.product_power_param_mst
@@ -533,8 +542,6 @@
           and season_flag = #{seasonFlag}
           and season_end_time = #{seasonEndTime}
           and season_st_time = #{seasonStTime}
-
     </select>
-
 
 </mapper>

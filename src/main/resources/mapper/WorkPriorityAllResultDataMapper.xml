@@ -29,7 +29,8 @@
         from planocycle.work_priority_all_result_data data
         left join masterdb.jan_mst jan on data.jan_cd=jan.jan_cd
         left join masterdb.jan_mst_planocycle jan2 on data.jan_cd=jan2.jan_cd
-        left join planocycle.work_priority_order_jan_new jan3 on data.jan_cd=jan3.jan_new
+        left join planocycle.priority_order_jan_new jan3 on data.jan_cd=jan3.jan_new  and jan3.priority_order_cd=#{priorityOrderCd}
+        and jan3.company_cd=#{companyCd}
         where data.company_cd=#{companyCd} and data.author_cd=#{authorCd} and priority_all_cd=#{priorityAllCd}
         and shelf_patten_cd=#{patternCd}
     </select>
