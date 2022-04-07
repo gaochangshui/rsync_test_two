@@ -70,7 +70,8 @@ public class CommonMstServiceImpl implements CommonMstService {
             relationSorted = workPriorityOrderResultData
                     .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
                     .sorted(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank, Comparator.nullsFirst(Long::compareTo))
-                            .thenComparingLong(PriorityOrderResultDataDto::getSortRank)).collect(Collectors.toList());
+                            .thenComparingLong(PriorityOrderResultDataDto::getSortRank)
+                            .thenComparingLong(PriorityOrderResultDataDto::getNewRank)).collect(Collectors.toList());
 
             relationValue = relationEntry.getValue();
             for (WorkPriorityOrderRestrictRelation workPriorityOrderRestrictRelation : relationValue) {
