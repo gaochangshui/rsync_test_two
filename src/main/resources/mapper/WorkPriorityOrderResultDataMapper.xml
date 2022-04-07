@@ -339,7 +339,7 @@
     left join masterdb.jan_mst jan on data.jan_cd=jan.jan_cd
     left join masterdb.jan_mst_planocycle jan2 on data.jan_cd=jan2.jan_cd and jan2.company_cd=#{companyCd}
     left join planocycle.work_priority_order_jan_new jan3 on data.jan_cd=jan3.jan_new and data.priority_order_cd=jan3.priority_order_cd
-    and jan3.company_cd=#{companyCd}
+    and jan3.company_cd=data.company_cd
     where data.company_cd=#{companyCd} and data.author_cd=#{authorCd} and data.priority_order_cd=#{priorityOrderCd}
   </select>
   <update id="updateTaiTanaBatch">
