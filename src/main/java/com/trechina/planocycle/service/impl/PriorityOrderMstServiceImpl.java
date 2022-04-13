@@ -440,7 +440,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
         String[] array = resultDataList.split(",");
         //cgiを呼び出す
-        Map<String, Object> data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd);
+        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
+        Map<String, Object> data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd,tokenInfo);
         if (data.get("data") != null && data.get("data") != "") {
             String[] strResult = data.get("data").toString().split("@");
             String[] strSplit = null;
@@ -614,7 +615,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
     @Override
-    public Map<String, Object> getFaceKeisanForCgi(String[] array, String companyCd, Integer shelfPatternNo, String authorCd) {
+    public Map<String, Object> getFaceKeisanForCgi(String[] array, String companyCd, Integer shelfPatternNo, String authorCd,String tokenInfo) {
         PriorityOrderJanCgiDto priorityOrderJanCgiDto = new PriorityOrderJanCgiDto();
         priorityOrderJanCgiDto.setDataArray(array);
         String uuid = UUID.randomUUID().toString();
@@ -626,7 +627,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         logger.info("計算給FaceKeisancgi的参数{}", priorityOrderJanCgiDto);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("PriorityOrderData");
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
+
         Map<String, Object> resultCgi = null;
         //再帰的にcgiを呼び出して、まずtaskidに行きます
         String result = cgiUtil.postCgi(path, priorityOrderJanCgiDto, tokenInfo);

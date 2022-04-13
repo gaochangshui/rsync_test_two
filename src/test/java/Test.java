@@ -1,10 +1,13 @@
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+
+@SpringBootTest
 public class Test {
     private static Logger logger = LoggerFactory.getLogger(Test.class);
 
@@ -27,6 +30,7 @@ public class Test {
 
         }
     }
+
 
 
 }

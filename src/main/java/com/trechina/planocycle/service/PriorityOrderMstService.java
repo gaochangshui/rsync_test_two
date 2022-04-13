@@ -68,7 +68,7 @@ public interface PriorityOrderMstService {
      */
     void deleteWorkTable(String companyCd,Integer priorityOrderCd);
 
-    Map<String,Object> getFaceKeisanForCgi(String[]array,String companyCd,Integer shelfPatternNo,String authorCd);
+    Map<String,Object> getFaceKeisanForCgi(String[]array,String companyCd,Integer shelfPatternNo,String authorCd,String tokenInfo);
 
     /**
      * 最終保存

@@ -62,6 +62,16 @@ public class PriorityAllMstController {
         }
     }
 
+    /**
+     * 查看自动计算执行状态
+     * @param taskId
+     * @return
+     */
+    @GetMapping("/returnAutoCalculationState")
+    public Map<String, Object> returnAutoCalculationState(String taskId){
+        return priorityAllMstService.returnAutoCalculationState(taskId);
+    }
+
 
 
     /**

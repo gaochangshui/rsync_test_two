@@ -10,10 +10,12 @@ import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
+import com.trechina.planocycle.utils.VehicleNumCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +60,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     private ProductPowerMstMapper productPowerMstMapper;
     @Autowired
     private PriorityAllNumGeneratorMapper priorityAllNumGeneratorMapper;
+    @Autowired
+    private ThreadPoolTaskExecutor executor;
+    @Autowired
+    private  VehicleNumCache vehicleNumCache;
     @Value("${skuPerPattan}")
     private Long skuCountPerPattan;
 
@@ -246,9 +252,15 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         //          制約別のtana_cntの降順で制約別tana_cnt＋１
         //          残り棚数が0の場合、終了 ❊ループが終了し、残棚数が残す場合は存在しないはず
         // 基本パターンに紐付け棚パターンCDをもらう
+        String uuid = UUID.randomUUID().toString();
+        String authorCd = session.getAttribute("aud").toString();
+        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
+        executor.execute(()->{
+
+
         Integer basicPatternCd;
         BigDecimal basicTannaNum;
-        String authorCd = session.getAttribute("aud").toString();
+
         String companyCd = priorityAllSaveDto.getCompanyCd();
         Integer priorityAllCd = priorityAllSaveDto.getPriorityAllCd();
         Integer priorityOrderCd = priorityAllSaveDto.getPriorityOrderCd();
@@ -290,11 +302,11 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 //pattern対応janの取得
                 String resultDataList = workPriorityAllResultDataMapper.getJans(pattern.getShelfPatternCd(), companyCd, priorityAllCd,authorCd);
                 if (resultDataList == null) {
-                    return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
+                    vehicleNumCache.put("janIsNull");
                 }
                 String[] array = resultDataList.split(",");
                 //smtを呼び出して推奨face数を計算する
-                Map<String, Object> data = priorityOrderMstService.getFaceKeisanForCgi(array, companyCd,  pattern.getShelfPatternCd(), authorCd);
+                Map<String, Object> data = priorityOrderMstService.getFaceKeisanForCgi(array, companyCd,  pattern.getShelfPatternCd(), authorCd,tokenInfo);
                 if (data.get("data") != null && data.get("data") != "") {
                     String[] strResult = data.get("data").toString().split("@");
                     String[] strSplit = null;
@@ -383,10 +395,28 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             }
         } catch(Exception ex) {
             logger.error("", ex);
+            vehicleNumCache.put("IO");
             throw new BusinessException("自動計算失敗");
+        }finally {
+            vehicleNumCache.put(uuid);
         }
+        });
+        return ResultMaps.result(ResultEnum.SUCCESS, uuid);
+    }
 
-        return ResultMaps.result(ResultEnum.SUCCESS, "計算成功しました。");
+    @Override
+    public Map<String, Object> returnAutoCalculationState(String taskId) {
+        if (vehicleNumCache.get("janIsNull")!=null){
+            return ResultMaps.result(ResultEnum.JANNOTESISTS);
+        }
+        if (vehicleNumCache.get("IO")!=null){
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
+       if (vehicleNumCache.get(taskId) != null){
+
+           return ResultMaps.result(ResultEnum.SUCCESS,"success");
+       }
+        return ResultMaps.result(ResultEnum.SUCCESS,"9");
     }
 
     /**

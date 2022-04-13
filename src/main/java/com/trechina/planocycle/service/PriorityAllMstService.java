@@ -43,6 +43,10 @@ public interface PriorityAllMstService {
      */
     Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto);
 
+    /**
+     *
+     */
+    Map<String, Object> returnAutoCalculationState(String taskId);
 
     /**
      * 保存
