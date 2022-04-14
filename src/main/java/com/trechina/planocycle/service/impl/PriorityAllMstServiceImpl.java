@@ -252,12 +252,14 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         //          制約別のtana_cntの降順で制約別tana_cnt＋１
         //          残り棚数が0の場合、終了 ❊ループが終了し、残棚数が残す場合は存在しないはず
         // 基本パターンに紐付け棚パターンCDをもらう
+
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
+
+
+
         executor.execute(()->{
-
-
         Integer basicPatternCd;
         BigDecimal basicTannaNum;
 
@@ -268,10 +270,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         List<PriorityAllPatternListVO> info;
         // 基本パターンの制約List
         List<WorkPriorityAllRestrictResult> basicRestrictList;
-        // 全パターンの制約List
-        List<PriorityAllRestrictDto> allRestrictDtoList;
-        // 全パターンのRelationList
-        List<WorkPriorityAllRestrictRelation> allRelationsList;
+            // 全パターンの制約List
+            List<PriorityAllRestrictDto> allRestrictDtoList;
+            // 全パターンのRelationList
+            List<WorkPriorityAllRestrictRelation> allRelationsList;
 
         workPriorityAllResultDataMapper.deleteWKTableResultData(companyCd, priorityAllCd, authorCd);
 
@@ -283,6 +285,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             // 全パターンのList
             List<PriorityAllPatternListVO> checkedInfo = info.stream().filter(vo->vo.getCheckFlag()==1).collect(Collectors.toList());
             for(PriorityAllPatternListVO pattern : checkedInfo) {
+
                 // パターンのPTS台/棚List
                 List<ShelfPtsDataTanamst> tanaList = shelfPtsDataTanamstMapper.selectByPatternCd(pattern.getShelfPatternCd().longValue());
 
@@ -302,7 +305,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 //pattern対応janの取得
                 String resultDataList = workPriorityAllResultDataMapper.getJans(pattern.getShelfPatternCd(), companyCd, priorityAllCd,authorCd);
                 if (resultDataList == null) {
-                    vehicleNumCache.put("janIsNull");
+                    vehicleNumCache.put("janIsNull"+uuid);
                 }
                 String[] array = resultDataList.split(",");
                 //smtを呼び出して推奨face数を計算する
@@ -392,10 +395,13 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
                 //ptsを一時テーブルに保存
                 priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
+
+
             }
+
         } catch(Exception ex) {
             logger.error("", ex);
-            vehicleNumCache.put("IO");
+            vehicleNumCache.put("IO"+uuid);
             throw new BusinessException("自動計算失敗");
         }finally {
             vehicleNumCache.put(uuid);
@@ -406,14 +412,16 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
     @Override
     public Map<String, Object> returnAutoCalculationState(String taskId) {
-        if (vehicleNumCache.get("janIsNull")!=null){
+        if (vehicleNumCache.get("janIsNull"+taskId)!=null){
+            vehicleNumCache.remove("janIsNull"+taskId);
             return ResultMaps.result(ResultEnum.JANNOTESISTS);
         }
-        if (vehicleNumCache.get("IO")!=null){
+        if (vehicleNumCache.get("IO"+taskId)!=null){
+            vehicleNumCache.remove("IO"+taskId);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
        if (vehicleNumCache.get(taskId) != null){
-
+            vehicleNumCache.remove(taskId);
            return ResultMaps.result(ResultEnum.SUCCESS,"success");
        }
         return ResultMaps.result(ResultEnum.SUCCESS,"9");
