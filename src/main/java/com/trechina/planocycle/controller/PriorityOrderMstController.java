@@ -75,6 +75,15 @@ public class PriorityOrderMstController {
     }
 
     /**
+     * 查看自动计算执行状态
+     * @param taskId
+     * @return
+     */
+    @GetMapping("/autoTaskId")
+    public Map<String, Object> autoTaskId(String taskId){
+        return priorityOrderMstService.autoTaskId(taskId);
+    }
+    /**
      * 編集時にすべての情報を表示
      * @param companyCd
      * @param priorityOrderCd
