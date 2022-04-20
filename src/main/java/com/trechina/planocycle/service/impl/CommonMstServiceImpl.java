@@ -69,8 +69,8 @@ public class CommonMstServiceImpl implements CommonMstService {
             //sortrankがnullの場合skurankのみでソート
             relationSorted = workPriorityOrderResultData
                     .stream().filter(data -> relationCd.equals(data.getRestrictCd()))
-                    .sorted(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank, Comparator.nullsFirst(Long::compareTo))
-                            .thenComparingLong(PriorityOrderResultDataDto::getSortRank)
+                    .sorted(Comparator.comparing(PriorityOrderResultDataDto::getSortRank, Comparator.nullsFirst(Long::compareTo))
+                            .thenComparingLong(PriorityOrderResultDataDto::getSkuRank)
                             .thenComparingLong(PriorityOrderResultDataDto::getNewRank)).collect(Collectors.toList());
 
             relationValue = relationEntry.getValue();
