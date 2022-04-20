@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Field;
@@ -42,7 +41,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      * @param taskID
      * @return
      */
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> getCommodityScoreData(String taskID, String companyCd) {
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
@@ -95,7 +93,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      * @param taskID
      * @return
      */
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> getCommodityScoreGroupData(String taskID, String companyCd) {
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
