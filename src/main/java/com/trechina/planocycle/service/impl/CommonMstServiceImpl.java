@@ -58,6 +58,7 @@ public class CommonMstServiceImpl implements CommonMstService {
         List<PriorityOrderResultDataDto> relationSorted = null;
         PriorityOrderResultDataDto priorityOrderResultData = null;
         List<PriorityOrderResultDataDto> resultData = null;
+        List<String> adoptedJan = new ArrayList<>();
 
         for (Map.Entry<Long, List<WorkPriorityOrderRestrictRelation>> relationEntry : relationByGroup.entrySet()) {
             Long relationCd = relationEntry.getKey();
@@ -102,6 +103,11 @@ public class CommonMstServiceImpl implements CommonMstService {
                 for (int i = setResultDataIndex; i < relationSorted.size(); i++) {
                     priorityOrderResultData = relationSorted.get(i);
 
+                    //if jan is adopted, it will not be set
+                    if(adoptedJan.contains(priorityOrderResultData.getJanCd())){
+                        continue;
+                    }
+
                     Long faceSku = Optional.ofNullable(priorityOrderResultData.getFaceSku()).orElse(1L);
                     Long janWidth = Optional.ofNullable(priorityOrderResultData.getJanWidth()).orElse(0L);
                     Long face = priorityOrderResultData.getFace();
@@ -123,6 +129,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                         priorityOrderResultData.setAdoptFlag(1);
                         priorityOrderResultData.setTanaType((int) tanaType);
 
+                        adoptedJan.add(priorityOrderResultData.getJanCd());
+
                         resultData = finalSetJanResultData.getOrDefault(taiTanaKey, new ArrayList<>());
                         resultData.add(priorityOrderResultData);
                         finalSetJanResultData.put(taiTanaKey, resultData);
@@ -135,6 +143,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                             priorityOrderResultData.setTanaType((int) tanaType);
                             priorityOrderResultData.setAdoptFlag(1);
                             priorityOrderResultData.setTanaCd(tanaCd);
+
+                            adoptedJan.add(priorityOrderResultData.getJanCd());
 
                             setResultDataIndex = i + 1;
                             resultData.add(priorityOrderResultData);
