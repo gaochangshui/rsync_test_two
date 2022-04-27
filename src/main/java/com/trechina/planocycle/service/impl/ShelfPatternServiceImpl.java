@@ -24,7 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 @Service
@@ -81,16 +83,22 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             Integer resultInfo = shelfPatternMstMapper.insert(shelfPatternMst);
             logger.info("保存棚名情報保存後に戻る情報：{}" ,resultInfo);
 
-            shelfPatternDto.getArea().forEach(item -> {
-                ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
-                shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());
-                shelfPatternArea.setShelfPatternCd(shelfPatternMst.getShelfPatternCd());
+//            shelfPatternDto.getArea().forEach(item -> {
+//                ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
+//                shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());
+//                shelfPatternArea.setShelfPatternCd(shelfPatternMst.getShelfPatternCd());
+//
+//                shelfPatternArea.setAreacd(item);
+//                list.add(shelfPatternArea);
+//            });
+//            logger.info("pattern情報変換後のareaパラメータを保存：{}",list);
+//            shelfPatternAreaService.setShelfPatternArea(list,authorCd);
 
-                shelfPatternArea.setAreacd(item);
-                list.add(shelfPatternArea);
-            });
-            logger.info("pattern情報変換後のareaパラメータを保存：{}",list);
-            shelfPatternAreaService.setShelfPatternArea(list,authorCd);
+            ShelfPatternBranchVO shelfPatternBranchVO = new ShelfPatternBranchVO();
+            shelfPatternBranchVO.setBranchCd(shelfPatternDto.getBranchCd());
+            shelfPatternBranchVO.setShelfPatternCd(shelfPatternMst.getShelfPatternCd());
+            shelfPatternBranchVO.setStartTime(Calendar.getInstance().getTime());
+            this.setShelfPatternBranch(shelfPatternBranchVO);
         } catch (Exception e) {
             logger.error(e.toString());
             throw new BusinessException(e.toString());

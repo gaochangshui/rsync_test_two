@@ -78,16 +78,16 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         Integer resultInfo = shelfNameMstMapper.insert(shelfNameMst);
         //ユーザーIDの取得
 
-        shelfNameDto.getArea().forEach(item -> {
-            ShelfNameArea shelfNameArea = new ShelfNameArea();
-            shelfNameArea.setCompanyCd(shelfNameDto.getCompanyCd());
-            shelfNameArea.setAreacd(item);
-            shelfNameArea.setShelfNameCd(shelfNameMst.getId());
-            list.add(shelfNameArea);
-        });
+//        shelfNameDto.getArea().forEach(item -> {
+//            ShelfNameArea shelfNameArea = new ShelfNameArea();
+//            shelfNameArea.setCompanyCd(shelfNameDto.getCompanyCd());
+//            shelfNameArea.setAreacd(item);
+//            shelfNameArea.setShelfNameCd(shelfNameMst.getId());
+//            list.add(shelfNameArea);
+//        });
         logger.info("保存棚名称信息変換后的area参数：{}",list);
 
-        shelfNameAreaService.setShelfNameArea(list,authorCd);
+//        shelfNameAreaService.setShelfNameArea(list,authorCd);
         logger.info("保存棚名称信息保存后返回的信息：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

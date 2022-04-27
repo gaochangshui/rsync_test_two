@@ -7,8 +7,18 @@ public class ShelfPatternDto {
     private String companyCd;
     private Integer shelfNameCD;
     private List<Integer> area;
+
+    private List<String> branchCd;
     private String shelfPatternName;
     private String ptsRelationID;
+
+    public List<String> getBranchCd() {
+        return branchCd;
+    }
+
+    public void setBranchCd(List<String> branchCd) {
+        this.branchCd = branchCd;
+    }
 
     public Integer getShelfPatternCd() {
         return shelfPatternCd;
