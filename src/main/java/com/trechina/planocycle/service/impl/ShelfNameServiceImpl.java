@@ -120,56 +120,56 @@ public class ShelfNameServiceImpl implements ShelfNameService {
         int resultInfo = shelfNameMstMapper.update(shelfNameMst);
         logger.info("修改棚名称信息后返回的信息：{}",resultInfo);
         //shelfName関連Areaの取得
-        List<Integer> getShelfNameArea = shelfNameAreaService.getShelfNameArea(shelfNameMst.getId(),shelfNameMst.getConpanyCd());
-        logger.info("shelfName関連付け的所有Area：{}",getShelfNameArea);
-        //データベースと重複データの変更
-        shelfNameDto.getArea().forEach(item->{
-            for (Integer area : getShelfNameArea) {
-                if (item.equals(area)){
-                    shelfNameAreaService.setDelFlg(item,shelfNameDto.getId(),authorCd);
-                }
-            }
-        });
+//        List<Integer> getShelfNameArea = shelfNameAreaService.getShelfNameArea(shelfNameMst.getId(),shelfNameMst.getConpanyCd());
+//        logger.info("shelfName関連付け的所有Area：{}",getShelfNameArea);
+//        //データベースと重複データの変更
+//        shelfNameDto.getArea().forEach(item->{
+//            for (Integer area : getShelfNameArea) {
+//                if (item.equals(area)){
+//                    shelfNameAreaService.setDelFlg(item,shelfNameDto.getId(),authorCd);
+//                }
+//            }
+//        });
         //削除するareaコレクション
-        List<Integer> deleteAreaList = ListDisparityUtils.getListDisparit(getShelfNameArea, shelfNameDto.getArea());
-        //areaの集合を追加するには
-        List<Integer> setAreaList = ListDisparityUtils.getListDisparit( shelfNameDto.getArea(),getShelfNameArea);
-        if (!deleteAreaList.isEmpty()) {
-            deleteAreaList.forEach(item -> {
-
-                ShelfNameArea shelfNameArea = new ShelfNameArea();
-                shelfNameArea.setCompanyCd(shelfNameDto.getCompanyCd());
-                shelfNameArea.setAreacd(item);
-                shelfNameArea.setShelfNameCd(shelfNameMst.getId());
-                delList.add(shelfNameArea);
-            });
-            logger.info("削除棚名称信息変換后的area参数：{}",delList);
-            //関連するareaを削除
-            shelfNameAreaService.delAreaCd(deleteAreaList,shelfNameDto.getId(),authorCd);
-            //検索棚名の下の棚pattern
-            List<Integer> shelfPatternList = shelfPatternService.getShelfPattern(shelfNameDto.getCompanyCd(), shelfNameDto.getId());
-            //小屋patternの下のareaを削除
-            if (shelfPatternList!=null) {
-                shelfPatternList.forEach(item ->
-                    shelfPatternAreaService.deleteAreaCd(deleteAreaList, item, authorCd)
-                );
-            }
-
-        }
-        if (!setAreaList.isEmpty()) {
-            setAreaList.forEach(item -> {
-                ShelfNameArea shelfNameArea = new ShelfNameArea();
-                shelfNameArea.setCompanyCd(shelfNameDto.getCompanyCd());
-                shelfNameArea.setAreacd(item);
-                shelfNameArea.setShelfNameCd(shelfNameMst.getId());
-                setList.add(shelfNameArea);
-            });
-            logger.info("添加棚名称信息変換后的area参数：{}", setList);
-            //関連するareaを追加
-            Map<String, Object> setAreaInfo = shelfNameAreaService.setShelfNameArea(setList, authorCd);
-
-            logger.info("添加棚名称信息保存后返回的信息：{}",setAreaInfo);
-        }
+//        List<Integer> deleteAreaList = ListDisparityUtils.getListDisparit(getShelfNameArea, shelfNameDto.getArea());
+//        //areaの集合を追加するには
+//        List<Integer> setAreaList = ListDisparityUtils.getListDisparit( shelfNameDto.getArea(),getShelfNameArea);
+//        if (!deleteAreaList.isEmpty()) {
+//            deleteAreaList.forEach(item -> {
+//
+//                ShelfNameArea shelfNameArea = new ShelfNameArea();
+//                shelfNameArea.setCompanyCd(shelfNameDto.getCompanyCd());
+//                shelfNameArea.setAreacd(item);
+//                shelfNameArea.setShelfNameCd(shelfNameMst.getId());
+//                delList.add(shelfNameArea);
+//            });
+//            logger.info("削除棚名称信息変換后的area参数：{}",delList);
+//            //関連するareaを削除
+//            shelfNameAreaService.delAreaCd(deleteAreaList,shelfNameDto.getId(),authorCd);
+//            //検索棚名の下の棚pattern
+//            List<Integer> shelfPatternList = shelfPatternService.getShelfPattern(shelfNameDto.getCompanyCd(), shelfNameDto.getId());
+//            //小屋patternの下のareaを削除
+//            if (shelfPatternList!=null) {
+//                shelfPatternList.forEach(item ->
+//                    shelfPatternAreaService.deleteAreaCd(deleteAreaList, item, authorCd)
+//                );
+//            }
+//
+//        }
+//        if (!setAreaList.isEmpty()) {
+//            setAreaList.forEach(item -> {
+//                ShelfNameArea shelfNameArea = new ShelfNameArea();
+//                shelfNameArea.setCompanyCd(shelfNameDto.getCompanyCd());
+//                shelfNameArea.setAreacd(item);
+//                shelfNameArea.setShelfNameCd(shelfNameMst.getId());
+//                setList.add(shelfNameArea);
+//            });
+//            logger.info("添加棚名称信息変換后的area参数：{}", setList);
+//            //関連するareaを追加
+//            Map<String, Object> setAreaInfo = shelfNameAreaService.setShelfNameArea(setList, authorCd);
+//
+//            logger.info("添加棚名称信息保存后返回的信息：{}",setAreaInfo);
+//        }
 
 
         return ResultMaps.result(ResultEnum.SUCCESS);
