@@ -87,7 +87,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
 //        });
         logger.info("保存棚名称信息変換后的area参数：{}",list);
 
-        shelfNameAreaService.setShelfNameArea(list,authorCd);
+//        shelfNameAreaService.setShelfNameArea(list,authorCd);
         logger.info("保存棚名称信息保存后返回的信息：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
