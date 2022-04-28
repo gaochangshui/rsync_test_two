@@ -17,6 +17,10 @@
           #{branch}
         </foreach>
   </update>
+  <delete id="deleteByPatternCd">
+    delete from planocycle.shelf_pattern_branch
+    where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+  </delete>
   <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />

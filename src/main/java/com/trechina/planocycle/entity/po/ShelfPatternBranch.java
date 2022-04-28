@@ -12,6 +12,16 @@ public class ShelfPatternBranch {
     @JsonFormat(pattern = "yyyy/MM/dd")
     private Date startTime;
 
+    private String authorCd;
+
+    public String getAuthorCd() {
+        return authorCd;
+    }
+
+    public void setAuthorCd(String authorCd) {
+        this.authorCd = authorCd;
+    }
+
     public Integer getShelfPattrenCd() {
         return shelfPatternCd;
     }

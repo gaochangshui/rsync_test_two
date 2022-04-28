@@ -62,8 +62,12 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         logger.info("棚pattern情報のパラメータの取得：{}",companyCd);
         List<ShelfPatternMst> resultInfo = shelfPatternMstMapper.selectByPrimaryKey(companyCd);
         resultInfo.stream().peek(result -> {
-            if (result.getStoreCd()==null) {
+            if (result.getStoreCdStr()==null) {
                 result.setStoreCd(new String[]{});
+            }else{
+                String storeCdStr = result.getStoreCdStr();
+                String[] storeCdStrList = storeCdStr.split(",");
+                result.setStoreCd(storeCdStrList);
             }
         }).collect(Collectors.toList());
         logger.info("棚pattern情報の戻り値の取得：{}",resultInfo);
@@ -108,7 +112,10 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 shelfPatternBranch.setShelfPattrenCd(shelfPatternMst.getShelfPatternCd());
                 branchList.add(shelfPatternBranch);
             }
-            shelfPatternBranchMapper.insert(branchList, authorCd);
+            shelfPatternBranchMapper.deleteByPatternCd(shelfPatternMst.getShelfPatternCd());
+            if(!branchList.isEmpty()){
+                shelfPatternBranchMapper.insert(branchList, authorCd);
+            }
 /*            shelfPatternDto.getArea().forEach(item -> {
                 ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
                 shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());
@@ -157,8 +164,23 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             int resultInfo = shelfPatternMstMapper.update(shelfPatternMst);
             logger.info("保存棚名称信息保存后返回的信息：{}" , resultInfo);
             //つかむ取棚pattern関連的Area
-            List<Integer> getShelfPatternArea = shelfPatternAreaService.getShelfPatternArea(shelfPatternMst.getShelfPatternCd(),shelfPatternMst.getConpanyCd());
-            logger.info("棚pattern関連的所有Area：{}" , getShelfPatternArea);
+//            List<Integer> getShelfPatternArea = shelfPatternAreaService.getShelfPatternArea(shelfPatternMst.getShelfPatternCd(),shelfPatternMst.getConpanyCd());
+//            logger.info("棚pattern関連的所有Area：{}" , getShelfPatternArea);
+            String[] storeCd = shelfPatternDto.getStoreCd();
+            List<ShelfPatternBranch> branchList = new ArrayList<>();
+            ShelfPatternBranch shelfPatternBranch = null;
+            for (String cd : storeCd) {
+                shelfPatternBranch = new ShelfPatternBranch();
+                shelfPatternBranch.setBranch(cd);
+                shelfPatternBranch.setAuthorCd(authorCd);
+                shelfPatternBranch.setStartTime(new Date());
+                shelfPatternBranch.setShelfPattrenCd(shelfPatternMst.getShelfPatternCd());
+                branchList.add(shelfPatternBranch);
+            }
+            shelfPatternBranchMapper.deleteByPatternCd(shelfPatternMst.getShelfPatternCd());
+            if(!branchList.isEmpty()){
+                shelfPatternBranchMapper.insert(branchList, authorCd);
+            }
             //database中修改重複数据
             //shelfPatternDto.getArea().forEach(item->{
             //    for (Integer area : getShelfPatternArea) {
