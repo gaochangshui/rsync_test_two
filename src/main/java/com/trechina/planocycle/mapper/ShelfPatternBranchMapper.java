@@ -19,6 +19,7 @@ public interface ShelfPatternBranchMapper {
 
     int deleteBranchCd (@Param("branchList")List<String> branchList, @Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd")String authorCd);
 
+    int deleteByPatternCd(@Param("shelfPatternCd") Integer shelfPatternCd);
     Integer setDelFlg(@Param("branch")String branch,@Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd")String authorCd);
 
     List<ShelfPatternBranchDto> getBranch(@Param("companyCd")String companyCd);

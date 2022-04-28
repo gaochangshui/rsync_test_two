@@ -1,6 +1,7 @@
 package com.trechina.planocycle.entity.po;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Date;
 
@@ -27,6 +28,7 @@ public class ShelfPatternMst {
 
     private String[] storeCd;
 
+    @JsonIgnore
     private String storeCdStr;
 
     public String getStoreCdStr() {
