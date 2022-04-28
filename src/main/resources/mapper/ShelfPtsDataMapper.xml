@@ -26,16 +26,6 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     on pts.shelf_pattern_cd = area.shelf_pattern_cd
     and pattern.company_cd = area.company_cd and area.deleteflg=0
     where pts.company_cd = #{companyCd,jdbcType=VARCHAR} and pts.deleteflg=0
-    <if test="rangFlag==2">
-      and (pts.valid_flg =0 or pts.valid_flg is null)
-    </if>
-    <if test="lists.size>0">
-      and area.areacd in
-      <foreach collection="lists" index="index" item="item"  open="("  close=")" separator=",">
-        #{item}
-      </foreach>
-        and pts.valid_flg =1
-    </if>
     order by id desc
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

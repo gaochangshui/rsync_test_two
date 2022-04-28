@@ -156,7 +156,10 @@
       </foreach>
       AND mst.company_cd = #{companyCd,jdbcType=VARCHAR}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="map">
+    <select id="getExcelForPattern" resultType="java.util.Map">
+
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="map">
     delete from planocycle.shelf_pattern_mst
     where company_cd = #{conpanyCd,jdbcType=VARCHAR}
       and shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}

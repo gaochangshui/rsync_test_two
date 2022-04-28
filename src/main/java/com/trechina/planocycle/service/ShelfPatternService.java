@@ -2,8 +2,10 @@ package com.trechina.planocycle.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPatternDto;
+import com.trechina.planocycle.entity.po.ShelfPatternMst;
 import com.trechina.planocycle.entity.vo.ShelfPatternBranchVO;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -92,4 +94,6 @@ public interface ShelfPatternService {
      * @return
      */
      Map<String,Object> getShelfPatternForArea(String companyCd,int[] areaCds);
+
+    void patternDownloadForExcel(List<ShelfPatternMst> patternDataList,String companyCd, HttpServletResponse response) ;
 }

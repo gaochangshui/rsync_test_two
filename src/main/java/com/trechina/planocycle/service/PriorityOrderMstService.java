@@ -15,7 +15,7 @@ public interface PriorityOrderMstService {
      */
     Map<String,Object> getPriorityOrderList(String companyCd);
 
-
+    Map<String,Object> getPriorityOrderListInfo(String companyCd,Integer priorityOrderCd);
     /**
      * 登録者がいる企業に優先順位表があるかどうかを調べる
      * @return

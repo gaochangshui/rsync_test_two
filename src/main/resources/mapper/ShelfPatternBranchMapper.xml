@@ -28,6 +28,19 @@
     from planocycle.shelf_pattern_branch
     where shelf_pattern_cd=#{id} and deleteflg=0
   </select>
+    <select id="getBranch" resultType="com.trechina.planocycle.entity.dto.ShelfPatternBranchDto">
+      select concat(company_cd,'_',branch_cd) as id,branch_name as name
+        from masterdb.branchs
+    where company_cd = #{companyCd}
+    </select>
+  <select id="getPatternBranch" resultType="com.trechina.planocycle.entity.po.ShelfPatternBranch">
+    select branch,shelf_pattern_cd
+    from planocycle.shelf_pattern_branch
+    where  deleteflg=0 and shelf_pattern_cd in
+    <foreach collection="list" separator="," index="index" open="(" close=")" item="item">
+      #{item}
+    </foreach>
+  </select>
   <update id="deleteByPrimaryKey" parameterType="map">
     update  planocycle.shelf_pattern_branch
     set edit_time=now(),editer_cd=#{authorCd},deleteflg=1

@@ -22,4 +22,6 @@ public interface PriorityOrderJanCardMapper {
     int deleteByAuthorCd(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
 
     int insertBySelect(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
+
+    List<String> getExistOtherMst(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 }

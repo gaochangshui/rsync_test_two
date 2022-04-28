@@ -17,7 +17,7 @@ public interface ShelfPtsDataMapper {
 
     int insert(ShelfPtsData record);
 
-    List<ShelfPtsData> selectByPrimaryKey(String companyCd, @Param("rangFlag") Integer rangFlag, @Param("lists") List<Integer> areaList);
+    List<ShelfPtsData> selectByPrimaryKey(String companyCd);
 
     int updateByPrimaryKey(@Param("lists") List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto);
 

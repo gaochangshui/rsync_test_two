@@ -27,8 +27,8 @@ public class ShelfPtsController {
      * @return
      */
     @GetMapping("/getShelfPtsInfo")
-    public Map<String, Object> getShelfPtsInfo(String companyCd, Integer rangFlag, String areaList) {
-        return shelfPtsService.getShelfPtsInfo(companyCd, rangFlag, areaList);
+    public Map<String, Object> getShelfPtsInfo(String companyCd) {
+        return shelfPtsService.getShelfPtsInfo(companyCd);
     }
 
     /**

@@ -131,6 +131,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return ResultMaps.result(ResultEnum.SUCCESS, priorityOrderMstList);
     }
 
+    @Override
+    public Map<String, Object> getPriorityOrderListInfo(String companyCd,Integer priorityOrderCd) {
+        priorityOrderJanCardMapper.getExistOtherMst(companyCd,priorityOrderCd);
+        return null;
+    }
+
     /**
      * この企業に優先順位表があるかどうかを取得します。
      *

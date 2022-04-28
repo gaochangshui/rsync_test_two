@@ -70,17 +70,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      * @return
      */
     @Override
-    public Map<String, Object> getShelfPtsInfo(String companyCd, Integer rangFlag, String areaList) {
-        logger.info("棚割pts情報パラメータの取得：{},{}",companyCd,areaList);
-        String[] strArr = areaList.split(",");
-        List<Integer> list = new ArrayList<>();
-        if (strArr.length > 0 && !areaList.equals("")) {
-            for (int i = 0; i < strArr.length; i++) {
-                list.add(Integer.valueOf(strArr[i]));
-            }
-        }
-        logger.info("area情報の処理：{}", list);
-        List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.selectByPrimaryKey(companyCd, rangFlag, list);
+    public Map<String, Object> getShelfPtsInfo(String companyCd) {
+        logger.info("棚割pts情報パラメータの取得：{}",companyCd);
+        List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.selectByPrimaryKey(companyCd);
         logger.info("棚割pts情報の値を返す：{}", shelfPtsData);
         return ResultMaps.result(ResultEnum.SUCCESS, shelfPtsData);
     }

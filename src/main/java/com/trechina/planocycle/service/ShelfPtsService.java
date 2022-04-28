@@ -17,7 +17,7 @@ public interface ShelfPtsService {
      * @param companyCd
      * @return
      */
-    Map<String,Object> getShelfPtsInfo(String companyCd,Integer rangFlag,String areaList);
+    Map<String,Object> getShelfPtsInfo(String companyCd);
 
     /**
      * 棚割pts情報の保存

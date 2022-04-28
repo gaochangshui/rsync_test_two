@@ -21,6 +21,7 @@ public class PriorityAllPtsController {
      */
     @GetMapping("getPtsDetailData")
     public Map<String,Object> getPtsDetailData(Integer patternCd, String companyCd, Integer priorityAllCd){
+
         return priorityAllPtsService.getPtsDetailData(patternCd,companyCd,priorityAllCd);
 
     }

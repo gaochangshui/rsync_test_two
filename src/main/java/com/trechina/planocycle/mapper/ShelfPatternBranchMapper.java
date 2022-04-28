@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.ShelfPatternBranchDto;
 import com.trechina.planocycle.entity.po.ShelfPatternBranch;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -19,5 +20,10 @@ public interface ShelfPatternBranchMapper {
     int deleteBranchCd (@Param("branchList")List<String> branchList, @Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd")String authorCd);
 
     Integer setDelFlg(@Param("branch")String branch,@Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd")String authorCd);
+
+    List<ShelfPatternBranchDto> getBranch(@Param("companyCd")String companyCd);
+
+    List<ShelfPatternBranch> getPatternBranch(@Param("list")List<Integer> shelfPatternCdList);
+
 
 }
