@@ -62,8 +62,13 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         logger.info("棚pattern情報のパラメータの取得：{}",companyCd);
         List<ShelfPatternMst> resultInfo = shelfPatternMstMapper.selectByPrimaryKey(companyCd);
         resultInfo.stream().peek(result -> {
-            if (result.getStoreCd()==null) {
+            if (result.getStoreCdStr()==null) {
                 result.setStoreCd(new String[]{});
+            }else{
+                String storeCdStr = result.getStoreCdStr();
+                storeCdStr = storeCdStr.replace("{", "").replace("}", "");
+                String[] storeCdStrList = storeCdStr.split(",");
+                result.setStoreCd(storeCdStrList);
             }
         }).collect(Collectors.toList());
         logger.info("棚pattern情報の戻り値の取得：{}",resultInfo);

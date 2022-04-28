@@ -32,7 +32,7 @@
   </sql>
   <sql id="branch_column_list">
     shelf.company_cd,shelf.shelf_name_cd,shelf.ptskey, name.shelf_name as shelfName, shelf.shelf_pattern_cd, shelf.shelf_pattern_name, shelf.create_time, shelf.author_cd,
-      shelf.registered, shelf.maintainer_cd, shelf.modified,shelf.modified,array_agg(branch.branch) as branchs
+      shelf.registered, shelf.maintainer_cd, shelf.modified,shelf.modified,array_agg(branch.branch) as storeCdStr
   </sql>
   <sql id="groups">
     shelf.company_cd,shelf.shelf_name_cd,name.shelf_name, shelf.shelf_pattern_cd,  shelf.shelf_pattern_name, shelf.create_time, shelf.author_cd,

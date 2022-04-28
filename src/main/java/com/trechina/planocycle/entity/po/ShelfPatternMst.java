@@ -27,6 +27,16 @@ public class ShelfPatternMst {
 
     private String[] storeCd;
 
+    private String storeCdStr;
+
+    public String getStoreCdStr() {
+        return storeCdStr;
+    }
+
+    public void setStoreCdStr(String storeCdStr) {
+        this.storeCdStr = storeCdStr;
+    }
+
     public String[] getStoreCd() {
         return storeCd;
     }
