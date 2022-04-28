@@ -9,7 +9,6 @@ public class ShelfNameDataVO {
 
     private String conpanyCd;
 
-    private String areaName;
     private String shelfName;
     @JsonFormat(pattern = "yyyy/MM/dd")
     private Date createTime;
@@ -32,13 +31,6 @@ public class ShelfNameDataVO {
         this.conpanyCd = conpanyCd;
     }
 
-    public String getAreaName() {
-        return areaName;
-    }
-
-    public void setAreaName(String areaName) {
-        this.areaName = areaName;
-    }
 
     public String getShelfName() {
         return shelfName;
@@ -64,15 +56,4 @@ public class ShelfNameDataVO {
         this.authorCd = authorCd;
     }
 
-    @Override
-    public String toString() {
-        return "ShelfNameDataVO{" +
-                "id=" + id +
-                ", conpanyCd='" + conpanyCd + '\'' +
-                ", areaName=" + areaName +
-                ", shelfName='" + shelfName + '\'' +
-                ", createTime=" + createTime +
-                ", authorCd=" + authorCd +
-                '}';
-    }
 }
