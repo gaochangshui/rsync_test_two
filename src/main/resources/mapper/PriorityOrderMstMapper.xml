@@ -42,9 +42,8 @@
     from planocycle.shelf_pts_data pts
     inner join planocycle.shelf_pattern_mst pattern
     on pts.company_cd = pattern.company_cd and pts.shelf_pattern_cd = pattern.shelf_pattern_cd
-    inner join planocycle.shelf_pattern_area area
-    on pattern.company_cd = area.company_cd and pattern.shelf_pattern_cd = area.shelf_pattern_cd
-    where coalesce(pts.company_cd,area.company_cd) = #{companyCd}
+
+    where pts.company_cd = #{companyCd}
       and pts.shelf_pattern_cd is not null
   </select>
   <select id="selectProductPowerCd" resultType="map">
