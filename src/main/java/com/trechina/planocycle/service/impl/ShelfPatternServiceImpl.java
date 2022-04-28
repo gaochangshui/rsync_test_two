@@ -92,7 +92,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             Integer resultInfo = shelfPatternMstMapper.insert(shelfPatternMst);
             logger.info("保存棚名情報保存後に戻る情報：{}" ,resultInfo);
 
-            shelfPatternDto.getArea().forEach(item -> {
+/*            shelfPatternDto.getArea().forEach(item -> {
                 ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
                 shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());
                 shelfPatternArea.setShelfPatternCd(shelfPatternMst.getShelfPatternCd());
@@ -101,7 +101,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 list.add(shelfPatternArea);
             });
             logger.info("pattern情報変換後のareaパラメータを保存：{}",list);
-            shelfPatternAreaService.setShelfPatternArea(list,authorCd);
+            shelfPatternAreaService.setShelfPatternArea(list,authorCd);*/
         } catch (Exception e) {
             logger.error(e.toString());
             throw new BusinessException(e.toString());
