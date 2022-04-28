@@ -10,6 +10,16 @@ public class ShelfPatternDto {
     private String shelfPatternName;
     private String ptsRelationID;
 
+    private String[] storeCd;
+
+    public String[] getStoreCd() {
+        return storeCd;
+    }
+
+    public void setStoreCd(String[] storeCd) {
+        this.storeCd = storeCd;
+    }
+
     public Integer getShelfPatternCd() {
         return shelfPatternCd;
     }

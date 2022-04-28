@@ -25,6 +25,16 @@ public class ShelfPatternMst {
     private Date modified;
     private Integer branch;
 
+    private String[] storeCd;
+
+    public String[] getStoreCd() {
+        return storeCd;
+    }
+
+    public void setStoreCd(String[] storeCd) {
+        this.storeCd = storeCd;
+    }
+
     public String getPtsRelationID() {
         return ptsRelationID;
     }

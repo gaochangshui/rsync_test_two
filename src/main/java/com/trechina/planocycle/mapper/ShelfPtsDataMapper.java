@@ -35,7 +35,7 @@ public interface ShelfPtsDataMapper {
 
     List<ShelfPtsNameVO> selectPtsName(String companyCd);
 
-    List<ShelfPtsData> selectPtsInfoOfPattern(String companyCd, Integer rangFlag, @Param("lists") List<Integer> areaList);
+    List<ShelfPtsData> selectPtsInfoOfPattern(String companyCd);
 
     void updateByPrimaryKeyOfPattern(@Param("lists") List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto);
 

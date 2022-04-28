@@ -559,17 +559,17 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      * @return
      */
     @Override
-    public Map<String, Object> getPtsInfoOfPattern(String companyCd, Integer rangFlag, String areaList) {
-        logger.info("つかむ取棚pattern別的pts信息参数：{},{}", companyCd, areaList);
-        String[] strArr = areaList.split(",");
-        List<Integer> list = new ArrayList<>();
-        if (strArr.length > 0 && !areaList.equals("")) {
-            for (int i = 0; i < strArr.length; i++) {
-                list.add(Integer.valueOf(strArr[i]));
-            }
-        }
-        logger.info("処理area信息：{}", list);
-        List<ShelfPtsData> shelfPtsNameVOList = shelfPtsDataMapper.selectPtsInfoOfPattern(companyCd, rangFlag, list);
+    public Map<String, Object> getPtsInfoOfPattern(String companyCd) {
+        logger.info("つかむ取棚pattern別的pts信息参数：{}", companyCd);
+//        String[] strArr = areaList.split(",");
+//        List<Integer> list = new ArrayList<>();
+//        if (strArr.length > 0 && !areaList.equals("")) {
+//            for (int i = 0; i < strArr.length; i++) {
+//                list.add(Integer.valueOf(strArr[i]));
+//            }
+//        }
+//        logger.info("処理area信息：{}", list);
+        List<ShelfPtsData> shelfPtsNameVOList = shelfPtsDataMapper.selectPtsInfoOfPattern(companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS, shelfPtsNameVOList);
     }
 }

@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Strings;
 import com.trechina.planocycle.entity.dto.ShelfPatternBranchDto;
 import com.trechina.planocycle.entity.dto.ShelfPatternDto;
 import com.trechina.planocycle.entity.po.ShelfPatternArea;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,6 +61,11 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     public Map<String, Object> getShelfPatternInfo(String companyCd) {
         logger.info("棚pattern情報のパラメータの取得：{}",companyCd);
         List<ShelfPatternMst> resultInfo = shelfPatternMstMapper.selectByPrimaryKey(companyCd);
+        resultInfo.stream().peek(result -> {
+            if (result.getStoreCd()==null) {
+                result.setStoreCd(new String[]{});
+            }
+        }).collect(Collectors.toList());
         logger.info("棚pattern情報の戻り値の取得：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
@@ -91,7 +98,17 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         try {
             Integer resultInfo = shelfPatternMstMapper.insert(shelfPatternMst);
             logger.info("保存棚名情報保存後に戻る情報：{}" ,resultInfo);
-
+            String[] storeCd = shelfPatternDto.getStoreCd();
+            List<ShelfPatternBranch> branchList = new ArrayList<>();
+            ShelfPatternBranch shelfPatternBranch = null;
+            for (String cd : storeCd) {
+                shelfPatternBranch = new ShelfPatternBranch();
+                shelfPatternBranch.setBranch(cd);
+                shelfPatternBranch.setStartTime(new Date());
+                shelfPatternBranch.setShelfPattrenCd(shelfPatternMst.getShelfPatternCd());
+                branchList.add(shelfPatternBranch);
+            }
+            shelfPatternBranchMapper.insert(branchList, authorCd);
 /*            shelfPatternDto.getArea().forEach(item -> {
                 ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
                 shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());

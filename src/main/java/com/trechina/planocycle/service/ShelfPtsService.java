@@ -65,11 +65,9 @@ public interface ShelfPtsService {
     /**
      * 棚pattern別pts情報の取得
      * @param companyCd
-     * @param rangFlag
-     * @param areaList
      * @return
      */
-    Map<String, Object> getPtsInfoOfPattern(String companyCd, Integer rangFlag, String areaList);
+    Map<String, Object> getPtsInfoOfPattern(String companyCd);
 
     /**
      * 棚pattern別pts関連pattern
