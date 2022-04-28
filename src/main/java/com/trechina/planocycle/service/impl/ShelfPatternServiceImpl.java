@@ -143,15 +143,15 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             List<Integer> getShelfPatternArea = shelfPatternAreaService.getShelfPatternArea(shelfPatternMst.getShelfPatternCd(),shelfPatternMst.getConpanyCd());
             logger.info("棚pattern関連的所有Area：{}" , getShelfPatternArea);
             //database中修改重複数据
-            shelfPatternDto.getArea().forEach(item->{
-                for (Integer area : getShelfPatternArea) {
-                    if (item.equals(area)){
-                        shelfPatternAreaService.setDelFlg(item,shelfPatternDto.getShelfPatternCd(),authorCd);
-                    }
-                }
-            });
+            //shelfPatternDto.getArea().forEach(item->{
+            //    for (Integer area : getShelfPatternArea) {
+            //        if (item.equals(area)){
+            //            shelfPatternAreaService.setDelFlg(item,shelfPatternDto.getShelfPatternCd(),authorCd);
+            //        }
+            //    }
+            //});
             //削除するareaコレクション
-            List<Integer> deleteAreaList = ListDisparityUtils.getListDisparit(getShelfPatternArea, shelfPatternDto.getArea());
+         /*   List<Integer> deleteAreaList = ListDisparityUtils.getListDisparit(getShelfPatternArea, shelfPatternDto.getArea());
             //areaの集合を追加するには
             List<Integer> setAreaList = ListDisparityUtils.getListDisparit( shelfPatternDto.getArea(),getShelfPatternArea);
             if (!deleteAreaList.isEmpty()){
@@ -182,7 +182,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 logger.info("添加棚pattern信息変換后的area参数：{}" , setList);
                 Map<String, Object> setAreaInfo = shelfPatternAreaService.setShelfPatternArea(setList, authorCd);
                 logger.info("修改棚名称信息保存后返回的信息：{}",setAreaInfo);
-            }
+            }*/
 
         }catch (Exception e) {
             logger.error(e.toString());
