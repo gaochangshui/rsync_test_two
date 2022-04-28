@@ -12,8 +12,7 @@
     <result column="start_day" javaType="DATE" property="startDay"/>
   </resultMap>
   <sql id="Base_Column_List">
-    id, pts.company_cd, file_name, pts.create_time, pts.authorcd,start_day,
-case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_cd
+    id, pts.company_cd, file_name, pts.create_time, pts.authorcd,start_day, pts.shelf_pattern_cd  as shelf_pattern_cd
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap">
     select distinct
@@ -22,9 +21,6 @@ case valid_flg when 0 then null else pts.shelf_pattern_cd end as shelf_pattern_c
     left join 	planocycle.shelf_pattern_mst pattern
     on pts.shelf_pattern_cd = pattern.shelf_pattern_cd and pattern.deleteflg=0
     and pts.company_cd = pattern.company_cd
-    left join planocycle.shelf_pattern_area area
-    on pts.shelf_pattern_cd = area.shelf_pattern_cd
-    and pattern.company_cd = area.company_cd and area.deleteflg=0
     where pts.company_cd = #{companyCd,jdbcType=VARCHAR} and pts.deleteflg=0
     order by id desc
   </select>
