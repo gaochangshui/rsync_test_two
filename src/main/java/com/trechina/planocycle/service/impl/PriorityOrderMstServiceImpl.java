@@ -450,7 +450,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String resultDataList = workPriorityOrderResultDataMapper.getResultDataList(companyCd, authorCd, priorityOrderCd);
         if (resultDataList == null) {
             //return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
-            vehicleNumCache.put("janNotExist"+uuid);
+            vehicleNumCache.put("janNotExist"+uuid,1);
         }
         String[] array = resultDataList.split(",");
         //cgiを呼び出す
@@ -514,7 +514,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         if (shelfPatternCd == null) {
             //logger.info("shelfPatternCd:{}不存在", shelfPatternCd);
             //return ResultMaps.result(ResultEnum.FAILURE);
-            vehicleNumCache.put("PatternCdNotExist"+uuid);
+            vehicleNumCache.put("PatternCdNotExist"+uuid,1);
         }
 
         List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
@@ -536,7 +536,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         //ptsを一時テーブルに保存
         shelfPtsService.saveWorkPtsData(companyCd, authorCd, priorityOrderCd);
-            vehicleNumCache.put(uuid);
+            vehicleNumCache.put(uuid,1);
     });
         return ResultMaps.result(ResultEnum.SUCCESS,uuid);
     }

@@ -305,7 +305,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 //pattern対応janの取得
                 String resultDataList = workPriorityAllResultDataMapper.getJans(pattern.getShelfPatternCd(), companyCd, priorityAllCd,authorCd);
                 if (resultDataList == null) {
-                    vehicleNumCache.put("janIsNull"+uuid);
+                    vehicleNumCache.put("janIsNull"+uuid,1);
                 }
                 String[] array = resultDataList.split(",");
                 //smtを呼び出して推奨face数を計算する
@@ -401,10 +401,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
         } catch(Exception ex) {
             logger.error("", ex);
-            vehicleNumCache.put("IO"+uuid);
+            vehicleNumCache.put("IO"+uuid,1);
             throw new BusinessException("自動計算失敗");
         }finally {
-            vehicleNumCache.put(uuid);
+            vehicleNumCache.put(uuid,1);
         }
         });
         return ResultMaps.result(ResultEnum.SUCCESS, uuid);

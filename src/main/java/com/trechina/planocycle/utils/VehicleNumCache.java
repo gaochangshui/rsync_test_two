@@ -9,32 +9,32 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class VehicleNumCache {
 
-    private final Integer existFlag = new Integer(1);
-    private Cache<String,Integer> cache = CacheBuilder.newBuilder()
+    private Cache<String,Object> cache = CacheBuilder.newBuilder()
             .recordStats()
             .maximumSize(5000000)
-            .expireAfterWrite(3, TimeUnit.MINUTES)
+            .expireAfterWrite(10, TimeUnit.MINUTES)
             .build();
     /**
      * 返回是否存在车辆，非null为存在
-     * @param vehicleNum
      * @return
      */
-    public Integer get(String vehicleNum){
-        return cache.getIfPresent(vehicleNum);
+    public Object get(String key){
+        return cache.getIfPresent(key);
     }
     /**
      * 返回是否存在车辆，非null为存在
-     * @param vehicleNum
      * @return
      */
-    public void put(String vehicleNum){
-        cache.put(vehicleNum,existFlag);
+    public void put(String key, Object value){
+        cache.put(key,value);
 
     }
-    public void remove(String vehicleNum){
-        cache.invalidate(vehicleNum);
+    public void put(String key, Integer value){
+        cache.put(key,value);
 
     }
+    public void remove(String key){
+        cache.invalidate(key);
 
+    }
 }

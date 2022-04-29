@@ -8,18 +8,17 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
 import com.trechina.planocycle.service.CommodityScoreDataService;
 import com.trechina.planocycle.utils.ResultMaps;
+import com.trechina.planocycle.utils.VehicleNumCache;
 import com.trechina.planocycle.utils.cgiUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,6 +30,10 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
+    private VehicleNumCache vehicleNumCache;
+    @Autowired
+    private ThreadPoolTaskExecutor executor;
     @Autowired
     private cgiUtils cgiUtil;
 
@@ -44,47 +47,62 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Override
     public Map<String, Object> getCommodityScoreData(String taskID, String companyCd) {
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        List strList = new ArrayList();
-        // taskIdを持って、再度cgiに運転状態/データの取得を要求する
-        Map<String, Object> data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
-        if ("9".equals(data.get("data"))){
-            return data;
-        }
-        logger.info("商品力点数表web版cgi返回数据：{}", data);
         String authorCd = session.getAttribute("aud").toString();
-        // 返されるデータは文字列で、2 D配列に処理されます。
-        if (data.get("data") != null) {
-            String[] strResult = data.get("data").toString().split("@");
-            String[] strSplit = null;
-            String[] arr;
-            int a = 1;
-            productPowerDataMapper.deleteWKSyokika(companyCd, authorCd);
-            productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
-            productPowerDataMapper.deleteWKYobiiitern(authorCd, companyCd);
-            productPowerDataMapper.deleteWKYobiiiternData(authorCd, companyCd);
-            for (int i = 0; i < strResult.length; i++) {
-                strSplit = strResult[i].split(" ");
-                arr = new String[strSplit.length + 1];
-                for (int j = strSplit.length - 1; j >= a; j--) {
-                    arr[j + 1] = strSplit[j];
-                }
-                arr[a] = session.getAttribute("aud").toString();
-                System.arraycopy(strSplit, 0, arr, 0, a);
-                strList.add(arr);
+        Map<String, Object> data;
+        if (vehicleNumCache.get(taskID)==null) {
+            data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
+            if ("9".equals(data.get("data")) || data.get("data") == null) {
+                return data;
+            } else {
+                vehicleNumCache.put(taskID, "1");
+                Map<String, Object> finalData = data;
+                executor.execute(() -> {
+                    List strList = new ArrayList();
+                    // taskIdを持って、再度cgiに運転状態/データの取得を要求する
+                    logger.info("商品力点数表web版cgi返回数据：{}", finalData);
+                    // 返されるデータは文字列で、2 D配列に処理されます。
+                    if (finalData.get("data") != null) {
+                        String[] strResult = finalData.get("data").toString().split("@");
+                        String[] strSplit = null;
+                        String[] arr;
+                        int a = 1;
+                        productPowerDataMapper.deleteWKSyokika(companyCd, authorCd);
+                        productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
+                        productPowerDataMapper.deleteWKYobiiitern(authorCd, companyCd);
+                        productPowerDataMapper.deleteWKYobiiiternData(authorCd, companyCd);
+                        for (int i = 0; i < strResult.length; i++) {
+                            strSplit = strResult[i].split(" ");
+                            arr = new String[strSplit.length + 1];
+                            for (int j = strSplit.length - 1; j >= a; j--) {
+                                arr[j + 1] = strSplit[j];
+                            }
+                            arr[a] = authorCd;
+                            System.arraycopy(strSplit, 0, arr, 0, a);
+                            if (i % 1000 == 0 && i >= 1000) {
+                                productPowerDataMapper.insert(strList);
+                                strList.clear();
+                            }
+                            strList.add(arr);
+                        }
+                        if (!strList.isEmpty()) {
+                            productPowerDataMapper.insert(strList);
+                        }
+                    }
+                    vehicleNumCache.put(taskID, "2");
+                });
             }
-        } else {
-            return data;
-        }
-        try {
-            exec(strList);
-        } catch (InterruptedException e) {
-            logger.error("", e);
-            Thread.currentThread().interrupt();
-        }
-        List<ProductPowerMstData> syokikaList = productPowerDataMapper.selectWKSyokika(companyCd, authorCd);
+        }else {
+            if ("2".equals(vehicleNumCache.get(taskID))){
+                vehicleNumCache.remove(taskID);
+                List<ProductPowerMstData> syokikaList = productPowerDataMapper.selectWKSyokika(companyCd, authorCd);
+                logger.info("返回pos基本情報はい{}", syokikaList);
+                return ResultMaps.result(ResultEnum.SUCCESS,syokikaList);
+            }
 
-        logger.info("返回pos基本情報はい{}", syokikaList);
-        return ResultMaps.result(ResultEnum.SUCCESS, syokikaList);
+
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS,"9");
+
     }
 
     /**
@@ -98,49 +116,51 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         //ユーザーIDの取得
         String authorCd = session.getAttribute("aud").toString();
-        if (!"1".equals(taskID)) {
 
-            List strList = new ArrayList();
-            // taskIdを持って、再度cgiに運転状態/データの取得を要求する
-            Map<String, Object> data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
-            if ("9".equals(data.get("data"))){
-                return data;
-            }
-            logger.info("商品力点数表web版cgi返回数据：{}", data);
-            // 返されるデータは文字列で、2 D配列に処理されます。
-            if (data.get("data") != null && data.get("data") != "") {
-                String[] strResult = data.get("data").toString().split("@");
-                String[] strSplit = null;
-                String[] arr;
-                int a = 1;
-                productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
-                for (int i = 0; i < strResult.length; i++) {
-                    strSplit = strResult[i].split(" ");
-                    arr = new String[strSplit.length + 1];
-                    for (int j = strSplit.length - 1; j >= a; j--) {
-                        arr[j + 1] = strSplit[j];
+            if (!"1".equals(taskID)) {
+
+                List strList = new ArrayList();
+                // taskIdを持って、再度cgiに運転状態/データの取得を要求する
+                Map<String, Object> data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
+                if ("9".equals(data.get("data"))) {
+                    return data;
+                }
+                logger.info("商品力点数表web版cgi返回数据：{}", data);
+                // 返されるデータは文字列で、2 D配列に処理されます。
+                if (data.get("data") != null && data.get("data") != "") {
+                    String[] strResult = data.get("data").toString().split("@");
+                    String[] strSplit = null;
+                    String[] arr;
+                    int a = 1;
+                    productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
+                    for (int i = 0; i < strResult.length; i++) {
+                        strSplit = strResult[i].split(" ");
+                        arr = new String[strSplit.length + 1];
+                        for (int j = strSplit.length - 1; j >= a; j--) {
+                            arr[j + 1] = strSplit[j];
+                        }
+                        arr[a] = session.getAttribute("aud").toString();
+                        System.arraycopy(strSplit, 0, arr, 0, a);
+                        //データが大きすぎて1回1000保存
+                        if (i % 1000 == 0 && i >= 1000) {
+                            productPowerDataMapper.insertGroup(strList);
+                            strList.clear();
+                        }
+                        strList.add(arr);
                     }
-                    arr[a] = session.getAttribute("aud").toString();
-                    System.arraycopy(strSplit, 0, arr, 0, a);
-                    //データが大きすぎて1回1000保存
-                    if (i % 1000 == 0 && i >= 1000) {
+                    if (!strList.isEmpty()) {
                         productPowerDataMapper.insertGroup(strList);
-                        strList.clear();
                     }
-                    strList.add(arr);
-                }
-                if (!strList.isEmpty()) {
-                    productPowerDataMapper.insertGroup(strList);
-                }
-            } else if ("".equals(data.get("data"))) {
-                productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
-            } else {
+                } else if ("".equals(data.get("data"))) {
+                    productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
+                } else {
 
-                return data;
+                    return data;
+                }
+
+
             }
-
-
-        }
+        
         List<ProductPowerMstData> kokyakuList = productPowerDataMapper.selectWKKokyaku(authorCd, companyCd);
         logger.info("pos基本情報和顧客情報：{}", kokyakuList);
         List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData(authorCd, companyCd);
@@ -171,6 +191,19 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         });
 
         return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);
+    }
+
+    @Override
+    public Map<String, Object> productTaskId(String taskId) {
+        if (vehicleNumCache.get("IsNull"+taskId)!=null){
+            vehicleNumCache.remove(2+taskId);
+            return ResultMaps.result(ResultEnum.CGITIEMOUT);
+        }
+        if (vehicleNumCache.get(taskId) != null){
+            vehicleNumCache.remove(taskId);
+            return ResultMaps.result(ResultEnum.SUCCESS,"success");
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS,"9");
     }
 
 

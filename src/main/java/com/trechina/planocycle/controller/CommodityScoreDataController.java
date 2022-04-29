@@ -27,6 +27,15 @@ public class CommodityScoreDataController {
     }
 
     /**
+     * 查看自动计算执行状态
+     * @param taskId
+     * @return
+     */
+    @GetMapping("/productTaskId")
+    public Map<String, Object> autoTaskId(String taskId){
+        return commodityScoreDataService.productTaskId(taskId);
+    }
+    /**
      * 商品力点数表の基本データの取得
      *
      * @param productPowerDataForCgiDto
