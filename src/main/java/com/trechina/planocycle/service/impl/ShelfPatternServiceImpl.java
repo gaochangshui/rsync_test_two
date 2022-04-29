@@ -401,8 +401,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     }
 
     @Override
-    public Map<String, Object> getShelfPatternForArea(String companyCd, int[] areaCds) {
-        List<ShelfNamePatternVo> shelfPatternForArea = shelfPatternMstMapper.getShelfPatternForArea(companyCd, areaCds);
+    public Map<String, Object> getShelfPatternForArea(String companyCd) {
+        List<ShelfNamePatternVo> shelfPatternForArea = shelfPatternMstMapper.getShelfPatternForArea(companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS,shelfPatternForArea);
     }
 

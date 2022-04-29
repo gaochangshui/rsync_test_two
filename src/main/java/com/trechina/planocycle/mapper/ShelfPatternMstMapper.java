@@ -38,6 +38,6 @@ public interface ShelfPatternMstMapper {
 
     List<Integer> getShelfPattern(@Param("companyCd") String companyCd, @Param("shelfNameCd") Integer shelfNameCd);
 
-    List<ShelfNamePatternVo> getShelfPatternForArea(@Param("companyCd") String companyCd,@Param("areaCds")int[]a);
+    List<ShelfNamePatternVo> getShelfPatternForArea(@Param("companyCd") String companyCd);
 
 }

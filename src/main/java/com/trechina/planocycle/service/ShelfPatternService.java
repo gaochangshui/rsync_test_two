@@ -93,7 +93,7 @@ public interface ShelfPatternService {
      * @param areaCds
      * @return
      */
-     Map<String,Object> getShelfPatternForArea(String companyCd,int[] areaCds);
+     Map<String,Object> getShelfPatternForArea(String companyCd);
 
     void patternDownloadForExcel(List<ShelfPatternMst> patternDataList,String companyCd, HttpServletResponse response) ;
 }

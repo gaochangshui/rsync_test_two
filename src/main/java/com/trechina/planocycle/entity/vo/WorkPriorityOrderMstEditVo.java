@@ -9,7 +9,7 @@ public class WorkPriorityOrderMstEditVo {
 
     private Long shelfPatternCd;
 
-    private String areaNameCd;
+//    private String areaNameCd;
 
     private Short attrA;
 
@@ -41,14 +41,6 @@ public class WorkPriorityOrderMstEditVo {
 
     public void setShelfPatternCd(Long shelfPatternCd) {
         this.shelfPatternCd = shelfPatternCd;
-    }
-
-    public String getAreaNameCd() {
-        return areaNameCd;
-    }
-
-    public void setAreaNameCd(String areaNameCd) {
-        this.areaNameCd = areaNameCd;
     }
 
     public Short getAttrA() {
@@ -89,7 +81,6 @@ public class WorkPriorityOrderMstEditVo {
                 "productPowerCd=" + productPowerCd +
                 ", shelfCd=" + shelfCd +
                 ", shelfPatternCd=" + shelfPatternCd +
-                ", areaNameCd='" + areaNameCd + '\'' +
                 ", attrA=" + attrA +
                 ", attrB=" + attrB +
                 ", partitionFlag=" + partitionFlag +
