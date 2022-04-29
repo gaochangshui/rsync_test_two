@@ -256,7 +256,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         orderMst.setShelfPatternCd(shelfPatternCd);
         orderMst.setAttribute1(dto.getAttr1());
         orderMst.setAttribute2(dto.getAttr2());
-        orderMst.setAreaNameCd(dto.getAreaNameCd());
+//        orderMst.setAreaNameCd(dto.getAreaNameCd());
         orderMst.setPriorityOrderCd(dto.getPriorityOrderCd());
         orderMst.setProductPowerCd(productPowerCd);
         workPriorityOrderMstMapper.insert(orderMst);

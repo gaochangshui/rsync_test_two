@@ -144,59 +144,50 @@
     and pts.deleteflg = 0
     inner join planocycle.shelf_pts_data_jandata jandata
     on pts.id = jandata.pts_cd
-    LEFT JOIN planocycle.shelf_pattern_area area ON pattern.shelf_pattern_cd = area.shelf_pattern_cd
-
-    AND area.deleteflg = 0
-
+<!--     LEFT JOIN planocycle.shelf_pattern_area area ON pattern.shelf_pattern_cd = area.shelf_pattern_cd-->
+<!--    AND area.deleteflg = 0 -->
     WHERE
     mst.deleteflg = 0
-    and exists (select deleteflg from planocycle.shelf_pattern_branch as br where pattern.shelf_pattern_cd=br.shelf_pattern_cd and deleteflg = 0 )
+<!--    and exists (select deleteflg from planocycle.shelf_pattern_branch as br where pattern.shelf_pattern_cd=br.shelf_pattern_cd and deleteflg = 0 )-->
+<!--          AND mst.company_cd = #{companyCd,jdbcType=VARCHAR}-->
+      </select>
+        <select id="getExcelForPattern" resultType="java.util.Map">
 
+        </select>
+        <delete id="deleteByPrimaryKey" parameterType="map">
+        delete from planocycle.shelf_pattern_mst
+        where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+          and shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+          and area = #{area,jdbcType=INTEGER}
+      </delete>
+        <update id="deleteByShelfName">
+          update planocycle.shelf_pattern_mst
+          set deleteflg=1 , maintainer_cd=#{authorCd} , modified=now()
+          where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+        </update>
+      <update id="deleteShelfPdCdHistory">
+        update planocycle.shelf_pts_data_history
+        set edit_time=now(),editer_cd=#{authorCd},deleteflg=1
+        where pattern_cd =#{id,jdbcType=INTEGER}
+      </update>
+        <update id="update">
+          update planocycle.shelf_pattern_mst set company_cd=#{conpanyCd},shelf_name_cd=#{shelfNameCd},shelf_pattern_name=#{shelfPatternName}
+            ,ptskey=#{ptsRelationID},maintainer_cd=#{maintainerCd},modified=now()
+            where shelf_pattern_cd=#{shelfPatternCd}
+        </update>
+        <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternMst">
+          <selectKey resultType="int" keyProperty="shelfPatternCd" order="AFTER">
+            select  currval('planocycle.shelf_pattern_mst_shelf_pattern_cd_seq'::regclass) as id
+          </selectKey>
+        insert into planocycle.shelf_pattern_mst (company_cd, shelf_name_cd,
+          shelf_pattern_name, ptskey, create_time,
+          author_cd, registered, maintainer_cd,
+          modified)
+        values
+         (#{conpanyCd,jdbcType=VARCHAR},#{shelfNameCd,jdbcType=INTEGER},
+          #{shelfPatternName,jdbcType=VARCHAR},#{ptsRelationID,jdbcType=VARCHAR}, now(),
+          #{authorCd,jdbcType=VARCHAR}, now(), #{maintainerCd,jdbcType=VARCHAR},now())
 
+      </insert>
 
-    and area.areacd in
-      <foreach collection="areaCds" item="item" open="(" close=")" separator=",">
-        #{item}
-      </foreach>
-      AND mst.company_cd = #{companyCd,jdbcType=VARCHAR}
-  </select>
-    <select id="getExcelForPattern" resultType="java.util.Map">
-
-    </select>
-    <delete id="deleteByPrimaryKey" parameterType="map">
-    delete from planocycle.shelf_pattern_mst
-    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
-      and shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
-      and area = #{area,jdbcType=INTEGER}
-  </delete>
-    <update id="deleteByShelfName">
-      update planocycle.shelf_pattern_mst
-      set deleteflg=1 , maintainer_cd=#{authorCd} , modified=now()
-      where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
-    </update>
-  <update id="deleteShelfPdCdHistory">
-    update planocycle.shelf_pts_data_history
-    set edit_time=now(),editer_cd=#{authorCd},deleteflg=1
-    where pattern_cd =#{id,jdbcType=INTEGER}
-  </update>
-    <update id="update">
-      update planocycle.shelf_pattern_mst set company_cd=#{conpanyCd},shelf_name_cd=#{shelfNameCd},shelf_pattern_name=#{shelfPatternName}
-        ,ptskey=#{ptsRelationID},maintainer_cd=#{maintainerCd},modified=now()
-        where shelf_pattern_cd=#{shelfPatternCd}
-    </update>
-    <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternMst">
-      <selectKey resultType="int" keyProperty="shelfPatternCd" order="AFTER">
-        select  currval('planocycle.shelf_pattern_mst_shelf_pattern_cd_seq'::regclass) as id
-      </selectKey>
-    insert into planocycle.shelf_pattern_mst (company_cd, shelf_name_cd,
-      shelf_pattern_name, ptskey, create_time,
-      author_cd, registered, maintainer_cd,
-      modified)
-    values
-     (#{conpanyCd,jdbcType=VARCHAR},#{shelfNameCd,jdbcType=INTEGER},
-      #{shelfPatternName,jdbcType=VARCHAR},#{ptsRelationID,jdbcType=VARCHAR}, now(),
-      #{authorCd,jdbcType=VARCHAR}, now(), #{maintainerCd,jdbcType=VARCHAR},now())
-
-  </insert>
-
-</mapper>
+    </mapper>

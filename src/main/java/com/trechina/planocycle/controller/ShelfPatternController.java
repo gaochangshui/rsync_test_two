@@ -109,10 +109,10 @@ public class ShelfPatternController {
     /**
      * areaに基づいて棚名と棚patternを取得
      */
-    @GetMapping("getShelfPatternForArea")
-    public Map<String, Object> getShelfPatternForArea(@RequestParam("companyCd") String companyCd, @RequestParam("areaCds") int[] areaCds) {
+    @GetMapping("getShelfPattern")
+    public Map<String, Object> getShelfPatternForArea(@RequestParam("companyCd") String companyCd) {
 
-        return shelfPatternService.getShelfPatternForArea(companyCd, areaCds);
+        return shelfPatternService.getShelfPatternForArea(companyCd);
     }
 
     @GetMapping("patternDownloadForExcel")

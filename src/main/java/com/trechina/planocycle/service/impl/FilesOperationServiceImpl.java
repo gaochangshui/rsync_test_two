@@ -203,7 +203,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 for (MultipartFile file : multipartFileList) {
                     String filenames = "";
                     if (file != null && file.getOriginalFilename() != null) {
-                        filenames = ("" + file.getOriginalFilename()).replace(" ", "*");
+                        filenames = ("" + file.getOriginalFilename());
                         if (filenames.contains(".csv")) {
                             excelPutPath(file, path + filenames);
                             File file1 = new File(path + filenames);
