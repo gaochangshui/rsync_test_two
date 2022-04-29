@@ -14,9 +14,9 @@
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
-    <include refid="Base_Column_List" />
+      company_cd, date_mst, case tenpo_kaisou_mst when 'tenpo_kaisou_core_mst' then '1' else '0' end as tenpo_kaisou_mst , selected_tenpo,
+      case shouhin_kaisou_mst when 'shouhin_kaisou_core_mst' then '1' else  '0' end as shouhin_kaisou_mst, selected_shouhin
     from masterdb.mst_kigyocore
     where company_cd = #{companyCd,jdbcType=VARCHAR}
   </select>
-
 </mapper>
