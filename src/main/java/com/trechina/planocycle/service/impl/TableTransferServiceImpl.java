@@ -1,14 +1,13 @@
 package com.trechina.planocycle.service.impl;
 
 import com.trechina.planocycle.exception.BusinessException;
-import com.trechina.planocycle.mapper.AreasMapper;
-import com.trechina.planocycle.mapper.AttributeMapper;
-import com.trechina.planocycle.mapper.BranchsMapper;
-import com.trechina.planocycle.mapper.JansMapper;
+import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.TableTransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class TableTransferServiceImpl implements TableTransferService {
@@ -20,6 +19,8 @@ public class TableTransferServiceImpl implements TableTransferService {
     private BranchsMapper branchsMapper;
     @Autowired
     private JansMapper jansMapper;
+    @Autowired
+    private JanInfoMapper janInfoMapper;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -60,5 +61,20 @@ public class TableTransferServiceImpl implements TableTransferService {
         } catch (Exception e) {
             throw new BusinessException("更新失敗");
         }
+    }
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int getJanInfoTransfer() {
+        List<String> workTableList = janInfoMapper.getSchemaOrTableName();
+        for (String table : workTableList) {
+            try {
+                String[] wks = table.split("_wk");
+                janInfoMapper.dropFinal(wks[0]);
+                return  janInfoMapper.setFinalForWork(table,wks[0]);
+            } catch (Exception e) {
+                throw new BusinessException(table+"更新失敗");
+            }
+        }
+        return 0;
     }
 }

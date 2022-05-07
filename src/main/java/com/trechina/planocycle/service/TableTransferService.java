@@ -8,4 +8,6 @@ public interface TableTransferService {
     int getJansTransfer();
 
     int getAttrTransfer();
+
+    int getJanInfoTransfer();
 }

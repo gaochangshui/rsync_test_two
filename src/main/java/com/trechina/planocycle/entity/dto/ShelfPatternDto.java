@@ -1,5 +1,6 @@
 package com.trechina.planocycle.entity.dto;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ShelfPatternDto {
@@ -9,7 +10,7 @@ public class ShelfPatternDto {
     private List<Integer> area;
     private String shelfPatternName;
     private String ptsRelationID;
-
+    private String commonPartsData;
     private String[] storeCd;
 
     public String[] getStoreCd() {
@@ -68,14 +69,25 @@ public class ShelfPatternDto {
         this.ptsRelationID = ptsRelationID;
     }
 
+    public String getCommonPartsData() {
+        return commonPartsData;
+    }
+
+    public void setCommonPartsData(String commonPartsData) {
+        this.commonPartsData = commonPartsData;
+    }
+
     @Override
     public String toString() {
         return "ShelfPatternDto{" +
-                "companyCd='" + companyCd + '\'' +
+                "shelfPatternCd=" + shelfPatternCd +
+                ", companyCd='" + companyCd + '\'' +
                 ", shelfNameCD=" + shelfNameCD +
                 ", area=" + area +
                 ", shelfPatternName='" + shelfPatternName + '\'' +
                 ", ptsRelationID='" + ptsRelationID + '\'' +
+                ", commonPartsData='" + commonPartsData + '\'' +
+                ", storeCd=" + Arrays.toString(storeCd) +
                 '}';
     }
 }

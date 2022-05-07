@@ -3,6 +3,7 @@ package com.trechina.planocycle.entity.po;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.Arrays;
 import java.util.Date;
 
 public class ShelfPatternMst {
@@ -27,7 +28,7 @@ public class ShelfPatternMst {
     private Integer branch;
 
     private String[] storeCd;
-
+    private String commonPartsData;
     @JsonIgnore
     private String storeCdStr;
 
@@ -152,6 +153,14 @@ public class ShelfPatternMst {
         this.branch = branch;
     }
 
+    public String getCommonPartsData() {
+        return commonPartsData;
+    }
+
+    public void setCommonPartsData(String commonPartsData) {
+        this.commonPartsData = commonPartsData;
+    }
+
     @Override
     public String toString() {
         return "ShelfPatternMst{" +
@@ -168,6 +177,9 @@ public class ShelfPatternMst {
                 ", maintainerCd='" + maintainerCd + '\'' +
                 ", modified=" + modified +
                 ", branch=" + branch +
+                ", storeCd=" + Arrays.toString(storeCd) +
+                ", commonPartsData='" + commonPartsData + '\'' +
+                ", storeCdStr='" + storeCdStr + '\'' +
                 '}';
     }
 }

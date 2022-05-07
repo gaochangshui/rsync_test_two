@@ -32,7 +32,7 @@
   </sql>
   <sql id="branch_column_list">
     shelf.company_cd,shelf.shelf_name_cd,shelf.ptskey, name.shelf_name as shelfName, shelf.shelf_pattern_cd, shelf.shelf_pattern_name, shelf.create_time, shelf.author_cd,
-      shelf.registered, shelf.maintainer_cd, shelf.modified,shelf.modified,string_agg(branch.branch, ',') as storeCdStr
+      shelf.registered, shelf.maintainer_cd, shelf.modified,shelf.modified,string_agg(branch.branch, ',') as storeCdStr,shelf.common_parts_data
   </sql>
   <sql id="groups">
     shelf.company_cd,shelf.shelf_name_cd,name.shelf_name, shelf.shelf_pattern_cd,  shelf.shelf_pattern_name, shelf.create_time, shelf.author_cd,
@@ -171,7 +171,7 @@
         where pattern_cd =#{id,jdbcType=INTEGER}
       </update>
         <update id="update">
-          update planocycle.shelf_pattern_mst set company_cd=#{conpanyCd},shelf_name_cd=#{shelfNameCd},shelf_pattern_name=#{shelfPatternName}
+          update planocycle.shelf_pattern_mst set company_cd=#{conpanyCd},shelf_name_cd=#{shelfNameCd},shelf_pattern_name=#{shelfPatternName},common_parts_data = #{commonPartsData}
             ,ptskey=#{ptsRelationID},maintainer_cd=#{maintainerCd},modified=now()
             where shelf_pattern_cd=#{shelfPatternCd}
         </update>
@@ -182,11 +182,11 @@
         insert into planocycle.shelf_pattern_mst (company_cd, shelf_name_cd,
           shelf_pattern_name, ptskey, create_time,
           author_cd, registered, maintainer_cd,
-          modified)
+          modified,common_parts_data)
         values
          (#{conpanyCd,jdbcType=VARCHAR},#{shelfNameCd,jdbcType=INTEGER},
           #{shelfPatternName,jdbcType=VARCHAR},#{ptsRelationID,jdbcType=VARCHAR}, now(),
-          #{authorCd,jdbcType=VARCHAR}, now(), #{maintainerCd,jdbcType=VARCHAR},now())
+          #{authorCd,jdbcType=VARCHAR}, now(), #{maintainerCd,jdbcType=VARCHAR},now(),#{commonPartsData,jdbcType=VARCHAR})
 
       </insert>
 

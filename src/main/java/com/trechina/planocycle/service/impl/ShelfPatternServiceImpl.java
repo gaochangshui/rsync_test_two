@@ -1,7 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Strings;
 import com.trechina.planocycle.entity.dto.ShelfPatternBranchDto;
 import com.trechina.planocycle.entity.dto.ShelfPatternDto;
 import com.trechina.planocycle.entity.po.ShelfPatternArea;
@@ -17,7 +16,10 @@ import com.trechina.planocycle.service.ShelfPatternAreaService;
 import com.trechina.planocycle.service.ShelfPatternService;
 import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +98,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         shelfPatternMst.setPtsRelationID(shelfPatternDto.getPtsRelationID());
         shelfPatternMst.setAuthorCd(session.getAttribute("aud").toString());
         shelfPatternMst.setMaintainerCd(session.getAttribute("aud").toString());
+        shelfPatternMst.setCommonPartsData(shelfPatternDto.getCommonPartsData());
         //つかむ取authorid
         String authorCd = session.getAttribute("aud").toString();
         logger.info("pattern情報変換後のパラメータを保存：{}",shelfPatternMst);
@@ -157,6 +160,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         shelfPatternMst.setShelfPatternName(shelfPatternDto.getShelfPatternName());
         shelfPatternMst.setPtsRelationID(shelfPatternDto.getPtsRelationID());
         shelfPatternMst.setMaintainerCd(session.getAttribute("aud").toString());
+        shelfPatternMst.setCommonPartsData(shelfPatternDto.getCommonPartsData());
         //ユーザーIDの取得
         String authorCd = session.getAttribute("aud").toString();
         logger.info("修改pattern信息変換后的参数：{}",shelfPatternMst);

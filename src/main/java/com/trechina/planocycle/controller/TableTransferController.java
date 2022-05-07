@@ -46,4 +46,9 @@ public class TableTransferController {
     public int attrTransfer() {
         return tableTransferService.getAttrTransfer();
     }
+
+    @GetMapping("janInfoTransfer")
+    public int janInfoTransfer() {
+        return tableTransferService.getJanInfoTransfer();
+    }
 }
