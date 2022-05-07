@@ -67,4 +67,11 @@ public interface CommodityScoreMasterService {
      * 編集，つかむ取商品里点数表参数
      */
     public Map<String,Object> getAllDataOrParam(String companyCd,Integer productPowerNo);
+
+    /**
+     * 获取都道府県接口
+     * @return
+     */
+    Map<String, Object> getPrefectureInfo();
+
 }

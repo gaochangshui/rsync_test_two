@@ -6,7 +6,7 @@ public class Jans {
     private String janname;
 
     public String getJan() {
-        return jan;
+        return  jan;
     }
 
     public void setJan(String jan) {

@@ -20,6 +20,7 @@ public class ProductPowerParam {
     private String seasonStTime;
     private String storeCd;
     private String yearFlag;
+    private String commonPartsData;
 
     public String getCompany() {
         return company;
@@ -143,12 +144,29 @@ public class ProductPowerParam {
         this.yearFlag = yearFlag;
     }
 
+    public String getCommonPartsData() {
+        return commonPartsData;
+    }
+
+    public void setCommonPartsData(String commonPartsData) {
+        this.commonPartsData = commonPartsData;
+    }
+
+    public JSONObject getCustomerCondition() {
+        return customerCondition;
+    }
+
+    public void setCustomerCondition(JSONObject customerCondition) {
+
+        this.customerCondition = customerCondition;
+    }
+
     @Override
     public String toString() {
         return "ProductPowerParam{" +
                 "company='" + company + '\'' +
                 ", customerValue='" + customerValue + '\'' +
-                ", customerCondition='" + customerCondition + '\'' +
+                ", customerCondition=" + customerCondition +
                 ", posValue='" + posValue + '\'' +
                 ", prdCd='" + prdCd + '\'' +
                 ", prepareValue='" + prepareValue + '\'' +
@@ -162,14 +180,7 @@ public class ProductPowerParam {
                 ", seasonStTime='" + seasonStTime + '\'' +
                 ", storeCd='" + storeCd + '\'' +
                 ", yearFlag='" + yearFlag + '\'' +
+                ", commonPartsData='" + commonPartsData + '\'' +
                 '}';
-    }
-
-    public JSONObject getCustomerCondition() {
-        return customerCondition;
-    }
-
-    public void setCustomerCondition(JSONObject customerCondition) {
-        this.customerCondition = customerCondition;
     }
 }

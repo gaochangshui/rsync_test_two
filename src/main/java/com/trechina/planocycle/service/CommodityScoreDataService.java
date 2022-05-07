@@ -23,12 +23,7 @@ public interface CommodityScoreDataService {
      */
     Map<String, Object> getCommodityScoreGroupData(String taskID, String companyCd);
 
-    /**
-     * 查看自动计算执行状态
-     * @param taskId
-     * @return
-     */
-    Map<String, Object> productTaskId(String taskId);
+
     /**
      * 商品力点数表基本taskidを取得する
      *

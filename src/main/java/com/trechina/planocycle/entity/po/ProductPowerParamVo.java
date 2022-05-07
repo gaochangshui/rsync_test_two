@@ -18,6 +18,8 @@ public class ProductPowerParamVo {
     private String seasonStTime;
     private String storeCd;
     private String yearFlag;
+    private String commonPartsData;
+
 
     public String getCompany() {
         return company;
@@ -149,9 +151,17 @@ public class ProductPowerParamVo {
         this.customerCondition = customerCondition;
     }
 
+    public String getCommonPartsData() {
+        return commonPartsData;
+    }
+
+    public void setCommonPartsData(String commonPartsData) {
+        this.commonPartsData = commonPartsData;
+    }
+
     @Override
     public String toString() {
-        return "ProductPowerParam{" +
+        return "ProductPowerParamVo{" +
                 "company='" + company + '\'' +
                 ", customerValue='" + customerValue + '\'' +
                 ", customerCondition='" + customerCondition + '\'' +
@@ -168,8 +178,7 @@ public class ProductPowerParamVo {
                 ", seasonStTime='" + seasonStTime + '\'' +
                 ", storeCd='" + storeCd + '\'' +
                 ", yearFlag='" + yearFlag + '\'' +
+                ", commonPartsData='" + commonPartsData + '\'' +
                 '}';
     }
-
-
 }

@@ -116,9 +116,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         //ユーザーIDの取得
         String authorCd = session.getAttribute("aud").toString();
-
             if (!"1".equals(taskID)) {
-
                 List strList = new ArrayList();
                 // taskIdを持って、再度cgiに運転状態/データの取得を要求する
                 Map<String, Object> data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
@@ -154,22 +152,16 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 } else if ("".equals(data.get("data"))) {
                     productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
                 } else {
-
                     return data;
                 }
-
-
             }
-        
         List<ProductPowerMstData> kokyakuList = productPowerDataMapper.selectWKKokyaku(authorCd, companyCd);
         logger.info("pos基本情報和顧客情報：{}", kokyakuList);
         List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData(authorCd, companyCd);
         logger.info("準備プロジェクト：{}", kokyakuList);
-
         if (wkYobiiiternDataList.isEmpty()) {
             return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);
         }
-
         kokyakuList.forEach(item -> {
             for (WKYobiiiternData wkYobiiiternData : wkYobiiiternDataList) {
                 Class w = item.getClass();
@@ -187,23 +179,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 }
 
             }
-
         });
 
         return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);
-    }
-
-    @Override
-    public Map<String, Object> productTaskId(String taskId) {
-        if (vehicleNumCache.get("IsNull"+taskId)!=null){
-            vehicleNumCache.remove(2+taskId);
-            return ResultMaps.result(ResultEnum.CGITIEMOUT);
-        }
-        if (vehicleNumCache.get(taskId) != null){
-            vehicleNumCache.remove(taskId);
-            return ResultMaps.result(ResultEnum.SUCCESS,"success");
-        }
-        return ResultMaps.result(ResultEnum.SUCCESS,"9");
     }
 
 

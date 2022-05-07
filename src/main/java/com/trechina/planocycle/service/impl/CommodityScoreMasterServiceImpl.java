@@ -291,6 +291,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setSeasonEndTime(param.getSeasonEndTime());
         powerParam.setSeasonStTime(param.getSeasonStTime());
         powerParam.setYearFlag(param.getYearFlag());
+        powerParam.setCommonPartsData(param.getCommonPartsData());
         List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(productPowerNo, companyCd);
         List<Object> list = new ArrayList();
         list.add(allData);
@@ -298,6 +299,17 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         list.add(reserve);
 
         return ResultMaps.result(ResultEnum.SUCCESS,list);
+    }
+
+    @Override
+    public Map<String, Object> getPrefectureInfo() {
+
+            ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+            String pathInfo = resourceBundle.getString("PlaceList");
+
+            String result=cgiUtil.getCgi(pathInfo,(String) session.getAttribute("MSPACEDGOURDLP"));
+            return ResultMaps.result(ResultEnum.SUCCESS, JSON.parse(result));
+
     }
 
 }

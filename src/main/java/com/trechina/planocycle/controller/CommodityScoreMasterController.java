@@ -71,4 +71,13 @@ public class CommodityScoreMasterController {
     public Map<String,Object> getAllDataOrParam(String companyCd,Integer productPowerNo){
         return commodityScoreMasterService.getAllDataOrParam(companyCd,productPowerNo);
     }
+
+    /**
+     * 获取都道府県
+     * @return
+     */
+    @GetMapping("/getPrefectureInfo")
+    public Map<String,Object> getPrefectureInfo() {
+        return commodityScoreMasterService.getPrefectureInfo();
+    }
 }
