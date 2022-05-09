@@ -10,7 +10,5 @@ import java.util.Map;
  */
 @Mapper
 public interface JanClassifyMapper {
-    List<Map<String, String>> selectJanClassify(String tableName);
-
-
+    List<Map<String, Object>> selectJanClassify(String tableName);
 }
