@@ -532,8 +532,8 @@
     </select>
     <select id="getDynamicAllData" resultType="map">
         select power_mst.jan,
-        <foreach collection="columnMap" index="index" item="item" separator=",">
-           jan_info.${index} as ${item}
+        <foreach collection="classify" index="index" item="item" separator=",">
+           jan_info."${item.sort}" as ${item.attr_val}
         </foreach>
         from planocycle.product_power_mst_data power_mst
         inner join ${tableName} jan_info on power_mst.jan=jan_info.${janCdColName}

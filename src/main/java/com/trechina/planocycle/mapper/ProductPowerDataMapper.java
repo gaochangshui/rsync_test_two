@@ -137,5 +137,5 @@ public interface ProductPowerDataMapper {
              @Param("checkedCodeList") String[] checkedCodeList);
 
     List<Map<String, Object>> getDynamicAllData(String companyCd, Integer productPowerCd, String tableName,
-                                                String janCdColName, Map<String, String> columnMap);
+                                                String janCdColName, List<Map<String, Object>> classify);
 }
