@@ -5,6 +5,7 @@ import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.entity.po.WKYobiiiternData;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.mapper.JanClassifyMapper;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
 import com.trechina.planocycle.service.CommodityScoreDataService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -35,6 +36,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Autowired
     private ThreadPoolTaskExecutor executor;
     @Autowired
+    private JanClassifyMapper janClassifyMapper;
+    @Autowired
     private cgiUtils cgiUtil;
 
 
@@ -51,7 +54,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         Map<String, Object> data;
         if (vehicleNumCache.get(taskID)==null) {
             data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
-            if ("9".equals(data.get("data")) || data.get("data") == null) {
+            if ("9".equals(data.get("data")) || data.get("data") == null || data.get("data") == "") {
                 return data;
             } else {
                 vehicleNumCache.put(taskID, "1");
@@ -94,7 +97,11 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }else {
             if ("2".equals(vehicleNumCache.get(taskID))){
                 vehicleNumCache.remove(taskID);
+
                 List<ProductPowerMstData> syokikaList = productPowerDataMapper.selectWKSyokika(companyCd, authorCd);
+                String tableName = "\""+ companyCd+"\"" + "." + "prod_" + "0001" +"_jan_info";
+                List<Map<String, String>> janClassifyList = janClassifyMapper.selectJanClassify(tableName);
+
                 logger.info("返回pos基本情報はい{}", syokikaList);
                 return ResultMaps.result(ResultEnum.SUCCESS,syokikaList);
             }
@@ -113,6 +120,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      */
     @Override
     public Map<String, Object> getCommodityScoreGroupData(String taskID, String companyCd) {
+        String commonPartsData = null;
+
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         //ユーザーIDの取得
         String authorCd = session.getAttribute("aud").toString();

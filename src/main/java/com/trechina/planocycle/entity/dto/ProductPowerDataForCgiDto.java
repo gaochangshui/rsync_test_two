@@ -15,6 +15,9 @@ public class ProductPowerDataForCgiDto {
     private String storeCd;
     private String yearFlag;
 
+
+
+
     public String getYearFlag() {
         return yearFlag;
     }
@@ -157,7 +160,7 @@ public class ProductPowerDataForCgiDto {
                 ", seasonStTime='" + seasonStTime + '\'' +
                 ", prdCd='" + prdCd + '\'' +
                 ", storeCd='" + storeCd + '\'' +
-                ", yearFlg='" + yearFlag + '\'' +
+                ", yearFlag='" + yearFlag + '\'' +
                 ", change_flag='" + change_flag + '\'' +
                 ", usercd='" + usercd + '\'' +
                 '}';

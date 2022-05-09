@@ -69,8 +69,10 @@ public class TableTransferServiceImpl implements TableTransferService {
         for (String table : workTableList) {
             try {
                 String[] wks = table.split("_wk");
-                janInfoMapper.dropFinal(wks[0]);
-                return  janInfoMapper.setFinalForWork(table,wks[0]);
+
+            System.out.println(wks[0]);
+                janInfoMapper.dropFinal(wks[0]+"\"");
+                janInfoMapper.setFinalForWork(table,wks[0]+"\"");
             } catch (Exception e) {
                 throw new BusinessException(table+"更新失敗");
             }

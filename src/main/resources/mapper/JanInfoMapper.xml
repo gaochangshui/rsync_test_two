@@ -5,9 +5,9 @@
         create table ${wkTable} as select * from ${finalTable}
     </insert>
     <delete id="dropFinal">
-        DROP TABLE IF EXISTS ${tableName};
+        DROP TABLE IF EXISTS  ${tableName};
     </delete>
     <select id="getSchemaOrTableName" resultType="java.lang.String">
-        select concat(table_schema,'.', "table_name")	from  information_schema.tables where table_schema  in ('87c6f4','1000') and "table_name" like '%wk'
+        select  '"' || table_schema || '"' || '.' || '"' || table_name || '"'	from  information_schema.tables where table_schema  in ('87c6f4','1000') and "table_name" like '%wk'
     </select>
 </mapper>

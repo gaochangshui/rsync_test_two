@@ -137,4 +137,7 @@ public interface ProductPowerDataMapper {
              @Param("checkedCodeList") String[] checkedCodeList);
 
     List<Map<String, Object>> getDynamicAllData(String companyCd, Integer productPowerCd, String tableName, String janCdColName);
+
+    List<Map<String, Object>> getSyokikaAllData(@Param("tableName") String tableName, @Param("janCdColName") String janCdColName,
+                    @Param("companyCd")String companyCd,@Param("authorCd") String authorCd);
 }
