@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ProductPowerDataMapper {
@@ -134,4 +135,6 @@ public interface ProductPowerDataMapper {
 
     List<ReserveMstVo> getCheckedReserve(@Param("productPowerCd") Integer productPowerCd, @Param("companyCd") String companyCd,
              @Param("checkedCodeList") String[] checkedCodeList);
+
+    List<Map<String, Object>> getDynamicAllData(String companyCd, Integer productPowerCd, String tableName, String janCdColName);
 }

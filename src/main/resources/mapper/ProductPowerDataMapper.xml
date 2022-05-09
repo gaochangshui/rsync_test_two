@@ -530,6 +530,15 @@
         </foreach>
         order by data_sort asc
     </select>
+    <select id="getDynamicAllData" resultType="map">
+        select power_mst.jan,
+        <foreach collection="columnMap" index="index" item="item" separator=",">
+           jan_info.${index} as jan_info.${item}
+        </foreach>
+        from planocycle.product_power_mst_data power_mst
+        inner join ${tableName} jan_info on power_mst.jan=jan_info.${janCdColName}
+        where power_mst.company_cd=#{company_cd} and power_mst.product_power_cd=#{productPowerCd}
+    </select>
     <select id="getParamCount" resultType="java.lang.Integer">
         select count(1)
         from planocycle.product_power_param_mst
