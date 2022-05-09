@@ -136,5 +136,6 @@ public interface ProductPowerDataMapper {
     List<ReserveMstVo> getCheckedReserve(@Param("productPowerCd") Integer productPowerCd, @Param("companyCd") String companyCd,
              @Param("checkedCodeList") String[] checkedCodeList);
 
-    List<Map<String, Object>> getDynamicAllData(String companyCd, Integer productPowerCd, String tableName, String janCdColName);
+    List<Map<String, Object>> getDynamicAllData(String companyCd, Integer productPowerCd, String tableName,
+                                                String janCdColName, Map<String, String> columnMap);
 }
