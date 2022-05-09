@@ -154,7 +154,15 @@
         <select id="getExcelForPattern" resultType="java.util.Map">
 
         </select>
-        <delete id="deleteByPrimaryKey" parameterType="map">
+  <select id="getPatternName" resultType="java.lang.String">
+    select shelf_pattern_name from planocycle.shelf_pattern_mst
+    where shelf_pattern_name in
+        <foreach collection="list" separator="," open="(" close=")" item="item">
+          #{item.shelfPatternName}
+        </foreach>
+        and company_cd = #{companyCd}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
         delete from planocycle.shelf_pattern_mst
         where company_cd = #{conpanyCd,jdbcType=VARCHAR}
           and shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
@@ -189,5 +197,11 @@
           #{authorCd,jdbcType=VARCHAR}, now(), #{maintainerCd,jdbcType=VARCHAR},now(),#{commonPartsData,jdbcType=VARCHAR})
 
       </insert>
-
+  <insert id="setPatternList" parameterType="java.util.List" keyProperty="shelfPatternCd" useGeneratedKeys="true">
+    insert into planocycle.shelf_pattern_mst(company_cd,shelf_name_cd,shelf_pattern_name,create_time,registered,modified,ptskey)
+    values
+    <foreach collection="shelfPatternDto" item="item" separator="," >
+      ('0001',#{item.shelfNameCD},#{item.shelfPatternName},now(),now(),now(),#{item.ptsRelationID})
+    </foreach>
+  </insert>
     </mapper>

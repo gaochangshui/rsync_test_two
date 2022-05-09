@@ -120,4 +120,14 @@ public class ShelfPatternController {
        List patternDataList = null;
          shelfPatternService.patternDownloadForExcel(patternDataList,companyCd,response);
     }
+
+    /**
+     * 批量保存棚pattern
+     * @param shelfPatternDto
+     * @return
+     */
+    @PostMapping("setPatternList")
+    public Map<String, Object> setPatternList(@RequestBody List<ShelfPatternDto> shelfPatternDto) {
+        return shelfPatternService.setPatternList(shelfPatternDto);
+    }
 }

@@ -429,6 +429,38 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         //    logger.error("io閉じる異常", e);
         //}
     }
+    /**
+     * 批量保存棚pattern
+     * @param shelfPatternDto
+     * @return
+     */
+    @Override
+    public Map<String, Object> setPatternList(List<ShelfPatternDto> shelfPatternDto) {
+        String companyCd = shelfPatternDto.get(0).getCompanyCd();
+        List<String> patternName = shelfPatternMstMapper.getPatternName(shelfPatternDto,companyCd);
+        if (!patternName.isEmpty()){
+            return ResultMaps.result(ResultEnum.SUCCESS,patternName);
+        }
+
+        String authorCd = session.getAttribute("aud").toString();
+        shelfPatternMstMapper.setPatternList(shelfPatternDto);
+        List<ShelfPatternBranch> branchList = new ArrayList();
+        for (ShelfPatternDto patternDto : shelfPatternDto) {
+            ShelfPatternBranch shelfPatternBranch= null;
+            for (String cd : patternDto.getStoreCd()) {
+                shelfPatternBranch = new ShelfPatternBranch();
+                shelfPatternBranch.setBranch(cd);
+                shelfPatternBranch.setStartTime(new Date());
+                shelfPatternBranch.setShelfPattrenCd(patternDto.getShelfPatternCd());
+                branchList.add(shelfPatternBranch);
+            }
+
+        }
+        if(!branchList.isEmpty()){
+            shelfPatternBranchMapper.insert(branchList, authorCd);
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
 
 
     void excelUtil(List<ShelfPatternMst> patternDataList,List<ShelfPatternBranch> patternBranch,List<ShelfNameDataVO> shelfNameList ,List<ShelfPatternBranchDto> BranchList ,HttpServletResponse response){

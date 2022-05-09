@@ -25,7 +25,8 @@
     set company_cd=#{conpanyCd},shelf_name=#{shelfName},edit_time=now(),editer_cd=#{authorCd}
     where id=#{id}
   </update>
-  <select id="selectShelfNameInfo" resultType="com.trechina.planocycle.entity.vo.ShelfNameDataVO">
+
+    <select id="selectShelfNameInfo" resultType="com.trechina.planocycle.entity.vo.ShelfNameDataVO">
     select
         shelf.id,shelf.company_cd, array_to_string(array_agg(areas.areaname),',') as areaName, shelf.shelf_name as shelfName,
            shelf.create_time as createTime, shelf.author_cd as authorCd

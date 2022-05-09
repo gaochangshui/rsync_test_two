@@ -96,4 +96,10 @@ public interface ShelfPatternService {
      Map<String,Object> getShelfPatternForArea(String companyCd);
 
     void patternDownloadForExcel(List<ShelfPatternMst> patternDataList,String companyCd, HttpServletResponse response) ;
+    /**
+     * 批量保存棚pattern
+     * @param shelfPatternDto
+     * @return
+     */
+    Map<String, Object> setPatternList(List<ShelfPatternDto> shelfPatternDto);
 }

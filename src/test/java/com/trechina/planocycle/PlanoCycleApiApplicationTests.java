@@ -1,5 +1,6 @@
 package com.trechina.planocycle;
 
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityAllResultDataDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.mapper.*;
@@ -15,8 +16,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -51,6 +55,10 @@ class PlanoCycleApiApplicationTests {
     PriorityOrderJanNewMapper priorityOrderJanNewMapper;
     @Autowired
     WorkPriorityAllResultDataMapper workPriorityAllResultDataMapper;
+    @Autowired
+    ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
+    JanClassifyMapper janClassifyMapper;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
@@ -119,8 +127,29 @@ class PlanoCycleApiApplicationTests {
         List<PriorityAllResultDataDto> resultDatas = workPriorityAllResultDataMapper.getResultDatas("0001", "10215814", 0, 80);
         resultDatas.stream().forEach(System.out::println);
     }
+    @Test
+    public  void test7(){
+        String commonPartsData = "{\"dateIsCore\":\"1\",\"storeLevel\":\"3\",\"storeIsCore\":\"1\",\"storeMstClass\":\"0001\",\"prodIsCore\":\"2\",\"prodMstClass\":\"0001\"}";
+        String companyCd = "87c6f4";
+        String authorCd = "10215814";
+        JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
+        String prodMstClass = jsonObject.get("prodMstClass").toString();
+        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        String isCompanyCd =null;
+        if ("1".equals(prodIsCore)){
+            isCompanyCd = "1000";
+        }else {
+            isCompanyCd = companyCd;
+        }
 
-    public  void test7(){}
+        String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd,prodMstClass);
+        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
+        List<Map<String, Object>> janClassifyList = janClassifyMapper.selectJanClassify(tableName);
+        Map<String, String> attrMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString()));
+        Map<String, String> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
+        List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
+                janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", janClassifyList,authorCd);
+    }
 
 
 }
