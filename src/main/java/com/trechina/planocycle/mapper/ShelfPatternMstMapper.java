@@ -40,7 +40,7 @@ public interface ShelfPatternMstMapper {
 
     List<ShelfNamePatternVo> getShelfPatternForArea(@Param("companyCd") String companyCd);
 
-    int setPatternList( List<ShelfPatternDto> shelfPatternDto);
+    int setPatternList( List<ShelfPatternDto> shelfPatternDto, String companyCd, String authorCd);
 
     List<String> getPatternName(@Param("list")List<ShelfPatternDto> shelfPatternDto,@Param("companyCd") String companyCd);
 }
