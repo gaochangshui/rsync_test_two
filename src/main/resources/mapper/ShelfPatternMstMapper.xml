@@ -161,6 +161,7 @@
           #{item.shelfPatternName}
         </foreach>
         and company_cd = #{companyCd}
+        and deleteflg = 0
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
         delete from planocycle.shelf_pattern_mst
@@ -198,10 +199,10 @@
 
       </insert>
   <insert id="setPatternList" parameterType="java.util.List" keyColumn="shelf_pattern_cd" keyProperty="shelfPatternDto.shelfPatternCd" useGeneratedKeys="true">
-    insert into planocycle.shelf_pattern_mst(company_cd,shelf_name_cd,shelf_pattern_name,create_time,registered,modified,ptskey)
+    insert into planocycle.shelf_pattern_mst(company_cd,shelf_name_cd,shelf_pattern_name,create_time,author_cd,registered,maintainer_cd,modified,ptskey,common_parts_data)
     values
     <foreach collection="shelfPatternDto" item="item" separator="," >
-      (#{companyCd},#{item.shelfNameCD},#{item.shelfPatternName},now(),now(),now(),#{item.ptsRelationID})
+      (#{companyCd},#{item.shelfNameCD},#{item.shelfPatternName},now(),#{authorCd},now(),#{authorCd},now(),#{item.ptsRelationID},#{item.commonPartsData})
     </foreach>
   </insert>
     </mapper>

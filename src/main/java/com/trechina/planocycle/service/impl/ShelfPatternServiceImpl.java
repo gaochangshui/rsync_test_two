@@ -435,6 +435,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> setPatternList(List<ShelfPatternDto> shelfPatternDto) {
         String companyCd = shelfPatternDto.get(0).getCompanyCd();
         List<String> patternName = shelfPatternMstMapper.getPatternName(shelfPatternDto,companyCd);
@@ -443,7 +444,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         }
 
         String authorCd = session.getAttribute("aud").toString();
-        shelfPatternMstMapper.setPatternList(shelfPatternDto);
+        shelfPatternMstMapper.setPatternList(shelfPatternDto,companyCd,authorCd);
         List<ShelfPatternBranch> branchList = new ArrayList();
         for (ShelfPatternDto patternDto : shelfPatternDto) {
             ShelfPatternBranch shelfPatternBranch= null;
@@ -453,6 +454,10 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 shelfPatternBranch.setStartTime(new Date());
                 shelfPatternBranch.setShelfPattrenCd(patternDto.getShelfPatternCd());
                 branchList.add(shelfPatternBranch);
+                if (branchList.size()==5000){
+                    shelfPatternBranchMapper.insert(branchList, authorCd);
+                    branchList.clear();
+                }
             }
 
         }
