@@ -9,7 +9,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
 @Mapper
 public interface ShelfPatternMstMapper {
     int deleteByPrimaryKey(@Param("conpanyCd") String conpanyCd, @Param("shelfPatternCd") Integer shelfPatternCd, @Param("area") Integer area);
@@ -28,7 +27,7 @@ public interface ShelfPatternMstMapper {
 
     String selectByShePatternNoNm(@Param("item") String shelfPatternNo);
 
-    List<Integer> selectDistinctName(ShelfPatternDto shelfPatternDto);
+    Integer selectDistinctName(ShelfPatternDto shelfPatternDto);
 
     void updateByPtsForShelfPdCd(@Param("id") Integer id,@Param("authorCd") String authorCd);
 
@@ -43,4 +42,6 @@ public interface ShelfPatternMstMapper {
     int setPatternList( List<ShelfPatternDto> shelfPatternDto, String companyCd, String authorCd);
 
     List<String> getPatternName(@Param("list")List<ShelfPatternDto> shelfPatternDto,@Param("companyCd") String companyCd);
+
+    List<ShelfPatternNameVO> getPatternForStorel(String storeIsCore,String companyCd);
 }

@@ -4,6 +4,7 @@ public class ParamConfigVO {
     private String itemName;
     private String itemCd;
     private String itemValue;
+    private Integer flag;
 
     public String getItemName() {
         return itemName;
@@ -27,5 +28,13 @@ public class ParamConfigVO {
 
     public void setItemValue(String itemValue) {
         this.itemValue = itemValue;
+    }
+
+    public Integer getFlag() {
+        return flag;
+    }
+
+    public void setFlag(Integer flag) {
+        this.flag = flag;
     }
 }

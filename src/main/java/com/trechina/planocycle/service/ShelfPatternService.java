@@ -102,4 +102,6 @@ public interface ShelfPatternService {
      * @return
      */
     Map<String, Object> setPatternList(List<ShelfPatternDto> shelfPatternDto);
+
+    Map<String, Object> getPatternForStorel(String companyCd, String storeIsCore);
 }

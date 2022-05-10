@@ -352,6 +352,18 @@
         where company_cd = #{companyCd} and author_cd = #{authorCd}
 
     </update>
+    <insert id="setSyokikaAllData">
+        insert into planocycle.work_product_power_syokika
+        <foreach collection="lists[0]" item="list" open="(" close=")" separator="," index="index">
+            ${index}
+        </foreach>
+        values
+        <foreach collection="lists" item="list" separator=","  index="index">
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </foreach>
+    </insert>
     <insert id="setWkDataForFinally">
         insert into planocycle.work_product_power_mst_data (company_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pd_pos_amount,pd_pos_num,
                                                        pd_branch_amount,pd_branch_num,pd_compare_amount,pd_compare_num,pd_branch_compare_amount,pd_branch_compare_num,
@@ -558,8 +570,11 @@
             jan_info."${item.sort}" as ${item.attr_val}
         </foreach>
         from planocycle.work_product_power_syokika power_syokika
-        inner join ${tableName} jan_info on power_syokika.jan=jan_info.${janCdColName}
-        where power_syokika.author_cd = #{authorCd}
+        left join ${tableName} jan_info on power_syokika.jan=jan_info.${janCdColName}
+        where power_syokika.author_cd = #{authorCd} and power_syokika.company_cd = #{companyCd}
+    </select>
+    <select id="rankCalculation" resultType="java.util.Map">
+
     </select>
 
 </mapper>

@@ -136,8 +136,12 @@ public interface ProductPowerDataMapper {
     List<ReserveMstVo> getCheckedReserve(@Param("productPowerCd") Integer productPowerCd, @Param("companyCd") String companyCd,
              @Param("checkedCodeList") String[] checkedCodeList);
 
-    List<Map<String, Object>> getSyokikaAllData(String companyCd, String tableName,
-                                                String janCdColName, List<Map<String, Object>> classify,@Param("authorCd") String authorCd);
+    List<Map<String, Object>> getSyokikaAllData(@Param("companyCd") String companyCd, @Param("tableName") String tableName,
+                                                @Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify,@Param("authorCd") String authorCd);
     List<Map<String, Object>> getDynamicAllData(String companyCd, Integer productPowerCd, String tableName,
                                                 String janCdColName, List<Map<String, Object>> classify);
+
+    int setSyokikaAllData(@Param("lists") List<Map<String,Object>>lists);
+
+    List<Map<String,Object>> rankCalculation(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 }
