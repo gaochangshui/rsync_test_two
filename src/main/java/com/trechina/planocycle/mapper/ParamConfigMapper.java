@@ -7,5 +7,5 @@ import java.util.List;
 
 @Mapper
 public interface  ParamConfigMapper {
-    List<ParamConfigVO> selectParamConfig(String type);
+    List<ParamConfigVO> selectParamConfig();
 }
