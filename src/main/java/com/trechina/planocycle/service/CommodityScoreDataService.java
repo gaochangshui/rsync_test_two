@@ -13,7 +13,7 @@ public interface CommodityScoreDataService {
      * @param taskID
      * @return
      */
-    Map<String, Object> getCommodityScoreData(String taskID, String companyCd);
+    Map<String, Object> getCommodityScoreData(String taskID, String companyCd,String commonPartsData);
 
     /**
      * 商品力点数表顧客Groupデータ取得
@@ -21,7 +21,7 @@ public interface CommodityScoreDataService {
      * @param taskID
      * @return
      */
-    Map<String, Object> getCommodityScoreGroupData(String taskID, String companyCd);
+    Map<String, Object> getCommodityScoreGroupData(String taskID, String companyCd,String commonPartsData);
 
 
     /**

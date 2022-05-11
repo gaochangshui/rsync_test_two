@@ -112,8 +112,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         String prepareValue = param.getPrepareValue();
         //POS項目
         String posValue = param.getPosValue();
-        String rangWeight = param.getRangWeight();
-        Set<String> weightKeys = JSON.parseObject(rangWeight).keySet();
+        String RankWeight = param.getRankWeight();
+        Set<String> weightKeys = JSON.parseObject(RankWeight).keySet();
 
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, productPowerCd);
         List<ProductPowerMstData> allData = productPowerDataMapper.getAllData(companyCd, productPowerCd);

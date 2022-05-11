@@ -1,9 +1,11 @@
 package com.trechina.planocycle.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.entity.po.WKYobiiiternData;
+import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.JanClassifyMapper;
 import com.trechina.planocycle.mapper.ParamConfigMapper;
@@ -20,13 +22,12 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.text.MessageFormat;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 @Service
 public class CommodityScoreDataServiceImpl implements CommodityScoreDataService {
@@ -54,8 +55,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      * @return
      */
     @Override
-    public Map<String, Object> getCommodityScoreData(String taskID, String companyCd) {
-        String commonPartsData = "{\"dateIsCore\":\"1\",\"storeLevel\":\"3\",\"storeIsCore\":\"1\",\"storeMstClass\":\"0000\",\"prodIsCore\":\"2\",\"prodMstClass\":\"0001\"}";
+    public Map<String, Object> getCommodityScoreData(String taskID, String companyCd,String commonPartsData) {
+         commonPartsData = "{\"dateIsCore\":\"1\",\"storeLevel\":\"3\",\"storeIsCore\":\"1\",\"storeMstClass\":\"0000\",\"prodIsCore\":\"2\",\"prodMstClass\":\"0001\"}";
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         String authorCd = session.getAttribute("aud").toString();
         Map<String, Object> data;
@@ -94,33 +95,33 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             }*/
                             strList.add(arr);
                         }
-                        //List<Map<String,Object>> list = new ArrayList<>();
-                        //
-                        //List<ParamConfigVO> paramConfigAll = paramConfigMapper.getParamConfigAll();
-                        //int spiltList = 30000/strList.get(0).length;
-                        //for (String[] strings : strList) {
-                        //
-                        //    Map<String, Object> map = new HashMap<>();
-                        //    for (int i = 0; i < paramConfigAll.size(); i++) {
-                        //        map.put("company_cd",strings[0]);
-                        //        map.put("author_cd",strings[1]);
-                        //        map.put("jan",strings[2]);
-                        //        if (paramConfigAll.get(i).getFlag() == 0) {
-                        //            map.put(paramConfigAll.get(i).getItemCd(), strings[i + 3]);
-                        //        }
-                        //    }
-                        //    list.add(map);
-                        //    if (list.size()==spiltList){
-                        //        productPowerDataMapper.setSyokikaAllData(list);
-                        //        list.clear();
-                        //    }
-                        //}
-                        //
-                        //if (!list.isEmpty()){
-                        //    productPowerDataMapper.setSyokikaAllData(list);
-                        //}
+                        List<Map<String,Object>> list = new ArrayList<>();
+
+                        List<ParamConfigVO> paramConfigAll = paramConfigMapper.getParamConfigAll();
+                        int spiltList = 30000/strList.get(0).length;
+                        for (String[] strings : strList) {
+
+                            Map<String, Object> map = new HashMap<>();
+                            for (int i = 0; i < paramConfigAll.size(); i++) {
+                                map.put("company_cd",strings[0]);
+                                map.put("author_cd",strings[1]);
+                                map.put("jan",strings[2]);
+                                if (paramConfigAll.get(i).getFlag() == 0) {
+                                    map.put(paramConfigAll.get(i).getItemCd(), strings[i + 3]);
+                                }
+                            }
+                            list.add(map);
+                            if (list.size()==spiltList){
+                                productPowerDataMapper.setSyokikaAllData(list);
+                                list.clear();
+                            }
+                        }
+
+                        if (!list.isEmpty()){
+                            productPowerDataMapper.setSyokikaAllData(list);
+                        }
                         if (!strList.isEmpty()) {
-                            productPowerDataMapper.insert(strList);
+                       //     productPowerDataMapper.insert(strList);
                         }
                     }
                     vehicleNumCache.put(taskID, "2");
@@ -137,23 +138,23 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     vehicleNumCache.remove(taskID);
 
                     List<ProductPowerMstData> syokikaList = productPowerDataMapper.selectWKSyokika(companyCd, authorCd);
-                    //JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
-                    //String prodMstClass = jsonObject.get("prodMstClass").toString();
-                    //String prodIsCore = jsonObject.get("prodIsCore").toString();
-                    //String isCompanyCd =null;
-                    //if ("1".equals(prodIsCore)){
-                    //    isCompanyCd = "1000";
-                    //}else {
-                    //    isCompanyCd = "87c6f4";
-                    //}
-                    //String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd,prodMstClass);
-                    //String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, "0001");
-                    //List<Map<String, Object>> janClassifyList = janClassifyMapper.selectJanClassify(tableName);
-                    //Map<String, String> attrMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString()));
-                    //Map<String, String> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
-                    //List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
-                    //        janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", janClassifyList,authorCd);
-                    //logger.info("返回pos基本情報はい{}", allData);
+                    JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
+                    String prodMstClass = jsonObject.get("prodMstClass").toString();
+                    String prodIsCore = jsonObject.get("prodIsCore").toString();
+                    String isCompanyCd =null;
+                    if ("1".equals(prodIsCore)){
+                        isCompanyCd = "1000";
+                    }else {
+                        isCompanyCd = "87c6f4";
+                    }
+                    String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd,prodMstClass);
+                    String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, "0001");
+                    List<Map<String, Object>> janClassifyList = janClassifyMapper.selectJanClassify(tableName);
+                    Map<String, String> attrMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString()));
+                    Map<String, String> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
+                    List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
+                            janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", janClassifyList,authorCd);
+                    logger.info("返回pos基本情報はい{}", allData);
                     return ResultMaps.result(ResultEnum.SUCCESS,syokikaList);
                 }
             }
@@ -169,8 +170,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      * @return
      */
     @Override
-    public Map<String, Object> getCommodityScoreGroupData(String taskID, String companyCd) {
-        String commonPartsData = null;
+    public Map<String, Object> getCommodityScoreGroupData(String taskID, String companyCd,String commonPartsData) {
+         commonPartsData = null;
 
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         //ユーザーIDの取得

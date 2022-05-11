@@ -272,7 +272,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setStoreCd(param.getStoreCd());
         powerParam.setCustomerValue(param.getCustomerValue());
         powerParam.setPrepareValue(param.getPrepareValue());
-        powerParam.setRangWeight(param.getRangWeight());
+        powerParam.setRankWeight(param.getRankWeight());
         powerParam.setPrdCd(param.getPrdCd());
         powerParam.setRecentlyFlag(param.getRecentlyFlag());
         powerParam.setRecentlyEndTime(param.getRecentlyEndTime());

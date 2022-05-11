@@ -22,8 +22,8 @@ public class CommodityScoreDataController {
      */
 
     @GetMapping("/getCommodityScoreData")
-    public Map<String, Object> getCommodityScoreData(String taskID, String companyCd) {
-        return commodityScoreDataService.getCommodityScoreData(taskID, companyCd);
+    public Map<String, Object> getCommodityScoreData(String taskID, String companyCd,String commonPartsData) {
+        return commodityScoreDataService.getCommodityScoreData(taskID, companyCd,commonPartsData);
     }
 
     /**
@@ -46,8 +46,8 @@ public class CommodityScoreDataController {
      */
 
     @GetMapping("/getCommodityScoreGroupData")
-    public Map<String, Object> getCommodityScoreGroupData(String taskID, String companyCd) {
-        return commodityScoreDataService.getCommodityScoreGroupData(taskID, companyCd);
+    public Map<String, Object> getCommodityScoreGroupData(String taskID, String companyCd,String commonPartsData) {
+        return commodityScoreDataService.getCommodityScoreGroupData(taskID, companyCd,commonPartsData);
     }
 
     /**

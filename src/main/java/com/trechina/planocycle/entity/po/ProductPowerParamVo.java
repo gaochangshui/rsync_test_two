@@ -9,7 +9,7 @@ public class ProductPowerParamVo {
     private String prdCd;
     private String prepareValue;
     private Integer productPowerNo;
-    private String rangWeight;
+    private String rankWeight;
     private String recentlyEndTime;
     private String recentlyFlag;
     private String recentlyStTime;
@@ -71,12 +71,12 @@ public class ProductPowerParamVo {
         this.productPowerNo = productPowerNo;
     }
 
-    public String getRangWeight() {
-        return rangWeight;
+    public String getRankWeight() {
+        return rankWeight;
     }
 
-    public void setRangWeight(String rangWeight) {
-        this.rangWeight = rangWeight;
+    public void setRankWeight(String RankWeight) {
+        this.rankWeight = RankWeight;
     }
 
     public String getRecentlyEndTime() {
@@ -169,7 +169,7 @@ public class ProductPowerParamVo {
                 ", prdCd='" + prdCd + '\'' +
                 ", prepareValue='" + prepareValue + '\'' +
                 ", productPowerNo=" + productPowerNo +
-                ", rangWeight='" + rangWeight + '\'' +
+                ", RankWeight='" + rankWeight + '\'' +
                 ", recentlyEndTime='" + recentlyEndTime + '\'' +
                 ", recentlyFlag='" + recentlyFlag + '\'' +
                 ", recentlyStTime='" + recentlyStTime + '\'' +
