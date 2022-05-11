@@ -14,7 +14,8 @@ public class ProductPowerDataForCgiDto {
     private String prdCd;
     private String storeCd;
     private String yearFlag;
-
+    private String channelNm;
+    private String placeNm;
 
 
 
@@ -145,6 +146,22 @@ public class ProductPowerDataForCgiDto {
         this.usercd = usercd;
     }
 
+    public String getChannelNm() {
+        return channelNm;
+    }
+
+    public void setChannelNm(String channelNm) {
+        this.channelNm = channelNm;
+    }
+
+    public String getPlaceNm() {
+        return placeNm;
+    }
+
+    public void setPlaceNm(String placeNm) {
+        this.placeNm = placeNm;
+    }
+
     @Override
     public String toString() {
         return "ProductPowerDataForCgiDto{" +
@@ -161,6 +178,8 @@ public class ProductPowerDataForCgiDto {
                 ", prdCd='" + prdCd + '\'' +
                 ", storeCd='" + storeCd + '\'' +
                 ", yearFlag='" + yearFlag + '\'' +
+                ", channelNm='" + channelNm + '\'' +
+                ", placeNm='" + placeNm + '\'' +
                 ", change_flag='" + change_flag + '\'' +
                 ", usercd='" + usercd + '\'' +
                 '}';

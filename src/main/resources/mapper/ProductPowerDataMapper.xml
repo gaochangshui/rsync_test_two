@@ -433,10 +433,33 @@
                k.branch_compare_num as gBranchCompareNum,s.classify_big as classifyBig,s.classify_middle as classifyMiddle,s.classify_small as classifySmall,
                s.classify_fine as classifyFine,s.pos_amount as pPosAmount,s.pos_num as pPosNum,s.branch_amount as pBranchAmount,s.branch_num as pBranchNum,
                s.compare_amount as pCompareAmount,s.compare_num as pCompareNum,
-               s.branch_compare_amount as pBranchCompareAmount,s.branch_compare_num as pBranchCompareNum
+               s.branch_compare_amount as pBranchCompareAmount,s.branch_compare_num as pBranchCompareNum,
+               yobi.item1,yobi.item2,yobi.item3,yobi.item4,yobi.item5,yobi.item6,yobi.item7,yobi.item8,yobi.item9,yobi.item10
 
         from  planocycle.work_product_power_syokika s left join planocycle.work_product_power_kokyaku k
                 on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd
+        left join (select
+                       dd.jan as jan,
+
+                       sum ( case when dd.data_cd = '31001' then dd.data_value else 0 end ) as item1,
+                       sum ( case when dd.data_cd = '31002' then dd.data_value else 0 end ) as item2,
+                       sum ( case when dd.data_cd = '31003' then dd.data_value else 0 end ) as item3,
+                       sum ( case when dd.data_cd = '31004' then dd.data_value else 0 end ) as item4,
+                       sum ( case when dd.data_cd = '31005' then dd.data_value else 0 end ) as item5,
+                       sum ( case when dd.data_cd = '31006' then dd.data_value else 0 end ) as item6,
+                       sum ( case when dd.data_cd = '31007' then dd.data_value else 0 end ) as item7,
+                       sum ( case when dd.data_cd = '31008' then dd.data_value else 0 end ) as item8,
+                       sum ( case when dd.data_cd = '31009' then dd.data_value else 0 end ) as item9,
+                       sum ( case when dd.data_cd = '31010' then dd.data_value else 0 end ) as item10
+                   from
+                       planocycle.work_product_power_reserve_mst mm
+                           inner join planocycle.work_product_power_reserve_data dd on mm.data_cd = dd.data_cd
+                   where
+                       mm.author_cd = #{authorCd}
+                     and mm.company_cd = #{companyCd}
+                   GROUP BY
+                       dd.jan )as  yobi
+        on yobi.jan = s.jan
         where  s.author_cd=#{authorCd} and s.company_cd = #{companyCd}
         order by jan
     </select>

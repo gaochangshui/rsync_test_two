@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.po.WKYobiiiternData;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.JanClassifyMapper;
@@ -21,7 +20,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
-import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -226,7 +224,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             vehicleNumCache.remove(taskID);
             List<ProductPowerMstData> kokyakuList = productPowerDataMapper.selectWKKokyaku(authorCd, companyCd);
             logger.info("pos基本情報和顧客情報：{}", kokyakuList);
-            List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData(authorCd, companyCd);
+           /* List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData(authorCd, companyCd);
             logger.info("準備プロジェクト：{}", kokyakuList);
             if (wkYobiiiternDataList.isEmpty()) {
                 return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);
@@ -248,7 +246,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     }
 
                 }
-            });
+            });*/
             return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);
         }
 
