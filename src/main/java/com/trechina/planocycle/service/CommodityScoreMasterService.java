@@ -37,12 +37,6 @@ public interface CommodityScoreMasterService {
 
 
 
-    /**
-     * つかむ取Chanel情報接口
-     * @return
-     */
-    Map<String, Object> getChanelInfo();
-
 
     void productPowerParamAttr(String conpanyCd, Integer productPowerCd, Map<String, Object> result);
 
@@ -68,10 +62,6 @@ public interface CommodityScoreMasterService {
      */
     public Map<String,Object> getAllDataOrParam(String companyCd,Integer productPowerNo);
 
-    /**
-     * 获取都道府県接口
-     * @return
-     */
-    Map<String, Object> getPrefectureInfo();
 
+    Map<String, Object> getPrefectureAndChanelInfo();
 }

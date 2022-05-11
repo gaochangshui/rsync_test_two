@@ -49,16 +49,6 @@ public class CommodityScoreMasterController {
     }
 
 
-    /**
-     * Chanel情報の取得
-     * @return
-     */
-    @GetMapping("/getChanelInfo")
-    public Map<String,Object> getChanelInfo() {
-        return commodityScoreMasterService.getChanelInfo();
-    }
-
-
 
     /**
      * 編集はすべてのパラメータを返します
@@ -73,11 +63,13 @@ public class CommodityScoreMasterController {
     }
 
     /**
-     * 获取都道府県
+     * 获取都道府県&Chanel情報
      * @return
      */
-    @GetMapping("/getPrefectureInfo")
-    public Map<String,Object> getPrefectureInfo() {
-        return commodityScoreMasterService.getPrefectureInfo();
+    @GetMapping("/getPrefectureAndChanelInfo")
+    public Map<String,Object> getPrefectureAndChanelInfo() {
+        return commodityScoreMasterService.getPrefectureAndChanelInfo();
     }
+
+
 }

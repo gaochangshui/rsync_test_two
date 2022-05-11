@@ -6,6 +6,7 @@ import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.entity.po.WKYobiiiternData;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.JanClassifyMapper;
+import com.trechina.planocycle.mapper.ParamConfigMapper;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
 import com.trechina.planocycle.service.CommodityScoreDataService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -41,6 +42,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Autowired
     private JanClassifyMapper janClassifyMapper;
     @Autowired
+    private ParamConfigMapper paramConfigMapper;
+    @Autowired
     private cgiUtils cgiUtil;
 
 
@@ -52,7 +55,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      */
     @Override
     public Map<String, Object> getCommodityScoreData(String taskID, String companyCd) {
-        String commonPartsData = "{\"dateIsCore\":\"1\",\"storeLevel\":\"3\",\"storeIsCore\":\"1\",\"storeMstClass\":\"0000\",\"prodIsCore\":\"1\",\"prodMstClass\":\"0000\"}";
+        String commonPartsData = "{\"dateIsCore\":\"1\",\"storeLevel\":\"3\",\"storeIsCore\":\"1\",\"storeMstClass\":\"0000\",\"prodIsCore\":\"2\",\"prodMstClass\":\"0001\"}";
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         String authorCd = session.getAttribute("aud").toString();
         Map<String, Object> data;
@@ -64,7 +67,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 vehicleNumCache.put(taskID, "1");
                 Map<String, Object> finalData = data;
                 executor.execute(() -> {
-                    List strList = new ArrayList();
+                    List<String []> strList = new ArrayList();
                     // taskIdを持って、再度cgiに運転状態/データの取得を要求する
                     logger.info("商品力点数表web版cgi返回数据：{}", finalData);
                     // 返されるデータは文字列で、2 D配列に処理されます。
@@ -85,12 +88,37 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             }
                             arr[a] = authorCd;
                             System.arraycopy(strSplit, 0, arr, 0, a);
-                            if (i % 1000 == 0 && i >= 1000) {
+                           /* if (i % 1000 == 0 && i >= 1000) {
                                 productPowerDataMapper.insert(strList);
                                 strList.clear();
-                            }
+                            }*/
                             strList.add(arr);
                         }
+                        //List<Map<String,Object>> list = new ArrayList<>();
+                        //
+                        //List<ParamConfigVO> paramConfigAll = paramConfigMapper.getParamConfigAll();
+                        //int spiltList = 30000/strList.get(0).length;
+                        //for (String[] strings : strList) {
+                        //
+                        //    Map<String, Object> map = new HashMap<>();
+                        //    for (int i = 0; i < paramConfigAll.size(); i++) {
+                        //        map.put("company_cd",strings[0]);
+                        //        map.put("author_cd",strings[1]);
+                        //        map.put("jan",strings[2]);
+                        //        if (paramConfigAll.get(i).getFlag() == 0) {
+                        //            map.put(paramConfigAll.get(i).getItemCd(), strings[i + 3]);
+                        //        }
+                        //    }
+                        //    list.add(map);
+                        //    if (list.size()==spiltList){
+                        //        productPowerDataMapper.setSyokikaAllData(list);
+                        //        list.clear();
+                        //    }
+                        //}
+                        //
+                        //if (!list.isEmpty()){
+                        //    productPowerDataMapper.setSyokikaAllData(list);
+                        //}
                         if (!strList.isEmpty()) {
                             productPowerDataMapper.insert(strList);
                         }
@@ -109,23 +137,23 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     vehicleNumCache.remove(taskID);
 
                     List<ProductPowerMstData> syokikaList = productPowerDataMapper.selectWKSyokika(companyCd, authorCd);
-                   /* JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
-                    String prodMstClass = jsonObject.get("prodMstClass").toString();
-                    String prodIsCore = jsonObject.get("prodIsCore").toString();
-                    String isCompanyCd =null;
-                    if ("1".equals(prodIsCore)){
-                        isCompanyCd = "1000";
-                    }else {
-                        isCompanyCd = companyCd;
-                    }
-                    String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd,prodMstClass);
-                    String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd, "0001");
-                    List<Map<String, Object>> janClassifyList = janClassifyMapper.selectJanClassify(tableName);
-                    Map<String, String> attrMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString()));
-                    Map<String, String> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
-                    List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
-                            janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", janClassifyList,authorCd);*/
-                    logger.info("返回pos基本情報はい{}", syokikaList);
+                    //JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
+                    //String prodMstClass = jsonObject.get("prodMstClass").toString();
+                    //String prodIsCore = jsonObject.get("prodIsCore").toString();
+                    //String isCompanyCd =null;
+                    //if ("1".equals(prodIsCore)){
+                    //    isCompanyCd = "1000";
+                    //}else {
+                    //    isCompanyCd = "87c6f4";
+                    //}
+                    //String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd,prodMstClass);
+                    //String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, "0001");
+                    //List<Map<String, Object>> janClassifyList = janClassifyMapper.selectJanClassify(tableName);
+                    //Map<String, String> attrMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString()));
+                    //Map<String, String> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
+                    //List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
+                    //        janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", janClassifyList,authorCd);
+                    //logger.info("返回pos基本情報はい{}", allData);
                     return ResultMaps.result(ResultEnum.SUCCESS,syokikaList);
                 }
             }

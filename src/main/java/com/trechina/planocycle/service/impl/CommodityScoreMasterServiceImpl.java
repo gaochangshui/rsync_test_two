@@ -44,7 +44,12 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
     @Autowired
+    private ChannelListMapper channelListMapper;
+    @Autowired
+    private PlaceListMapper placeListMapper;
+    @Autowired
     private cgiUtils cgiUtil;
+
     /**
      * 企業情報の取得
      * @return
@@ -200,21 +205,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
 
 
 
-    /**
-     * chanel情報の取得
-     * @return
-     */
-    @Override
-    public Map<String, Object> getChanelInfo() {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String pathInfo = resourceBundle.getString("ChannelList");
-        String result=cgiUtil.getCgi(pathInfo,(String) session.getAttribute("MSPACEDGOURDLP"));
-        return ResultMaps.result(ResultEnum.SUCCESS, JSON.parse(result));
-    }
-
-
-
-
 
     @Override
     public boolean delSmartData(ProductPowerParamMst productPowerParamMst) {
@@ -302,14 +292,15 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     }
 
     @Override
-    public Map<String, Object> getPrefectureInfo() {
-
-            ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-            String pathInfo = resourceBundle.getString("PlaceList");
-
-            String result=cgiUtil.getCgi(pathInfo,(String) session.getAttribute("MSPACEDGOURDLP"));
-            return ResultMaps.result(ResultEnum.SUCCESS, JSON.parse(result));
-
+    public Map<String, Object> getPrefectureAndChanelInfo() {
+        List list = new ArrayList();
+        List<String> placeList = placeListMapper.getPlaceList();
+        List<String> channelList = channelListMapper.getChannelList();
+        list.add(placeList);
+        list.add(channelList);
+        return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
+
+
 
 }

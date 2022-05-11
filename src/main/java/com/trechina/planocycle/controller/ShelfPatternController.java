@@ -130,4 +130,16 @@ public class ShelfPatternController {
     public Map<String, Object> setPatternList(@RequestBody List<ShelfPatternDto> shelfPatternDto) {
         return shelfPatternService.setPatternList(shelfPatternDto);
     }
+
+
+    /**
+     *
+     *
+     * @param companyCd
+     * @return
+     */
+    @GetMapping("/getPatternForStorel")
+    public Map<String, Object> getPatternForStorel(String companyCd,String storeIsCore) {
+        return shelfPatternService.getPatternForStorel(companyCd,storeIsCore);
+    }
 }

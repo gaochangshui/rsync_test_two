@@ -86,8 +86,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     public Map<String, Object> setShelfPatternInfo(ShelfPatternDto shelfPatternDto) {
         logger.info("棚pattern情報を保存するパラメータ：{}",shelfPatternDto);
         // 名称check 同一个棚名称棚パータン名唯一
-        List<Integer> result = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
-        if (result!=null && !result.isEmpty()){
+        Integer result = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
+        if (result!=null){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
         List<ShelfPatternArea> list = new ArrayList<>();
@@ -145,8 +145,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     public Map<String, Object> updateShelfPatternInfo(ShelfPatternDto shelfPatternDto) {
         logger.info("棚pattern情報のパラメータの変更：{}",shelfPatternDto);
         // 名称check 同一个棚名称棚パータン名唯一
-        List<Integer> resultNum = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
-        if (resultNum!=null &&resultNum.size()>1){
+        Integer resultNum = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
+        if (!shelfPatternDto.getShelfPatternCd().equals(resultNum)){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
         //削除するコレクション
@@ -465,6 +465,12 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             shelfPatternBranchMapper.insert(branchList, authorCd);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public Map<String, Object> getPatternForStorel(String companyCd, String storeIsCore) {
+        List<ShelfPatternNameVO> patternForStorel = shelfPatternMstMapper.getPatternForStorel(storeIsCore, companyCd);
+        return ResultMaps.result(ResultEnum.SUCCESS,patternForStorel);
     }
 
 
