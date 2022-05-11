@@ -48,7 +48,7 @@
     group by item_flg
   </select>
   <select id="getParam" resultType="com.trechina.planocycle.entity.po.ProductPowerParam">
-    select company_cd,product_power_cd,customerValue,kokyakugroup,posValue,prdCd,prepareValue,rangWeight,recentlyEndTime,recentlyFlag,recentlyStTime,seasonEndTime
+    select company_cd,product_power_cd,customerValue,kokyakugroup,posValue,prdCd,prepareValue,RankWeight,recentlyEndTime,recentlyFlag,recentlyStTime,seasonEndTime
       seasonFlag,seasonStTime,storeCd,yearFlag
     FROM planocycle.product_power_param_mst
     WHERE company_cd = #{companyCd} and product_power_cd = #{productPowerCd}
@@ -67,9 +67,9 @@
       )
   </insert>
   <insert id="insertParam">
-    insert into planocycle.product_power_param_mst (company_cd,product_power_cd,customer_value,customer_condition,pos_value,prd_cd,prepare_value,rang_weight,recently_end_time,
+    insert into planocycle.product_power_param_mst (company_cd,product_power_cd,customer_value,customer_condition,pos_value,prd_cd,prepare_value,rank_weight,recently_end_time,
                                                     recently_flag,recently_st_time,season_end_time,season_flag,season_st_time,store_cd,year_flag,author_cd,create_time,common_parts_data)
-    values(#{item.company},#{item.productPowerNo},#{item.customerValue},#{customerCondition},#{item.posValue},#{item.prdCd},#{item.prepareValue},#{item.rangWeight},
+    values(#{item.company},#{item.productPowerNo},#{item.customerValue},#{customerCondition},#{item.posValue},#{item.prdCd},#{item.prepareValue},#{item.rankWeight},
            #{item.recentlyEndTime},#{item.recentlyFlag},#{item.recentlyStTime},#{item.seasonEndTime},#{item.seasonFlag},#{item.seasonStTime},#{item.storeCd},
            #{item.yearFlag},#{authorCd},now(),#{item.commonPartsData})
   </insert>

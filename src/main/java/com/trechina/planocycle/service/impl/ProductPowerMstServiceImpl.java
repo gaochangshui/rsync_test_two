@@ -113,11 +113,11 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         String prepareValue = param.getPrepareValue();
         //POS項目
         String posValue = param.getPosValue();
-        String rangWeight = param.getRangWeight();
+        String rankWeight = param.getRankWeight();
         Set<String> weightKeys = new HashSet<>();
 
-        if (!Strings.isNullOrEmpty(rangWeight)) {
-            weightKeys = JSON.parseObject(rangWeight).keySet();
+        if (!Strings.isNullOrEmpty(rankWeight)) {
+            weightKeys = JSON.parseObject(rankWeight).keySet();
         }
 
         String tableName = "";
@@ -130,8 +130,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         //第数セット
         String prodMstClass = productPowerParamJson.getString("prodMstClass");
 
-        companyCd="87c6f4";
-        prodMstClass="0001";
+//        companyCd="87c6f4";
+//        prodMstClass="0001";
         if("0".equals(prodIsCore)){
             //0-企業
             tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", companyCd, prodMstClass);

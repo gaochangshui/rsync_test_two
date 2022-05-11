@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -269,26 +268,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         productPowerDataMapper.deleteWKData(rankCalculateVo.getCompanyCd(),authorCd);
 
         List<ProductPowerMstData> productPowerMstDataList = productPowerDataMapper.selectWKKokyaku(authorCd,rankCalculateVo.getCompanyCd());
-        List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData(authorCd,rankCalculateVo.getCompanyCd());
-
-        productPowerMstDataList.stream().forEach(item->{
-            for (WKYobiiiternData wkYobiiiternData : wkYobiiiternDataList) {
-
-                Class w =item.getClass();
-                for(int i=1;i<=10;i++){
-                    if (wkYobiiiternData.getJan().equals(item.getJan()) && Integer.valueOf("3100" + i).equals(wkYobiiiternData.getDataCd())){
-                        try {
-                            Field field = w.getDeclaredField("item"+i);
-                            field.setAccessible(true);
-                            field.set(item,wkYobiiiternData.getDataValue());
-                        } catch (NoSuchFieldException | IllegalAccessException e) {
-                            logger.error("", e);
-                        }
-
-                    }
-                }
-            }
-        });
 
         String[] columns = {"PdPosAmount", "PdPosNum", "PdBranchAmount", "PdBranchNum", "PdCompareAmount", "PdCompareNum","PdBranchCompareAmount"
         ,"PdBranchCompareNum","GdPosAmount","GdPosNum","GdBranchAmount","GdBranchNum","GdCompareAmount","GdCompareNum","GdBranchCompareAmount","GdBranchCompareNum",
