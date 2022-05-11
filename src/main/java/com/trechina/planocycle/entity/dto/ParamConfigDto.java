@@ -5,6 +5,7 @@ public class ParamConfigDto {
     private String label;
     private Integer value;
     private  String colName;
+    private Integer rankFlag;
 
     public String getLabel() {
         return label;
@@ -30,12 +31,21 @@ public class ParamConfigDto {
         this.colName = colName;
     }
 
+    public Integer getRankFlag() {
+        return rankFlag;
+    }
+
+    public void setRankFlag(Integer rankFlag) {
+        this.rankFlag = rankFlag;
+    }
+
     @Override
     public String toString() {
         return "ParamConfigDto{" +
                 "label='" + label + '\'' +
                 ", value=" + value +
                 ", colName='" + colName + '\'' +
+                ", rankFlag=" + rankFlag +
                 '}';
     }
 }
