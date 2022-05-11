@@ -1,6 +1,9 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.sun.javafx.collections.MappingChange;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
@@ -25,6 +28,7 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -318,6 +322,36 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
         logger.info("taskId返回：{}", result);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
+    }
+
+    @Override
+    public Map<String, Object> getCommodityScoreDataFromDB(Integer productPowerCd, String companyCd, String[] posCd,
+                                                           String[] prepareCd, String[] intageCd, String[] customerCd) {
+        List<String> cdList = new ArrayList<>();
+
+        if(posCd.length>0){
+            cdList.addAll(Arrays.asList(posCd));
+        }
+        if(prepareCd.length>0){
+            cdList.addAll(Arrays.asList(prepareCd));
+        }
+        if(intageCd.length>0){
+            cdList.addAll(Arrays.asList(intageCd));
+        }
+        if(customerCd.length>0){
+            cdList.addAll(Arrays.asList(customerCd));
+        }
+
+        List<ParamConfigVO> paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
+        List<Map<String, String>> productPowerMstData = productPowerDataMapper.selectShowData(productPowerCd, paramConfigVOS, customerCd, prepareCd, intageCd);
+        List<Map<String, String>> returnData = new ArrayList<>();
+        Map<String, String> colName = paramConfigVOS.stream()
+                .collect(Collectors.toMap(ParamConfigVO::getItemCd, ParamConfigVO::getItemName, (key1, key2) -> key1, LinkedHashMap::new));
+
+        returnData.add(colName);
+        returnData.addAll(productPowerMstData);
+
+        return ResultMaps.result(ResultEnum.SUCCESS, returnData);
     }
 
 

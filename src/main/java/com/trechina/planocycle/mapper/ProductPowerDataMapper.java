@@ -2,6 +2,7 @@ package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.po.*;
+import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -37,6 +38,10 @@ public interface ProductPowerDataMapper {
     //テンポラリ・テーブル・データの戻りページ
     List<ProductPowerMstData> selectWKKokyaku(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
 
+    //表示データ項目
+    List<Map<String, String>> selectShowData(@Param("productPowerCd") Integer productPowerCd,
+                                             @Param("showList")List<ParamConfigVO> showList,
+                                             String[] customerCd, String[] prepareCd, String[] intageCd);
 
     //テンポラリ・テーブルyobilitemとdata
     int deleteWKYobiiiternCd(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("valueCd") Integer valueCd);

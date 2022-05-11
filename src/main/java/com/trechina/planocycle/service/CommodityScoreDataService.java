@@ -41,4 +41,6 @@ public interface CommodityScoreDataService {
     Map<String, Object> getCommodityScoreGroupTaskId(ProductPowerGroupDataForCgiDto productPowerDataForCgiDto);
 
 
+    Map<String, Object> getCommodityScoreDataFromDB(Integer productPowerCd, String companyCd, String[] posCd, String[] prepareCd, String[] intageCd,
+                                                    String[] customerCd);
 }

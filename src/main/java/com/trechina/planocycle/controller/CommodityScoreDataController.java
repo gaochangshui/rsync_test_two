@@ -46,8 +46,15 @@ public class CommodityScoreDataController {
      */
 
     @GetMapping("/getCommodityScoreGroupData")
+    @Deprecated
     public Map<String, Object> getCommodityScoreGroupData(String taskID, String companyCd,String commonPartsData) {
         return commodityScoreDataService.getCommodityScoreGroupData(taskID, companyCd,commonPartsData);
+    }
+
+    @GetMapping("/getShowCommodityScoreData")
+    public Map<String, Object> getCommodityScoreDataFromDB(Integer productPowerCd, String companyCd,String[] posCd, String[] prepareCd, String[] intageCd,
+                                                           String[] customerCd) {
+        return commodityScoreDataService.getCommodityScoreDataFromDB(productPowerCd, companyCd, posCd, prepareCd, intageCd, customerCd);
     }
 
     /**
