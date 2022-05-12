@@ -117,6 +117,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         String prepareValue = param.getPrepareValue();
         //POS項目
         String posValue = param.getPosValue();
+        //市場項目
+        String intageValue = param.getIntageValue();
         String rankWeight = param.getRankWeight();
         Set<String> weightKeys = new HashSet<>();
 
@@ -134,8 +136,6 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         //第数セット
         String prodMstClass = productPowerParamJson.getString("prodMstClass");
 
-//        companyCd="87c6f4";
-//        prodMstClass="0001";
         if("0".equals(prodIsCore)){
             //0-企業
             tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", companyCd, prodMstClass);
@@ -150,12 +150,11 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
         List<ParamConfigVO> paramList = paramConfigMapper.selectParamConfig();
         Map<String, List<ParamConfigVO>> paramListByGroup = paramList.stream()
-                .collect(Collectors.groupingBy(paramParam -> paramParam.getItemCd().split("_")[0]));
+                .collect(Collectors.groupingBy(paramParam -> paramParam.getItemCd().split("_")[0], LinkedHashMap::new, Collectors.toList()));
 
         List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
-        classify = classify.stream().filter(map -> "jan_cd".equals(map.get("attr").toString())
-                || !map.get("attr").toString().endsWith("_cd")).collect(Collectors.toList());
         Map<String, String> attrColumnMap = classify.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
+        classify = classify.stream().filter(map -> map.get("colSort")!=null).collect(Collectors.toList());
 
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, productPowerCd);
         List<Map<String, Object>> allData = productPowerDataMapper.getDynamicAllData(companyCd, productPowerCd,
@@ -173,7 +172,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         this.fillParamData(ProductPowerHeaderEnum.CUSTOMER.getCode(), ProductPowerHeaderEnum.CUSTOMER.getName(),
                 customerValue,paramListByGroup.get(ProductPowerHeaderEnum.CUSTOMER.getCode()), headersByClassify, columnsByClassify, weightKeys);
         this.fillParamData(ProductPowerHeaderEnum.INTAGE.getCode(), ProductPowerHeaderEnum.INTAGE.getName(),
-                customerValue,paramListByGroup.get(ProductPowerHeaderEnum.INTAGE.getCode()), headersByClassify, columnsByClassify, weightKeys);
+                intageValue,paramListByGroup.get(ProductPowerHeaderEnum.INTAGE.getCode()), headersByClassify, columnsByClassify, weightKeys);
         this.fillPrepareParamData(prepareValue, productPowerCd, companyCd, headersByClassify, columnsByClassify, weightKeys);
 
         ServletOutputStream outputStream = null;
@@ -259,23 +258,27 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         headersByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.INTAGE.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.PREPARE_RANK.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.INTAGE_RANK.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.RANK.getName(), Lists.newArrayList("Rank"));
         return headersByClassify;
     }
 
     private Map<String, List<String>> initColumnClassify(List<String> attr){
         Map<String, List<String>> columnsByClassify = new LinkedHashMap<>(10);
-        columnsByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("jan", "skuName"));
+        columnsByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("jan", "sku_name"));
         columnsByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), attr);
         columnsByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.INTAGE.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.PREPARE_RANK.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.INTAGE_RANK.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.RANK.getName(), Lists.newArrayList("rankResult"));
         return columnsByClassify;
     }

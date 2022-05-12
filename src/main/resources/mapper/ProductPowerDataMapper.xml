@@ -676,8 +676,8 @@
         order by data_sort asc
     </select>
     <select id="getDynamicAllData" resultType="map">
-        select power_mst.jan,
-        <foreach collection="classify" index="index" item="item" separator=",">
+        select power_mst.jan,power_mst.sku_name
+        <foreach collection="classify" index="index" item="item" open="," separator=",">
            jan_info."${item.sort}" as ${item.attr_val}
         </foreach>
         from planocycle.product_power_mst_data power_mst

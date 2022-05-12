@@ -22,7 +22,7 @@ public class ExcelUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ExcelUtils.class);
 
-    public static <T> void generateExcel(Map<String, List<String>> headersByClassify,
+    public static void generateExcel(Map<String, List<String>> headersByClassify,
                                          Map<String, List<String>> columnsByClassify, List<Map<String, Object>> allData,
                                          OutputStream outputStream) {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
@@ -69,7 +69,6 @@ public class ExcelUtils {
                 }
             }
 
-            Class<?> clazz = allData.get(0).getClass();
             //すべての商品を巡って、一つの商品は一列です。
             XSSFRow janRow = null;
             XSSFCell janCell = null;

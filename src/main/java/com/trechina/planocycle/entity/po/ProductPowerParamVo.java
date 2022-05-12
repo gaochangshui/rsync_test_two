@@ -8,6 +8,8 @@ public class ProductPowerParamVo {
     private String posValue;
     private String prdCd;
     private String prepareValue;
+
+    private String intageValue;
     private Integer productPowerNo;
     private String rankWeight;
     private String recentlyEndTime;
@@ -21,6 +23,13 @@ public class ProductPowerParamVo {
     private String commonPartsData;
     private String intageValue;
 
+    public String getIntageValue() {
+        return intageValue;
+    }
+
+    public void setIntageValue(String intageValue) {
+        this.intageValue = intageValue;
+    }
 
     public String getCompany() {
         return company;
