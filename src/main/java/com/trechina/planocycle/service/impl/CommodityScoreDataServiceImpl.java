@@ -3,10 +3,12 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
+import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.JanClassifyMapper;
 import com.trechina.planocycle.mapper.ParamConfigMapper;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
+import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.CommodityScoreDataService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
@@ -19,10 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +42,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     private JanClassifyMapper janClassifyMapper;
     @Autowired
     private ParamConfigMapper paramConfigMapper;
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
     @Autowired
     private cgiUtils cgiUtil;
 
@@ -66,7 +67,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 return data;
             }
         }
-        
+        String coreCompany = sysConfigMapper.selectSycConfig("core_company");
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
         String prodMstClass = jsonObject.get("prodMstClass").toString();
         String prodIsCore = jsonObject.get("prodIsCore").toString();
