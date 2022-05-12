@@ -517,6 +517,41 @@
         where  s.author_cd=#{authorCd} and s.company_cd = #{companyCd}
         order by jan
     </select>
+    <select id="selectShowData" resultType="map">
+        select
+        syokika.jan jan
+            <foreach collection="showList" item="item" open="," separator=",">coalesce(${item.itemCd},'') as ${item.itemCd}</foreach>
+        from  planocycle.work_product_power_syokika syokika
+            <if test="prepareCd.length>0">
+                left join (select
+                dd.jan as jan,
+                sum ( case when dd.data_cd = '31001' then dd.data_value else 0 end ) as item1,
+                sum ( case when dd.data_cd = '31002' then dd.data_value else 0 end ) as item2,
+                sum ( case when dd.data_cd = '31003' then dd.data_value else 0 end ) as item3,
+                sum ( case when dd.data_cd = '31004' then dd.data_value else 0 end ) as item4,
+                sum ( case when dd.data_cd = '31005' then dd.data_value else 0 end ) as item5,
+                sum ( case when dd.data_cd = '31006' then dd.data_value else 0 end ) as item6,
+                sum ( case when dd.data_cd = '31007' then dd.data_value else 0 end ) as item7,
+                sum ( case when dd.data_cd = '31008' then dd.data_value else 0 end ) as item8,
+                sum ( case when dd.data_cd = '31009' then dd.data_value else 0 end ) as item9,
+                sum ( case when dd.data_cd = '31010' then dd.data_value else 0 end ) as item10
+                from
+                planocycle.work_product_power_reserve_mst mm
+                inner join planocycle.work_product_power_reserve_data dd on mm.data_cd = dd.data_cd and mm.product_power_cd=dd.product_power_cd
+                where mm.product_power_cd=#{productPowerCd}
+                GROUP BY dd.jan )as  yobi on yobi.jan = syokika.jan
+            </if>
+        <if test="customerCd.length>0">
+            left join planocycle.work_product_power_kokyaku kokyaku
+            on kokyaku.jan = syokika.jan and kokyaku.product_power_cd=syokika.product_power_cd
+        </if>
+        <if test="intageCd.length>0">
+            left join planocycle.work_product_power_intage intage
+            on intage.jan = syokika.jan and intage.product_power_cd=syokika.product_power_cd
+        </if>
+        where syokika.product_power_cd=#{productPowerCd}
+        order by jan
+    </select>
     <select id="getProductPowerMstData" resultType="com.trechina.planocycle.entity.po.ProductPowerMstData">
         select * from planocycle.product_power_mst_data where company_cd=#{companyCd} and product_power_cd=#{productPowerCd} and deleteflg=0
     </select>

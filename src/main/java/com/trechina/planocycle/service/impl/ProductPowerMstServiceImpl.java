@@ -1,21 +1,18 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.entity.dto.TableNameDto;
-import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.entity.po.ProductPowerParamVo;
+import com.trechina.planocycle.entity.po.SysConfig;
+import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.entity.vo.ProductPowerMstVo;
 import com.trechina.planocycle.entity.vo.ReserveMstVo;
-import com.trechina.planocycle.enums.CustomerLabelEnum;
-import com.trechina.planocycle.enums.PosLabelEnum;
 import com.trechina.planocycle.enums.ProductPowerHeaderEnum;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.PriorityAllMstMapper;
-import com.trechina.planocycle.mapper.PriorityOrderMstMapper;
-import com.trechina.planocycle.mapper.ProductPowerDataMapper;
-import com.trechina.planocycle.mapper.ProductPowerMstMapper;
+import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ProductPowerMstService;
 import com.trechina.planocycle.utils.ExcelUtils;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -32,17 +29,25 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     @Autowired
     ProductPowerMstMapper productPowerMstMapper;
+
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
     @Autowired
     PriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
     PriorityAllMstMapper priorityAllMstMapper;
     @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
+    private ParamConfigMapper paramConfigMapper;
+    @Autowired
+    private JanClassifyMapper janClassifyMapper;
     @Autowired
     HttpSession session;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -112,77 +117,90 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         String prepareValue = param.getPrepareValue();
         //POS項目
         String posValue = param.getPosValue();
-        String RankWeight = param.getRankWeight();
-        Set<String> weightKeys = JSON.parseObject(RankWeight).keySet();
+        String rankWeight = param.getRankWeight();
+        Set<String> weightKeys = new HashSet<>();
+
+        if (!Strings.isNullOrEmpty(rankWeight)) {
+            weightKeys = JSON.parseObject(rankWeight).keySet();
+        }
+
+        String tableName = "";
+        String janInfoTableName = "";
+
+        ProductPowerParamVo productPowerParam = productPowerDataMapper.getParam(companyCd, productPowerCd);
+        JSONObject productPowerParamJson = JSON.parseObject(productPowerParam.getCommonPartsData());
+        //1-自设，0-企業
+        String prodIsCore = productPowerParamJson.getString("prodIsCore");
+        //第数セット
+        String prodMstClass = productPowerParamJson.getString("prodMstClass");
+
+//        companyCd="87c6f4";
+//        prodMstClass="0001";
+        if("0".equals(prodIsCore)){
+            //0-企業
+            tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", companyCd, prodMstClass);
+            janInfoTableName = String.format("\"%s\".prod_%s_jan_info", companyCd, prodMstClass);
+        }else{
+            String coreCompany = sysConfigMapper.selectSycConfig("core_company");
+            //1-自设
+            tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", coreCompany, prodMstClass);
+            janInfoTableName = String.format("\"%s\".prod_%s_jan_info", coreCompany, prodMstClass);
+        }
+
+        List<ParamConfigVO> paramList = paramConfigMapper.selectParamConfig();
+        Map<String, List<ParamConfigVO>> paramListByGroup = paramList.stream()
+                .collect(Collectors.groupingBy(paramParam -> paramParam.getItemCd().split("_")[0]));
+
+        List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
+        classify = classify.stream().filter(map -> "jan_cd".equals(map.get("attr").toString())
+                || !map.get("attr").toString().endsWith("_cd")).collect(Collectors.toList());
+        Map<String, String> attrColumnMap = classify.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
 
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, productPowerCd);
-        List<ProductPowerMstData> allData = productPowerDataMapper.getAllData(companyCd, productPowerCd);
+        List<Map<String, Object>> allData = productPowerDataMapper.getDynamicAllData(companyCd, productPowerCd,
+                janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", classify);
 
         //表示するカラムに対応するフィールド名
-        Map<String, List<String>> columnsByClassify = new LinkedHashMap<>(10);
-        columnsByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("jan", "skuName"));
-        columnsByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), Lists.newArrayList("classifyBig", "classifyMiddle", "classifySmall", "classifyFine"));
-        columnsByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
-        columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
-        columnsByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
-        columnsByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
-        columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
-        columnsByClassify.put(ProductPowerHeaderEnum.PREPARE_RANK.getName(), Lists.newArrayList());
-        columnsByClassify.put(ProductPowerHeaderEnum.RANK.getName(), Lists.newArrayList("rankResult"));
+        List<String> attr = classify.stream().map(map -> map.get("attr").toString()).collect(Collectors.toList());
+        Map<String, List<String>> columnsByClassify = this.initColumnClassify(attr);
         //表示する列に対応するヘッダー
-        Map<String, List<String>> headersByClassify = new LinkedHashMap<>(10);
-        headersByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("JANコード", "商品名"));
-        headersByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), Lists.newArrayList("大分類", "中分類", "小分類", "細分類"));
-        headersByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
-        headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
-        headersByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
-        headersByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
-        headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
-        headersByClassify.put(ProductPowerHeaderEnum.PREPARE_RANK.getName(), Lists.newArrayList());
-        headersByClassify.put(ProductPowerHeaderEnum.RANK.getName(), Lists.newArrayList("Rank"));
+        List<String> attrName = classify.stream().map(map -> map.get("attr_val").toString()).collect(Collectors.toList());
+        Map<String, List<String>> headersByClassify = this.initHeaderClassify(attrName);
 
-        if(!Strings.isNullOrEmpty(customerValue)){
-            String[] customerValues = customerValue.split(",");
+        this.fillParamData(ProductPowerHeaderEnum.POS.getCode(),ProductPowerHeaderEnum.POS.getName(),
+                posValue,paramListByGroup.get(ProductPowerHeaderEnum.POS.getCode()), headersByClassify, columnsByClassify, weightKeys);
+        this.fillParamData(ProductPowerHeaderEnum.CUSTOMER.getCode(), ProductPowerHeaderEnum.CUSTOMER.getName(),
+                customerValue,paramListByGroup.get(ProductPowerHeaderEnum.CUSTOMER.getCode()), headersByClassify, columnsByClassify, weightKeys);
+        this.fillParamData(ProductPowerHeaderEnum.INTAGE.getCode(), ProductPowerHeaderEnum.INTAGE.getName(),
+                customerValue,paramListByGroup.get(ProductPowerHeaderEnum.INTAGE.getCode()), headersByClassify, columnsByClassify, weightKeys);
+        this.fillPrepareParamData(prepareValue, productPowerCd, companyCd, headersByClassify, columnsByClassify, weightKeys);
 
-            for (String code : customerValues) {
-                CustomerLabelEnum customerLabelByCode = CustomerLabelEnum.getCustomerLabelByCode(Integer.valueOf(code));
-                List<String> customer = headersByClassify.get(ProductPowerHeaderEnum.CUSTOMER.getName());
-                customer.add(customerLabelByCode.getLable());
-
-                List<String> customerColumn = columnsByClassify.get(ProductPowerHeaderEnum.CUSTOMER.getName());
-                customerColumn.add(customerLabelByCode.getColumnName());
-
-                if(weightKeys.contains(customerLabelByCode.getColumnName())){
-                    List<String> customerRank = headersByClassify.get(ProductPowerHeaderEnum.CUSTOMER_RANK.getName());
-                    customerRank.add(customerLabelByCode.getLable()+"Rank");
-
-                    List<String> customerRankColumn = columnsByClassify.get(ProductPowerHeaderEnum.CUSTOMER_RANK.getName());
-                    customerRankColumn.add(customerLabelByCode.getColumnRankName());
+        ServletOutputStream outputStream = null;
+        try {
+            String productPowerName = productPowerInfo.getProductPowerName();
+            String fileName = String.format("%s.xlsx", productPowerName);
+            String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
+            response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+            response.setHeader("Content-Disposition", format);
+            outputStream = response.getOutputStream();
+            ExcelUtils.generateExcel(headersByClassify, columnsByClassify, allData, outputStream);
+            outputStream.flush();
+        } catch (IOException e) {
+            logger.error("", e);
+        } finally {
+            if(Objects.nonNull(outputStream)){
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    logger.error("io閉じる異常", e);
                 }
             }
         }
+    }
 
-        if(!Strings.isNullOrEmpty(posValue)){
-            String[] posValues = posValue.split(",");
-
-            for (String code : posValues) {
-                PosLabelEnum posLabelByCode = PosLabelEnum.getPosLabelByCode(Integer.valueOf(code));
-                List<String> customer = headersByClassify.get(ProductPowerHeaderEnum.POS.getName());
-                customer.add(posLabelByCode.getLable());
-
-                List<String> customerColumn = columnsByClassify.get(ProductPowerHeaderEnum.POS.getName());
-                customerColumn.add(posLabelByCode.getColumnName());
-
-                if(weightKeys.contains(posLabelByCode.getColumnName())){
-                    List<String> customerRank = headersByClassify.get(ProductPowerHeaderEnum.POS_RANK.getName());
-                    customerRank.add(posLabelByCode.getLable()+"Rank");
-
-                    List<String> customerRankColumn = columnsByClassify.get(ProductPowerHeaderEnum.POS_RANK.getName());
-                    customerRankColumn.add(posLabelByCode.getColumnRankName());
-                }
-            }
-        }
-
+    private void fillPrepareParamData(String prepareValue, Integer productPowerCd, String companyCd,
+                                      Map<String, List<String>> headersByClassify,
+                                      Map<String, List<String>> columnsByClassify, Set<String> weightKeys){
         if(!Strings.isNullOrEmpty(prepareValue)){
             String[] prepareValues = prepareValue.split(",");
             List<ReserveMstVo> reserve = productPowerDataMapper.getCheckedReserve(productPowerCd, companyCd, prepareValues);
@@ -205,26 +223,59 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
                 }
             }
         }
+    }
+    private void fillParamData(String paramType, String paramNameType, String paramVal, List<ParamConfigVO> paramList,
+                               Map<String, List<String>> headersByClassify,
+                               Map<String, List<String>> columnsByClassify, Set<String> weightKeys){
+        if(!Strings.isNullOrEmpty(paramVal)) {
+            String paramTypeRank = String.format("%sRank", paramType);
+            String[] paramsValueArr = paramVal.split(",");
+            List<ParamConfigVO> paramConfigChecked = paramList.stream()
+                    .filter(config -> Arrays.stream(paramsValueArr).anyMatch(s->s.equals(config.getItemValue()))).collect(Collectors.toList());
+            for (ParamConfigVO paramConfigVO : paramConfigChecked) {
+                List<String> customer = headersByClassify.get(paramNameType);
+                customer.add(paramConfigVO.getItemName());
 
-        ServletOutputStream outputStream = null;
-        try {
-            String fileName = MessageFormat.format("{0}.xlsx", productPowerInfo.getProductPowerName());
-            String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
-            response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-            response.setHeader("Content-Disposition", format);
-            outputStream = response.getOutputStream();
-            ExcelUtils.generateExcel(headersByClassify, columnsByClassify, allData, outputStream);
-            outputStream.flush();
-        } catch (IOException e) {
-            logger.error("", e);
-        } finally {
-            if(Objects.nonNull(outputStream)){
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    logger.error("io閉じる異常", e);
+                List<String> column = columnsByClassify.get(paramNameType);
+                column.add(paramConfigVO.getItemCd());
+
+                if (weightKeys.contains(paramConfigVO.getItemCd())) {
+                    List<String> rank = headersByClassify.get(paramTypeRank);
+                    String rankName = String.format("%sRank", paramConfigVO.getItemName());
+                    rank.add(rankName);
+
+                    List<String> customerRankColumn = columnsByClassify.get(paramTypeRank);
+                    customerRankColumn.add(rankName);
                 }
             }
         }
+    }
+
+    private Map<String, List<String>> initHeaderClassify(List<String> attrName){
+        Map<String, List<String>> headersByClassify = new LinkedHashMap<>(10);
+        headersByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("JANコード", "商品名"));
+        headersByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), attrName);
+        headersByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.PREPARE_RANK.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.RANK.getName(), Lists.newArrayList("Rank"));
+        return headersByClassify;
+    }
+
+    private Map<String, List<String>> initColumnClassify(List<String> attr){
+        Map<String, List<String>> columnsByClassify = new LinkedHashMap<>(10);
+        columnsByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("jan", "skuName"));
+        columnsByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), attr);
+        columnsByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.PREPARE_RANK.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.RANK.getName(), Lists.newArrayList("rankResult"));
+        return columnsByClassify;
     }
 }

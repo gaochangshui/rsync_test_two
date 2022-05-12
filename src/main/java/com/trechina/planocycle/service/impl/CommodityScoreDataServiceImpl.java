@@ -273,6 +273,36 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 
+    @Override
+    public Map<String, Object> getCommodityScoreDataFromDB(Integer productPowerCd, String companyCd, String[] posCd,
+                                                           String[] prepareCd, String[] intageCd, String[] customerCd) {
+        List<String> cdList = new ArrayList<>();
+
+        if(posCd.length>0){
+            cdList.addAll(Arrays.asList(posCd));
+        }
+        if(prepareCd.length>0){
+            cdList.addAll(Arrays.asList(prepareCd));
+        }
+        if(intageCd.length>0){
+            cdList.addAll(Arrays.asList(intageCd));
+        }
+        if(customerCd.length>0){
+            cdList.addAll(Arrays.asList(customerCd));
+        }
+
+        List<ParamConfigVO> paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
+        List<Map<String, String>> productPowerMstData = productPowerDataMapper.selectShowData(productPowerCd, paramConfigVOS, customerCd, prepareCd, intageCd);
+        List<Map<String, String>> returnData = new ArrayList<>();
+        Map<String, String> colName = paramConfigVOS.stream()
+                .collect(Collectors.toMap(ParamConfigVO::getItemCd, ParamConfigVO::getItemName, (key1, key2) -> key1, LinkedHashMap::new));
+
+        returnData.add(colName);
+        returnData.addAll(productPowerMstData);
+
+        return ResultMaps.result(ResultEnum.SUCCESS, returnData);
+    }
+
 
     /**
      * マルチスレッド挿入pos基本データ

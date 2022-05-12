@@ -23,7 +23,7 @@ public class ExcelUtils {
     private static final Logger logger = LoggerFactory.getLogger(ExcelUtils.class);
 
     public static <T> void generateExcel(Map<String, List<String>> headersByClassify,
-                                         Map<String, List<String>> columnsByClassify, List<T> allData,
+                                         Map<String, List<String>> columnsByClassify, List<Map<String, Object>> allData,
                                          OutputStream outputStream) {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
             XSSFSheet sheet = workbook.createSheet();
@@ -74,7 +74,7 @@ public class ExcelUtils {
             XSSFRow janRow = null;
             XSSFCell janCell = null;
             for (int i = 0; i < allData.size(); i++) {
-                T data = allData.get(i);
+                Map<?, ?> data = allData.get(i);
                 int columnIndex = 0;
                 //ヘッダーを除き、商品内容は3行目から
                 int rowIndex = i+2;
@@ -84,10 +84,7 @@ public class ExcelUtils {
                     //すべてのカラム名を巡回し、対応する値を見つけます。
                     for (String columnName : columnList) {
                         //poのgetterメソッドによるフィールド値の取得
-                        String getMethodName = "get" + columnName.substring(0, 1).toUpperCase() + columnName.substring(1);
-                        Method method = clazz.getMethod(getMethodName);
-                        Object value = method.invoke(data);
-
+                        Object value = data.get(columnName);
                         janCell= janRow.createCell(columnIndex);
 
                         if(value instanceof BigDecimal){
