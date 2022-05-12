@@ -251,11 +251,11 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public Map<String, Object> getAllDataOrParam(String companyCd, Integer productPowerNo) {
         String aud = session.getAttribute("aud").toString();
-        productPowerDataMapper.deleteWKSyokika(companyCd,aud);
-        productPowerDataMapper.deleteWKKokyaku(companyCd,aud);
-        productPowerDataMapper.deleteWKYobiiitern(aud,companyCd);
-        productPowerDataMapper.deleteWKYobiiiternData(aud,companyCd);
-        productPowerDataMapper.deleteWKData(companyCd,aud);
+        productPowerDataMapper.deleteWKSyokika(companyCd,aud,productPowerNo);
+        productPowerDataMapper.deleteWKKokyaku(companyCd,aud,productPowerNo);
+        productPowerDataMapper.deleteWKYobiiitern(aud,companyCd,productPowerNo);
+        productPowerDataMapper.deleteWKYobiiiternData(aud,companyCd,productPowerNo);
+        productPowerDataMapper.deleteWKData(companyCd,aud,productPowerNo);
 
         productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud);
          productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud);

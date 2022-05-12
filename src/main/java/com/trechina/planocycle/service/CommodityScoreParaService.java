@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerReserveMst;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
-import com.trechina.planocycle.entity.vo.RankCalculateVo;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -55,10 +54,10 @@ public interface CommodityScoreParaService {
     Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd, String dataName, Integer valueCd);
     /**
      * rank計算
-     * @param rankCalculateVo
+     * @param
      * @return
      */
-    Map<String,Object>  rankCalculate( RankCalculateVo rankCalculateVo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    Map<String,Object>  rankCalculate( Map<String,Object> map) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
     /**
      * reserveの削除

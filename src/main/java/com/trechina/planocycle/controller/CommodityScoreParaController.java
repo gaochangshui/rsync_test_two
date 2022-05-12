@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerReserveMst;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
-import com.trechina.planocycle.entity.vo.RankCalculateVo;
 import com.trechina.planocycle.service.CommodityScoreParaService;
 import com.trechina.planocycle.service.FilesOperationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,9 +88,9 @@ public class CommodityScoreParaController {
      * 計算rank
      */
     @PostMapping("rankCalculate")
-    public Map<String,Object> rankCalculate(@RequestBody RankCalculateVo rankCalculateVo) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public Map<String,Object> rankCalculate(@RequestBody Map<String,Object> map) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
-        return commodityScoreParaService.rankCalculate(rankCalculateVo);
+        return commodityScoreParaService.rankCalculate(map);
     }
 
 

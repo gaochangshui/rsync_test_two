@@ -13,7 +13,7 @@ import java.util.Map;
 public interface ProductPowerDataMapper {
 
     //テンポラリ・テーブルワークproduct_power_syokika
-    int deleteWKSyokika(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
+    int deleteWKSyokika(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("productPowerCd") Integer productPowerCd);
 
     //smartデータをテンポラリ・テーブルに保存
     int insert(@Param("keyNameList") List<String[]> keyNameList);
@@ -26,7 +26,7 @@ public interface ProductPowerDataMapper {
 
     //テンポラリ・テーブルのすべて
 
-    int deleteWKKokyaku(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
+    int deleteWKKokyaku(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("productPowerCd") Integer productPowerCd);
 
     //smartデータをテンポラリ・テーブルに保存
     int insertGroup(@Param("keyNameList") List<List<String>> keyNameList);
@@ -41,11 +41,11 @@ public interface ProductPowerDataMapper {
     //テンポラリ・テーブルyobilitemとdata
     int deleteWKYobiiiternCd(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("valueCd") Integer valueCd);
 
-    int deleteWKYobiiitern(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
+    int deleteWKYobiiitern(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
     int deleteWKYobiiiternDataCd(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("valueCd") Integer valueCd);
 
-    int deleteWKYobiiiternData(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
+    int deleteWKYobiiiternData(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
     List<WKYobiiiternData> selectWKYobiiiternData(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
 
@@ -114,12 +114,12 @@ public interface ProductPowerDataMapper {
     //三表合流一表
 
 
-    int deleteWKData(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
+    int deleteWKData(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("productPowerCd") Integer productPowerCd);
 
 
     List<ProductPowerMstData> rankCalculates();
 
-    int setWKData(@Param("list") List<ProductPowerMstData> productPowerMstData, @Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
+    int setWKData(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd,@Param("productPowerCd")Integer productPowerCd);
 
     int deleteData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
@@ -144,4 +144,8 @@ public interface ProductPowerDataMapper {
     int setSyokikaAllData(@Param("lists") List<Map<String,Object>>lists);
 
     List<Map<String,Object>> rankCalculation(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+
+    List<Map<String, Object>> getProductRankCalculate(@Param("map") Map<String, Object> map, @Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd);
+
+    void setWkDataRank(List<Map<String, Object>> rankCalculate, String authorCd, String companyCd, Integer productPowerCd);
 }

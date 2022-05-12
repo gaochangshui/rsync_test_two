@@ -1,10 +1,8 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.JanClassifyMapper;
 import com.trechina.planocycle.mapper.ParamConfigMapper;
@@ -21,7 +19,10 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,112 +55,41 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      */
     @Override
     public Map<String, Object> getCommodityScoreData(String taskID, String companyCd,String commonPartsData) {
-         commonPartsData = "{\"dateIsCore\":\"1\",\"storeLevel\":\"3\",\"storeIsCore\":\"1\",\"storeMstClass\":\"0000\",\"prodIsCore\":\"2\",\"prodMstClass\":\"0001\"}";
+        commonPartsData = "{\"dateIsCore\":\"1\",\"storeLevel\":\"3\",\"storeIsCore\":\"1\",\"storeMstClass\":\"0000\",\"prodIsCore\":\"2\",\"prodMstClass\":\"0001\"}";
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         String authorCd = session.getAttribute("aud").toString();
+        String[] split = taskID.split(",");
         Map<String, Object> data;
-        if (vehicleNumCache.get(taskID)==null) {
-            data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
+        for (String s : split) {
+            data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), s, tokenInfo);
             if ("9".equals(data.get("data")) || data.get("data") == null || data.get("data") == "") {
                 return data;
-            } else {
-                vehicleNumCache.put(taskID, "1");
-                Map<String, Object> finalData = data;
-                executor.execute(() -> {
-                    List<String []> strList = new ArrayList();
-                    // taskIdを持って、再度cgiに運転状態/データの取得を要求する
-                    logger.info("商品力点数表web版cgi返回数据：{}", finalData);
-                    // 返されるデータは文字列で、2 D配列に処理されます。
-                    if (finalData.get("data") != null) {
-                        String[] strResult = finalData.get("data").toString().split("@");
-                        String[] strSplit = null;
-                        String[] arr;
-                        int a = 1;
-                        productPowerDataMapper.deleteWKSyokika(companyCd, authorCd);
-                        productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
-                        productPowerDataMapper.deleteWKYobiiitern(authorCd, companyCd);
-                        productPowerDataMapper.deleteWKYobiiiternData(authorCd, companyCd);
-                        for (int i = 0; i < strResult.length; i++) {
-                            strSplit = strResult[i].split(" ");
-                            arr = new String[strSplit.length + 1];
-                            for (int j = strSplit.length - 1; j >= a; j--) {
-                                arr[j + 1] = strSplit[j];
-                            }
-                            arr[a] = authorCd;
-                            System.arraycopy(strSplit, 0, arr, 0, a);
-                           /* if (i % 1000 == 0 && i >= 1000) {
-                                productPowerDataMapper.insert(strList);
-                                strList.clear();
-                            }*/
-                            strList.add(arr);
-                        }
-                        List<Map<String,Object>> list = new ArrayList<>();
-
-                        List<ParamConfigVO> paramConfigAll = paramConfigMapper.getParamConfigAll();
-                        int spiltList = 30000/strList.get(0).length;
-                        for (String[] strings : strList) {
-
-                            Map<String, Object> map = new HashMap<>();
-                            for (int i = 0; i < paramConfigAll.size(); i++) {
-                                map.put("company_cd",strings[0]);
-                                map.put("author_cd",strings[1]);
-                                map.put("jan",strings[2]);
-                                if (paramConfigAll.get(i).getFlag() == 0) {
-                                    map.put(paramConfigAll.get(i).getItemCd(), strings[i + 3]);
-                                }
-                            }
-                            list.add(map);
-                            if (list.size()==spiltList){
-                                productPowerDataMapper.setSyokikaAllData(list);
-                                list.clear();
-                            }
-                        }
-
-                        if (!list.isEmpty()){
-                            productPowerDataMapper.setSyokikaAllData(list);
-                        }
-                        if (!strList.isEmpty()) {
-                       //     productPowerDataMapper.insert(strList);
-                        }
-                    }
-                    vehicleNumCache.put(taskID, "2");
-                });
             }
         }
-            for (int i = 0; i < 10; i++) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if ("2".equals(vehicleNumCache.get(taskID))){
-                    vehicleNumCache.remove(taskID);
+        
+        JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
+        String prodMstClass = jsonObject.get("prodMstClass").toString();
+        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        String isCompanyCd = null;
+        if ("1".equals(prodIsCore)) {
+            isCompanyCd = "1000";
+        } else {
+            isCompanyCd = "87c6f4";
+        }
+        String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
+        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, "0001");
+        List<Map<String, Object>> janClassifyList = janClassifyMapper.selectJanClassify(tableName);
+        Map<String, String> attrMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString()));
+        Map<String, String> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
+        List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
+                janInfoTableName, "\"" + attrColumnMap.get("jan_cd") + "\"", janClassifyList, authorCd);
+        logger.info("返回pos基本情報はい{}", allData);
+        return ResultMaps.result(ResultEnum.SUCCESS, null);
 
-                    List<ProductPowerMstData> syokikaList = productPowerDataMapper.selectWKSyokika(companyCd, authorCd);
-                    JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
-                    String prodMstClass = jsonObject.get("prodMstClass").toString();
-                    String prodIsCore = jsonObject.get("prodIsCore").toString();
-                    String isCompanyCd =null;
-                    if ("1".equals(prodIsCore)){
-                        isCompanyCd = "1000";
-                    }else {
-                        isCompanyCd = "87c6f4";
-                    }
-                    String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd,prodMstClass);
-                    String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, "0001");
-                    List<Map<String, Object>> janClassifyList = janClassifyMapper.selectJanClassify(tableName);
-                    Map<String, String> attrMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString()));
-                    Map<String, String> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
-                    List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
-                            janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", janClassifyList,authorCd);
-                    logger.info("返回pos基本情報はい{}", allData);
-                    return ResultMaps.result(ResultEnum.SUCCESS,syokikaList);
-                }
-            }
-
-        return ResultMaps.result(ResultEnum.SUCCESS,"9");
 
     }
+
+
 
     /**
      * 顧客グループデータの取得
@@ -194,7 +124,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             String[] strSplit = null;
                             String[] arr;
                             int a = 1;
-                            productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd);
+
                             for (int i = 0; i < strResult.length; i++) {
                                 strSplit = strResult[i].split(" ");
                                 arr = new String[strSplit.length + 1];
@@ -257,28 +187,51 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     /**
      * 商品力点数表taskidを取得する
      *
-     * @param productPowerDataForCgiDto
+     * @param
      * @return
      */
     @Override
-    public Map<String, Object> getCommodityScoreTaskId(ProductPowerDataForCgiDto productPowerDataForCgiDto) {
+    public Map<String, Object> getCommodityScoreTaskId( Map<String,Object> map) {
         String uuid = UUID.randomUUID().toString();
-        productPowerDataForCgiDto.setGuid(uuid);
-        productPowerDataForCgiDto.setMode("shoki_data");
-        productPowerDataForCgiDto.setUsercd(session.getAttribute("aud").toString());
-        if ("0".equals(productPowerDataForCgiDto.getSeasonFlag())) {
-            productPowerDataForCgiDto.setSeasonFlag("MONTH");
+        String authorCd = session.getAttribute("aud").toString();
+        String companyCd = map.get("company").toString();
+        Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
+        map.put("guid",uuid);
+        map.put("mode","shoki_data");
+        map.put("usercd",authorCd);
+        if ("0".equals(map.get("seasonFlag"))) {
+            map.put("seasonFlag","MONTH");
         } else {
-            productPowerDataForCgiDto.setSeasonFlag("WEEK");
+            map.put("seasonFlag","WEEK");
         }
-        if ("0".equals(productPowerDataForCgiDto.getRecentlyFlag())) {
-            productPowerDataForCgiDto.setRecentlyFlag("MONTH");
+        if ("0".equals(map.get("recentlyFlag"))) {
+            map.put("recentlyFlag","MONTH");
         } else {
-            productPowerDataForCgiDto.setRecentlyFlag("WEEK");
+            map.put("recentlyFlag","WEEK");
         }
+        map.put("tableName","work_product_power_kokyaku");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("調用cgiつかむ取data的参数：{}", productPowerDataForCgiDto);
-        String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
+        logger.info("調用cgiつかむ取data的参数：{}", map);
+        //yobi
+        productPowerDataMapper.deleteWKYobiiitern(authorCd, companyCd,productPowerCd);
+        productPowerDataMapper.deleteWKYobiiiternData(authorCd, companyCd,productPowerCd);
+        //顧客データ
+
+        productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd,productPowerCd);
+        String groupResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
+        uuid = UUID.randomUUID().toString();
+        map.put("mode","shoki_data");
+        map.put("guid",uuid);
+        //市場データ
+        String intergeResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
+        uuid = UUID.randomUUID().toString();
+        map.put("mode","shoki_data");
+        map.put("guid",uuid);
+        map.remove("customerCondition");
+        //posデータ
+        productPowerDataMapper.deleteWKSyokika(companyCd, authorCd,productPowerCd);
+        String posResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
+        String result = groupResult+","+intergeResult + "," + posResult;
         logger.info("taskId返回：{}", result);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }

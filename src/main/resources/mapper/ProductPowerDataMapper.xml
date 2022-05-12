@@ -225,28 +225,67 @@
         where company_cd = #{companyCd} and author_cd = #{authorCd}
     </insert>
     <insert id="setWKData" >
-        insert into planocycle.work_product_power_mst_data(company_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pd_pos_amount,pd_pos_num,
-                                                          pd_branch_amount,pd_branch_num,pd_compare_amount,pd_compare_num,pd_branch_compare_amount,pd_branch_compare_num,
-                                                          gd_pos_amount,gd_pos_num,gd_branch_amount,gd_branch_num,gd_compare_amount,gd_compare_num,gd_branch_compare_amount,
-                                                          gd_branch_compare_num,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,rank_result,author_cd,
-                                                          create_time,pd_pos_amount_rank,pd_pos_num_rank,pd_branch_amount_rank,pd_branch_num_rank,pd_compare_amount_rank,
-                                                          pd_compare_num_rank,pd_branch_compare_amount_rank,pd_branch_compare_num_rank,gd_pos_amount_rank,gd_pos_num_rank,
-                                                          gd_branch_amount_rank,gd_branch_num_rank ,gd_compare_amount_rank,gd_compare_num_rank,gd_branch_compare_amount_rank,
-                                                          gd_branch_compare_num_rank,item1_rank,item2_rank,item3_rank,item4_rank,item5_rank,item6_rank,item7_rank,item8_rank,
-                                                          item9_rank,item10_rank)
+        insert into planocycle.work_product_power_mst_data(company_cd,product_power_cd,author_cd,jan,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,
+                                                           pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,
+                                                           pos_store_item01,pos_store_item02,pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,
+                                                           pos_store_item08,pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
+                                                           pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
+                                                           pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,pos_compare_store_item06,
+                                                           pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,customer_compare_store_item01,customer_compare_store_item02,
+                                                           customer_compare_store_item03,customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
+                                                           customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10,customer_compare_item01,customer_compare_item02,customer_compare_item03,
+                                                           customer_compare_item04,customer_compare_item05,customer_compare_item06,customer_compare_item07,customer_compare_item08,customer_compare_item09,customer_compare_item10,
+                                                           customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,customer_store_item05,customer_store_item06,customer_store_item07,
+                                                           customer_store_item08,customer_store_item09,customer_store_item10,customer_item01,customer_item02,customer_item03,customer_item04,customer_item05,customer_item06,
+                                                           customer_item07,customer_item08,customer_item09,customer_item10,customer_item11,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,intage_item06,
+                                                           intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02)
+        select ${companyCd},${productPowerCd},${authorCd},s.jan,yobi.item1,yobi.item2,yobi.item3,yobi.item4,yobi.item5,yobi.item6,yobi.item7,yobi.item8,yobi.item9,yobi.item10,
+               pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,
+               pos_store_item01,pos_store_item02,pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,
+               pos_store_item08,pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
+               pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
+               pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,pos_compare_store_item06,
+               pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,customer_compare_store_item01,customer_compare_store_item02,
+               customer_compare_store_item03,customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
+               customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10,customer_compare_item01,customer_compare_item02,customer_compare_item03,
+               customer_compare_item04,customer_compare_item05,customer_compare_item06,customer_compare_item07,customer_compare_item08,customer_compare_item09,customer_compare_item10,
+               customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,customer_store_item05,customer_store_item06,customer_store_item07,
+               customer_store_item08,customer_store_item09,customer_store_item10,customer_item01,customer_item02,customer_item03,customer_item04,customer_item05,customer_item06,
+               customer_item07,customer_item08,customer_item09,customer_item10,customer_item11,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,intage_item06,
+               intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02
 
-        values
-               <foreach collection="list" separator="," item="item" >
-                   (#{companyCd},#{item.jan},#{item.skuName},#{item.classifyBig},#{item.classifyMiddle},#{item.classifySmall},#{item.classifyFine},#{item.pdPosAmount},
-                    #{item.pdPosNum},#{item.pdBranchAmount},#{item.pdBranchNum},#{item.pdCompareAmount},#{item.pdCompareNum},#{item.pdBranchCompareAmount},#{item.pdBranchCompareNum},
-                    #{item.gdPosAmount},#{item.gdPosNum},#{item.gdBranchAmount},#{item.gdBranchNum},#{item.gdCompareAmount},#{item.gdCompareNum},#{item.gdBranchCompareAmount},
-                    #{item.gdBranchCompareNum},#{item.item1},#{item.item2},#{item.item3},#{item.item4},#{item.item5},#{item.item6},#{item.item7},#{item.item8},#{item.item9},
-                    #{item.item10},#{item.rankResult},#{authorCd},now(),#{item.pdPosAmountRank},#{item.pdPosNumRank},#{item.pdBranchAmountRank},#{item.pdBranchNumRank},
-                    #{item.pdCompareAmountRank},#{item.pdCompareNumRank},#{item.pdBranchCompareAmountRank},#{item.pdBranchCompareNumRank},#{item.gdPosAmountRank},#{item.gdPosNumRank},
-                    #{item.gdBranchAmountRank},#{item.gdBranchNumRank},#{item.gdCompareAmountRank},#{item.gdCompareNumRank},#{item.gdBranchCompareAmountRank},#{item.gdBranchCompareNumRank},
-                    #{item.item1Rank},#{item.item2Rank},#{item.item3Rank},#{item.item4Rank},#{item.item5Rank},#{item.item6Rank},#{item.item7Rank},#{item.item8Rank},#{item.item9Rank},
-                    #{item.item10Rank})
-               </foreach>
+        from  planocycle.work_product_power_syokika s
+            left join planocycle.work_product_power_kokyaku k
+                    on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd
+            left join planocycle.work_product_power_intage i
+                    on i.jan = s.jan and i.author_cd=s.author_cd and  s.company_cd = i.company_cd
+
+            left join (select
+                         dd.jan as jan,
+
+                         sum ( case when dd.data_cd = '31001' then dd.data_value else 0 end ) as item1,
+                         sum ( case when dd.data_cd = '31002' then dd.data_value else 0 end ) as item2,
+                         sum ( case when dd.data_cd = '31003' then dd.data_value else 0 end ) as item3,
+                         sum ( case when dd.data_cd = '31004' then dd.data_value else 0 end ) as item4,
+                         sum ( case when dd.data_cd = '31005' then dd.data_value else 0 end ) as item5,
+                         sum ( case when dd.data_cd = '31006' then dd.data_value else 0 end ) as item6,
+                         sum ( case when dd.data_cd = '31007' then dd.data_value else 0 end ) as item7,
+                         sum ( case when dd.data_cd = '31008' then dd.data_value else 0 end ) as item8,
+                         sum ( case when dd.data_cd = '31009' then dd.data_value else 0 end ) as item9,
+                         sum ( case when dd.data_cd = '31010' then dd.data_value else 0 end ) as item10
+                     from
+                         planocycle.work_product_power_reserve_mst mm
+                             inner join planocycle.work_product_power_reserve_data dd on mm.data_cd = dd.data_cd
+                     where
+                         mm.author_cd = '10215814'
+                       and mm.company_cd = '0001'
+                     GROUP BY
+                         dd.jan
+        )as yobi
+            on yobi.jan = s.jan
+
+        where  s.author_cd='10215814' and s.company_cd = '0001'
+        order by s.jan;
 
     </insert>
 
@@ -271,16 +310,16 @@
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </update>
     <delete id="deleteWKSyokika">
-        delete from planocycle.work_product_power_syokika where company_cd=#{companyCd} and author_cd=#{authorCd}
+        delete from planocycle.work_product_power_syokika where company_cd=#{companyCd} and author_cd=#{authorCd} and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </delete>
     <delete id="deleteWKKokyaku">
-        delete from planocycle.work_product_power_kokyaku where company_cd=#{companyCd} and author_cd=#{authorCd}
+        delete from planocycle.work_product_power_kokyaku where company_cd=#{companyCd} and author_cd=#{authorCd} and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </delete>
     <delete id="deleteWKYobiiitern">
-        delete from planocycle.work_product_power_reserve_mst where company_cd=#{companyCd} and author_cd=#{authorCd}
+        delete from planocycle.work_product_power_reserve_mst where company_cd=#{companyCd} and author_cd=#{authorCd} and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </delete>
     <delete id="deleteWKYobiiiternData">
-        delete from planocycle.work_product_power_reserve_data where company_cd=#{companyCd} and author_cd=#{authorCd}
+        delete from planocycle.work_product_power_reserve_data where company_cd=#{companyCd} and author_cd=#{authorCd} and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </delete>
     <delete id="phyDeleteSyokika">
         delete from planocycle.product_power_syokika where company_cd = #{companyCd,jdbcType=VARCHAR}
@@ -330,7 +369,7 @@
 
     </update>
     <update id="setData">
-        insert into planocycle.product_power_mst_data (company_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pd_pos_amount,pd_pos_num,
+        insert into planocycle.work_product_power_mst_data (company_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pd_pos_amount,pd_pos_num,
                                                        pd_branch_amount,pd_branch_num,pd_compare_amount,pd_compare_num,pd_branch_compare_amount,pd_branch_compare_num,
                                                        gd_pos_amount,gd_pos_num,gd_branch_amount,gd_branch_num,gd_compare_amount,gd_compare_num,gd_branch_compare_amount,
                                                        gd_branch_compare_num,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,rank_result,author_cd,
@@ -350,6 +389,21 @@
                                                         item9_rank,item10_rank,#{productPowerCd}
         from planocycle.work_product_power_mst_data
         where company_cd = #{companyCd} and author_cd = #{authorCd}
+
+    </update>
+    <update id="setWkDataRank">
+        update planocycle.work_product_power_mst_data
+        set
+            <foreach collection="rankCalculate[0]" item="item" separator="," index="index">
+                <if test="index != 'jan'">
+                    ${index}=
+                    case jan
+                    <foreach collection="rankCalculate" item="item" index="ind">
+                        when #{item.jan} then #{item.${index}} ::integer
+                    </foreach>
+                    else null end
+                </if>
+            </foreach>
 
     </update>
     <insert id="setSyokikaAllData">
@@ -598,6 +652,45 @@
     </select>
     <select id="rankCalculation" resultType="java.util.Map">
 
+    </select>
+    <select id="getProductRankCalculate" resultType="java.util.Map">
+        select s.jan,
+               <foreach collection="map" index="index" separator="," item="item">
+                    row_number() over(order by ${index} ) as "${index}_rank"
+                </foreach>
+                ,row_number() over(order by
+                <foreach collection="map" item="item" separator="+" index="index">
+                   ${index} ::integer * ${item} /100
+                </foreach>
+                ) as rank_result
+        from  planocycle.work_product_power_syokika s
+            left join planocycle.work_product_power_kokyaku k
+        on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd
+       left join planocycle.work_product_power_intage i
+                on i.jan = s.jan and i.author_cd=s.author_cd and  s.company_cd = i.company_cd
+        left join (select
+        dd.jan as jan,
+        sum ( case when dd.data_cd = '31001' then dd.data_value else 0 end ) as item1,
+        sum ( case when dd.data_cd = '31002' then dd.data_value else 0 end ) as item2,
+        sum ( case when dd.data_cd = '31003' then dd.data_value else 0 end ) as item3,
+        sum ( case when dd.data_cd = '31004' then dd.data_value else 0 end ) as item4,
+        sum ( case when dd.data_cd = '31005' then dd.data_value else 0 end ) as item5,
+        sum ( case when dd.data_cd = '31006' then dd.data_value else 0 end ) as item6,
+        sum ( case when dd.data_cd = '31007' then dd.data_value else 0 end ) as item7,
+        sum ( case when dd.data_cd = '31008' then dd.data_value else 0 end ) as item8,
+        sum ( case when dd.data_cd = '31009' then dd.data_value else 0 end ) as item9,
+        sum ( case when dd.data_cd = '31010' then dd.data_value else 0 end ) as item10
+        from
+        planocycle.work_product_power_reserve_mst mm
+        inner join planocycle.work_product_power_reserve_data dd on mm.data_cd = dd.data_cd
+        where
+        mm.author_cd = '10215814'
+        and mm.company_cd = '0001'
+        GROUP BY
+        dd.jan
+        )as yobi
+        on yobi.jan = s.jan
+        where  s.author_cd='10215814' and s.company_cd = '0001'
     </select>
 
 </mapper>

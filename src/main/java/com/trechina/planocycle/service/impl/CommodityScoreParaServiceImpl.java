@@ -6,7 +6,6 @@ import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
-import com.trechina.planocycle.entity.vo.RankCalculateVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreMasterService;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -258,16 +256,26 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
     /**
      * rank計算
-     * @param rankCalculateVo
+     * @param
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> rankCalculate(RankCalculateVo rankCalculateVo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Map<String, Object> rankCalculate(Map<String,Object> map) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String authorCd = session.getAttribute("aud").toString();
-        productPowerDataMapper.deleteWKData(rankCalculateVo.getCompanyCd(),authorCd);
+        String companyCd = map.get("companyCd").toString();
+        Integer productPowerCd = Integer.valueOf(map.get("productPowerCd").toString());
+        productPowerDataMapper.deleteWKData(companyCd,authorCd,productPowerCd);
+        map.remove("companyCd");
+        map.remove("productPowerCd");
+        Set<String> strings = map.keySet();
 
-        List<ProductPowerMstData> productPowerMstDataList = productPowerDataMapper.selectWKKokyaku(authorCd,rankCalculateVo.getCompanyCd());
+        List<Map<String, Object>> rankCalculate = productPowerDataMapper.getProductRankCalculate(map, companyCd, productPowerCd);
+        productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd);
+        productPowerDataMapper.setWkDataRank(rankCalculate,authorCd,companyCd,productPowerCd);
+
+       /*  RankCalculateVo rankCalculateVo = null;
+       List<ProductPowerMstData> productPowerMstDataList = productPowerDataMapper.selectWKKokyaku(authorCd,rankCalculateVo.getCompanyCd());
 
         String[] columns = {"PdPosAmount", "PdPosNum", "PdBranchAmount", "PdBranchNum", "PdCompareAmount", "PdCompareNum","PdBranchCompareAmount"
         ,"PdBranchCompareNum","GdPosAmount","GdPosNum","GdBranchAmount","GdBranchNum","GdCompareAmount","GdCompareNum","GdBranchCompareAmount","GdBranchCompareNum",
@@ -369,8 +377,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 int z = productPowerDataMapper.setWKData(list, authorCd, rankCalculateVo.getCompanyCd());
                 logger.info("插入条数:{}",z);
             }
-        }
-        return ResultMaps.result(ResultEnum.SUCCESS,productPowerMstDataList);
+        }*/
+        return ResultMaps.result(ResultEnum.SUCCESS,rankCalculate);
     }
 
     @Transactional(rollbackFor = Exception.class)
