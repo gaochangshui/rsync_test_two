@@ -601,7 +601,7 @@
         order by data_sort asc
     </select>
     <select id="getDynamicAllData" resultType="map">
-        select power_mst.jan,
+        select power_mst.jan,power_mst.sku_name
         <foreach collection="classify" index="index" item="item" separator=",">
            jan_info."${item.sort}" as ${item.attr_val}
         </foreach>

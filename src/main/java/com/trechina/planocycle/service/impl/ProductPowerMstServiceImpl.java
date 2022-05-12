@@ -134,8 +134,6 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         //第数セット
         String prodMstClass = productPowerParamJson.getString("prodMstClass");
 
-//        companyCd="87c6f4";
-//        prodMstClass="0001";
         if("0".equals(prodIsCore)){
             //0-企業
             tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", companyCd, prodMstClass);
@@ -153,9 +151,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
                 .collect(Collectors.groupingBy(paramParam -> paramParam.getItemCd().split("_")[0]));
 
         List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
-        classify = classify.stream().filter(map -> "jan_cd".equals(map.get("attr").toString())
-                || !map.get("attr").toString().endsWith("_cd")).collect(Collectors.toList());
         Map<String, String> attrColumnMap = classify.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
+        classify = classify.stream().filter(map -> map.get("colSort")!=null).collect(Collectors.toList());
 
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, productPowerCd);
         List<Map<String, Object>> allData = productPowerDataMapper.getDynamicAllData(companyCd, productPowerCd,
@@ -268,7 +265,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
     private Map<String, List<String>> initColumnClassify(List<String> attr){
         Map<String, List<String>> columnsByClassify = new LinkedHashMap<>(10);
-        columnsByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("jan", "skuName"));
+        columnsByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("jan", "sku_name"));
         columnsByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), attr);
         columnsByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());

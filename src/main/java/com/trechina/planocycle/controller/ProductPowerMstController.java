@@ -49,7 +49,7 @@ public class ProductPowerMstController {
      * 商品力点数表データを取得excel download
      * @return
      */
-    @PostMapping("downloadProductPowerInfo")
+    @PostMapping("/downloadProductPowerInfo")
     public void downloadProductPowerInfo(@RequestBody ProductPowerVO productPowerVO, HttpServletResponse response){
         powerMstService.downloadProductPowerInfo(productPowerVO.getCompanyCd(),productPowerVO.getProductPowerNo(),response);
     }
