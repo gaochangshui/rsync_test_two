@@ -2,6 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.SysConfigMapper">
     <select id="selectSycConfig" resultType="string">
-        select ${targetColumn} from sys_config
+        select ${targetColumn} from planocycle.sys_config
     </select>
 </mapper>
