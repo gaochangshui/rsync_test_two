@@ -1,9 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.sun.javafx.collections.MappingChange;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
@@ -28,7 +25,6 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service

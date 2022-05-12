@@ -6,6 +6,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.ProductPowerParamVo;
+import com.trechina.planocycle.entity.po.SysConfig;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.entity.vo.ProductPowerMstVo;
 import com.trechina.planocycle.entity.vo.ReserveMstVo;
@@ -34,6 +35,9 @@ import java.util.stream.Collectors;
 public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     @Autowired
     ProductPowerMstMapper productPowerMstMapper;
+
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
     @Autowired
     PriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
@@ -137,9 +141,10 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", companyCd, prodMstClass);
             janInfoTableName = String.format("\"%s\".prod_%s_jan_info", companyCd, prodMstClass);
         }else{
+            String coreCompany = sysConfigMapper.selectSycConfig("core_company");
             //1-自设
-            tableName = String.format("\"1000\".prod_%s_jan_kaisou_header_sys", prodMstClass);
-            janInfoTableName = String.format("\"1000\".prod_%s_jan_info", prodMstClass);
+            tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", coreCompany, prodMstClass);
+            janInfoTableName = String.format("\"%s\".prod_%s_jan_info", coreCompany, prodMstClass);
         }
 
         List<ParamConfigVO> paramList = paramConfigMapper.selectParamConfig();
