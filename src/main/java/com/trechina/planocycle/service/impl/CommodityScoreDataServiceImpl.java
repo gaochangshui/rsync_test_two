@@ -338,7 +338,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             cdList.addAll(Arrays.asList(customerCd));
         }
 
-        List<ParamConfigVO> paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
+        List<ParamConfigVO> paramConfigVOS = null;
+        if(cdList.isEmpty()){
+            paramConfigVOS = new ArrayList<>();
+        }else{
+            paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
+        }
         List<Map<String, String>> productPowerMstData = productPowerDataMapper.selectShowData(productPowerCd, paramConfigVOS, customerCd, prepareCd, intageCd);
         List<Map<String, String>> returnData = new ArrayList<>();
         Map<String, String> colName = paramConfigVOS.stream()

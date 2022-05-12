@@ -141,6 +141,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", companyCd, prodMstClass);
             janInfoTableName = String.format("\"%s\".prod_%s_jan_info", companyCd, prodMstClass);
         }else{
+            //自设company_cd
             String coreCompany = sysConfigMapper.selectSycConfig("core_company");
             //1-自设
             tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", coreCompany, prodMstClass);
