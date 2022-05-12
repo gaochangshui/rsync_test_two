@@ -117,6 +117,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         String prepareValue = param.getPrepareValue();
         //POS項目
         String posValue = param.getPosValue();
+        //市場項目
+        String intageValue = param.getIntageValue();
         String rankWeight = param.getRankWeight();
         Set<String> weightKeys = new HashSet<>();
 
@@ -148,7 +150,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
         List<ParamConfigVO> paramList = paramConfigMapper.selectParamConfig();
         Map<String, List<ParamConfigVO>> paramListByGroup = paramList.stream()
-                .collect(Collectors.groupingBy(paramParam -> paramParam.getItemCd().split("_")[0]));
+                .collect(Collectors.groupingBy(paramParam -> paramParam.getItemCd().split("_")[0], LinkedHashMap::new, Collectors.toList()));
 
         List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
         Map<String, String> attrColumnMap = classify.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
@@ -170,7 +172,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         this.fillParamData(ProductPowerHeaderEnum.CUSTOMER.getCode(), ProductPowerHeaderEnum.CUSTOMER.getName(),
                 customerValue,paramListByGroup.get(ProductPowerHeaderEnum.CUSTOMER.getCode()), headersByClassify, columnsByClassify, weightKeys);
         this.fillParamData(ProductPowerHeaderEnum.INTAGE.getCode(), ProductPowerHeaderEnum.INTAGE.getName(),
-                customerValue,paramListByGroup.get(ProductPowerHeaderEnum.INTAGE.getCode()), headersByClassify, columnsByClassify, weightKeys);
+                intageValue,paramListByGroup.get(ProductPowerHeaderEnum.INTAGE.getCode()), headersByClassify, columnsByClassify, weightKeys);
         this.fillPrepareParamData(prepareValue, productPowerCd, companyCd, headersByClassify, columnsByClassify, weightKeys);
 
         ServletOutputStream outputStream = null;
@@ -256,9 +258,11 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         headersByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.INTAGE.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.PREPARE_RANK.getName(), Lists.newArrayList());
+        headersByClassify.put(ProductPowerHeaderEnum.INTAGE_RANK.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.RANK.getName(), Lists.newArrayList("Rank"));
         return headersByClassify;
     }
@@ -270,9 +274,11 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         columnsByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.INTAGE.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.POS_RANK.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER_RANK.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.PREPARE_RANK.getName(), Lists.newArrayList());
+        columnsByClassify.put(ProductPowerHeaderEnum.INTAGE_RANK.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.RANK.getName(), Lists.newArrayList("rankResult"));
         return columnsByClassify;
     }

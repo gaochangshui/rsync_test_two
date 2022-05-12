@@ -3,7 +3,7 @@
 <mapper namespace="com.trechina.planocycle.mapper.ParamConfigMapper">
   <select id="selectParamConfig" resultType="com.trechina.planocycle.entity.vo.ParamConfigVO">
     select item_cd,item_value,item_name from planocycle.param_config config
-    where flag=0
+    where flag=0 order by item_value
   </select>
   <select id="getParamConfig" resultType="com.trechina.planocycle.entity.dto.ParamConfigDto">
     select item_cd as colName,item_value as value,item_name as label from planocycle.param_config config
