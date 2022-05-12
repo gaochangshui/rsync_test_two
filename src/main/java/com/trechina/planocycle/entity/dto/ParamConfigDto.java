@@ -6,6 +6,7 @@ public class ParamConfigDto {
     private Integer value;
     private  String colName;
     private Integer rankFlag;
+    private String itemType;
 
     public String getLabel() {
         return label;
@@ -39,6 +40,14 @@ public class ParamConfigDto {
         this.rankFlag = rankFlag;
     }
 
+    public String getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
+    }
+
     @Override
     public String toString() {
         return "ParamConfigDto{" +
@@ -46,6 +55,7 @@ public class ParamConfigDto {
                 ", value=" + value +
                 ", colName='" + colName + '\'' +
                 ", rankFlag=" + rankFlag +
+                ", itemType='" + itemType + '\'' +
                 '}';
     }
 }

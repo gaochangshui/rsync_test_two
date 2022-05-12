@@ -6,7 +6,7 @@
     where flag=0
   </select>
   <select id="getParamConfig" resultType="com.trechina.planocycle.entity.dto.ParamConfigDto">
-    select item_cd as colName,item_value as value,item_name as label,rank_flag as rankFlag from planocycle.param_config config
+    select item_cd as colName,item_value as value,item_name as label,rank_flag as rankFlag,item_type as itemType  from planocycle.param_config config
     where flag=0
   </select>
   <select id="getParamConfigAll" resultType="com.trechina.planocycle.entity.vo.ParamConfigVO">

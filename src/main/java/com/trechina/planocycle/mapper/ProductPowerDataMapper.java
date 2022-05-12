@@ -52,6 +52,9 @@ public interface ProductPowerDataMapper {
 
     int deleteWKYobiiiternData(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
+    int deleteWKIntage(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("productPowerCd") Integer productPowerCd);
+
+
     List<WKYobiiiternData> selectWKYobiiiternData(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
 
     //smartデータをテンポラリ・テーブルに保存
@@ -71,6 +74,8 @@ public interface ProductPowerDataMapper {
     int setWkYobilitemDataForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
     int setWkDataForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
+
+    int setWKIntageForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
     //最終テーブルの削除
     int deleteSyokika(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
@@ -92,6 +97,8 @@ public interface ProductPowerDataMapper {
 
     int phyDeleteYobiiiternData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
+    int phyDeleteIntage(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
+
 
     //最終テーブルクエリー
     List<ProductPowerSyokika> selectSyokika(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
@@ -106,6 +113,8 @@ public interface ProductPowerDataMapper {
     int endYobiiiternForWk(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
     int endYobiiiternDataForWk(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
+
+    int endIntageForWK(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
     //クエリの最終テーブル数
     Integer syokikaPowerCdNum(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);

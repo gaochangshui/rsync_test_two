@@ -56,7 +56,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      */
     @Override
     public Map<String, Object> getCommodityScoreData(String taskID, String companyCd,String commonPartsData) {
-        commonPartsData = "{\"dateIsCore\":\"1\",\"storeLevel\":\"3\",\"storeIsCore\":\"1\",\"storeMstClass\":\"0000\",\"prodIsCore\":\"2\",\"prodMstClass\":\"0001\"}";
+        commonPartsData = "{\"dateIsCore\":\"1\",\"storeLevel\":\"3\",\"storeIsCore\":\"1\",\"storeMstClass\":\"0000\",\"prodIsCore\":\"2\",\"prodMstClass\":\"0000\"}";
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         String authorCd = session.getAttribute("aud").toString();
         String[] split = taskID.split(",");
@@ -73,19 +73,29 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String prodIsCore = jsonObject.get("prodIsCore").toString();
         String isCompanyCd = null;
         if ("1".equals(prodIsCore)) {
-            isCompanyCd = "1000";
+            isCompanyCd = coreCompany;
         } else {
-            isCompanyCd = "87c6f4";
+            isCompanyCd = companyCd;
         }
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
-        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, "0001");
+        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
         List<Map<String, Object>> janClassifyList = janClassifyMapper.selectJanClassify(tableName);
-        Map<String, String> attrMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString()));
-        Map<String, String> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
+        Map<String, Object> colMap =new HashMap<>();
+        colMap.put("jan","JAN");
+         colMap.putAll(janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString())));
+        Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
+
+
         List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
                 janInfoTableName, "\"" + attrColumnMap.get("jan_cd") + "\"", janClassifyList, authorCd);
-        logger.info("返回pos基本情報はい{}", allData);
-        return ResultMaps.result(ResultEnum.SUCCESS, null);
+        Set<String> strings = allData.get(0).keySet();
+        colMap.remove("jan_cd");
+        List<Map<String, Object>> resultData = new ArrayList<>();
+        resultData.add(colMap);
+        resultData.addAll(allData);
+
+        logger.info("返回pos基本情報はい{}", resultData);
+        return ResultMaps.result(ResultEnum.SUCCESS, resultData);
 
 
     }

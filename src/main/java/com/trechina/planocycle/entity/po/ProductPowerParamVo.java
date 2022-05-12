@@ -19,6 +19,7 @@ public class ProductPowerParamVo {
     private String storeCd;
     private String yearFlag;
     private String commonPartsData;
+    private String intageValue;
 
 
     public String getCompany() {
@@ -159,6 +160,14 @@ public class ProductPowerParamVo {
         this.commonPartsData = commonPartsData;
     }
 
+    public String getIntageValue() {
+        return intageValue;
+    }
+
+    public void setIntageValue(String intageValue) {
+        this.intageValue = intageValue;
+    }
+
     @Override
     public String toString() {
         return "ProductPowerParamVo{" +
@@ -169,7 +178,7 @@ public class ProductPowerParamVo {
                 ", prdCd='" + prdCd + '\'' +
                 ", prepareValue='" + prepareValue + '\'' +
                 ", productPowerNo=" + productPowerNo +
-                ", RankWeight='" + rankWeight + '\'' +
+                ", rankWeight='" + rankWeight + '\'' +
                 ", recentlyEndTime='" + recentlyEndTime + '\'' +
                 ", recentlyFlag='" + recentlyFlag + '\'' +
                 ", recentlyStTime='" + recentlyStTime + '\'' +
@@ -179,6 +188,7 @@ public class ProductPowerParamVo {
                 ", storeCd='" + storeCd + '\'' +
                 ", yearFlag='" + yearFlag + '\'' +
                 ", commonPartsData='" + commonPartsData + '\'' +
+                ", intageValue='" + intageValue + '\'' +
                 '}';
     }
 }

@@ -6,10 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.po.*;
-import com.trechina.planocycle.entity.vo.CommodityListInfoVO;
-import com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO;
-import com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO;
-import com.trechina.planocycle.entity.vo.ReserveMstVo;
+import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreMasterService;
@@ -47,6 +44,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     private ChannelListMapper channelListMapper;
     @Autowired
     private PlaceListMapper placeListMapper;
+    @Autowired
+    private ParamConfigMapper paramConfigMapper;
     @Autowired
     private cgiUtils cgiUtil;
 
@@ -256,14 +255,42 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.deleteWKYobiiitern(aud,companyCd,productPowerNo);
         productPowerDataMapper.deleteWKYobiiiternData(aud,companyCd,productPowerNo);
         productPowerDataMapper.deleteWKData(companyCd,aud,productPowerNo);
+        productPowerDataMapper.deleteWKIntage(companyCd,aud,productPowerNo);
 
         productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud);
          productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud);
          productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud);
         productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud);
         productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud);
-        List<ProductPowerMstData> allData = productPowerDataMapper.getAllData(companyCd, productPowerNo);
+        productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud);
+
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
+        String[] posCd = param.getPosValue().split(",");
+        String[] customerCd = param.getCustomerValue().split(",");
+        String[] prepareCd = param.getPrepareValue().split(",");
+        String[] intageCd = param.getIntageValue().split(",");
+
+        List<String> cdList = new ArrayList<>();
+
+        if(posCd.length>0){
+            cdList.addAll(Arrays.asList(posCd));
+        }
+        if(prepareCd.length>0){
+            cdList.addAll(Arrays.asList(prepareCd));
+        }
+        if(intageCd.length>0){
+            cdList.addAll(Arrays.asList(intageCd));
+        }
+        if(customerCd.length>0){
+            cdList.addAll(Arrays.asList(customerCd));
+        }
+        List<ParamConfigVO> paramConfigVOS = null;
+        if(cdList.isEmpty()){
+            paramConfigVOS = new ArrayList<>();
+        }else{
+            paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
+        }
+        List<ProductPowerMstData> allData = productPowerDataMapper.getAllData(companyCd, productPowerNo);
         ProductPowerParam powerParam = new ProductPowerParam();
         JSONObject jsonObject = JSON.parseObject(param.getCustomerCondition());
 

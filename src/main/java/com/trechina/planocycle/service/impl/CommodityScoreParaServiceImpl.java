@@ -125,6 +125,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             productPowerDataMapper.endYobiiiternForWk(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.endYobiiiternDataForWk(conpanyCd,productPowerCd,authorCd);
             //物理削除挿入の保存の変更
+            productPowerDataMapper.phyDeleteIntage(conpanyCd,productPowerCd,authorCd);
+            productPowerDataMapper.endIntageForWK(conpanyCd,productPowerCd,authorCd);
+            //物理削除挿入の保存の変更
             productPowerDataMapper.deleteData(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.setData(productPowerCd,authorCd,conpanyCd);
             //期間パラメータ削除挿入{{きかんぱらめーた:さくじょそうにゅう}}

@@ -26,7 +26,7 @@ public interface CommodityScoreDataService {
     /**
      * 商品力点数表基本taskidを取得する
      *
-     * @param productPowerDataForCgiDto
+     * @param
      * @return
      */
     Map<String, Object> getCommodityScoreTaskId( Map<String,Object> map);
