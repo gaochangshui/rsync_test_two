@@ -16,13 +16,13 @@ public class CommodityScoreDataController {
     /**
      * 商品力点数表の基本データの取得
      *
-     * @param taskID
+     * @param
      * @return
      */
 
-    @GetMapping("/getCommodityScoreData")
-    public Map<String, Object> getCommodityScoreData(String taskID, String companyCd,String commonPartsData) {
-        return commodityScoreDataService.getCommodityScoreData(taskID, companyCd,commonPartsData);
+    @PostMapping("/getCommodityScoreData")
+    public Map<String, Object> getCommodityScoreData(@RequestBody Map<String,Object> map) {
+        return commodityScoreDataService.getCommodityScoreData(map);
     }
 
     /**

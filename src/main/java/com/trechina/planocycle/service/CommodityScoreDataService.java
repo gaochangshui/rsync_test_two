@@ -9,10 +9,10 @@ public interface CommodityScoreDataService {
     /**
      * 商品力点数表の基本データの取得
      *
-     * @param taskID
+     * @param
      * @return
      */
-    Map<String, Object> getCommodityScoreData(String taskID, String companyCd,String commonPartsData);
+    Map<String, Object> getCommodityScoreData(Map<String,Object> map);
 
     /**
      * 商品力点数表顧客Groupデータ取得

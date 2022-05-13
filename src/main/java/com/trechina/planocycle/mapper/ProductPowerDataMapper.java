@@ -152,7 +152,7 @@ public interface ProductPowerDataMapper {
              @Param("checkedCodeList") String[] checkedCodeList);
 
     List<Map<String, Object>> getSyokikaAllData(@Param("companyCd") String companyCd, @Param("tableName") String tableName,
-                                                @Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify,@Param("authorCd") String authorCd);
+                                                @Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify,@Param("authorCd") String authorCd,@Param("productPowerCd") Integer productPowerCd);
     List<Map<String, Object>> getDynamicAllData(String companyCd, Integer productPowerCd, String tableName,
                                                 String janCdColName, List<Map<String, Object>> classify);
 
@@ -165,4 +165,6 @@ public interface ProductPowerDataMapper {
     void setWkDataRank(List<Map<String, Object>> rankCalculate, String authorCd, String companyCd, Integer productPowerCd);
 
     List<String> getShowItemCd(@Param("list") List<String> cdList);
+
+
 }

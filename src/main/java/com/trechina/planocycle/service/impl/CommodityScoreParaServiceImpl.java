@@ -106,6 +106,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         String authorCd = session.getAttribute("aud").toString();
 
         logger.info("保存期間、表示プロジェクト、weight所有参数:{}",productPowerParam);
+
         String conpanyCd = productPowerParam.getCompany();
         Integer productPowerCd = productPowerParam.getProductPowerNo();
 

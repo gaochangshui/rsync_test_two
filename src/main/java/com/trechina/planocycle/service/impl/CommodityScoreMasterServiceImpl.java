@@ -257,12 +257,12 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.deleteWKData(companyCd,aud,productPowerNo);
         productPowerDataMapper.deleteWKIntage(companyCd,aud,productPowerNo);
 
-        //productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud);
-        // productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud);
-        // productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud);
-        //productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud);
-//        productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud);
-        //productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud);
+        productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud);
+         productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud);
+         productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud);
+        productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud);
+        productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud);
+        productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud);
 
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
         String[] posCd = {};

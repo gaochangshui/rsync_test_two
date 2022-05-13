@@ -50,12 +50,15 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     /**
      * smartによる商品力点数表基本posデータの取得
      *
-     * @param taskID
-     * @return
+     * @param
+     * @return  String taskID, String companyCd,String commonPartsData,Integer productPowerCd
      */
     @Override
-    public Map<String, Object> getCommodityScoreData(String taskID, String companyCd,String commonPartsData) {
-        commonPartsData = "{\"dateIsCore\":\"1\",\"storeLevel\":\"3\",\"storeIsCore\":\"1\",\"storeMstClass\":\"0000\",\"prodIsCore\":\"2\",\"prodMstClass\":\"0000\"}";
+    public Map<String, Object> getCommodityScoreData(Map<String,Object> taskIdMap) {
+        String taskID = taskIdMap.get("taskID").toString();
+        String commonPartsData = taskIdMap.get("commonPartsData").toString();
+        Integer productPowerCd = Integer.valueOf(taskIdMap.get("productPowerCd").toString());
+        String companyCd = taskIdMap.get("companyCd").toString();
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         String authorCd = session.getAttribute("aud").toString();
         String[] split = taskID.split(",");
@@ -89,7 +92,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
         List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
-                janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd);
+                janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd);
         List<Map<String, Object>> resultData = new ArrayList<>();
         resultData.add(colMap);
         resultData.addAll(allData);
@@ -206,8 +209,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = map.get("company").toString();
-        Integer productPowerCd =3000;
-        //Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
+
+        Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
         map.put("guid",uuid);
         map.put("mode","shoki_data");
         map.put("usercd",authorCd);
@@ -230,9 +233,14 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         //顧客データ
         productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd,productPowerCd);
         productPowerDataMapper.deleteWKSyokika(companyCd, authorCd,productPowerCd);
+        List<String> getjan = productPowerDataMapper.getjan();
+        productPowerDataMapper.selectWKKokyaku(authorCd,companyCd,productPowerCd,getjan);
+        productPowerDataMapper.selectWKKIntager(authorCd,companyCd,productPowerCd,getjan);
         String groupResult ="";
         String intergeResult= "";
         if (map.get("channelNm")!=null &&!"".equals(map.get("channelNm"))) {
+
+
              groupResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
         }
         uuid = UUID.randomUUID().toString();
@@ -243,6 +251,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         if (!customerCondition.isEmpty()) {
              intergeResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
+
         }
         uuid = UUID.randomUUID().toString();
         map.put("mode","shoki_data");
@@ -253,7 +262,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String posResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
         String result = groupResult+","+intergeResult + "," + posResult;
         logger.info("taskId返回：{}", result);
-        List<String> getjan = productPowerDataMapper.getjan();
+
         productPowerDataMapper.selectWKSyokika(companyCd,authorCd,productPowerCd,getjan);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
