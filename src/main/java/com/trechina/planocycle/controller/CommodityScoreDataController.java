@@ -28,7 +28,7 @@ public class CommodityScoreDataController {
     /**
      * 商品力点数表の基本データの取得
      *
-     * @param productPowerDataForCgiDto
+     * @param
      * @return
      */
 

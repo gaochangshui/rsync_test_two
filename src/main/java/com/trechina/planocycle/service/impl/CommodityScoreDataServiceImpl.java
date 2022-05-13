@@ -225,20 +225,28 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerDataMapper.deleteWKYobiiitern(authorCd, companyCd,productPowerCd);
         productPowerDataMapper.deleteWKYobiiiternData(authorCd, companyCd,productPowerCd);
         //顧客データ
-
         productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd,productPowerCd);
-        String groupResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
+        productPowerDataMapper.deleteWKSyokika(companyCd, authorCd,productPowerCd);
+        String groupResult ="";
+        String intergeResult= "";
+        if (map.get("channelNm")!=null &&!"".equals(map.get("channelNm"))) {
+             groupResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
+        }
         uuid = UUID.randomUUID().toString();
         map.put("mode","shoki_data");
         map.put("guid",uuid);
         //市場データ
-        String intergeResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
+        Map<Object,Object> customerCondition = (Map<Object, Object>) map.get("customerCondition");
+
+        if (!customerCondition.isEmpty()) {
+             intergeResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
+        }
         uuid = UUID.randomUUID().toString();
         map.put("mode","shoki_data");
         map.put("guid",uuid);
         map.remove("customerCondition");
         //posデータ
-        productPowerDataMapper.deleteWKSyokika(companyCd, authorCd,productPowerCd);
+
         String posResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
         String result = groupResult+","+intergeResult + "," + posResult;
         logger.info("taskId返回：{}", result);

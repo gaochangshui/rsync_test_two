@@ -616,7 +616,7 @@
                 </foreach>
                 ,row_number() over(order by
                 <foreach collection="map" item="item" separator="+" index="index">
-                   ${index} ::integer * ${item} /100
+                    ${index} ::integer   * ${item} /100
                 </foreach>
                 ) as rank_result
         from  planocycle.work_product_power_syokika s
