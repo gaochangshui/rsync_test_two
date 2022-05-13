@@ -1,7 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.JanClassifyMapper;
@@ -106,99 +105,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
 
     /**
-     * 顧客グループデータの取得
-     *
-     * @param taskID
-     * @return
-     */
-    @Override
-    public Map<String, Object> getCommodityScoreGroupData(String taskID, String companyCd,String commonPartsData) {
-         commonPartsData = null;
-
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        //ユーザーIDの取得
-        String authorCd = session.getAttribute("aud").toString();
-
-            if (!"1".equals(taskID)) {
-                Map<String, Object> data =null;
-                if (vehicleNumCache.get(taskID)==null) {
-
-                    // taskIdを持って、再度cgiに運転状態/データの取得を要求する
-                     data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), taskID, tokenInfo);
-                    if ("9".equals(data.get("data")) || data.get("data") == null || data.get("data") == "") {
-                        return data;
-                    }else {
-                        Map<String, Object> finalData = data;
-                        executor.execute(() -> {
-                            vehicleNumCache.put(taskID, "1");
-                            List strList = new ArrayList();
-                            logger.info("商品力点数表web版cgi返回数据：{}", finalData);
-                            // 返されるデータは文字列で、2 D配列に処理されます。
-                            String[] strResult = finalData.get("data").toString().split("@");
-                            String[] strSplit = null;
-                            String[] arr;
-                            int a = 1;
-
-                            for (int i = 0; i < strResult.length; i++) {
-                                strSplit = strResult[i].split(" ");
-                                arr = new String[strSplit.length + 1];
-                                for (int j = strSplit.length - 1; j >= a; j--) {
-                                    arr[j + 1] = strSplit[j];
-                                }
-                                arr[a] = authorCd;
-                                System.arraycopy(strSplit, 0, arr, 0, a);
-                                //データが大きすぎて1回1000保存
-                                if (i % 1000 == 0 && i >= 1000) {
-                                    productPowerDataMapper.insertGroup(strList);
-                                    strList.clear();
-                                }
-                                strList.add(arr);
-                            }
-                            if (!strList.isEmpty()) {
-                                productPowerDataMapper.insertGroup(strList);
-                            }
-
-                            vehicleNumCache.put(taskID, "2");
-                        });
-                    }
-
-                }
-                }
-        if ("2".equals(vehicleNumCache.get(taskID)) || "1".equals(taskID)) {
-            vehicleNumCache.remove(taskID);
-         //   List<ProductPowerMstData> kokyakuList = productPowerDataMapper.selectWKKokyaku(authorCd, companyCd,null);
-         //   logger.info("pos基本情報和顧客情報：{}", kokyakuList);
-           /* List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData(authorCd, companyCd);
-            logger.info("準備プロジェクト：{}", kokyakuList);
-            if (wkYobiiiternDataList.isEmpty()) {
-                return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);
-            }
-            kokyakuList.forEach(item -> {
-                for (WKYobiiiternData wkYobiiiternData : wkYobiiiternDataList) {
-                    Class w = item.getClass();
-                    for (int i = 1; i <= 10; i++) {
-                        if (wkYobiiiternData.getJan().equals(item.getJan()) && Integer.valueOf("3100" + i).equals(wkYobiiiternData.getDataCd())) {
-                            try {
-                                Field field = w.getDeclaredField("item" + i);
-                                field.setAccessible(true);
-                                field.set(item, wkYobiiiternData.getDataValue());
-                            } catch (NoSuchFieldException | IllegalAccessException e) {
-                                logger.error("", e);
-                            }
-
-                        }
-                    }
-
-                }
-            });*/
-            //return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);
-        }
-
-        return ResultMaps.result(ResultEnum.SUCCESS, "9");
-    }
-
-
-    /**
      * 商品力点数表taskidを取得する
      *
      * @param
@@ -267,42 +173,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 
-    /**
-     * 商品パワーポイントリストを取得するお客様Grouptaskid
-     *
-     * @param productPowerDataForCgiDto
-     * @return
-     */
-    @Override
-    public Map<String, Object> getCommodityScoreGroupTaskId(ProductPowerGroupDataForCgiDto productPowerDataForCgiDto) {
-        String aud = session.getAttribute("aud").toString();
-        Integer paramCount = productPowerDataMapper.getParamCount(productPowerDataForCgiDto);
-
-        if (paramCount > 0) {
-            productPowerDataForCgiDto.setChangeFlag("1");
-        } else {
-            productPowerDataForCgiDto.setChangeFlag("0");
-        }
-        String uuid = UUID.randomUUID().toString();
-        productPowerDataForCgiDto.setGuid(uuid);
-        productPowerDataForCgiDto.setMode("shoki_data");
-        if (productPowerDataForCgiDto.getSeasonFlag().equals("0")) {
-            productPowerDataForCgiDto.setSeasonFlag("MONTH");
-        } else {
-            productPowerDataForCgiDto.setSeasonFlag("WEEK");
-        }
-        if (productPowerDataForCgiDto.getRecentlyFlag().equals("0")) {
-            productPowerDataForCgiDto.setRecentlyFlag("MONTH");
-        } else {
-            productPowerDataForCgiDto.setRecentlyFlag("WEEK");
-        }
-        productPowerDataForCgiDto.setUsercd(aud);
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("調用cgiつかむ取data的参数：{}", productPowerDataForCgiDto);
-        String result = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), productPowerDataForCgiDto, tokenInfo);
-        logger.info("taskId返回：{}", result);
-        return ResultMaps.result(ResultEnum.SUCCESS, result);
-    }
 
     @Override
     public Map<String, Object> getCommodityScoreDataFromDB(Integer productPowerCd, String companyCd, String[] posCd,
