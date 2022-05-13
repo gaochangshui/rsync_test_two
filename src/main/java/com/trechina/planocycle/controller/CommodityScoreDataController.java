@@ -1,6 +1,7 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
+import com.trechina.planocycle.entity.vo.ShowDataVO;
 import com.trechina.planocycle.service.CommodityScoreDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -50,10 +51,10 @@ public class CommodityScoreDataController {
         return commodityScoreDataService.getCommodityScoreGroupData(taskID, companyCd,commonPartsData);
     }
 
-    @GetMapping("/getShowCommodityScoreData")
-    public Map<String, Object> getCommodityScoreDataFromDB(Integer productPowerCd, String companyCd,String[] posCd, String[] prepareCd, String[] intageCd,
-                                                           String[] customerCd) {
-        return commodityScoreDataService.getCommodityScoreDataFromDB(productPowerCd, companyCd, posCd, prepareCd, intageCd, customerCd);
+    @PostMapping("/getShowCommodityScoreData")
+    public Map<String, Object> getCommodityScoreDataFromDB(@RequestBody ShowDataVO showDataVO) {
+        return commodityScoreDataService.getCommodityScoreDataFromDB(showDataVO.getProductPowerCd(), showDataVO.getCompanyCd(),
+                showDataVO.getPosCd(), showDataVO.getPrepareCd(), showDataVO.getIntageCd(), showDataVO.getCustomerCd());
     }
 
     /**
