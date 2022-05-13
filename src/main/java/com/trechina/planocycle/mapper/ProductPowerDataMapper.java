@@ -139,7 +139,7 @@ public interface ProductPowerDataMapper {
 
     int setData(@Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
 
-    List<ProductPowerMstData> getAllData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
+    List<Map<String,Object>> getAllData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd,@Param("list")List<String> list);
 
     ProductPowerParamVo getParam(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
@@ -162,4 +162,6 @@ public interface ProductPowerDataMapper {
     List<Map<String, Object>> getProductRankCalculate(@Param("map") Map<String, Object> map, @Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd);
 
     void setWkDataRank(List<Map<String, Object>> rankCalculate, String authorCd, String companyCd, Integer productPowerCd);
+
+    List<String> getShowItemCd(@Param("list") List<String> cdList);
 }

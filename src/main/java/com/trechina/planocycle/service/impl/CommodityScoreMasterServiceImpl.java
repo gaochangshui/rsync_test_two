@@ -257,18 +257,30 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.deleteWKData(companyCd,aud,productPowerNo);
         productPowerDataMapper.deleteWKIntage(companyCd,aud,productPowerNo);
 
-        productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud);
-         productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud);
-         productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud);
-        productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud);
-        productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud);
-        productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud);
+        //productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud);
+        // productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud);
+        // productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud);
+        //productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud);
+//        productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud);
+        //productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud);
 
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
-        String[] posCd = param.getPosValue().split(",");
-        String[] customerCd = param.getCustomerValue().split(",");
-        String[] prepareCd = param.getPrepareValue().split(",");
-        String[] intageCd = param.getIntageValue().split(",");
+        String[] posCd = {};
+        String[] customerCd ={};
+        String[] prepareCd ={};
+        String[] intageCd ={};
+        if (param.getPosValue()!= null && !"".equals(param.getPosValue())) {
+             posCd = param.getPosValue().split(",");
+        }
+        if (param.getCustomerValue()!= null && "".equals(param.getCustomerValue())) {
+             customerCd = param.getCustomerValue().split(",");
+        }
+        if (param.getPrepareValue()!= null && "".equals(param.getPrepareValue())) {
+            prepareCd = param.getPrepareValue().split(",");
+        }
+        if (param.getIntageValue()!= null && "".equals(param.getIntageValue())) {
+             intageCd = param.getIntageValue().split(",");
+        }
 
         List<String> cdList = new ArrayList<>();
 
@@ -284,13 +296,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         if(customerCd.length>0){
             cdList.addAll(Arrays.asList(customerCd));
         }
-        List<ParamConfigVO> paramConfigVOS = null;
-        if(cdList.isEmpty()){
-            paramConfigVOS = new ArrayList<>();
-        }else{
-            paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
-        }
-        List<ProductPowerMstData> allData = productPowerDataMapper.getAllData(companyCd, productPowerNo);
+        List<String> showItemCd = productPowerDataMapper.getShowItemCd(cdList);
+        List<Map<String, Object>> allData = productPowerDataMapper.getAllData(companyCd, productPowerNo, showItemCd);
         ProductPowerParam powerParam = new ProductPowerParam();
         JSONObject jsonObject = JSON.parseObject(param.getCustomerCondition());
 

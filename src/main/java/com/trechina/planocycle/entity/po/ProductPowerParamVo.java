@@ -21,15 +21,9 @@ public class ProductPowerParamVo {
     private String storeCd;
     private String yearFlag;
     private String commonPartsData;
-    private String intageValue;
 
-    public String getIntageValue() {
-        return intageValue;
-    }
 
-    public void setIntageValue(String intageValue) {
-        this.intageValue = intageValue;
-    }
+
 
     public String getCompany() {
         return company;

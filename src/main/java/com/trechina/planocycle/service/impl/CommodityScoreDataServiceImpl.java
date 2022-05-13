@@ -66,6 +66,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             if ("9".equals(data.get("data")) || data.get("data") == null || data.get("data") == "") {
                 return data;
             }
+            if ("ok".equals(data.get("data"))){
+                continue;
+            }
         }
         String coreCompany = sysConfigMapper.selectSycConfig("core_company");
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
@@ -79,17 +82,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
-        List<Map<String, Object>> janClassifyList = janClassifyMapper.selectJanClassify(tableName);
-        Map<String, Object> colMap =new HashMap<>();
-        colMap.put("jan","JAN");
-         colMap.putAll(janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString())));
-        Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
-
+        List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
+        Map<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1,k2)->k1, LinkedHashMap::new));
+        Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
         List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
-                janInfoTableName, "\"" + attrColumnMap.get("jan_cd") + "\"", janClassifyList, authorCd);
-        Set<String> strings = allData.get(0).keySet();
-        colMap.remove("jan_cd");
+                janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd);
         List<Map<String, Object>> resultData = new ArrayList<>();
         resultData.add(colMap);
         resultData.addAll(allData);

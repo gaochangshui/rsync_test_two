@@ -8,24 +8,9 @@ public class ParamConfigDto {
     private Integer rankFlag;
     private String itemType;
 
-    private String itemType;
-    private Integer rankFlag;
 
-    public String getItemType() {
-        return itemType;
-    }
 
-    public void setItemType(String itemType) {
-        this.itemType = itemType;
-    }
 
-    public Integer getRankFlag() {
-        return rankFlag;
-    }
-
-    public void setRankFlag(Integer rankFlag) {
-        this.rankFlag = rankFlag;
-    }
 
     public String getLabel() {
         return label;
