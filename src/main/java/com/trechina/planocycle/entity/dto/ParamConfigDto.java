@@ -9,6 +9,16 @@ public class ParamConfigDto {
     private String itemType;
     private Integer rankFlag;
 
+    private boolean disabled = false;
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
     public String getItemType() {
         return itemType;
     }
