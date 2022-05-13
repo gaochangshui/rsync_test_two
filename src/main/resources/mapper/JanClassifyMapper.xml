@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.JanClassifyMapper">
     <select id="selectJanClassify" resultType="map">
-        select "1" as attr, "2" as attr_val, "3" as sort, "4" as "colSort" from ${tableName}  where "1" like '%_name' or "1" = 'jan_cd';
-
+        select "1" as attr, "2" as attr_val, "3" as sort, "4" as "colSort" from ${tableName}  where "1" like '%_name' or "1" = 'jan_cd'
+        order by "3";
     </select>
     <select id="getJanClassify" resultType="java.util.Map">
         select case "1" when 'jan_cd' then 'jan' else "1" end  as attr, "2" as attr_val, "3" as sort, "4" as "colSort" from ${tableName}  where "1" like '%_name' or "1" = 'jan_cd';

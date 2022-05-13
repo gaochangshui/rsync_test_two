@@ -5,12 +5,35 @@ public class ParamConfigDto {
     private String label;
     private Integer value;
     private  String colName;
-    private Integer rankFlag;
+
     private String itemType;
+    private Integer rankFlag;
 
+    private boolean disabled = false;
 
+    public boolean isDisabled() {
+        return disabled;
+    }
 
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
 
+    public String getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
+    }
+
+    public Integer getRankFlag() {
+        return rankFlag;
+    }
+
+    public void setRankFlag(Integer rankFlag) {
+        this.rankFlag = rankFlag;
+    }
 
     public String getLabel() {
         return label;
@@ -36,30 +59,12 @@ public class ParamConfigDto {
         this.colName = colName;
     }
 
-    public Integer getRankFlag() {
-        return rankFlag;
-    }
-
-    public void setRankFlag(Integer rankFlag) {
-        this.rankFlag = rankFlag;
-    }
-
-    public String getItemType() {
-        return itemType;
-    }
-
-    public void setItemType(String itemType) {
-        this.itemType = itemType;
-    }
-
     @Override
     public String toString() {
         return "ParamConfigDto{" +
                 "label='" + label + '\'' +
                 ", value=" + value +
                 ", colName='" + colName + '\'' +
-                ", rankFlag=" + rankFlag +
-                ", itemType='" + itemType + '\'' +
                 '}';
     }
 }
