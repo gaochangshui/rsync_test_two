@@ -435,48 +435,36 @@
         where company_cd = #{companyCd} and product_power_cd = #{productPowerCd} and deleteflg=0
     </insert>
 
-    <select id="selectWKSyokika" resultMap="syokikaMap">
-        select jan,sku_name,pos_amount,classify_big,classify_middle,classify_small,classify_fine,
-               pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num
-        from planocycle.work_product_power_syokika where company_cd=#{companyCd} and author_cd=#{authorCd}
-        order by jan
-    </select>
-    <select id="selectWKKokyaku" resultMap="allMap">
-        select s.jan as jan,s.sku_name as skuName,k.pos_amount as gPosAmount,k.pos_num as gPosNum,k.branch_amount as gBranchAmount,
-               k.branch_num as gBranchNum,k.compare_amount as gCompareAmount,k.compare_num as gCompareNum,k.branch_compare_amount as gBranchCompareAmount,
-               k.branch_compare_num as gBranchCompareNum,s.classify_big as classifyBig,s.classify_middle as classifyMiddle,s.classify_small as classifySmall,
-               s.classify_fine as classifyFine,s.pos_amount as pPosAmount,s.pos_num as pPosNum,s.branch_amount as pBranchAmount,s.branch_num as pBranchNum,
-               s.compare_amount as pCompareAmount,s.compare_num as pCompareNum,
-               s.branch_compare_amount as pBranchCompareAmount,s.branch_compare_num as pBranchCompareNum,
-               yobi.item1,yobi.item2,yobi.item3,yobi.item4,yobi.item5,yobi.item6,yobi.item7,yobi.item8,yobi.item9,yobi.item10
-
-        from  planocycle.work_product_power_syokika s left join planocycle.work_product_power_kokyaku k
-                on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd
-        left join (select
-                       dd.jan as jan,
-
-                       sum ( case when dd.data_cd = '31001' then dd.data_value else 0 end ) as item1,
-                       sum ( case when dd.data_cd = '31002' then dd.data_value else 0 end ) as item2,
-                       sum ( case when dd.data_cd = '31003' then dd.data_value else 0 end ) as item3,
-                       sum ( case when dd.data_cd = '31004' then dd.data_value else 0 end ) as item4,
-                       sum ( case when dd.data_cd = '31005' then dd.data_value else 0 end ) as item5,
-                       sum ( case when dd.data_cd = '31006' then dd.data_value else 0 end ) as item6,
-                       sum ( case when dd.data_cd = '31007' then dd.data_value else 0 end ) as item7,
-                       sum ( case when dd.data_cd = '31008' then dd.data_value else 0 end ) as item8,
-                       sum ( case when dd.data_cd = '31009' then dd.data_value else 0 end ) as item9,
-                       sum ( case when dd.data_cd = '31010' then dd.data_value else 0 end ) as item10
-                   from
-                       planocycle.work_product_power_reserve_mst mm
-                           inner join planocycle.work_product_power_reserve_data dd on mm.data_cd = dd.data_cd
-                   where
-                       mm.author_cd = #{authorCd}
-                     and mm.company_cd = #{companyCd}
-                   GROUP BY
-                       dd.jan )as  yobi
-        on yobi.jan = s.jan
-        where  s.author_cd=#{authorCd} and s.company_cd = #{companyCd}
-        order by jan
-    </select>
+    <insert id="selectWKSyokika">
+        insert into planocycle.work_product_power_syokika(company_cd,product_power_cd,jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
+                                                          pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,pos_store_item01,pos_store_item02,
+                                                          pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,pos_store_item08,
+                                                          pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
+                                                          pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
+                                                          pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,
+                                                          pos_compare_store_item06,pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,
+                                                          author_cd)
+        values
+        <foreach collection="list" separator="," item="item">
+            (#{companyCd},3000,#{item},1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,#{authorCd})
+        </foreach>
+    </insert>
+    <insert id="selectWKKokyaku" >
+        insert into planocycle.work_product_power_kokyaku(company_cd,product_power_cd,jan,customer_item01,customer_item02,customer_item03,customer_item04,
+            customer_item05,customer_item06,customer_item07,customer_item08,customer_item09,customer_item10,
+            customer_item11,customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,
+            customer_store_item05,customer_store_item06,customer_store_item07,customer_store_item08,customer_store_item09,
+            customer_store_item10,customer_compare_item01,customer_compare_item02,customer_compare_item03,customer_compare_item04,
+            customer_compare_item05,customer_compare_item06,customer_compare_item07,customer_compare_item08,customer_compare_item09,
+            customer_compare_item10,customer_compare_store_item01,customer_compare_store_item02,customer_compare_store_item03,
+            customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
+            customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10
+            ,author_cd)
+            values
+            <foreach collection="list" separator="," item="item" open="(" close=")">
+                #{companyCd},#{productPowerCd},#{item},1,2,3,4,5,5,6,7,8,9,0,0,1,2,3,4,5,5,6,7,8,91,2,3,4,5,5,6,7,8,91,2,3,4,5,5,6,7,8,#{authorCd}
+            </foreach>
+    </insert>
     <select id="selectShowData" resultType="map">
         select
         syokika.jan jan
@@ -604,7 +592,7 @@
         </foreach>
         from planocycle.work_product_power_syokika power_syokika
         left join ${tableName} jan_info on power_syokika.jan=jan_info.${janCdColName}
-        where power_syokika.author_cd = #{authorCd} and power_syokika.company_cd = #{companyCd}
+        where power_syokika.author_cd = #{authorCd} and power_syokika.company_cd = #{companyCd} and power_syokika.product_power_cd = 3000
     </select>
     <select id="rankCalculation" resultType="java.util.Map">
 
@@ -670,5 +658,13 @@
         where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
         order by rank_result asc
     </select>
+    <select id="getjan" resultType="java.lang.String">
+        select "1" from "0001".prod_0000_jan_info limit 100
+    </select>
+    <insert id="selectWKKIntager">
+        insert into planocycle.work_product_power_intage(company_cd,product_power_cd,jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
+            intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
+            intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,author_cd)
+    </insert>
 
 </mapper>

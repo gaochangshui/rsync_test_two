@@ -23,8 +23,8 @@ public interface ProductPowerDataMapper {
     int insertWkSyokikaForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
     //テンポラリ・テーブル・データの戻りページ
-    List<ProductPowerMstData> selectWKSyokika(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
-
+    int  selectWKSyokika(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("productPowerCd")Integer productPowerCd,@Param("list") List<String> jan);
+    List<String> getjan();
     //テンポラリ・テーブルのすべて
 
     int deleteWKKokyaku(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("productPowerCd") Integer productPowerCd);
@@ -36,7 +36,8 @@ public interface ProductPowerDataMapper {
     int insertWkKokyakuForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
     //テンポラリ・テーブル・データの戻りページ
-    List<ProductPowerMstData> selectWKKokyaku(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
+    int selectWKKokyaku(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd,@Param("productPowerCd")Integer productPowerCd,@Param("list") List<String> jan);
+    int selectWKKIntager(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd,@Param("productPowerCd")Integer productPowerCd,@Param("list") List<String> jan);
 
     //表示データ項目
     List<Map<String, String>> selectShowData(@Param("productPowerCd") Integer productPowerCd,

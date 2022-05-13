@@ -2,7 +2,6 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
-import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.JanClassifyMapper;
@@ -62,6 +61,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String[] split = taskID.split(",");
         Map<String, Object> data;
         for (String s : split) {
+            if ("".equals(s)){
+                continue;
+            }
             data = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), s, tokenInfo);
             if ("9".equals(data.get("data")) || data.get("data") == null || data.get("data") == "") {
                 return data;
@@ -161,8 +163,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 }
         if ("2".equals(vehicleNumCache.get(taskID)) || "1".equals(taskID)) {
             vehicleNumCache.remove(taskID);
-            List<ProductPowerMstData> kokyakuList = productPowerDataMapper.selectWKKokyaku(authorCd, companyCd);
-            logger.info("pos基本情報和顧客情報：{}", kokyakuList);
+         //   List<ProductPowerMstData> kokyakuList = productPowerDataMapper.selectWKKokyaku(authorCd, companyCd,null);
+         //   logger.info("pos基本情報和顧客情報：{}", kokyakuList);
            /* List<WKYobiiiternData> wkYobiiiternDataList = productPowerDataMapper.selectWKYobiiiternData(authorCd, companyCd);
             logger.info("準備プロジェクト：{}", kokyakuList);
             if (wkYobiiiternDataList.isEmpty()) {
@@ -186,7 +188,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
                 }
             });*/
-            return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);
+            //return ResultMaps.result(ResultEnum.SUCCESS, kokyakuList);
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS, "9");
@@ -204,7 +206,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = map.get("company").toString();
-        Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
+        Integer productPowerCd =3000;
+        //Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
         map.put("guid",uuid);
         map.put("mode","shoki_data");
         map.put("usercd",authorCd);
@@ -250,6 +253,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String posResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
         String result = groupResult+","+intergeResult + "," + posResult;
         logger.info("taskId返回：{}", result);
+        List<String> getjan = productPowerDataMapper.getjan();
+        productPowerDataMapper.selectWKSyokika(companyCd,authorCd,productPowerCd,getjan);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 
