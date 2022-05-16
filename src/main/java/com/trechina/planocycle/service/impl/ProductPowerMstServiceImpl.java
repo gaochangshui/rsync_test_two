@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ProductPowerMstServiceImpl implements ProductPowerMstService {
@@ -111,14 +112,19 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     public void downloadProductPowerInfo(String companyCd, Integer productPowerCd, HttpServletResponse response) {
         //必要なヘッダーを検索
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerCd);
+        if(Strings.isNullOrEmpty(param.getProject())){
+            logger.error("no project");
+            return;
+        }
+        String[] project = param.getProject().split(",");
         //顧客グループ
-        String customerValue = param.getCustomerValue();
+        String customerValue = Stream.of(project).filter(s -> s.startsWith(ProductPowerHeaderEnum.CUSTOMER.getCode())).collect(Collectors.joining(","));
         //予備項目
-        String prepareValue = param.getPrepareValue();
+        String prepareValue = Stream.of(project).filter(s -> s.startsWith("item")).collect(Collectors.joining(","));
         //POS項目
-        String posValue = param.getPosValue();
+        String posValue = Stream.of(project).filter(s -> s.startsWith(ProductPowerHeaderEnum.POS.getCode())).collect(Collectors.joining(","));
         //市場項目
-        String intageValue = param.getIntageValue();
+        String intageValue = Stream.of(project).filter(s -> s.startsWith(ProductPowerHeaderEnum.INTAGE.getCode())).collect(Collectors.joining(","));
         String rankWeight = param.getRankWeight();
         Set<String> weightKeys = new HashSet<>();
 
@@ -231,7 +237,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             String paramTypeRank = String.format("%sRank", paramType);
             String[] paramsValueArr = paramVal.split(",");
             List<ParamConfigVO> paramConfigChecked = paramList.stream()
-                    .filter(config -> Arrays.stream(paramsValueArr).anyMatch(s->s.equals(config.getItemValue()))).collect(Collectors.toList());
+                    .filter(config -> Arrays.stream(paramsValueArr).anyMatch(s->s.equals(config.getItemCd()))).collect(Collectors.toList());
             for (ParamConfigVO paramConfigVO : paramConfigChecked) {
                 List<String> customer = headersByClassify.get(paramNameType);
                 customer.add(paramConfigVO.getItemName());

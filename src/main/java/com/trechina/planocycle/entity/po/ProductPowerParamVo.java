@@ -22,8 +22,15 @@ public class ProductPowerParamVo {
     private String yearFlag;
     private String commonPartsData;
 
+    private String project;
 
+    public String getProject() {
+        return project;
+    }
 
+    public void setProject(String project) {
+        this.project = project;
+    }
 
     public String getCompany() {
         return company;
