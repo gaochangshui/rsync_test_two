@@ -72,7 +72,7 @@
                                                     place_nm,channel_nm,project)
     values(#{item.company},#{item.productPowerNo},#{customerCondition},#{item.prdCd},#{item.rankWeight},
            #{item.recentlyEndTime},#{item.recentlyFlag},#{item.recentlyStTime},#{item.seasonEndTime},#{item.seasonFlag},#{item.seasonStTime},#{item.storeCd},
-           #{item.yearFlag},#{authorCd},now(),#{item.commonPartsData},#{item.placeNm},#{item.channelNm},#{project})
+           #{item.yearFlag},#{authorCd},now(),#{item.commonPartsData},#{item.placeNm},#{item.channelNm},#{item.project})
   </insert>
   <delete id="deleteCommofityParamForChange" parameterType="com.trechina.planocycle.entity.po.ProductPowerParamMst">
     delete from planocycle.product_power_param_mst

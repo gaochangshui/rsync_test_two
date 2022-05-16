@@ -21,7 +21,7 @@ public class ProductPowerParam {
     private String commonPartsData;
     private String channelNm;
     private String placeNm;
-    private JSONObject project;
+    private String project;
 
     public String getCompany() {
         return company;
@@ -162,11 +162,11 @@ public class ProductPowerParam {
         this.placeNm = placeNm;
     }
 
-    public JSONObject getProject() {
+    public String getProject() {
         return project;
     }
 
-    public void setProject(JSONObject project) {
+    public void setProject(String project) {
         this.project = project;
     }
 
