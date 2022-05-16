@@ -115,8 +115,34 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = map.get("company").toString();
+        String commonPartsData = map.get("commonPartsData").toString();
+        JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
 
+        String storeIsCore = jsonObject.get("storeIsCore").toString();
+        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        String dateIsCore  = jsonObject.get("dateIsCore").toString();
+
+        map.put("selected_tenpo",jsonObject.get("storeMstClass").toString());
+        map.put("selected_shouhin",jsonObject.get("prodMstClass").toString());
+        map.put("storeLevel",jsonObject.get("storeLevel").toString());
+        if ("1".equals(dateIsCore)){
+            map.put(":date_mst","date_core_mst");
+        }else {
+            map.put(":date_mst","date_kigyomst");
+        }
+        if ("1".equals(prodIsCore)){
+            map.put("shouhin_kaisou_mst","shouhin_kaisou_core_mst");
+        }else {
+            map.put("shouhin_kaisou_mst","shouhin_kaisou_kigyomst");
+        }
+        if ("1".equals(storeIsCore)){
+            map.put(":tenpo_kaisou_mst","tenpo_kaisou_core_mst");
+        }else {
+            map.put(":tenpo_kaisou_mst","tenpo_kaisou_kigyomst");
+        }
+        map.remove("commonPartsData");
         Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
+
         map.put("guid",uuid);
         map.put("mode","shoki_data");
         map.put("usercd",authorCd);
@@ -130,7 +156,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         } else {
             map.put("recentlyFlag","WEEK");
         }
-        map.put("tableName","work_product_power_kokyaku");
+        map.put("tableName","planocycle.work_product_power_kokyaku");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("調用cgiつかむ取data的参数：{}", map);
         //yobi
@@ -139,23 +165,24 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         //顧客データ
         productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd,productPowerCd);
         productPowerDataMapper.deleteWKSyokika(companyCd, authorCd,productPowerCd);
+        productPowerDataMapper.deleteWKIntage(companyCd, authorCd,productPowerCd);
         List<String> getjan = productPowerDataMapper.getjan();
         productPowerDataMapper.selectWKKokyaku(authorCd,companyCd,productPowerCd,getjan);
         productPowerDataMapper.selectWKKIntager(authorCd,companyCd,productPowerCd,getjan);
         String groupResult ="";
         String intergeResult= "";
         if (map.get("channelNm")!=null &&!"".equals(map.get("channelNm"))) {
-
-
              groupResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
         }
-        uuid = UUID.randomUUID().toString();
-        map.put("mode","shoki_data");
-        map.put("guid",uuid);
+
         //市場データ
         Map<Object,Object> customerCondition = (Map<Object, Object>) map.get("customerCondition");
 
         if (!customerCondition.isEmpty()) {
+            uuid = UUID.randomUUID().toString();
+            map.put("mode","shoki_data");
+            map.put("guid",uuid);
+            map.put("tableName","planocycle.work_product_power_intage");
              intergeResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
 
         }
@@ -163,6 +190,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         map.put("mode","shoki_data");
         map.put("guid",uuid);
         map.remove("customerCondition");
+        map.put("tableName","planocycle.work_product_power_syokika");
         //posデータ
 
         String posResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);

@@ -263,7 +263,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      * @param
      * @return
      */
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> rankCalculate(Map<String,Object> map) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String authorCd = session.getAttribute("aud").toString();
@@ -274,9 +273,15 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         map.remove("productPowerCd");
         Set<String> strings = map.keySet();
 
-        List<Map<String, Object>> rankCalculate = productPowerDataMapper.getProductRankCalculate(map, companyCd, productPowerCd);
+        List<Map<String, Object>> rankCalculate = productPowerDataMapper.getProductRankCalculate(map, companyCd, productPowerCd,authorCd);
         productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd);
-        productPowerDataMapper.setWkDataRank(rankCalculate,authorCd,companyCd,productPowerCd);
+        Set<String> colNames = rankCalculate.get(0).keySet();
+        for (String colName : colNames) {
+            if (!colName.equals("jan")) {
+                productPowerDataMapper.setWkDataRank(rankCalculate, authorCd, companyCd, productPowerCd, colName);
+            }
+        }
+
 
         return ResultMaps.result(ResultEnum.SUCCESS,rankCalculate);
     }

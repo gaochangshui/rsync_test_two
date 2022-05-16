@@ -16,6 +16,7 @@ public interface ProductPowerDataMapper {
     //テンポラリ・テーブルワークproduct_power_syokika
     int deleteWKSyokika(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("productPowerCd") Integer productPowerCd);
 
+
     //smartデータをテンポラリ・テーブルに保存
     int insert(@Param("keyNameList") List<String[]> keyNameList);
 
@@ -160,9 +161,9 @@ public interface ProductPowerDataMapper {
 
     List<Map<String,Object>> rankCalculation(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 
-    List<Map<String, Object>> getProductRankCalculate(@Param("map") Map<String, Object> map, @Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd);
+    List<Map<String, Object>> getProductRankCalculate(@Param("map") Map<String, Object> map, @Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);
 
-    void setWkDataRank(List<Map<String, Object>> rankCalculate, String authorCd, String companyCd, Integer productPowerCd);
+    void setWkDataRank(List<Map<String, Object>> rankCalculate, String authorCd, String companyCd, Integer productPowerCd,String colName);
 
     List<String> getShowItemCd(@Param("list") List<String> cdList);
 

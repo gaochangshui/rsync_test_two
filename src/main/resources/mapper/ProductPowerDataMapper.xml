@@ -213,7 +213,7 @@
                                                            customer_store_item08,customer_store_item09,customer_store_item10,customer_item01,customer_item02,customer_item03,customer_item04,customer_item05,customer_item06,
                                                            customer_item07,customer_item08,customer_item09,customer_item10,customer_item11,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,intage_item06,
                                                            intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02)
-        select ${companyCd},${productPowerCd},${authorCd},s.jan,yobi.item1,yobi.item2,yobi.item3,yobi.item4,yobi.item5,yobi.item6,yobi.item7,yobi.item8,yobi.item9,yobi.item10,
+        select #{companyCd},#{productPowerCd},#{authorCd},s.jan,yobi.item1,yobi.item2,yobi.item3,yobi.item4,yobi.item5,yobi.item6,yobi.item7,yobi.item8,yobi.item9,yobi.item10,
                pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,
                pos_store_item01,pos_store_item02,pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,
                pos_store_item08,pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
@@ -227,13 +227,11 @@
                customer_store_item08,customer_store_item09,customer_store_item10,customer_item01,customer_item02,customer_item03,customer_item04,customer_item05,customer_item06,
                customer_item07,customer_item08,customer_item09,customer_item10,customer_item11,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,intage_item06,
                intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02
-
         from  planocycle.work_product_power_syokika s
             left join planocycle.work_product_power_kokyaku k
-                    on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd
+                    on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd and s.product_power_cd = k.product_power_cd
             left join planocycle.work_product_power_intage i
-                    on i.jan = s.jan and i.author_cd=s.author_cd and  s.company_cd = i.company_cd
-
+                    on i.jan = s.jan and i.author_cd=s.author_cd and  s.company_cd = i.company_cd and s.product_power_cd = i.product_power_cd
             left join (select
                          dd.jan as jan,
 
@@ -251,14 +249,15 @@
                          planocycle.work_product_power_reserve_mst mm
                              inner join planocycle.work_product_power_reserve_data dd on mm.data_cd = dd.data_cd
                      where
-                         mm.author_cd = '10215814'
-                       and mm.company_cd = '0001'
+                         mm.author_cd = #{authorCd}
+                       and mm.company_cd = #{companyCd}
+                        and mm.product_power_cd = #{productPowerCd}
                      GROUP BY
                          dd.jan
         )as yobi
             on yobi.jan = s.jan
 
-        where  s.author_cd='10215814' and s.company_cd = '0001'
+        where  s.author_cd=#{authorCd} and s.company_cd = #{companyCd} and s.product_power_cd = #{productPowerCd}
         order by s.jan;
 
     </insert>
@@ -316,7 +315,7 @@
         and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
     </delete>
     <delete id="deleteWKData">
-        delete from planocycle.work_product_power_mst_data where company_cd =#{companyCd} and author_cd = #{authorCd}
+        delete from planocycle.work_product_power_mst_data where company_cd =#{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
     </delete>
     <delete id="deleteData">
         delete  from planocycle.product_power_mst_data
@@ -359,17 +358,13 @@
     <update id="setWkDataRank">
         update planocycle.work_product_power_mst_data
         set
-            <foreach collection="rankCalculate[0]" item="item" separator="," index="index">
-                <if test="index != 'jan'">
-                    ${index}=
+                    ${colName}=
                     case jan
                     <foreach collection="rankCalculate" item="item" index="ind">
-                        when #{item.jan} then #{item.${index}} ::integer
+                        when #{item.jan} then #{item.${colName}} ::integer
                     </foreach>
                     else null end
-                </if>
-            </foreach>
-
+        where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
     </update>
     <insert id="setWKIntageForFinally">
         insert into planocycle.work_product_power_intage(company_cd,product_power_cd,jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
@@ -611,7 +606,7 @@
         select power_syokika.jan as jan,
         <foreach collection="classify" index="index" item="item" separator=",">
             <if test="item.sort != 1">
-                jan_info."${item.sort}" as ${item.attr}
+                case  when jan_info."${item.sort}" is null then '' else jan_info."${item.sort}"  end  as ${item.attr}
 
             </if>
         </foreach>
@@ -635,9 +630,9 @@
                 ) as rank_result
         from  planocycle.work_product_power_syokika s
             left join planocycle.work_product_power_kokyaku k
-        on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd
+        on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd and s.product_power_cd = k.product_power_cd
        left join planocycle.work_product_power_intage i
-                on i.jan = s.jan and i.author_cd=s.author_cd and  s.company_cd = i.company_cd
+                on i.jan = s.jan and i.author_cd=s.author_cd and  s.company_cd = i.company_cd and s.product_power_cd = i.product_power_cd
         left join (select
         dd.jan as jan,
         sum ( case when dd.data_cd = '31001' then dd.data_value else null end ) as item1,
@@ -654,13 +649,14 @@
         planocycle.work_product_power_reserve_mst mm
         inner join planocycle.work_product_power_reserve_data dd on mm.data_cd = dd.data_cd
         where
-        mm.author_cd = '10215814'
-        and mm.company_cd = '0001'
+        mm.author_cd = #{authorCd}
+        and mm.company_cd = #{companyCd}
+        and mm.product_power_cd = #{productPowerCd}
         GROUP BY
         dd.jan
         )as yobi
         on yobi.jan = s.jan
-        where  s.author_cd='10215814' and s.company_cd = '0001'
+        where  s.author_cd=#{authorCd} and s.company_cd = #{companyCd} and s.product_power_cd = #{productPowerCd}
     </select>
     <select id="getShowItemCd" resultType="java.lang.String">
         select item_cd from planocycle.param_config where cast(item_value as VARCHAR) in
@@ -687,7 +683,7 @@
         order by rank_result asc
     </select>
     <select id="getjan" resultType="java.lang.String">
-        select "1" from "0001".prod_0000_jan_info limit 100
+        select "1" from "0001".prod_0000_jan_info limit 3000
     </select>
 
     <insert id="selectWKKIntager">
