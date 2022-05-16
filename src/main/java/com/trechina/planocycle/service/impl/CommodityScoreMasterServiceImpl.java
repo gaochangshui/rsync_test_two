@@ -3,6 +3,7 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.entity.dto.CompanyListDto;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.po.*;
@@ -47,6 +48,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Autowired
     private ParamConfigMapper paramConfigMapper;
     @Autowired
+    private PlanocycleKigyoListMapper planocycleKigyoListMapper;
+    @Autowired
     private cgiUtils cgiUtil;
 
     /**
@@ -57,10 +60,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     public Map<String,Object> getEnterpriseInfo() {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("CompanyList");
-        Object resultInfo = "";
-        String result = cgiUtil.getCgi(path+session.getAttribute("inCharge")+"&mode=kigyolist",(String) session.getAttribute("MSPACEDGOURDLP"));
-        logger.info(result);
-        resultInfo = JSON.parse(result);
+
+        String companys = session.getAttribute("inCharge").toString();
+        List<String> companyList = Arrays.asList(companys.split(","));
+        List<CompanyListDto> resultInfo = planocycleKigyoListMapper.getCompanyList(companyList);
 
         logger.info("つかむ取企業信息：{}",resultInfo);
 

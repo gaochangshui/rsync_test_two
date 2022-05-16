@@ -274,6 +274,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         Set<String> strings = map.keySet();
 
         List<Map<String, Object>> rankCalculate = productPowerDataMapper.getProductRankCalculate(map, companyCd, productPowerCd,authorCd);
+
         productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd);
         Set<String> colNames = rankCalculate.get(0).keySet();
         for (String colName : colNames) {

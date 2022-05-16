@@ -706,7 +706,7 @@
         order by rank_result asc
     </select>
     <select id="getjan" resultType="java.lang.String">
-        select "1" from "0001".prod_0000_jan_info limit 3000
+        select "1" from "0001".prod_0000_jan_info limit 200
     </select>
 
     <insert id="selectWKKIntager">
