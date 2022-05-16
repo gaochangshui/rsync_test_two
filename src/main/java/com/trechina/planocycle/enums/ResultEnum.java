@@ -2,6 +2,7 @@ package com.trechina.planocycle.enums;
 
 public enum ResultEnum {
     SUCCESS(101,"成功"),
+    SUCCESS_BUT_NEW_JAN(102,"成功"),
     FAILURE(202,"失敗"),
     TIMEOUT(10001,"登録超時"),
     NOTFOUNTCOOKIE(10002,"找不到cookie信息"),
@@ -15,6 +16,8 @@ public enum ResultEnum {
     FILEVERSIONFAILURE(40001,"文件版本不はい"),
     FILECONTENTFAILURE(40002,"文件内容不はい"),
     DATAISTOOLARGE(40003,"数据量を過ぎて大"),
+    CLASSIFY_NOT_EXIST(40004,"classify not exist"),
+    VERSION_ERROR(40005,"version error"),
     JANCDINEXISTENCE(50004,"JAN不存在");
 
     private Integer code;

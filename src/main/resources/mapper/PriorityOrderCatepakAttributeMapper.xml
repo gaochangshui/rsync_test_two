@@ -14,20 +14,24 @@
   </sql>
 
   <delete id="deleteByPrimaryKey" parameterType="map">
-    delete from planocycle.priority_order_catepak_attribute
+    delete from priority.work_priority_order_catepak_attribute
+    where company_cd = #{companyCd,jdbcType=INTEGER}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteFinalByPrimaryKey" parameterType="map">
+    delete from priority.priority_order_catepak_attribute
     where company_cd = #{companyCd,jdbcType=INTEGER}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
   <select id="selectForTempTable" resultType="java.lang.String">
-    select branch_num from ${tableName}
+    select max(branch_num) as branch_num from ${tableName}
     where
     <foreach collection="lists" separator="and" item="list">
       ${list}
     </foreach>
-    limit 1
   </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderCatepakAttribute">
-    insert into planocycle.priority_order_catepak_attribute (attr_cd, catepak_cd, company_cd,
+    insert into priority.work_priority_order_catepak_attribute (attr_cd, catepak_cd, company_cd,
       priority_order_cd, attr_value, flg)
     values
      <foreach collection="lists" item="list" separator=",">
@@ -35,5 +39,16 @@
       #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.attrValue,jdbcType=VARCHAR}, #{list.flg,jdbcType=INTEGER})
      </foreach>
   </insert>
-
+  <insert id="insertFinalData">
+    insert into priority.priority_order_catepak_attribute(company_cd,priority_order_cd,attr_cd,attr_value,flg,catepak_cd)
+    select company_cd,priority_order_cd,attr_cd,attr_value,flg,catepak_cd
+    from priority.work_priority_order_catepak_attribute
+    where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
+  </insert>
+  <insert id="setWorkForFinal">
+    insert into priority.work_priority_order_catepak_attribute(company_cd,priority_order_cd,attr_cd,attr_value,flg,catepak_cd)
+    select company_cd,priority_order_cd,attr_cd,attr_value,flg,catepak_cd
+    from priority.priority_order_catepak_attribute
+    where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
+  </insert>
 </mapper>

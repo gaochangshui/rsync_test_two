@@ -31,4 +31,11 @@ public final class ResultMaps {
         map.put("msg", resultEnum.getMsg());
         return map;
     }
+
+    public final static Map<String,Object> result(Integer code, String msg){
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("code", code);
+        map.put("msg", msg);
+        return map;
+    }
 }

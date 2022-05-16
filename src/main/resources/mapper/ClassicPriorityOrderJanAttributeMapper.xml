@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ClassicPriorityOrderJanAttributeMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderJanAttribute">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="jan_new" jdbcType="VARCHAR" property="janNew" />
+    <id column="attr_cd" jdbcType="INTEGER" property="attrCd" />
+    <result column="attr_value" jdbcType="VARCHAR" property="attrValue" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, priority_order_cd, jan_new, attr_cd, attr_value
+  </sql>
+  <insert id="setFinalForWork">
+    insert into priority.priority_order_jan_attribute
+    select * from priority.work_priority_order_jan_attribute
+      where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </insert>
+  <insert id="setWorkForFinal">
+    insert into priority.work_priority_order_jan_attribute
+    select * from priority.priority_order_jan_attribute
+      where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </insert>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from priority.work_priority_order_jan_attribute
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteFinal">
+    delete from priority.priority_order_jan_attribute
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <select id="getAttribute" resultType="java.lang.String">
+      select value from priority.priority_order_mst_attrsort
+        where priority_order_cd = #{priorityOrderCd}
+      order by sort
+    </select>
+  <select id="getAttr" resultType="map">
+    select attr_value,jan_new,attr_cd from priority.priority_order_jan_attribute
+    where priority_order_cd = #{priorityOrderCd} and company_cd = #{companyCd}
+    order by attr_cd
+  </select>
+  <select id="selectAttributeByJan" resultType="com.trechina.planocycle.entity.po.PriorityOrderJanAttribute">
+    select jan_new, attr_cd, attr_value from priority.work_priority_order_jan_attribute
+    where priority_order_cd = #{priorityOrderCd} and company_cd = #{companyCd,jdbcType=VARCHAR}
+    and jan_new in
+    <foreach collection="janList" item="list" separator="," open="(" close=")">
+        #{list.jan}
+    </foreach>
+  </select>
+    <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanAttribute">
+    insert into priority.work_priority_order_jan_attribute (company_cd, priority_order_cd, jan_new,
+      attr_cd, attr_value)
+    values
+           <foreach collection="lists" item="list" separator=",">
+           (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janNew,jdbcType=VARCHAR},
+      #{list.attrCd,jdbcType=INTEGER}, #{list.attrValue,jdbcType=VARCHAR})
+           </foreach>
+  </insert>
+  <delete id="deleteByJan">
+    delete from priority.work_priority_order_jan_attribute
+    where company_cd = #{company,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    and jan_new in
+    <foreach collection="lists" item="list" separator="," open="(" close=")">
+      #{list.jan}
+    </foreach>
+  </delete>
+</mapper>

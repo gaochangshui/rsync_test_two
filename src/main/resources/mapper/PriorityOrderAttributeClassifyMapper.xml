@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderAttributeClassifyMapper">
+    <insert id="insert">
+        insert into priority.work_priority_order_attribute_classify(tai_cd,tana_cd,attr1,attr2,company_cd,priority_order_cd)
+        values
+        <foreach collection="list" separator="," item="item">
+            (#{item.taiCd},#{item.tanaCd},#{item.attr1},#{item.attr2},#{item.companyCd},#{item.priorityOrderCd})
+        </foreach>
+    </insert>
+    <insert id="insertFinal">
+        insert into priority.priority_order_attribute_classify
+        select * from priority.work_priority_order_attribute_classify
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </insert>
+    <insert id="insertWork">
+        insert into priority.work_priority_order_attribute_classify
+        select * from priority.priority_order_attribute_classify
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </insert>
+    <delete id="delete">
+        delete from priority.work_priority_order_attribute_classify where priority_order_cd = #{priorityOrderCd}
+    </delete>
+    <delete id="deleteFinal">
+        delete from priority.priority_order_attribute_classify where priority_order_cd = #{priorityOrderCd}
+    </delete>
+    <select id="classifyList" resultType="com.trechina.planocycle.entity.po.PriorityOrderAttributeClassify">
+        select distinct datas.${tai} as attr1,datas.${tana} as attr2,DENSE_RANK() over(order by ${tai}) taiCd,DENSE_RANK() over(PARTITION by ${tai} order by ${tai}, ${tana}) tanaCd
+        from ${tablename} datas
+        where rank_upd != 99999999
+        order by taiCd,tanaCd
+    </select>
+    <select id="getAttrNum" resultType="java.lang.Integer">
+        select  count(1) from priority.work_priority_order_attribute_classify where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getClassifyList" resultType="com.trechina.planocycle.entity.po.PriorityOrderAttributeClassify">
+        select tai_cd ,tana_cd,attr1,attr2
+        from  priority.work_priority_order_attribute_classify
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+        order by tai_cd,tana_cd
+    </select>
+    <select id="selectDiffJanTaiTana" resultType="string">
+        select distinct concat(tai_cd,'_', tana_cd) from priority.work_priority_order_attribute_classify
+        where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
+    </select>
+</mapper>

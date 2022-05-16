@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.FaceNumDataDto;
+import com.trechina.planocycle.entity.dto.GetPatternForProductPowerCd;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.ProductPowerMst;
 import com.trechina.planocycle.entity.vo.CommodityListInfoVO;
@@ -42,5 +43,6 @@ public interface ProductPowerMstMapper {
 
     Double getSalesCntAvg(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
+    GetPatternForProductPowerCd getPatternAndName(@Param("productPowerCd") Integer productPowerCd);
 
 }
