@@ -159,23 +159,17 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     public Map<String, Object> setCommodityList(ProductCdAndNameDto productPowerName) {
         logger.info("商品力点数名保存参数：{}", productPowerName);
         // 名前が重複しているかどうかを判断する
-
         Integer resultName = productPowerMstMapper.selectExistsName(productPowerName.getProductPowerName(),
                 productPowerName.getCompanyCd(),productPowerName.getProductPowerNo());
         Integer resultNum = productPowerMstMapper.selectUpdExistsName(productPowerName.getCompanyCd(), productPowerName.getProductPowerNo());
         if (resultName == 0 && resultNum < 1){
             insertMasterInfo(productPowerName);
             return ResultMaps.result(ResultEnum.SUCCESS);
-
         }
-
-
         if (resultNum == 1 && resultName==0){
             updateMasterInfo(productPowerName);
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
-
-
 
         return ResultMaps.result(ResultEnum.NAMEISEXISTS);
     }
@@ -305,10 +299,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         JSONObject jsonObject = JSON.parseObject(param.getCustomerCondition());
 
         powerParam.setCustomerCondition(jsonObject);
-        powerParam.setPosValue(param.getPosValue());
+
         powerParam.setStoreCd(param.getStoreCd());
         powerParam.setCustomerValue(param.getCustomerValue());
-        powerParam.setPrepareValue(param.getPrepareValue());
+
         powerParam.setRankWeight(param.getRankWeight());
         powerParam.setPrdCd(param.getPrdCd());
         powerParam.setRecentlyFlag(param.getRecentlyFlag());
@@ -338,6 +332,11 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 
+    @Override
+    public Map<String, Object> getSelectedTenPo() {
+
+        return null;
+    }
 
 
 }

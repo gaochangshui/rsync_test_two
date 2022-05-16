@@ -71,5 +71,8 @@ public class CommodityScoreMasterController {
         return commodityScoreMasterService.getPrefectureAndChanelInfo();
     }
 
-
+    @GetMapping("/getSelectedTenPo")
+    public Map<String,Object> getSelectedTenPo() {
+        return commodityScoreMasterService.getSelectedTenPo();
+    }
 }

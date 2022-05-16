@@ -64,4 +64,6 @@ public interface CommodityScoreMasterService {
 
 
     Map<String, Object> getPrefectureAndChanelInfo();
+
+    Map<String, Object> getSelectedTenPo();
 }

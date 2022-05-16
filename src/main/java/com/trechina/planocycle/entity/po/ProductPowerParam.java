@@ -7,9 +7,7 @@ public class ProductPowerParam {
     private String company;
     private String customerValue;
     private JSONObject customerCondition;
-    private String posValue;
     private String prdCd;
-    private String prepareValue;
     private Integer productPowerNo;
     private String rankWeight;
     private String recentlyEndTime;
@@ -21,6 +19,9 @@ public class ProductPowerParam {
     private String storeCd;
     private String yearFlag;
     private String commonPartsData;
+    private String channelNm;
+    private String placeNm;
+    private JSONObject project;
 
     public String getCompany() {
         return company;
@@ -38,16 +39,6 @@ public class ProductPowerParam {
         this.customerValue = customerValue;
     }
 
-
-
-    public String getPosValue() {
-        return posValue;
-    }
-
-    public void setPosValue(String posValue) {
-        this.posValue = posValue;
-    }
-
     public String getPrdCd() {
         return prdCd;
     }
@@ -56,13 +47,7 @@ public class ProductPowerParam {
         this.prdCd = prdCd;
     }
 
-    public String getPrepareValue() {
-        return prepareValue;
-    }
 
-    public void setPrepareValue(String prepareValue) {
-        this.prepareValue = prepareValue;
-    }
 
     public Integer getProductPowerNo() {
         return productPowerNo;
@@ -161,15 +146,37 @@ public class ProductPowerParam {
         this.customerCondition = customerCondition;
     }
 
+    public String getChannelNm() {
+        return channelNm;
+    }
+
+    public void setChannelNm(String channelNm) {
+        this.channelNm = channelNm;
+    }
+
+    public String getPlaceNm() {
+        return placeNm;
+    }
+
+    public void setPlaceNm(String placeNm) {
+        this.placeNm = placeNm;
+    }
+
+    public JSONObject getProject() {
+        return project;
+    }
+
+    public void setProject(JSONObject project) {
+        this.project = project;
+    }
+
     @Override
     public String toString() {
         return "ProductPowerParam{" +
                 "company='" + company + '\'' +
                 ", customerValue='" + customerValue + '\'' +
                 ", customerCondition=" + customerCondition +
-                ", posValue='" + posValue + '\'' +
                 ", prdCd='" + prdCd + '\'' +
-                ", prepareValue='" + prepareValue + '\'' +
                 ", productPowerNo=" + productPowerNo +
                 ", rankWeight='" + rankWeight + '\'' +
                 ", recentlyEndTime='" + recentlyEndTime + '\'' +
@@ -181,6 +188,9 @@ public class ProductPowerParam {
                 ", storeCd='" + storeCd + '\'' +
                 ", yearFlag='" + yearFlag + '\'' +
                 ", commonPartsData='" + commonPartsData + '\'' +
+                ", channelNm='" + channelNm + '\'' +
+                ", placeNm='" + placeNm + '\'' +
+                ", project=" + project +
                 '}';
     }
 }
