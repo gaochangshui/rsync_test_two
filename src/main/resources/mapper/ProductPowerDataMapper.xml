@@ -494,20 +494,43 @@
         select
         syokika.jan jan
             <foreach collection="showList" item="item" open="," separator=",">coalesce(${item.itemCd},'') as ${item.itemCd}</foreach>
+            <foreach collection="showPreparedList" item="item" open="," separator=",">coalesce(${item.data_cd},0) as ${item.data_cd}</foreach>
         from  planocycle.work_product_power_syokika syokika
-            <if test="prepareCd.length>0">
+            <if test="prepareCd.size()>0">
                 left join (select
                 dd.jan as jan,
-                sum ( case when dd.data_cd = '31001' then dd.data_value else 0 end ) as item1,
+                <trim suffixOverrides=",">
+                <if test="prepareCd.contains('item1')">
+                    sum ( case when dd.data_cd = '31001' then dd.data_value else 0 end ) as item1,
+                </if>
+                <if test="prepareCd.contains('item2')">
                 sum ( case when dd.data_cd = '31002' then dd.data_value else 0 end ) as item2,
+                </if>
+                <if test="prepareCd.contains('item3')">
                 sum ( case when dd.data_cd = '31003' then dd.data_value else 0 end ) as item3,
+                </if>
+                <if test="prepareCd.contains('item4')">
                 sum ( case when dd.data_cd = '31004' then dd.data_value else 0 end ) as item4,
+                </if>
+                <if test="prepareCd.contains('item5')">
                 sum ( case when dd.data_cd = '31005' then dd.data_value else 0 end ) as item5,
+                </if>
+                <if test="prepareCd.contains('item6')">
                 sum ( case when dd.data_cd = '31006' then dd.data_value else 0 end ) as item6,
+                </if>
+                <if test="prepareCd.contains('item7')">
                 sum ( case when dd.data_cd = '31007' then dd.data_value else 0 end ) as item7,
+                </if>
+                <if test="prepareCd.contains('item8')">
                 sum ( case when dd.data_cd = '31008' then dd.data_value else 0 end ) as item8,
+                </if>
+                <if test="prepareCd.contains('item9')">
                 sum ( case when dd.data_cd = '31009' then dd.data_value else 0 end ) as item9,
+                </if>
+                <if test="prepareCd.contains('item10')">
                 sum ( case when dd.data_cd = '31010' then dd.data_value else 0 end ) as item10
+                </if>
+                </trim>
                 from
                 planocycle.work_product_power_reserve_mst mm
                 inner join planocycle.work_product_power_reserve_data dd on mm.data_cd = dd.data_cd and mm.product_power_cd=dd.product_power_cd

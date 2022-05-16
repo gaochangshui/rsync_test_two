@@ -47,4 +47,10 @@
       and market_pos_flag = #{marketPosFlag,jdbcType=INTEGER}
       and data_cd = #{dataCd,jdbcType=INTEGER}
   </update>
+  <select id="selectAllPrepared" resultType="map">
+    select
+      ltrim(replace(data_cd::varchar, '31', ''), '0') data_cd, data_name
+    from planocycle.work_product_power_reserve_mst where product_power_cd=#{productPowerCd}
+    order by data_sort
+  </select>
 </mapper>

@@ -3,10 +3,7 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.JanClassifyMapper;
-import com.trechina.planocycle.mapper.ParamConfigMapper;
-import com.trechina.planocycle.mapper.ProductPowerDataMapper;
-import com.trechina.planocycle.mapper.SysConfigMapper;
+import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreDataService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
@@ -42,6 +39,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     private ParamConfigMapper paramConfigMapper;
     @Autowired
     private SysConfigMapper sysConfigMapper;
+    @Autowired
+    private ProductPowerReserveMstMapper productPowerReserveMstMapper;
     @Autowired
     private cgiUtils cgiUtil;
 
@@ -198,11 +197,21 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }else{
             paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
         }
-        List<Map<String, String>> productPowerMstData = productPowerDataMapper.selectShowData(productPowerCd, paramConfigVOS, customerCd, prepareCd, intageCd);
+
+        List<Map<String, Object>> reserveMst = productPowerReserveMstMapper.selectAllPrepared(productPowerCd);
+        reserveMst = reserveMst.stream()
+                .peek(map->map.put("data_cd", "item"+map.get("data_cd")))
+                .filter(map->Arrays.asList(prepareCd).contains(map.get("data_cd").toString())).collect(Collectors.toList());
+
+        List<Map<String, String>> productPowerMstData = productPowerDataMapper.selectShowData(productPowerCd, paramConfigVOS,reserveMst,
+                customerCd, Arrays.asList(prepareCd), intageCd);
         List<Map<String, String>> returnData = new ArrayList<>();
         Map<String, String> colName = paramConfigVOS.stream()
                 .collect(Collectors.toMap(ParamConfigVO::getItemCd, ParamConfigVO::getItemName, (key1, key2) -> key1, LinkedHashMap::new));
 
+        Map<String, String> preparedColName = reserveMst.stream().collect(Collectors.toMap(map -> map.get("data_cd").toString(),
+                map -> map.get("data_name").toString(), (key1, key2) -> key1, LinkedHashMap::new));
+        colName.putAll(preparedColName);
         returnData.add(colName);
         returnData.addAll(productPowerMstData);
 

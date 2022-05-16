@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ProductPowerReserveMstMapper {
@@ -17,4 +18,6 @@ public interface ProductPowerReserveMstMapper {
     List<ProductPowerReserveMst> selectByPrimaryKey(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd);
 
     int updateByPrimaryKey(ProductPowerReserveMst record);
+
+    List<Map<String, Object>> selectAllPrepared(@Param("productPowerCd") Integer productPowerCd);
 }

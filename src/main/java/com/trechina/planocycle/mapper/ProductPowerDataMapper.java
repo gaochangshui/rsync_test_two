@@ -42,7 +42,8 @@ public interface ProductPowerDataMapper {
     //表示データ項目
     List<Map<String, String>> selectShowData(@Param("productPowerCd") Integer productPowerCd,
                                              @Param("showList")List<ParamConfigVO> showList,
-                                             String[] customerCd, String[] prepareCd, String[] intageCd);
+                                             @Param("showPreparedList")List<Map<String, Object>> showPreparedList,
+                                             String[] customerCd, List<String> prepareCd, String[] intageCd);
 
     //テンポラリ・テーブルyobilitemとdata
     int deleteWKYobiiiternCd(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("valueCd") Integer valueCd);
