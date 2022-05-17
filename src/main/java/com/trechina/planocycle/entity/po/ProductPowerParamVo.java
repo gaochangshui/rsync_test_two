@@ -3,13 +3,8 @@ package com.trechina.planocycle.entity.po;
 
 public class ProductPowerParamVo {
     private String company;
-    private String customerValue;
     private String customerCondition;
-    private String posValue;
     private String prdCd;
-    private String prepareValue;
-
-    private String intageValue;
     private Integer productPowerNo;
     private String rankWeight;
     private String recentlyEndTime;
@@ -21,8 +16,7 @@ public class ProductPowerParamVo {
     private String storeCd;
     private String yearFlag;
     private String commonPartsData;
-
-
+    private String project;
 
 
     public String getCompany() {
@@ -33,22 +27,12 @@ public class ProductPowerParamVo {
         this.company = company;
     }
 
-    public String getCustomerValue() {
-        return customerValue;
+    public String getCustomerCondition() {
+        return customerCondition;
     }
 
-    public void setCustomerValue(String customerValue) {
-        this.customerValue = customerValue;
-    }
-
-
-
-    public String getPosValue() {
-        return posValue;
-    }
-
-    public void setPosValue(String posValue) {
-        this.posValue = posValue;
+    public void setCustomerCondition(String customerCondition) {
+        this.customerCondition = customerCondition;
     }
 
     public String getPrdCd() {
@@ -57,14 +41,6 @@ public class ProductPowerParamVo {
 
     public void setPrdCd(String prdCd) {
         this.prdCd = prdCd;
-    }
-
-    public String getPrepareValue() {
-        return prepareValue;
-    }
-
-    public void setPrepareValue(String prepareValue) {
-        this.prepareValue = prepareValue;
     }
 
     public Integer getProductPowerNo() {
@@ -79,8 +55,8 @@ public class ProductPowerParamVo {
         return rankWeight;
     }
 
-    public void setRankWeight(String RankWeight) {
-        this.rankWeight = RankWeight;
+    public void setRankWeight(String rankWeight) {
+        this.rankWeight = rankWeight;
     }
 
     public String getRecentlyEndTime() {
@@ -147,14 +123,6 @@ public class ProductPowerParamVo {
         this.yearFlag = yearFlag;
     }
 
-    public String getCustomerCondition() {
-        return customerCondition;
-    }
-
-    public void setCustomerCondition(String customerCondition) {
-        this.customerCondition = customerCondition;
-    }
-
     public String getCommonPartsData() {
         return commonPartsData;
     }
@@ -163,23 +131,20 @@ public class ProductPowerParamVo {
         this.commonPartsData = commonPartsData;
     }
 
-    public String getIntageValue() {
-        return intageValue;
+    public String getProject() {
+        return project;
     }
 
-    public void setIntageValue(String intageValue) {
-        this.intageValue = intageValue;
+    public void setProject(String project) {
+        this.project = project;
     }
 
     @Override
     public String toString() {
         return "ProductPowerParamVo{" +
                 "company='" + company + '\'' +
-                ", customerValue='" + customerValue + '\'' +
                 ", customerCondition='" + customerCondition + '\'' +
-                ", posValue='" + posValue + '\'' +
                 ", prdCd='" + prdCd + '\'' +
-                ", prepareValue='" + prepareValue + '\'' +
                 ", productPowerNo=" + productPowerNo +
                 ", rankWeight='" + rankWeight + '\'' +
                 ", recentlyEndTime='" + recentlyEndTime + '\'' +
@@ -191,7 +156,7 @@ public class ProductPowerParamVo {
                 ", storeCd='" + storeCd + '\'' +
                 ", yearFlag='" + yearFlag + '\'' +
                 ", commonPartsData='" + commonPartsData + '\'' +
-                ", intageValue='" + intageValue + '\'' +
+                ", project='" + project + '\'' +
                 '}';
     }
 }

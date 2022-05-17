@@ -262,47 +262,15 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud);
 
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
-        String[] posCd = {};
-        String[] customerCd ={};
-        String[] prepareCd ={};
-        String[] intageCd ={};
-        if (param.getPosValue()!= null && !"".equals(param.getPosValue())) {
-             posCd = param.getPosValue().split(",");
-        }
-        if (param.getCustomerValue()!= null && "".equals(param.getCustomerValue())) {
-             customerCd = param.getCustomerValue().split(",");
-        }
-        if (param.getPrepareValue()!= null && "".equals(param.getPrepareValue())) {
-            prepareCd = param.getPrepareValue().split(",");
-        }
-        if (param.getIntageValue()!= null && "".equals(param.getIntageValue())) {
-             intageCd = param.getIntageValue().split(",");
-        }
 
-        List<String> cdList = new ArrayList<>();
+        List<String> cdList = Arrays.asList(param.getProject().split(","));
 
-        if(posCd.length>0){
-            cdList.addAll(Arrays.asList(posCd));
-        }
-        if(prepareCd.length>0){
-            cdList.addAll(Arrays.asList(prepareCd));
-        }
-        if(intageCd.length>0){
-            cdList.addAll(Arrays.asList(intageCd));
-        }
-        if(customerCd.length>0){
-            cdList.addAll(Arrays.asList(customerCd));
-        }
-        List<String> showItemCd = productPowerDataMapper.getShowItemCd(cdList);
-        List<Map<String, Object>> allData = productPowerDataMapper.getAllData(companyCd, productPowerNo, showItemCd);
+        List<LinkedHashMap<String, Object>> allData = productPowerDataMapper.getAllData(companyCd, productPowerNo, cdList);
         ProductPowerParam powerParam = new ProductPowerParam();
         JSONObject jsonObject = JSON.parseObject(param.getCustomerCondition());
 
         powerParam.setCustomerCondition(jsonObject);
-
         powerParam.setStoreCd(param.getStoreCd());
-        powerParam.setCustomerValue(param.getCustomerValue());
-
         powerParam.setRankWeight(param.getRankWeight());
         powerParam.setPrdCd(param.getPrdCd());
         powerParam.setRecentlyFlag(param.getRecentlyFlag());
@@ -313,6 +281,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setSeasonStTime(param.getSeasonStTime());
         powerParam.setYearFlag(param.getYearFlag());
         powerParam.setCommonPartsData(param.getCommonPartsData());
+        powerParam.setProject(param.getProject());
         List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(productPowerNo, companyCd);
         List<Object> list = new ArrayList();
         list.add(allData);

@@ -7,6 +7,7 @@ import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,12 +18,6 @@ public interface ProductPowerDataMapper {
     int deleteWKSyokika(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("productPowerCd") Integer productPowerCd);
 
 
-    //smartデータをテンポラリ・テーブルに保存
-    int insert(@Param("keyNameList") List<String[]> keyNameList);
-
-    //最終テーブルをテンポラリ・テーブルに保存
-    int insertWkSyokikaForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
-
     //テンポラリ・テーブル・データの戻りページ
     int  selectWKSyokika(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("productPowerCd")Integer productPowerCd,@Param("list") List<String> jan);
     List<String> getjan();
@@ -30,8 +25,6 @@ public interface ProductPowerDataMapper {
 
     int deleteWKKokyaku(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("productPowerCd") Integer productPowerCd);
 
-    //smartデータをテンポラリ・テーブルに保存
-    int insertGroup(@Param("keyNameList") List<List<String>> keyNameList);
 
     //最終テーブルをテンポラリ・テーブルに保存
     int insertWkKokyakuForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
@@ -142,7 +135,7 @@ public interface ProductPowerDataMapper {
 
     int setData(@Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
 
-    List<Map<String,Object>> getAllData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd,@Param("list")List<String> list);
+    List<LinkedHashMap<String,Object>> getAllData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("list")List<String> list);
 
     ProductPowerParamVo getParam(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 

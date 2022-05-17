@@ -54,62 +54,11 @@
         <result column="data_cd" jdbcType="VARCHAR" property="valueCd"/>
         <result column="data_name" jdbcType="VARCHAR" property="dataName"/>
     </resultMap>
-    <insert id="insert">
-        insert into planocycle.work_product_power_syokika (company_cd,author_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pos_amount,
-        pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num
-        )
-        values
-            <foreach collection="keyNameList" separator="," item="lists">
-
-                 <foreach collection="lists" item="item" separator="," open="(" close=")" index="index">
-                     <choose>
-                         <when test="index == 8 || index==9 || index == 10 || index == 11 || index == 12 || index == 13 || index == 14 || index == 15">
-                           #{item} ::numeric
-                         </when>
-                         <otherwise>
-                             #{item} ::varchar
-                         </otherwise>
-                     </choose>
-
-                 </foreach>
-
-            </foreach>
-
-    </insert>
-    <insert id="insertGroup">
-        insert into planocycle.work_product_power_kokyaku (company_cd,author_cd,jan,pos_amount,
-        pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num)
-        values
-        <foreach collection="keyNameList" separator="," item="lists">
-
-            <foreach collection="lists" item="item" separator="," open="(" close=")" index="index">
-
-                <choose>
-                    <when test="index == 3 || index == 4 || index==5 || index == 6 || index == 7 || index == 8 || index == 9 || index == 10 ">
-                        #{item} ::numeric
-                    </when>
-                    <otherwise>
-                        #{item} ::text
-                    </otherwise>
-                </choose>
-            </foreach>
-
-        </foreach>
-    </insert>
     <insert id="insertYobilitem">
         insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort)
         values (#{companyCd},#{authorCd},#{dataCd},#{itemName},#{dataSort})
         on conflict(company_cd,author_cd,data_cd)
         do update set data_name=#{itemName},author_cd=#{authorCd}
-    </insert>
-    <insert id="insertWkSyokikaForFinally">
-        insert into planocycle.work_product_power_syokika(company_cd,author_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pos_amount,
-            pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num)
-            select (company_cd,author_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pos_amount,
-                pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num)
-            from planocycle.product_power_syokika
-            where company_cd = #{companyCd,jdbcType=VARCHAR}
-              and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </insert>
     <insert id="insertWkKokyakuForFinally">
         insert into planocycle.work_product_power_kokyaku(company_cd,author_cd,jan,sku_name,pos_amount,
@@ -283,16 +232,16 @@
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </update>
     <delete id="deleteWKSyokika">
-        delete from planocycle.work_product_power_syokika where company_cd=#{companyCd} and author_cd=#{authorCd} and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+        delete from planocycle.work_product_power_syokika where company_cd=#{companyCd}  and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </delete>
     <delete id="deleteWKKokyaku">
-        delete from planocycle.work_product_power_kokyaku where company_cd=#{companyCd} and author_cd=#{authorCd} and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+        delete from planocycle.work_product_power_kokyaku where company_cd=#{companyCd}  and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </delete>
     <delete id="deleteWKYobiiitern">
-        delete from planocycle.work_product_power_reserve_mst where company_cd=#{companyCd} and author_cd=#{authorCd} and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+        delete from planocycle.work_product_power_reserve_mst where company_cd=#{companyCd}  and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </delete>
     <delete id="deleteWKYobiiiternData">
-        delete from planocycle.work_product_power_reserve_data where company_cd=#{companyCd} and author_cd=#{authorCd} and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+        delete from planocycle.work_product_power_reserve_data where company_cd=#{companyCd}  and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </delete>
     <delete id="phyDeleteSyokika">
         delete from planocycle.product_power_syokika where company_cd = #{companyCd,jdbcType=VARCHAR}
@@ -578,8 +527,8 @@
 
 
     <select id="getParam" resultType="com.trechina.planocycle.entity.po.ProductPowerParamVo">
-        select company_cd as company,product_power_cd as productPowerNo,customer_value,customer_condition,pos_value,prd_cd,prepare_value,rank_weight,recently_end_time,recently_flag,recently_st_time,
-               season_end_time,season_flag,season_st_time,store_cd,year_flag,common_parts_data
+        select company_cd as company,product_power_cd as productPowerNo,customer_condition,prd_cd,rank_weight,recently_end_time,recently_flag,recently_st_time,
+               season_end_time,season_flag,season_st_time,store_cd,year_flag,common_parts_data,project
         from planocycle.product_power_param_mst
         where company_cd=#{companyCd} and product_power_cd = #{productPowerCd} and deleteflg=0
 
@@ -691,7 +640,7 @@
         </foreach>
         order by item_value
     </select>
-    <select id="getAllData" resultType="java.util.Map">
+    <select id="getAllData" resultType="java.util.LinkedHashMap">
         select
         <foreach collection="list" item="item" separator=",">
             ${item}

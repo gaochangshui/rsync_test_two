@@ -17,9 +17,6 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Service
@@ -246,71 +243,5 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         return ResultMaps.result(ResultEnum.SUCCESS, returnData);
     }
 
-
-    /**
-     * マルチスレッド挿入pos基本データ
-     */
-    class MyThread implements Runnable {
-        private List list;
-        private CountDownLatch begin;
-        private CountDownLatch end;
-
-        public MyThread(List list, CountDownLatch begin, CountDownLatch end) {
-            this.list = list;
-            this.begin = begin;
-            this.end = end;
-
-        }
-
-        @Override
-        public void run() {
-
-            try {
-
-
-                productPowerDataMapper.insert(list);
-                begin.await();
-
-            } catch (InterruptedException e) {
-                logger.error("", e);
-                Thread.currentThread().interrupt();
-            } finally {
-                end.countDown();
-
-            }
-
-        }
-    }
-
-    public void exec(List<String> list) throws InterruptedException {
-        int count = 1000;
-        int listSize = list.size();
-        int runSize = (listSize / count) + 1;
-        List<String> newList = null;
-        ExecutorService executor = Executors.newFixedThreadPool(runSize);
-        CountDownLatch begin = new CountDownLatch(1);
-        CountDownLatch end = new CountDownLatch(runSize);
-        //ループスレッド
-        for (int i = 0; i < runSize; i++) {
-            if ((i + 1) == runSize) {
-                int startIndex = i * count;
-                int endIndex = list.size();
-                newList = list.subList(startIndex, endIndex);
-
-            } else {
-                int startIndex = i * count;
-                int endIndex = (i + 1) * count;
-                newList = list.subList(startIndex, endIndex);
-            }
-
-            MyThread myThread = new MyThread(newList, begin, end);
-
-            executor.execute(myThread);
-
-        }
-        begin.countDown();
-        end.await();
-        executor.shutdown();
-    }
 
 }
