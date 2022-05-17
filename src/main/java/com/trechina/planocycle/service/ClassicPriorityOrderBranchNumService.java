@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-@Service
 public interface ClassicPriorityOrderBranchNumService {
     /**
      * 获取smart处理之后的必须+不可商品的结果集，并保存
