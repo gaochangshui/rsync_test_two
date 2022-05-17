@@ -3,6 +3,7 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.entity.dto.CompanyListDto;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.po.*;
@@ -47,6 +48,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Autowired
     private ParamConfigMapper paramConfigMapper;
     @Autowired
+    private PlanocycleKigyoListMapper planocycleKigyoListMapper;
+    @Autowired
     private cgiUtils cgiUtil;
 
     /**
@@ -57,10 +60,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     public Map<String,Object> getEnterpriseInfo() {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("CompanyList");
-        Object resultInfo = "";
-        String result = cgiUtil.getCgi(path+session.getAttribute("inCharge")+"&mode=kigyolist",(String) session.getAttribute("MSPACEDGOURDLP"));
-        logger.info(result);
-        resultInfo = JSON.parse(result);
+
+        String companys = session.getAttribute("inCharge").toString();
+        List<String> companyList = Arrays.asList(companys.split(","));
+        List<CompanyListDto> resultInfo = planocycleKigyoListMapper.getCompanyList(companyList);
 
         logger.info("つかむ取企業信息：{}",resultInfo);
 
@@ -156,23 +159,17 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     public Map<String, Object> setCommodityList(ProductCdAndNameDto productPowerName) {
         logger.info("商品力点数名保存参数：{}", productPowerName);
         // 名前が重複しているかどうかを判断する
-
         Integer resultName = productPowerMstMapper.selectExistsName(productPowerName.getProductPowerName(),
                 productPowerName.getCompanyCd(),productPowerName.getProductPowerNo());
         Integer resultNum = productPowerMstMapper.selectUpdExistsName(productPowerName.getCompanyCd(), productPowerName.getProductPowerNo());
         if (resultName == 0 && resultNum < 1){
             insertMasterInfo(productPowerName);
             return ResultMaps.result(ResultEnum.SUCCESS);
-
         }
-
-
         if (resultNum == 1 && resultName==0){
             updateMasterInfo(productPowerName);
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
-
-
 
         return ResultMaps.result(ResultEnum.NAMEISEXISTS);
     }
@@ -302,10 +299,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         JSONObject jsonObject = JSON.parseObject(param.getCustomerCondition());
 
         powerParam.setCustomerCondition(jsonObject);
-        powerParam.setPosValue(param.getPosValue());
+
         powerParam.setStoreCd(param.getStoreCd());
         powerParam.setCustomerValue(param.getCustomerValue());
-        powerParam.setPrepareValue(param.getPrepareValue());
+
         powerParam.setRankWeight(param.getRankWeight());
         powerParam.setPrdCd(param.getPrdCd());
         powerParam.setRecentlyFlag(param.getRecentlyFlag());
@@ -335,6 +332,11 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 
+    @Override
+    public Map<String, Object> getSelectedTenPo() {
+
+        return null;
+    }
 
 
 }

@@ -67,11 +67,12 @@
       )
   </insert>
   <insert id="insertParam">
-    insert into planocycle.product_power_param_mst (company_cd,product_power_cd,customer_value,customer_condition,pos_value,prd_cd,prepare_value,rank_weight,recently_end_time,
-                                                    recently_flag,recently_st_time,season_end_time,season_flag,season_st_time,store_cd,year_flag,author_cd,create_time,common_parts_data)
-    values(#{item.company},#{item.productPowerNo},#{item.customerValue},#{customerCondition},#{item.posValue},#{item.prdCd},#{item.prepareValue},#{item.rankWeight},
+    insert into planocycle.product_power_param_mst (company_cd,product_power_cd,customer_condition,prd_cd,rank_weight,recently_end_time,
+                                                    recently_flag,recently_st_time,season_end_time,season_flag,season_st_time,store_cd,year_flag,author_cd,create_time,common_parts_data,
+                                                    place_nm,channel_nm,project)
+    values(#{item.company},#{item.productPowerNo},#{customerCondition},#{item.prdCd},#{item.rankWeight},
            #{item.recentlyEndTime},#{item.recentlyFlag},#{item.recentlyStTime},#{item.seasonEndTime},#{item.seasonFlag},#{item.seasonStTime},#{item.storeCd},
-           #{item.yearFlag},#{authorCd},now(),#{item.commonPartsData})
+           #{item.yearFlag},#{authorCd},now(),#{item.commonPartsData},#{item.placeNm},#{item.channelNm},#{item.project})
   </insert>
   <delete id="deleteCommofityParamForChange" parameterType="com.trechina.planocycle.entity.po.ProductPowerParamMst">
     delete from planocycle.product_power_param_mst
@@ -99,6 +100,6 @@
       and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
   </update>
   <delete id="deleteParam">
-    delete from planocycle.product_power_param_mst where company_cd=#{companyCd} and product_power_cd =#{productPowerCd} and deleteflg=0
+    delete from planocycle.product_power_param_mst where company_cd=#{companyCd} and product_power_cd =#{productPowerCd}
   </delete>
 </mapper>

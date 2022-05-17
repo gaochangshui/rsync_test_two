@@ -100,7 +100,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      * @param
      * @return
      */
-    @Transactional(rollbackFor = Exception.class)
+    //@Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setCommodityScorePare(ProductPowerParam productPowerParam) {
         String authorCd = session.getAttribute("aud").toString();
@@ -129,10 +129,12 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             productPowerDataMapper.phyDeleteIntage(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.endIntageForWK(conpanyCd,productPowerCd,authorCd);
             //物理削除挿入の保存の変更
+        
             productPowerDataMapper.deleteData(conpanyCd,productPowerCd,authorCd);
             productPowerDataMapper.setData(productPowerCd,authorCd,conpanyCd);
             //期間パラメータ削除挿入{{きかんぱらめーた:さくじょそうにゅう}}
             String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
+
         productPowerParamMstMapper.deleteParam(conpanyCd,productPowerCd);
         productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd);
 
@@ -271,9 +273,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         productPowerDataMapper.deleteWKData(companyCd,authorCd,productPowerCd);
         map.remove("companyCd");
         map.remove("productPowerCd");
-        Set<String> strings = map.keySet();
-
         List<Map<String, Object>> rankCalculate = productPowerDataMapper.getProductRankCalculate(map, companyCd, productPowerCd,authorCd);
+
         productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd);
         Set<String> colNames = rankCalculate.get(0).keySet();
         for (String colName : colNames) {
