@@ -6,7 +6,16 @@ public class ParamConfigVO {
     private String itemValue;
     private Integer flag;
 
+    private String itemType;
     private Integer rankFlag;
+
+    public String getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
+    }
 
     public Integer getRankFlag() {
         return rankFlag;

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.ParamConfigMapper">
   <select id="selectParamConfig" resultType="com.trechina.planocycle.entity.vo.ParamConfigVO">
-    select item_cd,item_value,item_name from planocycle.param_config config
+    select item_cd,item_value,item_name,item_type from planocycle.param_config config
     where flag=0 order by item_value
   </select>
   <select id="getParamConfig" resultType="com.trechina.planocycle.entity.dto.ParamConfigDto">
