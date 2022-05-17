@@ -23,4 +23,7 @@
                masterdb.planocycle_kigyo_list list
                on list.company_cd = mst.group_cd
     </select>
+    <select id="getGroupInfo" resultType="java.lang.String">
+        SELECT array_to_string(array_agg(  concat(group_cd,'_',company_cd)),',')  from masterdb.group_company where group_cd = #{companyCd}
+    </select>
 </mapper>

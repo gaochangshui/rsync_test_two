@@ -17,6 +17,7 @@ public class ProductPowerParamVo {
     private String yearFlag;
     private String commonPartsData;
     private String project;
+    private Integer shelfPatternCd;
 
 
     public String getCompany() {
@@ -139,6 +140,14 @@ public class ProductPowerParamVo {
         this.project = project;
     }
 
+    public Integer getShelfPatternCd() {
+        return shelfPatternCd;
+    }
+
+    public void setShelfPatternCd(Integer shelfPatternCd) {
+        this.shelfPatternCd = shelfPatternCd;
+    }
+
     @Override
     public String toString() {
         return "ProductPowerParamVo{" +
@@ -157,6 +166,7 @@ public class ProductPowerParamVo {
                 ", yearFlag='" + yearFlag + '\'' +
                 ", commonPartsData='" + commonPartsData + '\'' +
                 ", project='" + project + '\'' +
+                ", shelfPatternCd=" + shelfPatternCd +
                 '}';
     }
 }

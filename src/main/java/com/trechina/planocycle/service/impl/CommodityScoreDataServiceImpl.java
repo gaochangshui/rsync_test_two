@@ -39,6 +39,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Autowired
     private ProductPowerReserveMstMapper productPowerReserveMstMapper;
     @Autowired
+    private PlanocycleKigyoListMapper planocycleKigyoListMapper;
+    @Autowired
     private cgiUtils cgiUtil;
 
 
@@ -108,12 +110,18 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      */
     @Override
     public Map<String, Object> getCommodityScoreTaskId( Map<String,Object> map) {
+
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = map.get("company").toString();
         String commonPartsData = map.get("commonPartsData").toString();
+        String company_kokigyou = planocycleKigyoListMapper.getGroupInfo(companyCd);
+        if (company_kokigyou!=null){
+            map.put("company_kokigyou",company_kokigyou);
+        }else {
+            map.put("company_kokigyou",companyCd+"_"+companyCd);
+        }
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
-
         String storeIsCore = jsonObject.get("storeIsCore").toString();
         String prodIsCore = jsonObject.get("prodIsCore").toString();
         String dateIsCore  = jsonObject.get("dateIsCore").toString();

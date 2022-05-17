@@ -6,7 +6,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.CompanyListDto;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
-import com.trechina.planocycle.entity.po.*;
+import com.trechina.planocycle.entity.po.ProductPowerMst;
+import com.trechina.planocycle.entity.po.ProductPowerParam;
+import com.trechina.planocycle.entity.po.ProductPowerParamMst;
+import com.trechina.planocycle.entity.po.ProductPowerParamVo;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -20,7 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterService {
@@ -49,6 +54,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     private ParamConfigMapper paramConfigMapper;
     @Autowired
     private PlanocycleKigyoListMapper planocycleKigyoListMapper;
+    @Autowired
+    private JanClassifyMapper janClassifyMapper;
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
     @Autowired
     private cgiUtils cgiUtil;
 
@@ -264,12 +273,40 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
 
         List<String> cdList = Arrays.asList(param.getProject().split(","));
+        String coreCompany = sysConfigMapper.selectSycConfig("core_company");
+        JSONObject jsonObject = JSONObject.parseObject(param.getCommonPartsData());
+        String prodMstClass = jsonObject.get("prodMstClass").toString();
+        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        String isCompanyCd = null;
+        if ("1".equals(prodIsCore)) {
+            isCompanyCd = coreCompany;
+        } else {
+            isCompanyCd = companyCd;
+        }
 
-        List<LinkedHashMap<String, Object>> allData = productPowerDataMapper.getAllData(companyCd, productPowerNo, cdList);
+        String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
+        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
+        List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
+        LinkedHashMap<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1, k2)->k1, LinkedHashMap::new));
+        Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
+
+        List<LinkedHashMap<String, Object>> returnDataAttr = new ArrayList<>();
+        List<LinkedHashMap<String, Object>> allDataAttr = productPowerDataMapper.getAllDataAttr(companyCd, productPowerNo, cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName);
+        returnDataAttr.add(colMap);
+        returnDataAttr.addAll(allDataAttr);
+        List<LinkedHashMap<String, Object>> returnDataItem = new ArrayList<>();
+        List<LinkedHashMap<String, Object>> allDataItem = productPowerDataMapper.getAllDataItem(companyCd, productPowerNo, cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName);
+        List<ParamConfigVO> paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
+        LinkedHashMap<String, Object> colName = paramConfigVOS.stream()
+                .collect(Collectors.toMap(ParamConfigVO::getItemCd, ParamConfigVO::getItemName, (key1, key2) -> key1, LinkedHashMap::new));
+        returnDataItem.add(colName);
+        returnDataItem.addAll(allDataItem);
+        List<LinkedHashMap<String, Object>> allDataRank = productPowerDataMapper.getAllDataRank(companyCd, productPowerNo, cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName);
+        returnDataAttr.addAll(allDataRank);
         ProductPowerParam powerParam = new ProductPowerParam();
-        JSONObject jsonObject = JSON.parseObject(param.getCustomerCondition());
+        JSONObject jsonObject1 = JSON.parseObject(param.getCustomerCondition());
 
-        powerParam.setCustomerCondition(jsonObject);
+        powerParam.setCustomerCondition(jsonObject1);
         powerParam.setStoreCd(param.getStoreCd());
         powerParam.setRankWeight(param.getRankWeight());
         powerParam.setPrdCd(param.getPrdCd());
@@ -283,8 +320,12 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setCommonPartsData(param.getCommonPartsData());
         powerParam.setProject(param.getProject());
         List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(productPowerNo, companyCd);
+        List<Object> dataAll = new ArrayList();
+        dataAll.add(returnDataAttr);
+        dataAll.add(returnDataItem);
+        dataAll.add(allDataRank);
         List<Object> list = new ArrayList();
-        list.add(allData);
+        list.add(dataAll);
         list.add(powerParam);
         list.add(reserve);
 

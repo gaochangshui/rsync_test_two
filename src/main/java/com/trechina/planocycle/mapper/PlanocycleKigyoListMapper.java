@@ -10,4 +10,6 @@ import java.util.List;
 public interface PlanocycleKigyoListMapper {
 
     List<CompanyListDto> getCompanyList(List<String> companyCd);
+
+    String getGroupInfo(String companyCd);
 }

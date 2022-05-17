@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 
 public class ProductPowerParam {
     private String company;
-    private String customerValue;
     private JSONObject customerCondition;
     private String prdCd;
     private Integer productPowerNo;
@@ -22,6 +21,7 @@ public class ProductPowerParam {
     private String channelNm;
     private String placeNm;
     private String project;
+    private Integer shelfPatternCd;
 
     public String getCompany() {
         return company;
@@ -31,14 +31,6 @@ public class ProductPowerParam {
         this.company = company;
     }
 
-    public String getCustomerValue() {
-        return customerValue;
-    }
-
-    public void setCustomerValue(String customerValue) {
-        this.customerValue = customerValue;
-    }
-
     public String getPrdCd() {
         return prdCd;
     }
@@ -46,8 +38,6 @@ public class ProductPowerParam {
     public void setPrdCd(String prdCd) {
         this.prdCd = prdCd;
     }
-
-
 
     public Integer getProductPowerNo() {
         return productPowerNo;
@@ -170,11 +160,18 @@ public class ProductPowerParam {
         this.project = project;
     }
 
+    public Integer getShelfPatternCd() {
+        return shelfPatternCd;
+    }
+
+    public void setShelfPatternCd(Integer shelfPatternCd) {
+        this.shelfPatternCd = shelfPatternCd;
+    }
+
     @Override
     public String toString() {
         return "ProductPowerParam{" +
                 "company='" + company + '\'' +
-                ", customerValue='" + customerValue + '\'' +
                 ", customerCondition=" + customerCondition +
                 ", prdCd='" + prdCd + '\'' +
                 ", productPowerNo=" + productPowerNo +
@@ -190,7 +187,8 @@ public class ProductPowerParam {
                 ", commonPartsData='" + commonPartsData + '\'' +
                 ", channelNm='" + channelNm + '\'' +
                 ", placeNm='" + placeNm + '\'' +
-                ", project=" + project +
+                ", project='" + project + '\'' +
+                ", shelfPatternCd=" + shelfPatternCd +
                 '}';
     }
 }

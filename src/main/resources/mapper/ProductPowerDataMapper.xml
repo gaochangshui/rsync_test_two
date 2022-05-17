@@ -528,7 +528,7 @@
 
     <select id="getParam" resultType="com.trechina.planocycle.entity.po.ProductPowerParamVo">
         select company_cd as company,product_power_cd as productPowerNo,customer_condition,prd_cd,rank_weight,recently_end_time,recently_flag,recently_st_time,
-               season_end_time,season_flag,season_st_time,store_cd,year_flag,common_parts_data,project
+               season_end_time,season_flag,season_st_time,store_cd,year_flag,common_parts_data,project,shelf_pattern_cd
         from planocycle.product_power_param_mst
         where company_cd=#{companyCd} and product_power_cd = #{productPowerCd} and deleteflg=0
 
@@ -640,22 +640,41 @@
         </foreach>
         order by item_value
     </select>
-    <select id="getAllData" resultType="java.util.LinkedHashMap">
-        select
-        <foreach collection="list" item="item" separator=",">
-            ${item}
+    <select id="getAllDataAttr" resultType="java.util.LinkedHashMap">
+        select datas.jan,
+        <foreach collection="classify" index="index" item="item" separator=",">
+            <if test="item.sort != 1">
+                case  when jan_info."${item.sort}" is null then '' else jan_info."${item.sort}"  end  as ${item.attr}
+            </if>
         </foreach>
-        ,
-        <foreach collection="list" item="item" separator=",">
-            "${item}_rank"
-        </foreach>
-        ,rank_result
-        from planocycle.product_power_mst_data
+        from planocycle.product_power_mst_data datas
+        left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
         where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
         order by rank_result asc
     </select>
     <select id="getjan" resultType="java.lang.String">
         select "1" from "0001".prod_0000_jan_info limit 15
+    </select>
+    <select id="getAllDataItem" resultType="java.util.LinkedHashMap">
+        select datas.jan,
+        <foreach collection="list" item="item" separator=",">
+            datas.${item}
+        </foreach>
+        from planocycle.product_power_mst_data datas
+        left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
+        where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
+        order by rank_result asc
+    </select>
+    <select id="getAllDataRank" resultType="java.util.LinkedHashMap">
+        select datas.jan,
+        <foreach collection="list" item="item" separator=",">
+            datas."${item}_rank"
+        </foreach>
+        ,rank_result
+        from planocycle.product_power_mst_data datas
+        left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
+        where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
+        order by rank_result asc
     </select>
 
     <insert id="selectWKKIntager">
