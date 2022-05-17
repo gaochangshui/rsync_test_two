@@ -122,5 +122,8 @@
     from planocycle.work_priority_order_result_data
     where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
   </select>
-
+  <select id="getPatternAndName" resultType="com.trechina.planocycle.entity.dto.GetPatternForProductPowerCd">
+    select shelf_pattern_cd as shelfPatternCd,shelf_name_cd as shelfNameCd from planocycle.product_power_param_mst
+    where product_power_cd = #{productPowerCd}
+  </select>
 </mapper>

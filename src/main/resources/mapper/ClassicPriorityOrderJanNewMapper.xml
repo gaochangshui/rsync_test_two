@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ClassicPriorityOrderJanNewMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ClassicPriorityOrderJanNew">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="jan_new" jdbcType="VARCHAR" property="janNew" />
+    <result column="rank" jdbcType="INTEGER" property="rank" />
+    <result column="branch_num" jdbcType="INTEGER" property="branchNum" />
+    <result column="branch_account" jdbcType="NUMERIC" property="branchAccount" />
+      <result column="name_new" jdbcType="VARCHAR" property="nameNew" />
+  </resultMap>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanNew">
+    insert into priority.work_priority_order_jan_new (company_cd, priority_order_cd, jan_new,
+      rank, branch_num, branch_account, name_new )
+    values
+           <foreach collection="lists" separator="," item="list">
+           (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janNew,jdbcType=VARCHAR},
+      #{list.rank,jdbcType=INTEGER} , #{list.branchNum,jdbcType=INTEGER} , #{list.branchAccount,jdbcType=NUMERIC} , #{list.nameNew,jdbcType=VARCHAR})
+           </foreach>
+  </insert>
+
+    <select id="selectJanNameFromJanNewByCompanyAndCd" resultMap="BaseResultMap">
+        select company_cd,priority_order_cd,jan_new,rank,branch_num,branch_account,name_new
+        from priority.work_priority_order_jan_new
+        where company_cd=#{company} and priority_order_cd=#{priorityOrderCd}
+    </select>
+
+    <update id="updateBranchNum">
+        update priority.work_priority_order_jan_new
+        set branch_num = #{branchNum,jdbcType=INTEGER}
+        where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        and jan_new = #{janNew,jdbcType=VARCHAR}
+    </update>
+    <insert id="setWorkForFinal">
+        insert into priority.work_priority_order_jan_new
+        select company_cd,priority_order_cd,jan_new,rank,branch_num,branch_account,name_new
+        from priority.priority_order_jan_new
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </insert>
+    <select id="selectExistJanNew" resultType="string">
+        select jan_new from priority.work_priority_order_jan_new
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        and jan_new in
+        <foreach collection="newJanList" item="obj" open="(" close=")" separator=",">
+            #{obj.jan}
+        </foreach>
+    </select>
+    <delete id="deleteByJan">
+        delete from priority.work_priority_order_jan_new
+        where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        and jan_new in
+        <foreach collection="newJanList" item="obj" open="(" close=")" separator=",">
+            #{obj.jan}
+        </foreach>
+    </delete>
+    <insert id="setFinalForWork">
+        insert into priority.priority_order_jan_new
+        select company_cd,priority_order_cd,jan_new,rank,branch_num,branch_account,name_new
+        from priority.work_priority_order_jan_new
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+            and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </insert>
+    <delete id="delete">
+    delete from priority.work_priority_order_jan_new
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteFinal">
+        delete from priority.priority_order_jan_new
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteJanNew">
+        delete from ${tableName}
+        where rank=-1
+    </delete>
+    <select id="selectJanNew" resultType="com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanNewVO">
+    select news.jan_new as janNew,news.name_new as janName
+         ,string_agg(attr_cd||':'||attr_value,',') as attr
+         ,news.rank,news.branch_num as branchNum,news.branch_account as branchAccount
+         ,'' as errMsg
+    from priority.work_priority_order_jan_new news
+           left join priority.work_priority_order_jan_attribute attr
+             on  news.company_cd = attr.company_cd
+             and news.priority_order_cd = attr.priority_order_cd
+            and news.jan_new = attr.jan_new
+    where news.company_cd = #{companyCd,jdbcType=VARCHAR}
+      and news.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    group by news.jan_new,news.name_new,rank,branch_num,branch_account
+    order by janNew
+  </select>
+    <select id="selectJanNewNotExistsMst" resultType="map">
+        select '' as jan_old,news.jan_new,'' as sku
+             ,string_agg(attr_cd||':'||attr_value,',' order by attr_cd asc) as attr
+            ,'' as mulit_attr,'' as pos_amount,'' as pos_before_rate,'' as branch_amount
+            ,'0' as unit_price,'+0' as unit_before_diff,'-1' as rank,'0' as branch_num
+            ,news.rank as rank_prop,news.rank as rank_upd,news.branch_num as branch_num_upd
+            ,news.branch_account  as pos_amount_upd ,'+'||news.branch_num as difference
+             ,to_number(news.branch_account::text,'99999999999999999.99')*to_number(news.branch_num::text,'99999999999999999.99')/1000 as sale_forecast
+        from priority.work_priority_order_jan_new news
+             left join priority.work_priority_order_jan_attribute attr
+               on  news.company_cd = attr.company_cd
+               and news.priority_order_cd = attr.priority_order_cd
+               and news.jan_new = attr.jan_new
+        where news.company_cd = #{companyCd,jdbcType=VARCHAR}
+          and news.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        and not exists(
+                select jan_new from ${tablename} temps where news.jan_new = temps.jan_new
+            )
+        group by news.jan_new,rank,branch_num,branch_account
+
+    </select>
+    <select id="selectColName" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
+        select news.jan_new as janNew,'' as janName
+             ,string_agg(attr_cd||':'||attr_value,',') as attr
+             ,news.rank,news.branch_num as branchNum,news.branch_account as branchAccount
+             ,'' as errMsg
+        from priority.work_priority_order_jan_new news
+         right join priority.product_power_param_attribute attr
+           on  news.company_cd = attr.company_cd
+        where attr.company_cd = #{companyCd,jdbcType=VARCHAR}
+          and attr.product_power_cd = #{productPowerNo,jdbcType=INTEGER}
+        group by news.jan_new,rank,branch_num,branch_account limit 1
+    </select>
+    <select id="selectJanNewOrAttr" resultType="java.util.Map">
+        select new.priority_order_cd,new.jan_new,rank,string_agg(attr_value,',' order by attr_cd) as attr
+        from priority.work_priority_order_jan_attribute attr
+          inner join priority.work_priority_order_jan_new new
+         on attr.priority_order_cd =new.priority_order_cd
+         and attr.jan_new = new.jan_new
+        where  new.company_cd = #{companyCd,jdbcType=VARCHAR}
+          and new.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        group by new.priority_order_cd,new.jan_new,rank
+    </select>
+    <select id="getExistOtherMst" resultType="com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanNewVO">
+        select news.jan_new as janNew,news.name_new as janName
+             ,string_agg(attr_cd||':'||attr_value,',') as attr
+             ,news.rank,news.branch_num as branchNum,news.branch_account as branchAccount
+             ,'' as errMsg
+        from priority.work_priority_order_jan_new news
+                 left join priority.work_priority_order_jan_attribute attr
+                           on  news.company_cd = attr.company_cd
+                               and news.priority_order_cd = attr.priority_order_cd
+                               and news.jan_new = attr.jan_new
+        where  news.priority_order_cd =#{priorityOrderCd} and news.company_cd = #{companyCd}
+          and
+            not exists(select jan_old from priority.work_priority_order_jan_proposal pro1 where news.jan_new = pro1.jan_old and pro1.priority_order_cd = news.priority_order_cd and pro1.flag=1)
+          and not exists(select jan_old from priority.work_priority_order_jan_proposal pro2 where news.jan_new = pro2.jan_new and pro2.priority_order_cd = news.priority_order_cd and pro2.flag=1)
+          and not exists(select jan_old from priority.priority_order_jan_replace rep1 where news.jan_new = rep1.jan_new and rep1.company_cd = news.company_cd)
+          and not exists(select jan_old from priority.priority_order_jan_replace rep2 where news.jan_new = rep2.jan_old and rep2.company_cd = news.company_cd)
+        and not exists(select jan_old from ${tableName} datas where news.jan_new = datas.jan_old)
+        group by news.jan_new,news.name_new,rank,branch_num,branch_account
+
+    </select>
+    <select id="getJanNewMst" resultType="com.trechina.planocycle.entity.po.Jans">
+        select jan , janname
+        from masterdb.jans
+        where jan in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+
+</mapper>

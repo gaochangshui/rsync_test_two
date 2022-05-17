@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ClassicPriorityOrderBranchNumMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderBranchNum">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="branch" jdbcType="INTEGER" property="branch" />
+    <id column="jan_new" jdbcType="VARCHAR" property="janNew" />
+    <result column="branch_num" jdbcType="INTEGER" property="branchNum" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, priority_order_cd, branch, jan_new, branch_num
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from priority.priority_order_branch_num
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      and branch = #{branch,jdbcType=INTEGER}
+      and jan_new = #{janNew,jdbcType=VARCHAR}
+  </select>
+    <select id="checkJanNew" resultType="java.lang.String">
+
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from priority.priority_order_branch_num
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderBranchNum">
+    insert into priority.priority_order_branch_num (company_cd, priority_order_cd, branch,
+      jan_new, branch_num)
+    values (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{branch,jdbcType=INTEGER},
+      #{janNew,jdbcType=VARCHAR}, #{branchNum,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderBranchNum">
+    insert into priority.priority_order_branch_num
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        company_cd,
+      </if>
+      <if test="priorityOrderCd != null">
+        priority_order_cd,
+      </if>
+      <if test="branch != null">
+        branch,
+      </if>
+      <if test="janNew != null">
+        jan_new,
+      </if>
+      <if test="branchNum != null">
+        branch_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        #{companyCd,jdbcType=VARCHAR},
+      </if>
+      <if test="priorityOrderCd != null">
+        #{priorityOrderCd,jdbcType=INTEGER},
+      </if>
+      <if test="branch != null">
+        #{branch,jdbcType=INTEGER},
+      </if>
+      <if test="janNew != null">
+        #{janNew,jdbcType=VARCHAR},
+      </if>
+      <if test="branchNum != null">
+        #{branchNum,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderBranchNum">
+    update priority.priority_order_branch_num
+    <set>
+      <if test="branchNum != null">
+        branch_num = #{branchNum,jdbcType=INTEGER},
+      </if>
+    </set>
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      and branch = #{branch,jdbcType=INTEGER}
+      and jan_new = #{janNew,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.PriorityOrderBranchNum">
+    update priority.priority_order_branch_num
+    set branch_num = #{branchNum,jdbcType=INTEGER}
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      and branch = #{branch,jdbcType=INTEGER}
+      and jan_new = #{janNew,jdbcType=VARCHAR}
+  </update>
+</mapper>

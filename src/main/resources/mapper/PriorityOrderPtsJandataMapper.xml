@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderPtsJandataMapper">
+    <insert id="insert">
+        insert into priority.priority_order_pts_jandata(company_cd,priority_order_cd,jan_cd,tai_cd,tana_cd,tanaposition_cd)
+        values
+        <foreach collection="list" item="item" separator="," >
+            (#{item.companyCd},#{item.priorityOrderCd},#{item.jan},#{item.taiCd},#{item.tanaCd},#{item.tanapositionCd})
+        </foreach>
+    </insert>
+    <insert id="insertNewJan">
+        insert into priority.priority_order_pts_jandata(company_cd,priority_order_cd,jan_cd,tai_cd,tana_cd,tanaposition_cd,flg)
+        values
+        <foreach collection="list" item="item" separator="," >
+            (#{item.companyCd},#{item.priorityOrderCd},#{item.jan},#{item.taiCd},#{item.tanaCd},#{item.tanapositionCd}, -1)
+        </foreach>
+    </insert>
+    <delete id="delete">
+        delete from priority.priority_order_pts_jandata where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </delete>
+    <select id="selectPtsJanCount" resultType="int">
+        select sum(CASE concat(tai_cd, tana_cd, jan_cd)
+        <foreach collection="ptsJanList" item="obj">
+            WHEN concat(#{obj.taiCd},#{obj.tanaCd},trim(#{obj.jan})) THEN 1
+        </foreach>
+        else 0 end) num
+        from priority.priority_order_pts_jandata
+        where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
+    </select>
+    <update id="updatePtsJanRank">
+        update priority.priority_order_pts_jandata
+        <set>
+            rank=
+            CASE jan_cd
+            <foreach collection="ptsJanList" item="obj">
+                WHEN trim(#{obj.jan}) THEN #{obj.tanapositionCd}
+            </foreach>
+            ELSE rank END
+        </set>
+        <where>
+            company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
+        </where>
+    </update>
+    <select id="selectJanRank" resultType="com.trechina.planocycle.entity.dto.DownloadDto">
+        select jan_new jan, ROW_NUMBER() OVER(PARTITION by
+        <foreach collection="sortList" item="obj" separator=",">${obj}</foreach>
+         order by case "orderdata".rank when -1 then -1 else 0 end,jandata.rank,rank_prop, "orderdata".rank) rank
+        from ${tableName} "orderdata" inner join
+        priority.priority_order_pts_jandata jandata on jandata.jan_cd="orderdata".jan_new
+        where jandata.company_cd=#{companyCd} and jandata.priority_order_cd=#{priorityOrderCd} and flg!=99999999;
+    </select>
+    <select id="selectSavedJanRank" resultType="com.trechina.planocycle.entity.dto.DownloadDto">
+        select jan_new jan, ROW_NUMBER() OVER(PARTITION by
+        <foreach collection="sortList" item="obj" separator=",">${obj}</foreach>
+        order by jandata.rank,rank_prop, "orderdata".rank) rank
+        from priority.priority_order_result_data "orderdata" inner join
+        priority.priority_order_pts_jandata jandata on jandata.jan_cd="orderdata".jan_new and jandata.company_cd="orderdata".company_cd
+        and jandata.priority_order_cd="orderdata".priority_order_cd
+        where orderdata.company_cd=#{companyCd} and orderdata.priority_order_cd=#{priorityOrderCd};
+    </select>
+    <update id="updateRankUpd">
+        update ${tableName}
+        set rank_upd=
+        CASE jan_new
+        <foreach collection="ptsJanList" item="obj">
+            WHEN trim(#{obj.jan}) THEN #{obj.rank}
+        </foreach>
+        ELSE rank_upd END
+        where rank_upd != 99999999
+    </update>
+    <update id="updateAttr">
+        update ${tableName}
+        set
+        ${attr1}=CASE jan_new
+        <foreach collection="ptsJanList" item="obj">
+            WHEN trim(#{obj.jan}) THEN #{obj.attr1}
+        </foreach>
+        ELSE ${attr1} END,
+        ${attr2}=CASE jan_new
+        <foreach collection="ptsJanList" item="obj">
+            WHEN trim(#{obj.jan}) THEN #{obj.attr2}
+        </foreach>
+        ELSE ${attr2} END
+    </update>
+    <update id="updateSavedRankUpd">
+        update priority.priority_order_result_data
+        set rank_upd=
+        CASE jan_new
+        <foreach collection="ptsJanList" item="obj">
+            WHEN trim(#{obj.jan}) THEN #{obj.rank}
+        </foreach>
+        ELSE rank_upd END
+        where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd};
+    </update>
+    <select id="selectCutJan" resultType="com.trechina.planocycle.entity.dto.DownloadDto">
+        select jan_cd jan, tai_cd, tana_cd,tanaposition_cd from priority.priority_order_pts_jandata
+        where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd} and flg != 99999999
+        and jan_cd not in
+        <foreach collection="ptsJanList" item="obj" open="(" close=")" separator=",">
+            #{obj.jan}
+        </foreach>
+    </select>
+    <select id="selectNewJan" resultType="com.trechina.planocycle.entity.dto.DownloadDto">
+        select tmp.jan_cd jan, classify.attr1 , classify.attr2,tmp.tanaposition_cd,#{companyCd} company_cd,#{priorityOrderCd} priority_order_cd,
+               tmp.tai_cd tai_cd, tmp.tana_cd tana_cd
+         from (select * from priority.priority_order_pts_jandata jandata where flg != 99999999 and priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}) jandata
+        right join(
+        <foreach collection="ptsJanList" item="obj" open="(" close=")" separator="union all">
+            select #{obj.jan} jan_cd,#{obj.taiCd} tai_cd,#{obj.tanaCd} tana_cd,#{obj.tanapositionCd} tanaposition_cd
+        </foreach>
+        ) tmp on jandata.jan_cd=tmp.jan_cd
+        inner join (select * from priority.work_priority_order_attribute_classify where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd} ) classify
+            on classify.tai_cd=tmp.tai_cd and classify.tana_cd=tmp.tana_cd
+        where jandata.jan_cd is null
+    </select>
+    <delete id="deleteByJan">
+        delete from priority.priority_order_pts_jandata
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+        and jan_cd in
+        <foreach collection="cutJanList" item="obj" open="(" close=")" separator=",">
+            #{obj.jan}
+        </foreach>
+    </delete>
+    <update id="updateCutByJan">
+        update priority.priority_order_pts_jandata
+        set flg=99999999
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+        and jan_cd in
+        <foreach collection="cutJanList" item="obj" open="(" close=")" separator=",">
+            #{obj.jan}
+        </foreach>
+    </update>
+</mapper>
