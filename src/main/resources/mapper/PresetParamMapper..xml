@@ -11,4 +11,8 @@
   <delete id="deleteByAuthorCd">
     delete from planocycle.preset_param where author_cd=#{authorCd}
   </delete>
+  <select id="getPresetParam" resultType="string">
+    select item_cd from planocycle.preset_param
+    where author_cd=#{authorCd}
+  </select>
 </mapper>
