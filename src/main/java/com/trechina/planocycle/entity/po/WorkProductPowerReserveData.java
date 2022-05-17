@@ -8,6 +8,7 @@ public class WorkProductPowerReserveData {
     private Integer dataCd;
     private String jan;
     private BigDecimal dataValue;
+    private Integer productPowerCd;
 
     public String getCompanyCd() {
         return companyCd;
@@ -47,5 +48,13 @@ public class WorkProductPowerReserveData {
 
     public void setDataValue(BigDecimal dataValue) {
         this.dataValue = dataValue;
+    }
+
+    public Integer getProductPowerCd() {
+        return productPowerCd;
+    }
+
+    public void setProductPowerCd(Integer productPowerCd) {
+        this.productPowerCd = productPowerCd;
     }
 }

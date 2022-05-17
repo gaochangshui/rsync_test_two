@@ -1,6 +1,5 @@
 package com.trechina.planocycle.mapper;
 
-import com.trechina.planocycle.entity.dto.ProductPowerGroupDataForCgiDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.entity.vo.ReserveMstVo;
@@ -40,11 +39,11 @@ public interface ProductPowerDataMapper {
                                              String[] customerCd, List<String> prepareCd, String[] intageCd);
 
     //テンポラリ・テーブルyobilitemとdata
-    int deleteWKYobiiiternCd(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("valueCd") Integer valueCd);
+    int deleteWKYobiiiternCd(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("valueCd") Integer valueCd, @Param("productPowerCd") Integer productPowerCd);
 
     int deleteWKYobiiitern(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
-    int deleteWKYobiiiternDataCd(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("valueCd") Integer valueCd);
+    int deleteWKYobiiiternDataCd(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("valueCd") Integer valueCd,@Param("productPowerCd") Integer productPowerCd);
 
     int deleteWKYobiiiternData(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
@@ -54,9 +53,9 @@ public interface ProductPowerDataMapper {
     List<WKYobiiiternData> selectWKYobiiiternData(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
 
     //smartデータをテンポラリ・テーブルに保存
-    Integer getWKYobiiiternSort(@Param("companyCd") String companyCd, @Param("aud") String aud);
+    Integer getWKYobiiiternSort(@Param("companyCd") String companyCd, @Param("aud") String aud,@Param("productPowerCd")Integer productPowerCd);
 
-    int insertYobilitem(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("dataCd") Integer valueCd, @Param("itemName") String itemName, @Param("dataSort") Integer dataSort);
+    int insertYobilitem(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("dataCd") Integer valueCd, @Param("itemName") String itemName, @Param("dataSort") Integer dataSort,@Param("productPowerCd")Integer productPowerCd);
 
     int insertYobilitemData(@Param("dataList") List<WorkProductPowerReserveData> dataList);
 
@@ -146,7 +145,7 @@ public interface ProductPowerDataMapper {
 
     ProductPowerParamVo getParam(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
-    Integer getParamCount(ProductPowerGroupDataForCgiDto productPowerParamVo);
+    Integer getParamCount(Map<String,Object> map);
 
     List<ReserveMstVo> getReserve(@Param("productPowerCd") Integer productPowerCd, @Param("companyCd") String companyCd);
 

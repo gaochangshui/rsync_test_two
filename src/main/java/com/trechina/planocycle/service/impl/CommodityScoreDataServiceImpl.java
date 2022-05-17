@@ -110,7 +110,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      */
     @Override
     public Map<String, Object> getCommodityScoreTaskId( Map<String,Object> map) {
-
+        Integer paramCount = productPowerDataMapper.getParamCount(map);
+        if (paramCount >0){
+            map.put("changFlag","1");
+        }else {
+            map.put("changFlag","0");
+        }
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = map.get("company").toString();

@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -215,7 +214,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    private List<WorkProductPowerReserveData> dataFormat(List<String[]> datas, String companyCd, Integer dataCd) {
+    private List<WorkProductPowerReserveData> dataFormat(List<String[]> datas, String companyCd, Integer dataCd,Integer productPowerCd) {
         String authorCd = session.getAttribute("aud").toString();
         List<WorkProductPowerReserveData> result = new ArrayList<>();
         WorkProductPowerReserveData reserveData = null;
@@ -224,6 +223,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             String[] data = datas.get(i);
             reserveData = new WorkProductPowerReserveData();
             reserveData.setCompanyCd(companyCd);
+            reserveData.setProductPowerCd(productPowerCd);
             reserveData.setDataCd(dataCd);
             reserveData.setAuthorCd(authorCd);
             reserveData.setJan(data[0]);
@@ -235,26 +235,26 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd,String dataName,Integer valueCd) {
+    public Map<String, Object> saveYoBi(List<String[]> data, String companyCd, Integer productPowerCd,String dataName,Integer valueCd) {
         //
         String aud = session.getAttribute("aud").toString();
-        Integer sortMax = productPowerDataMapper.getWKYobiiiternSort(companyCd, aud);
+        Integer sortMax = productPowerDataMapper.getWKYobiiiternSort(companyCd, aud,productPowerCd);
         if (sortMax==null){
             sortMax = 1;
         }else {
             sortMax +=1;
         }
 
-        productPowerDataMapper.insertYobilitem(companyCd,aud,valueCd,dataName,sortMax);
+        productPowerDataMapper.insertYobilitem(companyCd,aud,valueCd,dataName,sortMax,productPowerCd);
         if (data==null){
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
-        List<WorkProductPowerReserveData> dataList = dataFormat(data, companyCd, valueCd);
+        List<WorkProductPowerReserveData> dataList = dataFormat(data, companyCd, valueCd,productPowerCd);
         if (dataList.isEmpty()) {
             logger.info("csv文件中没有数据");
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
-        productPowerDataMapper.deleteWKYobiiiternDataCd(aud,companyCd,valueCd);
+        productPowerDataMapper.deleteWKYobiiiternDataCd(aud,companyCd,valueCd,productPowerCd);
         productPowerDataMapper.insertYobilitemData(dataList);
         return ResultMaps.result(ResultEnum.SUCCESS);
 
@@ -266,7 +266,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      * @return
      */
     @Override
-    public Map<String, Object> rankCalculate(Map<String,Object> map) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Map<String, Object> rankCalculate(Map<String,Object> map) {
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = map.get("companyCd").toString();
         Integer productPowerCd = Integer.valueOf(map.get("productPowerCd").toString());
@@ -293,8 +293,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         String aud = session.getAttribute("aud").toString();
         String companyCd = String.valueOf(((Map) jsonObject.get("param")).get("companyCd"));
         Integer valueCd = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("valueCd")));
-        productPowerDataMapper.deleteWKYobiiiternCd(aud,companyCd,valueCd);
-        productPowerDataMapper.deleteWKYobiiiternDataCd(aud,companyCd,valueCd);
+        Integer productPowerCd = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("productPowerCd")));
+        productPowerDataMapper.deleteWKYobiiiternCd(aud,companyCd,valueCd,productPowerCd);
+        productPowerDataMapper.deleteWKYobiiiternDataCd(aud,companyCd,valueCd,productPowerCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

@@ -5,7 +5,6 @@ import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerReserveMst;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -46,18 +45,18 @@ public interface CommodityScoreParaService {
      * プロジェクトのアップロードをデータベースに保存する
      * @param data
      * @param companyCd
-     * @param dataCd
+     * @param productPowerCd
      * @param dataName
      * @param valueCd
      * @return
      */
-    Map<String, Object> saveYoBi(List<String[]> data, String companyCd, String dataCd, String dataName, Integer valueCd);
+    Map<String, Object> saveYoBi(List<String[]> data, String companyCd, Integer productPowerCd, String dataName, Integer valueCd);
     /**
      * rank計算
      * @param
      * @return
      */
-    Map<String,Object>  rankCalculate( Map<String,Object> map) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    Map<String,Object>  rankCalculate( Map<String,Object> map);
 
     /**
      * reserveの削除

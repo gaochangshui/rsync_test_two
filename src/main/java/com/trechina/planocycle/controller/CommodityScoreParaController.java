@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -62,15 +61,15 @@ public class CommodityScoreParaController {
      * プロジェクトのアップロードをデータベースに保存する
      * @param multipartFile
      * @param companyCd
-     * @param dataCd
+     * @param productPowerCd
      * @param dataName
      * @param valueCd
      * @return
      */
     @PostMapping("/yobi")
-    public Map<String, Object> updateYobi(@RequestParam(value = "file",required = false) MultipartFile multipartFile, @RequestParam("companyCd") String companyCd, @RequestParam("dataCd") String dataCd, @RequestParam("dataName")String dataName, @RequestParam("valueCd")Integer valueCd) {
+    public Map<String, Object> updateYobi(@RequestParam(value = "file",required = false) MultipartFile multipartFile, @RequestParam("companyCd") String companyCd, @RequestParam("dataCd") Integer productPowerCd, @RequestParam("dataName")String dataName, @RequestParam("valueCd")Integer valueCd) {
         List<String[]> csvData = filesOperationService.uploadCsvToList(multipartFile);
-        return commodityScoreParaService.saveYoBi(csvData, companyCd, dataCd,dataName,valueCd);
+        return commodityScoreParaService.saveYoBi(csvData, companyCd, productPowerCd,dataName,valueCd);
     }
 
     /**
@@ -88,7 +87,7 @@ public class CommodityScoreParaController {
      * 計算rank
      */
     @PostMapping("rankCalculate")
-    public Map<String,Object> rankCalculate(@RequestBody Map<String,Object> map) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public Map<String,Object> rankCalculate(@RequestBody Map<String,Object> map) {
 
         return commodityScoreParaService.rankCalculate(map);
     }
