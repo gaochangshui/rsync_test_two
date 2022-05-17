@@ -257,7 +257,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
                     rank.add(rankName);
 
                     List<String> customerRankColumn = columnsByClassify.get(paramTypeRank);
-                    customerRankColumn.add(rankName);
+                    customerRankColumn.add(String.format("%s_rank", paramConfigVO.getItemCd()));
                 }
             }
         }
