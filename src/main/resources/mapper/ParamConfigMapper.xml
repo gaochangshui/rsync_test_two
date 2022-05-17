@@ -15,7 +15,7 @@
     order by item_value
   </select>
   <select id="selectParamConfigByCd" resultType="com.trechina.planocycle.entity.vo.ParamConfigVO">
-    select item_cd,item_value,item_name from planocycle.param_config config
+    select item_cd,item_value,concat(item_type,'-',item_name) as item_name  from planocycle.param_config config
     <where>
       flag=0 and item_cd in
         <foreach collection="cdList" item="item" open="(" close=")" separator=",">

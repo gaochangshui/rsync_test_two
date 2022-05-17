@@ -168,4 +168,6 @@ public interface ProductPowerDataMapper {
     List<String> getShowItemCd(@Param("list") List<String> cdList);
 
 
+    List<String> getYobi(String companyCd, Integer productPowerCd, String authorCd);
+    List<Map<String,Object>> getYobiHeader(String companyCd, Integer productPowerCd, String authorCd);
 }

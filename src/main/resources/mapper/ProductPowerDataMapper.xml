@@ -347,15 +347,15 @@
 
     </insert>
     <insert id="setWkYobilitemDataForFinally">
-        insert into planocycle.work_product_power_reserve_data(company_cd,author_cd,data_cd,jan,data_value)
-        select company_cd,#{authorCd},data_cd,jan,data_value
+        insert into planocycle.work_product_power_reserve_data(company_cd,author_cd,data_cd,jan,data_value,product_power_cd)
+        select company_cd,#{authorCd},data_cd,jan,data_value,product_power_cd
         from planocycle.product_power_reserve_data
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
     </insert>
     <insert id="setWkYobilitemForFinally">
-        insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort)
-        select company_cd,#{authorCd},data_cd,data_name,data_sort
+        insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort,product_power_cd)
+        select company_cd,#{authorCd},data_cd,data_name,data_sort,product_power_cd
         from planocycle.product_power_reserve_mst
          where company_cd = #{companyCd,jdbcType=VARCHAR}
                  and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
@@ -666,7 +666,7 @@
     <select id="getAllDataItem" resultType="java.util.LinkedHashMap">
         select datas.jan,
         <foreach collection="list" item="item" separator=",">
-            datas.${item}
+            coalesce(datas.${item},'0') as ${item}
         </foreach>
         from planocycle.product_power_mst_data datas
         left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
@@ -678,12 +678,42 @@
         <foreach collection="list" item="item" separator=",">
             datas."${item}_rank"
         </foreach>
+
         ,rank_result
         from planocycle.product_power_mst_data datas
         left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
         where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
         order by rank_result asc
     </select>
+    <select id="getYobi" resultType="java.lang.String">
+        select case data_cd when 31001 then 'item1'
+                            when 31002 then 'item2'
+                            when 31003 then 'item3'
+                            when 31004 then 'item4'
+                            when 31005 then 'item5'
+                            when 31006 then 'item6'
+                            when 31007 then 'item7'
+                            when 31008 then 'item8'
+                            when 31009 then 'item9'
+                            when 31010 then 'item10' end
+        from planocycle.work_product_power_reserve_mst
+        where company_cd = #{companyCd} and product_power_cd = #{productPowerCd} and author_cd = #{authorCd}
+    </select>
+    <select id="getYobiHeader" resultType="java.util.Map">
+        select case data_cd when 31001 then 'item1'
+                            when 31002 then 'item2'
+                            when 31003 then 'item3'
+                            when 31004 then 'item4'
+                            when 31005 then 'item5'
+                            when 31006 then 'item6'
+                            when 31007 then 'item7'
+                            when 31008 then 'item8'
+                            when 31009 then 'item9'
+                            when 31010 then 'item10' end as col,data_name as val
+        from planocycle.work_product_power_reserve_mst
+        where company_cd = #{companyCd} and product_power_cd = #{productPowerCd} and author_cd = #{authorCd}
+    </select>
+
 
     <insert id="selectWKKIntager">
         insert into planocycle.work_product_power_intage(company_cd,product_power_cd,jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,

@@ -271,8 +271,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud);
 
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
-
-        List<String> cdList = Arrays.asList(param.getProject().split(","));
+        List<String> cdList = new ArrayList<>();
+         cdList.addAll(Arrays.asList(param.getProject().split(",")));
+        List<String> yobi = productPowerDataMapper.getYobi(companyCd, productPowerNo, aud);
+        cdList.addAll(yobi);
         String coreCompany = sysConfigMapper.selectSycConfig("core_company");
         JSONObject jsonObject = JSONObject.parseObject(param.getCommonPartsData());
         String prodMstClass = jsonObject.get("prodMstClass").toString();
@@ -299,6 +301,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         List<ParamConfigVO> paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
         LinkedHashMap<String, Object> colName = paramConfigVOS.stream()
                 .collect(Collectors.toMap(ParamConfigVO::getItemCd, ParamConfigVO::getItemName, (key1, key2) -> key1, LinkedHashMap::new));
+        List<Map<String, Object>> yobiHeader = productPowerDataMapper.getYobiHeader(companyCd, productPowerNo, aud);
+        for (Map<String, Object> map : yobiHeader) {
+            colName.put((String) map.get("col"),map.get("val"));
+        }
         returnDataItem.add(colName);
         returnDataItem.addAll(allDataItem);
         List<LinkedHashMap<String, Object>> allDataRank = productPowerDataMapper.getAllDataRank(companyCd, productPowerNo, cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName);
