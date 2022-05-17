@@ -302,7 +302,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         returnDataItem.add(colName);
         returnDataItem.addAll(allDataItem);
         List<LinkedHashMap<String, Object>> allDataRank = productPowerDataMapper.getAllDataRank(companyCd, productPowerNo, cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName);
-        returnDataAttr.addAll(allDataRank);
         ProductPowerParam powerParam = new ProductPowerParam();
         JSONObject jsonObject1 = JSON.parseObject(param.getCustomerCondition());
 
