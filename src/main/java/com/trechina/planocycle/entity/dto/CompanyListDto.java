@@ -1,10 +1,16 @@
 package com.trechina.planocycle.entity.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CompanyListDto {
+    @JsonProperty(value = "F1",required = true)
     private String F1 ;
+    @JsonProperty("F2")
     private String F2 ;
+    @JsonProperty("F3")
     private String F3 ;
+    @JsonProperty("F4")
     private String F4 ;
 
     public String getF1() {
