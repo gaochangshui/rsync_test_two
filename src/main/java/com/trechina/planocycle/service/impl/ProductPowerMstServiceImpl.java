@@ -162,6 +162,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
         List<ParamConfigVO> paramList = paramConfigMapper.selectParamConfig();
         Map<String, List<ParamConfigVO>> paramListByGroup = paramList.stream()
+                .peek(config-> config.setItemName(config.getItemType()+config.getItemName()))
                 .collect(Collectors.groupingBy(paramParam -> paramParam.getItemCd().split("_")[0], LinkedHashMap::new, Collectors.toList()));
 
         List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
