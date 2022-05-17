@@ -2,13 +2,11 @@ package com.trechina.planocycle.service.impl;
 
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanReplace;
-import com.trechina.planocycle.entity.po.PriorityOrderJanCard;
 import com.trechina.planocycle.entity.po.PriorityOrderJanReplace;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanReplaceVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanReplaceService;
-import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.dataConverUtils;
 import org.slf4j.Logger;
@@ -38,7 +36,7 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
     @Autowired
     private ClassicPriorityOrderJanCardMapper priorityOrderJanCardMapper;
     @Autowired
-    private PriorityOrderCommodityNotMapper priorityOrderCommodityNotMapper;
+    private ClassicPriorityOrderCommodityNotMapper priorityOrderCommodityNotMapper;
     /**
      * 获取jan变的信息
      *

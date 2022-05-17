@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderCatepakAttributeMapper">
+<mapper namespace="com.trechina.planocycle.mapper.ClassicPriorityOrderCatepakAttributeMapper">
   <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderCatepakAttribute">
     <id column="attr_cd" jdbcType="INTEGER" property="attrCd" />
     <id column="catepak_cd" jdbcType="INTEGER" property="catepakCd" />

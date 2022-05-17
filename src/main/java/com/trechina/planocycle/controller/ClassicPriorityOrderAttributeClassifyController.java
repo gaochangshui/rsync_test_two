@@ -2,7 +2,7 @@ package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.dto.DownloadSortDto;
 import com.trechina.planocycle.entity.po.PriorityOrderAttributeClassify;
-import com.trechina.planocycle.service.PriorityOrderAttributeClassifyService;
+import com.trechina.planocycle.service.ClassicPriorityOrderAttributeClassifyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,9 +14,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/priority/PriorityOrderAttributeClassify")
-public class PriorityOrderAttributeClassifyController {
+public class ClassicPriorityOrderAttributeClassifyController {
     @Autowired
-    private PriorityOrderAttributeClassifyService priorityOrderAttributeClassifyService;
+    private ClassicPriorityOrderAttributeClassifyService priorityOrderAttributeClassifyService;
     @PostMapping("/getClassifyList")
     public Map<String,Object> getClassifyList(@RequestBody DownloadSortDto downloadSortDto){
         return priorityOrderAttributeClassifyService.getClassifyList(downloadSortDto);

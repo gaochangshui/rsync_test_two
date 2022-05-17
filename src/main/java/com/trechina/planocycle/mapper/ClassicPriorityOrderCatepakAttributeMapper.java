@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 @Mapper
-public interface PriorityOrderCatepakAttributeMapper {
+public interface ClassicPriorityOrderCatepakAttributeMapper {
     int deleteByPrimaryKey(String companyCd, Integer priorityOrderCd);
 
     int deleteFinalByPrimaryKey(String companyCd, Integer priorityOrderCd);

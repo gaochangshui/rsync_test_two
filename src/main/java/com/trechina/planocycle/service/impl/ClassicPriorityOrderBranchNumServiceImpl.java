@@ -2,21 +2,15 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
+import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
-import com.trechina.planocycle.entity.po.PriorityOrderJanCard;
 import com.trechina.planocycle.entity.vo.PriorityOrderCommodityVO;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.ClassicPriorityOrderJanCardMapper;
-import com.trechina.planocycle.mapper.PriorityOrderBranchNumMapper;
-import com.trechina.planocycle.mapper.PriorityOrderCommodityMustMapper;
-import com.trechina.planocycle.mapper.PriorityOrderCommodityNotMapper;
-import com.trechina.planocycle.mapper.PriorityOrderJanCardMapper;
+import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.service.ClassicPriorityOrderBranchNumService;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanReplaceService;
-import com.trechina.planocycle.service.PriorityOrderBranchNumService;
-import com.trechina.planocycle.service.PriorityOrderDataService;
-import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
 import com.trechina.planocycle.utils.dataConverUtils;
@@ -27,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,13 +30,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Autowired
     private HttpSession session;
     @Autowired
-    private PriorityOrderCommodityMustMapper priorityOrderCommodityMustMapper;
+    private ClassicPriorityOrderCommodityMustMapper priorityOrderCommodityMustMapper;
     @Autowired
-    private PriorityOrderCommodityNotMapper priorityOrderCommodityNotMapper;
+    private ClassicPriorityOrderCommodityNotMapper priorityOrderCommodityNotMapper;
     @Autowired
     private ClassicPriorityOrderJanReplaceService priorityOrderJanReplaceService;
     @Autowired
-    private PriorityOrderBranchNumMapper priorityOrderBranchNumMapper;
+    private ClassicPriorityOrderBranchNumMapper priorityOrderBranchNumMapper;
     @Autowired
     private ClassicPriorityOrderJanCardMapper priorityOrderJanCardMapper;
     @Autowired
@@ -72,23 +65,18 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("调用priority_jan_storecnt的参数" + priorityOrderDataForCgiDto);
 
-        try {
-            String result = cgiUtil.postCgi(pathInfo, priorityOrderDataForCgiDto, tokenInfo);
-            logger.info("返回priority_jan_storecnt处理结果"+result);
-            String queryPath = resourceBundle.getString("TaskQuery");
-            // 带着taskid，再次请求cgi获取运行状态/数据
-            Map<String,Object> Data = cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-            logger.info("调用priority_jan_storecnt的结果" + Data);
-            JSONArray jsonArray = JSONArray.parseArray(String.valueOf(Data.get("data")));
-            logger.info("转json后："+jsonArray.toString());
-            if (jsonArray.size()>0){
-                priorityOrderCommodityMustMapper.deletePriorityBranchNum(companyCd,priorityOrderCd);
+        String result = cgiUtil.postCgi(pathInfo, priorityOrderDataForCgiDto, tokenInfo);
+        logger.info("返回priority_jan_storecnt处理结果"+result);
+        String queryPath = resourceBundle.getString("TaskQuery");
+        // 带着taskid，再次请求cgi获取运行状态/数据
+        Map<String,Object> Data = cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
+        logger.info("调用priority_jan_storecnt的结果" + Data);
+        JSONArray jsonArray = JSONArray.parseArray(String.valueOf(Data.get("data")));
+        logger.info("转json后："+jsonArray.toString());
+        if (jsonArray.size()>0){
+            priorityOrderCommodityMustMapper.deletePriorityBranchNum(companyCd,priorityOrderCd);
 
-                priorityOrderCommodityMustMapper.insertPriorityBranchNum(jsonArray,companyCd,priorityOrderCd);
-            }
-        } catch (IOException e) {
-            logger.info("报错:"+e);
-            return ResultMaps.result(ResultEnum.FAILURE);
+            priorityOrderCommodityMustMapper.insertPriorityBranchNum(jsonArray,companyCd,priorityOrderCd);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
@@ -283,8 +271,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Override
     public Map<String, Object> checkIsJanCommodityNot(List<PriorityOrderCommodityNot> priorityOrderCommodityNot) {
 
-        List<PriorityOrderJanCard> priorityOrderJanCard = priorityOrderCommodityNot.stream().map(item -> {
-            PriorityOrderJanCard priorityOrderJanCard1 = new PriorityOrderJanCard();
+        List<ClassicPriorityOrderJanCard> priorityOrderJanCard = priorityOrderCommodityNot.stream().map(item -> {
+            ClassicPriorityOrderJanCard priorityOrderJanCard1 = new ClassicPriorityOrderJanCard();
             priorityOrderJanCard1.setJanOld(item.getJan());
             priorityOrderJanCard1.setCompanyCd(item.getCompanyCd());
             priorityOrderJanCard1.setPriorityOrderCd(item.getPriorityOrderCd());

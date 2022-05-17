@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 @Mapper
-public interface PriorityOrderCommodityMustMapper {
+public interface ClassicPriorityOrderCommodityMustMapper {
     int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     int insert(@Param("lists") List<PriorityOrderCommodityMust> record);

@@ -5,9 +5,9 @@ import com.trechina.planocycle.entity.po.PriorityOrderCatepak;
 import com.trechina.planocycle.entity.po.PriorityOrderCatepakAttribute;
 import com.trechina.planocycle.entity.vo.PriorityOrderCatePakVO;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.PriorityOrderCatepakAttributeMapper;
+import com.trechina.planocycle.mapper.ClassicPriorityOrderCatepakAttributeMapper;
 import com.trechina.planocycle.mapper.PriorityOrderCatepakMapper;
-import com.trechina.planocycle.service.PriorityOrderCatePakService;
+import com.trechina.planocycle.service.ClassicPriorityOrderCatePakService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +19,14 @@ import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @Service
-public class PriorityOrderCatePakServiceImpl implements PriorityOrderCatePakService {
+public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOrderCatePakService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private HttpSession session;
     @Autowired
     private PriorityOrderCatepakMapper priorityOrderCatepakMapper;
     @Autowired
-    private PriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
+    private ClassicPriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
     /**
      * 获取カテパケ拡縮
      *

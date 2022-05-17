@@ -5,19 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.trechina.planocycle.entity.dto.ClassicPriorityOrderJanNewDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanNew;
 import com.trechina.planocycle.entity.po.Jans;
 import com.trechina.planocycle.entity.po.PriorityOrderJanAttribute;
-import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanNewVO;
-import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanNewService;
-import com.trechina.planocycle.service.PriorityOrderJanNewService;
-import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +37,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
     @Autowired
     private ClassicPriorityOrderDataMapper priorityOrderDataMapper;
     @Autowired
-    private PriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
+    private ClassicPriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
     @Autowired
     private ClassicPriorityOrderDataService priorityOrderDataService;
 

@@ -12,7 +12,6 @@ import com.google.gson.Gson;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanNewVO;
-import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -60,7 +59,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Autowired
     private ClassicPriorityOrderJanNewMapper priorityOrderJanNewMapper;
     @Autowired
-    private PriorityOrderCommodityNotMapper priorityOrderCommodityNotMapper;
+    private ClassicPriorityOrderCommodityNotMapper priorityOrderCommodityNotMapper;
     @Autowired
     private CommodityScoreMasterService commodityScoreMasterService;
     @Autowired
@@ -72,7 +71,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Autowired
     private ClassicPriorityOrderJanReplaceMapper priorityOrderJanReplaceMapper;
     @Autowired
-    private PriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
+    private ClassicPriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
     @Autowired
     private PriorityOrderCatepakMapper priorityOrderCatepakMapper;
     @Autowired
@@ -90,15 +89,15 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Autowired
     private ClassicPriorityOrderJanAttributeMapper priorityOrderJanAttributeMapper;
     @Autowired
-    private PriorityOrderAttributeClassifyService priorityOrderAttributeClassifyService;
+    private ClassicPriorityOrderAttributeClassifyService priorityOrderAttributeClassifyService;
     @Autowired
-    private PriorityOrderAttributeClassifyMapper priorityOrderClassifyMapper;
+    private ClaasicPriorityOrderAttributeClassifyMapper priorityOrderClassifyMapper;
     @Autowired
     private CacheUtil cacheUtil;
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
-    private PriorityOrderAttributeClassifyMapper priorityOrderMapper;
+    private ClaasicPriorityOrderAttributeClassifyMapper priorityOrderMapper;
     @Autowired
     private ProductPowerMstMapper productPowerMstMapper;
     @Autowired

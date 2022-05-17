@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 
 import java.util.Map;
 
-public interface PriorityOrderCatePakService {
+public interface ClassicPriorityOrderCatePakService {
     /**
      * 获取カテパケ拡縮
      * @param companyCd

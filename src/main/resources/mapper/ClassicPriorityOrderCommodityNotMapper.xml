@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderCommodityNotMapper">
+<mapper namespace="com.trechina.planocycle.mapper.ClassicPriorityOrderCommodityNotMapper">
   <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderCommodityNot">
     <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
     <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />

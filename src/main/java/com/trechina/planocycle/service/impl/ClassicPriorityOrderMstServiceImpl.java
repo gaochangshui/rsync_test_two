@@ -52,37 +52,35 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Autowired
     private ClassicPriorityOrderJanCardService priorityOrderJanCardService;
     @Autowired
-    private PriorityOrderCatePakService priorityOrderCatePakService;
+    private ClassicPriorityOrderCatePakService priorityOrderCatePakService;
     @Autowired
     private ClassicPriorityOrderJanProposalService priorityOrderJanProposalService;
     @Autowired
-    private PriorityOrderBranchNumService priorityOrderBranchNumService;
+    private ClassicPriorityOrderBranchNumService priorityOrderBranchNumService;
     @Autowired
-    private PriorityOrderJanAttributeMapper priorityOrderJanAttributeMapper;
+    private ClassicPriorityOrderJanAttributeMapper priorityOrderJanAttributeMapper;
     @Autowired
-    private PriorityOrderJanNewMapper priorityOrderJanNewMapper;
+    private ClassicPriorityOrderJanNewMapper priorityOrderJanNewMapper;
     @Autowired
-    private PriorityOrderJanCardMapper priorityOrderJanCardMapper;
+    private ClassicPriorityOrderJanCardMapper priorityOrderJanCardMapper;
     @Autowired
-    private PriorityOrderJanReplaceMapper priorityOrderJanReplaceMapper;
-    @Autowired
-    private PriorityOrderJanProposalMapper priorityOrderJanProposalMapper;
+    private ClassicPriorityOrderJanProposalMapper priorityOrderJanProposalMapper;
     @Autowired
     private PriorityOrderCatepakMapper priorityOrderCatepakMapper;
     @Autowired
-    private PriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
+    private ClassicPriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
     @Autowired
-    private PriorityOrderCommodityMustMapper priorityOrderCommodityMustMapper;
+    private ClassicPriorityOrderCommodityMustMapper priorityOrderCommodityMustMapper;
     @Autowired
-    private PriorityOrderCommodityNotMapper priorityOrderCommodityNotMapper;
+    private ClassicPriorityOrderCommodityNotMapper priorityOrderCommodityNotMapper;
     @Autowired
-    private PriorityOrderDataMapper priorityOrderDataMapper;
+    private ClassicPriorityOrderDataMapper priorityOrderDataMapper;
     @Autowired
-    private PriorityOrderResultDataMapper priorityOrderResultDataMapper;
+    private ClassicPriorityOrderResultDataMapper priorityOrderResultDataMapper;
     @Autowired
-    private PriorityOrderMstService priorityOrderMstService;
+    private ClassicPriorityOrderMstService priorityOrderMstService;
     @Autowired
-    private PriorityOrderAttributeClassifyMapper priorityOrderAttributeClassifyMapper;
+    private ClaasicPriorityOrderAttributeClassifyMapper priorityOrderAttributeClassifyMapper;
     @Autowired
     private cgiUtils cgiUtil;
     /**
@@ -286,21 +284,17 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("PriorityOrderData");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        try{
-            Map<String,Object> resultCgi = new HashMap<>();
-            //递归调用cgi，首先去taskid
+        Map<String,Object> resultCgi = new HashMap<>();
+        //递归调用cgi，首先去taskid
 
-            String result = cgiUtil.postCgi(path,priorityOrderDataForCgiDto,tokenInfo);
-            logger.info("taskId返回："+result);
-            String queryPath = resourceBundle.getString("TaskQuery");
-            //带着taskId，再次请求cgi获取运行状态/数据
-            resultCgi =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-            logger.info("保存优先顺位表结果："+resultCgi);
-            return resultCgi;
+        String result = cgiUtil.postCgi(path,priorityOrderDataForCgiDto,tokenInfo);
+        logger.info("taskId返回："+result);
+        String queryPath = resourceBundle.getString("TaskQuery");
+        //带着taskId，再次请求cgi获取运行状态/数据
+        resultCgi =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
+        logger.info("保存优先顺位表结果："+resultCgi);
+        return resultCgi;
 
-        } catch (IOException e) {
-            return null;
-        }
     }
 
 
@@ -389,19 +383,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         logger.info("获取处理完的pts出力参数:"+priorityOrderPtsDownDto);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         Map<String,Object> ptsPath = new HashMap<>();
-        try{
-            //递归调用cgi，首先去taskid
+        //递归调用cgi，首先去taskid
 
-            String result = cgiUtil.postCgi(path,priorityOrderPtsDownDto,tokenInfo);
-            logger.info("taskId返回："+result);
-            String queryPath = resourceBundle.getString("TaskQuery");
-            //带着taskId，再次请求cgi获取运行状态/数据
-            ptsPath =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-            logger.info("pts路径返回数据："+ptsPath);
+        String result = cgiUtil.postCgi(path,priorityOrderPtsDownDto,tokenInfo);
+        logger.info("taskId返回："+result);
+        String queryPath = resourceBundle.getString("TaskQuery");
+        //带着taskId，再次请求cgi获取运行状态/数据
+        ptsPath =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
+        logger.info("pts路径返回数据："+ptsPath);
 
-        } catch (IOException e) {
-            logger.info("报错:"+e);
-        }
         String filePath = ptsPath.get("data").toString();
         if (filePath.length()>1) {
             String[] fileName = filePath.split("/");
@@ -558,15 +548,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         //递归调用cgi，首先去taskid
 
         String resultJan = null;
-        try {
-            resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
-            logger.info("taskId返回：" + resultJan);
-            //带着taskId，再次请求cgi获取运行状态/数据
-            Map<String, Object> result = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
-            logger.info("删除smart优先顺位表信息："+result);
-        } catch (IOException e) {
-            logger.info("报错:"+e);
-        }
+        resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
+        logger.info("taskId返回：" + resultJan);
+        //带着taskId，再次请求cgi获取运行状态/数据
+        Map<String, Object> result = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
+        logger.info("删除smart优先顺位表信息："+result);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

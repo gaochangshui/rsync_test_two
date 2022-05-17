@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 @Mapper
-public interface PriorityOrderAttributeClassifyMapper {
+public interface ClaasicPriorityOrderAttributeClassifyMapper {
 
     List<PriorityOrderAttributeClassify> classifyList(@Param("tai") String tai, @Param("tana") String tana, @Param("tablename") String tablename);
 

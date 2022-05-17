@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.Map;
 
-public interface PriorityOrderAttributeClassifyService {
+public interface ClassicPriorityOrderAttributeClassifyService {
     /**
      * 获取jan所有属性的分类排序
      * @param downloadSortDto

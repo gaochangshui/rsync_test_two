@@ -3,8 +3,8 @@ package com.trechina.planocycle.service.impl;
 import com.trechina.planocycle.entity.dto.DownloadSortDto;
 import com.trechina.planocycle.entity.po.PriorityOrderAttributeClassify;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.PriorityOrderAttributeClassifyMapper;
-import com.trechina.planocycle.service.PriorityOrderAttributeClassifyService;
+import com.trechina.planocycle.mapper.ClaasicPriorityOrderAttributeClassifyMapper;
+import com.trechina.planocycle.service.ClassicPriorityOrderAttributeClassifyService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class PriorityOrderAttributeClassifyServiceImpl implements PriorityOrderAttributeClassifyService {
+public class ClassicPriorityOrderAttributeClassifyServiceImpl implements ClassicPriorityOrderAttributeClassifyService {
     @Autowired
     private HttpSession session;
     @Autowired
-    private PriorityOrderAttributeClassifyMapper priorityOrderAttributeClassifyMapper;
+    private ClaasicPriorityOrderAttributeClassifyMapper priorityOrderAttributeClassifyMapper;
 
     @Override
     public Map<String, Object> getClassifyList(DownloadSortDto downloadSortDto) {
