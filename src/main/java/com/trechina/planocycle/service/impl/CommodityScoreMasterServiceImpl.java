@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.CompanyListDto;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
-import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.po.ProductPowerMst;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerParamMst;
@@ -217,38 +216,24 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         String authorName = (String) session.getAttribute("aud");
         logger.info("参数はい:{}",productPowerParamMst);
         String uuid = UUID.randomUUID().toString();
-        //商品力点数mst表削除
-        productPowerMstMapper.delete(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd,authorName);
-      //パラメータ削除
-    productPowerParamMstMapper.deleteCommofityParam(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
-        //基本データ削除
-        productPowerDataMapper.deleteSyokika(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
-        //顧客グループ削除
-        productPowerDataMapper.deleteGroup(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
-         //予備項目Data削除
-        productPowerDataMapper.deleteYobiiitern(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
-        productPowerDataMapper.deleteYobiiiternData(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
-        //rankスプレッドシート削除
-        productPowerDataMapper.deleteRankData(productPowerParamMst.getConpanyCd(),productPowerParamMst.getProductPowerCd(),authorCd);
 
-
-        ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
-        productPowerDataForCgiDto.setMode("data_delete");
-        productPowerDataForCgiDto.setCompany(productPowerParamMst.getConpanyCd());
-        productPowerDataForCgiDto.setProductPowerNo(productPowerParamMst.getProductPowerCd());
-        productPowerDataForCgiDto.setGuid(uuid);
-
-
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("ProductPowerData");
-        String result = null;
-        result = cgiUtil.postCgi(path,productPowerDataForCgiDto,tokenInfo);
-        logger.info("taskid返回：{}",result);
-        String queryPath = resourceBundle.getString("TaskQuery");
-        // taskidを持って、再度cgiに運転状態/データの取得を要求する
-         cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
+        try {
+            //商品力点数mst表削除
+            productPowerMstMapper.delete(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd,authorName);
+            //パラメータ削除
+            productPowerParamMstMapper.deleteCommofityParam(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
+            //基本データ削除
+            productPowerDataMapper.deleteSyokika(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
+            //顧客グループ削除
+            productPowerDataMapper.deleteGroup(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
+            //予備項目Data削除
+            productPowerDataMapper.deleteYobiiitern(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
+            productPowerDataMapper.deleteYobiiiternData(productPowerParamMst.getConpanyCd(), productPowerParamMst.getProductPowerCd(),authorCd);
+            //rankスプレッドシート削除
+            productPowerDataMapper.deleteRankData(productPowerParamMst.getConpanyCd(),productPowerParamMst.getProductPowerCd(),authorCd);
+        } catch (Exception e) {
+            logger.error("削除に失敗しました");
+        }
         return true;
 
     }
