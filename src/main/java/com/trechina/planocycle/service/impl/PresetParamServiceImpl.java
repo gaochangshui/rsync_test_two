@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import com.trechina.planocycle.entity.po.PresetParam;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.PresetParamMapper;
 import com.trechina.planocycle.service.PresetParamService;
@@ -19,10 +20,11 @@ public class PresetParamServiceImpl implements PresetParamService {
     @Autowired
     private HttpSession session;
     @Override
-    public Map<String, Object> setPresetParam(String presetParam) {
+    public Map<String, Object> setPresetParam(PresetParam presetParam) {
         String authorCd = session.getAttribute("aud").toString();
         presetParamMapper.deleteByAuthorCd(authorCd);
-        presetParamMapper.insertPresetParam(authorCd, presetParam.split(","));
+        String presetParams = presetParam.getPresetParam();
+        presetParamMapper.insertPresetParam(authorCd, presetParams.split(","));
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

@@ -4,8 +4,8 @@
   <insert id="insertPresetParam">
     insert into planocycle.preset_param
     values
-    <foreach collection="presetParam" open="(" separator="," close="," item="item">
-      #{authorCd},#{item}
+    <foreach collection="presetParam" separator="," item="item">
+      (#{authorCd},#{item})
     </foreach>
   </insert>
   <delete id="deleteByAuthorCd">

@@ -1,11 +1,9 @@
 package com.trechina.planocycle.controller;
 
+import com.trechina.planocycle.entity.po.PresetParam;
 import com.trechina.planocycle.service.PresetParamService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -15,7 +13,7 @@ public class PresetParamController {
     @Autowired
     private PresetParamService presetParamService;
     @PostMapping("/setPresetParam")
-    public Map<String, Object> setPresetParam(String presetParam){
+    public Map<String, Object> setPresetParam(@RequestBody PresetParam presetParam){
         return presetParamService.setPresetParam(presetParam);
     }
 
