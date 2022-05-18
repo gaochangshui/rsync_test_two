@@ -21,6 +21,6 @@ public class SysConfigServiceImpl implements SysConfigService {
 
         String showJanSkuFlag = sysConfigMapper.selectSycConfig("show_jan_sku_flag");
         resultMap.put("showJanSkuFlag", showJanSkuFlag);
-        return ResultMaps.result(ResultEnum.SUCCESS, showJanSkuFlag);
+        return ResultMaps.result(ResultEnum.SUCCESS, resultMap);
     }
 }
