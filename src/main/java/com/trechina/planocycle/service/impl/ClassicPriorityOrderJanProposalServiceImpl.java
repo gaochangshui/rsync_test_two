@@ -60,16 +60,17 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
         logger.info("获取jan变提案list的返回值："+priorityOrderJanProposals);
         if(priorityOrderJanProposals.size()==0){
             // 如果没数据获取cgi数据
-            try {
-                janProposalData(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd);
+//            try {
+//                janProposalData(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd);
+                janProposalDataFromDB(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd);
 //                priorityOrderJanProposals = priorityOrderJanProposalMapper.selectByPrimaryKey(companyCd,priorityOrderCd);
                 String tableName = "\"1000\".prod_0000_jan_info";
                 priorityOrderJanProposals = priorityOrderJanProposalMapper.selectJanInfoByPrimaryKey(companyCd,priorityOrderCd,
                         tableName,"1", "2");
 
-            } catch (IOException e) {
-                logger.info("报错:"+e);
-            }
+//            } catch (IOException e) {
+//                logger.info("报错:"+e);
+//            }
         }
         logger.info("获取jan变提案list的返回值："+priorityOrderJanProposals);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanProposals);
