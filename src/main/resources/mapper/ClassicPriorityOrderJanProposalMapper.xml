@@ -32,6 +32,27 @@
     where pro.company_cd = #{companyCd,jdbcType=VARCHAR}
       and pro.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
+  <select id="selectJanInfoByPrimaryKey" parameterType="map" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanProposalVO">
+    select
+      pro.jan_old as janOld, pro.jan_new as janNew, jans."${janNameCol}" as janName, flag
+         ,case when rep.jan_old is not null then 'すでにJAN変商品として入力済みです。'
+               when rep1.jan_old is not null then 'すでにJAN変商品として入力済みです。'
+               when rep2.jan_old is not null then 'すでにJAN変商品として入力済みです。' end as errMsg
+    from priority.work_priority_order_jan_proposal pro
+           left join priority.priority_order_jan_replace as rep
+                     on pro.company_cd = rep.company_cd
+                       and pro.jan_old = rep.jan_old and pro.flag=1
+           left join priority.priority_order_jan_replace as rep1
+                     on pro.company_cd = rep1.company_cd
+                       and pro.jan_old = rep1.jan_new and pro.flag=1
+           left join priority.priority_order_jan_replace as rep2
+                     on pro.company_cd = rep2.company_cd
+                       and pro.jan_new = rep2.jan_old and pro.flag=1
+           left join ${tableName} jans
+                     on pro.jan_new = jans."${janCol}"
+    where pro.company_cd = #{companyCd,jdbcType=VARCHAR}
+      and pro.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority.work_priority_order_jan_proposal
     where company_cd = #{companyCd,jdbcType=VARCHAR}

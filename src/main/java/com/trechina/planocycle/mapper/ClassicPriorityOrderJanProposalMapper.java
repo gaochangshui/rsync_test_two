@@ -19,6 +19,8 @@ public interface ClassicPriorityOrderJanProposalMapper {
 
     List<PriorityOrderJanProposalVO> selectByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
+    List<PriorityOrderJanProposalVO> selectJanInfoByPrimaryKey(String companyCd, Integer priorityOrderCd, String tableName,
+                                                               String janCol, String janNameCol);
     int updateByPrimaryKey(@Param("lists") List<PriorityOrderJanProposal> record);
 
     /**

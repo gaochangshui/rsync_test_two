@@ -62,8 +62,11 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
             // 如果没数据获取cgi数据
             try {
                 janProposalData(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd);
-                priorityOrderJanProposals = priorityOrderJanProposalMapper.selectByPrimaryKey(companyCd,
-                        priorityOrderCd);
+//                priorityOrderJanProposals = priorityOrderJanProposalMapper.selectByPrimaryKey(companyCd,priorityOrderCd);
+                String tableName = "\"1000\".prod_0000_jan_info";
+                priorityOrderJanProposals = priorityOrderJanProposalMapper.selectJanInfoByPrimaryKey(companyCd,priorityOrderCd,
+                        tableName,"1", "2");
+
             } catch (IOException e) {
                 logger.info("报错:"+e);
             }
