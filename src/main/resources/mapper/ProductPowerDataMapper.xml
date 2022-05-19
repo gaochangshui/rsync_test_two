@@ -730,5 +730,15 @@
         </foreach>
 
     </insert>
-
+    <select id="selectSameNameJan" resultType="com.trechina.planocycle.entity.po.PriorityOrderJanProposal">
+        select t1.jan as janOld,t2.jan janNew from
+        (select distinct jan, janinfo."${janNameCol}" jan_name, janinfo."${janCol}" jan from ${tableName} janinfo
+        inner join planocycle.shelf_pts_data_jandata jandata on janinfo."${janCol}" = jandata.jan
+         where jandata.pts_cd=#{ptsCd}) t1
+        inner join
+        (select distinct jan, janinfo."${janNameCol}" jan_name, janinfo."${janCol}" jan from ${tableName} janinfo
+        inner join planocycle.product_power_mst_data powermst on janinfo."${janCol}"=powermst.jan
+        where powermst.product_power_cd=#{productPowerNo}) t2 on t2."${janNameCol}" = t1."${janNameCol}"
+        where t1."${janCol}"!=t2."${janCol}";
+    </select>
 </mapper>

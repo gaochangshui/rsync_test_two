@@ -2,6 +2,7 @@ package com.trechina.planocycle.mapper;
 
 import com.alibaba.fastjson.JSONArray;
 import com.trechina.planocycle.entity.po.PriorityOrderJanProposal;
+import com.trechina.planocycle.entity.po.PriorityOrderRestrictSet;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanProposalVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
