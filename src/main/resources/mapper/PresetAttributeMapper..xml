@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PresetAttributeMapper">
+  <insert id="insertPresetAttribute">
+    insert into priority.preset_attribute
+    values
+    <foreach collection="attributeMap" separator="," item="item">
+      (#{authorCd},#{item.attrCd}.#{item.attrName})
+    </foreach>
+  </insert>
+  <delete id="deleteByAuthorCd">
+    delete from priority.preset_attribute where author_cd=#{authorCd}
+  </delete>
+  <select id="getPresetAttribute" resultType="com.trechina.planocycle.entity.po.PresetAttribute">
+    select attr_cd, name attrName from priority.preset_attribute attribute
+    inner join planocycle.priority_order_mst_attrsort attrsort on attribute.attr_cd=attrsort.cd
+    where author_cd=#{authorCd}
+  </select>
+</mapper>
