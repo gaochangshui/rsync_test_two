@@ -15,7 +15,7 @@ public class SysConfigController {
     private SysConfigService sysConfigService;
 
     @GetMapping("/getShowJanSku")
-    public Map<String, Object> getShowJanSku(){
-        return sysConfigService.getShowJanSku();
+    public Map<String, Object> getShowJanSku(String companyCd,String commonPartsData){
+        return sysConfigService.getShowJanSku(companyCd,commonPartsData);
     }
 }
