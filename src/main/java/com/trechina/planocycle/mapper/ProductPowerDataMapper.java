@@ -155,7 +155,8 @@ public interface ProductPowerDataMapper {
     List<Map<String, Object>> getSyokikaAllData(@Param("companyCd") String companyCd, @Param("tableName") String tableName,
                                                 @Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify,@Param("authorCd") String authorCd,@Param("productPowerCd") Integer productPowerCd);
     List<Map<String, Object>> getDynamicAllData(String companyCd, Integer productPowerCd, String tableName,
-                                                String janCdColName, List<Map<String, Object>> classify, String[] projects);
+                                                String janCdColName, List<Map<String, Object>> classify, String[] projects,
+                                                Integer janNameColIndex);
 
     int setSyokikaAllData(@Param("lists") List<Map<String,Object>>lists);
 
@@ -170,4 +171,6 @@ public interface ProductPowerDataMapper {
 
     List<String> getYobi(String companyCd, Integer productPowerCd, String authorCd);
     List<Map<String,Object>> getYobiHeader(String companyCd, Integer productPowerCd, String authorCd);
+
+    List selectSameNameJan(Integer productPowerNo, Integer ptsCd);
 }

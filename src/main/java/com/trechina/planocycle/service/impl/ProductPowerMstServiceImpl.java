@@ -44,6 +44,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     @Autowired
     PriorityAllMstMapper priorityAllMstMapper;
     @Autowired
+    private SkuNameConfigMapper skuNameConfigMapper;
+    @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
     @Autowired
     private ParamConfigMapper paramConfigMapper;
@@ -167,12 +169,23 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
         List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
         Map<String, String> attrColumnMap = classify.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
+        List<Map<String, Object>> janName = classify.stream().filter(map -> map.get("attr").equals("jan_name")).collect(Collectors.toList());
+        classify = classify.stream().filter(map -> map.get("colSort")!=null).collect(Collectors.toList());
+
+        Integer janNameColIndex = null;
+        Integer janName2colNum = param.getJanName2colNum();
+        if(janName2colNum==null || Objects.equals(janName2colNum, 2)){
+            //product name（品名2）
+            janNameColIndex = Integer.parseInt(janName.get(0).get("sort").toString());
+        }else{
+            //品名1
+            janNameColIndex = skuNameConfigMapper.getJanName2colNum(companyCd, prodMstClass);
+        }
 
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, productPowerCd);
         List<Map<String, Object>> allData = productPowerDataMapper.getDynamicAllData(companyCd, productPowerCd,
-                janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", classify, project);
+                janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", classify, project, janNameColIndex);
 
-        classify = classify.stream().filter(map -> map.get("colSort")!=null).collect(Collectors.toList());
         //表示するカラムに対応するフィールド名
         List<String> attr = classify.stream().map(map -> map.get("attr").toString()).collect(Collectors.toList());
         Map<String, List<String>> columnsByClassify = this.initColumnClassify(attr);
