@@ -21,7 +21,8 @@ public class ProductPowerParam {
     private String channelNm;
     private String placeNm;
     private String project;
-    private Integer shelfPatternCd;
+    private String shelfPatternCd;
+    private Integer janName2colNum;
 
     public String getCompany() {
         return company;
@@ -160,12 +161,20 @@ public class ProductPowerParam {
         this.project = project;
     }
 
-    public Integer getShelfPatternCd() {
+    public String getShelfPatternCd() {
         return shelfPatternCd;
     }
 
-    public void setShelfPatternCd(Integer shelfPatternCd) {
+    public void setShelfPatternCd(String shelfPatternCd) {
         this.shelfPatternCd = shelfPatternCd;
+    }
+
+    public Integer getJanName2colNum() {
+        return janName2colNum;
+    }
+
+    public void setJanName2colNum(Integer janName2colNum) {
+        this.janName2colNum = janName2colNum;
     }
 
     @Override
@@ -188,7 +197,8 @@ public class ProductPowerParam {
                 ", channelNm='" + channelNm + '\'' +
                 ", placeNm='" + placeNm + '\'' +
                 ", project='" + project + '\'' +
-                ", shelfPatternCd=" + shelfPatternCd +
+                ", shelfPatternCd='" + shelfPatternCd + '\'' +
+                ", janName2colNum=" + janName2colNum +
                 '}';
     }
 }

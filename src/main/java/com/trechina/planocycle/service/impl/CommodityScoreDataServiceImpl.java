@@ -110,6 +110,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      */
     @Override
     public Map<String, Object> getCommodityScoreTaskId( Map<String,Object> map) {
+        //smtデータソースを教える
         Integer paramCount = productPowerDataMapper.getParamCount(map);
         if (paramCount >0){
             map.put("changFlag","1");
@@ -121,11 +122,13 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String companyCd = map.get("company").toString();
         String commonPartsData = map.get("commonPartsData").toString();
         String company_kokigyou = planocycleKigyoListMapper.getGroupInfo(companyCd);
+        //グループ企業かどうかを判断する
         if (company_kokigyou!=null){
             map.put("company_kokigyou",company_kokigyou);
         }else {
             map.put("company_kokigyou",companyCd+"_"+companyCd);
         }
+        //マスタ設定
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
         String storeIsCore = jsonObject.get("storeIsCore").toString();
         String prodIsCore = jsonObject.get("prodIsCore").toString();
@@ -151,7 +154,13 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
         map.remove("commonPartsData");
         Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
+        //選択した品名を判断する
+        Integer janName2colNum = Integer.valueOf(map.get("janName2colNum").toString());
+        if (janName2colNum == 1){
 
+        }else {
+            map.put("janName2colNum","_");
+        }
         map.put("guid",uuid);
         map.put("mode","shoki_data");
         map.put("usercd",authorCd);

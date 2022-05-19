@@ -198,6 +198,7 @@
                      from
                          planocycle.work_product_power_reserve_mst mm
                              inner join planocycle.work_product_power_reserve_data dd on mm.data_cd = dd.data_cd
+                             and mm.product_power_cd = dd.product_power_cd and mm.company_cd = dd.company_cd
                      where
                          mm.author_cd = #{authorCd}
                        and mm.company_cd = #{companyCd}
@@ -265,7 +266,7 @@
         and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
     </delete>
     <delete id="deleteWKData">
-        delete from planocycle.work_product_power_mst_data where company_cd =#{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
+        delete from planocycle.work_product_power_mst_data where company_cd =#{companyCd} and product_power_cd = #{productPowerCd}
     </delete>
     <delete id="deleteData">
         delete  from planocycle.product_power_mst_data
@@ -344,7 +345,6 @@
         from planocycle.product_power_mst_data
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
-
     </insert>
     <insert id="setWkYobilitemDataForFinally">
         insert into planocycle.work_product_power_reserve_data(company_cd,author_cd,data_cd,jan,data_value,product_power_cd)
@@ -529,7 +529,7 @@
 
     <select id="getParam" resultType="com.trechina.planocycle.entity.po.ProductPowerParamVo">
         select company_cd as company,product_power_cd as productPowerNo,customer_condition,prd_cd,rank_weight,recently_end_time,recently_flag,recently_st_time,
-               season_end_time,season_flag,season_st_time,store_cd,year_flag,common_parts_data,project,shelf_pattern_cd
+               season_end_time,season_flag,season_st_time,store_cd,year_flag,common_parts_data,project,shelf_pattern_cd,channel_nm,place_nm,jan_name2col_num
         from planocycle.product_power_param_mst
         where company_cd=#{companyCd} and product_power_cd = #{productPowerCd} and deleteflg=0
 
@@ -601,9 +601,9 @@
     <select id="getProductRankCalculate" resultType="java.util.Map">
         select s.jan,
                <foreach collection="map" index="index" separator="," item="item">
-                    row_number() over(order by ${index} ) as "${index}_rank"
+                   DENSE_RANK() over(order by ${index} ) as "${index}_rank"
                 </foreach>
-                ,row_number() over(order by
+                ,DENSE_RANK() over(order by
                 <foreach collection="map" item="item" separator="+" index="index">
                     ${index} ::integer   * ${item} /100
                 </foreach>
@@ -628,6 +628,7 @@
         from
         planocycle.work_product_power_reserve_mst mm
         inner join planocycle.work_product_power_reserve_data dd on mm.data_cd = dd.data_cd
+        and mm.product_power_cd = dd.product_power_cd and mm.company_cd = dd.company_cd
         where
         mm.author_cd = #{authorCd}
         and mm.company_cd = #{companyCd}
@@ -666,7 +667,9 @@
     <select id="getAllDataItem" resultType="java.util.LinkedHashMap">
         select datas.jan,
         <foreach collection="list" item="item" separator=",">
-            coalesce(datas.${item},'0') as ${item}
+            <if test="item !=''">
+                coalesce(datas.${item},'0') as ${item}
+            </if>
         </foreach>
         from planocycle.product_power_mst_data datas
         left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
@@ -676,7 +679,9 @@
     <select id="getAllDataRank" resultType="java.util.LinkedHashMap">
         select datas.jan,
         <foreach collection="list" item="item" separator=",">
-            datas."${item}_rank"
+               <if test="item !=''">
+                   datas."${item}_rank"
+               </if>
         </foreach>
 
         ,rank_result

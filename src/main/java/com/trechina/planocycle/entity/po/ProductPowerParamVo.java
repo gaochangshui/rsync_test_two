@@ -17,7 +17,10 @@ public class ProductPowerParamVo {
     private String yearFlag;
     private String commonPartsData;
     private String project;
-    private Integer shelfPatternCd;
+    private String shelfPatternCd;
+    private String placeNm;
+    private String channelNm;
+    private Integer janName2colNum;
 
 
     public String getCompany() {
@@ -140,12 +143,36 @@ public class ProductPowerParamVo {
         this.project = project;
     }
 
-    public Integer getShelfPatternCd() {
+    public String getShelfPatternCd() {
         return shelfPatternCd;
     }
 
-    public void setShelfPatternCd(Integer shelfPatternCd) {
+    public void setShelfPatternCd(String shelfPatternCd) {
         this.shelfPatternCd = shelfPatternCd;
+    }
+
+    public String getPlaceNm() {
+        return placeNm;
+    }
+
+    public void setPlaceNm(String placeNm) {
+        this.placeNm = placeNm;
+    }
+
+    public String getChannelNm() {
+        return channelNm;
+    }
+
+    public void setChannelNm(String channelNm) {
+        this.channelNm = channelNm;
+    }
+
+    public Integer getJanName2colNum() {
+        return janName2colNum;
+    }
+
+    public void setJanName2colNum(Integer janName2colNum) {
+        this.janName2colNum = janName2colNum;
     }
 
     @Override
@@ -166,7 +193,10 @@ public class ProductPowerParamVo {
                 ", yearFlag='" + yearFlag + '\'' +
                 ", commonPartsData='" + commonPartsData + '\'' +
                 ", project='" + project + '\'' +
-                ", shelfPatternCd=" + shelfPatternCd +
+                ", shelfPatternCd='" + shelfPatternCd + '\'' +
+                ", placeNm='" + placeNm + '\'' +
+                ", channelNm='" + channelNm + '\'' +
+                ", janName2colNum=" + janName2colNum +
                 '}';
     }
 }
