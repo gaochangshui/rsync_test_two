@@ -92,7 +92,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
-        List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName,tableNameAttr,colNum);
+        List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
+        for (Map<String, Object> map : janClassifyList) {
+            if ("jan_name".equals(map.get("attr"))) {
+                map.put("sort",colNum);
+            }
+        }
         Map<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1,k2)->k1, LinkedHashMap::new));
         Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
