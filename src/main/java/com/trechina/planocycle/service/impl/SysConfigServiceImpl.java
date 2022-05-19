@@ -19,8 +19,11 @@ public class SysConfigServiceImpl implements SysConfigService {
     @Autowired
     private SkuNameConfigMapper skuNameConfigMapper;
     @Override
-    public Map<String, Object> getShowJanSku(String companyCd,String commonPartsData) {
+    public Map<String, Object> getShowJanSku(Map<String ,Object>map) {
         Map<String, Object> resultMap = new HashMap<>();
+        //
+        String companyCd = map.get("companyCd").toString();
+        String commonPartsData = map.get("commonPartsData").toString();
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
         String prodMstClass = jsonObject.get("prodMstClass").toString();
         String prodIsCore = jsonObject.get("prodIsCore").toString();
