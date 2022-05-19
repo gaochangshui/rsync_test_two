@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -11,5 +12,5 @@ import java.util.Map;
 @Mapper
 public interface JanClassifyMapper {
     List<Map<String, Object>> selectJanClassify(String tableName);
-    List<Map<String, Object>> getJanClassify(String tableName);
+    List<Map<String, Object>> getJanClassify(@Param("tableName") String tableName);
 }

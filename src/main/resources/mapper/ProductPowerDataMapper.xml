@@ -659,7 +659,7 @@
         from planocycle.product_power_mst_data datas
         left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
         where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
-        order by rank_result asc
+        order by rank_result ,datas.jan
     </select>
     <select id="getjan" resultType="java.lang.String">
         select "1" from "0001".prod_0000_jan_info limit 15
@@ -674,7 +674,7 @@
         from planocycle.product_power_mst_data datas
         left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
         where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
-        order by rank_result asc
+        order by rank_result ,datas.jan
     </select>
     <select id="getAllDataRank" resultType="java.util.LinkedHashMap">
         select datas.jan,
@@ -688,7 +688,7 @@
         from planocycle.product_power_mst_data datas
         left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
         where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
-        order by rank_result asc
+        order by rank_result ,datas.jan
     </select>
     <select id="getYobi" resultType="java.lang.String">
         select case data_cd when 31001 then 'item1'
