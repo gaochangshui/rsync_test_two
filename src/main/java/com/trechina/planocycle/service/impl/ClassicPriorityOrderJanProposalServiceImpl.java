@@ -4,11 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanProposal;
+import com.trechina.planocycle.entity.po.ShelfPtsData;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanProposalVO;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.ClassicPriorityOrderDataMapper;
-import com.trechina.planocycle.mapper.ClassicPriorityOrderJanProposalMapper;
+import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanProposalService;
+import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
 import com.trechina.planocycle.utils.dataConverUtils;
@@ -36,6 +37,12 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
     private ClassicPriorityOrderDataMapper priorityOrderDataMapper;
     @Autowired
     private ClassicPriorityOrderJanProposalService priorityOrderJanProposalService;
+    @Autowired
+    private ShelfPtsDataMapper shelfPtsDataMapper;
+    @Autowired
+    private ShelfPtsDataJandataMapper ptsDataJandataMapper;
+    @Autowired
+    private ProductPowerDataMapper productPowerDataMapper;
     @Autowired
     private cgiUtils cgiUtil;
 
@@ -96,6 +103,46 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
                 //保存jan变提案list数据
                 priorityOrderJanProposalService.savePriorityOrderJanProposal(datasJan,companyCd,priorityOrderCd);
             }
+    }
+
+    /**
+     * from db
+     * @param companyCd
+     * @param productPowerNo
+     * @param shelfPatternNo
+     * @param priorityOrderCd
+     * @throws IOException
+     */
+    public void janProposalDataFromDB(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd) throws IOException {
+        ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectPtsCdByPatternCd(companyCd, Long.parseLong(shelfPatternNo));
+        //品名1/品名2相同、jan不同的商品
+        productPowerDataMapper.selectSameNameJan(productPowerNo, shelfPtsData.getId());
+
+        PriorityOrderDataForCgiDto priorityOrderDataForCgiDto = new PriorityOrderDataForCgiDto();
+        // 调用cgi拿jan变提案list的数据
+        String uuids = UUID.randomUUID().toString();
+        priorityOrderDataForCgiDto.setMode("priority_jan_motion");
+        priorityOrderDataForCgiDto.setGuid(uuids);
+        priorityOrderDataForCgiDto.setCompany(companyCd);
+        priorityOrderDataForCgiDto.setProductPowerNo(productPowerNo);
+        priorityOrderDataForCgiDto.setShelfPatternNo(shelfPatternNo);
+        logger.info("从cgi拿jan变提案list数据参数"+priorityOrderDataForCgiDto);
+        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+        String path = resourceBundle.getString("PriorityOrderData");
+        String queryPath = resourceBundle.getString("TaskQuery");
+        //递归调用cgi，首先去taskid
+
+        String resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
+        logger.info("taskId返回：" + resultJan);
+        //带着taskId，再次请求cgi获取运行状态/数据
+        Map<String, Object> DataJan = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
+        logger.info("jan变提案list cgi返回数据：" + DataJan);
+        if (!DataJan.get("data").equals("[ ]")) {
+            JSONArray datasJan = (JSONArray) JSON.parse(DataJan.get("data").toString());
+            //保存jan变提案list数据
+            priorityOrderJanProposalService.savePriorityOrderJanProposal(datasJan,companyCd,priorityOrderCd);
+        }
     }
 
 
