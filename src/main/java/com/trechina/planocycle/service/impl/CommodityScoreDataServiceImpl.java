@@ -41,6 +41,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Autowired
     private PlanocycleKigyoListMapper planocycleKigyoListMapper;
     @Autowired
+    private SkuNameConfigMapper skuNameConfigMapper;
+    @Autowired
     private cgiUtils cgiUtil;
 
 
@@ -82,9 +84,15 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         } else {
             isCompanyCd = companyCd;
         }
+        Integer janName2colNum = Integer.valueOf(taskIdMap.get("janName2colNum").toString());
+        Integer colNum = 2;
+        if (janName2colNum == 1){
+             colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+        }
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
+        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
-        List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
+        List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName,tableNameAttr,colNum);
         Map<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1,k2)->k1, LinkedHashMap::new));
         Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
@@ -142,7 +150,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }else {
             map.put(":date_mst","date_kigyomst");
         }
+        String isCompanyCd = companyCd;
         if ("1".equals(prodIsCore)){
+            isCompanyCd = "1000";
             map.put("shouhin_kaisou_mst","shouhin_kaisou_core_mst");
         }else {
             map.put("shouhin_kaisou_mst","shouhin_kaisou_kigyomst");
@@ -157,7 +167,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         //選択した品名を判断する
         Integer janName2colNum = Integer.valueOf(map.get("janName2colNum").toString());
         if (janName2colNum == 1){
-
+            Integer prodMstClass = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+            map.put("janName2colNum",prodMstClass);
         }else {
             map.put("janName2colNum","_");
         }

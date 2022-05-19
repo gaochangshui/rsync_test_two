@@ -56,6 +56,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Autowired
     private JanClassifyMapper janClassifyMapper;
     @Autowired
+    private  SkuNameConfigMapper skuNameConfigMapper;
+    @Autowired
     private SysConfigMapper sysConfigMapper;
     @Autowired
     private cgiUtils cgiUtil;
@@ -270,10 +272,15 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         } else {
             isCompanyCd = companyCd;
         }
-
+        Integer janName2colNum = param.getJanName2colNum();
+        Integer colNum = 2;
+        if (janName2colNum == 1){
+            colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+        }
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
+        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
-        List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
+        List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName,tableNameAttr,colNum);
         LinkedHashMap<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1, k2)->k1, LinkedHashMap::new));
         Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
