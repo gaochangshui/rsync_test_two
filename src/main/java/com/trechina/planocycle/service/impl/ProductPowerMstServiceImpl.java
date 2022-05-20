@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.ProductPowerParamVo;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
@@ -161,7 +162,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             janInfoTableName = String.format("\"%s\".prod_%s_jan_info", companyCd, prodMstClass);
         }else{
             //自设company_cd
-            String coreCompany = sysConfigMapper.selectSycConfig("core_company");
+            String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
             //1-自设
             tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", coreCompany, prodMstClass);
             janInfoTableName = String.format("\"%s\".prod_%s_jan_info", coreCompany, prodMstClass);

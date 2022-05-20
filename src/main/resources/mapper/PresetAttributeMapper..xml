@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PresetAttributeMapper">
+  <insert id="insertPresetAttribute">
+    insert into priority.preset_attribute
+    values
+    <foreach collection="presetAttribute" separator="," item="item">
+      (#{authorCd},#{item.attrData},#{item.commonPartsData})
+    </foreach>
+  </insert>
+  <delete id="deleteByAuthorCd">
+    delete from priority.preset_attribute where author_cd=#{authorCd}
+  </delete>
+  <select id="getPresetAttribute" resultType="com.trechina.planocycle.entity.po.PresetAttribute">
+    select attr_data, common_parts_data from priority.preset_attribute attribute
+    where author_cd=#{authorCd}
+  </select>
+</mapper>
