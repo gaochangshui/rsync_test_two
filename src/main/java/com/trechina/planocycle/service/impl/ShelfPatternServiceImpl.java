@@ -470,6 +470,11 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     @Override
     public Map<String, Object> getPatternForStorel(String companyCd, String storeIsCore) {
         List<ShelfPatternNameVO> patternForStorel = shelfPatternMstMapper.getPatternForStorel(storeIsCore, companyCd);
+        for (ShelfPatternNameVO shelfPatternNameVO : patternForStorel) {
+            String prodIsCore = shelfPatternNameVO.getStoreIsCore();
+            JSONObject jsonObject = JSONObject.parseObject(prodIsCore);
+            shelfPatternNameVO.setStoreIsCore(jsonObject.get("storeIsCore").toString());
+        }
         return ResultMaps.result(ResultEnum.SUCCESS,patternForStorel);
     }
 
