@@ -315,8 +315,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
 
         List list = new ArrayList<>();
-        List<Map<String, Object>> attrName = priorityOrderDataMapper.selectPriorityAttrName(tableNameAttr,isCompanyCd);
-        List<Map<String, Object>> stratumName = priorityOrderDataMapper.selectPriorityStratumName(tableName,isCompanyCd);
+        List<Map<String, Object>> attrName = priorityOrderDataMapper.selectPriorityAttrName(tableNameAttr,isCompanyCd,prodMstClass);
+        List<Map<String, Object>> stratumName = priorityOrderDataMapper.selectPriorityStratumName(tableName,isCompanyCd,prodMstClass);
         list.add(attrName);
         list.add(stratumName);
         return ResultMaps.result(ResultEnum.SUCCESS,list);
