@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/priority/PriorityOrderMstAttrSort")
+@RequestMapping("/planoCycle/priority/PriorityOrderMstAttrSort")
 public class ClassicPriorityOrderMstAttrSortController {
     @Autowired
     private ClassicPriorityOrderMstAttrSortService priorityOrderMstAttrSortService;

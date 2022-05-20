@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/priority/PriorityOrderData")
+@RequestMapping("/planoCycle/priority/PriorityOrderData")
 public class ClassicPriorityOrderDataController {
 
     @Autowired
@@ -54,10 +54,11 @@ public class ClassicPriorityOrderDataController {
      * @param enterpriseAxisDto
      * @return
      */
-    @GetMapping("/getAttrName")
+    @PostMapping("/getAttrName")
     public Map<String,Object> getAttrName(@RequestBody EnterpriseAxisDto enterpriseAxisDto){
         return priorityOrderDataService.getAttrName(enterpriseAxisDto);
     }
+
 
     /**
      * @return

@@ -4,7 +4,6 @@ import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import com.trechina.planocycle.service.ClassicPriorityOrderMstService;
-import com.trechina.planocycle.service.PriorityOrderMstService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +13,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/priority/PriorityOrderMst")
+@RequestMapping("/planoCycle/priority/PriorityOrderMst")
 public class ClassicPriorityOrderMstController {
     @Autowired
     private HttpSession session;

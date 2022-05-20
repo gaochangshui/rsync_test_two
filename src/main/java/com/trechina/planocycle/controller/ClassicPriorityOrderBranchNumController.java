@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/priority/PriorityOrderBranchNum")
+@RequestMapping("/planoCycle/priority/PriorityOrderBranchNum")
 public class ClassicPriorityOrderBranchNumController {
     @Autowired
     private ClassicPriorityOrderBranchNumService priorityOrderBranchNumService;

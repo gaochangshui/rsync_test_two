@@ -4,6 +4,7 @@ public class ShelfPatternNameVO {
     private Integer shelfPatternCd;
     private String shelfPatternName;
     private String storeCd;
+    private String storeIsCore;
 
     public Integer getShelfPatternCd() {
         return shelfPatternCd;
@@ -29,12 +30,21 @@ public class ShelfPatternNameVO {
         this.storeCd = storeCd;
     }
 
+    public String getStoreIsCore() {
+        return storeIsCore;
+    }
+
+    public void setStoreIsCore(String storeIsCore) {
+        this.storeIsCore = storeIsCore;
+    }
+
     @Override
     public String toString() {
         return "ShelfPatternNameVO{" +
                 "shelfPatternCd=" + shelfPatternCd +
                 ", shelfPatternName='" + shelfPatternName + '\'' +
                 ", storeCd='" + storeCd + '\'' +
+                ", storeIsCore='" + storeIsCore + '\'' +
                 '}';
     }
 }

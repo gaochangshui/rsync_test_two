@@ -2,14 +2,13 @@ package com.trechina.planocycle.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanNewService;
-import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/priority/PriorityOrderJanNew")
+@RequestMapping("/planoCycle/priority/PriorityOrderJanNew")
 public class ClassicPriorityOrderJanNewController {
     @Autowired
     private ClassicPriorityOrderJanNewService priorityOrderJanNewService;
