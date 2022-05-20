@@ -104,6 +104,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
                 janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd);
         List<Map<String, Object>> resultData = new ArrayList<>();
+        if (resultData.isEmpty()){
+            return ResultMaps.result(ResultEnum.SIZEISZERO);
+        }
         resultData.add(colMap);
         resultData.addAll(allData);
 
