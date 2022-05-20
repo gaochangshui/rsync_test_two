@@ -605,7 +605,7 @@
                 </foreach>
                 ,DENSE_RANK() over(order by
                 <foreach collection="map" item="item" separator="+" index="index">
-                    ${index} ::decimal * ${item} /100
+                    concat(${index},0) ::decimal * ${item} :: integer /100
                 </foreach>
                 desc
                 ) as rank_result
