@@ -41,7 +41,7 @@ public interface ClassicPriorityOrderDataMapper {
 
     String selectPriorityAttrCd(String company, Integer priorityNO);
 
-    List<Map<String, Object>> selectPriorityAttrName(String tableNameAttr,String isCompanyCd);
+    List<Map<String, Object>> selectPriorityAttrName(String tableNameAttr,String isCompanyCd,String prodIsCore);
 
     String selectPriorityAttrValue(String company, Integer priorityNO);
 
@@ -95,5 +95,5 @@ public interface ClassicPriorityOrderDataMapper {
 
     void updateRevivification(@Param("tableName")String tableName);
 
-    List<Map<String, Object>> selectPriorityStratumName(String tableName,String isCompanyCd);
+    List<Map<String, Object>> selectPriorityStratumName(String tableName,String isCompanyCd,String prodIsCore);
 }

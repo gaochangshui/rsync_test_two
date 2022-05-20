@@ -261,8 +261,9 @@
         and orders.company_cd = #{company,jdbcType=VARCHAR}
     </select>
     <select id="selectPriorityAttrName" resultType="java.util.Map">
-        SELECT "2" as label,"3" as value,2 as attr_type
+        select "2" as label ,concat( ${isCompanyCd} ,'_', ${prodIsCore} ,'_', "3") as value,2 as attr_type
         FROM ${tableNameAttr}
+
         where "4" is not null
         order by "4"::integer
     </select>
@@ -436,7 +437,7 @@
         on datas.jan_old = rep.jan_old and rep.company_cd = #{companyCd}
     </select>
     <select id="selectPriorityStratumName" resultType="java.util.Map">
-        SELECT "2" as label ,"3" as value,1 as attr_type
+        SELECT "2" as label ,concat( ${isCompanyCd} ,'_', ${prodIsCore} ,'_', "3") as value,1 as attr_type
         FROM ${tableName}
         where "4" is not null and "1" like '%_name'
         order by "4"::integer
