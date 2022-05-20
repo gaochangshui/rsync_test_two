@@ -54,10 +54,11 @@ public class ClassicPriorityOrderDataController {
      * @param enterpriseAxisDto
      * @return
      */
-    @GetMapping("/getAttrName")
+    @PostMapping("/getAttrName")
     public Map<String,Object> getAttrName(@RequestBody EnterpriseAxisDto enterpriseAxisDto){
         return priorityOrderDataService.getAttrName(enterpriseAxisDto);
     }
+
 
     /**
      * @return
