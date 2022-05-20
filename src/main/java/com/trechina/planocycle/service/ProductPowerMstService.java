@@ -33,4 +33,6 @@ public interface ProductPowerMstService {
      * @param response
      */
     void downloadProductPowerInfo(String companyCd, Integer productPowerCd, HttpServletResponse response);
+
+    Map<String, Object> getPatternForBranch(String companyCd,Integer productPowerCd);
 }

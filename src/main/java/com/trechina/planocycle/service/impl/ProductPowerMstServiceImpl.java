@@ -230,6 +230,14 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         }
     }
 
+    @Override
+    public Map<String, Object> getPatternForBranch(String companyCd,Integer productPowerCd) {
+        String branchs = productPowerDataMapper.getBranch(productPowerCd);
+        List<String> branchList = Arrays.asList(branchs.split(","));
+        String patternList = productPowerDataMapper.getPatternList(branchList);
+        return ResultMaps.result(ResultEnum.SUCCESS,patternList);
+    }
+
     private void fillPrepareParamData(String prepareValue, Integer productPowerCd, String companyCd,
                                       Map<String, List<String>> headersByClassify,
                                       Map<String, List<String>> columnsByClassify, Set<String> weightKeys){
