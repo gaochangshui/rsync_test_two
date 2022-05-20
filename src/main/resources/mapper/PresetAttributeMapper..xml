@@ -5,7 +5,7 @@
     insert into priority.preset_attribute
     values
     <foreach collection="presetAttribute" separator="," item="item">
-      (#{authorCd},#{item,attrCd},#{item.attrName})
+      (#{authorCd},#{item.attrData},#{item.commonPartsData})
     </foreach>
   </insert>
   <delete id="deleteByAuthorCd">

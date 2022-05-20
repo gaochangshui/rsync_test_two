@@ -2,8 +2,24 @@ package com.trechina.planocycle.entity.po;
 
 public class PresetAttribute {
     private String authorCd;
-    private String attrCd;
-    private String attrName;
+    private String attrData;
+    private String commonPartsData;
+
+    public String getAttrData() {
+        return attrData;
+    }
+
+    public void setAttrData(String attrData) {
+        this.attrData = attrData;
+    }
+
+    public String getCommonPartsData() {
+        return commonPartsData;
+    }
+
+    public void setCommonPartsData(String commonPartsData) {
+        this.commonPartsData = commonPartsData;
+    }
 
     public String getAuthorCd() {
         return authorCd;
@@ -11,21 +27,5 @@ public class PresetAttribute {
 
     public void setAuthorCd(String authorCd) {
         this.authorCd = authorCd;
-    }
-
-    public String getAttrCd() {
-        return attrCd;
-    }
-
-    public void setAttrCd(String attrCd) {
-        this.attrCd = attrCd;
-    }
-
-    public String getAttrName() {
-        return attrName;
-    }
-
-    public void setAttrName(String attrName) {
-        this.attrName = attrName;
     }
 }

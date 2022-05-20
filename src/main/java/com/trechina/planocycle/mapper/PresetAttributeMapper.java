@@ -7,7 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface PresetAttributeMapper {
-    int insertPresetAttribute(String authorCd, String[] presetAttribute);
+    int insertPresetAttribute(String authorCd, PresetAttribute presetAttribute);
 
     int deleteByAuthorCd(String authorCd);
 
