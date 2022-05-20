@@ -32,6 +32,10 @@ public class ProductPowerMstController {
     public Map<String,Object> getProductPowerTable(String companyCd){
         return powerMstService.getProductPowerTable(companyCd);
     }
+    @GetMapping("/getPatternForBranch")
+    public Map<String,Object> getPatternForBranch(String companyCd,Integer productPowerCd){
+        return powerMstService.getPatternForBranch(companyCd,productPowerCd);
+    }
 
     /**
      * 商品力点数表一覧データの取得

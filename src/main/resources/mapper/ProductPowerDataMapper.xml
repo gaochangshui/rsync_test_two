@@ -743,4 +743,15 @@
         where powermst.product_power_cd=#{productPowerNo}) t2 on t2."${janNameCol}" = t1."${janNameCol}"
         where t1."${janCol}"!=t2."${janCol}";
     </select>
+    <select id="getBranch" resultType="java.lang.String">
+        select  store_cd from planocycle.product_power_param_mst
+        where product_power_cd = #{productPowerCd}
+    </select>
+    <select id="getPatternList" resultType="java.lang.String">
+        select string_agg(distinct shelf_pattern_cd::varchar, ',') as shelfPatternCd from planocycle.shelf_pattern_branch
+        where branch in
+        <foreach collection="branchList" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

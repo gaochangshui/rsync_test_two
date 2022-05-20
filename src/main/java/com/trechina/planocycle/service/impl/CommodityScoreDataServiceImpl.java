@@ -203,9 +203,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd,productPowerCd);
         productPowerDataMapper.deleteWKSyokika(companyCd, authorCd,productPowerCd);
         productPowerDataMapper.deleteWKIntage(companyCd, authorCd,productPowerCd);
-       /* List<String> getjan = productPowerDataMapper.getjan();
-        productPowerDataMapper.selectWKKokyaku(authorCd,companyCd,productPowerCd,getjan);
-        productPowerDataMapper.selectWKKIntager(authorCd,companyCd,productPowerCd,getjan);*/
         String groupResult ="";
         String intergeResult= "";
         Map<Object,Object> customerCondition = (Map<Object, Object>) map.get("customerCondition");
@@ -234,7 +231,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String result = groupResult+","+intergeResult + "," + posResult;
         logger.info("taskId返回：{}", result);
 
-        /*productPowerDataMapper.selectWKSyokika(companyCd,authorCd,productPowerCd,getjan);*/
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 
