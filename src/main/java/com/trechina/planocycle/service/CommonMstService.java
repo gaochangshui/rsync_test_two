@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service;
 
+import com.trechina.planocycle.entity.dto.CommonPartsDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictRelation;
@@ -33,4 +34,6 @@ public interface CommonMstService {
                                                              Integer minFace);
 
     List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData);
+
+    CommonPartsDto getCommonPartsData(Integer productPowerCd, String companyCd);
 }

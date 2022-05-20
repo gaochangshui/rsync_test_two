@@ -1,12 +1,19 @@
 package com.trechina.planocycle.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.entity.dto.CommonPartsDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.Areas;
+import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictRelation;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.AreasMapper;
+import com.trechina.planocycle.mapper.ProductPowerParamMstMapper;
+import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.CommonMstService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
@@ -23,6 +30,10 @@ public class CommonMstServiceImpl implements CommonMstService {
 
     @Autowired
     private AreasMapper areasMapper;
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
+    @Autowired
+    private ProductPowerParamMstMapper productPowerParamMstMapper;
     @Override
     public Map<String, Object> getAreaInfo(String companyCd) {
         List<Areas> areasList = areasMapper.select(companyCd);
@@ -275,5 +286,23 @@ public class CommonMstServiceImpl implements CommonMstService {
             }
         }
         return positionResultData;
+    }
+
+    /**
+     * get bussiness
+     */
+    @Override
+    public CommonPartsDto getCommonPartsData(Integer productPowerCd, String companyCd){
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        ProductPowerParam param = productPowerParamMstMapper.getParam(companyCd, productPowerCd);
+        String commonPartsData = param.getCommonPartsData();
+        JSONObject jsonObject = JSON.parseObject(commonPartsData);
+
+        CommonPartsDto commonPartsDto = new CommonPartsDto();
+        commonPartsDto.setProdMstClass(jsonObject.getString("prodMstClass"));
+        commonPartsDto.setCoreCompany(coreCompany);
+        commonPartsDto.setProdIsCore(jsonObject.getString("prodIsCore"));
+
+        return commonPartsDto;
     }
 }
