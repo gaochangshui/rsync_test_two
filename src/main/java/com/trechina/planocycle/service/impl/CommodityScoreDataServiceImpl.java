@@ -200,23 +200,23 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd,productPowerCd);
         productPowerDataMapper.deleteWKSyokika(companyCd, authorCd,productPowerCd);
         productPowerDataMapper.deleteWKIntage(companyCd, authorCd,productPowerCd);
-        List<String> getjan = productPowerDataMapper.getjan();
+       /* List<String> getjan = productPowerDataMapper.getjan();
         productPowerDataMapper.selectWKKokyaku(authorCd,companyCd,productPowerCd,getjan);
-        productPowerDataMapper.selectWKKIntager(authorCd,companyCd,productPowerCd,getjan);
+        productPowerDataMapper.selectWKKIntager(authorCd,companyCd,productPowerCd,getjan);*/
         String groupResult ="";
         String intergeResult= "";
-        if (map.get("channelNm")!=null &&!"".equals(map.get("channelNm"))) {
+        Map<Object,Object> customerCondition = (Map<Object, Object>) map.get("customerCondition");
+        if (!customerCondition.isEmpty()) {
+            logger.info("顧客パラメータ{}",map);
              groupResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
         }
-
         //市場データ
-        Map<Object,Object> customerCondition = (Map<Object, Object>) map.get("customerCondition");
-
-        if (!customerCondition.isEmpty()) {
+        if (map.get("channelNm")!=null &&!"".equals(map.get("channelNm"))) {
             uuid = UUID.randomUUID().toString();
             map.put("mode","shoki_data");
             map.put("guid",uuid);
             map.put("tableName","planocycle.work_product_power_intage");
+            logger.info("市場パラメータ{}",map);
              intergeResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
 
         }
@@ -226,12 +226,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         map.remove("customerCondition");
         map.put("tableName","planocycle.work_product_power_syokika");
         //posデータ
-
+        logger.info("posパラメータ{}",map);
         String posResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
         String result = groupResult+","+intergeResult + "," + posResult;
         logger.info("taskId返回：{}", result);
 
-        productPowerDataMapper.selectWKSyokika(companyCd,authorCd,productPowerCd,getjan);
+        /*productPowerDataMapper.selectWKSyokika(companyCd,authorCd,productPowerCd,getjan);*/
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 

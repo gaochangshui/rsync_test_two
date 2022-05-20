@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.SkuNameConfigMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
@@ -19,11 +20,11 @@ public class SysConfigServiceImpl implements SysConfigService {
     @Autowired
     private SkuNameConfigMapper skuNameConfigMapper;
     @Override
-    public Map<String, Object> getShowJanSku(Map<String ,Object>map) {
+    public Map<String, Object> getShowJanSku(EnterpriseAxisDto enterpriseAxisDto) {
         Map<String, Object> resultMap = new HashMap<>();
         //
-        String companyCd = map.get("companyCd").toString();
-        String commonPartsData = map.get("commonPartsData").toString();
+        String companyCd = enterpriseAxisDto.getCompanyCd();
+        String commonPartsData = enterpriseAxisDto.getCommonPartsData();
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
         String prodMstClass = jsonObject.get("prodMstClass").toString();
         String prodIsCore = jsonObject.get("prodIsCore").toString();

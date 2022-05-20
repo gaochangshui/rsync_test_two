@@ -23,5 +23,12 @@
     insert into planocycle.priority_order_num_generator ( usercd, creattime)
     values ( #{usercd,jdbcType=INTEGER}, now())
   </insert>
+  <insert id="insertPriority">
+    <selectKey resultType="int" keyProperty="id" order="AFTER">
+      select  currval('priority.priority_order_num_generator_id_seq'::regclass) as id
+    </selectKey>
+    insert into priority.priority_order_num_generator ( usercd, creattime)
+    values ( #{usercd,jdbcType=INTEGER}, now())
+  </insert>
 
 </mapper>

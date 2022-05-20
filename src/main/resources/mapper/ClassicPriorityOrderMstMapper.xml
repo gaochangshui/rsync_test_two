@@ -49,7 +49,12 @@
       and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     group by product_power_cd
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="map">
+    <select id="getTableNameByCompanyCd" resultType="com.trechina.planocycle.entity.dto.TableNameDto">
+      select priority_order_cd as id,priority_order_name as fileName,author_cd as authorName,create_time as createTime
+       from priority.priority_order_mst
+        where company_cd = #{companyCd} and author_cd = #{authorCd} and deleteflg = 0
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority.priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

@@ -261,12 +261,10 @@
         and orders.company_cd = #{company,jdbcType=VARCHAR}
     </select>
     <select id="selectPriorityAttrName" resultType="java.util.Map">
-        SELECT attr_cd as attrCd,attrname as attrName
-        FROM planocycle.product_power_param_attribute attr
-                 inner join masterdb.attribute mst
-                            on mst.attrcd = attr.attr_value
-        where product_power_cd = #{productPowerCd,jdbcType=INTEGER}
-        order by attr_cd
+        SELECT "1" as id,"2" as name,"3" as col,${isCompanyCd} as companyCd
+        FROM ${tableNameAttr}
+        where "4" is not null
+        order by "4"::integer
     </select>
     <select id="selectPriorityAttrValue" resultType="java.lang.String">
         select array_to_string(array_agg(attr_value order by attr_cd),',')  as a from priority.priority_order_mst orders
@@ -436,6 +434,12 @@
         and not exists(select jan_old from priority.priority_order_jan_replace rep2 where pro.jan_new = rep2.jan_old and rep2.priority_order_cd = pro.priority_order_cd)
         left join priority.priority_order_jan_replace rep
         on datas.jan_old = rep.jan_old and rep.company_cd = #{companyCd}
+    </select>
+    <select id="selectPriorityStratumName" resultType="java.util.Map">
+        SELECT "1" as cd,"2" as name ,"3" as col,${isCompany} as companyCd
+        FROM ${tableName}
+        where "4" is not null and "1" like '%_name'
+        order by "4"::integer
     </select>
 
     <insert id="insert" >

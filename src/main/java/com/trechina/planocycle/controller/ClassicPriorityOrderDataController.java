@@ -1,6 +1,7 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.dto.DownloadSortDto;
+import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,12 +51,12 @@ public class ClassicPriorityOrderDataController {
 
     /**
      * 获取属性列名的名称
-     * @param productPowerCd
+     * @param enterpriseAxisDto
      * @return
      */
     @GetMapping("/getAttrName")
-    public List<Map<String,Object>> getAttrName(Integer productPowerCd){
-        return priorityOrderDataService.getAttrName(productPowerCd);
+    public Map<String,Object> getAttrName(@RequestBody EnterpriseAxisDto enterpriseAxisDto){
+        return priorityOrderDataService.getAttrName(enterpriseAxisDto);
     }
 
     /**

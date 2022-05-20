@@ -15,7 +15,7 @@ public class IDGeneratorController {
     private IDGeneratorService idGeneratorService;
 
     /**
-     * 優先順位表自動番号付け
+     * 基本pattern自動番号付け
      * @return
      */
     @GetMapping("/getPriorityOrderID")
@@ -23,6 +23,14 @@ public class IDGeneratorController {
         return idGeneratorService.priorityOrderNumGenerator();
     }
 
+    /**
+     * ゆうせんじゅんいひょう自動番号付け
+     * @return
+     */
+    @GetMapping("/getClassicPriorityOrderID")
+    public Map<String,Object> getClassicPriorityOrderID(){
+        return idGeneratorService.classPriorityOrderNumGenerator();
+    }
     /**
      * 商品力点数表自動番号取り
      * @return

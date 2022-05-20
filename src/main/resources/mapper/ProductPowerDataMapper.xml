@@ -605,8 +605,9 @@
                 </foreach>
                 ,DENSE_RANK() over(order by
                 <foreach collection="map" item="item" separator="+" index="index">
-                    ${index} ::integer   * ${item} /100
+                    ${index} ::decimal * ${item} /100
                 </foreach>
+                desc
                 ) as rank_result
         from  planocycle.work_product_power_syokika s
             left join planocycle.work_product_power_kokyaku k
@@ -638,6 +639,7 @@
         )as yobi
         on yobi.jan = s.jan
         where  s.author_cd=#{authorCd} and s.company_cd = #{companyCd} and s.product_power_cd = #{productPowerCd}
+        order by rank_result
     </select>
     <select id="getShowItemCd" resultType="java.lang.String">
         select item_cd from planocycle.param_config where cast(item_value as VARCHAR) in
