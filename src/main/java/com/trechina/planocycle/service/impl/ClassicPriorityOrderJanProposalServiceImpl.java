@@ -21,10 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriorityOrderJanProposalService {
@@ -35,6 +32,8 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
     private ClassicPriorityOrderJanProposalMapper priorityOrderJanProposalMapper;
     @Autowired
     private ClassicPriorityOrderDataMapper priorityOrderDataMapper;
+    @Autowired
+    private JanClassifyMapper janClassifyMapper;
     @Autowired
     private ClassicPriorityOrderJanProposalService priorityOrderJanProposalService;
     @Autowired
@@ -61,13 +60,17 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
         logger.info("获取jan变提案list的返回值："+priorityOrderJanProposals);
         if(priorityOrderJanProposals.size()==0){
             // 如果没数据获取cgi数据
-            try {
-                janProposalData(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd);
-                priorityOrderJanProposals = priorityOrderJanProposalMapper.selectByPrimaryKey(companyCd,
-                        priorityOrderCd);
-            } catch (IOException e) {
-                logger.info("报错:"+e);
-            }
+//            try {
+//                janProposalData(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd);
+                janProposalDataFromDB(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd);
+//                priorityOrderJanProposals = priorityOrderJanProposalMapper.selectByPrimaryKey(companyCd,priorityOrderCd);
+                String tableName = "\"1000\".prod_0000_jan_info";
+                priorityOrderJanProposals = priorityOrderJanProposalMapper.selectJanInfoByPrimaryKey(companyCd,priorityOrderCd,
+                        tableName,"1", "2");
+
+//            } catch (IOException e) {
+//                logger.info("报错:"+e);
+//            }
         }
         logger.info("获取jan变提案list的返回值："+priorityOrderJanProposals);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanProposals);
@@ -111,38 +114,19 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      * @param productPowerNo
      * @param shelfPatternNo
      * @param priorityOrderCd
-     * @throws IOException
      */
-    public void janProposalDataFromDB(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd) throws IOException {
+    public void janProposalDataFromDB(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd) {
         ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectPtsCdByPatternCd(companyCd, Long.parseLong(shelfPatternNo));
-        //品名1/品名2相同、jan不同的商品
-        productPowerDataMapper.selectSameNameJan(productPowerNo, shelfPtsData.getId());
-
-        PriorityOrderDataForCgiDto priorityOrderDataForCgiDto = new PriorityOrderDataForCgiDto();
-        // 调用cgi拿jan变提案list的数据
-        String uuids = UUID.randomUUID().toString();
-        priorityOrderDataForCgiDto.setMode("priority_jan_motion");
-        priorityOrderDataForCgiDto.setGuid(uuids);
-        priorityOrderDataForCgiDto.setCompany(companyCd);
-        priorityOrderDataForCgiDto.setProductPowerNo(productPowerNo);
-        priorityOrderDataForCgiDto.setShelfPatternNo(shelfPatternNo);
-        logger.info("从cgi拿jan变提案list数据参数"+priorityOrderDataForCgiDto);
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("PriorityOrderData");
-        String queryPath = resourceBundle.getString("TaskQuery");
-        //递归调用cgi，首先去taskid
-
-        String resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
-        logger.info("taskId返回：" + resultJan);
-        //带着taskId，再次请求cgi获取运行状态/数据
-        Map<String, Object> DataJan = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
-        logger.info("jan变提案list cgi返回数据：" + DataJan);
-        if (!DataJan.get("data").equals("[ ]")) {
-            JSONArray datasJan = (JSONArray) JSON.parse(DataJan.get("data").toString());
-            //保存jan变提案list数据
-            priorityOrderJanProposalService.savePriorityOrderJanProposal(datasJan,companyCd,priorityOrderCd);
-        }
+        //只是用品名2
+        String tableName = "\"1000\".prod_0000_jan_info";
+        List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
+        Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals("jan_cd")).findFirst();
+        String janCdCol = janCdOpt.get().get("attr").toString();
+        Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals("jan_name")).findFirst();
+        String janNameCol = janNameOpt.get().get("attr").toString();
+        List<PriorityOrderJanProposal> list = productPowerDataMapper.selectSameNameJan(productPowerNo, shelfPtsData.getId(), tableName, janCdCol, janNameCol);
+        JSONArray datasJan = JSON.parseArray(JSON.toJSONString(list));
+        priorityOrderJanProposalService.savePriorityOrderJanProposal(datasJan,companyCd,priorityOrderCd);
     }
 
 

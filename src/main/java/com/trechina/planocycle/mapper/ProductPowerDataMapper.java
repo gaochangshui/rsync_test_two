@@ -172,5 +172,5 @@ public interface ProductPowerDataMapper {
     List<String> getYobi(String companyCd, Integer productPowerCd, String authorCd);
     List<Map<String,Object>> getYobiHeader(String companyCd, Integer productPowerCd, String authorCd);
 
-    List selectSameNameJan(Integer productPowerNo, Integer ptsCd);
+    List<PriorityOrderJanProposal> selectSameNameJan(Integer productPowerNo, Integer ptsCd, String tableName, String janCol, String janNameCol);
 }

@@ -2,6 +2,7 @@ package com.trechina.planocycle.mapper;
 
 import com.alibaba.fastjson.JSONArray;
 import com.trechina.planocycle.entity.po.PriorityOrderJanProposal;
+import com.trechina.planocycle.entity.po.PriorityOrderRestrictSet;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanProposalVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -18,6 +19,8 @@ public interface ClassicPriorityOrderJanProposalMapper {
 
     List<PriorityOrderJanProposalVO> selectByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
+    List<PriorityOrderJanProposalVO> selectJanInfoByPrimaryKey(String companyCd, Integer priorityOrderCd, String tableName,
+                                                               String janCol, String janNameCol);
     int updateByPrimaryKey(@Param("lists") List<PriorityOrderJanProposal> record);
 
     /**
