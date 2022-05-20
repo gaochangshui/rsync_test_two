@@ -20,7 +20,7 @@ public class PresetAttributeServiceImpl implements PresetAttributeService {
     private HttpSession session;
     public Map<String, Object> getPresetAttribute(){
         String aud = session.getAttribute("aud").toString();
-        List<PresetAttribute> presetAttribute = presetAttributeMapper.getPresetAttribute(aud);
+        PresetAttribute presetAttribute = presetAttributeMapper.getPresetAttribute(aud);
         return ResultMaps.result(ResultEnum.SUCCESS, presetAttribute);
     }
 

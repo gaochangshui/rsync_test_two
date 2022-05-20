@@ -1,6 +1,9 @@
 package com.trechina.planocycle.entity.po;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class PresetAttribute {
+    @JsonIgnore
     private String authorCd;
     private String attrData;
     private String commonPartsData;

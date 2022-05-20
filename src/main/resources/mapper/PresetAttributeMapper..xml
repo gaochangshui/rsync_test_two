@@ -12,8 +12,7 @@
     delete from priority.preset_attribute where author_cd=#{authorCd}
   </delete>
   <select id="getPresetAttribute" resultType="com.trechina.planocycle.entity.po.PresetAttribute">
-    select attr_cd, attr_name from priority.preset_attribute attribute
-    inner join priority.priority_order_mst_attrsort attrsort on attribute.attr_cd=attrsort.cd::varchar
+    select attr_data, common_parts_data from priority.preset_attribute attribute
     where author_cd=#{authorCd}
   </select>
 </mapper>

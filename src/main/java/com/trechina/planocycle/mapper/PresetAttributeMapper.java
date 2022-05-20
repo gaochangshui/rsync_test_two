@@ -11,5 +11,5 @@ public interface PresetAttributeMapper {
 
     int deleteByAuthorCd(String authorCd);
 
-    List<PresetAttribute> getPresetAttribute(String authorCd);
+    PresetAttribute getPresetAttribute(String authorCd);
 }
