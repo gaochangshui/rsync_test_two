@@ -4,16 +4,16 @@
   <insert id="insertPresetAttribute">
     insert into priority.preset_attribute
     values
-    <foreach collection="attributeMap" separator="," item="item">
-      (#{authorCd},#{item.attrCd}.#{item.attrName})
+    <foreach collection="presetAttribute" separator="," item="item">
+      (#{authorCd},#{item,attrCd},#{item.attrName})
     </foreach>
   </insert>
   <delete id="deleteByAuthorCd">
     delete from priority.preset_attribute where author_cd=#{authorCd}
   </delete>
   <select id="getPresetAttribute" resultType="com.trechina.planocycle.entity.po.PresetAttribute">
-    select attr_cd, name attrName from priority.preset_attribute attribute
-    inner join planocycle.priority_order_mst_attrsort attrsort on attribute.attr_cd=attrsort.cd
+    select attr_cd, attr_name from priority.preset_attribute attribute
+    inner join priority.priority_order_mst_attrsort attrsort on attribute.attr_cd=attrsort.cd::varchar
     where author_cd=#{authorCd}
   </select>
 </mapper>

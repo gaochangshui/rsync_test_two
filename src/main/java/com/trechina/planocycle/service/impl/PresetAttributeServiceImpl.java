@@ -28,7 +28,8 @@ public class PresetAttributeServiceImpl implements PresetAttributeService {
     public Map<String, Object> setPresetAttribute(PresetAttribute presetAttribute) {
         String aud = session.getAttribute("aud").toString();
         String attrCd = presetAttribute.getAttrCd();
-        presetAttributeMapper.insertPresetAttribute(aud, attrCd.split(","));
+        presetAttributeMapper.deleteByAuthorCd(aud);
+//        presetAttributeMapper.insertPresetAttribute(aud, attrCd.split(","));
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 }
