@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/priority/PriorityOrderData")
+@RequestMapping("/planoCycle/priority/PriorityOrderData")
 public class ClassicPriorityOrderDataController {
 
     @Autowired

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/priority/PriorityOrderAttributeClassify")
+@RequestMapping("/planoCycle/priority/PriorityOrderAttributeClassify")
 public class ClassicPriorityOrderAttributeClassifyController {
     @Autowired
     private ClassicPriorityOrderAttributeClassifyService priorityOrderAttributeClassifyService;

@@ -2,7 +2,6 @@ package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.po.PriorityOrderJanReplace;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanReplaceService;
-import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/priority/priorityOrderJanReplace")
+@RequestMapping("/planoCycle/priority/priorityOrderJanReplace")
 public class ClassicPriorityOrderJanReplaceControloer {
     @Autowired
     private ClassicPriorityOrderJanReplaceService priorityOrderJanReplaceService;

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/priority/PriorityOrderJanProposal")
+@RequestMapping("/planoCycle/priority/PriorityOrderJanProposal")
 public class ClassicPriorityOrderJanProposalController {
 
     @Autowired
