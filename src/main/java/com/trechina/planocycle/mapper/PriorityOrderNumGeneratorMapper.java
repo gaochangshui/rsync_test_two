@@ -8,6 +8,8 @@ public interface PriorityOrderNumGeneratorMapper {
 
     Integer insert(PriorityOrderNumGenerator record);
 
+    Integer insertPriority(PriorityOrderNumGenerator record);
+
     PriorityOrderNumGenerator selectByPrimaryKey(Integer id);
 
 }

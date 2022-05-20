@@ -2,6 +2,7 @@ package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.dto.DownloadDto;
 import com.trechina.planocycle.entity.dto.DownloadSortDto;
+import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
 import com.trechina.planocycle.entity.po.PriorityOrderAttributeClassify;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,10 +45,10 @@ public interface ClassicPriorityOrderDataService {
 
     /**
      * 获取属性名
-     * @param productPowerCd
+     * @param enterpriseAxisDto
      * @return
      */
-    List<Map<String,Object>> getAttrName(Integer productPowerCd);
+    Map<String,Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto);
 
     void downloadForCsv(DownloadSortDto downloadDto, HttpServletResponse response) throws IOException;
 

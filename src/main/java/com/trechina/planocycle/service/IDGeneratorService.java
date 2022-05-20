@@ -18,4 +18,10 @@ public interface IDGeneratorService {
      * @return
      */
     Map<String,Object> priorityAllID();
+
+    /**
+     * ゆうせんじゅんいひょう自動番号付け
+     * @return
+     */
+    Map<String, Object> classPriorityOrderNumGenerator();
 }

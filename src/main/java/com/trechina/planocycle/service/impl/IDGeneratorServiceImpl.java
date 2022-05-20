@@ -57,4 +57,16 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
     public Map<String, Object> priorityAllID() {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
+    /**
+     * ゆうせんじゅんいひょう自動番号付け
+     * @return
+     */
+    @Override
+    public Map<String, Object> classPriorityOrderNumGenerator() {
+        PriorityOrderNumGenerator priorityOrderNumGenerator = new PriorityOrderNumGenerator();
+        priorityOrderNumGenerator.setUsercd(session.getAttribute("aud").toString());
+        Integer id = priorityOrderNumGeneratorMapper.insertPriority(priorityOrderNumGenerator);
+        logger.info("優先順位表自動取号：{}",priorityOrderNumGenerator.getId());
+        return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderNumGenerator.getId());
+    }
 }

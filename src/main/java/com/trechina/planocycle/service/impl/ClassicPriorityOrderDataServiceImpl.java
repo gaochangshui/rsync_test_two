@@ -101,6 +101,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Autowired
     private ProductPowerMstMapper productPowerMstMapper;
     @Autowired
+    private SysConfigMapper sysConfigMapper;
+    @Autowired
     private ClassicPriorityOrderJanCardService priorityOrderJanCardService;
     /**
      * 优先顺位表初期设定数据
@@ -296,9 +298,28 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
     // 查询属性名
     @Override
-    public List<Map<String, Object>> getAttrName(Integer productPowerCd) {
-        List<Map<String, Object>> attrName = priorityOrderDataMapper.selectPriorityAttrName(productPowerCd);
-        return attrName;
+    public Map<String, Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto) {
+        String companyCd = enterpriseAxisDto.getCompanyCd();
+        String commonPartsData = enterpriseAxisDto.getCommonPartsData();
+        JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
+        String prodMstClass = jsonObject.get("prodMstClass").toString();
+        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        String coreCompany = sysConfigMapper.selectSycConfig("core_company");
+        String isCompanyCd = null;
+        if ("1".equals(prodIsCore)) {
+            isCompanyCd = coreCompany;
+        } else {
+            isCompanyCd = companyCd;
+        }
+        String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
+        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
+
+        List list = new ArrayList<>();
+        List<Map<String, Object>> attrName = priorityOrderDataMapper.selectPriorityAttrName(tableNameAttr,isCompanyCd);
+        List<Map<String, Object>> stratumName = priorityOrderDataMapper.selectPriorityStratumName(tableName,isCompanyCd);
+        list.add(attrName);
+        list.add(stratumName);
+        return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 
     @Transactional(rollbackFor = Exception.class)

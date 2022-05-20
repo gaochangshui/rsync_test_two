@@ -1,5 +1,6 @@
 package com.trechina.planocycle.controller;
 
+import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.service.SysConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +17,7 @@ public class SysConfigController {
     private SysConfigService sysConfigService;
 
     @PostMapping("/getShowJanSku")
-    public Map<String, Object> getShowJanSku(@RequestBody Map<String ,Object>map){
-        return sysConfigService.getShowJanSku(map);
+    public Map<String, Object> getShowJanSku(@RequestBody EnterpriseAxisDto enterpriseAxisDto){
+        return sysConfigService.getShowJanSku(enterpriseAxisDto);
     }
 }

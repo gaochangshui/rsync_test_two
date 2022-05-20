@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMst;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -22,4 +23,6 @@ public interface ClassicPriorityOrderMstMapper {
     int deleteforid(Integer priorityOrderCd);
 
     String selectPriorityOrderCdForProdCd(String companyCd, Integer productPowerCd);
+
+    List<TableNameDto> getTableNameByCompanyCd(String companyCd, String authorCd);
 }
