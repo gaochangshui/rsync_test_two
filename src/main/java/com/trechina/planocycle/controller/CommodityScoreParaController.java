@@ -104,10 +104,6 @@ public class CommodityScoreParaController {
     }
 
 
-    //@PostMapping("rankCalculate")
-    //public Map<String,Object> getPr(@RequestBody Map<String,Object> map) {
-    //
-    //    return commodityScoreParaService.rankCalculate(map);
-    //}
+
 
 }
