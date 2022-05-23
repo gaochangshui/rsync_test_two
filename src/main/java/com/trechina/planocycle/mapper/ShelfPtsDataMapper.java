@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ShelfPtsDataMapper {
@@ -163,4 +164,9 @@ public interface ShelfPtsDataMapper {
     int insertWorkPtsJanData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
 
     ShelfPtsData selectPtsCdByPatternCd(@Param("companyCd") String companyCd, @Param("patternCd") Long shelfPatternCd);
+
+    List<ShelfPtsData> getPtsCdByPatternCd(@Param("companyCd") String companyCd, @Param("patternCd") String shelfPatternCd);
+
+    List<Map<String,Object>> getInitialExtraction(List<ShelfPtsData> shelfPtsData, String tableName, Integer productPowerCd
+            , Map<String,Object> attrTableName,List<Map<String,Object>> listAttr);
 }

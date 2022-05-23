@@ -582,4 +582,41 @@
     <select id="getpatternCd" resultType="java.lang.Integer">
       select
     </select>
+  <select id="getPtsCdByPatternCd" resultMap="BaseResultMap">
+    select id,file_name from planocycle.shelf_pts_data where company_cd=#{companyCd} and shelf_pattern_cd::varchar=any(string_to_array(#{patternCd},','))
+  </select>
+  <select id="getInitialExtraction" resultType="java.util.Map">
+    select t1.jan,t1."2" as sku,
+           <foreach collection="listAttr" separator="," item="item" >
+             ${item.tableName}.${item.col}
+           </foreach>
+
+         ,concat(t2.pos_item01,0) as pos_amount,concat(t2.pos_item03,0) as unit_price,concat(t2.pos_store_item01,0) as branch_amount
+    from(
+          select jan,info."2"
+
+          from
+            planocycle.priority_order_pts_data_jandata  jandata
+              left join ${tableName} info
+                        on jandata.jan = info."1"
+          where jandata.pts_cd in
+            <foreach collection="shelfPtsData" item="item" open="(" close=")" separator=",">
+              #{item}
+            </foreach>
+        ) t1
+          left join
+        (SELECT datas.jan,info."2" ,datas.pos_item01,datas.pos_item03,datas.pos_store_item01
+         from
+           planocycle.product_power_mst_data datas
+             left join  ${tableName} info
+                       on datas.jan = info."1"
+         where datas.product_power_cd =#{productPowerCd}
+        ) t2
+        on t1."2" = t2."2"
+        <foreach collection="attrTableName" item="item" index="index">
+          left join ${item} as ${index}
+        on ${index}."1" = t1.jan
+        </foreach>
+
+  </select>
 </mapper>

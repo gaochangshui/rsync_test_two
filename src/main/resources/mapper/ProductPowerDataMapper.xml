@@ -750,7 +750,7 @@
     <select id="getPatternList" resultType="java.lang.String">
         select string_agg(distinct shelf_pattern_cd::varchar, ',') as shelfPatternCd from planocycle.shelf_pattern_branch
         where branch in
-        <foreach collection="branchList" separator="," open="(" close=")" item="item">
+        <foreach  collection="branchList" separator="," open="(" close=")" item="item">
             #{item}
         </foreach>
     </select>

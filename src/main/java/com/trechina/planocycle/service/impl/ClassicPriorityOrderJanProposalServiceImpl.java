@@ -9,7 +9,6 @@ import com.trechina.planocycle.entity.vo.PriorityOrderJanProposalVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanProposalService;
-import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
 import com.trechina.planocycle.utils.dataConverUtils;
@@ -116,7 +115,7 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      * @param priorityOrderCd
      */
     public void janProposalDataFromDB(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd) {
-        ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectPtsCdByPatternCd(companyCd, Long.parseLong(shelfPatternNo));
+        List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, Long.parseLong(shelfPatternNo));
         //只是用品名2
         String tableName = "\"1000\".prod_0000_jan_info";
         List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);

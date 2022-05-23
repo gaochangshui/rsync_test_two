@@ -129,9 +129,15 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         //smtデータソースを教える
         Integer paramCount = productPowerDataMapper.getParamCount(map);
         if (paramCount >0){
-            map.put("changFlag","1");
+            map.put("changeFlag","1");
         }else {
-            map.put("changFlag","0");
+            map.put("changeFlag","0");
+        }
+        if ("".equals(map.get("seasonEndTime"))) {
+            map.put("seasonEndTime","_");
+        }
+        if ("".equals(map.get("seasonStTime"))) {
+            map.put("seasonStTime","_");
         }
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
@@ -205,6 +211,22 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerDataMapper.deleteWKIntage(companyCd, authorCd,productPowerCd);
         String groupResult ="";
         String intergeResult= "";
+        uuid = UUID.randomUUID().toString();
+        Map<String,Object> posMap = new HashMap();
+        posMap.putAll(map);
+        posMap.put("mode","shoki_data");
+        posMap.put("guid",uuid);
+        posMap.remove("customerCondition");
+        posMap.put("tableName","planocycle.work_product_power_syokika");
+        //posデータ
+        logger.info("posパラメータ{}",posMap);
+        String posResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), posMap, tokenInfo);
+        while (true) {
+            Map<String, Object> map1 = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), posResult, tokenInfo);
+            if (!"9".equals(map1.get("data"))){
+               break;
+            }
+        }
         Map<Object,Object> customerCondition = (Map<Object, Object>) map.get("customerCondition");
         if (!customerCondition.isEmpty()) {
             logger.info("顧客パラメータ{}",map);
@@ -213,21 +235,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         //市場データ
         if (map.get("channelNm")!=null &&!"".equals(map.get("channelNm"))) {
             uuid = UUID.randomUUID().toString();
-            map.put("mode","shoki_data");
+            map.put("mode","market_data");
             map.put("guid",uuid);
             map.put("tableName","planocycle.work_product_power_intage");
             logger.info("市場パラメータ{}",map);
              intergeResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
-
         }
-        uuid = UUID.randomUUID().toString();
-        map.put("mode","shoki_data");
-        map.put("guid",uuid);
-        map.remove("customerCondition");
-        map.put("tableName","planocycle.work_product_power_syokika");
-        //posデータ
-        logger.info("posパラメータ{}",map);
-        String posResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), map, tokenInfo);
         String result = groupResult+","+intergeResult + "," + posResult;
         logger.info("taskId返回：{}", result);
 
