@@ -587,7 +587,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> uploadPriorityOrderData(MultipartFile file, String mode, String company, Integer priorityOrderCd,
+    public Map<String, Object> uploadPriorityOrderData(MultipartFile file, String company, Integer priorityOrderCd,
                                                        String attrList, String allAttrList) {
         Map<String, Object> resultMap = Maps.newHashMap();
 

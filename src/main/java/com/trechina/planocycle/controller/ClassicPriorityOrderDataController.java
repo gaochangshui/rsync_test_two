@@ -66,11 +66,9 @@ public class ClassicPriorityOrderDataController {
      */
     @PostMapping("/uploadPriorityOrderData")
     public Map<String,Object> uploadPriorityOrderData(@RequestParam("file") MultipartFile file,
-          @RequestParam("mode") String mode,@RequestParam("company") String company,
-          @RequestParam("attrList") String attrList, @RequestParam("allAttrList") String allAttrList,
-                                                      @RequestParam("priorityOrderCd") Integer priorityOrderCd,
-                                                      @RequestParam("productPowerCd")Integer productPowerCd){
-        return priorityOrderDataService.uploadPriorityOrderData(file, mode,company, priorityOrderCd, attrList, allAttrList);
+          @RequestParam("company") String company,@RequestParam("attrList") String attrList,
+          @RequestParam("allAttrList") String allAttrList,@RequestParam("priorityOrderCd") Integer priorityOrderCd){
+        return priorityOrderDataService.uploadPriorityOrderData(file,company, priorityOrderCd, attrList, allAttrList);
     }
 
     @PostMapping("/downloadForCsv")

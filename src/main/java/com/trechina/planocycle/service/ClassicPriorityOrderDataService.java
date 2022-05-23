@@ -26,7 +26,7 @@ public interface ClassicPriorityOrderDataService {
     Map<String, Object> getUploadPriorityOrderData();
 
     @Transactional(rollbackFor = Exception.class)
-    Map<String, Object> uploadPriorityOrderData(MultipartFile file, String mode, String company, Integer priorityOrderCd,
+    Map<String, Object> uploadPriorityOrderData(MultipartFile file, String company, Integer priorityOrderCd,
                                                 String attrList, String allAttrList);
 
     void doJanCut(List<DownloadDto> cutJanList, String company, Integer priorityOrderCd);
