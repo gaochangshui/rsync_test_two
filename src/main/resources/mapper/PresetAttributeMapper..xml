@@ -3,10 +3,7 @@
 <mapper namespace="com.trechina.planocycle.mapper.PresetAttributeMapper">
   <insert id="insertPresetAttribute">
     insert into priority.preset_attribute
-    values
-    <foreach collection="presetAttribute" separator="," item="item">
-      (#{authorCd},#{item.attrData},#{item.commonPartsData})
-    </foreach>
+    values(#{authorCd},#{presetAttribute.attrData},#{presetAttribute.commonPartsData})
   </insert>
   <delete id="deleteByAuthorCd">
     delete from priority.preset_attribute where author_cd=#{authorCd}
