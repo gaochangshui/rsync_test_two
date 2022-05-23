@@ -249,7 +249,7 @@
 
     </select>
     <select id="selectTempColName" resultType="java.lang.String">
-        select column_name from information_schema.columns where table_name=#{tablename}
+        select column_name from information_schema.columns where table_name=lower(#{tablename})
     </select>
     <select id="selectPriorityAttrCd" resultType="java.lang.String">
         select array_to_string(array_agg(attr_cd),',')  as a from priority.priority_order_mst orders
@@ -534,19 +534,19 @@
         TRUNCATE TABLE ${table_name};
     </delete>
     <select id="selectDynamicAttr" resultType="map">
-        select "1" as "jan_new", "2" as "sku"
-        <foreach collection="attrTableList" index="index" item="dto" open=",">
-            <foreach collection="dto.colNum" separator="," index="i" item="colNum">
-                ${dto.tableName}.${colNum} as attr${dto.index+i+1}
+        select tmp0."1" as "jan_new", tmp0."2" as "sku"
+        <foreach collection="attrTableList" index="index" item="dto" open="," separator=",">
+            <foreach collection="dto.colNum" index="i" item="colNum">
+                "tmp${index}"."${colNum}" as "attr${dto.index+i+1}"
             </foreach>
         </foreach>
         from
         <foreach collection="attrTableList" index="index" item="dto">
             <if test="index==0">
-                ${dto.tableName} as ${dto.tableName}
+                ${dto.tableName} as tmp${index}
             </if>
             <if test="index!=0">
-                left join ${dto.tableName} as ${dto.tableName} on ${dto.tableName}."1" = ${attrTableList[index-1]}."1"
+                left join ${dto.tableName} as tmp${index} on tmp${index}."1" = tmp${index-1}."1"
             </if>
         </foreach>
     </select>
