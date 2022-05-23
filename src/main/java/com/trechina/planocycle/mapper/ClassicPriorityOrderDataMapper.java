@@ -8,6 +8,7 @@ import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -99,4 +100,10 @@ public interface ClassicPriorityOrderDataMapper {
     List<Map<String, Object>> selectPriorityStratumName(String tableName,String isCompanyCd,String prodIsCore);
 
     List<Map<String, Object>> selectDynamicAttr(String[] jans, List<AttrHeaderSysDto> attrTableList);
+
+    String getColName(String tableNameAttr, String tableNameKaisou,String colName);
+
+    int deleteWorkData(String companyCd,Integer priorityOrderCd);
+
+    int insertWorkData(String companyCd, Integer priorityOrderCd, List<LinkedHashMap<String, Object>> datas,String authorCd);
 }

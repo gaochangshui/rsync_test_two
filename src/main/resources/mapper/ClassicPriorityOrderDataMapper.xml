@@ -517,6 +517,30 @@
         </foreach>)
         </foreach>
     </insert>
+    <insert id="insertWorkData">
+        insert into priority.work_priority_order_result_data(
+        <foreach collection="datas[0]" item="item" index="index" separator=",">
+            ${index}
+        </foreach>
+        ,company_cd,priority_order_cd,author_cd)
+        values
+        <foreach collection="datas" separator="," item="list" >
+            (
+             <foreach collection="list" item="item" index="index" separator=",">
+                <choose>
+                    <when test="index == 'rank' || index == 'rank_prop' || index == 'rank_upd' || index == 'goods_rank'">
+                        #{item} :: integer
+                    </when>
+                    <otherwise>
+                        #{item}
+                    </otherwise>
+                </choose>
+
+             </foreach>
+             ,#{companyCd},#{priorityOrderCd},#{authorCd}
+            )
+        </foreach>
+    </insert>
     <delete id="deleteExistJanNew">
         delete from ${tableName}
         <where>
@@ -534,6 +558,9 @@
     <delete id="truncateTable">
         TRUNCATE TABLE ${table_name};
     </delete>
+    <delete id="deleteWorkData">
+        delete from priority.work_priority_order_result_data where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </delete>
     <select id="selectDynamicAttr" resultType="map">
         select tmp0."1" as "jan_new", tmp0."2" as "sku"
         <foreach collection="attrTableList" index="index" item="dto" open="," separator=",">
@@ -550,5 +577,12 @@
                 left join ${dto.tableName} as tmp${index} on tmp${index}."1" = tmp${index-1}."1"
             </if>
         </foreach>
+    </select>
+    <select id="getColName" resultType="java.lang.String">
+        select "2" from (select "1","2","3" from ${tableNameKaisou}
+                       union
+                       select "1","2","3" from	${tableNameAttr}
+                      ) as t1
+        where t1."3" = #{colName}
     </select>
 </mapper>

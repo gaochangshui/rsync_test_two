@@ -586,12 +586,13 @@
     select id,file_name from planocycle.shelf_pts_data where company_cd=#{companyCd} and shelf_pattern_cd::varchar=any(string_to_array(#{patternCd},','))
   </select>
   <select id="getInitialExtraction" resultType="java.util.LinkedHashMap">
-    select t1.jan,concat(t1."2",'') as sku,
+    select t1.jan as jan_old,t1.jan as jan_new ,coalesce(t1."2",'') as sku,
            <foreach collection="listAttr" separator="," item="item" >
-             concat(${item.tableName}.${item.col},'') as ${item.colName}
+             coalesce(${item.tableName}.${item.col},'') as ${item.colName}
            </foreach>
 
-         ,concat(t2.pos_item01,0) as pos_amount,concat(t2.pos_item03,0) as unit_price,concat(t2.pos_store_item01,0) as branch_amount
+         ,coalesce(t2.pos_item01,'0') as pos_amount,coalesce(t2.pos_item03,'0') as unit_price,coalesce(t2.pos_store_item01,'0') as branch_amount
+            ,coalesce (t2.rank_result,99999999) as rank,coalesce(t2.rank_result,99999999) as rank_prop,coalesce(t2.rank_result,99999999) as rank_upd,coalesce(t2.rank_result,99999999) as goods_rank
     from(
           select jan,info."2"
 
@@ -605,7 +606,7 @@
             </foreach>
         ) t1
           left join
-        (SELECT datas.jan,info."2" ,datas.pos_item01,datas.pos_item03,datas.pos_store_item01
+        (SELECT datas.jan,info."2" ,datas.pos_item01,datas.pos_item03,datas.pos_store_item01,datas.rank_result
          from
            planocycle.product_power_mst_data datas
              left join  ${tableName} info
