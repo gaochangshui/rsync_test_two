@@ -117,8 +117,7 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      * @param priorityOrderCd
      */
     public void janProposalDataFromDB(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd) {
-        //todo: multi pts data
-        ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectPtsCdByPatternCd(companyCd, Long.parseLong(shelfPatternNo));
+        List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, Long.parseLong(shelfPatternNo));
         //只是用品名2
         String tableName = "\"1000\".prod_0000_jan_info";
         List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);

@@ -16,6 +16,7 @@ public class PriorityOrderDataForCgiDto {
     private String[] dataArray;
     private List<String> orderCol;
     private Integer itemFlg;
+    private String attrList;
 
     public String getCompany() {
         return company;
@@ -114,6 +115,14 @@ public class PriorityOrderDataForCgiDto {
         this.itemFlg = itemFlg;
     }
 
+    public String getAttrList() {
+        return attrList;
+    }
+
+    public void setAttrList(String attrList) {
+        this.attrList = attrList;
+    }
+
     @Override
     public String toString() {
         return "PriorityOrderDataForCgiDto{" +
@@ -129,6 +138,7 @@ public class PriorityOrderDataForCgiDto {
                 ", dataArray=" + Arrays.toString(dataArray) +
                 ", orderCol=" + orderCol +
                 ", itemFlg=" + itemFlg +
+                ", attrList='" + attrList + '\'' +
                 '}';
     }
 }
