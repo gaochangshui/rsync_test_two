@@ -18,11 +18,11 @@ public interface PriorityOrderPtsJandataMapper {
 
     Integer updatePtsJanRank(String companyCd, Integer priorityOrderCd, List<DownloadDto> ptsJanList);
 
-    List<DownloadDto> selectJanRank(String companyCd, Integer priorityOrderCd, List<String> sortList, String tableName);
+    List<DownloadDto> selectJanRank(String companyCd, Integer priorityOrderCd, List<String> sortList);
 
     List<DownloadDto> selectSavedJanRank(String companyCd, Integer priorityOrderCd, List<String> sortList);
-    int updateRankUpd(List<DownloadDto> ptsJanList, String tableName, String attr1, String attr2);
-    int updateAttr(List<DownloadDto> ptsJanList, String tableName, String attr1, String attr2);
+    int updateRankUpd(List<DownloadDto> ptsJanList, String attr1, String attr2);
+    int updateAttr(List<DownloadDto> ptsJanList, Integer priorityOrderCd, String attr1, String attr2);
 
     void updateSavedRankUpd(String companyCd, Integer priorityOrderCd, List<DownloadDto> ptsJanList);
 

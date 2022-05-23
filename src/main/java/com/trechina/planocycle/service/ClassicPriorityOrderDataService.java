@@ -26,13 +26,13 @@ public interface ClassicPriorityOrderDataService {
     Map<String, Object> getUploadPriorityOrderData();
 
     @Transactional(rollbackFor = Exception.class)
-    Map<String, Object> uploadPriorityOrderData(MultipartFile file, String mode, String company, String taiCd,
-                                                String tanaCd, Integer priorityOrderCd, String attrList,Integer productPowerCd);
+    Map<String, Object> uploadPriorityOrderData(MultipartFile file, String company, Integer priorityOrderCd,
+                                                String attrList, String allAttrList);
 
     void doJanCut(List<DownloadDto> cutJanList, String company, Integer priorityOrderCd);
 
-    Map<String, Object> doJanNew(List<DownloadDto> newJanList, String company, Integer priorityOrderCd, Integer productPowerCd,
-                                       String attrList, List<PriorityOrderAttributeClassify> classifyList);
+    Map<String, Object> doJanNew(List<DownloadDto> newJanList, String company, Integer priorityOrderCd,
+                                 String attrList, String allAttrList, List<PriorityOrderAttributeClassify> classifyList);
 
     /**
      * 优先顺位表反应按钮抽出数据

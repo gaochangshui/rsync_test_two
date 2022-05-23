@@ -108,6 +108,7 @@
             when #{item.jan} then 99999999
         </foreach>
         else rank_upd end
+        where priority_order_cd=#{priorityOrderCd}
     </update>
     <update id="updateUPdRank">
         update ${tableName}
@@ -249,7 +250,7 @@
 
     </select>
     <select id="selectTempColName" resultType="java.lang.String">
-        select column_name from information_schema.columns where table_name=#{tablename}
+        select column_name from information_schema.columns where table_name=lower(#{tablename})
     </select>
     <select id="selectPriorityAttrCd" resultType="java.lang.String">
         select array_to_string(array_agg(attr_cd),',')  as a from priority.priority_order_mst orders
@@ -328,14 +329,14 @@
 
     </select>
     <select id="existJanOld" resultType="string">
-        select jan_old from ${tableName} where jan_old in
+        select jan_old from priority.work_priority_order_result_data where jan_old in
         <foreach collection="jan" item="obj" open="(" close=")" separator=",">
             #{obj}
         </foreach>
         and rank != -1
     </select>
     <select id="existJanNew" resultType="string">
-        select jan_new from ${tableName} where jan_new in
+        select jan_new from priority.work_priority_order_result_data where jan_new in
         <foreach collection="jan" item="obj" open="(" close=")" separator=",">
             #{obj}
         </foreach>
@@ -444,7 +445,7 @@
     </select>
 
     <insert id="insert" >
-    insert into ${tablename} (
+    insert into priority.work_priority_order_result_data (
             <foreach collection="keyNameList" separator="," item="key">
               ${key.name}
             </foreach>
@@ -561,19 +562,19 @@
         delete from priority.work_priority_order_result_data where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </delete>
     <select id="selectDynamicAttr" resultType="map">
-        select "1" as "jan_new", "2" as "sku"
-        <foreach collection="attrTableList" index="index" item="dto" open=",">
-            <foreach collection="dto.colNum" separator="," index="i" item="colNum">
-                ${dto.tableName}.${colNum} as attr${dto.index+i+1}
+        select tmp0."1" as "jan_new", tmp0."2" as "sku"
+        <foreach collection="attrTableList" index="index" item="dto" open="," separator=",">
+            <foreach collection="dto.colNum" index="i" item="colNum">
+                "tmp${index}"."${colNum}" as "attr${dto.index+i+1}"
             </foreach>
         </foreach>
         from
         <foreach collection="attrTableList" index="index" item="dto">
             <if test="index==0">
-                ${dto.tableName} as ${dto.tableName}
+                ${dto.tableName} as tmp${index}
             </if>
             <if test="index!=0">
-                left join ${dto.tableName} as ${dto.tableName} on ${dto.tableName}."1" = ${attrTableList[index-1]}."1"
+                left join ${dto.tableName} as tmp${index} on tmp${index}."1" = tmp${index-1}."1"
             </if>
         </foreach>
     </select>
