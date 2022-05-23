@@ -533,4 +533,21 @@
     <delete id="truncateTable">
         TRUNCATE TABLE ${table_name};
     </delete>
+    <select id="selectDynamicAttr" resultType="map">
+        select "1" as "jan_new", "2" as "sku"
+        <foreach collection="attrTableList" index="index" item="dto" open=",">
+            <foreach collection="dto.colNum" separator="," index="i" item="colNum">
+                ${dto.tableName}.${colNum} as attr${dto.index+i+1}
+            </foreach>
+        </foreach>
+        from
+        <foreach collection="attrTableList" index="index" item="dto">
+            <if test="index==0">
+                ${dto.tableName} as ${dto.tableName}
+            </if>
+            <if test="index!=0">
+                left join ${dto.tableName} as ${dto.tableName} on ${dto.tableName}."1" = ${attrTableList[index-1]}."1"
+            </if>
+        </foreach>
+    </select>
 </mapper>

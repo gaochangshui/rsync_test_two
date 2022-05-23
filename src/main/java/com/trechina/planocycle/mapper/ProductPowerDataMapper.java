@@ -172,7 +172,7 @@ public interface ProductPowerDataMapper {
     List<String> getYobi(String companyCd, Integer productPowerCd, String authorCd);
     List<Map<String,Object>> getYobiHeader(String companyCd, Integer productPowerCd, String authorCd);
 
-    List<PriorityOrderJanProposal> selectSameNameJan(Integer productPowerNo, Integer ptsCd, String tableName, String janCol, String janNameCol);
+    List<PriorityOrderJanProposal> selectSameNameJan(Integer productPowerNo, String ptsCd, String tableName, String janCol, String janNameCol);
 
     String getBranch(Integer productPowerCd);
 

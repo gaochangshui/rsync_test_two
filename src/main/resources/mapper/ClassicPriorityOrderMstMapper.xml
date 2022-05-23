@@ -68,5 +68,7 @@
     values (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{priorityOrderName,jdbcType=VARCHAR},
       #{productPowerCd,jdbcType=INTEGER})
   </insert>
-
+  <select id="getCommonPartsData" resultType="string">
+    select common_parts_data from priority.priority_order_mst
+  </select>
 </mapper>

@@ -47,6 +47,7 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,7 +62,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Autowired
     private ClassicPriorityOrderCommodityNotMapper priorityOrderCommodityNotMapper;
     @Autowired
-    private CommodityScoreMasterService commodityScoreMasterService;
+    private CommonMstService commonMstService;
     @Autowired
     private PriorityOrderMstService priorityOrderMstService;
     @Autowired
@@ -451,6 +452,51 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     }
 
     @Override
+    public Map<String, Object> getPriorityOrderDataForDB(String [] jans,String companyCd, String attrList,
+                                                         Integer priorityOrderCd) {
+        CommonPartsDto commonPartsDto = commonMstService.getPriorityCommonPartsData(priorityOrderCd, companyCd);
+        commonPartsDto.setCoreCompany("1000");
+        commonPartsDto.setProdMstClass("0000");
+        String tableName = String.format("\"%s\".prod_%s_jan_info", commonPartsDto.getCoreCompany(), commonPartsDto.getProdMstClass());
+        priorityOrderMapper.checkIsJanNew(tableName, jans);
+
+        List<AttrHeaderSysDto> attrTableList = new ArrayList<>();
+        AttrHeaderSysDto itemDto = null;
+        for (int i = 0; i < attrList.split(",").length; i++) {
+            String s = attrList.split(",")[i];
+            int length = s.split("_").length;
+            if(length<3){
+                logger.warn("error attr data:{}", s);
+                continue;
+            }
+
+            String[] attrArray = s.split("_");
+            String itemTableName = String.format("\"%s\".prod_%s_jan_info", attrArray[0], attrArray[1]);
+            String colNum = attrArray[2];
+
+            if (attrTableList.stream().anyMatch(attrHeaderSysDto ->attrHeaderSysDto.getTableName().equals(itemTableName))) {
+                AttrHeaderSysDto attrHeaderSysDto = attrTableList.stream().findFirst().get();
+                attrHeaderSysDto.getColNum().add(colNum);
+            }else{
+                itemDto = new AttrHeaderSysDto();
+                itemDto.setTableName(tableName);
+                itemDto.setColNum(Lists.newArrayList(colNum));
+                itemDto.setIndex(i);
+                attrTableList.add(itemDto);
+            }
+        }
+
+        AttrHeaderSysDto dto = new AttrHeaderSysDto();
+        dto.setIndex(0);
+        dto.setColNum(Lists.newArrayList("3"));
+        dto.setTableName("1000.prod_0000_jan_info");
+        jans = new String[]{"2", "1"};
+        attrTableList = Lists.newArrayList(dto);
+        List<Map<String, Object>> results = priorityOrderDataMapper.selectDynamicAttr(jans, attrTableList);
+        return ResultMaps.result(ResultEnum.SUCCESS, results);
+    }
+
+    @Override
     public Map<String, Object> getPatternAndName(Integer productPowerCd) {
         GetPatternForProductPowerCd patternAndName = productPowerMstMapper.getPatternAndName(productPowerCd);
         if (patternAndName == null){
@@ -720,7 +766,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<DownloadDto> notExistNewJan = newJanList.stream().filter(jan -> newJanExistCdList.contains(jan.getJan())).collect(Collectors.toList());
         priorityOrderPtsJandataMapper.insertNewJan(notExistNewJan);
 
-        Map<String, Object> cgiData = getPriorityOrderDataForSmt(newJanExistCdList.toArray(new String[0]), company, priorityOrderCd,productPowerCd);
+//        Map<String, Object> cgiData = getPriorityOrderDataForSmt(newJanExistCdList.toArray(new String[0]), company, priorityOrderCd,productPowerCd);
+        Map<String, Object> cgiData = getPriorityOrderDataForDB(newJanExistCdList.toArray(new String[0]), company,  attrList, priorityOrderCd);
         Object data = cgiData.get("data");
 
         if(data==null){
