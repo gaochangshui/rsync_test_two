@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.alibaba.fastjson.JSONArray;
+import com.trechina.planocycle.entity.dto.AttrHeaderSysDto;
 import com.trechina.planocycle.entity.dto.DownloadDto;
 import com.trechina.planocycle.entity.dto.GoodsRankDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
@@ -96,4 +97,6 @@ public interface ClassicPriorityOrderDataMapper {
     void updateRevivification(@Param("tableName")String tableName);
 
     List<Map<String, Object>> selectPriorityStratumName(String tableName,String isCompanyCd,String prodIsCore);
+
+    List<Map<String, Object>> selectDynamicAttr(String[] jans, List<AttrHeaderSysDto> attrTableList);
 }

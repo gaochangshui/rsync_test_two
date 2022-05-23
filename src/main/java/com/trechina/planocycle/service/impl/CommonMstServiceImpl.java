@@ -11,9 +11,8 @@ import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictRelation;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.AreasMapper;
-import com.trechina.planocycle.mapper.ProductPowerParamMstMapper;
-import com.trechina.planocycle.mapper.SysConfigMapper;
+import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.service.ClassicPriorityOrderMstService;
 import com.trechina.planocycle.service.CommonMstService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
@@ -34,6 +33,8 @@ public class CommonMstServiceImpl implements CommonMstService {
     private SysConfigMapper sysConfigMapper;
     @Autowired
     private ProductPowerParamMstMapper productPowerParamMstMapper;
+    @Autowired
+    private ClassicPriorityOrderMstMapper priorityOrderMstMapper;
     @Override
     public Map<String, Object> getAreaInfo(String companyCd) {
         List<Areas> areasList = areasMapper.select(companyCd);
@@ -296,6 +297,20 @@ public class CommonMstServiceImpl implements CommonMstService {
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         ProductPowerParam param = productPowerParamMstMapper.getParam(companyCd, productPowerCd);
         String commonPartsData = param.getCommonPartsData();
+        JSONObject jsonObject = JSON.parseObject(commonPartsData);
+
+        CommonPartsDto commonPartsDto = new CommonPartsDto();
+        commonPartsDto.setProdMstClass(jsonObject.getString("prodMstClass"));
+        commonPartsDto.setCoreCompany(coreCompany);
+        commonPartsDto.setProdIsCore(jsonObject.getString("prodIsCore"));
+
+        return commonPartsDto;
+    }
+
+    @Override
+    public CommonPartsDto getPriorityCommonPartsData(Integer priorityOrderCd, String companyCd){
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        String commonPartsData = priorityOrderMstMapper.getCommonPartsData(companyCd, priorityOrderCd);
         JSONObject jsonObject = JSON.parseObject(commonPartsData);
 
         CommonPartsDto commonPartsDto = new CommonPartsDto();

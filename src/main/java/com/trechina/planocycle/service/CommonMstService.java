@@ -36,4 +36,6 @@ public interface CommonMstService {
     List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData);
 
     CommonPartsDto getCommonPartsData(Integer productPowerCd, String companyCd);
+
+    CommonPartsDto getPriorityCommonPartsData(Integer priorityOrderCd, String companyCd);
 }

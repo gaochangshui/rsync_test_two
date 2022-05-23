@@ -736,7 +736,7 @@
         select t1.jan as janOld,t2.jan janNew from
         (select distinct jan, janinfo."${janNameCol}" jan_name, janinfo."${janCol}" jan from ${tableName} janinfo
         inner join planocycle.shelf_pts_data_jandata jandata on janinfo."${janCol}" = jandata.jan
-         where jandata.pts_cd=#{ptsCd}) t1
+         where jandata.pts_cd::varchar=any(string_to_array(#{ptsCd},','))) t1
         inner join
         (select distinct jan, janinfo."${janNameCol}" jan_name, janinfo."${janCol}" jan from ${tableName} janinfo
         inner join planocycle.product_power_mst_data powermst on janinfo."${janCol}"=powermst.jan

@@ -13,6 +13,16 @@ public class PriorityOrderMst {
 
     private Short partitionVal;
 
+    private String commonPartsData;
+
+    public String getCommonPartsData() {
+        return commonPartsData;
+    }
+
+    public void setCommonPartsData(String commonPartsData) {
+        this.commonPartsData = commonPartsData;
+    }
+
     public Short getPartitionFlag() {
         return partitionFlag;
     }

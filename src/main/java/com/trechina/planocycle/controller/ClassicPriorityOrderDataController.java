@@ -61,6 +61,7 @@ public class ClassicPriorityOrderDataController {
 
 
     /**
+     * @param attrList eg: {company_cd}_{class}_{header_sys(column 3)}
      * @return
      */
     @PostMapping("/uploadPriorityOrderData")

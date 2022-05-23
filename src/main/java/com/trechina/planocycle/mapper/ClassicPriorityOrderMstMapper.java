@@ -25,4 +25,6 @@ public interface ClassicPriorityOrderMstMapper {
     String selectPriorityOrderCdForProdCd(String companyCd, Integer productPowerCd);
 
     List<TableNameDto> getTableNameByCompanyCd(String companyCd, String authorCd);
+
+    String getCommonPartsData(String companyCd, Integer priorityOrderCd);
 }
