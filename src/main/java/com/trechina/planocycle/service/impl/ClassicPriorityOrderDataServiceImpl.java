@@ -198,29 +198,41 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             //只是用品名2
             String tableName = "\"1000\".prod_0000_jan_info";
             List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
-            Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals("jan_cd")).findFirst();
-            String janCdCol = janCdOpt.get().get("attr").toString();
-            Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals("jan_name")).findFirst();
-            String janNameCol = janNameOpt.get().get("attr").toString();
+            //Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals("jan_cd")).findFirst();
+            //String janCdCol = janCdOpt.get().get("attr").toString();
+            //Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals("jan_name")).findFirst();
+            //String janNameCol = janNameOpt.get().get("attr").toString();
             String[] AttrList = priorityOrderDataForCgiDto.getAttrList().split(",");
             List<Map<String,Object>> listAttr = new ArrayList();
             Map<String,Object> listTableName = new HashMap<>();
+            Map<String,Object> headerTableName = new HashMap<>();
+            int i = 1;
             for (String s : AttrList) {
+
                 Map<String,Object> map = new HashMap<>();
                 String[] s1 = s.split("_");
                 map.put("companyCd",s1[0]);
                 map.put("isCore",s1[1]);
-                map.put("col",s1[2]);
+                map.put("col","\""+s1[2]+"\"");
                 map.put("tableName","\""+s1[0]+"\"");
+                map.put("colName","attr"+i);
+                i++;
                 listAttr.add(map);
-                String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", s1[0], s1[1]);
-              listTableName.put("\""+s1[0]+"\"",tableNameAttr);
+                String tableNameInfo = MessageFormat.format("\"{0}\".prod_{1}_jan_info", s1[0], s1[1]);
+                String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_info", s1[0], s1[1]);
+                String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_info", s1[0], s1[1]);
+              listTableName.put("\""+s1[0]+"\"",tableNameInfo);
+                headerTableName.put("\""+"attr"+s1[0]+"\"",tableNameAttr);
+                headerTableName.put("\""+"kaisou"+s1[0]+"\"",tableNameKaisou);
             }
-
-            List<Map<String, Object>> initialExtraction = shelfPtsDataMapper.getInitialExtraction(shelfPtsData, tableName
-                    , priorityOrderDataForCgiDto.getProductPowerNo(),listTableName,listAttr);
-
-
+            List<LinkedHashMap<String, Object>> colHeader = shelfPtsDataMapper.getColHeader(headerTableName,listAttr);
+            List<LinkedHashMap<String, Object>> initialExtraction = new ArrayList<>();
+            //initialExtraction = shelfPtsDataMapper.getInitialExtraction(shelfPtsData, tableName
+            //        , priorityOrderDataForCgiDto.getProductPowerNo(),listTableName,listAttr);
+            //
+            //if (initialExtraction!=null){
+            //    return ResultMaps.result(ResultEnum.SUCCESS,initialExtraction);
+            //}
             String uuid = UUID.randomUUID().toString();
             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
             String path = resourceBundle.getString("PriorityOrderData");

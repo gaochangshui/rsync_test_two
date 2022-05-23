@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanProposal;
-import com.trechina.planocycle.entity.po.ShelfPtsData;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanProposalVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -20,7 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.UUID;
 
 @Service
 public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriorityOrderJanProposalService {
@@ -115,17 +117,17 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      * @param priorityOrderCd
      */
     public void janProposalDataFromDB(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd) {
-        List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, Long.parseLong(shelfPatternNo));
-        //只是用品名2
-        String tableName = "\"1000\".prod_0000_jan_info";
-        List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
-        Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals("jan_cd")).findFirst();
-        String janCdCol = janCdOpt.get().get("attr").toString();
-        Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals("jan_name")).findFirst();
-        String janNameCol = janNameOpt.get().get("attr").toString();
-        List<PriorityOrderJanProposal> list = productPowerDataMapper.selectSameNameJan(productPowerNo, shelfPtsData.getId(), tableName, janCdCol, janNameCol);
-        JSONArray datasJan = JSON.parseArray(JSON.toJSONString(list));
-        priorityOrderJanProposalService.savePriorityOrderJanProposal(datasJan,companyCd,priorityOrderCd);
+        //List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, Long.parseLong(shelfPatternNo));
+        ////只是用品名2
+        //String tableName = "\"1000\".prod_0000_jan_info";
+        //List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
+        //Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals("jan_cd")).findFirst();
+        //String janCdCol = janCdOpt.get().get("attr").toString();
+        //Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals("jan_name")).findFirst();
+        //String janNameCol = janNameOpt.get().get("attr").toString();
+        //List<PriorityOrderJanProposal> list = productPowerDataMapper.selectSameNameJan(productPowerNo, shelfPtsData.getId(), tableName, janCdCol, janNameCol);
+        //JSONArray datasJan = JSON.parseArray(JSON.toJSONString(list));
+        //priorityOrderJanProposalService.savePriorityOrderJanProposal(datasJan,companyCd,priorityOrderCd);
     }
 
 
