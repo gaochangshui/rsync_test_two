@@ -120,12 +120,13 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
     public void janProposalDataFromDB(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd) {
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, shelfPatternNo);
         //只是用品名2
-        String tableName = "\"1000\".prod_0000_jan_info";
+        String tableName = "\"1000\".prod_0000_jan_attr_header_sys";
         List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
         Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals("jan_cd")).findFirst();
-        String janCdCol = janCdOpt.get().get("attr").toString();
+        String janCdCol = janCdOpt.get().get("sort").toString();
         Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals("jan_name")).findFirst();
-        String janNameCol = janNameOpt.get().get("attr").toString();
+        String janNameCol = janNameOpt.get().get("sort").toString();
+        tableName = "\"1000\".prod_0000_jan_info";
         List<PriorityOrderJanProposal> list = productPowerDataMapper.selectSameNameJan(productPowerNo,
                 shelfPtsData.stream().map(pts->pts.getId()+"").collect(Collectors.joining(",")), tableName, janCdCol, janNameCol);
         JSONArray datasJan = JSON.parseArray(JSON.toJSONString(list));
