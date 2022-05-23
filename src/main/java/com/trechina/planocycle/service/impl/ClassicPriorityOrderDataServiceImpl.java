@@ -47,7 +47,6 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -112,90 +111,16 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     /**
      * 优先顺位表初期设定数据
      *
-     * @param priorityOrderDataForCgiDto
+     * @param priorityOrderDataDto
      * @return
      */
     @Override
-    public Map<String, Object> getPriorityOrderData(PriorityOrderDataForCgiDto priorityOrderDataForCgiDto) {
-        // 从cgi获取数据
-        logger.info("优先顺位表初期设定数据参数" + priorityOrderDataForCgiDto);
-        Map<String, Object> Data = new HashMap<>();
-        //没有下面这俩参数代表直接跳转画面，有既存数据
-        if (priorityOrderDataForCgiDto.getMode().equals("priority_data")) {
-
-            PriorityOrderMstDto priorityOrderMstDto = new PriorityOrderMstDto();
-            priorityOrderMstDto.setCompanyCd(priorityOrderDataForCgiDto.getCompany());
-            priorityOrderMstDto.setPriorityOrderCd(priorityOrderDataForCgiDto.getPriorityNO());
-            // 抽出attrbutecd
-            String attrcd = priorityOrderDataMapper.selectPriorityAttrCd(priorityOrderDataForCgiDto.getCompany(),
-                    priorityOrderDataForCgiDto.getPriorityNO());
-            String attrValue = priorityOrderDataMapper.selectPriorityAttrValue(priorityOrderDataForCgiDto.getCompany(),
-                    priorityOrderDataForCgiDto.getPriorityNO());
-            //最終表をテンポラリ・テーブルに戻す
-            priorityOrderJanCardMapper.deleteByPrimaryKey(priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getPriorityNO());
-            priorityOrderJanCardMapper.setWorkForFinal(priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getPriorityNO());
-
-            priorityOrderJanNewMapper.delete(priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getPriorityNO());
-            priorityOrderJanNewMapper.setWorkForFinal(priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getPriorityNO());
-
-            priorityOrderJanAttributeMapper.deleteByPrimaryKey(priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getPriorityNO());
-            priorityOrderJanAttributeMapper.setWorkForFinal(priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getPriorityNO());
-
-            priorityOrderJanProposalMapper.deleteByPrimaryKey(priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getPriorityNO());
-            priorityOrderJanProposalMapper.setWorkForFinal(priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getPriorityNO());
-
-            priorityOrderCatepakMapper.deleteByPrimaryKey(priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getPriorityNO());
-            priorityOrderCatepakMapper.setWorkForFinal(priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getPriorityNO());
-
-            priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getPriorityNO());
-            priorityOrderCatepakAttributeMapper.setWorkForFinal(priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getPriorityNO());
-
-            priorityOrderMapper.delete(priorityOrderDataForCgiDto.getPriorityNO());
-            priorityOrderMapper.insertWork(priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getPriorityNO());
-
-            logger.info("抽出的优先顺位表属性cd" + attrcd);
-
-            priorityOrderMstDto.setAttributeCd(attrValue);
-//            Data = priorityOrderMstService.priorityDataWRFlag(priorityOrderMstDto, new String[0], "read");
-            String[] colName = attrcd.split(",");
-            for (int i = 0; i < colName.length; i++) {
-                colName[i] = "attr" +colName[i];
-                if (i==colName.length-1){
-                    colName[i] = "mulit_attr";
-                }
-            }
-
-            List<PriorityOrderMstAttrSort> attrSort = priorityOrderDataMapper.getAttrSort(priorityOrderDataForCgiDto.getCompany(), priorityOrderDataForCgiDto.getPriorityNO());
-            String [] c =new String[attrSort.size()];
-            for (int i = 0; i < attrSort.size(); i++) {
-                if (attrSort.get(i).getValue() == colName.length){
-                    c[i] = "mulit_attr";
-                }else {
-                    c[i] = "attr"+attrSort.get(i).getValue();
-                }
-
-            }
-            List<String> col = Arrays.asList(c);
-            priorityOrderDataForCgiDto.setOrderCol(col);
-            List<Map<String, Object>> dataList = priorityOrderResultDataMapper.selectFinalData(priorityOrderMstDto.getPriorityOrderCd(), priorityOrderMstDto.getCompanyCd(),col);
-            JSONArray jsonArray =  new JSONArray();
-            JSONObject itemObj = null;
-            for (Map<String, Object> itemMap : dataList) {
-                itemObj = new JSONObject();
-                for (Map.Entry<String, Object> entry : itemMap.entrySet()) {
-                    if(!entry.getKey().startsWith("attr") || Arrays.stream(colName).anyMatch(s -> s.equals(entry.getKey()))){
-                        itemObj.put(entry.getKey(), entry.getValue());
-                    }
-                }
-                jsonArray.add(itemObj);
-            }
-            Data.put("data", jsonArray.toString());
-            logger.info("colName",colName);
-
-            logger.info("优先顺位表既存cgi返回数据：" + Data);
-        } else {
+    public Map<String, Object> getPriorityOrderData(PriorityOrderDataDto priorityOrderDataDto) {
+        String companyCd = priorityOrderDataDto.getCompanyCd();
+        Integer priorityPowerCd = priorityOrderDataDto.getPriorityOrderCd();
+        String authorCd = session.getAttribute("aud").toString();
             // 初始化数据
-            List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(priorityOrderDataForCgiDto.getCompany(), priorityOrderDataForCgiDto.getShelfPatternNo());
+            List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, priorityOrderDataDto.getShelfPatternCd());
             //只是用品名2
             String tableName = "\"1000\".prod_0000_jan_info";
             List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
@@ -203,10 +128,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             //String janCdCol = janCdOpt.get().get("attr").toString();
             //Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals("jan_name")).findFirst();
             //String janNameCol = janNameOpt.get().get("attr").toString();
-            String[] AttrList = priorityOrderDataForCgiDto.getAttrList().split(",");
+            String[] AttrList = priorityOrderDataDto.getAttrList().split(",");
             List<Map<String,Object>> listAttr = new ArrayList();
             Map<String,Object> listTableName = new HashMap<>();
-            Map<String,Object> headerTableName = new HashMap<>();
+            LinkedHashMap<String,Object> mapColHeader = new LinkedHashMap<>();
+            mapColHeader.put("jan_old","JAN");
+            mapColHeader.put("jan_new","JAN");
+            mapColHeader.put("sku","商品名");
             int i = 1;
             for (String s : AttrList) {
 
@@ -217,111 +145,43 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 map.put("col","\""+s1[2]+"\"");
                 map.put("tableName","\""+s1[0]+"\"");
                 map.put("colName","attr"+i);
-                i++;
                 listAttr.add(map);
                 String tableNameInfo = MessageFormat.format("\"{0}\".prod_{1}_jan_info", s1[0], s1[1]);
-                String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_info", s1[0], s1[1]);
-                String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_info", s1[0], s1[1]);
-              listTableName.put("\""+s1[0]+"\"",tableNameInfo);
-                headerTableName.put("\""+"attr"+s1[0]+"\"",tableNameAttr);
-                headerTableName.put("\""+"kaisou"+s1[0]+"\"",tableNameKaisou);
+                String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", s1[0], s1[1]);
+                String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", s1[0], s1[1]);
+
+                String colName = priorityOrderDataMapper.getColName(tableNameAttr, tableNameKaisou, s1[2]);
+                mapColHeader.put("attr"+i,colName);
+                listTableName.put("\""+s1[0]+"\"",tableNameInfo);
+                i++;
             }
-            List<LinkedHashMap<String, Object>> colHeader = shelfPtsDataMapper.getColHeader(headerTableName,listAttr);
+            mapColHeader.put("pos_amount","販売金額");
+            mapColHeader.put("unit_price","一品単価");
+            mapColHeader.put("branch_amount","販売金額@店");
+            mapColHeader.put("rank","Rank");
+            mapColHeader.put("rank_prop","Rank");
+            mapColHeader.put("rank_upd","Rank");
             List<LinkedHashMap<String, Object>> initialExtraction = new ArrayList<>();
-            //initialExtraction = shelfPtsDataMapper.getInitialExtraction(shelfPtsData, tableName
-            //        , priorityOrderDataForCgiDto.getProductPowerNo(),listTableName,listAttr);
-            //
-            //if (initialExtraction!=null){
-            //    return ResultMaps.result(ResultEnum.SUCCESS,initialExtraction);
-            //}
-            String uuid = UUID.randomUUID().toString();
-            ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-            String path = resourceBundle.getString("PriorityOrderData");
-            priorityOrderDataForCgiDto.setGuid(uuid);
-            // 获取品名和商品cd
-//            ProductOrderAttrAndItemVO productOrderAttrAndItemVO = commodityScoreMasterService.getAttrAndItmemInfo(
-//                    priorityOrderDataForCgiDto.getCompany(),priorityOrderDataForCgiDto.getProductPowerNo()
-//            );
-            String company = priorityOrderDataForCgiDto.getCompany();
-            Integer priorityNO = priorityOrderDataForCgiDto.getPriorityNO();
-            ProductOrderAttrAndItemVO productOrderAttrAndItemVO = productPowerParamMstMapper.selectAttrAndValue(
-                    priorityOrderDataForCgiDto.getCompany(), priorityOrderDataForCgiDto.getProductPowerNo());
-            priorityOrderDataForCgiDto.setAttributeCd(productOrderAttrAndItemVO.getAttrStr());
-            priorityOrderDataForCgiDto.setItemFlg(productOrderAttrAndItemVO.getItemFlg());
-            priorityOrderDataForCgiDto.setProductNmFlag(productOrderAttrAndItemVO.getItemFlg());
-            priorityOrderDataForCgiDto.setWriteReadFlag("read");
-            priorityOrderDataForCgiDto.setMode("priority_shoki");
+            initialExtraction.add(mapColHeader);
+        List<LinkedHashMap<String, Object>> datas = shelfPtsDataMapper.getInitialExtraction(shelfPtsData, tableName
+                , priorityOrderDataDto.getProductPowerCd(), listTableName, listAttr);
 
-            String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-            logger.info("调用cgi获取优先顺位表的参数：" + priorityOrderDataForCgiDto);
-            //递归调用cgi，首先去taskid
-            String result = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
-            logger.info("taskId返回：" + result);
-            String queryPath = resourceBundle.getString("TaskQuery");
-            //带着taskId，再次请求cgi获取运行状态/数据
-            Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-            logger.info("优先顺位表cgi返回数据：" + Data);
+        priorityOrderDataMapper.deleteWorkData(companyCd,priorityPowerCd);
+        priorityOrderDataMapper.insertWorkData(companyCd,priorityPowerCd,datas,authorCd);
+        for (LinkedHashMap<String, Object> data : datas) {
+            data.remove("goods_rank");
+        }
+        initialExtraction.addAll(datas);
             //delete old data
-            priorityOrderJanAttributeMapper.deleteByPrimaryKey(company, priorityNO);
-            priorityOrderCatepakMapper.deleteByPrimaryKey(company, priorityNO);
-            priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(company, priorityNO);
-            priorityOrderJanCardMapper.deleteByPrimaryKey(company, priorityNO);
-            priorityOrderJanProposalMapper.deleteByPrimaryKey(company, priorityNO);
-            priorityOrderJanNewMapper.delete(company, priorityNO);
-            priorityOrderMstAttrSortMapper.deleteByPrimaryKey(company, priorityNO);
-        }
+            priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd, priorityPowerCd);
+            priorityOrderCatepakMapper.deleteByPrimaryKey(companyCd, priorityPowerCd);
+            priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd, priorityPowerCd);
+            priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd, priorityPowerCd);
+            priorityOrderJanProposalMapper.deleteByPrimaryKey(companyCd, priorityPowerCd);
+            priorityOrderJanNewMapper.delete(companyCd, priorityPowerCd);
+            priorityOrderMstAttrSortMapper.deleteByPrimaryKey(companyCd, priorityPowerCd);
 
-        if (Data.get("data") != null) {
-            JSONArray datas = (JSONArray) JSONArray.parse(Data.get("data").toString());
-            this.commParseJsonArray(datas, priorityOrderDataForCgiDto.getCompany(), priorityOrderDataForCgiDto.getPriorityNO());
-            //janProposalData(priorityOrderDataForCgiDto, path, cgiUtils, tokenInfo, queryPath);
-            //查询
-            List<Map<String, Object>> results = priorityOrderDataMapper.selectTempData(priorityOrderDataForCgiDto.getOrderCol(),
-                        "public.priorityorder" + session.getAttribute("aud").toString(),priorityOrderDataForCgiDto.getMode());
-
-       /*     results.forEach(item -> {
-                if (item.get("rank_prop").toString().equals("99999999")) {
-                    item.put("rank_prop", "カット");
-                }
-                if (item.get("rank_prop").toString().equals("99999998")) {
-                    item.put("rank_prop", "_");
-                }
-                if (item.get("rank_upd").toString().equals("99999999")) {
-                    item.put("rank_upd", "カット");
-                }
-                if (item.get("rank_upd").toString().equals("99999998")) {
-                    item.put("rank_upd", "_");
-                }
-                if (item.get("rank").toString().equals("-1")) {
-                    item.put("rank", "新規");
-                }
-                if (item.get("rank").toString().equals("99999998")) {
-                    item.put("rank", "_");
-                }
-            });*/
-            String a =null;
-            Double b =0.0;
-            for (Map<String, Object> stringObjectMap : results) {
-                if ("_".equals(stringObjectMap.get("pos_before_rate").toString()) || "".equals(stringObjectMap.get("pos_before_rate").toString())){
-                    continue;
-                }
-                a=stringObjectMap.get("pos_before_rate").toString();
-                String[] split = a.split("%");
-                DecimalFormat format=new DecimalFormat("#0.00");
-                a = format.format(Double.parseDouble(split[0]))+"%";//保留2为小数
-
-                stringObjectMap.put("pos_before_rate",a);
-            }
-            Map<String, Object> colMap = new HashMap<>();
-            colMap.put("col", ((JSONObject) datas.get(0)).keySet().stream().sorted());
-            results.add(0, colMap);
-            if(!priorityOrderDataForCgiDto.getMode().equals("priority_shoki")){
-
-            }
-            return ResultMaps.result(ResultEnum.SUCCESS, results);
-        } else {
-            return Data;
-        }
+    return ResultMaps.result(ResultEnum.SUCCESS,initialExtraction);
     }
 
     private void commParseJsonArray(JSONArray datas, String company, Integer priorityNO){

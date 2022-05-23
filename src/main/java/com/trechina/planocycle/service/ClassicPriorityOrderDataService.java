@@ -3,7 +3,7 @@ package com.trechina.planocycle.service;
 import com.trechina.planocycle.entity.dto.DownloadDto;
 import com.trechina.planocycle.entity.dto.DownloadSortDto;
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderDataDto;
 import com.trechina.planocycle.entity.po.PriorityOrderAttributeClassify;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,10 +16,10 @@ import java.util.Map;
 public interface ClassicPriorityOrderDataService {
     /**
      * 优先顺位表初期设定数据
-     * @param priorityOrderDataForCgiDto
+     * @param priorityOrderDataDto
      * @return
      */
-    Map<String,Object> getPriorityOrderData(PriorityOrderDataForCgiDto priorityOrderDataForCgiDto);
+    Map<String,Object> getPriorityOrderData(PriorityOrderDataDto priorityOrderDataDto);
 
     Map<String, String> checkIsJanNew(List<String> janList, String company, Integer priorityOrderCd, String tableName);
 

@@ -2,7 +2,7 @@ package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.dto.DownloadSortDto;
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderDataDto;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +26,8 @@ public class ClassicPriorityOrderDataController {
      * @return
      */
     @PostMapping("/getPriorityOrderData")
-    public Map<String,Object> getPriorityOrderData(@RequestBody PriorityOrderDataForCgiDto priorityOrderDataForCgiDto){
-        return priorityOrderDataService.getPriorityOrderData(priorityOrderDataForCgiDto);
+    public Map<String,Object> getPriorityOrderData(@RequestBody PriorityOrderDataDto priorityOrderDataDto){
+        return priorityOrderDataService.getPriorityOrderData(priorityOrderDataDto);
     }
 
     /**
