@@ -45,7 +45,7 @@
         select jan_new jan, ROW_NUMBER() OVER(PARTITION by
         <foreach collection="sortList" item="obj" separator=",">${obj}</foreach>
          order by case "orderdata".rank when -1 then -1 else 0 end,jandata.rank,rank_prop, "orderdata".rank) rank
-        from ${tableName} "orderdata" inner join
+        from priority.work_priority_order_result_data "orderdata" inner join
         priority.priority_order_pts_jandata jandata on jandata.jan_cd="orderdata".jan_new
         where jandata.company_cd=#{companyCd} and jandata.priority_order_cd=#{priorityOrderCd} and flg!=99999999;
     </select>
@@ -59,14 +59,14 @@
         where orderdata.company_cd=#{companyCd} and orderdata.priority_order_cd=#{priorityOrderCd};
     </select>
     <update id="updateRankUpd">
-        update ${tableName}
+        update priority.work_priority_order_result_data
         set rank_upd=
         CASE jan_new
         <foreach collection="ptsJanList" item="obj">
             WHEN trim(#{obj.jan}) THEN #{obj.rank}
         </foreach>
         ELSE rank_upd END
-        where rank_upd != 99999999
+        where rank_upd != 99999999 and priority_order_cd=#{priorityOrderCd}
     </update>
     <update id="updateAttr">
         update ${tableName}
@@ -81,6 +81,7 @@
             WHEN trim(#{obj.jan}) THEN #{obj.attr2}
         </foreach>
         ELSE ${attr2} END
+        where priority_order_cd=#{priorityOrderCd}
     </update>
     <update id="updateSavedRankUpd">
         update priority.priority_order_result_data

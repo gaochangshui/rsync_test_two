@@ -71,7 +71,7 @@ public interface ClassicPriorityOrderDataMapper {
 
     void updateCutJanForProp(String tablename);
 
-    void updateCutJanByJanList(String tablename, List<DownloadDto> existJanCut);
+    void updateCutJanByJanList(Integer priorityOrderCd, List<DownloadDto> existJanCut);
 
     List<String> selectExistJan(@Param("tableName")String tableName, List<DownloadDto> newJanList);
 
@@ -80,9 +80,9 @@ public interface ClassicPriorityOrderDataMapper {
                                                 @Param("priorityOrderCd") Integer priorityOrderCd,
                                                 @Param("tablename") String tablename);
 
-    List<String> existJanOld(List<String> jan, String tableName);
+    List<String> existJanOld(List<String> jan);
 
-    List<String> existJanNew(List<String> jan, String tableName);
+    List<String> existJanNew(List<String> jan);
 
     List<Map<String,Object>> getTmpTable(@Param("tableName") String tableName,@Param("colName")List<String>colName,@Param("priorityOrderCd") Integer priorityOrderCd,@Param("companyCd")String companyCd);
 

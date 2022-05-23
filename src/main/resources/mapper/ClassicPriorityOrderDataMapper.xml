@@ -108,6 +108,7 @@
             when #{item.jan} then 99999999
         </foreach>
         else rank_upd end
+        where priority_order_cd=#{priorityOrderCd}
     </update>
     <update id="updateUPdRank">
         update ${tableName}
@@ -328,14 +329,14 @@
 
     </select>
     <select id="existJanOld" resultType="string">
-        select jan_old from ${tableName} where jan_old in
+        select jan_old from priority.work_priority_order_result_data where jan_old in
         <foreach collection="jan" item="obj" open="(" close=")" separator=",">
             #{obj}
         </foreach>
         and rank != -1
     </select>
     <select id="existJanNew" resultType="string">
-        select jan_new from ${tableName} where jan_new in
+        select jan_new from priority.work_priority_order_result_data where jan_new in
         <foreach collection="jan" item="obj" open="(" close=")" separator=",">
             #{obj}
         </foreach>
@@ -444,7 +445,7 @@
     </select>
 
     <insert id="insert" >
-    insert into ${tablename} (
+    insert into priority.work_priority_order_result_data (
             <foreach collection="keyNameList" separator="," item="key">
               ${key.name}
             </foreach>
