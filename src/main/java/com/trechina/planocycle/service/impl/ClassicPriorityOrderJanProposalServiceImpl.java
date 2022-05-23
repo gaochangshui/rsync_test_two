@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanProposal;
 import com.trechina.planocycle.entity.po.ShelfPtsData;
@@ -10,7 +11,6 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanProposalService;
 import com.trechina.planocycle.service.CommonMstService;
-import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
 import com.trechina.planocycle.utils.dataConverUtils;
@@ -47,6 +47,10 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
     @Autowired
     private cgiUtils cgiUtil;
 
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
+
+
     /**
      * 获取jan变提案list
      *
@@ -64,9 +68,10 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
             // 如果没数据获取cgi数据
 //            try {
 //                janProposalData(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd);
-                janProposalDataFromDB(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd);
+            String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+                janProposalDataFromDB(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd, coreCompany);
 //                priorityOrderJanProposals = priorityOrderJanProposalMapper.selectByPrimaryKey(companyCd,priorityOrderCd);
-                String tableName = "\"1000\".prod_0000_jan_info";
+                String tableName = String.format("\"%s\".prod_0000_jan_info", coreCompany);
                 priorityOrderJanProposals = priorityOrderJanProposalMapper.selectJanInfoByPrimaryKey(companyCd,priorityOrderCd,
                         tableName,"1", "2");
 
@@ -117,16 +122,16 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      * @param shelfPatternNo
      * @param priorityOrderCd
      */
-    public void janProposalDataFromDB(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd) {
+    public void janProposalDataFromDB(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd, String coreCompany) {
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, shelfPatternNo);
         //只是用品名2
-        String tableName = "\"1000\".prod_0000_jan_attr_header_sys";
+        String tableName = String.format("\"%s\".prod_0000_jan_attr_header_sys", coreCompany);
         List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
         Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals("jan_cd")).findFirst();
         String janCdCol = janCdOpt.get().get("sort").toString();
         Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals("jan_name")).findFirst();
         String janNameCol = janNameOpt.get().get("sort").toString();
-        tableName = "\"1000\".prod_0000_jan_info";
+        tableName = String.format("\"%s\".prod_0000_jan_info", coreCompany);
         List<PriorityOrderJanProposal> list = productPowerDataMapper.selectSameNameJan(productPowerNo,
                 shelfPtsData.stream().map(pts->pts.getId()+"").collect(Collectors.joining(",")), tableName, janCdCol, janNameCol);
         JSONArray datasJan = JSON.parseArray(JSON.toJSONString(list));
