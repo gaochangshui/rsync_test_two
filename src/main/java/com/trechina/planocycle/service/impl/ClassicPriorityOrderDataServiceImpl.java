@@ -489,9 +489,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
             List<DownloadDto> newJanList = new ArrayList<>(priorityOrderPtsJandataMapper.selectNewJan(company, priorityOrderCd, uploadJanList));
             List<ClassicPriorityOrderJanNew> priorityOrderJanNews = null;
+            List<PriorityOrderMstAttrSortDto> attrSorts = priorityOrderMstAttrSortMapper.selectWKAttr(company, priorityOrderCd);
             if(!newJanList.isEmpty()){
                 ClassicPriorityOrderDataService dataService = applicationContext.getBean(ClassicPriorityOrderDataService.class);
-                resultMap = dataService.doJanNew(newJanList, company, priorityOrderCd, attrList, classifyList);
+                resultMap = dataService.doJanNew(newJanList, company, priorityOrderCd, attrList, classifyList, attrSorts);
                 priorityOrderJanNews = (List<ClassicPriorityOrderJanNew>) resultMap.getOrDefault("data", Lists.newArrayList());
             }
             String authorCd = session.getAttribute("aud").toString();
@@ -569,7 +570,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             List<String> attrSort = Arrays.stream(attrList.split(",")).collect(Collectors.toList());
             List<DownloadDto> newRankList = null;
             String[] attrArray = attrList.split(",");
-            List<String> taiTana = Arrays.asList(attrArray).subList(0, 2);
+            Map<String, String> attrSortMap = attrSorts.stream().collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getValue, PriorityOrderMstAttrSortDto::getSort));
+            List<String> attrColList = Arrays.asList(attrArray).stream().map(attrSortMap::get).collect(Collectors.toList());
+            List<String> taiTana = Arrays.asList(attrArray).stream().map(attrSortMap::get).collect(Collectors.toList()).subList(0, 2);
 
             uploadJanList.stream().peek(jan->{
                 Optional<PriorityOrderAttributeClassify> attr1Opt = classifyList.stream()
@@ -582,8 +585,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             }).collect(Collectors.toList());
             priorityOrderPtsJandataMapper.updateAttr(uploadJanList, priorityOrderCd, taiTana.get(0), taiTana.get(1));
 
-            newRankList = priorityOrderPtsJandataMapper.selectJanRank(company, priorityOrderCd, attrSort);
-            priorityOrderPtsJandataMapper.updateRankUpd(newRankList, taiTana.get(0), taiTana.get(1));
+            newRankList = priorityOrderPtsJandataMapper.selectJanRank(company, priorityOrderCd, attrColList);
+            priorityOrderPtsJandataMapper.updateRankUpd(newRankList, taiTana.get(0), taiTana.get(1), priorityOrderCd);
             cacheUtil.put(authorCd, attrList);
         } catch (IOException e) {
             logger.error("", e);
@@ -616,7 +619,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
     @Override
     public Map<String, Object> doJanNew(List<DownloadDto> newJanList, String company, Integer priorityOrderCd,
-                                        String attrList, List<PriorityOrderAttributeClassify> classifyList){
+                                        String attrList, List<PriorityOrderAttributeClassify> classifyList,List<PriorityOrderMstAttrSortDto> attrSorts){
         priorityOrderJanNewMapper.deleteByJan(company, priorityOrderCd, newJanList);
 
         List<String> newJanExistCdList = newJanList.stream().map(DownloadDto::getJan).collect(Collectors.toList());
@@ -643,12 +646,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<PriorityOrderJanAttribute> janAttrs = new ArrayList<>();
 
         String[] attrValSort = attrList.split(",");
-        List<PriorityOrderMstAttrSort> attrSorts = priorityOrderMstAttrSortMapper.selectWKByPrimaryKey(company, priorityOrderCd);
         Map<String, String> attrSortMap = attrSorts.stream()
                 .filter(sort-> !Arrays.stream(attrValSort).collect(Collectors.toList()).contains(sort.getValue()+""))
-                .collect(Collectors.toMap(PriorityOrderMstAttrSort::getValue, sort->"attr"+sort.getSort()));
+                .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getValue, PriorityOrderMstAttrSortDto::getSort));
 
-        List<String> attrSort = Arrays.stream(attrValSort).map(sort->"attr"+attrSortMap.get(sort)).collect(Collectors.toList());
+        List<String> attrSort = Arrays.stream(attrValSort).map(sort->attrSortMap.get(sort)).collect(Collectors.toList());
         String[] allAttrSortList = attrSortMap.values().toArray(new String[0]);
         List<String> taiTana = attrSort.subList(0, 2);
 

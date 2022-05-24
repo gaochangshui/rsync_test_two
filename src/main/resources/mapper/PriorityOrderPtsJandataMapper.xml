@@ -69,7 +69,7 @@
         where rank_upd != 99999999 and priority_order_cd=#{priorityOrderCd}
     </update>
     <update id="updateAttr">
-        update ${tableName}
+        update priority.work_priority_order_result_data
         set
         ${attr1}=CASE jan_new
         <foreach collection="ptsJanList" item="obj">

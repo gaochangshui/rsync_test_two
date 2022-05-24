@@ -1,9 +1,6 @@
 package com.trechina.planocycle.service;
 
-import com.trechina.planocycle.entity.dto.DownloadDto;
-import com.trechina.planocycle.entity.dto.DownloadSortDto;
-import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderDataDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.PriorityOrderAttributeClassify;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,7 +29,7 @@ public interface ClassicPriorityOrderDataService {
     void doJanCut(List<DownloadDto> cutJanList, String company, Integer priorityOrderCd);
 
     Map<String, Object> doJanNew(List<DownloadDto> newJanList, String company, Integer priorityOrderCd,
-                                 String attrList, List<PriorityOrderAttributeClassify> classifyList);
+                                 String attrList, List<PriorityOrderAttributeClassify> classifyList, List<PriorityOrderMstAttrSortDto> attrSorts);
 
     /**
      * 优先顺位表反应按钮抽出数据
