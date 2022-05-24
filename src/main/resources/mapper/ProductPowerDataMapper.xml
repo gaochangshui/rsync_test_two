@@ -734,14 +734,14 @@
     </insert>
     <select id="selectSameNameJan" resultType="com.trechina.planocycle.entity.po.PriorityOrderJanProposal">
         select t1.jan as janOld,t2.jan janNew from
-        (select distinct jan, janinfo."${janNameCol}" jan_name, janinfo."${janCol}" jan from ${tableName} janinfo
+        (select distinct jan, janinfo."${janNameCol}" jan_name from ${tableName} janinfo
         inner join planocycle.shelf_pts_data_jandata jandata on janinfo."${janCol}" = jandata.jan
          where jandata.pts_cd::varchar=any(string_to_array(#{ptsCd},','))) t1
         inner join
-        (select distinct jan, janinfo."${janNameCol}" jan_name, janinfo."${janCol}" jan from ${tableName} janinfo
+        (select distinct jan, janinfo."${janNameCol}" jan_name from ${tableName} janinfo
         inner join planocycle.product_power_mst_data powermst on janinfo."${janCol}"=powermst.jan
-        where powermst.product_power_cd=#{productPowerNo}) t2 on t2."${janNameCol}" = t1."${janNameCol}"
-        where t1."${janCol}"!=t2."${janCol}";
+        where powermst.product_power_cd=#{productPowerNo}) t2 on t2.jan_name = t1.jan_name
+        where t1.jan!=t2.jan;
     </select>
     <select id="getBranch" resultType="java.lang.String">
         select  store_cd from planocycle.product_power_param_mst

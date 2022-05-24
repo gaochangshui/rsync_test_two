@@ -33,7 +33,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
     @Autowired
     private ClassicPriorityOrderJanNewMapper priorityOrderJanNewMapper;
     @Autowired
-    private PriorityOrderJanAttributeMapper priorityOrderJanAttributeMapper;
+    private ClassicPriorityOrderJanAttributeMapper priorityOrderJanAttributeMapper;
     @Autowired
     private ClassicPriorityOrderDataMapper priorityOrderDataMapper;
     @Autowired
@@ -59,8 +59,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
             // 遍历结果集，拆分动态列
             if (!priorityOrderJanNewVOS.isEmpty()) {
                 List<String> janNewList = priorityOrderJanNewVOS.stream().map(ClassicPriorityOrderJanNewVO::getJanNew).collect(Collectors.toList());
-                String tableName = "public.priorityorder"+session.getAttribute("aud").toString();
-                Map<String, String> errorJan = priorityOrderDataService.checkIsJanNew(janNewList, companyCd, priorityOrderCd, tableName);
+                Map<String, String> errorJan = priorityOrderDataService.checkIsJanNew(janNewList, companyCd, priorityOrderCd, "");
 
                 priorityOrderJanNewVOS.forEach(item -> {
                     Map<String, Object> result = new HashMap<>();
@@ -122,15 +121,13 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
     @Override
     public Map<String, Object> setPriorityOrderJanNew(JSONArray jsonArray) {
         //try {
-            logger.info("保存新规商品list参数:" + jsonArray);
+            logger.info("保存新规商品list参数:{}" ,jsonArray);
             List<ClassicPriorityOrderJanNew> janNewList = new ArrayList<>();
             List<PriorityOrderJanAttribute> janAttributeList = new ArrayList<>();
             //获取参数中第一行的企业和优先顺位号
             String companyCd = String.valueOf(((HashMap) jsonArray.get(0)).get("companyCd"));
             Integer priorityOrderCd =Integer.valueOf(String.valueOf(((HashMap) jsonArray.get(0)).get("priorityOrderCd")));
             // 全删
-            String tableName = "public.priorityorder" + session.getAttribute("aud");
-          //  priorityOrderDataMapper.deleteJanNew(companyCd, priorityOrderCd, tableName);
             priorityOrderJanNewMapper.delete(companyCd, priorityOrderCd);
             priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
 
@@ -140,18 +137,11 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         List<ClassicPriorityOrderJanNewDto> janNewAll = new Gson().fromJson(jsonArray.toJSONString(), new TypeToken<List<ClassicPriorityOrderJanNewDto>>(){}.getType());
             List<String> janNews = janNewAll.stream().map(ClassicPriorityOrderJanNewDto::getJanNew).collect(Collectors.toList());
             if(!janNews.isEmpty()){
-              //  priorityOrderDataMapper.deleteExistJanNew(janNews, tableName);
+                priorityOrderDataMapper.deleteExistJanNew(janNews,
+                        "priority.work_priority_order_result_data");
             }
 
-        List<Map> newList =  jsonArray.toJavaList(Map.class);
-        //不存在主表的数据查询，保出到主表
-           // notExistsData(companyCd, priorityOrderCd);
-
-            return ResultMaps.result(ResultEnum.SUCCESS);
-        //} catch (Exception e) {
-        //    logger.info("保存新规商品list报错" + e);
-        //    return ResultMaps.result(ResultEnum.FAILURE);
-        //}
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
@@ -178,8 +168,8 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
                 janAttr(janAttributeList, companyCd, priorityOrderCd, (HashMap) jsonArray.get(i));
             }
         }
-        logger.info("保存新规商品list主表处理完后的参数：" + janNewList.toString());
-        logger.info("保存新规商品list动态属性列处理完后的参数：" + janAttributeList.toString());
+        logger.info("保存新规商品list主表处理完后的参数：{}",janNewList.toString());
+        logger.info("保存新规商品list动态属性列处理完后的参数：{}", janAttributeList.toString());
         List<String> janNews = janNewList.stream().map(item -> item.getJanNew()).collect(Collectors.toList());
         if (!janNews.isEmpty()) {
             List<Jans> janNewMst = priorityOrderJanNewMapper.getJanNewMst(janNews);
@@ -195,24 +185,20 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         }
 
         //全插入
-        if (janNewList.size() > 0) {
+        if (!janNewList.isEmpty()) {
             priorityOrderJanNewMapper.insert(janNewList);
             priorityOrderJanAttributeMapper.insert(janAttributeList);
             //查询所有jannew 修改配荷店铺数
             List<Map<String, Object>> maps = priorityOrderJanNewMapper.selectJanNewOrAttr(companyCd, priorityOrderCd);
             maps.forEach(item -> {
                 String[] attrName = item.get("attr").toString().split(",");
-                String sel = "";
+                StringBuilder sel = new StringBuilder();
                 for (int i = 1; i <= attrName.length; i++) {
-                    if (i == attrName.length) {
-                        sel += "mulit_attr='" + attrName[i - 1] + "'";
-                    } else {
-                        sel += "attr" + i + "='" + attrName[i - 1] + "',";
-                    }
+                    sel.append("attr").append(i).append("='").append(attrName[i - 1]).append("',");
                 }
-                List<String> colValueList = Arrays.asList(sel.split(","));
+                List<String> colValueList = Arrays.asList(sel.toString().split(","));
                 String branchNum = priorityOrderCatepakAttributeMapper.selectForTempTable(colValueList, "public.priorityorder" + session.getAttribute("aud").toString());
-                logger.info("查询定番店铺数" + branchNum);
+                logger.info("查询定番店铺数{}", branchNum);
                 if (branchNum != null) {
                     priorityOrderJanNewMapper.updateBranchNum(Integer.valueOf(item.get("priority_order_cd").toString()),
                             item.get("jan_new").toString(), Integer.valueOf(branchNum));
