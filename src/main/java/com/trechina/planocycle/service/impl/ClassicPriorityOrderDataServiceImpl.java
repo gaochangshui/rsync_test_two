@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.Charset;
@@ -639,11 +640,15 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<Map> maps = datas.toJavaList(Map.class);
         List<PriorityOrderJanAttribute> janAttrs = new ArrayList<>();
 
-        priorityOrderMstAttrSortMapper.selectByPrimaryKey()
+        String[] attrValSort = attrList.split(",");
+        List<PriorityOrderMstAttrSort> attrSorts = priorityOrderMstAttrSortMapper.selectWKByPrimaryKey(company, priorityOrderCd);
+        Map<String, String> attrSortMap = attrSorts.stream()
+                .filter(sort-> !Arrays.stream(attrValSort).collect(Collectors.toList()).contains(sort.getValue()+""))
+                .collect(Collectors.toMap(PriorityOrderMstAttrSort::getValue, sort->"attr"+sort.getSort()));
 
-        String[] attrSort = attrList.split(",");
-        String[] allAttrSortList = allAttrList.split(",");
-        List<String> taiTana = Arrays.asList(attrSort).subList(0, 2);
+        List<String> attrSort = Arrays.stream(attrValSort).map(sort->"attr"+attrSortMap.get(sort)).collect(Collectors.toList());
+        String[] allAttrSortList = attrSortMap.values().toArray(new String[0]);
+        List<String> taiTana = attrSort.subList(0, 2);
 
         List<String> janMstList = maps.stream().map(map -> map.get("jan_new").toString()).collect(Collectors.toList());
         newJanList.stream().filter(newJan->!janMstList.contains(newJan.getJan())).forEach(newJan->{
@@ -667,7 +672,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             item.put(taiTana.get(0), newJan.getAttr1());
             item.put(taiTana.get(1), newJan.getAttr2());
 
-            for (int i = 2; i < allAttrSortList.length; i++) {
+            for (int i = 0; i < allAttrSortList.length; i++) {
                 item.put(allAttrSortList[i], "");
             }
 

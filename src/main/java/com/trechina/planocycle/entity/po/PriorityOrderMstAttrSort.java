@@ -5,7 +5,7 @@ public class PriorityOrderMstAttrSort {
 
     private Integer priorityOrderCd;
 
-    private Integer value;
+    private String value;
 
     private Integer sort;
 
@@ -27,11 +27,11 @@ public class PriorityOrderMstAttrSort {
         this.priorityOrderCd = priorityOrderCd;
     }
 
-    public Integer getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(Integer value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
