@@ -39,7 +39,7 @@ public interface ClassicPriorityOrderDataService {
      * @param colNameList
      * @return
      */
-    Map<String,Object> getPriorityOrderDataUpd(List<String> colNameList,Integer priorityOrderCd,Integer delFlg,String companyCd);
+    Map<String,Object> getPriorityOrderDataUpd(List<String> colNameList,Integer priorityOrderCd,String companyCd);
 
     Map<String,Object> getPriorityOrderListInfo(String companyCd,Integer priorityOrderCd);
 

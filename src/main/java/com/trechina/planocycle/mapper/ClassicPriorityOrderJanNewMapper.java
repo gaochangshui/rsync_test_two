@@ -3,9 +3,7 @@ package com.trechina.planocycle.mapper;
 import com.trechina.planocycle.entity.dto.DownloadDto;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanNew;
 import com.trechina.planocycle.entity.po.Jans;
-import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanNewVO;
-import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -42,10 +40,9 @@ public interface ClassicPriorityOrderJanNewMapper {
 
     void deleteByJan(String companyCd, Integer priorityOrderCd, List<DownloadDto> newJanList);
 
-    List<ClassicPriorityOrderJanNewVO> getExistOtherMst(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd
-                                                , @Param("tableName")String tableName);
+    List<ClassicPriorityOrderJanNewVO> getExistOtherMst(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
-    void deleteJanNew(@Param("tableName") String tableName);
+    void deleteJanNew(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     List<Jans> getJanNewMst(@Param("list")List<String> janNews);
 }

@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.dto.DownloadSortDto;
 import com.trechina.planocycle.entity.po.PriorityOrderAttributeClassify;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ClaasicPriorityOrderAttributeClassifyMapper;
+import com.trechina.planocycle.mapper.ClassicPriorityOrderMstAttrSortMapper;
 import com.trechina.planocycle.service.ClassicPriorityOrderAttributeClassifyService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +20,21 @@ public class ClassicPriorityOrderAttributeClassifyServiceImpl implements Classic
     private HttpSession session;
     @Autowired
     private ClaasicPriorityOrderAttributeClassifyMapper priorityOrderAttributeClassifyMapper;
+    @Autowired
+    private ClassicPriorityOrderMstAttrSortMapper classicPriorityOrderMstAttrSortMapper;
 
     @Override
     public Map<String, Object> getClassifyList(DownloadSortDto downloadSortDto) {
-        String tablename = "public.priorityorder" + session.getAttribute("aud").toString();
+        Integer priorityOrderCd = downloadSortDto.getPriorityOrderCd();
+        String companyCd = downloadSortDto.getCompanyCd();
+        String taiCd = classicPriorityOrderMstAttrSortMapper.getAttrCol(companyCd, priorityOrderCd, downloadSortDto.getTaiCd());
+        String tanaCd = classicPriorityOrderMstAttrSortMapper.getAttrCol(companyCd, priorityOrderCd, downloadSortDto.getTaiCd());
         Integer attrNum = priorityOrderAttributeClassifyMapper.getAttrNum(downloadSortDto.getCompanyCd(), downloadSortDto.getPriorityOrderCd());
         List<PriorityOrderAttributeClassify> classifyList = null;
             if (attrNum > 0){
                 classifyList = priorityOrderAttributeClassifyMapper.getClassifyList(downloadSortDto.getCompanyCd(), downloadSortDto.getPriorityOrderCd());
             }else {
-                classifyList = priorityOrderAttributeClassifyMapper.classifyList(downloadSortDto.getTaiCd(), downloadSortDto.getTanaCd(), tablename);
+                classifyList = priorityOrderAttributeClassifyMapper.classifyList(taiCd,tanaCd);
                 classifyList.forEach(item -> {
                     item.setCompanyCd(downloadSortDto.getCompanyCd());
                     item.setPriorityOrderCd(downloadSortDto.getPriorityOrderCd());

@@ -2,15 +2,12 @@ package com.trechina.planocycle.service.impl;
 
 import com.google.api.client.util.Strings;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard;
-import com.trechina.planocycle.entity.po.PriorityOrderJanCard;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanCardVO;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanNewVO;
-import com.trechina.planocycle.entity.vo.PriorityOrderJanCardVO;
-import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.mapper.ClassicPriorityOrderJanCardMapper;
+import com.trechina.planocycle.mapper.ClassicPriorityOrderJanNewMapper;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanCardService;
-import com.trechina.planocycle.service.PriorityOrderJanCardService;
 import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.dataConverUtils;
@@ -46,7 +43,7 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
     @Override
     public Map<String, Object> getPriorityOrderJanCard(String companyCd, Integer priorityOrderCd) {
         String tableName = "public.priorityorder" + session.getAttribute("aud").toString();
-        List<ClassicPriorityOrderJanNewVO> janNewList = priorityOrderJanNewMapper.getExistOtherMst(companyCd, priorityOrderCd,tableName);
+        List<ClassicPriorityOrderJanNewVO> janNewList = priorityOrderJanNewMapper.getExistOtherMst(companyCd, priorityOrderCd);
         logger.info("获取card商品list参数:"+companyCd+","+priorityOrderCd);
         List<ClassicPriorityOrderJanCardVO> priorityOrderJanCardVOS = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd);
         for (ClassicPriorityOrderJanNewVO priorityOrderJanNewVO : janNewList) {

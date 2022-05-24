@@ -26,7 +26,7 @@
     </delete>
     <select id="classifyList" resultType="com.trechina.planocycle.entity.po.PriorityOrderAttributeClassify">
         select distinct datas.${tai} as attr1,datas.${tana} as attr2,DENSE_RANK() over(order by ${tai}) taiCd,DENSE_RANK() over(PARTITION by ${tai} order by ${tai}, ${tana}) tanaCd
-        from ${tablename} datas
+        from priority.work_priority_order_result_data datas
         where rank_upd != 99999999
         order by taiCd,tanaCd
     </select>

@@ -76,26 +76,26 @@ public interface ClassicPriorityOrderDataMapper {
 
     List<String> selectExistJan(@Param("tableName")String tableName, List<DownloadDto> newJanList);
 
-    List<Map<String, Object>> getTempDataAndMst(@Param("orderCol") List<String> colNameList,
-                                                @Param("colName") List<String> colName,
-                                                @Param("priorityOrderCd") Integer priorityOrderCd,
-                                                @Param("tablename") String tablename);
+    List<Map<String, Object>> getTempDataAndMst(@Param("colSortNameList") List<String> colSortNameList,
+                                                @Param("colNameList") List<String> colNameList,
+                                                @Param("companyCd") String companyCd,
+                                                @Param("priorityOrderCd") Integer priorityOrderCd);
 
     List<String> existJanOld(List<String> jan);
 
     List<String> existJanNew(List<String> jan);
 
-    List<Map<String,Object>> getTmpTable(@Param("tableName") String tableName,@Param("colName")List<String>colName,@Param("priorityOrderCd") Integer priorityOrderCd,@Param("companyCd")String companyCd);
+    List<Map<String,Object>> getTmpTable(@Param("colNameList")List<String>colNameList,@Param("priorityOrderCd") Integer priorityOrderCd,@Param("companyCd")String companyCd);
 
-    void updateUPdRank(@Param("janCutList") List<String> janCutList,@Param("tableName") String tableName);
+    void updateUPdRank(@Param("janCutList") List<String> janCutList,@Param("companyCd") String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    void insertJanNew(@Param("lists") JSONArray jsonArray,@Param("tableName")String tableName);
+    void insertJanNew(@Param("lists") JSONArray jsonArray);
 
-    void insertTmpTable(@Param("tableName") String tableName, @Param("lists") List<Map<String, Object>> dataList);
+    void insertTmpTable( @Param("lists") List<Map<String, Object>> dataList);
 
     List<Map<String, Object>> selectTempDataByRankUpd(@Param("lists") List<String> attrSort, String tableName);
 
-    void updateRevivification(@Param("tableName")String tableName);
+    void updateRevivification(@Param("companyCd") String companyCd,@Param("priorityOrderCd") Integer priorityOrderCd);
 
     List<Map<String, Object>> selectPriorityStratumName(String tableName,String isCompanyCd,String prodIsCore);
 

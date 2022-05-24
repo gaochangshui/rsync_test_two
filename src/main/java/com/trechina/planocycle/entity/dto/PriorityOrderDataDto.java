@@ -1,10 +1,11 @@
 package com.trechina.planocycle.entity.dto;
 
+import java.util.LinkedHashMap;
 public class PriorityOrderDataDto {
     private String companyCd;
     private Integer productPowerCd;
     private String shelfPatternCd;
-    private String attrList;
+    private LinkedHashMap<String,Object> attrList;
     private Integer priorityOrderCd;
 
     public String getCompanyCd() {
@@ -31,11 +32,11 @@ public class PriorityOrderDataDto {
         this.shelfPatternCd = shelfPatternCd;
     }
 
-    public String getAttrList() {
+    public LinkedHashMap<String, Object> getAttrList() {
         return attrList;
     }
 
-    public void setAttrList(String attrList) {
+    public void setAttrList(LinkedHashMap<String, Object> attrList) {
         this.attrList = attrList;
     }
 
@@ -53,7 +54,7 @@ public class PriorityOrderDataDto {
                 "companyCd='" + companyCd + '\'' +
                 ", productPowerCd=" + productPowerCd +
                 ", shelfPatternCd='" + shelfPatternCd + '\'' +
-                ", attrList='" + attrList + '\'' +
+                ", attrList=" + attrList +
                 ", priorityOrderCd=" + priorityOrderCd +
                 '}';
     }
