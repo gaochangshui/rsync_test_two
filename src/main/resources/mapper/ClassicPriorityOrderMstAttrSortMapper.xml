@@ -23,7 +23,12 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort">
+    <delete id="deleteAttrWk">
+      delete from priority.work_priority_order_mst_attrsort
+      where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort">
     insert into priority.priority_order_mst_attrsort (company_cd, priority_order_cd, value,
       sort, cd)
     values
@@ -68,5 +73,12 @@
         #{cd,jdbcType=INTEGER},
       </if>
     </trim>
+  </insert>
+  <insert id="insertAttrWk">
+    insert into priority.work_priority_order_mst_attrsort (company_cd,priority_order_cd,value,sort)
+    values
+    <foreach collection="attrList" index="index" separator="," item="item" >
+      (#{companyCd},#{priorityOrderCd},#{item},#{index}+1)
+    </foreach>
   </insert>
 </mapper>

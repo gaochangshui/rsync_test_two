@@ -108,6 +108,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     private JanClassifyMapper janClassifyMapper;
     @Autowired
     private ClassicPriorityOrderJanCardService priorityOrderJanCardService;
+    @Autowired
+    private ClassicPriorityOrderMstAttrSortMapper classicPriorityOrderMstAttrSortMapper;
     /**
      * 优先顺位表初期设定数据
      *
@@ -119,27 +121,29 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         String companyCd = priorityOrderDataDto.getCompanyCd();
         Integer priorityPowerCd = priorityOrderDataDto.getPriorityOrderCd();
         String authorCd = session.getAttribute("aud").toString();
-            // 初始化数据
-            List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, priorityOrderDataDto.getShelfPatternCd());
-            //只是用品名2
-            String tableName = "\"1000\".prod_0000_jan_info";
-            List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
-            //Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals("jan_cd")).findFirst();
-            //String janCdCol = janCdOpt.get().get("attr").toString();
-            //Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals("jan_name")).findFirst();
-            //String janNameCol = janNameOpt.get().get("attr").toString();
-            String[] AttrList = priorityOrderDataDto.getAttrList().split(",");
-            List<Map<String,Object>> listAttr = new ArrayList();
-            Map<String,Object> listTableName = new HashMap<>();
-            LinkedHashMap<String,Object> mapColHeader = new LinkedHashMap<>();
-            mapColHeader.put("jan_old","JAN");
-            mapColHeader.put("jan_new","JAN");
-            mapColHeader.put("sku","商品名");
-            int i = 1;
-            for (String s : AttrList) {
-
-                Map<String,Object> map = new HashMap<>();
-                String[] s1 = s.split("_");
+        // 初始化数据
+        List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, priorityOrderDataDto.getShelfPatternCd());
+        //只是用品名2
+        String tableName = "\"1000\".prod_0000_jan_info";
+        List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
+        //Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals("jan_cd")).findFirst();
+        //String janCdCol = janCdOpt.get().get("attr").toString();
+        //Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals("jan_name")).findFirst();
+        //String janNameCol = janNameOpt.get().get("attr").toString();
+        String[] AttrList = priorityOrderDataDto.getAttrList().split(",");
+        List<String> list = Arrays.asList(AttrList);
+        classicPriorityOrderMstAttrSortMapper.deleteAttrWk(companyCd,priorityPowerCd);
+        classicPriorityOrderMstAttrSortMapper.insertAttrWk(companyCd,priorityPowerCd,list);
+        List<Map<String,Object>> listAttr = new ArrayList();
+        Map<String,Object> listTableName = new HashMap<>();
+        LinkedHashMap<String,Object> mapColHeader = new LinkedHashMap<>();
+        mapColHeader.put("jan_old","旧JAN");
+        mapColHeader.put("jan_new","新JAN");
+        mapColHeader.put("sku","SKU");
+        int i = 1;
+        for (String s : AttrList) {
+            Map<String,Object> map = new HashMap<>();
+            String[] s1 = s.split("_");
                 map.put("companyCd",s1[0]);
                 map.put("isCore",s1[1]);
                 map.put("col","\""+s1[2]+"\"");
@@ -158,6 +162,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             mapColHeader.put("pos_amount","販売金額");
             mapColHeader.put("unit_price","一品単価");
             mapColHeader.put("branch_amount","販売金額@店");
+            mapColHeader.put("branch_num","定番店铺数");
             mapColHeader.put("rank","Rank");
             mapColHeader.put("rank_prop","Rank");
             mapColHeader.put("rank_upd","Rank");
@@ -165,7 +170,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             initialExtraction.add(mapColHeader);
         List<LinkedHashMap<String, Object>> datas = shelfPtsDataMapper.getInitialExtraction(shelfPtsData, tableName
                 , priorityOrderDataDto.getProductPowerCd(), listTableName, listAttr);
-
+        if (datas.isEmpty()){
+            return ResultMaps.result(ResultEnum.SIZEISZERO);
+        }
         priorityOrderDataMapper.deleteWorkData(companyCd,priorityPowerCd);
         priorityOrderDataMapper.insertWorkData(companyCd,priorityPowerCd,datas,authorCd);
         for (LinkedHashMap<String, Object> data : datas) {

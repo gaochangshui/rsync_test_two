@@ -22,7 +22,7 @@ public class ClassicPriorityOrderDataController {
 
     /**
      * 获取优先顺位表数据
-     * @param priorityOrderDataForCgiDto
+     * @param priorityOrderDataDto
      * @return
      */
     @PostMapping("/getPriorityOrderData")
