@@ -562,8 +562,8 @@
     <select id="selectDynamicAttr" resultType="map">
         select tmp0."1" as "jan_new", tmp0."2" as "sku"
         <foreach collection="attrTableList" index="index" item="dto" open="," separator=",">
-            <foreach collection="dto.colNum" index="i" item="colNum">
-                "tmp${index}"."${colNum}" as "attr${dto.index+i+1}"
+            <foreach collection="dto.colNum" index="i" item="colNum" separator=",">
+                tmp${index}."${colNum}" as "attr${dto.index+i+1}"
             </foreach>
         </foreach>
         from
@@ -575,6 +575,10 @@
                 left join ${dto.tableName} as tmp${index} on tmp${index}."1" = tmp${index-1}."1"
             </if>
         </foreach>
+        where "1" in 
+        <foreach collection="jans" item="jan" index="index" open="(" close=")" separator=",">
+            #{jan}
+        </foreach>
     </select>
     <select id="getColName" resultType="java.lang.String">
         select "2" from (select "1","2","3" from ${tableNameKaisou}
@@ -582,5 +586,8 @@
                        select "1","2","3" from	${tableNameAttr}
                       ) as t1
         where t1."3" = #{colName}
+    </select>
+    <select id="selectTempColNameBySchema" resultType="java.lang.String">
+        select column_name from information_schema.columns where table_name=lower(#{tablename}) and table_schema=#{schema}
     </select>
 </mapper>

@@ -41,6 +41,8 @@ public interface ClassicPriorityOrderDataMapper {
 
     List<String> selectTempColName(String tablename);
 
+    List<String> selectTempColNameBySchema(String tablename, String schema);
+
     String selectPriorityAttrCd(String company, Integer priorityNO);
 
     List<Map<String, Object>> selectPriorityAttrName(String tableNameAttr,String isCompanyCd,String prodIsCore);

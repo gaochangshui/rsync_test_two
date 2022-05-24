@@ -517,7 +517,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 priorityOrderDataMapper.updateCutJanByJanList(priorityOrderCd, needJanCutList);
             }
 
-            List<String> colName = priorityOrderDataMapper.selectTempColName("work_priority_order_result_data");
+            List<String> colName = priorityOrderDataMapper.selectTempColNameBySchema("work_priority_order_result_data", "priority");
             List<Map<String, String>> keyNameLists = colName.stream().map(col -> {
                 Map<String, String> map = new HashMap<>(1);
                 map.put("name", col);
@@ -645,13 +645,15 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<Map> maps = datas.toJavaList(Map.class);
         List<PriorityOrderJanAttribute> janAttrs = new ArrayList<>();
 
+        //eg:1000_0000_4
         String[] attrValSort = attrList.split(",");
         Map<String, String> attrSortMap = attrSorts.stream()
-                .filter(sort-> !Arrays.stream(attrValSort).collect(Collectors.toList()).contains(sort.getValue()+""))
                 .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getValue, PriorityOrderMstAttrSortDto::getSort));
 
-        List<String> attrSort = Arrays.stream(attrValSort).map(sort->attrSortMap.get(sort)).collect(Collectors.toList());
-        String[] allAttrSortList = attrSortMap.values().toArray(new String[0]);
+        //1000_0000_4 ==> attr2
+        List<String> attrSort = Arrays.stream(attrValSort).map(attrSortMap::get).collect(Collectors.toList());
+        List<String> allAttrSortList = new ArrayList<>(attrSortMap.values());
+        allAttrSortList.removeIf(attrSort::contains);
         List<String> taiTana = attrSort.subList(0, 2);
 
         List<String> janMstList = maps.stream().map(map -> map.get("jan_new").toString()).collect(Collectors.toList());
@@ -676,8 +678,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             item.put(taiTana.get(0), newJan.getAttr1());
             item.put(taiTana.get(1), newJan.getAttr2());
 
-            for (int i = 0; i < allAttrSortList.length; i++) {
-                item.put(allAttrSortList[i], "");
+            for (int i = 0; i < allAttrSortList.size(); i++) {
+                item.put(allAttrSortList.get(i), "");
             }
 
             datas.add(JSON.parseObject(new Gson().toJson(item)));
