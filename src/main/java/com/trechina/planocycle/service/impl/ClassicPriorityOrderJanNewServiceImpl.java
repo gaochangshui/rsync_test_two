@@ -5,9 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.trechina.planocycle.entity.dto.ClassicPriorityOrderJanNewDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanNew;
 import com.trechina.planocycle.entity.po.Jans;
 import com.trechina.planocycle.entity.po.PriorityOrderJanAttribute;
+import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -40,6 +42,8 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
     private ClassicPriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
     @Autowired
     private ClassicPriorityOrderDataService priorityOrderDataService;
+    @Autowired
+    private ClassicPriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
 
     /**
      * 获取新规janList
@@ -49,7 +53,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
      * @return
      */
     @Override
-    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd, Integer productPowerNo) {
+    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd) {
         try {
             logger.info("获取新规商品list参数：{},{}",companyCd, priorityOrderCd);
             List<ClassicPriorityOrderJanNewVO> priorityOrderJanNewVOS = priorityOrderJanNewMapper.selectJanNew(companyCd, priorityOrderCd);
@@ -87,15 +91,9 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
 
             } else {
                 //获取列头
-                ClassicPriorityOrderJanNewVO colResult = priorityOrderJanNewMapper.selectColName(companyCd, productPowerNo);
-                logger.info("获取新规商品list返回结果集e：" + colResult);
-                String[] attrList = colResult.getAttr().split(",");
-                String[] valList;
-                List<String> results = new ArrayList<>();
-                for (int i = 0; i < attrList.length; i++) {
-                    valList = attrList[i].split(":");
-                    results.add("attr" + valList[0]);
-                }
+                List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKRankSort(companyCd, priorityOrderCd);
+                List<String> attrList = priorityOrderMstAttrSorts.stream().map(PriorityOrderMstAttrSortDto::getSort).collect(Collectors.toList());
+                List<String> results = new ArrayList<>(attrList);
                 results.add("janNew");
                 results.add("janName");
                 results.add("rank");
@@ -121,17 +119,17 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
     @Override
     public Map<String, Object> setPriorityOrderJanNew(JSONArray jsonArray) {
         //try {
-            logger.info("保存新规商品list参数:{}" ,jsonArray);
-            List<ClassicPriorityOrderJanNew> janNewList = new ArrayList<>();
-            List<PriorityOrderJanAttribute> janAttributeList = new ArrayList<>();
-            //获取参数中第一行的企业和优先顺位号
-            String companyCd = String.valueOf(((HashMap) jsonArray.get(0)).get("companyCd"));
-            Integer priorityOrderCd =Integer.valueOf(String.valueOf(((HashMap) jsonArray.get(0)).get("priorityOrderCd")));
-            // 全删
-            priorityOrderJanNewMapper.delete(companyCd, priorityOrderCd);
-            priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
+        logger.info("保存新规商品list参数:{}" ,jsonArray);
+        List<ClassicPriorityOrderJanNew> janNewList = new ArrayList<>();
+        List<PriorityOrderJanAttribute> janAttributeList = new ArrayList<>();
+        //获取参数中第一行的企业和优先顺位号
+        String companyCd = String.valueOf(((HashMap) jsonArray.get(0)).get("companyCd"));
+        Integer priorityOrderCd =Integer.valueOf(String.valueOf(((HashMap) jsonArray.get(0)).get("priorityOrderCd")));
+        // 全删
+        priorityOrderJanNewMapper.delete(companyCd, priorityOrderCd);
+        priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
 
-            // 遍历前端给的jsonArray 构筑新规商品list表和关联的动态属性列表的实体类字符串,保存数据
+        // 遍历前端给的jsonArray 构筑新规商品list表和关联的动态属性列表的实体类字符串,保存数据
         dataSave(jsonArray, janNewList, janAttributeList, companyCd, priorityOrderCd);
 
         List<ClassicPriorityOrderJanNewDto> janNewAll = new Gson().fromJson(jsonArray.toJSONString(), new TypeToken<List<ClassicPriorityOrderJanNewDto>>(){}.getType());
@@ -273,7 +271,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
             priorityOrderJanAttribute.setCompanyCd(companyCd);
             priorityOrderJanAttribute.setPriorityOrderCd(priorityOrderCd);
             priorityOrderJanAttribute.setJanNew(String.valueOf(item.get("janNew")));
-            if (key.toString().indexOf("attr") > -1) {
+            if (key.toString().contains("attr")) {
                 priorityOrderJanAttribute.setAttrCd(Integer.valueOf(key.toString().replace("attr", "")));
                 priorityOrderJanAttribute.setAttrValue(String.valueOf(item.get(key)));
                 janAttributeList.add(priorityOrderJanAttribute);
@@ -297,7 +295,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         priorityOrderJanNew.setPriorityOrderCd(priorityOrderCd);
         priorityOrderJanNew.setJanNew(String.valueOf(item.get("janNew")));
         priorityOrderJanNew.setRank(Integer.valueOf(String.valueOf(item.get("rank"))));
-        priorityOrderJanNew.setBranchAccount(BigDecimal.valueOf(Double.valueOf(String.valueOf(item.get("branchAccount")))));
+        priorityOrderJanNew.setBranchAccount(BigDecimal.valueOf(Double.parseDouble(String.valueOf(item.get("branchAccount")))));
         priorityOrderJanNew.setNameNew(String.valueOf(item.get("janName")));
         janNewList.add(priorityOrderJanNew);
     }

@@ -35,11 +35,11 @@ public class ClassicPriorityOrderMstAttrSortServiceImpl implements ClassicPriori
         List<Map<String,Object>> result = new ArrayList<>();
         resultInfo.forEach(item->{
             Map<String,Object> maps = new HashMap<>();
-            if (item.getCd()==13 && item.getValue() == resultInfo.size()){
-                maps.put("value","mulit_attr");
-            } else {
+//            if (item.getCd()==13 && item.getValue() == resultInfo.size()){
+//                maps.put("value","mulit_attr");
+//            } else {
                 maps.put("value",item.getValue().toString());
-            }
+//            }
             maps.put("cd",item.getCd().toString());
             maps.put("sort",item.getSort());
             result.add(maps);

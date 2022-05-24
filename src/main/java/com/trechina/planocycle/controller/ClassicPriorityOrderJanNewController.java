@@ -20,8 +20,8 @@ public class ClassicPriorityOrderJanNewController {
      * @return
      */
     @GetMapping("/getPriorityOrderJanNew")
-    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo) {
-        return priorityOrderJanNewService.getPriorityOrderJanNew(companyCd,priorityOrderCd,productPowerNo);
+    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd) {
+        return priorityOrderJanNewService.getPriorityOrderJanNew(companyCd,priorityOrderCd);
     }
 
     /**
