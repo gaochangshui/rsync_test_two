@@ -92,14 +92,17 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
             } else {
                 //获取列头
                 List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKRankSort(companyCd, priorityOrderCd);
-                List<String> attrList = priorityOrderMstAttrSorts.stream().map(PriorityOrderMstAttrSortDto::getSort).collect(Collectors.toList());
-                List<String> results = new ArrayList<>(attrList);
-                results.add("janNew");
-                results.add("janName");
-                results.add("rank");
-                results.add("branchNum");
-                results.add("branchAccount");
-                results.add("errMsg");
+                Map<String, String> attrMap = priorityOrderMstAttrSorts.stream()
+                        .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getSort, PriorityOrderMstAttrSortDto::getName,
+                                (k1,k2)->k1, LinkedHashMap::new));
+                Map<String, String> results = new LinkedHashMap<>();
+                results.put("janNew", "新JAN");
+                results.put("janName", "商品名");
+                results.putAll(attrMap);
+                results.put("rank", "Rank");
+                results.put("branchNum", "配荷店舗数");
+                results.put("branchAccount", "想定店金額");
+                results.put("errMsg", "エラーメッセージ");
                 jsonArray.add(results);
             }
             return ResultMaps.result(ResultEnum.SUCCESS, jsonArray);
