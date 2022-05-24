@@ -93,4 +93,9 @@
     inner join priority.work_priority_order_mst_attrsort attrsort on mstattr.priority_order_cd=attrsort.priority_order_cd and mstattr.value=attrsort.value
     where attrsort.priority_order_cd=#{priorityOrderCd} and attrsort.company_cd=#{companyCd} order by mstattr.sort;
   </select>
+
+  <select id="selectWKAttr" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto">
+    select sort, value "value" from priority.work_priority_order_mst_attr
+    where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
+  </select>
 </mapper>

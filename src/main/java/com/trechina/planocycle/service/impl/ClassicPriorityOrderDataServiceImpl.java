@@ -257,7 +257,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 //        if("priority_data".equals(mode)){
 //            datas = priorityOrderDataMapper.downloadSavedForCsv(downloadDto.getTaiCd(), downloadDto.getTanaCd(), companyCd, priorityOrderCd);
 //        }else{
-        datas = priorityOrderDataMapper.downloadForCsv(downloadDto.getTaiCd(), downloadDto.getTanaCd(), tablename,downloadDto.getPriorityOrderCd());
+        List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKAttr(companyCd, priorityOrderCd);
+        Map<String, String> attrSortMap = priorityOrderMstAttrSorts.stream().collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getValue, PriorityOrderMstAttrSortDto::getSort));
+        datas = priorityOrderDataMapper.downloadForCsv(attrSortMap.get(downloadDto.getTaiCd()), attrSortMap.get(downloadDto.getTanaCd()), tablename,downloadDto.getPriorityOrderCd());
 //        }
 
         datas.stream().forEach(item->{

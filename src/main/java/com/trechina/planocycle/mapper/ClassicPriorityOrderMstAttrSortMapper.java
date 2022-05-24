@@ -23,4 +23,6 @@ public interface ClassicPriorityOrderMstAttrSortMapper {
     List<PriorityOrderMstAttrSort> selectWKByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     List<PriorityOrderMstAttrSortDto> selectWKRankSort(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
+    List<PriorityOrderMstAttrSortDto> selectWKAttr(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 }
