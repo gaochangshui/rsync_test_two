@@ -412,11 +412,11 @@
             <foreach collection="keyNameList" separator="," item="key">
               ${key.name}
             </foreach>
-                                     )
+            )
     values
            <foreach collection="lists" separator="," item="list">
            (
-             <foreach collection="keyNameList" separator="," item="keys">
+            <foreach collection="keyNameList" separator="," item="keys">
                  <choose>
                      <when test="keys.name == 'pos_amount' || keys.name == 'branch_num' || keys.name == 'rank' || keys.name == 'rank_prop' || keys.name == 'rank_upd'">
                          case #{list.${keys.name}} ::character varying
@@ -453,6 +453,51 @@
              )
            </foreach>
   </insert>
+    <insert id="insertByPriorityOrderCd" >
+        insert into priority.work_priority_order_result_data (
+        <foreach collection="keyNameList" separator="," item="key">
+            ${key.name}
+        </foreach>)
+        values
+        <foreach collection="lists" separator="," item="list">
+            (
+            <foreach collection="keyNameList" separator="," item="keys">
+                <choose>
+                    <when test="keys.name == 'pos_amount' || keys.name == 'branch_num' || keys.name == 'rank' || keys.name == 'rank_prop' || keys.name == 'rank_upd'">
+                        case #{list.${keys.name}} ::character varying
+                        when '_' then '99999998'::integer
+                        when '' then '0'::integer
+                        when '新規' then '-1'::integer
+                        when 'カット' then '99999999'::integer
+                        else #{list.${keys.name}} :: integer end
+                    </when>
+                    <when test="keys.name == 'goods_rank'">
+                        <if test="list.goods_rank != null">
+                            case #{list.goods_rank} ::character varying
+                            when '_' then '99999998'::integer
+                            when '' then '0'::integer
+                            when '新規' then '-1'::integer
+                            when 'カット' then '99999999'::integer
+                            else #{list.goods_rank} :: integer end
+                        </if>
+                        <if test="list.goods_rank == null">
+                            case #{list.rank_prop} ::character varying
+                            when '_' then '99999998'::integer
+                            when '' then '0'::integer
+                            when '新規' then '-1'::integer
+                            when 'カット' then '99999999'::integer
+                            else #{list.rank_prop} :: integer end
+                        </if>
+                    </when>
+                    <otherwise>
+                        #{list.${keys.name}}
+                    </otherwise>
+                </choose>
+
+            </foreach>
+            )
+        </foreach>
+    </insert>
     <insert id="insertJanNew">
         insert into priority.work_priority_order_result_data(
         <foreach collection="lists[0]" item="item" index="index" separator=",">

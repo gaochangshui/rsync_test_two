@@ -18,6 +18,7 @@ public interface ClassicPriorityOrderDataMapper {
 
     int insert(@Param("lists") JSONArray record,@Param("keyNameList") List<Map<String,String>> keyNameList,@Param("tablename") String tablename);
 
+    int insertByPriorityOrderCd(@Param("lists") JSONArray record,@Param("keyNameList") List<Map<String,String>> keyNameList,@Param("priorityOrderCd") Integer priorityOrderCd);
 
     int dropTempData(String tablename);
 

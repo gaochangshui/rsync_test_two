@@ -268,7 +268,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             String [] version = {"共通棚割情報","V1.0","NS"};
             String [] headers = {"棚台番号","棚段番号","棚位置","商品コード","フェース数","フェース面","フェース回転","積上数","陳列種別"};
             String  fileName = "品揃えPTS_20220401"+System.currentTimeMillis()+".csv";
-            String tablename = "public.priorityorder" + session.getAttribute("aud").toString();
 
         List<DownloadDto> datas = null;
         List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKAttr(companyCd, priorityOrderCd);
@@ -337,12 +336,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Override
     public Map<String, Object> getPriorityOrderDataForDB(String [] jans,String companyCd, String attrList,
                                                          Integer priorityOrderCd) {
-//        CommonPartsDto commonPartsDto = commonMstService.getPriorityCommonPartsData(priorityOrderCd, companyCd);
         CommonPartsDto commonPartsDto = new CommonPartsDto();
         commonPartsDto.setCoreCompany("1000");
         commonPartsDto.setProdMstClass("0000");
         String tableName = String.format("\"%s\".prod_%s_jan_info", commonPartsDto.getCoreCompany(), commonPartsDto.getProdMstClass());
-//        priorityOrderMapper.checkIsJanNew(tableName, jans);
 
         List<AttrHeaderSysDto> attrTableList = new ArrayList<>();
         AttrHeaderSysDto itemDto = null;
@@ -561,13 +558,16 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                     dataMap.put("pos_amount_upd","_");
                     dataMap.put("pos_before_rate","_");
                     dataMap.put("pos_amount","_");
+                    dataMap.put("priority_order_cd", priorityOrderCd);
+                    dataMap.put("author_cd", authorCd);
+                    dataMap.put("company_cd", company);
                     List<PriorityOrderJanAttribute> attributes = attrs.stream().filter(attr -> attr.getJanNew().equals(downloadDto.getJan())).collect(Collectors.toList());
                     for (int i = 0; i < attributes.size(); i++) {
                         dataMap.put("attr"+attributes.get(i).getAttrCd(), attributes.get(i).getAttrValue());
                     }
                     datas.add(dataMap);
                 }
-                priorityOrderDataMapper.insert(JSON.parseArray(new Gson().toJson(datas)), keyNameLists, "");
+                priorityOrderDataMapper.insertByPriorityOrderCd(JSON.parseArray(new Gson().toJson(datas)), keyNameLists, priorityOrderCd);
             }
 
             int batchNum = BigDecimal.valueOf(uploadJanList.size() / 1000.0).setScale(0, RoundingMode.CEILING).intValue();
