@@ -536,7 +536,8 @@
             (
              <foreach collection="list" item="item" index="index" separator=",">
                 <choose>
-                    <when test="index == 'rank' || index == 'rank_prop' || index == 'rank_upd' || index == 'goods_rank'">
+                    <when test="index == 'rank' || index == 'rank_prop' || index == 'rank_upd' || index == 'goods_rank' || index == 'difference' || index == 'branch_num' || index == 'branch_num_upd'
+                                   || index == 'branch_amount_upd' ">
                         #{item} :: integer
                     </when>
                     <otherwise>

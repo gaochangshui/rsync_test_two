@@ -172,9 +172,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             map.put("shouhin_kaisou_mst","shouhin_kaisou_kigyomst");
         }
         if ("1".equals(storeIsCore)){
-            map.put(":tenpo_kaisou_mst","tenpo_kaisou_core_mst");
+            map.put("tenpo_kaisou_mst","tenpo_kaisou_core_mst");
         }else {
-            map.put(":tenpo_kaisou_mst","tenpo_kaisou_kigyomst");
+            map.put("tenpo_kaisou_mst","tenpo_kaisou_kigyomst");
         }
         map.remove("commonPartsData");
         Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
