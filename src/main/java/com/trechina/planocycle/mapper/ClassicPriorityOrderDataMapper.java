@@ -57,7 +57,7 @@ public interface ClassicPriorityOrderDataMapper {
 
     int deleteJanNew(String companyCd, Integer priorityOrderCd, String tablename);
 
-    List<DownloadDto> downloadForCsv(@Param("tai") String tai,@Param("tana") String tana,@Param("tablename") String tablename,@Param("priorityOrderCd")Integer priorityOrderCd);
+    List<DownloadDto> downloadForCsv(@Param("tai") String tai,@Param("tana") String tana,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     List<DownloadDto> downloadSavedForCsv(@Param("tai") String tai,@Param("tana") String tana,
                                           @Param("companyCd") String company, @Param("priorityOrderCd")Integer priorityOrderCd);

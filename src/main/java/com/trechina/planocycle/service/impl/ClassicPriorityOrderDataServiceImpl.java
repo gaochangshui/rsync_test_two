@@ -252,15 +252,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             String  fileName = "品揃えPTS_20220401"+System.currentTimeMillis()+".csv";
             String tablename = "public.priorityorder" + session.getAttribute("aud").toString();
 
-        String mode = downloadDto.getMode();
         List<DownloadDto> datas = null;
-//        if("priority_data".equals(mode)){
-//            datas = priorityOrderDataMapper.downloadSavedForCsv(downloadDto.getTaiCd(), downloadDto.getTanaCd(), companyCd, priorityOrderCd);
-//        }else{
         List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKAttr(companyCd, priorityOrderCd);
         Map<String, String> attrSortMap = priorityOrderMstAttrSorts.stream().collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getValue, PriorityOrderMstAttrSortDto::getSort));
-        datas = priorityOrderDataMapper.downloadForCsv(attrSortMap.get(downloadDto.getTaiCd()), attrSortMap.get(downloadDto.getTanaCd()), tablename,downloadDto.getPriorityOrderCd());
-//        }
+        datas = priorityOrderDataMapper.downloadForCsv(attrSortMap.get(downloadDto.getTaiCd()), attrSortMap.get(downloadDto.getTanaCd()),downloadDto.getPriorityOrderCd());
 
         datas.stream().forEach(item->{
             item.setCompanyCd(downloadDto.getCompanyCd());
