@@ -8,8 +8,7 @@ import java.util.Map;
 
 @Mapper
 public interface ClassicPriorityOrderResultDataMapper {
-    int setFinalForWork(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd") String authorCd
-            , @Param("tablename")String tablename, @Param("tableCol")List<String> tableCol);
+    int setFinalForWork(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd") String authorCd);
 
     int deleteFinal(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 

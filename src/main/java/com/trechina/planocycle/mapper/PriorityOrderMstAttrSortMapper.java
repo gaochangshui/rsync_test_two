@@ -63,4 +63,10 @@ public interface PriorityOrderMstAttrSortMapper {
     //つかむ取列名
     String getColNmforMst(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
+    void deleteAttrFinal(String companyCd, Integer priorityOrderCd);
+
+    void insertAttrFinal(String companyCd, Integer priorityOrderCd);
+    void insertAttrSortFinal(String companyCd, Integer priorityOrderCd);
+
+    void deleteAttrSortFinal(String companyCd, Integer priorityOrderCd);
 }

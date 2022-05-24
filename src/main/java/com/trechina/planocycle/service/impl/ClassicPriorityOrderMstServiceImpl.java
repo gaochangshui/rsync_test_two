@@ -3,12 +3,13 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.trechina.planocycle.entity.dto.GoodsRankDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMst;
-import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import com.trechina.planocycle.entity.po.PriorityOrderPattern;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -82,6 +83,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Autowired
     private ClaasicPriorityOrderAttributeClassifyMapper priorityOrderAttributeClassifyMapper;
     @Autowired
+    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+    @Autowired
     private cgiUtils cgiUtil;
     /**
      * 获取优先顺位表list
@@ -115,7 +118,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         if (count >0) {
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
-        // 把参数处理成两个表的的数据，insert
+         //把参数处理成两个表的的数据，insert
         priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
         try {
             logger.info("保存优先顺位表参数："+priorityOrderMstDto);
@@ -157,10 +160,14 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderAttributeClassifyMapper.insertFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
 
             //resultData保存
-            String tablename = "priorityorder" + session.getAttribute("aud").toString();
-            List<String> tableCol = priorityOrderDataMapper.selectTempColName(tablename);
             priorityOrderResultDataMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderResultDataMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd(),authorCd,tablename,tableCol);
+            priorityOrderResultDataMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd(),authorCd);
+            //屬性attr保存
+            priorityOrderMstAttrSortMapper.deleteAttrFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+            priorityOrderMstAttrSortMapper.insertAttrFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+            //sort保存
+            priorityOrderMstAttrSortMapper.deleteAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+            priorityOrderMstAttrSortMapper.insertAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
             List<PriorityOrderPattern> priorityOrderPatternList = new ArrayList<>();
             String[] shelfPatternList = priorityOrderMstDto.getShelfPatternCd().split(",");
             for (int i = 0; i < shelfPatternList.length; i++) {
@@ -173,21 +180,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             logger.info("保存优先顺位表pattert表要保存的数据："+priorityOrderPatternList.toString());
             priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderPatternMapper.insert(priorityOrderPatternList);
-            // 处理属性保存
-            List<Map<String, Object>> array = (List<Map<String, Object>>) JSONArray.parse(priorityOrderMstDto.getRankAttributeList());
-//            attrSave(priorityOrderMstDto,array);
-            String attrInfo = "";
-            for (int i = 1; i <= array.size(); i++) {
-                if (i<array.size()) {
-                    attrInfo += array.get(i-1).get("cd")+",";
-                }else {
-                    attrInfo += "13,";
-                }
-            }
-            String attrFinalInfo = attrInfo.substring(0,attrInfo.length()-1);
-            priorityOrderMstDto.setAttributeCd(attrFinalInfo);
-            // 调用cgi保存数据
-            cgiSave(priorityOrderMstDto);
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
             logger.info("报错:"+e);
@@ -577,7 +569,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         Integer priorityOrderCd = priorityOrderMstDto.getPriorityOrderCd();
         String priorityData = priorityOrderMstDto.getPriorityData();
         String tablename = "public.priorityorder" + authorCd;
-        List<GoodsRankDto> goodsRank = priorityOrderDataMapper.getGoodsRank(tablename);
+        List<GoodsRankDto> goodsRank = priorityOrderDataMapper.getGoodsRank(companyCd,priorityOrderCd);
         JSONArray datas = JSON.parseArray(priorityData);
         List<Map<String, String>> keyNameList = new ArrayList<>();
         colNameList(datas, keyNameList);
@@ -587,10 +579,13 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderJanCardMapper.setDelJanList(delJanList, companyCd, priorityOrderCd);
         }
 
-        priorityOrderDataMapper.truncateTable(tablename);
-        priorityOrderDataMapper.insert(datas, keyNameList, tablename);
+        priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
+        List<LinkedHashMap<String, Object>> linkedHashMaps = new Gson().fromJson(datas.toString(), new TypeToken<List<LinkedHashMap<String, Object>>>() {
+        }.getType());
 
-        priorityOrderDataMapper.updateGoodsRank(tablename,goodsRank);
+        priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,linkedHashMaps,authorCd);
+
+        priorityOrderDataMapper.updateGoodsRank(goodsRank,companyCd,priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

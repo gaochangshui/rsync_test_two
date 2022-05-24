@@ -2,16 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.ClassicPriorityOrderResultDataMapper">
     <insert id="setFinalForWork">
-        insert into priority.priority_order_result_data(company_cd,priority_order_cd,
-        <foreach collection="tableCol" item="item" separator=",">
-            ${item}
-        </foreach>
-        )
-        select #{companyCd},#{priorityOrderCd},
-        <foreach collection="tableCol" item="item" separator=",">
-            ${item}
-        </foreach>
-        from ${tablename}
+        insert into priority.priority_order_result_data
+        select from priority.work_priority_order_result_data
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </insert>
     <delete id="deleteFinal">
         DELETE FROM priority.priority_order_result_data WHERE company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}

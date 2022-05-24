@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.Charset;
@@ -904,14 +903,18 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
      */
     @Override
     public Map<String, Object> getPriorityOrderDataUpd(List<String> colNameList, Integer priorityOrderCd,String companyCd) {
+        String authorCd = session.getAttribute("aud").toString();
         classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd,priorityOrderCd);
         classicPriorityOrderMstAttrSortMapper.insertAttrSortWk(companyCd,priorityOrderCd,colNameList);
         List<String> attrSortList = classicPriorityOrderMstAttrSortMapper.getAttrSortList(companyCd, priorityOrderCd);
         List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
 
         priorityOrderDataService.getPriorityOrderListInfo(companyCd,priorityOrderCd);
-        List<Map<String, Object>> datas = priorityOrderDataMapper.getTempDataAndMst(attrSortList,attrList, companyCd, priorityOrderCd);
-        if (datas.isEmpty()) {
+        List<LinkedHashMap<String, Object>> datas = priorityOrderDataMapper.getTempDataAndMst(attrSortList,attrList, companyCd, priorityOrderCd);
+        if (!datas.isEmpty()) {
+            priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
+            priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,datas,authorCd);
+
             return ResultMaps.result(ResultEnum.SUCCESS,datas);
         }
 

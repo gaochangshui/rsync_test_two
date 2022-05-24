@@ -160,9 +160,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         map.put("selected_shouhin",jsonObject.get("prodMstClass").toString());
         map.put("storeLevel",jsonObject.get("storeLevel").toString());
         if ("1".equals(dateIsCore)){
-            map.put(":date_mst","date_core_mst");
+            map.put("date_mst","date_core_mst");
         }else {
-            map.put(":date_mst","date_kigyomst");
+            map.put("date_mst","date_kigyomst");
         }
         String isCompanyCd = companyCd;
         if ("1".equals(prodIsCore)){

@@ -64,9 +64,9 @@ public interface ClassicPriorityOrderDataMapper {
 
     void truncateTable(String tablename);
 
-    List<GoodsRankDto> getGoodsRank(@Param("tablename")String tablename);
+    List<GoodsRankDto> getGoodsRank(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    int updateGoodsRank(@Param("tablename")String tablename,@Param("list")List<GoodsRankDto> list);
+    int updateGoodsRank(@Param("list")List<GoodsRankDto> list,@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     List<PriorityOrderMstAttrSort> getAttrSort (String company, Integer priorityNO);
 
@@ -78,7 +78,7 @@ public interface ClassicPriorityOrderDataMapper {
 
     List<String> selectExistJan(@Param("tableName")String tableName, List<DownloadDto> newJanList);
 
-    List<Map<String, Object>> getTempDataAndMst(@Param("colSortNameList") List<String> colSortNameList,
+    List<LinkedHashMap<String, Object>> getTempDataAndMst(@Param("colSortNameList") List<String> colSortNameList,
                                                 @Param("colNameList") List<String> colNameList,
                                                 @Param("companyCd") String companyCd,
                                                 @Param("priorityOrderCd") Integer priorityOrderCd);
