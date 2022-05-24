@@ -591,19 +591,22 @@
              coalesce(${item.tableName}.${item.col},'') as ${item.colName}
            </foreach>
 
-         ,coalesce(t2.pos_item01,'0') as pos_amount,coalesce(t2.pos_item03,'0') as unit_price,coalesce(t2.pos_store_item01,'0') as branch_amount
+         ,coalesce(t2.pos_item01,'0') as pos_amount,coalesce(t2.pos_item03,'0') as unit_price,coalesce(t2.pos_store_item01,'0') as branch_amount,
+            t1.branch_num as branch_num
             ,coalesce (t2.rank_result,99999999) as rank,coalesce(t2.rank_result,99999999) as rank_prop,coalesce(t2.rank_result,99999999) as rank_upd,coalesce(t2.rank_result,99999999) as goods_rank
     from(
-          select jan,info."2"
-
+          select  jan,info."2",count(branch) as branch_num
           from
             planocycle.shelf_pts_data_jandata  jandata
               left join ${tableName} info
                         on jandata.jan = info."1"
+            inner join planocycle.shelf_pts_data ptsdata on ptsdata.id = jandata.pts_cd
+            inner join planocycle.shelf_pattern_branch branchs on ptsdata.shelf_pattern_cd = branchs.shelf_pattern_cd
           where jandata.pts_cd in
             <foreach collection="shelfPtsData" item="item" open="(" close=")" separator=",">
               #{item.id}
             </foreach>
+        GROUP BY jan,info."2"
         ) t1
           left join
         (SELECT datas.jan,info."2" ,datas.pos_item01,datas.pos_item03,datas.pos_store_item01,datas.rank_result
