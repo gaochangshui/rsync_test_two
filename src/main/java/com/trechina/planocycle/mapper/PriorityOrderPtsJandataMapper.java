@@ -21,7 +21,7 @@ public interface PriorityOrderPtsJandataMapper {
     List<DownloadDto> selectJanRank(String companyCd, Integer priorityOrderCd, List<String> sortList);
 
     List<DownloadDto> selectSavedJanRank(String companyCd, Integer priorityOrderCd, List<String> sortList);
-    int updateRankUpd(List<DownloadDto> ptsJanList, String attr1, String attr2);
+    int updateRankUpd(List<DownloadDto> ptsJanList, String attr1, String attr2, Integer priorityOrderCd);
     int updateAttr(List<DownloadDto> ptsJanList, Integer priorityOrderCd, String attr1, String attr2);
 
     void updateSavedRankUpd(String companyCd, Integer priorityOrderCd, List<DownloadDto> ptsJanList);

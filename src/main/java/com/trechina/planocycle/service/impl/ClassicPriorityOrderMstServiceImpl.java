@@ -175,7 +175,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderPatternMapper.insert(priorityOrderPatternList);
             // 处理属性保存
             List<Map<String, Object>> array = (List<Map<String, Object>>) JSONArray.parse(priorityOrderMstDto.getRankAttributeList());
-            attrSave(priorityOrderMstDto,array);
+//            attrSave(priorityOrderMstDto,array);
             String attrInfo = "";
             for (int i = 1; i <= array.size(); i++) {
                 if (i<array.size()) {
@@ -237,27 +237,27 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     // 处理属性保存
     private void attrSave(PriorityOrderMstDto priorityOrderMstDto,List<Map<String, Object>> array) {
 
-        logger.info("获取rankAttributeCdList"+array);
-        List<PriorityOrderMstAttrSort> priorityOrderMstAttrSortList = new ArrayList<>();
-        for (int i = 0; i < array.size(); i++) {
-            PriorityOrderMstAttrSort priorityOrderMstAttrSort = new PriorityOrderMstAttrSort();
-          priorityOrderMstAttrSort.setCompanyCd(priorityOrderMstDto.getCompanyCd());
-          priorityOrderMstAttrSort.setPriorityOrderCd(priorityOrderMstDto.getPriorityOrderCd());
-          if (array.get(i).get("value").toString().equals("mulit_attr")){
-              priorityOrderMstAttrSort.setValue(array.size());
-              priorityOrderMstAttrSort.setCd(13);
-          } else {
-              priorityOrderMstAttrSort.setValue(Integer.valueOf(array.get(i).get("value").toString()));
-              priorityOrderMstAttrSort.setCd(Integer.valueOf(array.get(i).get("cd").toString()));
-          }
-          if (array.get(i).get("sort").toString().equals("")){
-              priorityOrderMstAttrSort.setSort(0);
-          } else {
-            priorityOrderMstAttrSort.setSort(Integer.valueOf(array.get(i).get("sort").toString()));
-          }
-          priorityOrderMstAttrSortList.add(priorityOrderMstAttrSort);
-        }
-        priorityOrderMstAttrSortService.setPriorityAttrSort(priorityOrderMstAttrSortList);
+//        logger.info("获取rankAttributeCdList"+array);
+//        List<PriorityOrderMstAttrSort> priorityOrderMstAttrSortList = new ArrayList<>();
+//        for (int i = 0; i < array.size(); i++) {
+//            PriorityOrderMstAttrSort priorityOrderMstAttrSort = new PriorityOrderMstAttrSort();
+//          priorityOrderMstAttrSort.setCompanyCd(priorityOrderMstDto.getCompanyCd());
+//          priorityOrderMstAttrSort.setPriorityOrderCd(priorityOrderMstDto.getPriorityOrderCd());
+//          if (array.get(i).get("value").toString().equals("mulit_attr")){
+//              priorityOrderMstAttrSort.setValue(array.size());
+//              priorityOrderMstAttrSort.setCd(13);
+//          } else {
+//              priorityOrderMstAttrSort.setValue(Integer.valueOf(array.get(i).get("value").toString()));
+//              priorityOrderMstAttrSort.setCd(Integer.valueOf(array.get(i).get("cd").toString()));
+//          }
+//          if (array.get(i).get("sort").toString().equals("")){
+//              priorityOrderMstAttrSort.setSort(0);
+//          } else {
+//            priorityOrderMstAttrSort.setSort(Integer.valueOf(array.get(i).get("sort").toString()));
+//          }
+//          priorityOrderMstAttrSortList.add(priorityOrderMstAttrSort);
+//        }
+//        priorityOrderMstAttrSortService.setPriorityAttrSort(priorityOrderMstAttrSortList);
     }
 
     /**

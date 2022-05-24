@@ -41,6 +41,8 @@ public interface ClassicPriorityOrderDataMapper {
 
     List<String> selectTempColName(String tablename);
 
+    List<String> selectTempColNameBySchema(String tablename, String schema);
+
     String selectPriorityAttrCd(String company, Integer priorityNO);
 
     List<Map<String, Object>> selectPriorityAttrName(String tableNameAttr,String isCompanyCd,String prodIsCore);
@@ -55,7 +57,7 @@ public interface ClassicPriorityOrderDataMapper {
 
     int deleteJanNew(String companyCd, Integer priorityOrderCd, String tablename);
 
-    List<DownloadDto> downloadForCsv(@Param("tai") String tai,@Param("tana") String tana,@Param("tablename") String tablename,@Param("priorityOrderCd")Integer priorityOrderCd);
+    List<DownloadDto> downloadForCsv(@Param("tai") String tai,@Param("tana") String tana,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     List<DownloadDto> downloadSavedForCsv(@Param("tai") String tai,@Param("tana") String tana,
                                           @Param("companyCd") String company, @Param("priorityOrderCd")Integer priorityOrderCd);

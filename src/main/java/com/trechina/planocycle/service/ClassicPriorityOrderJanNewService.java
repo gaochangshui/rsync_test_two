@@ -11,7 +11,7 @@ public interface ClassicPriorityOrderJanNewService {
      * @param priorityOrderCd
      * @return
      */
-    Map<String,Object> getPriorityOrderJanNew(String companyCd,Integer priorityOrderCd, Integer productPowerNo);
+    Map<String,Object> getPriorityOrderJanNew(String companyCd,Integer priorityOrderCd);
 
     /**
      *保存新规商品list

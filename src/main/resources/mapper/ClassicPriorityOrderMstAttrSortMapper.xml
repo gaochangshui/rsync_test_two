@@ -34,6 +34,13 @@
   <select id="getAttrCol" resultType="java.lang.String">
     select sort from priority.work_priority_order_mst_attr where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd} and value = #{value}
   </select>
+  <select id="selectWKByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from priority.work_priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority.priority_order_mst_attrsort
     where company_cd = #{companyCd,jdbcType=VARCHAR}
@@ -109,4 +116,14 @@
       (#{companyCd},#{priorityOrderCd},#{item},#{index}+1)
     </foreach>
   </insert>
+  <select id="selectWKRankSort" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto">
+    select mstattr.sort sort, attrsort.sort sortRank, attrsort.value "value",name from priority.work_priority_order_mst_attr mstattr
+    inner join priority.work_priority_order_mst_attrsort attrsort on mstattr.priority_order_cd=attrsort.priority_order_cd and mstattr.value=attrsort.value
+    where attrsort.priority_order_cd=#{priorityOrderCd} and attrsort.company_cd=#{companyCd} order by mstattr.sort;
+  </select>
+
+  <select id="selectWKAttr" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto">
+    select sort, value "value" from priority.work_priority_order_mst_attr
+    where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
+  </select>
 </mapper>

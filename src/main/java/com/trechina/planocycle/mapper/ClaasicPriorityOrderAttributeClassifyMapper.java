@@ -10,7 +10,7 @@ import java.util.Set;
 @Mapper
 public interface ClaasicPriorityOrderAttributeClassifyMapper {
 
-    List<PriorityOrderAttributeClassify> classifyList(@Param("tai") String tai, @Param("tana") String tana);
+    List<PriorityOrderAttributeClassify> classifyList(@Param("tai") String tai, @Param("tana") String tana, @Param("priorityOrderCd") Integer priorityOrderCd);
 
      int insert (@Param("list")List<PriorityOrderAttributeClassify> list);
 
