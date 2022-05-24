@@ -27,12 +27,12 @@ public interface ClassicPriorityOrderDataService {
 
     @Transactional(rollbackFor = Exception.class)
     Map<String, Object> uploadPriorityOrderData(MultipartFile file, String company, Integer priorityOrderCd,
-                                                String attrList, String allAttrList);
+                                                String attrList);
 
     void doJanCut(List<DownloadDto> cutJanList, String company, Integer priorityOrderCd);
 
     Map<String, Object> doJanNew(List<DownloadDto> newJanList, String company, Integer priorityOrderCd,
-                                 String attrList, String allAttrList, List<PriorityOrderAttributeClassify> classifyList);
+                                 String attrList, List<PriorityOrderAttributeClassify> classifyList);
 
     /**
      * 优先顺位表反应按钮抽出数据

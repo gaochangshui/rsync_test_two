@@ -364,6 +364,14 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         return ResultMaps.result(ResultEnum.SUCCESS,patternAndName);
     }
 
+    /**
+     * check jan's error message
+     * @param janList
+     * @param company
+     * @param priorityOrderCd
+     * @param tableName
+     * @return
+     */
     @Override
     public Map<String, String> checkIsJanNew(List<String> janList, String company, Integer priorityOrderCd, String tableName) {
         Map<String, String> janMsg = new HashMap<>(2);
@@ -439,17 +447,15 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     /**
      *
      * @param file
-     * @param mode
      * @param company
      * @param priorityOrderCd
      * @param attrList rank attribute list
-     * @param allAttrList all attribute list
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> uploadPriorityOrderData(MultipartFile file, String company, Integer priorityOrderCd,
-                                                       String attrList, String allAttrList) {
+                                                       String attrList) {
         Map<String, Object> resultMap = Maps.newHashMap();
 
         try {
@@ -475,7 +481,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             List<ClassicPriorityOrderJanNew> priorityOrderJanNews = null;
             if(!newJanList.isEmpty()){
                 ClassicPriorityOrderDataService dataService = applicationContext.getBean(ClassicPriorityOrderDataService.class);
-                resultMap = dataService.doJanNew(newJanList, company, priorityOrderCd, attrList, allAttrList, classifyList);
+                resultMap = dataService.doJanNew(newJanList, company, priorityOrderCd, attrList, classifyList);
                 priorityOrderJanNews = (List<ClassicPriorityOrderJanNew>) resultMap.getOrDefault("data", Lists.newArrayList());
             }
             String authorCd = session.getAttribute("aud").toString();
@@ -508,6 +514,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             }).collect(Collectors.toList());
 
             if(!needJanNewList.isEmpty()){
+                //add 新规jan
                 List<Map<String, Object>> datas = new ArrayList<>();
                 List<PriorityOrderJanAttribute> attrs = priorityOrderJanAttributeMapper.selectAttributeByJan(company, priorityOrderCd, needJanNewList);
                 for (DownloadDto downloadDto : needJanNewList) {
@@ -521,9 +528,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                     dataMap.put("jan_old","_");
                     dataMap.put("jan_new",downloadDto.getJan());
                     dataMap.put("rank",-1);
+                    dataMap.put("goods_rank",downloadDto.getTanapositionCd());
                     dataMap.put("rank_prop",downloadDto.getTanapositionCd());
                     dataMap.put("rank_upd",downloadDto.getTanapositionCd());
                     dataMap.put("branch_amount","_");
+                    dataMap.put("branch_num","0");
                     dataMap.put("unit_price","_");
                     dataMap.put("pos_amount_upd","_");
                     dataMap.put("pos_before_rate","_");
@@ -549,11 +558,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
             List<String> attrSort = Arrays.stream(attrList.split(",")).collect(Collectors.toList());
             List<DownloadDto> newRankList = null;
-//            if("priority_data".equals(mode)){
-//                //edit
-//                newRankList = priorityOrderPtsJandataMapper.selectSavedJanRank(company, priorityOrderCd, attrSort);
-//                priorityOrderPtsJandataMapper.updateSavedRankUpd(company, priorityOrderCd, newRankList);
-//            }else{
             String[] attrArray = attrList.split(",");
             List<String> taiTana = Arrays.asList(attrArray).subList(0, 2);
 
@@ -571,7 +575,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             newRankList = priorityOrderPtsJandataMapper.selectJanRank(company, priorityOrderCd, attrSort);
             priorityOrderPtsJandataMapper.updateRankUpd(newRankList, taiTana.get(0), taiTana.get(1));
             cacheUtil.put(authorCd, attrList);
-//            }
         } catch (IOException e) {
             logger.error("", e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -603,7 +606,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
     @Override
     public Map<String, Object> doJanNew(List<DownloadDto> newJanList, String company, Integer priorityOrderCd,
-                                        String attrList, String allAttrList, List<PriorityOrderAttributeClassify> classifyList){
+                                        String attrList, List<PriorityOrderAttributeClassify> classifyList){
         priorityOrderJanNewMapper.deleteByJan(company, priorityOrderCd, newJanList);
 
         List<String> newJanExistCdList = newJanList.stream().map(DownloadDto::getJan).collect(Collectors.toList());
@@ -628,6 +631,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         //新規jan
         List<Map> maps = datas.toJavaList(Map.class);
         List<PriorityOrderJanAttribute> janAttrs = new ArrayList<>();
+
+        priorityOrderMstAttrSortMapper.selectByPrimaryKey()
 
         String[] attrSort = attrList.split(",");
         String[] allAttrSortList = allAttrList.split(",");
@@ -710,9 +715,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                     janAttr.setAttrValue(item.get(attr).toString());
                 }
                 String attrCd = attr.toString();
-                if(attr.toString().equals("mulit_attr")){
-                    attrCd = "attr"+attrs.size();
-                }
                 janAttr.setAttrCd(Integer.parseInt(attrCd.replace("attr", "")));
                 janAttr.setJanNew(item.get("jan_new").toString());
                 janAttr.setPriorityOrderCd(priorityOrderCd);
