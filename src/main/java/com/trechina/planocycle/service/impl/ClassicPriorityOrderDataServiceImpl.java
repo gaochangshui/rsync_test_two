@@ -270,9 +270,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             String  fileName = "品揃えPTS_20220401"+System.currentTimeMillis()+".csv";
 
         List<DownloadDto> datas = null;
-        List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKAttr(companyCd, priorityOrderCd);
-        Map<String, String> attrSortMap = priorityOrderMstAttrSorts.stream().collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getValue, PriorityOrderMstAttrSortDto::getSort));
-        datas = priorityOrderDataMapper.downloadForCsv(attrSortMap.get(downloadDto.getTaiCd()), attrSortMap.get(downloadDto.getTanaCd()),downloadDto.getPriorityOrderCd());
+        datas = priorityOrderDataMapper.downloadForCsv(downloadDto.getTaiCd(), downloadDto.getTanaCd(),downloadDto.getPriorityOrderCd());
 
         datas.stream().forEach(item->{
             item.setCompanyCd(downloadDto.getCompanyCd());
