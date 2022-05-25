@@ -24,20 +24,16 @@ public class ClassicPriorityOrderAttributeClassifyServiceImpl implements Classic
     private HttpSession session;
     @Autowired
     private ClaasicPriorityOrderAttributeClassifyMapper priorityOrderAttributeClassifyMapper;
-    @Autowired
-    private ClassicPriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
 
     @Override
     public Map<String, Object> getClassifyList(DownloadSortDto downloadSortDto) {
         Integer attrNum = priorityOrderAttributeClassifyMapper.getAttrNum(downloadSortDto.getCompanyCd(), downloadSortDto.getPriorityOrderCd());
-        List<PriorityOrderMstAttrSortDto> mstAttrSorts = priorityOrderMstAttrSortMapper.selectWKAttr(downloadSortDto.getCompanyCd(), downloadSortDto.getPriorityOrderCd());
-        Map<String, String> mstAttrSortMap = mstAttrSorts.stream().collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getValue, PriorityOrderMstAttrSortDto::getSort));
         List<PriorityOrderAttributeClassify> classifyList = null;
             if (attrNum > 0){
                 classifyList = priorityOrderAttributeClassifyMapper.getClassifyList(downloadSortDto.getCompanyCd(), downloadSortDto.getPriorityOrderCd());
             }else {
-                classifyList = priorityOrderAttributeClassifyMapper.classifyList(mstAttrSortMap.get(downloadSortDto.getTaiCd()),
-                        mstAttrSortMap.get(downloadSortDto.getTanaCd()), downloadSortDto.getPriorityOrderCd());
+                classifyList = priorityOrderAttributeClassifyMapper.classifyList(downloadSortDto.getTaiCd(),
+                        downloadSortDto.getTanaCd(), downloadSortDto.getPriorityOrderCd());
                 classifyList.forEach(item -> {
                     item.setCompanyCd(downloadSortDto.getCompanyCd());
                     item.setPriorityOrderCd(downloadSortDto.getPriorityOrderCd());
