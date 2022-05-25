@@ -12,7 +12,7 @@ import java.util.Map;
 public interface ClassicPriorityOrderMstMapper {
     int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
-    int insert(PriorityOrderMst record);
+    int insert(@Param("list") PriorityOrderMst record,@Param("authorCd") String authorCd);
 
     List<PriorityOrderMst> selectByPrimaryKey(@Param("companyCd") String companyCd);
 
