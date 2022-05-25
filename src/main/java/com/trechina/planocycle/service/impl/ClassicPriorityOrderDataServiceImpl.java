@@ -484,7 +484,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         cacheUtil.remove(authorCd);
         List<String> attrSort = Arrays.stream(attrList.split(",")).collect(Collectors.toList());
 //        result.add(ImmutableMap.of("col", colNameList.stream().sorted()));
-        List<Map<String, Object>> tempData = priorityOrderDataMapper.selectTempDataByRankUpd(attrSort, priorityOrderCd, company);
+        List<PriorityOrderMstAttrSort> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKByPrimaryKey(company, priorityOrderCd);
+        List<String> allAttrSortList = priorityOrderMstAttrSorts.stream().map(PriorityOrderMstAttrSort::getValue).collect(Collectors.toList());
+        List<Map<String, Object>> tempData = priorityOrderDataMapper.selectTempDataByRankUpd(attrSort, priorityOrderCd, company, allAttrSortList);
         tempData.forEach(item -> {
             if (item.get("rank").toString().equals("-1")) {
                 item.put("rank", "新規");

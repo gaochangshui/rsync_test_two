@@ -96,7 +96,7 @@ public interface ClassicPriorityOrderDataMapper {
 
     void insertTmpTable( @Param("lists") List<Map<String, Object>> dataList);
 
-    List<Map<String, Object>> selectTempDataByRankUpd(@Param("lists") List<String> attrSort, Integer priorityOrderCd, String company);
+    List<Map<String, Object>> selectTempDataByRankUpd(@Param("lists") List<String> attrSort, Integer priorityOrderCd, String company, List<String> allAttrSortList);
 
     void updateRevivification(@Param("companyCd") String companyCd,@Param("priorityOrderCd") Integer priorityOrderCd);
 

@@ -9,7 +9,7 @@
     <result column="cd" jdbcType="INTEGER" property="cd" />
   </resultMap>
   <sql id="Base_Column_List">
-    company_cd, priority_order_cd, value, sort, cd
+    company_cd, priority_order_cd, value, sort
   </sql>
   <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
     select
