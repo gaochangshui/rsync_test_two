@@ -336,7 +336,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     }
 
     @Override
-    public Map<String, Object> getPriorityOrderDataForDB(String [] jans,String companyCd, String attrList,
+    public Map<String, Object> getPriorityOrderDataForDB(String [] jans,String companyCd, String attrList,Map<String, String> attrSortMap,
                                                          Integer priorityOrderCd) {
         CommonPartsDto commonPartsDto = new CommonPartsDto();
         commonPartsDto.setCoreCompany("1000");
@@ -347,13 +347,14 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         AttrHeaderSysDto itemDto = null;
         for (int i = 0; i < attrList.split(",").length; i++) {
             String s = attrList.split(",")[i];
-            int length = s.split("_").length;
+            String attrValue = attrSortMap.get(s);
+            int length = attrValue.split("_").length;
             if(length<3){
                 logger.warn("error attr data:{}", s);
                 continue;
             }
 
-            String[] attrArray = s.split("_");
+            String[] attrArray = attrValue.split("_");
             String itemTableName = String.format("\"%s\".prod_%s_jan_info", attrArray[0], attrArray[1]);
             String colNum = attrArray[2];
 
@@ -509,7 +510,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> uploadPriorityOrderData(MultipartFile file, String company, Integer priorityOrderCd,
+    public Map<String, Object> uploadPriorityOrderData(String taiCd, String tanaCd, MultipartFile file, String company, Integer priorityOrderCd,
                                                        String attrList) {
         Map<String, Object> resultMap = Maps.newHashMap();
 
@@ -537,7 +538,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             List<PriorityOrderMstAttrSortDto> attrSorts = priorityOrderMstAttrSortMapper.selectWKAttr(company, priorityOrderCd);
             if(!newJanList.isEmpty()){
                 ClassicPriorityOrderDataService dataService = applicationContext.getBean(ClassicPriorityOrderDataService.class);
-                resultMap = dataService.doJanNew(newJanList, company, priorityOrderCd, attrList, classifyList, attrSorts);
+                resultMap = dataService.doJanNew(newJanList, company, priorityOrderCd, taiCd, tanaCd, attrList, classifyList, attrSorts);
                 priorityOrderJanNews = (List<ClassicPriorityOrderJanNew>) resultMap.getOrDefault("data", Lists.newArrayList());
             }
             String authorCd = session.getAttribute("aud").toString();
@@ -615,12 +616,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 priorityOrderPtsJandataMapper.updatePtsJanRank(company, priorityOrderCd, subUploadJanList);
             }
 
-            List<String> attrSort = Arrays.stream(attrList.split(",")).collect(Collectors.toList());
             List<DownloadDto> newRankList = null;
             String[] attrArray = attrList.split(",");
-            Map<String, String> attrSortMap = attrSorts.stream().collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getValue, PriorityOrderMstAttrSortDto::getSort));
-            List<String> attrColList = Arrays.asList(attrArray).stream().map(attrSortMap::get).collect(Collectors.toList());
-            List<String> taiTana = Arrays.asList(attrArray).stream().map(attrSortMap::get).collect(Collectors.toList()).subList(0, 2);
 
             uploadJanList.stream().peek(jan->{
                 Optional<PriorityOrderAttributeClassify> attr1Opt = classifyList.stream()
@@ -631,10 +628,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                         .filter(classify -> classify.getTanaCd().equals(jan.getTanaCd()) && classify.getTaiCd().equals(jan.getTaiCd())).findFirst();
                 attr2Opt.ifPresent(priorityOrderAttributeClassify -> jan.setAttr2(priorityOrderAttributeClassify.getAttr2()));
             }).collect(Collectors.toList());
-            priorityOrderPtsJandataMapper.updateAttr(uploadJanList, priorityOrderCd, taiTana.get(0), taiTana.get(1));
+            priorityOrderPtsJandataMapper.updateAttr(uploadJanList, priorityOrderCd, taiCd, tanaCd);
 
-            newRankList = priorityOrderPtsJandataMapper.selectJanRank(company, priorityOrderCd, attrColList);
-            priorityOrderPtsJandataMapper.updateRankUpd(newRankList, taiTana.get(0), taiTana.get(1), priorityOrderCd);
+            newRankList = priorityOrderPtsJandataMapper.selectJanRank(company, priorityOrderCd, Arrays.stream(attrArray).collect(Collectors.toList()));
+            priorityOrderPtsJandataMapper.updateRankUpd(newRankList, taiCd, tanaCd, priorityOrderCd);
             cacheUtil.put(authorCd, attrList);
         } catch (IOException e) {
             logger.error("", e);
@@ -666,7 +663,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     }
 
     @Override
-    public Map<String, Object> doJanNew(List<DownloadDto> newJanList, String company, Integer priorityOrderCd,
+    public Map<String, Object> doJanNew(List<DownloadDto> newJanList, String company, Integer priorityOrderCd, String taiCd, String tanaCd,
                                         String attrList, List<PriorityOrderAttributeClassify> classifyList,List<PriorityOrderMstAttrSortDto> attrSorts){
         priorityOrderJanNewMapper.deleteByJan(company, priorityOrderCd, newJanList);
 
@@ -676,10 +673,15 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             return Maps.newHashMap();
         }
 
+        //eg:attr1,attr2
+        List<String> attrSort = Arrays.stream(attrList.split(",")).collect(Collectors.toList());
+        Map<String, String> attrSortMap = attrSorts.stream()
+                .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getSort, PriorityOrderMstAttrSortDto::getValue));
+
         List<DownloadDto> notExistNewJan = newJanList.stream().filter(jan -> newJanExistCdList.contains(jan.getJan())).collect(Collectors.toList());
         priorityOrderPtsJandataMapper.insertNewJan(notExistNewJan);
 
-        Map<String, Object> cgiData = getPriorityOrderDataForDB(newJanExistCdList.toArray(new String[0]), company,  attrList, priorityOrderCd);
+        Map<String, Object> cgiData = getPriorityOrderDataForDB(newJanExistCdList.toArray(new String[0]), company,  attrList, attrSortMap, priorityOrderCd);
         Object data = cgiData.get("data");
 
         if(data==null){
@@ -693,16 +695,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<Map> maps = datas.toJavaList(Map.class);
         List<PriorityOrderJanAttribute> janAttrs = new ArrayList<>();
 
-        //eg:1000_0000_4
-        String[] attrValSort = attrList.split(",");
-        Map<String, String> attrSortMap = attrSorts.stream()
-                .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getValue, PriorityOrderMstAttrSortDto::getSort));
-
-        //1000_0000_4 ==> attr2
-        List<String> attrSort = Arrays.stream(attrValSort).map(attrSortMap::get).collect(Collectors.toList());
-        List<String> allAttrSortList = new ArrayList<>(attrSortMap.values());
-        allAttrSortList.removeIf(attrSort::contains);
-        List<String> taiTana = attrSort.subList(0, 2);
+        List<String> allAttrSortList = new ArrayList<>(attrSortMap.keySet());
+        allAttrSortList.removeIf(s->s.equals(taiCd)||s.equals(tanaCd));
 
         List<String> janMstList = maps.stream().map(map -> map.get("jan_new").toString()).collect(Collectors.toList());
         newJanList.stream().filter(newJan->!janMstList.contains(newJan.getJan())).forEach(newJan->{
@@ -723,8 +717,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             item.put("difference","_");
             item.put("pos_amount","_");
             item.put("goods_rank",newJan.getTanapositionCd());
-            item.put(taiTana.get(0), newJan.getAttr1());
-            item.put(taiTana.get(1), newJan.getAttr2());
+            item.put(taiCd, newJan.getAttr1());
+            item.put(tanaCd, newJan.getAttr2());
 
             for (int i = 0; i < allAttrSortList.size(); i++) {
                 item.put(allAttrSortList.get(i), "");
@@ -762,17 +756,17 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             for (Object attr : attrs) {
                 PriorityOrderJanAttribute janAttr = new PriorityOrderJanAttribute();
 
-                if(taiTana.contains(attr.toString())){
+                if(taiCd.equals(attr.toString()) || tanaCd.equals(attr.toString())){
                     Optional<DownloadDto> janOpt = newJanList.stream().filter(downloadDto -> downloadDto.getJan().equals(item.get("jan_new"))).findFirst();
                     if(janOpt.isPresent()){
                         DownloadDto jan = janOpt.get();
                         Optional<PriorityOrderAttributeClassify> attrOpt = classifyList.stream()
                                 .filter(classify -> classify.getTanaCd().equals(jan.getTanaCd()) && classify.getTaiCd().equals(jan.getTaiCd())).findFirst();
 
-                        if (taiTana.indexOf(attr.toString())==0) {
+                        if (taiCd.equals(attr.toString())) {
                             //taiTana's first element is tai attr
                             attrOpt.ifPresent(priorityOrderAttributeClassify -> janAttr.setAttrValue(attrOpt.get().getAttr1()));
-                        }else if(taiTana.indexOf(attr.toString())==1){
+                        }else if(tanaCd.equals(attr.toString())){
                             //taiTana's second element is tana attr
                             attrOpt.ifPresent(priorityOrderAttributeClassify -> janAttr.setAttrValue(attrOpt.get().getAttr2()));
                         }

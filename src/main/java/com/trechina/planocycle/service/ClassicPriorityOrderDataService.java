@@ -23,12 +23,12 @@ public interface ClassicPriorityOrderDataService {
     Map<String, Object> getUploadPriorityOrderData();
 
     @Transactional(rollbackFor = Exception.class)
-    Map<String, Object> uploadPriorityOrderData(MultipartFile file, String company, Integer priorityOrderCd,
+    Map<String, Object> uploadPriorityOrderData(String taiCd, String tanaCd,MultipartFile file, String company, Integer priorityOrderCd,
                                                 String attrList);
 
     void doJanCut(List<DownloadDto> cutJanList, String company, Integer priorityOrderCd);
 
-    Map<String, Object> doJanNew(List<DownloadDto> newJanList, String company, Integer priorityOrderCd,
+    Map<String, Object> doJanNew(List<DownloadDto> newJanList, String company, Integer priorityOrderCd, String taiCd, String tanaCd,
                                  String attrList, List<PriorityOrderAttributeClassify> classifyList, List<PriorityOrderMstAttrSortDto> attrSorts);
 
     /**
@@ -51,7 +51,7 @@ public interface ClassicPriorityOrderDataService {
 
     Map<String, Object> getPriorityOrderDataForSmt(String [] jans,String companyCd,Integer priorityOrderCd,Integer productPowerCd);
 
-    Map<String, Object> getPriorityOrderDataForDB(String[] jans, String companyCd, String attrList, Integer priorityOrderCd);
+    Map<String, Object> getPriorityOrderDataForDB(String[] jans, String companyCd, String attrList, Map<String,String> attrSortMap, Integer priorityOrderCd);
 
     Map<String, Object> getPatternAndName(Integer productPowerCd);
 
