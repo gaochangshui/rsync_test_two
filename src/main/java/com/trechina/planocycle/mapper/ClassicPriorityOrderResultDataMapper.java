@@ -11,8 +11,9 @@ public interface ClassicPriorityOrderResultDataMapper {
     int setFinalForWork(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd") String authorCd);
 
     int deleteFinal(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
-
-
     List<Map<String, Object>> selectFinalData(Integer priorityOrderCd, String companyCd,List<String> list);
+
+    //select the branch num of the same attribute Jan
+    Integer selectBranchNumByAttr(Integer priorityOrderCd, String companyCd, Map<String, Object> attrValMap);
 
 }

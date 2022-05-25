@@ -45,8 +45,8 @@ public class ClassicPriorityOrderDataController {
      * @return
      */
     @GetMapping("/getUploadPriorityOrderData")
-    public Map<String,Object> getUploadPriorityOrderData(){
-        return priorityOrderDataService.getUploadPriorityOrderData();
+    public Map<String,Object> getUploadPriorityOrderData(String company, Integer priorityOrderCd){
+        return priorityOrderDataService.getUploadPriorityOrderData(company, priorityOrderCd);
     }
 
     /**

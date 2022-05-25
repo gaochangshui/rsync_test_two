@@ -16,4 +16,11 @@
         from priority.priority_order_result_data
         where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
     </select>
+    <select id="selectBranchNumByAttr" resultType="int">
+        select max(branch_amount) from priority.work_priority_order_result_data resultData
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+        <foreach collection="attrValMap" index="index" item="val" open=" and " separator=" and ">
+            ${index}=#{val}
+        </foreach>
+    </select>
 </mapper>

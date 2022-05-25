@@ -167,7 +167,8 @@
       </if>
   </select>
     <select id="selectTempDataByRankUpd"  resultType="java.util.Map">
-        select * from ${tableName}
+        select * from priority.work_priority_order_result_data
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{company}
         <if test="lists!=null">
             order by
             <foreach collection="lists" item="list" separator=",">
@@ -585,7 +586,7 @@
                 left join ${dto.tableName} as tmp${index} on tmp${index}."1" = tmp${index-1}."1"
             </if>
         </foreach>
-        where "1" in 
+        where tmp0."1" in
         <foreach collection="jans" item="jan" index="index" open="(" close=")" separator=",">
             #{jan}
         </foreach>
