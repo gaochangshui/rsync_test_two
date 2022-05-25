@@ -85,7 +85,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             isCompanyCd = companyCd;
         }
         Integer janName2colNum = Integer.valueOf(taskIdMap.get("janName2colNum").toString());
-        Integer colNum = 1;
+        Integer colNum = 2;
         if (janName2colNum == 2){
              colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
         }
@@ -221,8 +221,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         //posデータ
         logger.info("posパラメータ{}",posMap);
         String posResult = cgiUtil.postCgi(cgiUtil.setPath("ProductPowerData"), posMap, tokenInfo);
+        if ("".equals(posResult)){
+            return ResultMaps.result(ResultEnum.CGIERROR);
+        }
         while (true) {
             Map<String, Object> map1 = cgiUtil.postCgiOfWeb(cgiUtil.setPath("TaskQuery"), posResult, tokenInfo);
+
             if (!"9".equals(map1.get("data"))){
                break;
             }
