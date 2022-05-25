@@ -53,6 +53,7 @@
       select priority_order_cd as id,priority_order_name as fileName,author_cd as authorName,create_time as createTime
        from priority.priority_order_mst
         where company_cd = #{companyCd} and author_cd = #{authorCd} and deleteflg = 0
+        order by priority_order_cd desc
     </select>
     <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority.priority_order_mst

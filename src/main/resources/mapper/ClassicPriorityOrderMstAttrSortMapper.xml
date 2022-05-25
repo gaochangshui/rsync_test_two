@@ -19,12 +19,10 @@
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
   <select id="getAttrSortList" resultType="java.lang.String">
-    select attr.sort
-    from priority.work_priority_order_mst_attrsort attrsort
-    left join priority.work_priority_order_mst_attr attr
-    on attrsort.company_cd = attr.company_cd and attrsort.priority_order_cd = attr.priority_order_cd and attrsort.value = attr.value
-    where attrsort.company_cd = #{companyCd} and attrsort.priority_order_cd = #{priorityOrderCd}
-    order by attrsort.sort
+    select value
+    from priority.work_priority_order_mst_attrsort
+    where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    order by sort
   </select>
   <select id="getAttrList" resultType="java.lang.String">
     select sort

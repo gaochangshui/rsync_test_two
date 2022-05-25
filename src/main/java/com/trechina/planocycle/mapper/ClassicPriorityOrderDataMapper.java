@@ -112,5 +112,5 @@ public interface ClassicPriorityOrderDataMapper {
 
     int insertWorkDataForFinal(String companyCd, Integer priorityOrderCd);
 
-    List<Map<String,Object>> getWorkData(String companyCd,Integer priorityOrderCd);
+    List<Map<String,Object>> getWorkData(String companyCd,Integer priorityOrderCd,List<String> attrSortList);
 }

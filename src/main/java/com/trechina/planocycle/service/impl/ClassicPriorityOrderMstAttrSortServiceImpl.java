@@ -4,7 +4,6 @@ import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.PriorityOrderMstAttrSortMapper;
 import com.trechina.planocycle.service.ClassicPriorityOrderMstAttrSortService;
-import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +70,6 @@ public class ClassicPriorityOrderMstAttrSortServiceImpl implements ClassicPriori
      */
     @Override
     public Integer delPriorityAttrSortInfo(String companyCd, Integer priorityOrderCd) {
-        return priorityOrderMstAttrSortMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
+        return priorityOrderMstAttrSortMapper.deleteAttrFinal(companyCd,priorityOrderCd);
     }
 }

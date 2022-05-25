@@ -505,6 +505,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         Integer priorityOrderCd = primaryKeyVO.getPriorityOrderCd();
         // 删除主表
         delPriorityOrderMst(primaryKeyVO);
+        //删除data
+        priorityOrderResultDataMapper.deleteFinal(companyCd,priorityOrderCd);
         // 删除jan变list
         priorityOrderJanReplaceService.delJanReplaceInfo(companyCd,priorityOrderCd);
         // 删除新规商品list
@@ -522,30 +524,13 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         priorityOrderBranchNumService.delPriorityOrderBranchNumInfo(companyCd,priorityOrderCd);
         // 删除数据的排序
         priorityOrderMstAttrSortService.delPriorityAttrSortInfo(companyCd,priorityOrderCd);
+        //删除attr
+        priorityOrderMstAttrSortMapper.deleteAttrSortFinal(companyCd,priorityOrderCd);
         // 删除jannew的属性列
         priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
         // 删除棚pattern关联信息
         priorityOrderPatternMapper.deleteforid(priorityOrderCd);
-        // 删除smart数据
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("PriorityOrderData");
-        String queryPath = resourceBundle.getString("TaskQuery");
-        PriorityOrderDataForCgiDto priorityOrderDataForCgiDto = new PriorityOrderDataForCgiDto();
-        // 调用cgi拿jan变提案list的数据
-        String uuids = UUID.randomUUID().toString();
-        priorityOrderDataForCgiDto.setMode("priority_delete");
-        priorityOrderDataForCgiDto.setGuid(uuids);
-        priorityOrderDataForCgiDto.setCompany(companyCd);
-        priorityOrderDataForCgiDto.setPriorityNO(priorityOrderCd);
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        //递归调用cgi，首先去taskid
 
-        String resultJan = null;
-        resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
-        logger.info("taskId返回：" + resultJan);
-        //带着taskId，再次请求cgi获取运行状态/数据
-        Map<String, Object> result = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
-        logger.info("删除smart优先顺位表信息："+result);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

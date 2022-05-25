@@ -413,8 +413,18 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
         classicPriorityOrderMstAttrSortMapper.deleteAttrWk(companyCd,priorityOrderCd);
         classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd,priorityOrderCd);
+        classicPriorityOrderMstAttrSortMapper.insertAttrForFinal(companyCd,priorityOrderCd);
+        classicPriorityOrderMstAttrSortMapper.insertAttrSortForFinal(companyCd,priorityOrderCd);
+        List list = new ArrayList();
+        List<String> attrSortList = classicPriorityOrderMstAttrSortMapper.getAttrSortList(companyCd, priorityOrderCd);
+        List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
         PriorityOrderMstDto patternOrProduct = priorityOrderMstMapper.getPatternOrProduct(companyCd, priorityOrderCd);
-        return null;
+        List<Map<String, Object>> workData = priorityOrderDataMapper.getWorkData(companyCd, priorityOrderCd, attrList);
+        list.add(attrSortList);
+        list.add(patternOrProduct);
+        list.add(workData);
+
+        return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 
     /**
@@ -937,10 +947,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         claasicPriorityOrderAttributeClassifyMapper.delete(priorityOrderCd);
         classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd,priorityOrderCd);
         classicPriorityOrderMstAttrSortMapper.insertAttrSortWk(companyCd,priorityOrderCd,colNameList);
-        List<String> attrSortList = classicPriorityOrderMstAttrSortMapper.getAttrSortList(companyCd, priorityOrderCd);
         List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
 
-        priorityOrderDataService.getPriorityOrderListInfo(companyCd,priorityOrderCd);
+        //priorityOrderDataService.getPriorityOrderListInfo(companyCd,priorityOrderCd);
         List<LinkedHashMap<String, Object>> datas = priorityOrderDataMapper.getTempDataAndMst(colNameList,attrList, companyCd, priorityOrderCd);
         if (!datas.isEmpty()) {
             priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
