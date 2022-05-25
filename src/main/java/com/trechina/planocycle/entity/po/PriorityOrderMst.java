@@ -13,14 +13,14 @@ public class PriorityOrderMst {
 
     private Short partitionVal;
 
-    private String commonPartsData;
+    private String attrOption;
 
-    public String getCommonPartsData() {
-        return commonPartsData;
+    public String getAttrOption() {
+        return attrOption;
     }
 
-    public void setCommonPartsData(String commonPartsData) {
-        this.commonPartsData = commonPartsData;
+    public void setAttrOption(String attrOption) {
+        this.attrOption = attrOption;
     }
 
     public Short getPartitionFlag() {
@@ -78,6 +78,9 @@ public class PriorityOrderMst {
                 ", priorityOrderCd=" + priorityOrderCd +
                 ", priorityOrderName='" + priorityOrderName + '\'' +
                 ", productPowerCd=" + productPowerCd +
+                ", partitionFlag=" + partitionFlag +
+                ", partitionVal=" + partitionVal +
+                ", attrOption='" + attrOption + '\'' +
                 '}';
     }
 }

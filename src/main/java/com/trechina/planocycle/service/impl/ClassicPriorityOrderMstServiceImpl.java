@@ -127,6 +127,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderMst.setPriorityOrderCd(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMst.setPriorityOrderName(priorityOrderMstDto.getPriorityOrderName());
             priorityOrderMst.setProductPowerCd(priorityOrderMstDto.getProductPowerCd());
+            priorityOrderMst.setAttrOption(priorityOrderMstDto.getAttrOption());
             logger.info("保存优先顺位表mst表要保存的数据："+priorityOrderMst);
             priorityOrderMstMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMstMapper.insert(priorityOrderMst,authorCd);
