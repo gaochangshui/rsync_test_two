@@ -910,7 +910,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
 
         priorityOrderDataService.getPriorityOrderListInfo(companyCd,priorityOrderCd);
-        List<LinkedHashMap<String, Object>> datas = priorityOrderDataMapper.getTempDataAndMst(attrSortList,attrList, companyCd, priorityOrderCd);
+        List<LinkedHashMap<String, Object>> datas = priorityOrderDataMapper.getTempDataAndMst(colNameList,attrList, companyCd, priorityOrderCd);
         if (!datas.isEmpty()) {
             priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
             priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,datas,authorCd);
