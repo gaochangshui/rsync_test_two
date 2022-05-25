@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ClassicPriorityOrderMstAttrSortMapper {
@@ -34,7 +35,11 @@ public interface ClassicPriorityOrderMstAttrSortMapper {
     List<PriorityOrderMstAttrSortDto> selectWKRankSort(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     List<PriorityOrderMstAttrSortDto> selectWKAttr(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
     List<String>getAttrList(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
+    List<Map<String,Object>>getAllAttrList(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
 
 
     String getAttrCol(String companyCd, Integer priorityOrderCd, String value);
