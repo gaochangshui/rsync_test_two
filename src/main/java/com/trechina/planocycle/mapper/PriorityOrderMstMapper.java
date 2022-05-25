@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.PriorityOrderDataDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMst;
 import org.apache.ibatis.annotations.Mapper;
@@ -56,4 +57,6 @@ public interface PriorityOrderMstMapper {
     int updateOrderName(@Param("priorityOrderCd") Integer priorityOrderCd, @Param("priorityOrderName") String priorityOrderName);
     //テンポラリ・テーブル・ストア
     int setPartition(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd,@Param("authorCd")String authorCd,@Param("partition")Integer partition );
+
+    PriorityOrderDataDto getPatternOrProduct(@Param("companyCd")String companyCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 }

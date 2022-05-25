@@ -109,4 +109,8 @@ public interface ClassicPriorityOrderDataMapper {
     int deleteWorkData(String companyCd,Integer priorityOrderCd);
 
     int insertWorkData(String companyCd, Integer priorityOrderCd, List<LinkedHashMap<String, Object>> datas,String authorCd);
+
+    int insertWorkDataForFinal(String companyCd, Integer priorityOrderCd);
+
+    List<Map<String,Object>> getWorkData(String companyCd,Integer priorityOrderCd);
 }
