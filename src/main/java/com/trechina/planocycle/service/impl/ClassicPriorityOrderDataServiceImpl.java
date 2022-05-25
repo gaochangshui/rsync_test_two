@@ -197,14 +197,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         }
         initialExtraction.addAll(datas);
             //delete old data
-            priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd, priorityPowerCd);
-            priorityOrderCatepakMapper.deleteByPrimaryKey(companyCd, priorityPowerCd);
-            priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd, priorityPowerCd);
-            priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd, priorityPowerCd);
-            priorityOrderJanProposalMapper.deleteByPrimaryKey(companyCd, priorityPowerCd);
-            priorityOrderJanNewMapper.delete(companyCd, priorityPowerCd);
-            priorityOrderMstAttrSortMapper.deleteByPrimaryKey(companyCd, priorityPowerCd);
-
     return ResultMaps.result(ResultEnum.SUCCESS,initialExtraction);
 
     }
