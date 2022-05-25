@@ -55,6 +55,20 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
     @Override
     public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd) {
         try {
+            //获取列头
+            List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKRankSort(companyCd, priorityOrderCd);
+            Map<String, String> attrMap = priorityOrderMstAttrSorts.stream()
+                    .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getSort, PriorityOrderMstAttrSortDto::getName,
+                            (k1,k2)->k1, LinkedHashMap::new));
+            Map<String, String> results = new LinkedHashMap<>();
+            results.put("janNew", "新JAN");
+            results.put("janName", "商品名");
+            results.putAll(attrMap);
+            results.put("rank", "Rank");
+            results.put("branchNum", "配荷店舗数");
+            results.put("branchAccount", "想定店金額");
+            results.put("errMsg", "エラーメッセージ");
+
             logger.info("获取新规商品list参数：{},{}",companyCd, priorityOrderCd);
             List<ClassicPriorityOrderJanNewVO> priorityOrderJanNewVOS = priorityOrderJanNewMapper.selectJanNew(companyCd, priorityOrderCd);
             logger.info("获取新规商品list返回结果集b：{}", priorityOrderJanNewVOS);
@@ -87,22 +101,9 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
                     jsonArray.add(result);
                 });
                 //把动态的列名写到下标0，让前端生成动态列
-                jsonArray.add(0, ((HashMap) jsonArray.get(0)).keySet().stream().sorted());
+                jsonArray.add(0, results);
 
             } else {
-                //获取列头
-                List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKRankSort(companyCd, priorityOrderCd);
-                Map<String, String> attrMap = priorityOrderMstAttrSorts.stream()
-                        .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getSort, PriorityOrderMstAttrSortDto::getName,
-                                (k1,k2)->k1, LinkedHashMap::new));
-                Map<String, String> results = new LinkedHashMap<>();
-                results.put("janNew", "新JAN");
-                results.put("janName", "商品名");
-                results.putAll(attrMap);
-                results.put("rank", "Rank");
-                results.put("branchNum", "配荷店舗数");
-                results.put("branchAccount", "想定店金額");
-                results.put("errMsg", "エラーメッセージ");
                 jsonArray.add(results);
             }
             return ResultMaps.result(ResultEnum.SUCCESS, jsonArray);
