@@ -1,11 +1,13 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
 import com.trechina.planocycle.entity.po.PriorityOrderCatepak;
 import com.trechina.planocycle.entity.po.PriorityOrderCatepakAttribute;
 import com.trechina.planocycle.entity.vo.PriorityOrderCatePakVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ClassicPriorityOrderCatepakAttributeMapper;
+import com.trechina.planocycle.mapper.ClassicPriorityOrderMstAttrSortMapper;
 import com.trechina.planocycle.mapper.PriorityOrderCatepakMapper;
 import com.trechina.planocycle.service.ClassicPriorityOrderCatePakService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOrderCatePakService {
@@ -27,6 +30,8 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
     private PriorityOrderCatepakMapper priorityOrderCatepakMapper;
     @Autowired
     private ClassicPriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
+    @Autowired
+    private ClassicPriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     /**
      * 获取カテパケ拡縮
      *
@@ -35,8 +40,27 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
      * @return
      */
     @Override
-    public Map<String, Object> getPriorityOrderCatePak(String companyCd, Integer priorityOrderCd,Integer productPowerNo) {
-        try {
+    public Map<String, Object> getPriorityOrderCatePak(String companyCd, Integer priorityOrderCd) {
+        try {//获取列头
+            List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKRankSort(companyCd, priorityOrderCd);
+            Map<String, String> attrMap = priorityOrderMstAttrSorts.stream()
+                    .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getSort, PriorityOrderMstAttrSortDto::getName,
+                            (k1,k2)->k1, LinkedHashMap::new));
+
+            Map<String, String> colMap = new LinkedHashMap<>(attrMap.size());
+            Map<String, String> smallMap = new LinkedHashMap<>(attrMap.size());
+            Map<String, String> bigMap = new LinkedHashMap<>(attrMap.size());
+
+            for (Map.Entry<String, String> entry : attrMap.entrySet()) {
+                smallMap.put("attrSmall"+entry.getKey().replace("attr",""), entry.getValue());
+                bigMap.put("attrBig"+entry.getKey().replace("attr",""), entry.getValue());
+            }
+
+            colMap.putAll(smallMap);
+            colMap.put("rank","RANK");
+            colMap.put("branchNum","店舗数");
+            colMap.putAll(bigMap);
+
             logger.info("获取カテパケ拡縮参数：{},{}",companyCd,priorityOrderCd);
             List<PriorityOrderCatePakVO> priorityOrderCatePakVOS = priorityOrderCatepakMapper.selectByPrimaryKey(companyCd,
                     priorityOrderCd);
@@ -72,15 +96,13 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                     jsonArray.add(result);
                 });
                 //把动态的列名写到下标0，让前端生成动态列
-                jsonArray.add(0, ((HashMap) jsonArray.get(0)).keySet().stream().sorted());
+                jsonArray.add(0, colMap);
             } else {
-                Integer colResult = priorityOrderCatepakMapper.selectColName(companyCd,
-                        productPowerNo);
-                logger.info("获取カテパケ拡縮结果集2：{}",colResult);
-                if (colResult!=null) {
+                logger.info("获取カテパケ拡縮结果集2：{}",attrMap);
+                if (!attrMap.isEmpty()) {
                     List<String> list = new ArrayList<>();
-                    String[] valList;
-                    for (int i = 0; i < colResult; i++) {
+
+                    for (int i = 0; i < attrMap.size(); i++) {
                         list.add("attrSmall" + i);
                         list.add("attrBig" + i);
                     }
@@ -129,7 +151,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
 //                priorityOrderCatepak.setBranchNum(Integer.valueOf(((HashMap) item).get("branchNum").toString()));
                     // 写入数据重新取号，返回自增列id，实体类自动接收
                     priorityOrderCatepakMapper.insert(priorityOrderCatepak);
-                    logger.info("保存カテパケ拡縮返回值:" + priorityOrderCatepak.toString());
+                    logger.info("保存カテパケ拡縮返回值:{}",  priorityOrderCatepak.toString());
                     catePakAttr(companyCd, priorityOrderCd, (HashMap) item, priorityOrderCatepak);
                 }
 
@@ -178,13 +200,13 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
         String colValue = "";
         int idx =1;
         for (Object key: item.keySet()) {
-            if (key.toString().indexOf("attrSmall")>-1 || key.toString().indexOf("attrBig")>-1) {
+            if (key.toString().contains("attrSmall") || key.toString().contains("attrBig")) {
                 PriorityOrderCatepakAttribute catepakAttribute = new PriorityOrderCatepakAttribute();
                 // 动态属性列表
                 catepakAttribute.setCompanyCd(companyCd);
                 catepakAttribute.setPriorityOrderCd(priorityOrderCd);
                 catepakAttribute.setCatepakCd(priorityOrderCatepak.getId());
-                if (key.toString().indexOf("attrSmall") > -1) {
+                if (key.toString().contains("attrSmall")) {
                     //缩小是0
                     catepakAttribute.setFlg(0);
                     catepakAttribute.setAttrCd(Integer.valueOf(key.toString().replace("attrSmall", "")));
@@ -192,7 +214,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                     colValue+="attr"+idx+"='"+item.get(key)+"',";
                     idx+=1;
                 }
-                if (key.toString().indexOf("attrBig") > -1) {
+                if (key.toString().contains("attrBig")) {
                     //扩张是1
                     catepakAttribute.setFlg(1);
                     catepakAttribute.setAttrCd(Integer.valueOf(key.toString().replace("attrBig", "")));

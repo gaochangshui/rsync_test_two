@@ -11,7 +11,7 @@ public interface ClassicPriorityOrderCatePakService {
      * @param priorityOrderCd
      * @return
      */
-    Map<String,Object> getPriorityOrderCatePak(String companyCd,Integer priorityOrderCd,Integer productPowerNo);
+    Map<String,Object> getPriorityOrderCatePak(String companyCd,Integer priorityOrderCd);
 
     /**
      * 保存カテパケ拡縮
