@@ -519,14 +519,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     public Map<String, Object> getUploadPriorityOrderData(String company, Integer priorityOrderCd) {
         List<Map<String, Object>> result = new ArrayList<>();
         String authorCd = session.getAttribute("aud").toString();
-//        String tableName = "priorityorder"+authorCd;
-
-//        List<String> colNameList = priorityOrderDataMapper.selectTempColName(tableName);
-        String attrList = cacheUtil.get(authorCd).toString();
         cacheUtil.remove(authorCd);
-        List<PriorityOrderMstAttrSort> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKByPrimaryKey(company, priorityOrderCd);
-        List<String> allAttrSortList = priorityOrderMstAttrSorts.stream().map(PriorityOrderMstAttrSort::getValue).collect(Collectors.toList());
-        List<Map<String, Object>> tempData = priorityOrderDataMapper.getWorkData(company,priorityOrderCd,  allAttrSortList);
+        List<String> attrValueList = classicPriorityOrderMstAttrSortMapper.getAttrList(company, priorityOrderCd);
+        List<Map<String, Object>> tempData = priorityOrderDataMapper.getWorkData(company,priorityOrderCd,  attrValueList);
         tempData.forEach(item -> {
             if (item.get("rank").toString().equals("-1")) {
                 item.put("rank", "新規");
