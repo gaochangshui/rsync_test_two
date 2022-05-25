@@ -20,8 +20,8 @@ public class ClassicPriorityOrderCatePakController {
      * @return
      */
     @GetMapping("/getPriorityOrderCatePak")
-    public Map<String,Object> getPriorityOrderCatePak(String companyCd, Integer priorityOrderCd,Integer productPowerNo){
-        return priorityOrderCatePakService.getPriorityOrderCatePak(companyCd,priorityOrderCd,productPowerNo);
+    public Map<String,Object> getPriorityOrderCatePak(String companyCd, Integer priorityOrderCd){
+        return priorityOrderCatePakService.getPriorityOrderCatePak(companyCd,priorityOrderCd);
     }
 
     /**

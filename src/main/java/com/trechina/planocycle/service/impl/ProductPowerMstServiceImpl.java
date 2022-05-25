@@ -180,7 +180,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
         Integer janNameColIndex = null;
         Integer janName2colNum = param.getJanName2colNum();
-        if(janName2colNum==null || Objects.equals(janName2colNum, 2)){
+        if(janName2colNum==null || Objects.equals(janName2colNum, MagicString.PRODUCT_TYPE_JAN)){
             //product name（品名2）
             janNameColIndex = Integer.parseInt(janName.get(0).get("sort").toString());
         }else{

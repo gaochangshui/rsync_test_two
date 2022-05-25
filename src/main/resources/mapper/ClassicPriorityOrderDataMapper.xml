@@ -102,7 +102,7 @@
         where rank_prop=99999999
     </update>
     <update id="updateCutJanByJanList">
-        update ${tablename}
+        update priority.work_priority_order_result_data
         set rank_upd=
         case jan_new
         <foreach collection="existJanCut" item="item">

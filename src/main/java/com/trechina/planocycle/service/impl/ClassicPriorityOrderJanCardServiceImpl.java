@@ -1,12 +1,15 @@
 package com.trechina.planocycle.service.impl;
 
 import com.google.api.client.util.Strings;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanCardVO;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ClassicPriorityOrderJanCardMapper;
 import com.trechina.planocycle.mapper.ClassicPriorityOrderJanNewMapper;
+import com.trechina.planocycle.mapper.JanClassifyMapper;
+import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanCardService;
 import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -33,6 +36,10 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
 
     @Autowired
     private ClassicPriorityOrderJanNewMapper priorityOrderJanNewMapper;
+    @Autowired
+    private JanClassifyMapper janClassifyMapper;
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
     /**
      * 获取card商品list
      *
@@ -42,10 +49,17 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
      */
     @Override
     public Map<String, Object> getPriorityOrderJanCard(String companyCd, Integer priorityOrderCd) {
-        String tableName = "public.priorityorder" + session.getAttribute("aud").toString();
         List<ClassicPriorityOrderJanNewVO> janNewList = priorityOrderJanNewMapper.getExistOtherMst(companyCd, priorityOrderCd);
-        logger.info("获取card商品list参数:"+companyCd+","+priorityOrderCd);
-        List<ClassicPriorityOrderJanCardVO> priorityOrderJanCardVOS = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd);
+        logger.info("获取card商品list参数:{},{}",companyCd,priorityOrderCd);
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        String tableName = String.format("\"%s\".prod_%s_jan_info",coreCompany, MagicString.FIRST_CLASS_CD);
+        List<Map<String, Object>> janHeader = janClassifyMapper.selectJanClassify(tableName);
+        String janCdCol = janHeader.stream().filter(map -> map.get("attr").equals(MagicString.JAN_HEADER_JAN_CD_COL))
+                .map(map -> map.get("attr")).findFirst().orElse(MagicString.JAN_HEADER_JAN_CD_DEFAULT).toString();
+        String janNameCol = janHeader.stream().filter(map -> map.get("attr").equals(MagicString.JAN_HEADER_JAN_NAME_COL))
+                .map(map -> map.get("attr")).findFirst().orElse(MagicString.JAN_HEADER_JAN_NAME_DEFAULT).toString();
+
+        List<ClassicPriorityOrderJanCardVO> priorityOrderJanCardVOS = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd, tableName, janCdCol, janNameCol);
         for (ClassicPriorityOrderJanNewVO priorityOrderJanNewVO : janNewList) {
             for (ClassicPriorityOrderJanCardVO priorityOrderJanCardVO : priorityOrderJanCardVOS) {
                 if (priorityOrderJanNewVO.getJanNew().equals(priorityOrderJanCardVO.getJanOld())){
