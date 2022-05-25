@@ -582,22 +582,22 @@
         delete from priority.work_priority_order_result_data where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </delete>
     <select id="selectDynamicAttr" resultType="map">
-        select tmp0."1" as "jan_new", tmp0."2" as "sku"
+        select tmpCore."${janCdCol}" as "jan_new", tmpCore."${janNameCol}" as "sku"
         <foreach collection="attrTableList" index="index" item="dto" open="," separator=",">
             <foreach collection="dto.colNum" index="i" item="colNum" separator=",">
-                tmp${index}."${colNum}" as "attr${dto.index+i+1}"
+                tmp${index}."${colNum}" as ${dto.index}
             </foreach>
         </foreach>
-        from
+        from ${coreTableName} tmpCore
         <foreach collection="attrTableList" index="index" item="dto">
             <if test="index==0">
-                ${dto.tableName} as tmp${index}
+                left join ${dto.tableName} as tmp${index} on tmp${index}."${dto.janCdCol}" = tmpCore."${janCdCol}"
             </if>
             <if test="index!=0">
-                left join ${dto.tableName} as tmp${index} on tmp${index}."1" = tmp${index-1}."1"
+                left join ${dto.tableName} as tmp${index} on tmp${index}."${dto.janCdCol}" = tmp${index-1}."${dto.janCdCol}"
             </if>
         </foreach>
-        where tmp0."1" in
+        where tmpCore."${janCdCol}" in
         <foreach collection="jans" item="jan" index="index" open="(" close=")" separator=",">
             #{jan}
         </foreach>

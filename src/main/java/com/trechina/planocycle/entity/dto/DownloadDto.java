@@ -13,6 +13,16 @@ public class DownloadDto {
         private Integer rank;
         private String name;
 
+        private Integer branchNum;
+
+        public Integer getBranchNum() {
+                return branchNum;
+        }
+
+        public void setBranchNum(Integer branchNum) {
+                this.branchNum = branchNum;
+        }
+
         public String getName() {
                 return name;
         }

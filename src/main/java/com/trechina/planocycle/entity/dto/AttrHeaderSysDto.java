@@ -6,13 +6,33 @@ public class AttrHeaderSysDto {
     private String tableName;
     private List<String> colNum;
 
-    private Integer index;
+    private String index;
 
-    public Integer getIndex() {
+    private String janCdCol;
+
+    private String janNameCol;
+
+    public String getJanCdCol() {
+        return janCdCol;
+    }
+
+    public void setJanCdCol(String janCdCol) {
+        this.janCdCol = janCdCol;
+    }
+
+    public String getJanNameCol() {
+        return janNameCol;
+    }
+
+    public void setJanNameCol(String janNameCol) {
+        this.janNameCol = janNameCol;
+    }
+
+    public String getIndex() {
         return index;
     }
 
-    public void setIndex(Integer index) {
+    public void setIndex(String index) {
         this.index = index;
     }
 
