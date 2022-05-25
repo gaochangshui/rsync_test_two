@@ -102,7 +102,7 @@ public interface ClassicPriorityOrderDataMapper {
 
     List<Map<String, Object>> selectPriorityStratumName(String tableName,String isCompanyCd,String prodIsCore);
 
-    List<Map<String, Object>> selectDynamicAttr(String[] jans, List<AttrHeaderSysDto> attrTableList);
+    List<Map<String, Object>> selectDynamicAttr(String[] jans, List<AttrHeaderSysDto> attrTableList, String coreTableName, String janCdCol, String janNameCol);
 
     String getColName(String tableNameAttr, String tableNameKaisou,String colName);
 

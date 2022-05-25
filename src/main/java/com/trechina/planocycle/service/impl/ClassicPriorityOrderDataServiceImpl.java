@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanNewVO;
@@ -325,8 +326,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     public Map<String, Object> getPriorityOrderDataForDB(String [] jans,String companyCd, String attrList,Map<String, String> attrSortMap,
                                                          Integer priorityOrderCd) {
         CommonPartsDto commonPartsDto = new CommonPartsDto();
-        commonPartsDto.setCoreCompany("1000");
-        commonPartsDto.setProdMstClass("0000");
+        commonPartsDto.setCoreCompany(sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY));
+        commonPartsDto.setProdMstClass(MagicString.FIRST_CLASS_CD);
         String tableName = String.format("\"%s\".prod_%s_jan_info", commonPartsDto.getCoreCompany(), commonPartsDto.getProdMstClass());
 
         List<AttrHeaderSysDto> attrTableList = new ArrayList<>();
@@ -348,15 +349,31 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 AttrHeaderSysDto attrHeaderSysDto = attrTableList.stream().findFirst().get();
                 attrHeaderSysDto.getColNum().add(colNum);
             }else{
+                String itemHeaderTableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", attrArray[0], attrArray[1]);
+                List<Map<String, Object>> janClassify = janClassifyMapper.selectJanClassify(itemHeaderTableName);
+                if(janClassify.isEmpty()){
+                    logger.warn("jan header table {} not exists", itemTableName);
+                    continue;
+                }
+
+                String cdCol = janClassify.stream().filter(map -> map.get("attr").equals(MagicString.JAN_HEADER_JAN_CD_COL)).map(map -> map.get("sort"))
+                        .findAny().orElse(MagicString.JAN_HEADER_JAN_CD_DEFAULT).toString();
+
                 itemDto = new AttrHeaderSysDto();
                 itemDto.setTableName(tableName);
                 itemDto.setColNum(Lists.newArrayList(colNum));
-                itemDto.setIndex(i);
+                //index=attr1
+                itemDto.setIndex(s);
+                itemDto.setJanCdCol(cdCol);
                 attrTableList.add(itemDto);
             }
         }
 
-        List<Map<String, Object>> results = priorityOrderDataMapper.selectDynamicAttr(jans, attrTableList);
+        List<Map<String, Object>> results = new ArrayList<>(1);
+        if(!attrTableList.isEmpty()){
+            results = priorityOrderDataMapper.selectDynamicAttr(jans, attrTableList, tableName,
+                    MagicString.JAN_HEADER_JAN_CD_DEFAULT, MagicString.JAN_HEADER_JAN_NAME_DEFAULT);
+        }
         return ResultMaps.result(ResultEnum.SUCCESS, JSON.toJSON(results));
     }
 
@@ -750,13 +767,17 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                     for (String attr : attrList.split(",")) {
                         attrValMap.put(attr, item.getOrDefault(attr, ""));
                     }
+                    //The order cannot be changed, select only the checked attribute rank(value in attrList)
+                    Integer branchNum = priorityOrderResultDataMapper.selectBranchNumByAttr(priorityOrderCd, company, attrValMap);
+                    branchNum = Optional.ofNullable(branchNum).orElse(0);
+                    item.put("branch_num", branchNum);
+
                     for (String attr : allAttrSortList) {
                         attrValMap.put(attr, item.getOrDefault(attr, ""));
                     }
-                    Integer branchNum = priorityOrderResultDataMapper.selectBranchNumByAttr(priorityOrderCd, company, attrValMap);
                     this.fillCommonParam(downloadDto, item);
-                    item.put("branch_num", Optional.ofNullable(branchNum).orElse(0));
                     downloadDto.setName(item.get("sku").toString());
+                    downloadDto.setBranchNum(branchNum);
                     newJanList.set(i, downloadDto);
                 }
             }
@@ -803,7 +824,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             janNew.setRank(jan.getTanapositionCd());
             janNew.setPriorityOrderCd(priorityOrderCd);
             janNew.setBranchAccount(BigDecimal.ZERO);
-            janNew.setBranchnum(0);
+            janNew.setBranchnum(jan.getBranchNum());
             janNew.setNameNew(jan.getName());
             return janNew;
         }).collect(Collectors.toList());

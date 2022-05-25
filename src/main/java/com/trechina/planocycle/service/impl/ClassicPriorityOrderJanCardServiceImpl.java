@@ -55,9 +55,9 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
         String tableName = String.format("\"%s\".prod_%s_jan_info",coreCompany, MagicString.FIRST_CLASS_CD);
         List<Map<String, Object>> janHeader = janClassifyMapper.selectJanClassify(tableName);
         String janCdCol = janHeader.stream().filter(map -> map.get("attr").equals(MagicString.JAN_HEADER_JAN_CD_COL))
-                .map(map -> map.get("attr")).findFirst().orElse(MagicString.JAN_HEADER_JAN_CD_DEFAULT).toString();
+                .map(map -> map.get("sort")).findFirst().orElse(MagicString.JAN_HEADER_JAN_CD_DEFAULT).toString();
         String janNameCol = janHeader.stream().filter(map -> map.get("attr").equals(MagicString.JAN_HEADER_JAN_NAME_COL))
-                .map(map -> map.get("attr")).findFirst().orElse(MagicString.JAN_HEADER_JAN_NAME_DEFAULT).toString();
+                .map(map -> map.get("sort")).findFirst().orElse(MagicString.JAN_HEADER_JAN_NAME_DEFAULT).toString();
 
         List<ClassicPriorityOrderJanCardVO> priorityOrderJanCardVOS = priorityOrderJanCardMapper.selectJanCard(companyCd,priorityOrderCd, tableName, janCdCol, janNameCol);
         for (ClassicPriorityOrderJanNewVO priorityOrderJanNewVO : janNewList) {
