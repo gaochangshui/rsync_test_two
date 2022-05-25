@@ -38,4 +38,7 @@ public interface ClassicPriorityOrderMstAttrSortMapper {
 
 
     String getAttrCol(String companyCd, Integer priorityOrderCd, String value);
+
+    List<String> attrValueList(String companyCd, Integer priorityOrderCd);
+
 }

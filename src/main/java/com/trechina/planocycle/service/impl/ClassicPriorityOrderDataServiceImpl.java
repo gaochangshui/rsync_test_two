@@ -418,11 +418,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List list = new ArrayList();
         List<String> attrSortList = classicPriorityOrderMstAttrSortMapper.getAttrSortList(companyCd, priorityOrderCd);
         List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
+        List<String> attrValueList = classicPriorityOrderMstAttrSortMapper.attrValueList(companyCd, priorityOrderCd);
         PriorityOrderMstDto patternOrProduct = priorityOrderMstMapper.getPatternOrProduct(companyCd, priorityOrderCd);
         List<Map<String, Object>> workData = priorityOrderDataMapper.getWorkData(companyCd, priorityOrderCd, attrList);
         list.add(attrSortList);
         list.add(patternOrProduct);
         list.add(workData);
+        list.add(attrValueList);
 
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
