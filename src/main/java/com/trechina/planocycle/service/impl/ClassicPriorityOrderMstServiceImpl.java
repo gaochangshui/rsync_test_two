@@ -120,7 +120,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         }
          //把参数处理成两个表的的数据，insert
         priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
-        try {
+        //try {
             logger.info("保存优先顺位表参数："+priorityOrderMstDto);
             PriorityOrderMst priorityOrderMst = new PriorityOrderMst();
             priorityOrderMst.setCompanyCd(priorityOrderMstDto.getCompanyCd());
@@ -181,11 +181,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderPatternMapper.insert(priorityOrderPatternList);
             return ResultMaps.result(ResultEnum.SUCCESS);
-        } catch (Exception e) {
-            logger.info("报错:"+e);
-            logger.error("保存优先顺位表报错："+e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        //} catch (Exception e) {
+        //    logger.info("报错:"+e);
+        //    logger.error("保存优先顺位表报错："+e);
+        //    return ResultMaps.result(ResultEnum.FAILURE);
+        //}
     }
     // 调用cgi保存数据
     private void cgiSave(PriorityOrderMstDto priorityOrderMstDto) {

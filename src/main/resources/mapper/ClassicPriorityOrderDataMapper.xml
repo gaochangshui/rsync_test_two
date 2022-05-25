@@ -319,7 +319,7 @@
             where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
     </select>
     <select id="getGoodsRank" resultType="com.trechina.planocycle.entity.dto.GoodsRankDto">
-        select jan_new as jan ,goods_rank from priority.priority_order_result_data where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+        select jan_new as jan ,goods_rank from priority.work_priority_order_result_data where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getAttrSort" resultType="com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort">
         select "value" from
@@ -536,9 +536,8 @@
             (
              <foreach collection="list" item="item" index="index" separator=",">
                 <choose>
-                    <when test="index == 'rank' || index == 'rank_prop' || index == 'rank_upd' || index == 'goods_rank' || index == 'difference' || index == 'branch_num' || index == 'branch_num_upd'
-                                   || index == 'branch_amount_upd' ">
-                        #{item} :: integer
+                    <when test="index == 'rank' || index == 'rank_prop' || index == 'rank_upd' || index == 'goods_rank' || index == 'difference' || index == 'branch_num' || index == 'branch_num_upd'">
+                        cast(#{item} as integer)
                     </when>
                     <otherwise>
                         #{item}

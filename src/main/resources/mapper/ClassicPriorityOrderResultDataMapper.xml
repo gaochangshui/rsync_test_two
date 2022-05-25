@@ -3,7 +3,7 @@
 <mapper namespace="com.trechina.planocycle.mapper.ClassicPriorityOrderResultDataMapper">
     <insert id="setFinalForWork">
         insert into priority.priority_order_result_data
-        select from priority.work_priority_order_result_data
+        select * from priority.work_priority_order_result_data
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </insert>
     <delete id="deleteFinal">
