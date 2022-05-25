@@ -114,7 +114,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         // check优先顺位表名称
         Integer count = priorityOrderPatternMapper.selectByPriorityOrderName(priorityOrderMstDto.getCompanyCd(),
                                                             priorityOrderMstDto.getPriorityOrderName(),
-                                                            priorityOrderMstDto.getPriorityOrderCd());
+                                                            priorityOrderMstDto.getPriorityOrderCd(),authorCd);
         if (count >0) {
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
@@ -129,7 +129,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderMst.setProductPowerCd(priorityOrderMstDto.getProductPowerCd());
             logger.info("保存优先顺位表mst表要保存的数据："+priorityOrderMst);
             priorityOrderMstMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderMstMapper.insert(priorityOrderMst);
+            priorityOrderMstMapper.insert(priorityOrderMst,authorCd);
             //jannew最終テーブルデータの保存
             priorityOrderJanNewMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderJanNewMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
@@ -584,8 +584,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         }.getType());
 
         priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,linkedHashMaps,authorCd);
-
-        priorityOrderDataMapper.updateGoodsRank(goodsRank,companyCd,priorityOrderCd);
+        if (!goodsRank.isEmpty()) {
+            priorityOrderDataMapper.updateGoodsRank(goodsRank, companyCd, priorityOrderCd);
+        }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

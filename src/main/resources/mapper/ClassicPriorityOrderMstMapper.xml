@@ -64,9 +64,9 @@
   </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMst">
     insert into priority.priority_order_mst (company_cd, priority_order_cd, priority_order_name,
-      product_power_cd)
-    values (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{priorityOrderName,jdbcType=VARCHAR},
-      #{productPowerCd,jdbcType=INTEGER})
+      product_power_cd,author_cd,create_time,editer_cd,edit_time)
+    values (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.priorityOrderName,jdbcType=VARCHAR},
+      #{list.productPowerCd,jdbcType=INTEGER},#{authorCd},now(),#{authorCd},now())
   </insert>
   <select id="getCommonPartsData" resultType="string">
     select common_parts_data from priority.priority_order_mst
