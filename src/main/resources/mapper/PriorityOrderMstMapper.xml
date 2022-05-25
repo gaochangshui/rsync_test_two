@@ -107,8 +107,8 @@
   <select id="selectOrderMstByPriorityOrderCd" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/> from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and deleteflg=0
   </select>
-  <select id="getPatternOrProduct" resultType="com.trechina.planocycle.entity.dto.PriorityOrderDataDto">
-    SELECT mst.product_power_cd,string_agg(pattern.shelf_pattern_cd ::VARCHAR, ',') as priorityOrderCd
+  <select id="getPatternOrProduct" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstDto">
+    SELECT mst.product_power_cd,string_agg(pattern.shelf_pattern_cd ::VARCHAR, ',') as priorityOrderCd,attr_option
 
     from priority.priority_order_mst  mst
            left join priority.priority_order_pattern pattern

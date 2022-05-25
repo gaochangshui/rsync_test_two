@@ -116,6 +116,16 @@
       (#{companyCd},#{priorityOrderCd},#{item},#{index}+1)
     </foreach>
   </insert>
+  <insert id="insertAttrForFinal">
+    insert into priority.work_priority_order_mst_attr
+    select  * from priority.priority_order_mst_attr
+    where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
+  </insert>
+  <insert id="insertAttrSortForFinal">
+    insert into priority.work_priority_order_mst_attrsort
+    select  * from priority.priority_order_mst_attrsort
+    where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
+  </insert>
   <select id="selectWKRankSort" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto">
     select mstattr.sort sort, attrsort.sort sortRank, attrsort.value "value",name from priority.work_priority_order_mst_attr mstattr
     inner join priority.work_priority_order_mst_attrsort attrsort on mstattr.priority_order_cd=attrsort.priority_order_cd and mstattr.value=attrsort.value

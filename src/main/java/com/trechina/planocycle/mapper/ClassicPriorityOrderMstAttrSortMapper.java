@@ -24,6 +24,9 @@ public interface ClassicPriorityOrderMstAttrSortMapper {
     int deleteAttrSortWK(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
     int insertAttrSortWk(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("attrList")List<String> attrList);
 
+    int insertAttrForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+    int insertAttrSortForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
     List<PriorityOrderMstAttrSort> selectWKByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     List<PriorityOrderMstAttrSortDto> selectWKRankSort(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);

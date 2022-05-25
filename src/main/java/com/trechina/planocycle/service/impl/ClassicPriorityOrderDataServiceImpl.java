@@ -416,7 +416,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
         priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
         priorityOrderDataMapper.insertWorkDataForFinal(companyCd,priorityOrderCd);
-        priorityOrderMstMapper.getPatternOrProduct(companyCd,priorityOrderCd);
+
+        classicPriorityOrderMstAttrSortMapper.deleteAttrWk(companyCd,priorityOrderCd);
+        classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd,priorityOrderCd);
+        PriorityOrderMstDto patternOrProduct = priorityOrderMstMapper.getPatternOrProduct(companyCd, priorityOrderCd);
         return null;
     }
 
