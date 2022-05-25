@@ -22,7 +22,7 @@
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </insert>
   <delete id="deleteByPrimaryKey" parameterType="map">
-    delete from planocycle.work_priority_order_commodity_must
+    delete from priority.work_priority_order_commodity_must
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>

@@ -241,7 +241,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
      */
     @Override
     public Integer delPriorityOrderCommodityMustInfo(String companyCd, Integer priorityOrderCd) {
-        return priorityOrderCommodityMustMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
+        return priorityOrderCommodityMustMapper.deleteFinal(companyCd,priorityOrderCd);
     }
 
     /**
@@ -253,7 +253,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
      */
     @Override
     public Integer delPriorityOrderCommodityNotInfo(String companyCd, Integer priorityOrderCd) {
-        return priorityOrderCommodityNotMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
+        return priorityOrderCommodityNotMapper.deleteFinal(companyCd,priorityOrderCd);
     }
 
     /**

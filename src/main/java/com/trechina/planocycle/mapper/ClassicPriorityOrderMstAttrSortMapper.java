@@ -27,12 +27,13 @@ public interface ClassicPriorityOrderMstAttrSortMapper {
     int insertAttrForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
     int insertAttrSortForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
+    List<String> getAttrSortList(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
     List<PriorityOrderMstAttrSort> selectWKByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     List<PriorityOrderMstAttrSortDto> selectWKRankSort(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     List<PriorityOrderMstAttrSortDto> selectWKAttr(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
-    List<String>getAttrSortList(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
     List<String>getAttrList(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
 

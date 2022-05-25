@@ -608,5 +608,11 @@
     </select>
     <select id="getWorkData" resultType="java.util.Map">
         select jan_new,jan_old,pos_amount,branch_amount,unit_price,sku,rank,rank_prop,goods_rank,rank_upd,branch_num,branch_num_upd,
+               branch_amount_upd,difference,sale_forecast,
+               <foreach collection="attrSortList" separator=","  item="item" >
+                   #{item}
+               </foreach>
+            from priority.work_priority_order_result_data
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </select>
 </mapper>
