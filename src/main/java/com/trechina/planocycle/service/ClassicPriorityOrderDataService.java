@@ -20,7 +20,7 @@ public interface ClassicPriorityOrderDataService {
 
     Map<String, String> checkIsJanNew(List<String> janList, String company, Integer priorityOrderCd, String tableName);
 
-    Map<String, Object> getUploadPriorityOrderData();
+    Map<String, Object> getUploadPriorityOrderData(String company, Integer priorityOrderCd);
 
     @Transactional(rollbackFor = Exception.class)
     Map<String, Object> uploadPriorityOrderData(String taiCd, String tanaCd,MultipartFile file, String company, Integer priorityOrderCd,

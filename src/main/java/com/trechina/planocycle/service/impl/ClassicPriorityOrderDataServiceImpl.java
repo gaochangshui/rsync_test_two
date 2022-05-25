@@ -4,10 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
@@ -57,12 +57,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     private ClassicPriorityOrderDataMapper priorityOrderDataMapper;
     @Autowired
     private ClassicPriorityOrderJanNewMapper priorityOrderJanNewMapper;
-    @Autowired
-    private ClassicPriorityOrderCommodityNotMapper priorityOrderCommodityNotMapper;
-    @Autowired
-    private CommonMstService commonMstService;
-    @Autowired
-    private PriorityOrderMstService priorityOrderMstService;
     @Autowired
     private ProductPowerParamMstMapper productPowerParamMstMapper;
     @Autowired
@@ -371,7 +365,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         }
 
         List<Map<String, Object>> results = priorityOrderDataMapper.selectDynamicAttr(jans, attrTableList);
-        return ResultMaps.result(ResultEnum.SUCCESS, results);
+        return ResultMaps.result(ResultEnum.SUCCESS, JSON.toJSON(results));
     }
 
     @Override
@@ -490,17 +484,19 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
 
     @Override
-    public Map<String, Object> getUploadPriorityOrderData() {
+    public Map<String, Object> getUploadPriorityOrderData(String company, Integer priorityOrderCd) {
         List<Map<String, Object>> result = new ArrayList<>();
         String authorCd = session.getAttribute("aud").toString();
-        String tableName = "priorityorder"+authorCd;
+//        String tableName = "priorityorder"+authorCd;
 
-        List<String> colNameList = priorityOrderDataMapper.selectTempColName(tableName);
+//        List<String> colNameList = priorityOrderDataMapper.selectTempColName(tableName);
         String attrList = cacheUtil.get(authorCd).toString();
         cacheUtil.remove(authorCd);
         List<String> attrSort = Arrays.stream(attrList.split(",")).collect(Collectors.toList());
-        result.add(ImmutableMap.of("col", colNameList.stream().sorted()));
-        List<Map<String, Object>> tempData = priorityOrderDataMapper.selectTempDataByRankUpd(attrSort, tableName);
+//        result.add(ImmutableMap.of("col", colNameList.stream().sorted()));
+        List<PriorityOrderMstAttrSort> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKByPrimaryKey(company, priorityOrderCd);
+        List<String> allAttrSortList = priorityOrderMstAttrSorts.stream().map(PriorityOrderMstAttrSort::getValue).collect(Collectors.toList());
+        List<Map<String, Object>> tempData = priorityOrderDataMapper.selectTempDataByRankUpd(attrSort, priorityOrderCd, company, allAttrSortList);
         tempData.forEach(item -> {
             if (item.get("rank").toString().equals("-1")) {
                 item.put("rank", "新規");
@@ -687,49 +683,37 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         }
 
         //eg:attr1,attr2
-        List<String> attrSort = Arrays.stream(attrList.split(",")).collect(Collectors.toList());
         Map<String, String> attrSortMap = attrSorts.stream()
                 .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getSort, PriorityOrderMstAttrSortDto::getValue));
 
         List<DownloadDto> notExistNewJan = newJanList.stream().filter(jan -> newJanExistCdList.contains(jan.getJan())).collect(Collectors.toList());
         priorityOrderPtsJandataMapper.insertNewJan(notExistNewJan);
 
-        Map<String, Object> cgiData = getPriorityOrderDataForDB(newJanExistCdList.toArray(new String[0]), company,  attrList, attrSortMap, priorityOrderCd);
-        Object data = cgiData.get("data");
+        Map<String, Object> dbData = getPriorityOrderDataForDB(newJanExistCdList.toArray(new String[0]), company,  attrList, attrSortMap, priorityOrderCd);
+        Object data = dbData.get("data");
 
         if(data==null){
-            logger.error("cgi error, {}", cgiData);
+            logger.error("db error, {}", dbData);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
-        JSONArray datas = (JSONArray) JSONArray.parse(cgiData.get("data").toString());
+        JSONArray datas = (JSONArray) JSONArray.parse(dbData.get("data").toString());
         Map<String, Object> resultMap = Maps.newHashMap();
 
         //新規jan
-        List<Map> maps = datas.toJavaList(Map.class);
+        List<Map> maps = new Gson().fromJson(dbData.get("data").toString(), new TypeToken<List<Map>>(){}.getType());
         List<PriorityOrderJanAttribute> janAttrs = new ArrayList<>();
 
         List<String> allAttrSortList = new ArrayList<>(attrSortMap.keySet());
         allAttrSortList.removeIf(s->s.equals(taiCd)||s.equals(tanaCd));
 
         List<String> janMstList = maps.stream().map(map -> map.get("jan_new").toString()).collect(Collectors.toList());
+        //not in jan master
         newJanList.stream().filter(newJan->!janMstList.contains(newJan.getJan())).forEach(newJan->{
             Map<String, Object> item = new HashMap<>(16);
-            item.put("jan_old",newJan.getJan());
             item.put("sku","");
             item.put("jan_new",newJan.getJan());
-            item.put("rank",-1);
-            item.put("rank_prop",newJan.getTanapositionCd());
-            item.put("branch_amount","_");
-            item.put("unit_before_diff","_");
-            item.put("sale_forecast","0");
-            item.put("branch_num",0);
-            item.put("branch_num_upd","_");
-            item.put("unit_price","_");
-            item.put("pos_amount_upd","0");
-            item.put("pos_before_rate","_");
-            item.put("difference","_");
-            item.put("pos_amount","_");
-            item.put("goods_rank",newJan.getTanapositionCd());
+
+            this.fillCommonParam(newJan, item);
             item.put(taiCd, newJan.getAttr1());
             item.put(tanaCd, newJan.getAttr2());
 
@@ -742,24 +726,18 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             resultMap.put("code", ResultEnum.SUCCESS_BUT_NEW_JAN.getCode());
         });
 
+        //in jan master
         maps.forEach(item->{
             for (int i = 0; i < newJanList.size(); i++) {
                 DownloadDto downloadDto = newJanList.get(i);
                 if (item.get("jan_new").equals(downloadDto.getJan())){
-                    item.put("jan_old",downloadDto.getJan());
-                    item.put("rank",-1);
-                    item.put("rank_prop",downloadDto.getTanapositionCd());
-                    item.put("branch_amount","_");
-                    item.put("unit_before_diff","_");
-                    item.put("sale_forecast","_");
-                    item.put("branch_num",0);
-                    item.put("branch_num_upd","_");
-                    item.put("unit_price","_");
-                    item.put("pos_amount_upd","_");
-                    item.put("pos_before_rate","_");
-                    item.put("difference","_");
-                    item.put("pos_amount","_");
-                    item.put("goods_rank",downloadDto.getTanapositionCd());
+                    Map<String, Object> attrValMap = new HashMap<>();
+                    for (String attr : attrList.split(",")) {
+                        attrValMap.put(attr, item.get(attr));
+                    }
+                    Integer branchNum = priorityOrderResultDataMapper.selectBranchNumByAttr(priorityOrderCd, company, attrValMap);
+                    this.fillCommonParam(downloadDto, item);
+                    item.put("branch_num", Optional.ofNullable(branchNum).orElse(0));
                     downloadDto.setName(item.get("sku").toString());
                     newJanList.set(i, downloadDto);
                 }
@@ -815,6 +793,23 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         priorityOrderJanNewMapper.insert(priorityOrderJanNewList);
         resultMap.put("data", priorityOrderJanNewList);
         return resultMap;
+    }
+
+    private void fillCommonParam(DownloadDto downloadDto, Map<String, Object> item){
+        item.put("jan_old",downloadDto.getJan());
+        item.put("rank",-1);
+        item.put("rank_prop",downloadDto.getTanapositionCd());
+        item.put("branch_amount","_");
+        item.put("unit_before_diff","_");
+        item.put("sale_forecast","_");
+        item.put("branch_num",0);
+        item.put("branch_num_upd","_");
+        item.put("unit_price","_");
+        item.put("pos_amount_upd","_");
+        item.put("pos_before_rate","_");
+        item.put("difference","_");
+        item.put("pos_amount","_");
+        item.put("goods_rank",downloadDto.getTanapositionCd());
     }
 
     private  Map<String,Object> checkPTS(CsvReader csvReader, Integer priorityOrderCd, String company){
