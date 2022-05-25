@@ -11,6 +11,11 @@
   <sql id="Base_Column_List">
     company_cd, priority_order_cd, value, sort
   </sql>
+  <select id="attrValueList" resultType="string">
+    select value
+    from  priority.work_priority_order_mst_attr
+    where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+  </select>
   <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
@@ -133,5 +138,10 @@
   <select id="selectWKAttr" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto">
     select sort, value "value" from priority.work_priority_order_mst_attr
     where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
+  </select>
+  <select id="getAllAttrList" resultType="java.util.Map">
+    select sort,name,value
+    from  priority.work_priority_order_mst_attr
+    where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
   </select>
 </mapper>

@@ -416,13 +416,36 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         classicPriorityOrderMstAttrSortMapper.insertAttrForFinal(companyCd,priorityOrderCd);
         classicPriorityOrderMstAttrSortMapper.insertAttrSortForFinal(companyCd,priorityOrderCd);
         List list = new ArrayList();
+        Map<String, Object> map = new HashMap<>();
+        map.put("jan_old","旧JAN");
+        map.put("jan_new","新JAN");
+        map.put("sku","SKU");
+        map.put("branch_amount_upd","店@金額(円)");
+        map.put("pos_amount","POS金額(円)");
+        map.put("unit_price","単価");
+        map.put("branch_amount","店@金額(円)");
+        map.put("branch_num","定番 店舗数");
+        map.put("branch_num_upd","定番 店舗数");
+        map.put("difference","配荷差");
+        map.put("sale_forecast","売上増減 予測(千円)");
+        map.put("rank","Rank");
+        map.put("rank_prop","Rank");
+        map.put("rank_upd","Rank");
         List<String> attrSortList = classicPriorityOrderMstAttrSortMapper.getAttrSortList(companyCd, priorityOrderCd);
         List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
+        List<Map<String,Object>> allAttrList = classicPriorityOrderMstAttrSortMapper.getAllAttrList(companyCd, priorityOrderCd);
+        for (Map<String, Object> stringObjectMap : allAttrList) {
+            map.put(stringObjectMap.get("sort").toString(),stringObjectMap.get("name"));
+        }
+        List<String> attrValueList = classicPriorityOrderMstAttrSortMapper.attrValueList(companyCd, priorityOrderCd);
         PriorityOrderMstDto patternOrProduct = priorityOrderMstMapper.getPatternOrProduct(companyCd, priorityOrderCd);
-        List<Map<String, Object>> workData = priorityOrderDataMapper.getWorkData(companyCd, priorityOrderCd, attrList);
+        List<Map<String, Object>> workData = new ArrayList<>();
+                workData.add(map);
+                workData.addAll(priorityOrderDataMapper.getWorkData(companyCd, priorityOrderCd, attrList));
         list.add(attrSortList);
         list.add(patternOrProduct);
         list.add(workData);
+        list.add(attrValueList);
 
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }

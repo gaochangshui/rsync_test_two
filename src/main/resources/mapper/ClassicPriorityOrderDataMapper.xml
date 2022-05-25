@@ -369,14 +369,14 @@
         <foreach collection="colSortNameList" item="list" separator=",">
             ${list}
         </foreach>
-        order by mst.goods_rank) end as rank_prop,
+        order by mst.goods_rank,mst.jan_old ) end as rank_prop,
         case mst.rank_prop when 99999999 then mst.rank_prop else
         ROW_NUMBER() OVER (
         partition by
         <foreach collection="colSortNameList" item="list" separator=",">
             ${list}
         </foreach>
-        order by mst.goods_rank) end as rank_upd
+        order by mst.goods_rank,mst.jan_old ) end as rank_upd
 
 
         from priority.work_priority_order_result_data mst
@@ -616,7 +616,7 @@
         select jan_new,jan_old,pos_amount,branch_amount,unit_price,sku,rank,rank_prop,goods_rank,rank_upd,branch_num,branch_num_upd,
                branch_amount_upd,difference,sale_forecast,
                <foreach collection="attrSortList" separator=","  item="item" >
-                   #{item}
+                   ${item} as ${item}
                </foreach>
             from priority.work_priority_order_result_data
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
