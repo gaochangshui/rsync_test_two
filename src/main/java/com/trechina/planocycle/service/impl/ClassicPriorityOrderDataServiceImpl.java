@@ -723,7 +723,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 if (item.get("jan_new").equals(downloadDto.getJan())){
                     Map<String, Object> attrValMap = new HashMap<>();
                     for (String attr : attrList.split(",")) {
-                        attrValMap.put(attr, item.get(attr));
+                        attrValMap.put(attr, item.getOrDefault(attr, ""));
+                    }
+                    for (String attr : allAttrSortList) {
+                        attrValMap.put(attr, item.getOrDefault(attr, ""));
                     }
                     Integer branchNum = priorityOrderResultDataMapper.selectBranchNumByAttr(priorityOrderCd, company, attrValMap);
                     this.fillCommonParam(downloadDto, item);
