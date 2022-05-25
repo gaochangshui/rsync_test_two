@@ -21,13 +21,23 @@ public class ClassicPriorityOrderDataController {
     private ClassicPriorityOrderDataService priorityOrderDataService;
 
     /**
-     * 获取优先顺位表数据
+     * 初期获取优先顺位表数据
      * @param priorityOrderDataDto
      * @return
      */
     @PostMapping("/getPriorityOrderData")
     public Map<String,Object> getPriorityOrderData(@RequestBody PriorityOrderDataDto priorityOrderDataDto){
         return priorityOrderDataService.getPriorityOrderData(priorityOrderDataDto);
+    }
+
+    /**
+     * 编辑获取优先顺位表数据
+     * @param priorityOrderDataDto
+     * @return
+     */
+    @PostMapping("/editPriorityOrderData")
+    public Map<String,Object> editPriorityOrderData(@RequestBody PriorityOrderDataDto priorityOrderDataDto){
+        return priorityOrderDataService.editPriorityOrderData(priorityOrderDataDto);
     }
 
     /**

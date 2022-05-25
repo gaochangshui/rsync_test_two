@@ -550,6 +550,12 @@
             )
         </foreach>
     </insert>
+    <insert id="insertWorkDataForFinal">
+        insert into priority.work_priority_order_result_data
+            select * from
+            priority.priority_order_result_data
+            where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </insert>
     <delete id="deleteExistJanNew">
         delete from ${tableName}
         <where>
@@ -600,5 +606,8 @@
     </select>
     <select id="selectTempColNameBySchema" resultType="java.lang.String">
         select column_name from information_schema.columns where table_name=lower(#{tablename}) and table_schema=#{schema}
+    </select>
+    <select id="getWorkData" resultType="java.util.Map">
+        select jan_new,jan_old,pos_amount,branch_amount,unit_price,sku,rank,rank_prop,goods_rank,rank_upd,branch_num,branch_num_upd,
     </select>
 </mapper>

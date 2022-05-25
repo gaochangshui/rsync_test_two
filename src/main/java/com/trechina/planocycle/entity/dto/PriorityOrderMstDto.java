@@ -18,6 +18,8 @@ public class PriorityOrderMstDto {
 
     private String rankAttributeList;
 
+    private String attrOption;
+
     public String getCompanyCd() {
         return companyCd;
     }
@@ -74,6 +76,14 @@ public class PriorityOrderMstDto {
         this.attributeCd = attributeCd;
     }
 
+    public String getAttrOption() {
+        return attrOption;
+    }
+
+    public void setAttrOption(String attrOption) {
+        this.attrOption = attrOption;
+    }
+
     public String getRankAttributeList() {
         return rankAttributeList;
     }
@@ -93,6 +103,7 @@ public class PriorityOrderMstDto {
                 ", priorityData='" + priorityData + '\'' +
                 ", attributeCd='" + attributeCd + '\'' +
                 ", rankAttributeList='" + rankAttributeList + '\'' +
+                ", attrOption='" + attrOption + '\'' +
                 '}';
     }
 }

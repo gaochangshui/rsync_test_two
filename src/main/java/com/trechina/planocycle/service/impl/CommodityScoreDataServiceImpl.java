@@ -85,8 +85,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             isCompanyCd = companyCd;
         }
         Integer janName2colNum = Integer.valueOf(taskIdMap.get("janName2colNum").toString());
-        Integer colNum = 2;
-        if (janName2colNum == 1){
+        Integer colNum = 1;
+        if (janName2colNum == 2){
              colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
         }
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
@@ -180,7 +180,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
         //選択した品名を判断する
         Integer janName2colNum = Integer.valueOf(map.get("janName2colNum").toString());
-        if (janName2colNum == 1){
+        if (janName2colNum == 2){
             Integer prodMstClass = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
             map.put("janName2colNum",prodMstClass);
         }else {
