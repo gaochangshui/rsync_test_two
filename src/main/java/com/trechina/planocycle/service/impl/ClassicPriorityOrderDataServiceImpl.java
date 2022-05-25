@@ -362,7 +362,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 itemDto = new AttrHeaderSysDto();
                 itemDto.setTableName(tableName);
                 itemDto.setColNum(Lists.newArrayList(colNum));
-                //index=attr1
+                //index=attr1/attr2
                 itemDto.setIndex(s);
                 itemDto.setJanCdCol(cdCol);
                 attrTableList.add(itemDto);
@@ -524,11 +524,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 //        List<String> colNameList = priorityOrderDataMapper.selectTempColName(tableName);
         String attrList = cacheUtil.get(authorCd).toString();
         cacheUtil.remove(authorCd);
-        List<String> attrSort = Arrays.stream(attrList.split(",")).collect(Collectors.toList());
-//        result.add(ImmutableMap.of("col", colNameList.stream().sorted()));
         List<PriorityOrderMstAttrSort> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKByPrimaryKey(company, priorityOrderCd);
         List<String> allAttrSortList = priorityOrderMstAttrSorts.stream().map(PriorityOrderMstAttrSort::getValue).collect(Collectors.toList());
-        List<Map<String, Object>> tempData = priorityOrderDataMapper.selectTempDataByRankUpd(attrSort, priorityOrderCd, company, allAttrSortList);
+        List<Map<String, Object>> tempData = priorityOrderDataMapper.getWorkData(company,priorityOrderCd,  allAttrSortList);
         tempData.forEach(item -> {
             if (item.get("rank").toString().equals("-1")) {
                 item.put("rank", "新規");
@@ -565,6 +563,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 return checkResult;
             }
 
+            List<PriorityOrderMstAttrSortDto> checkedAttrList = priorityOrderMstAttrSortMapper.selectWKRankSort(company, priorityOrderCd);
+            attrList = checkedAttrList.stream().map(PriorityOrderMstAttrSortDto::getValue).collect(Collectors.joining(","));
             List<DownloadDto> uploadJanList = (List<DownloadDto>) checkResult.get("data");
             List<PriorityOrderAttributeClassify> classifyList = priorityOrderClassifyMapper.getClassifyList(company, priorityOrderCd);
 
