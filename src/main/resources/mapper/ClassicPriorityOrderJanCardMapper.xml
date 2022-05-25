@@ -67,7 +67,7 @@
 
     <select id="selectJanCard" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanCardVO">
     select card.jan_old as janOld
-         ,COALESCE(jans.janname,'') as janOldName
+         ,COALESCE(jans."${janNameCol}",'') as janOldName
          , case when rep.jan_new is not null then 'すでにJAN変商品として入力済みです。'
                 when repold.jan_old is not null then 'すでにJAN変商品として入力済みです。'
                 when pro1.jan_old is not null then 'すでにJAN変商品として入力済みです。'
@@ -85,8 +85,8 @@
          left join priority.work_priority_order_jan_proposal pro2
                    on pro2.jan_new = card.jan_old and pro2.flag = 1
                        and card.priority_order_cd = pro2.priority_order_cd
-         left join masterdb.jans as jans
-               on card.jan_old = jans.jan
+         left join ${janMstTableName} as jans
+               on card.jan_old = jans."${janCdCol}"
     where card.company_cd = #{companyCd,jdbcType=VARCHAR}
     and card.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>

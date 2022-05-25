@@ -13,7 +13,9 @@ import java.util.Map;
 public interface ClassicPriorityOrderJanCardMapper {
     int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
-    List<ClassicPriorityOrderJanCardVO> selectJanCard(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+    List<ClassicPriorityOrderJanCardVO> selectJanCard(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,
+                                                      @Param("janMstTableName") String janMstTableName,
+                                                      @Param("janCdCol") String janCdCol,@Param("janNameCol") String janNameCol);
 
     int insert(@Param("lists") List<ClassicPriorityOrderJanCard> record);
 
