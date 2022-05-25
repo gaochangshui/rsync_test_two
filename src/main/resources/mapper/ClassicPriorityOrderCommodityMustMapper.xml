@@ -37,13 +37,13 @@
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
   <select id="selectMystInfo" resultType="com.trechina.planocycle.entity.vo.PriorityOrderCommodityVO">
-      select branch,branchs.branch_name as branchName,jan_new as jan,jans.janname as janName,'' as errMsg
+      select branch,branchs."2" as branch_name as branchName,jan_new as jan,jans."2" as janName,'' as errMsg
       from planocycle.work_priority_order_commodity_must musts
-       left join masterdb.jans jans
-         on musts.jan_new = jans.jan
-       left join masterdb.branchs branchs
-         on musts.branch = branchs.branch_cd
-           and branchs.company_cd = musts.company_cd
+       left join "1000".prod_0000_jan_info jans
+         on musts.jan_new = jans."1"
+       left join "1000".ten_0000_ten_info branchs
+         on musts.branch = branchs."2"
+           and branchs."1" like '#{companyCd}%'
       where musts.company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     </select>
