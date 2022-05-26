@@ -184,7 +184,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Override
     public Map<String, Object> setPriorityOrderCommodityNot(List<PriorityOrderCommodityNot> priorityOrderCommodityNot) {
         logger.info("不可商品リストパラメータの保存："+priorityOrderCommodityNot);
-        // 拿到的参数只有第一行有企業和順位表cd，需要遍曆参数，給所有行都賦
+        // 拿到的参数只有第一行有企業和順位表cd，需要遍暦参数，給所有行都賦
         try{
             String companyCd = priorityOrderCommodityNot.get(0).getCompanyCd();
             Integer priorityOrderCd = priorityOrderCommodityNot.get(0).getPriorityOrderCd();
@@ -196,7 +196,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             // 査詢企業的店cd是几位数
             String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd);
             Integer branchLen = branchCd.length();
-            // 遍曆not 給店cd補0
+            // 遍暦not 給店cd補0
             not.forEach(item->{
                 if (item.getBranch() !=null) {
                     item.setBranch(String.format("%0"+branchLen+"d",Integer.valueOf(item.getBranch())));

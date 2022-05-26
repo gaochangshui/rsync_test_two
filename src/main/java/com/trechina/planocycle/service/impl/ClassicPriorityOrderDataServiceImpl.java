@@ -1025,7 +1025,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         if (!janNewList.isEmpty()) {
             JSONArray jsonArray = new JSONArray();
 
-            // 遍曆結果集，拆分動態列
+            // 遍暦結果集，拆分動態列
             if (!janNewList.isEmpty()) {
                 janNewList.forEach(item -> {
                     Map<String, Object> result = new HashMap<>();

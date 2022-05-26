@@ -67,13 +67,13 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
             logger.info("つかむ取カテパケ拡縮結果集：{}",priorityOrderCatePakVOS);
             JSONArray jsonArray = new JSONArray();
             if (!priorityOrderCatePakVOS.isEmpty()) {
-                // 遍曆結果集，拆分動態列
+                // 遍暦結果集，拆分動態列
                 priorityOrderCatePakVOS.forEach(item -> {
                     Map<String, Object> result = new HashMap<>();
                     String[] attrSmall = item.getSmalls().split(",");
                     String[] attrBig;
                     String[] valList;
-                    // 遍曆small
+                    // 遍暦small
                     for (int i = 0; i < attrSmall.length; i++) {
                         valList = attrSmall[i].split(":");
                         result.put("attrSmall" + valList[0], valList[1]);
@@ -95,7 +95,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                     //写入jsonArray
                     jsonArray.add(result);
                 });
-                //把動態的列名写到下标0，让前端生成動態列
+                //把動態的列名写到下ひょう0，譲前端生成動態列
                 jsonArray.add(0, colMap);
             } else {
                 logger.info("つかむ取カテパケ拡縮結果集2：{}",attrMap);
@@ -115,7 +115,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
             logger.info("カテパケ拡縮結果{}", jsonArray);
             return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
         }catch (Exception e) {
-            logger.info("つかむ取カテパケ拡縮失败：",e);
+            logger.info("つかむ取カテパケ拡縮失敗：",e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -137,7 +137,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
             // 全削
             priorityOrderCatepakMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-            // 遍曆前端給的jsonArray 構筑カテパケ拡縮表和关联的動態属性列表的實体類字符串
+            // 遍暦前端給的jsonArray 構筑カテパケ拡縮表和関連的動態属性列表的實体類字符串
             jsonArray.forEach(item->{
                 // 構造主表的参数
                 if (((HashMap) item).containsKey("rank") && ((HashMap) item).get("rank")!=null) {
