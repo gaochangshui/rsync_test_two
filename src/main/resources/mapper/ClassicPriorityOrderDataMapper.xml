@@ -583,11 +583,13 @@
     </delete>
     <select id="selectDynamicAttr" resultType="map">
         select tmpCore."${janCdCol}" as "jan_new", tmpCore."${janNameCol}" as "sku"
-        <foreach collection="attrTableList" index="index" item="dto" open="," separator=",">
-            <foreach collection="dto.colNum" index="i" item="colNum" separator=",">
-                tmp${index}."${colNum}" as ${dto.index}
+        <if test="attrTableList!=null">
+            <foreach collection="attrTableList" index="index" item="dto" open="," separator=",">
+                <foreach collection="dto.colNum" index="col" item="attr" separator=",">
+                    coalesce(tmp${index}."${col}", '') as ${attr}
+                </foreach>
             </foreach>
-        </foreach>
+        </if>
         from ${coreTableName} tmpCore
         <foreach collection="attrTableList" index="index" item="dto">
             <if test="index==0">

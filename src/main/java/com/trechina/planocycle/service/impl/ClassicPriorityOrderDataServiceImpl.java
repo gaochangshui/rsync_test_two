@@ -323,7 +323,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     }
 
     @Override
-    public Map<String, Object> getPriorityOrderDataForDB(String [] jans,String companyCd, String attrList,Map<String, String> attrSortMap,
+    public Map<String, Object> getPriorityOrderDataForDB(String [] jans,String companyCd, Map<String, String> attrSortMap,
                                                          Integer priorityOrderCd) {
         CommonPartsDto commonPartsDto = new CommonPartsDto();
         commonPartsDto.setCoreCompany(sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY));
@@ -332,12 +332,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
         List<AttrHeaderSysDto> attrTableList = new ArrayList<>();
         AttrHeaderSysDto itemDto = null;
-        for (int i = 0; i < attrList.split(",").length; i++) {
-            String s = attrList.split(",")[i];
-            String attrValue = attrSortMap.get(s);
+        for (Map.Entry<String, String> entry : attrSortMap.entrySet()) {
+            String attrValue = entry.getValue();
             int length = attrValue.split("_").length;
             if(length<3){
-                logger.warn("error attr data:{}", s);
+                logger.warn("error attr data:{}", attrValue);
                 continue;
             }
 
@@ -345,9 +344,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             String itemTableName = String.format("\"%s\".prod_%s_jan_info", attrArray[0], attrArray[1]);
             String colNum = attrArray[2];
 
-            if (attrTableList.stream().anyMatch(attrHeaderSysDto -> attrHeaderSysDto.getTableName().equals(itemTableName))) {
-                AttrHeaderSysDto attrHeaderSysDto = attrTableList.stream().findFirst().get();
-                attrHeaderSysDto.getColNum().add(colNum);
+            //classify the data of the same schema
+            Optional<AttrHeaderSysDto> any = attrTableList.stream().filter(attrHeaderSysDto -> attrHeaderSysDto.getTableName().equals(itemTableName)).findAny();
+            if (any.isPresent()) {
+                AttrHeaderSysDto attrHeaderSysDto = any.get();
+                attrHeaderSysDto.getColNum().put(colNum, entry.getKey());
             }else{
                 String itemHeaderTableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", attrArray[0], attrArray[1]);
                 List<Map<String, Object>> janClassify = janClassifyMapper.selectJanClassify(itemHeaderTableName);
@@ -360,17 +361,18 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                         .findAny().orElse(MagicString.JAN_HEADER_JAN_CD_DEFAULT).toString();
 
                 itemDto = new AttrHeaderSysDto();
-                itemDto.setTableName(tableName);
-                itemDto.setColNum(Lists.newArrayList(colNum));
+                itemDto.setTableName(itemTableName);
+                Map<String, String> colNumMap = Maps.newHashMap();
+                colNumMap.put(colNum, entry.getKey());
+                itemDto.setColNum(colNumMap);
                 //index=attr1/attr2
-                itemDto.setIndex(s);
                 itemDto.setJanCdCol(cdCol);
                 attrTableList.add(itemDto);
             }
         }
 
         List<Map<String, Object>> results = new ArrayList<>(1);
-        if(!attrTableList.isEmpty()){
+        if(jans.length > 0){
             results = priorityOrderDataMapper.selectDynamicAttr(jans, attrTableList, tableName,
                     MagicString.JAN_HEADER_JAN_CD_DEFAULT, MagicString.JAN_HEADER_JAN_NAME_DEFAULT);
         }
@@ -716,7 +718,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<DownloadDto> notExistNewJan = newJanList.stream().filter(jan -> newJanExistCdList.contains(jan.getJan())).collect(Collectors.toList());
         priorityOrderPtsJandataMapper.insertNewJan(notExistNewJan);
 
-        Map<String, Object> dbData = getPriorityOrderDataForDB(newJanExistCdList.toArray(new String[0]), company,  attrList, attrSortMap, priorityOrderCd);
+        Map<String, Object> dbData = getPriorityOrderDataForDB(newJanExistCdList.toArray(new String[0]), company, attrSortMap, priorityOrderCd);
         Object data = dbData.get("data");
 
         if(data==null){
