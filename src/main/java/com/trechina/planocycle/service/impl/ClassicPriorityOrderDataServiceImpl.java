@@ -326,9 +326,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         return Data;
     }
 
-    @Override
-    public Map<String, Object> getPriorityOrderDataForDB(String [] jans,String companyCd, Map<String, String> attrSortMap,
-                                                         Integer priorityOrderCd) {
+    public Map<String, Object> getPriorityOrderDataForDb(String [] jans, Map<String, String> attrSortMap) {
         CommonPartsDto commonPartsDto = new CommonPartsDto();
         commonPartsDto.setCoreCompany(sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY));
         commonPartsDto.setProdMstClass(MagicString.FIRST_CLASS_CD);
@@ -369,7 +367,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 Map<String, String> colNumMap = Maps.newHashMap();
                 colNumMap.put(colNum, entry.getKey());
                 itemDto.setColNum(colNumMap);
-                //index=attr1/attr2
                 itemDto.setJanCdCol(cdCol);
                 attrTableList.add(itemDto);
             }
@@ -537,7 +534,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         String authorCd = session.getAttribute("aud").toString();
         cacheUtil.remove(authorCd);
         List<String> attrValueList = classicPriorityOrderMstAttrSortMapper.getAttrList(company, priorityOrderCd);
-        List<Map<String, Object>> tempData = priorityOrderDataMapper.getWorkData(company,priorityOrderCd,  attrValueList);
+        List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSortDtos = classicPriorityOrderMstAttrSortMapper.selectWKRankSort(company, priorityOrderCd);
+        List<String> attrSort = priorityOrderMstAttrSortDtos.stream().map(PriorityOrderMstAttrSortDto::getValue).collect(Collectors.toList());
+        List<Map<String, Object>> tempData = priorityOrderDataMapper.selectTempDataByRankUpd(attrSort, priorityOrderCd,company,  attrValueList);
         tempData.forEach(item -> {
             if (item.get("rank").toString().equals("-1")) {
                 item.put("rank", "新規");
@@ -725,14 +724,14 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             return Maps.newHashMap();
         }
 
-        //eg:attr1,attr2
+        //eg:attr1:1000_0000_1,attr2:0001_0000_1
         Map<String, String> attrSortMap = attrSorts.stream()
                 .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getSort, PriorityOrderMstAttrSortDto::getValue));
 
         List<DownloadDto> notExistNewJan = newJanList.stream().filter(jan -> newJanExistCdList.contains(jan.getJan())).collect(Collectors.toList());
         priorityOrderPtsJandataMapper.insertNewJan(notExistNewJan);
 
-        Map<String, Object> dbData = getPriorityOrderDataForDB(newJanExistCdList.toArray(new String[0]), company, attrSortMap, priorityOrderCd);
+        Map<String, Object> dbData = getPriorityOrderDataForDb(newJanExistCdList.toArray(new String[0]), attrSortMap);
         Object data = dbData.get("data");
 
         if(data==null){

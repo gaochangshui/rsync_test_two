@@ -57,7 +57,7 @@ public interface ClassicPriorityOrderDataService {
 
     Map<String, Object> getPriorityOrderDataForSmt(String [] jans,String companyCd,Integer priorityOrderCd,Integer productPowerCd);
 
-    Map<String, Object> getPriorityOrderDataForDB(String[] jans, String companyCd, Map<String,String> attrSortMap, Integer priorityOrderCd);
+    Map<String, Object> getPriorityOrderDataForDb(String[] jans, Map<String,String> attrSortMap);
 
     Map<String, Object> getPatternAndName(Integer productPowerCd);
 

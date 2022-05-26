@@ -198,7 +198,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
                     sel.append("attr").append(i).append("='").append(attrName[i - 1]).append("',");
                 }
                 List<String> colValueList = Arrays.asList(sel.toString().split(","));
-                String branchNum = priorityOrderCatepakAttributeMapper.selectForTempTable(colValueList, "public.priorityorder" + session.getAttribute("aud").toString());
+                String branchNum = priorityOrderCatepakAttributeMapper.selectForTempTable(colValueList, priorityOrderCd);
                 logger.info("定番店舗数の照会{}", branchNum);
                 if (branchNum != null) {
                     priorityOrderJanNewMapper.updateBranchNum(Integer.valueOf(item.get("priority_order_cd").toString()),
