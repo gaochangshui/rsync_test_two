@@ -534,7 +534,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         String authorCd = session.getAttribute("aud").toString();
         cacheUtil.remove(authorCd);
         List<String> attrValueList = classicPriorityOrderMstAttrSortMapper.getAttrList(company, priorityOrderCd);
-        List<Map<String, Object>> tempData = priorityOrderDataMapper.getWorkData(company,priorityOrderCd,  attrValueList);
+        List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSortDtos = classicPriorityOrderMstAttrSortMapper.selectWKRankSort(company, priorityOrderCd);
+        List<String> attrSort = priorityOrderMstAttrSortDtos.stream().map(PriorityOrderMstAttrSortDto::getValue).collect(Collectors.toList());
+        List<Map<String, Object>> tempData = priorityOrderDataMapper.selectTempDataByRankUpd(attrSort, priorityOrderCd,company,  attrValueList);
         tempData.forEach(item -> {
             if (item.get("rank").toString().equals("-1")) {
                 item.put("rank", "新規");

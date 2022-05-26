@@ -167,8 +167,8 @@
       </if>
   </select>
     <select id="selectTempDataByRankUpd"  resultType="java.util.Map">
-        select jan_new,jan_old,pos_amount,branch_amount,unit_price,rank,rank_prop,goods_rank,rank_upd,branch_num,branch_num_upd,
-        branch_amount_upd,difference,sale_forecast,sku
+        select jan_new,jan_old,pos_amount,branch_amount,unit_price,sku,rank,rank_prop,goods_rank,rank_upd,branch_num,branch_num_upd,
+        branch_amount_upd,difference,sale_forecast
         <foreach collection="allAttrSortList" open="," item="attr" separator=",">
             coalesce(${attr}, '') as ${attr}
         </foreach>

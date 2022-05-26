@@ -46,7 +46,7 @@
         <foreach collection="sortList" item="obj" separator=",">${obj}</foreach>
          order by case "orderdata".rank when -1 then -1 else 0 end,jandata.rank,rank_prop, "orderdata".rank) rank
         from priority.work_priority_order_result_data "orderdata" inner join
-        priority.priority_order_pts_jandata jandata on jandata.jan_cd="orderdata".jan_new
+        priority.priority_order_pts_jandata jandata on jandata.jan_cd="orderdata".jan_new and jandata.priority_order_cd=orderdata.priority_order_cd
         where jandata.company_cd=#{companyCd} and jandata.priority_order_cd=#{priorityOrderCd} and flg!=99999999;
     </select>
     <select id="selectSavedJanRank" resultType="com.trechina.planocycle.entity.dto.DownloadDto">
