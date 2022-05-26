@@ -129,7 +129,67 @@ public class cgiUtils {
         }
         return "";
     }
+    /**
+     * 异步post調用cgi
+     * @param path
+     * @param cla
+     * @param tokenInfo
+     * @param <U>
+     * @return
+     * @throws IOException
+     */
+    public <U> String  postCgi(String path, U cla, String tokenInfo,String smartPath) {
+        OutputStream os = null;
+        BufferedReader reader = null;
+        InputStream in = null;
+        InputStream buffer = null;
 
+        try{
+            URL url =new URL(smartPath+path);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestProperty(HttpHeaders.CONTENT_TYPE,textFormat);
+
+            os = connection.getOutputStream();
+            os.write(JSON.toJSONBytes(cla));
+            in =connection.getInputStream();
+
+            buffer =new BufferedInputStream(in);
+            reader =new BufferedReader(new InputStreamReader(buffer));
+            String read;
+            StringBuilder builder = new StringBuilder();
+            while ((read = reader.readLine()) !=null){
+                builder.append(read);
+            }
+            return builder.toString();
+        }catch (Exception e){
+            logger.error("io異常", e);
+        }finally {
+            try {
+                if(Objects.nonNull(in)){
+                    in.close();
+                }
+
+                if(Objects.nonNull(buffer)){
+                    buffer.close();
+                }
+
+                if(Objects.nonNull(reader)){
+                    reader.close();
+                }
+
+                if(Objects.nonNull(os)){
+                    os.close();
+                }
+            } catch (IOException e) {
+                logger.error("io閉じる異常", e);
+            }
+        }
+        return "";
+    }
     public String setPath(String key){
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         return resourceBundle.getString(key);
@@ -220,7 +280,90 @@ public class cgiUtils {
             }
         }
     }
+    /**
+     * 再帰調用cgi（异步调用web版）
+     * @param path
+     * @param taskid
+     * @param tokenInfo
+     * @return
+     */
+    public  Map<String, Object> postCgiOfWeb(String path,String taskid, String tokenInfo,String smartPath){
+        InputStream in = null;
+        InputStream buffer = null;
+        BufferedReader reader = null;
+        InputStreamReader inputStreamReader = null;
 
+        try{
+            StringBuilder builder = null;
+            URL url =new URL(smartPath+path);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestProperty("Content-Type",textFormat);
+
+            OutputStream os = connection.getOutputStream();
+            Map<String,String> para = new HashMap<>();
+            para.put("taskid",taskid);
+            os.write(JSON.toJSONBytes(para));
+            Integer statusCode = connection.getResponseCode();
+
+            in =connection.getInputStream();
+            buffer =new BufferedInputStream(in);
+
+            inputStreamReader = new InputStreamReader(buffer);
+            reader =new BufferedReader(inputStreamReader);
+            String read;
+            builder = new StringBuilder();
+            while ((read = reader.readLine()) !=null){
+                builder.append(read+"@");
+            }
+            if (builder.length()==0){
+                return ResultMaps.result(ResultEnum.SIZEISZERO,"");
+            }
+            builder = new StringBuilder(builder.substring(0,builder.length()-1));
+            logger.info("postCgiOfWeb statusCode,reqult：{},{}",statusCode, builder);
+            in.close();
+            if (builder.toString().equals("2")) {
+                return ResultMaps.result(ResultEnum.CGITIEMOUT,null);
+            }
+            else if (builder.toString().equals("3")) {
+                return ResultMaps.result(ResultEnum.CGICANCEL,null);
+            }
+            else if (builder.toString().equals("4")) {
+                return ResultMaps.result(ResultEnum.CGIERROR,null);
+            }else if (builder.toString().equals("5")){
+                return ResultMaps.result(ResultEnum.DATAISTOOLARGE,null);
+            }
+            else{
+                return ResultMaps.result(ResultEnum.SUCCESS,builder.toString());
+            }
+        } catch (IOException e) {
+            logger.info("cgi調用error：", e);
+            return ResultMaps.result(ResultEnum.FAILURE,null);
+        } finally {
+            try {
+                if(Objects.nonNull(in)){
+                    in.close();
+                }
+
+                if(Objects.nonNull(buffer)){
+                    buffer.close();
+                }
+
+                if(Objects.nonNull(inputStreamReader)){
+                    inputStreamReader.close();
+                }
+
+                if(Objects.nonNull(reader)){
+                    reader.close();
+                }
+            } catch (IOException e) {
+                logger.info("io閉じる異常：",e);
+            }
+        }
+    }
     /**
      * 再帰調用cgi
      *                  通を過ぎて返回的code判断是否成功

@@ -93,7 +93,7 @@ public class ClassicPriorityOrderDataController {
     }
 
     @GetMapping("/getPriorityOrderListInfo")
-    Map<String,Object> getPriorityOrderListInfo(String companyCd,Integer priorityOrderCd){
+    public Map<String,Object> getPriorityOrderListInfo(String companyCd,Integer priorityOrderCd){
         return priorityOrderDataService.getPriorityOrderListInfo(companyCd,priorityOrderCd);
     }
 
