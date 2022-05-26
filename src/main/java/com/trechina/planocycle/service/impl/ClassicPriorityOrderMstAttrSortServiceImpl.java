@@ -22,7 +22,7 @@ public class ClassicPriorityOrderMstAttrSortServiceImpl implements ClassicPriori
     @Autowired
     private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     /**
-     * 获取既存数据的排序
+     * 既存のデータのソートの取得
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -47,7 +47,7 @@ public class ClassicPriorityOrderMstAttrSortServiceImpl implements ClassicPriori
     }
 
     /**
-     * 保存数据的排序
+     * 保存データのソート
      *
      * @param priorityOrderMstAttrSort
      * @return
@@ -55,7 +55,7 @@ public class ClassicPriorityOrderMstAttrSortServiceImpl implements ClassicPriori
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityAttrSort(List<PriorityOrderMstAttrSort> priorityOrderMstAttrSort) {
-        logger.info("保存优先顺位表排序的参数"+priorityOrderMstAttrSort);
+        logger.info("優先順位テーブルソートのパラメータを保存する"+priorityOrderMstAttrSort);
         if (priorityOrderMstAttrSort.size()>0) {
             priorityOrderMstAttrSortMapper.deleteByPrimaryKey(priorityOrderMstAttrSort.get(0).getCompanyCd(), priorityOrderMstAttrSort.get(0).getPriorityOrderCd());
             priorityOrderMstAttrSortMapper.insert(priorityOrderMstAttrSort);
@@ -63,7 +63,7 @@ public class ClassicPriorityOrderMstAttrSortServiceImpl implements ClassicPriori
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
     /**
-     * 删除数据的排序
+     * 削除データのソート
      * @param companyCd
      * @param priorityOrderCd
      * @return

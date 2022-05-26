@@ -10,20 +10,20 @@ import java.util.Map;
 public interface ClassicPriorityOrderMstService {
 
     /**
-     * 获取优先顺位表list
+     * 優先順位テーブルlistの取得
      * @param companyCd
      * @return
      */
     Map<String,Object> getPriorityOrderList(String companyCd);
 
     /**
-     * 保存优先顺位表参数
+     * 優先順位テーブルパラメータの保存
      * @param priorityOrderMstDto
      * @return
      */
     Map<String,Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto);
     /**
-     * 读写priorityorderData
+     * リードライトpriorityorderData
      * @param priorityOrderMstDto
      * @param res
      * @param wirteReadFlag
@@ -32,13 +32,13 @@ public interface ClassicPriorityOrderMstService {
     Map<String,Object> priorityDataWRFlag(PriorityOrderMstDto priorityOrderMstDto, String[] res, String wirteReadFlag);
 
     /**
-     * 获取登录这所在企业是否有优先顺位表
+     * この企業に優先順位テーブルがあるかどうかのログインを取得します。
      * @return
      */
     Map<String,Object> getPriorityOrderExistsFlg();
 
     /**
-     * 优先顺位表获取rank属性的动态列
+     * 優先順位テーブルrank属性の動的列の取得
      * @param companyCd
      * @param productPowerCd
      * @return
@@ -46,7 +46,7 @@ public interface ClassicPriorityOrderMstService {
     Map<String,Object> getRankAttr(String companyCd,Integer productPowerCd);
 
     /**
-     * 获取pts文件下载
+     * ptsファイルのダウンロードを取得する
      * @param priorityOrderPtsDownDto
      * @param response
      * @return
@@ -54,21 +54,21 @@ public interface ClassicPriorityOrderMstService {
     Map<String, Object> getPtsFileDownLoad(PriorityOrderPtsDownDto priorityOrderPtsDownDto, HttpServletResponse response,String ptsDownPath);
 
     /**
-     * 根据优先顺位表cd获取商品力点数表cd
+     * 優先順位テーブルcdに基づく商品力点数テーブルcdの取得
      * @param priorityOrderCd
      * @return
      */
     Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd);
 
     /**
-     * 删除所有优先顺位表信息
+     * すべての優先順位テーブル情報を削除
      * @param primaryKeyVO
      * @return
      */
     Map<String, Object> delPriorityOrderAllInfo(PriorityOrderPrimaryKeyVO primaryKeyVO);
 
     /**
-     * 根据productpowercd查询关联的优先顺位表cd
+     * productpowercdによる関連優先順位テーブルcdのクエリ
      * @param companyCd
      * @param productPowerCd
      * @return

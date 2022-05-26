@@ -9,14 +9,14 @@ import java.util.Map;
 
 public interface ClassicPriorityOrderAttributeClassifyService {
     /**
-     * 获取jan所有属性的分类排序
+     * janのすべての属性の分類ソートを取得する
      * @param downloadSortDto
      * @return
      */
     Map<String,Object> getClassifyList(@RequestBody DownloadSortDto downloadSortDto);
 
     /**
-     * 修改jan所有属性的分类排序
+     * janのすべての属性の分類順序を変更する
      * @param classifyList
      * @return
      */

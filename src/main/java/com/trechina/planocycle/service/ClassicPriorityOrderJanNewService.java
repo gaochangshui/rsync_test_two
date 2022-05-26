@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface ClassicPriorityOrderJanNewService {
     /**
-     * 获取新规janlist
+     * 新規商品リストの取得
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -14,14 +14,14 @@ public interface ClassicPriorityOrderJanNewService {
     Map<String,Object> getPriorityOrderJanNew(String companyCd,Integer priorityOrderCd);
 
     /**
-     *保存新规商品list
+     *新規商品リストの保存
      * @param jsonArray
      * @return
      */
     Map<String,Object> setPriorityOrderJanNew(JSONArray jsonArray);
 
     /**
-     * 删除新规商品list
+     * 削除新规商品list
      * @param companyCd
      * @param priorityOrderCd
      * @return

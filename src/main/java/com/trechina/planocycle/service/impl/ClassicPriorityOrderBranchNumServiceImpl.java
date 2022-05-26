@@ -44,7 +44,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Autowired
     private cgiUtils cgiUtil;
     /**
-     * 获取smart处理之后的必须+不可商品的结果集，并保存
+     *smart処理後の必須+不可商品の結菓セットを取得し、保存
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -63,16 +63,16 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         priorityOrderDataForCgiDto.setGuid(uuid);
         priorityOrderDataForCgiDto.setMode("priority_jan_storecnt");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("调用priority_jan_storecnt的参数" + priorityOrderDataForCgiDto);
+        logger.info("priority_を呼び出します。jan_storecntのパラメータ" + priorityOrderDataForCgiDto);
 
         String result = cgiUtil.postCgi(pathInfo, priorityOrderDataForCgiDto, tokenInfo);
-        logger.info("返回priority_jan_storecnt处理结果"+result);
+        logger.info("priority_jan_storecnt処理結菓"+result);
         String queryPath = resourceBundle.getString("TaskQuery");
         // 带着taskid，再次请求cgi获取运行状态/数据
         Map<String,Object> Data = cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-        logger.info("调用priority_jan_storecnt的结果" + Data);
+        logger.info("priority_を呼び出します。jan_storecntの結菓" + Data);
         JSONArray jsonArray = JSONArray.parseArray(String.valueOf(Data.get("data")));
-        logger.info("转json后："+jsonArray.toString());
+        logger.info("jsonを回した後："+jsonArray.toString());
         if (jsonArray.size()>0){
             priorityOrderCommodityMustMapper.deletePriorityBranchNum(companyCd,priorityOrderCd);
 
@@ -82,7 +82,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     }
 
     /**
-     * 获取必须商品list
+     * 必須商品リストの取得
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -90,16 +90,16 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
      */
     @Override
     public Map<String, Object> getPriorityOrderCommodityMust(String companyCd, Integer priorityOrderCd) {
-        logger.info("获取必须商品list的参数："+companyCd+","+priorityOrderCd);
+        logger.info("必須商品リストのパラメータを取得する："+companyCd+","+priorityOrderCd);
         List<PriorityOrderCommodityVO> priorityOrderCommodityVOList = priorityOrderCommodityMustMapper
                                                     .selectMystInfo(companyCd,priorityOrderCd);
-        logger.info("获取必须商品list的返回值："+priorityOrderCommodityVOList);
+        logger.info("必須商品リストの戻り値を取得する："+priorityOrderCommodityVOList);
 
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderCommodityVOList);
     }
 
     /**
-     * 获取不可商品list
+     * 不可商品リストの取得
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -107,15 +107,15 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
      */
     @Override
     public Map<String, Object> getPriorityOrderCommodityNot(String companyCd, Integer priorityOrderCd) {
-        logger.info("获取不可商品list的参数："+companyCd+","+priorityOrderCd);
+        logger.info("不可商品リストのパラメータを取得する："+companyCd+","+priorityOrderCd);
         List<PriorityOrderCommodityVO> priorityOrderCommodityVOList = priorityOrderCommodityNotMapper
                                                     .selectNotInfo(companyCd,priorityOrderCd);
-        logger.info("获取不可商品list的返回值："+priorityOrderCommodityVOList);
+        logger.info("不可商品リストの戻り値を取得する："+priorityOrderCommodityVOList);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderCommodityVOList);
     }
 
     /**
-     * 保存必须商品list，并传参给smart
+     * 保存必須商品リスト
      *
      * @param priorityOrderCommodityMust
      * @return
@@ -123,7 +123,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderCommodityMust(List<PriorityOrderCommodityMust> priorityOrderCommodityMust) {
-        logger.info("保存必须商品list参数："+priorityOrderCommodityMust);
+        logger.info("必須商品リストパラメータを保存する："+priorityOrderCommodityMust);
         // 拿到的参数只有第一行有企业和顺位表cd，需要遍历参数，给所有行都赋值
         try{
             String companyCd = priorityOrderCommodityMust.get(0).getCompanyCd();
@@ -133,7 +133,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             List<PriorityOrderCommodityMust> mustList =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderCommodityMust.class,priorityOrderCommodityMust,
                     companyCd ,priorityOrderCd);
 
-            logger.info("保存必须商品list处理完后的参数："+mustList);
+            logger.info("必須商品リストの処理後のパラメータを保存する："+mustList);
             // 查询企业的店cd是几位数
             String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd);
             Integer branchLen = branchCd.length();
@@ -143,8 +143,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     item.setBranch(String.format("%0"+branchLen+"d",Integer.valueOf(item.getBranch())));
                 }
             });
-            logger.info("保存必须商品店补0后的结果"+mustList);
-            //删除
+            logger.info("必須商品の店補0後の結菓を保存する"+mustList);
+            //削除
             priorityOrderCommodityMustMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             // jancheck
             String janInfo = priorityOrderJanReplaceService.getJanInfo();
@@ -159,7 +159,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 }
             }
             if (exists.size()>0){
-                //写入数据库
+                //データベースへの書き込み
                 priorityOrderCommodityMustMapper.insert(exists);
             }
            if (notExists.length()>0){
@@ -168,14 +168,14 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 return ResultMaps.result(ResultEnum.SUCCESS);
            }
         } catch (Exception e) {
-            logger.error("保存必须商品list："+e);
+            logger.error("保存必須商品リスト："+e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
 
 
     /**
-     * 保存不可商品list，并传参给smart
+     * 不可商品リストの保存
      *
      * @param priorityOrderCommodityNot
      * @return
@@ -183,7 +183,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderCommodityNot(List<PriorityOrderCommodityNot> priorityOrderCommodityNot) {
-        logger.info("保存不可商品list参数："+priorityOrderCommodityNot);
+        logger.info("不可商品リストパラメータの保存："+priorityOrderCommodityNot);
         // 拿到的参数只有第一行有企业和顺位表cd，需要遍历参数，给所有行都赋值
         try{
             String companyCd = priorityOrderCommodityNot.get(0).getCompanyCd();
@@ -192,7 +192,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             // 调用共同方法，处理数据
             List<PriorityOrderCommodityNot> not =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderCommodityNot.class,priorityOrderCommodityNot,
                     companyCd ,priorityOrderCd);
-            logger.info("保存不可商品list处理完后的参数："+not);
+            logger.info("不可商品リスト処理後のパラメータを保存する："+not);
             // 查询企业的店cd是几位数
             String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd);
             Integer branchLen = branchCd.length();
@@ -202,8 +202,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     item.setBranch(String.format("%0"+branchLen+"d",Integer.valueOf(item.getBranch())));
                 }
             });
-            logger.info("保存不可商品list店补0后的结果"+not);
-            //删除
+            logger.info("不可商品list店が0を補充した結菓を保存します"+not);
+            //削除
             priorityOrderCommodityNotMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             // jancheck
             String janInfo = priorityOrderJanReplaceService.getJanInfo();
@@ -227,13 +227,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
         } catch (Exception e) {
-            logger.error("保存不可商品list："+e);
+            logger.error("不可商品リストの保存："+e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
 
     /**
-     * 删除必须商品
+     * 必須商品を削除する
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -245,7 +245,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     }
 
     /**
-     * 删除不可商品
+     * 不可商品を削除する
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -257,7 +257,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     }
 
     /**
-     * 删除必须不可的中间表
+     * 必須の中間テーブルを削除
      *
      * @param companyCd
      * @param priorityOrderCd

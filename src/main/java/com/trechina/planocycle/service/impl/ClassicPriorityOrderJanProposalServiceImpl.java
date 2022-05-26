@@ -52,7 +52,7 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
 
 
     /**
-     * 获取jan变提案list
+     * jan変提案listの取得
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -60,12 +60,12 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      */
     @Override
     public Map<String, Object> getPriorityOrderJanProposal(String companyCd, Integer priorityOrderCd,Integer productPowerNo,String shelfPatternNo) {
-        logger.info("获取jan变提案list的参数:"+companyCd+","+priorityOrderCd);
+        logger.info("jan変提案listのパラメータを取得する:"+companyCd+","+priorityOrderCd);
         List<PriorityOrderJanProposalVO> priorityOrderJanProposals = priorityOrderJanProposalMapper.selectByPrimaryKey(companyCd,
                 priorityOrderCd);
-        logger.info("获取jan变提案list的返回值："+priorityOrderJanProposals);
+        logger.info("jan変提案listの戻り値を取得する："+priorityOrderJanProposals);
         if(priorityOrderJanProposals.size()==0){
-            // 如果没数据获取cgi数据
+
 //            try {
 //                janProposalData(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd);
             String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
@@ -79,12 +79,12 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
 //                logger.info("报错:"+e);
 //            }
         }
-        logger.info("获取jan变提案list的返回值："+priorityOrderJanProposals);
+        logger.info("jan変提案listの戻り値を取得する："+priorityOrderJanProposals);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanProposals);
     }
 
     /**
-     * 从cgi拿jan变提案list数据 写到postgre
+     * jan変情報の保存エラーcgiからjan変提案listデータをpostgreに書く
      * @throws IOException
      */
     public void janProposalData(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd) throws IOException {
@@ -101,16 +101,15 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
             String path = resourceBundle.getString("PriorityOrderData");
             String queryPath = resourceBundle.getString("TaskQuery");
-            //递归调用cgi，首先去taskid
 
             String resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
             logger.info("taskId返回：" + resultJan);
-            //带着taskId，再次请求cgi获取运行状态/数据
+
             Map<String, Object> DataJan = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
             logger.info("jan变提案list cgi返回数据：" + DataJan);
             if (!DataJan.get("data").equals("[ ]")) {
                 JSONArray datasJan = (JSONArray) JSON.parse(DataJan.get("data").toString());
-                //保存jan变提案list数据
+
                 priorityOrderJanProposalService.savePriorityOrderJanProposal(datasJan,companyCd,priorityOrderCd);
             }
     }
@@ -140,7 +139,7 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
 
 
     /**
-     * 修改jan变提案list的flag
+     * jan変提案listのflagを修正する
      *
      * @param priorityOrderJanProposal
      * @return
@@ -148,29 +147,29 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderJanProposal(List<PriorityOrderJanProposal> priorityOrderJanProposal) {
-        logger.info("修改jan变提案list的参数："+priorityOrderJanProposal);
+        logger.info("jan変提案listのパラメータを修正する："+priorityOrderJanProposal);
         try {
             dataConverUtils dataConverUtil = new dataConverUtils();
             String companyCd = priorityOrderJanProposal.get(0).getCompanyCd();
             Integer priorityOrderCd = priorityOrderJanProposal.get(0).getPriorityOrderCd();
-            //处理参数
+
             List<PriorityOrderJanProposal> proposals = dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderJanProposal.class,
                     priorityOrderJanProposal,companyCd,priorityOrderCd);
-            logger.info("修改jan变提案list的处理完后的参数："+proposals);
+            logger.info("jan変提案listの処理完了後のパラメータを修正する："+proposals);
             priorityOrderJanProposalMapper.updateByPrimaryKey(proposals);
 
-            // 修改后反映到主表
+            // 変更後にメインテーブルに反映
             //priorityOrderDataMapper.updatePriorityOrderDataForProp(companyCd,priorityOrderCd,
             //        "public.priorityorder"+session.getAttribute("aud").toString());
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
-            logger.info("修改jan变提案list报错："+e);
+            logger.info("jan変更提案listエラーの修正："+e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
 
     /**
-     * 保存cgi返回的jan提案list
+     * cgiが返すjan提案リストを保存する
      *
      * @param jsonArray
      * @return
@@ -182,7 +181,7 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
     }
 
     /**
-     * 删除jan变提案list
+     * jan変提案listを削除する
      *
      * @param companyCd
      * @param priorityOrderCd

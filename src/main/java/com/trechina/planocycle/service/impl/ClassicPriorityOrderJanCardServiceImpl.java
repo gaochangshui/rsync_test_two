@@ -41,7 +41,7 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
     @Autowired
     private SysConfigMapper sysConfigMapper;
     /**
-     * 获取card商品list
+     * card商品リストの取得
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -50,7 +50,7 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
     @Override
     public Map<String, Object> getPriorityOrderJanCard(String companyCd, Integer priorityOrderCd) {
         List<ClassicPriorityOrderJanNewVO> janNewList = priorityOrderJanNewMapper.getExistOtherMst(companyCd, priorityOrderCd);
-        logger.info("获取card商品list参数:{},{}",companyCd,priorityOrderCd);
+        logger.info("card商品リストパラメータを取得する:{},{}",companyCd,priorityOrderCd);
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         String tableName = String.format("\"%s\".prod_%s_jan_info",coreCompany, MagicString.FIRST_CLASS_CD);
         List<Map<String, Object>> janHeader = janClassifyMapper.selectJanClassify(tableName);
@@ -67,12 +67,12 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
                 }
             }
         }
-        logger.info("获取card商品list返回值："+priorityOrderJanCardVOS);
+        logger.info("card商品list戻り値の取得："+priorityOrderJanCardVOS);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCardVOS);
     }
 
     /**
-     * 保存card商品list
+     * card商品listの保存
      *
      * @param priorityOrderJanCard
      * @return
@@ -85,11 +85,11 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
             dataConverUtils dataConverUtil = new dataConverUtils();
             String companyCd = priorityOrderJanCard.get(0).getCompanyCd();
             Integer priorityOrderCd = priorityOrderJanCard.get(0).getPriorityOrderCd();
-            // 处理参数
+            // 処理パラメータ
             List<ClassicPriorityOrderJanCard> cards = dataConverUtil.priorityOrderCommonMstInsertMethod(ClassicPriorityOrderJanCard.class,
                     priorityOrderJanCard,companyCd,priorityOrderCd);
             logger.info("保存card商品list的处理完的参数："+cards);
-            //全删
+            //全削除
             priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             // jancheck
             String janInfo = priorityOrderJanReplaceService.getJanInfo();
@@ -108,10 +108,10 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
             String tableName = "public.priorityorder" + session.getAttribute("aud").toString();
          //   priorityOrderDataMapper.updateCutJanForProp(tableName);
             if (exists.size()>0) {
-                //全插
+                //全挿入
                 priorityOrderJanCardMapper.insert(exists);
 
-                // 修改优先顺位存在的jan信息
+                // 優先順位の存在するjan情報を修正する
             //    priorityOrderDataMapper.updatePriorityOrderDataForCard(companyCd, priorityOrderCd,tableName);
             }
             if (notExists.length()>0){
@@ -128,7 +128,7 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
     }
 
     /**
-     * 删除card商品list
+     * card商品listの削除
      *
      * @param companyCd
      * @param priorityOrderCd

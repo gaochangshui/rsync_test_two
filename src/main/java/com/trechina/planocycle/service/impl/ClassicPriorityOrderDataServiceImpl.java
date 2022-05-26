@@ -109,7 +109,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Autowired
     private ClaasicPriorityOrderAttributeClassifyMapper claasicPriorityOrderAttributeClassifyMapper;
     /**
-     * 优先顺位表初期设定数据
+     * 初期取得優先順位テーブルデータ
      *
      * @param priorityOrderDataDto
      * @return
@@ -217,7 +217,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         priorityOrderData(datas);
     }
 
-    // 查询属性名
+    /**
+     * 属性列名の名前を取得
+     * @param enterpriseAxisDto
+     * @return
+     */
     @Override
     public Map<String, Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto) {
         String companyCd = enterpriseAxisDto.getCompanyCd();
@@ -390,6 +394,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         return ResultMaps.result(ResultEnum.SUCCESS,patternAndName);
     }
 
+    /**
+     * 取得優先順位テーブルデータの編集
+     * @param priorityOrderDataDto
+     * @return
+     */
     @Override
     public Map<String, Object> editPriorityOrderData(PriorityOrderDataDto priorityOrderDataDto) {
         String companyCd = priorityOrderDataDto.getCompanyCd();
@@ -514,7 +523,12 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         return janMsg;
     }
 
-
+    /**
+     * ptsアップロード後のソート+優先順位表反応ボタン抽出データ
+     * @param company
+     * @param priorityOrderCd
+     * @return
+     */
     @Override
     public Map<String, Object> getUploadPriorityOrderData(String company, Integer priorityOrderCd) {
         List<Map<String, Object>> result = new ArrayList<>();
@@ -946,10 +960,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     }
 
     private JSONArray priorityOrderData(JSONArray datas) {
-        // 保存数据为临时表
+        // 一時テーブルとしてのデータの保存
 //        JSONArray datas = new JSONArray(Data);
         List<Map<String, String>> keyNameList = new ArrayList<>();
-        //拿到表头
+        //表に出す
         colNameList(datas, keyNameList);
         logger.info("打印创建临时表前的表头" + keyNameList.toString());
         logger.info(keyNameList.toString());
@@ -957,13 +971,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         Integer nameId = 0;
         List<Map<String, String>> finalKeyName = new ArrayList<>();
 
-        //临时存数据的实体表 priorityorder+社员号
+        //一時保存データのエンティティテーブルpriorityorder+社員番号
         String tablename = "public.priorityorder" + session.getAttribute("aud").toString();
         logger.info("创建的表名" + tablename);
-        //初始化建表
+
         priorityOrderDataMapper.dropTempData(tablename);
         priorityOrderDataMapper.updateTempData(keyNameList, tablename);
-        //写数据
+
 
         priorityOrderDataMapper.insert(datas, keyNameList, tablename);
 
@@ -972,7 +986,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
 
     /**
-     * 优先顺位表反应按钮抽出数据
+     * rank属性ソート+優先順位表反応ボタン抽出データ
      *
      * @param colNameList
      * @return
@@ -1046,12 +1060,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                     result.put("branch_num", item.getBranchNum());
                     result.put("branch_num_upd", item.getBranchNum());
                     result.put("branch_amount", item.getBranchAccount());
-                    //写入jsonArray
                     jsonArray.add(result);
                 });
 
             } else {
-                //获取列头
+
                 ClassicPriorityOrderJanNewVO colResult = priorityOrderJanNewMapper.selectColName(companyCd, priorityOrderCd);
                 logger.info("获取新规商品list返回结果集e：" + colResult);
                 String[] attrList = colResult.getAttr().split(",");

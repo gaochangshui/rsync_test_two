@@ -1,13 +1,9 @@
 package com.trechina.planocycle.service.impl;
 
 import com.trechina.planocycle.entity.dto.DownloadSortDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
 import com.trechina.planocycle.entity.po.PriorityOrderAttributeClassify;
-import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ClaasicPriorityOrderAttributeClassifyMapper;
-import com.trechina.planocycle.mapper.ClassicPriorityOrderMstAttrSortMapper;
-import com.trechina.planocycle.mapper.PriorityOrderMstAttrSortMapper;
 import com.trechina.planocycle.service.ClassicPriorityOrderAttributeClassifyService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +12,6 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ClassicPriorityOrderAttributeClassifyServiceImpl implements ClassicPriorityOrderAttributeClassifyService {
@@ -25,6 +20,11 @@ public class ClassicPriorityOrderAttributeClassifyServiceImpl implements Classic
     @Autowired
     private ClaasicPriorityOrderAttributeClassifyMapper priorityOrderAttributeClassifyMapper;
 
+    /**
+     * janのすべての属性の分類ソートを取得する
+     * @param downloadSortDto
+     * @return
+     */
     @Override
     public Map<String, Object> getClassifyList(DownloadSortDto downloadSortDto) {
         Integer attrNum = priorityOrderAttributeClassifyMapper.getAttrNum(downloadSortDto.getCompanyCd(), downloadSortDto.getPriorityOrderCd());
@@ -46,6 +46,11 @@ public class ClassicPriorityOrderAttributeClassifyServiceImpl implements Classic
         return ResultMaps.result(ResultEnum.SUCCESS,classifyList);
     }
 
+    /**
+     * janのすべての属性の分類順序を変更する
+     * @param classifyList
+     * @return
+     */
     @Override
     public Map<String, Object> setClassifyList(List<PriorityOrderAttributeClassify> classifyList) {
         String companyCd = classifyList.get(0).getCompanyCd();

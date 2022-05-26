@@ -21,7 +21,7 @@ public class ClassicPriorityOrderDataController {
     private ClassicPriorityOrderDataService priorityOrderDataService;
 
     /**
-     * 初期获取优先顺位表数据
+     * 初期取得優先順位テーブルデータ
      * @param priorityOrderDataDto
      * @return
      */
@@ -31,7 +31,7 @@ public class ClassicPriorityOrderDataController {
     }
 
     /**
-     * 编辑获取优先顺位表数据
+     * 取得優先順位テーブルデータの編集
      * @param priorityOrderDataDto
      * @return
      */
@@ -41,7 +41,7 @@ public class ClassicPriorityOrderDataController {
     }
 
     /**
-     * rank属性排序+优先顺位表反应按钮抽出数据
+     * rank属性ソート+優先順位表反応ボタン抽出データ
      * @param colNameList
      * @return
      */
@@ -51,7 +51,7 @@ public class ClassicPriorityOrderDataController {
     }
 
     /**
-     * pts上传后的排序+优先顺位表反应按钮抽出数据
+     * ptsアップロード後のソート+優先順位表反応ボタン抽出データ
      * @return
      */
     @GetMapping("/getUploadPriorityOrderData")
@@ -60,7 +60,7 @@ public class ClassicPriorityOrderDataController {
     }
 
     /**
-     * 获取属性列名的名称
+     * 属性列名の名前を取得
      * @param enterpriseAxisDto
      * @return
      */

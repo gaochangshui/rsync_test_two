@@ -16,7 +16,7 @@ public class ClassicPriorityOrderJanProposalController {
     private ClassicPriorityOrderJanProposalService priorityOrderJanProposalService;
 
     /**
-     * 获取jan变提案list
+     * jan変提案listの取得
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -27,7 +27,7 @@ public class ClassicPriorityOrderJanProposalController {
     }
 
     /**
-     * 修改jan变提案list的flag
+     * jan変提案listのflagを修正する
      * @param priorityOrderJanProposal
      * @return
      */
