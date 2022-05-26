@@ -203,7 +203,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
     private void commParseJsonArray(JSONArray datas, String company, Integer priorityNO){
         List<ClassicPriorityOrderJanNew> janNewList = priorityOrderJanNewMapper.selectJanNameFromJanNewByCompanyAndCd(company, priorityNO);
-        // 有新规Jan的时候，将新规JAN中名字为'_'的替换成新规JAN表中的数据。
+        // 有新規Jan的時候，将新規JAN中名字為'_'的替換成新規JAN表中的数据。
         if (!janNewList.isEmpty()) {
             for (int i = 0; i < datas.size(); i++) {
                 JSONObject obj = datas.getJSONObject(i);
@@ -316,11 +316,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         priorityOrderJanCgiDto.setAttributeCd(productOrderAttrAndItemVO.getAttrStr());
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         Map<String,Object> Data = null;
-        logger.info("获取新jan信息，传给smt的参数为：{}",priorityOrderJanCgiDto);
+        logger.info("つかむ取新jan信息，傳給smt的参数為：{}",priorityOrderJanCgiDto);
         String result = cgiUtil.postCgi(path, priorityOrderJanCgiDto, tokenInfo);
         logger.info("taskId返回：" + result);
         String queryPath = resourceBundle.getString("TaskQuery");
-        //带着taskId，再次请求cgi获取运行状态/数据
+        //帶着taskId，再次請求cgiつかむ取運行ステータス/数据
         Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
 
         return Data;
@@ -622,7 +622,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             }).collect(Collectors.toList());
 
             if(!needJanNewList.isEmpty()){
-                //add 新规jan
+                //add 新規jan
                 List<Map<String, Object>> datas = new ArrayList<>();
                 List<PriorityOrderJanAttribute> attrs = priorityOrderJanAttributeMapper.selectAttributeByJan(company, priorityOrderCd, needJanNewList);
                 for (DownloadDto downloadDto : needJanNewList) {
@@ -961,7 +961,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<Map<String, String>> keyNameList = new ArrayList<>();
         //表に出す
         colNameList(datas, keyNameList);
-        logger.info("打印创建临时表前的表头" + keyNameList.toString());
+        logger.info("打印創建臨時表前的表頭" + keyNameList.toString());
         logger.info(keyNameList.toString());
         String name = "";
         Integer nameId = 0;
@@ -969,7 +969,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
         //一時保存データのエンティティテーブルpriorityorder+社員番号
         String tablename = "public.priorityorder" + session.getAttribute("aud").toString();
-        logger.info("创建的表名" + tablename);
+        logger.info("創建的表名" + tablename);
 
         priorityOrderDataMapper.dropTempData(tablename);
         priorityOrderDataMapper.updateTempData(keyNameList, tablename);
@@ -1024,7 +1024,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         if (!janNewList.isEmpty()) {
             JSONArray jsonArray = new JSONArray();
 
-            // 遍历结果集，拆分动态列
+            // 遍暦結果集，拆分動態列
             if (!janNewList.isEmpty()) {
                 janNewList.forEach(item -> {
                     Map<String, Object> result = new HashMap<>();
@@ -1062,7 +1062,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             } else {
 
                 ClassicPriorityOrderJanNewVO colResult = priorityOrderJanNewMapper.selectColName(companyCd, priorityOrderCd);
-                logger.info("获取新规商品list返回结果集e：" + colResult);
+                logger.info("つかむ取新規商品list返回結果集e：" + colResult);
                 String[] attrList = colResult.getAttr().split(",");
                 String[] valList;
                 List<String> results = new ArrayList<>();

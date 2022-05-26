@@ -230,7 +230,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     // 処理属性の保存
     private void attrSave(PriorityOrderMstDto priorityOrderMstDto,List<Map<String, Object>> array) {
 
-//        logger.info("获取rankAttributeCdList"+array);
+//        logger.info("つかむ取rankAttributeCdList"+array);
 //        List<PriorityOrderMstAttrSort> priorityOrderMstAttrSortList = new ArrayList<>();
 //        for (int i = 0; i < array.size(); i++) {
 //            PriorityOrderMstAttrSort priorityOrderMstAttrSort = new PriorityOrderMstAttrSort();
@@ -325,7 +325,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Override
     public Map<String, Object> getPtsFileDownLoad(PriorityOrderPtsDownDto priorityOrderPtsDownDto, HttpServletResponse response,String ptsDownPath) {
         logger.info("pts出力パラメータを取得する:"+priorityOrderPtsDownDto);
-        // 从cgi获取数据
+        // 从cgiつかむ取数据
         String uuid = UUID.randomUUID().toString();
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("PriorityOrderData");
@@ -363,14 +363,14 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         attrInfo = attrInfo+attrInfo_mulit;
         String rankFinalInfo = rankInfo.substring(0,rankInfo.length()-1);
         String attrFinalInfo = attrInfo.substring(0,attrInfo.length()-1);
-        logger.info("处理完的rankAttributeCd"+rankFinalInfo);
+        logger.info("處理完的rankAttributeCd"+rankFinalInfo);
         priorityOrderPtsDownDto.setAttributeCd(attrFinalInfo);
         priorityOrderPtsDownDto.setRankAttributeCd(rankFinalInfo);
         // shelfPatternNoNm
         String resultShelf=shelfPatternService.getShePatternNoNm(priorityOrderPtsDownDto.getShelfPatternNo());
         logger.info("抽出完的shelfPatternNoNm"+resultShelf);
         priorityOrderPtsDownDto.setShelfPatternNoNm(resultShelf.replaceAll(" ","*"));
-        logger.info("获取处理完的pts出力参数:"+priorityOrderPtsDownDto);
+        logger.info("つかむ取處理完的pts出力参数:"+priorityOrderPtsDownDto);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         Map<String,Object> ptsPath = new HashMap<>();
         //cgiを再帰的に呼び出し、まずtaskidに行きます。
@@ -437,7 +437,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         priorityOrderJanReplaceService.delJanReplaceInfo(companyCd,priorityOrderCd);
         priorityOrderJanNewService.delriorityOrderJanNewInfo(companyCd,priorityOrderCd);
         priorityOrderJanCardService.delPriorityOrderJanCardInfo(companyCd,priorityOrderCd);
-        // 削除catepak扩缩
+        // 削除catepakかくだい
         priorityOrderCatePakService.delPriorityOrderCatePakInfo(companyCd,priorityOrderCd);
         priorityOrderCatePakService.delPriorityOrderCatePakAttrInfo(companyCd,priorityOrderCd);
         // jan変提案listを削除する

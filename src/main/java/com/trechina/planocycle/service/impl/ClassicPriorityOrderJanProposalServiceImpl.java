@@ -76,7 +76,7 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
                         tableName,"1", "2");
 
 //            } catch (IOException e) {
-//                logger.info("报错:"+e);
+//                logger.info("報錯:"+e);
 //            }
         }
         logger.info("jan変提案listの戻り値を取得する："+priorityOrderJanProposals);
@@ -89,14 +89,14 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      */
     public void janProposalData(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd) throws IOException {
             PriorityOrderDataForCgiDto priorityOrderDataForCgiDto = new PriorityOrderDataForCgiDto();
-            // 调用cgi拿jan变提案list的数据
+            // 調用cgi拿jan變提案list的数据
             String uuids = UUID.randomUUID().toString();
             priorityOrderDataForCgiDto.setMode("priority_jan_motion");
             priorityOrderDataForCgiDto.setGuid(uuids);
             priorityOrderDataForCgiDto.setCompany(companyCd);
             priorityOrderDataForCgiDto.setProductPowerNo(productPowerNo);
             priorityOrderDataForCgiDto.setShelfPatternNo(shelfPatternNo);
-            logger.info("从cgi拿jan变提案list数据参数"+priorityOrderDataForCgiDto);
+            logger.info("从cgi拿jan變提案list数据参数"+priorityOrderDataForCgiDto);
             String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
             ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
             String path = resourceBundle.getString("PriorityOrderData");
@@ -106,7 +106,7 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
             logger.info("taskId返回：" + resultJan);
 
             Map<String, Object> DataJan = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
-            logger.info("jan变提案list cgi返回数据：" + DataJan);
+            logger.info("jan變提案list cgi返回数据：" + DataJan);
             if (!DataJan.get("data").equals("[ ]")) {
                 JSONArray datasJan = (JSONArray) JSON.parse(DataJan.get("data").toString());
 

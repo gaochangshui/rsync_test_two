@@ -162,10 +162,10 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
                           Integer priorityOrderCd) {
         for (int i = 0; i < jsonArray.size(); i++) {
             HashMap item = (HashMap) jsonArray.get(i);
-            // 构造jannew主表的参数
+            // 構造jannew主表的参数
             if (item.get("janNew") != null) {
                 janNew(janNewList, companyCd, priorityOrderCd, (HashMap) jsonArray.get(i));
-                // 构造jan动态属性列的参数
+                // 構造jan動態属性列的参数
                 janAttr(janAttributeList, companyCd, priorityOrderCd, (HashMap) jsonArray.get(i));
             }
         }
@@ -267,7 +267,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
      */
     private void janAttr(List<PriorityOrderJanAttribute> janAttributeList, String companyCd, Integer priorityOrderCd, HashMap item) {
         for (Object key : item.keySet()) {
-            // 动态属性列表
+            // 動態属性列表
             PriorityOrderJanAttribute priorityOrderJanAttribute = new PriorityOrderJanAttribute();
             priorityOrderJanAttribute.setCompanyCd(companyCd);
             priorityOrderJanAttribute.setPriorityOrderCd(priorityOrderCd);

@@ -88,7 +88,7 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
             // 処理パラメータ
             List<ClassicPriorityOrderJanCard> cards = dataConverUtil.priorityOrderCommonMstInsertMethod(ClassicPriorityOrderJanCard.class,
                     priorityOrderJanCard,companyCd,priorityOrderCd);
-            logger.info("保存card商品list的处理完的参数："+cards);
+            logger.info("保存card商品list的處理完的参数："+cards);
             //全削除
             priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             // jancheck
@@ -121,7 +121,7 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
         } catch (Exception e) {
-            logger.info("保存card商品list报错："+e);
+            logger.info("保存card商品list報錯："+e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
 

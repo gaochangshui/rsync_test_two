@@ -20,7 +20,16 @@ public interface CommodityScoreDataService {
      */
     Map<String, Object> getCommodityScoreTaskId( Map<String,Object> map);
 
-
+    /**
+     * commonはプロジェクトインタフェースの取得を示します。
+     * @param productPowerCd
+     * @param companyCd
+     * @param posCd
+     * @param prepareCd
+     * @param intageCd
+     * @param customerCd
+     * @return
+     */
     Map<String, Object> getCommodityScoreDataFromDB(Integer productPowerCd, String companyCd, String[] posCd, String[] prepareCd, String[] intageCd,
                                                     String[] customerCd);
 }

@@ -40,7 +40,11 @@ public class CommodityScoreDataController {
         return commodityScoreDataService.getCommodityScoreTaskId(map);
     }
 
-
+    /**
+     * commonはプロジェクトインタフェースの取得を示します。
+     * @param showDataVO
+     * @return
+     */
     @PostMapping("/getShowCommodityScoreData")
     public Map<String, Object> getCommodityScoreDataFromDB(@RequestBody ShowDataVO showDataVO) {
         return commodityScoreDataService.getCommodityScoreDataFromDB(showDataVO.getProductPowerCd(), showDataVO.getCompanyCd(),

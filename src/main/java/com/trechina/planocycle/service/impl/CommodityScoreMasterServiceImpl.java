@@ -167,7 +167,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setCommodityList(ProductCdAndNameDto productPowerName) {
-        logger.info("商品力点数名保存参数：{}", productPowerName);
+        logger.info("商品力点数名保存パラメータ：{}", productPowerName);
         // 名前が重複しているかどうかを判断する
         Integer resultName = productPowerMstMapper.selectExistsName(productPowerName.getProductPowerName(),
                 productPowerName.getCompanyCd(),productPowerName.getProductPowerNo());
@@ -346,12 +346,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         list.add(placeList);
         list.add(channelList);
         return ResultMaps.result(ResultEnum.SUCCESS,list);
-    }
-
-    @Override
-    public Map<String, Object> getSelectedTenPo() {
-
-        return null;
     }
 
 

@@ -151,7 +151,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
         ProductPowerParamVo productPowerParam = productPowerDataMapper.getParam(companyCd, productPowerCd);
         JSONObject productPowerParamJson = JSON.parseObject(productPowerParam.getCommonPartsData());
-        //1-自设，0-企業
+        //1-自設，0-企業
         String prodIsCore = productPowerParamJson.getString("prodIsCore");
         //第数セット
         String prodMstClass = productPowerParamJson.getString("prodMstClass");
@@ -161,9 +161,9 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", companyCd, prodMstClass);
             janInfoTableName = String.format("\"%s\".prod_%s_jan_info", companyCd, prodMstClass);
         }else{
-            //自设company_cd
+            //自設company_cd
             String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
-            //1-自设
+            //1-自設
             tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", coreCompany, prodMstClass);
             janInfoTableName = String.format("\"%s\".prod_%s_jan_info", coreCompany, prodMstClass);
         }

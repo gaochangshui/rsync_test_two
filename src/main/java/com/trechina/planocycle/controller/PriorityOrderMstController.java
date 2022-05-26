@@ -75,7 +75,7 @@ public class PriorityOrderMstController {
     }
 
     /**
-     * 查看自动计算执行状态
+     * 表示自動計算実行ステータス
      * @param taskId
      * @return
      */

@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper
 public interface  ParamConfigMapper {
     List<ParamConfigDto> getParamConfig();
-    //获取所有的列名
+    //つかむ取所有的列名
     List<ParamConfigVO> getParamConfigAll();
     List<ParamConfigVO> selectParamConfig();
 
