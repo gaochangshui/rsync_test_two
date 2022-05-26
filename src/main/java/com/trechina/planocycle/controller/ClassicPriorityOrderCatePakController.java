@@ -14,7 +14,7 @@ public class ClassicPriorityOrderCatePakController {
     private ClassicPriorityOrderCatePakService priorityOrderCatePakService;
 
     /**
-     * 获取カテパケ拡縮
+     * つかむ取カテパケ拡縮
      * @param companyCd
      * @param priorityOrderCd
      * @return

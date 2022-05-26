@@ -251,7 +251,16 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 
-
+    /**
+     * commonはプロジェクトインタフェースの取得を示します。
+     * @param productPowerCd
+     * @param companyCd
+     * @param posCd
+     * @param prepareCd
+     * @param intageCd
+     * @param customerCd
+     * @return
+     */
     @Override
     public Map<String, Object> getCommodityScoreDataFromDB(Integer productPowerCd, String companyCd, String[] posCd,
                                                            String[] prepareCd, String[] intageCd, String[] customerCd) {

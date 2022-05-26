@@ -21,7 +21,7 @@ public interface ClassicPriorityOrderJanNewService {
     Map<String,Object> setPriorityOrderJanNew(JSONArray jsonArray);
 
     /**
-     * 削除新规商品list
+     * 削除新規商品list
      * @param companyCd
      * @param priorityOrderCd
      * @return

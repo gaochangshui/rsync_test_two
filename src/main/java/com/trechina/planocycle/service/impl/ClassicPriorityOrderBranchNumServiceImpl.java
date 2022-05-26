@@ -68,7 +68,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         String result = cgiUtil.postCgi(pathInfo, priorityOrderDataForCgiDto, tokenInfo);
         logger.info("priority_jan_storecnt処理結菓"+result);
         String queryPath = resourceBundle.getString("TaskQuery");
-        // 带着taskid，再次请求cgi获取运行状态/数据
+        // 帶着taskid，再次請求cgiつかむ取運行ステータス/数据
         Map<String,Object> Data = cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
         logger.info("priority_を呼び出します。jan_storecntの結菓" + Data);
         JSONArray jsonArray = JSONArray.parseArray(String.valueOf(Data.get("data")));
@@ -124,20 +124,20 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Override
     public Map<String, Object> setPriorityOrderCommodityMust(List<PriorityOrderCommodityMust> priorityOrderCommodityMust) {
         logger.info("必須商品リストパラメータを保存する："+priorityOrderCommodityMust);
-        // 拿到的参数只有第一行有企业和顺位表cd，需要遍历参数，给所有行都赋值
+//取得したパラメータは1行目に企業と順位テーブルcdがあるだけで、パラメータを巡回し、すべての行に値を割り当てる必要があります。
         try{
             String companyCd = priorityOrderCommodityMust.get(0).getCompanyCd();
             Integer priorityOrderCd = priorityOrderCommodityMust.get(0).getPriorityOrderCd();
             dataConverUtils dataConverUtil = new dataConverUtils();
-            // 调用共同方法，处理数据
+            // 共通メソッドを呼び出し、データを処理する
             List<PriorityOrderCommodityMust> mustList =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderCommodityMust.class,priorityOrderCommodityMust,
                     companyCd ,priorityOrderCd);
 
             logger.info("必須商品リストの処理後のパラメータを保存する："+mustList);
-            // 查询企业的店cd是几位数
+
             String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd);
             Integer branchLen = branchCd.length();
-            // 遍历not 给店cd补0
+            // notを巡回して店cdに0を補充する
             mustList.forEach(item->{
                 if (item.getBranch() != null){
                     item.setBranch(String.format("%0"+branchLen+"d",Integer.valueOf(item.getBranch())));
@@ -184,19 +184,19 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Override
     public Map<String, Object> setPriorityOrderCommodityNot(List<PriorityOrderCommodityNot> priorityOrderCommodityNot) {
         logger.info("不可商品リストパラメータの保存："+priorityOrderCommodityNot);
-        // 拿到的参数只有第一行有企业和顺位表cd，需要遍历参数，给所有行都赋值
+        // 拿到的参数只有第一行有企業和順位表cd，需要遍曆参数，給所有行都賦
         try{
             String companyCd = priorityOrderCommodityNot.get(0).getCompanyCd();
             Integer priorityOrderCd = priorityOrderCommodityNot.get(0).getPriorityOrderCd();
             dataConverUtils dataConverUtil = new dataConverUtils();
-            // 调用共同方法，处理数据
+            // 調用共同方法，處理数据
             List<PriorityOrderCommodityNot> not =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderCommodityNot.class,priorityOrderCommodityNot,
                     companyCd ,priorityOrderCd);
             logger.info("不可商品リスト処理後のパラメータを保存する："+not);
-            // 查询企业的店cd是几位数
+            // 査詢企業的店cd是几位数
             String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd);
             Integer branchLen = branchCd.length();
-            // 遍历not 给店cd补0
+            // 遍曆not 給店cd補0
             not.forEach(item->{
                 if (item.getBranch() !=null) {
                     item.setBranch(String.format("%0"+branchLen+"d",Integer.valueOf(item.getBranch())));
@@ -218,7 +218,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 }
             }
             if (exists.size()>0){
-                //写入数据库
+                //写入数据庫
                 priorityOrderCommodityNotMapper.insert(exists);
             }
             if (notExists.length()>0){

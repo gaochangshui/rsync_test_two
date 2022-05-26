@@ -33,7 +33,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
     @Autowired
     private ClassicPriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     /**
-     * 获取カテパケ拡縮
+     * つかむ取カテパケ拡縮
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -41,7 +41,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
      */
     @Override
     public Map<String, Object> getPriorityOrderCatePak(String companyCd, Integer priorityOrderCd) {
-        try {//获取列头
+        try {//つかむ取列頭
             List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKRankSort(companyCd, priorityOrderCd);
             Map<String, String> attrMap = priorityOrderMstAttrSorts.stream()
                     .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getSort, PriorityOrderMstAttrSortDto::getName,
@@ -61,26 +61,26 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
             colMap.put("branchNum","店舗数");
             colMap.putAll(bigMap);
 
-            logger.info("获取カテパケ拡縮参数：{},{}",companyCd,priorityOrderCd);
+            logger.info("つかむ取カテパケ拡縮参数：{},{}",companyCd,priorityOrderCd);
             List<PriorityOrderCatePakVO> priorityOrderCatePakVOS = priorityOrderCatepakMapper.selectByPrimaryKey(companyCd,
                     priorityOrderCd);
-            logger.info("获取カテパケ拡縮结果集：{}",priorityOrderCatePakVOS);
+            logger.info("つかむ取カテパケ拡縮結果集：{}",priorityOrderCatePakVOS);
             JSONArray jsonArray = new JSONArray();
             if (!priorityOrderCatePakVOS.isEmpty()) {
-                // 遍历结果集，拆分动态列
+                // 遍曆結果集，拆分動態列
                 priorityOrderCatePakVOS.forEach(item -> {
                     Map<String, Object> result = new HashMap<>();
                     String[] attrSmall = item.getSmalls().split(",");
                     String[] attrBig;
                     String[] valList;
-                    // 遍历small
+                    // 遍曆small
                     for (int i = 0; i < attrSmall.length; i++) {
                         valList = attrSmall[i].split(":");
                         result.put("attrSmall" + valList[0], valList[1]);
                     }
                     result.put("rank", item.getRank());
                     result.put("branchNum", item.getBranchNum());
-                    // big可以为空，需要判断一下
+                    // big可以為空，需要判断一下
                     if (item.getBigs() != null && !item.getBigs().equals("") ) {
                         attrBig = item.getBigs().split(",");
                         for (int i = 0; i < attrBig.length; i++) {
@@ -95,10 +95,10 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                     //写入jsonArray
                     jsonArray.add(result);
                 });
-                //把动态的列名写到下标0，让前端生成动态列
+                //把動態的列名写到下标0，让前端生成動態列
                 jsonArray.add(0, colMap);
             } else {
-                logger.info("获取カテパケ拡縮结果集2：{}",attrMap);
+                logger.info("つかむ取カテパケ拡縮結果集2：{}",attrMap);
                 if (!attrMap.isEmpty()) {
                     List<String> list = new ArrayList<>();
 
@@ -112,10 +112,10 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                 }
 
             }
-            logger.info("カテパケ拡縮结果{}", jsonArray);
+            logger.info("カテパケ拡縮結果{}", jsonArray);
             return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
         }catch (Exception e) {
-            logger.info("获取カテパケ拡縮失败：",e);
+            logger.info("つかむ取カテパケ拡縮失败：",e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -131,15 +131,15 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
     public Map<String, Object> setPriorityOrderCatePak(JSONArray jsonArray) {
         try {
             logger.info("保存カテパケ拡縮参数:"+jsonArray);
-            //获取参数中第一行的企业和优先顺位号
+            //つかむ取参数中第一行的企業和優先順位号
             String companyCd = String.valueOf(((HashMap) jsonArray.get(0)).get("companyCd"));
             Integer priorityOrderCd = Integer.parseInt(((HashMap) jsonArray.get(0)).get("priorityOrderCd").toString());
-            // 全删
+            // 全削
             priorityOrderCatepakMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-            // 遍历前端给的jsonArray 构筑カテパケ拡縮表和关联的动态属性列表的实体类字符串
+            // 遍曆前端給的jsonArray 構筑カテパケ拡縮表和关联的動態属性列表的實体類字符串
             jsonArray.forEach(item->{
-                // 构造主表的参数
+                // 構造主表的参数
                 if (((HashMap) item).containsKey("rank") && ((HashMap) item).get("rank")!=null) {
                     PriorityOrderCatepak priorityOrderCatepak = new PriorityOrderCatepak();
                     if("".equals(((HashMap<?, ?>) item).get("branchNum"))){
@@ -149,16 +149,16 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                     priorityOrderCatepak.setPriorityOrderCd(priorityOrderCd);
                     priorityOrderCatepak.setRank(Integer.valueOf(((HashMap) item).get("rank").toString()));
 //                priorityOrderCatepak.setBranchNum(Integer.valueOf(((HashMap) item).get("branchNum").toString()));
-                    // 写入数据重新取号，返回自增列id，实体类自动接收
+                    // 写入数据重新取号，返回自增列id，實体類自動接收
                     priorityOrderCatepakMapper.insert(priorityOrderCatepak);
-                    logger.info("保存カテパケ拡縮返回值:{}",  priorityOrderCatepak.toString());
+                    logger.info("保存カテパケ拡縮返回:{}",  priorityOrderCatepak.toString());
                     catePakAttr(companyCd, priorityOrderCd, (HashMap) item, priorityOrderCatepak);
                 }
 
             });
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
-            logger.info("保存カテパケ拡縮报错:"+e);
+            logger.info("保存カテパケ拡縮報錯:"+e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -238,7 +238,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
         List<String> colValueList = Arrays.asList(colValue.split(","));
         String branchNum =  priorityOrderCatepakAttributeMapper.selectForTempTable(colValueList,
                 "public.priorityorder"+session.getAttribute("aud").toString());
-        logger.info("查询定番店铺数"+branchNum);
+        logger.info("査詢定番店鋪数"+branchNum);
         if (branchNum!=null){
             priorityOrderCatepakMapper.updateBranchNum(priorityOrderCatepak.getId(),Integer.valueOf(branchNum));
         } else {

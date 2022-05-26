@@ -15,14 +15,14 @@ public class VehicleNumCache {
             .expireAfterWrite(10, TimeUnit.MINUTES)
             .build();
     /**
-     * 返回是否存在车辆，非null为存在
+     * 返回是否存在車輛，非null為存在
      * @return
      */
     public Object get(String key){
         return cache.getIfPresent(key);
     }
     /**
-     * 返回是否存在车辆，非null为存在
+     * 返回是否存在車輛，非null為存在
      * @return
      */
     public void put(String key, Object value){

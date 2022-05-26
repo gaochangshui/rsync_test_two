@@ -63,7 +63,7 @@ public class CommodityScoreMasterController {
     }
 
     /**
-     * 获取都道府県&Chanel情報
+     * つかむ取都道府県&Chanel情報
      * @return
      */
     @GetMapping("/getPrefectureAndChanelInfo")
@@ -71,8 +71,4 @@ public class CommodityScoreMasterController {
         return commodityScoreMasterService.getPrefectureAndChanelInfo();
     }
 
-    @GetMapping("/getSelectedTenPo")
-    public Map<String,Object> getSelectedTenPo() {
-        return commodityScoreMasterService.getSelectedTenPo();
-    }
 }
