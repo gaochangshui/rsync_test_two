@@ -12,7 +12,7 @@ import java.util.Map;
 
 public interface ClassicPriorityOrderDataService {
     /**
-     * 优先顺位表初期设定数据
+     * 初期取得優先順位テーブルデータ
      * @param priorityOrderDataDto
      * @return
      */
@@ -20,6 +20,12 @@ public interface ClassicPriorityOrderDataService {
 
     Map<String, String> checkIsJanNew(List<String> janList, String company, Integer priorityOrderCd, String tableName);
 
+    /**
+     * ptsアップロード後のソート+優先順位表反応ボタン抽出データ
+     * @param company
+     * @param priorityOrderCd
+     * @return
+     */
     Map<String, Object> getUploadPriorityOrderData(String company, Integer priorityOrderCd);
 
     @Transactional(rollbackFor = Exception.class)
@@ -32,7 +38,7 @@ public interface ClassicPriorityOrderDataService {
                                  String attrList, List<PriorityOrderAttributeClassify> classifyList, List<PriorityOrderMstAttrSortDto> attrSorts);
 
     /**
-     * 优先顺位表反应按钮抽出数据
+     * rank属性ソート+優先順位表反応ボタン抽出データ
      * @param colNameList
      * @return
      */
@@ -41,7 +47,7 @@ public interface ClassicPriorityOrderDataService {
     Map<String,Object> getPriorityOrderListInfo(String companyCd,Integer priorityOrderCd);
 
     /**
-     * 获取属性名
+     * 属性列名の名前を取得
      * @param enterpriseAxisDto
      * @return
      */
@@ -55,5 +61,10 @@ public interface ClassicPriorityOrderDataService {
 
     Map<String, Object> getPatternAndName(Integer productPowerCd);
 
+    /**
+     * 取得優先順位テーブルデータの編集
+     * @param priorityOrderDataDto
+     * @return
+     */
     Map<String, Object> editPriorityOrderData(PriorityOrderDataDto priorityOrderDataDto);
 }

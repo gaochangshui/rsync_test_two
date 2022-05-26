@@ -38,7 +38,7 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
     @Autowired
     private ClassicPriorityOrderCommodityNotMapper priorityOrderCommodityNotMapper;
     /**
-     * 获取jan变的信息
+     * jan変更リストの情報を取得する
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -46,15 +46,15 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
      */
     @Override
     public Map<String, Object> getPriorityOrderJanInfo(String companyCd, Integer priorityOrderCd) {
-        logger.info("获取jan变的信息参数："+companyCd+","+priorityOrderCd);
+        logger.info("jan変の情報パラメータを取得する："+companyCd+","+priorityOrderCd);
         List<PriorityOrderJanReplaceVO> priorityOrderJanReplaceVOList = priorityOrderJanReplaceMapper
                 .selectJanInfo(companyCd,priorityOrderCd);
-        logger.info("获取jan变的信息返回值："+priorityOrderJanReplaceVOList);
+        logger.info("jan変の情報戻り値を取得する："+priorityOrderJanReplaceVOList);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplaceVOList);
     }
 
     /**
-     * 保存jan变的信息
+     * jan変listの情報を保存する（全削除全挿入）
      *
      * @param priorityOrderJanReplace
      * @return
@@ -62,21 +62,21 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderJanInfo(List<PriorityOrderJanReplace> priorityOrderJanReplace) {
-        logger.info("保存jan变的信息参数："+priorityOrderJanReplace);
-        // 拿到的参数只有第一行有企业和顺位表cd，需要遍历参数，给所有行都赋值
+        logger.info("jan変の情報パラメータを保存する："+priorityOrderJanReplace);
+        // 取得したパラメータは1行目に企業と順位テーブルcdがあるだけで、パラメータを巡回し、すべての行に値を割り当てる必要があります。
         try{
             String companyCd = priorityOrderJanReplace.get(0).getCompanyCd();
             Integer priorityOrderCd = priorityOrderJanReplace.get(0).getPriorityOrderCd();
             dataConverUtils dataConverUtil = new dataConverUtils();
-            // 调用共同方法，处理数据
+            // 共通メソッドを呼び出し、データを処理する
             List<PriorityOrderJanReplace> jan =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderJanReplace.class,priorityOrderJanReplace,
                     companyCd ,priorityOrderCd);
 
-            logger.info("保存jan变的信息处理完后的参数："+jan);
+            logger.info("jan変の情報を保存して処理した後のパラメータ："+jan);
             // check
             String resuleJanDistinct =getJanInfo();
-            logger.info("checkjan的返回值"+resuleJanDistinct);
-            //删除
+            logger.info("checkjanの戻り値"+resuleJanDistinct);
+            //削除
 
             priorityOrderJanReplaceMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             List<PriorityOrderJanReplace> exists = new ArrayList<>();
@@ -94,12 +94,12 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
                     exists.add(jan.get(i));
                 }
             }
-            logger.info("存在的jan信息"+exists.toString());
-            logger.info("不存在的jan信息"+notExists);
-            //写入数据库
+            logger.info("存在するjan情報"+exists.toString());
+            logger.info("存在しないjan情報"+notExists);
+            //データベースへの書き込み
             if (exists.size()>0) {
                 priorityOrderJanReplaceMapper.insert(exists);
-                //修改主表
+                //マスターテーブルの変更
                 //priorityOrderDataMapper.updatePriorityOrderDataForJanNew(companyCd,priorityOrderCd,
                 //        "public.priorityorder"+session.getAttribute("aud").toString());
             }
@@ -109,8 +109,8 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
         } catch (Exception e) {
-            logger.error("保存jan变信息出错："+e);
-            // 手动回滚事务
+            logger.error("jan変情報の保存エラー："+e);
+            // トランザクションの手動ロールバック
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultMaps.result(ResultEnum.FAILURE);
         }
@@ -156,7 +156,7 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
     }
 
     /**
-     * 删除jan变list
+     * janを削除してリストを変更する
      *
      * @param companyCd
      * @param priorityOrderCd

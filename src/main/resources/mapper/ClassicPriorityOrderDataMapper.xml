@@ -370,7 +370,7 @@
             ${list}
         </foreach>
         order by mst.goods_rank,mst.jan_old ) end as rank_prop,
-        case mst.rank_prop when 99999999 then mst.rank_prop else
+        case mst.rank_upd when 99999999 then mst.rank_upd else
         ROW_NUMBER() OVER (
         partition by
         <foreach collection="colSortNameList" item="list" separator=",">
@@ -393,7 +393,7 @@
         datas.company_cd,datas.priority_order_cd,datas.author_cd,datas.jan_old,coalesce (rep.jan_new,pro.jan_new,datas.jan_old)  as  jan_new
                ,datas.sku,
         <foreach collection="colNameList" item="item" separator=",">
-            datas.${item}
+            coalesce(datas.${item},'') as ${item}
         </foreach>
         ,datas.pos_amount,datas.branch_amount,datas.unit_price,datas.branch_num,datas.branch_amount_upd,datas.branch_num_upd,difference,sale_forecast,
                datas.rank_prop,datas.rank,datas.rank_upd

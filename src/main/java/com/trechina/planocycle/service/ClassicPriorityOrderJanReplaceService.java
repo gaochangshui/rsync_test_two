@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface ClassicPriorityOrderJanReplaceService {
     /**
-     * 获取jan变的信息
+     * jan変更リストの情報を取得する
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -15,7 +15,7 @@ public interface ClassicPriorityOrderJanReplaceService {
     Map<String,Object> getPriorityOrderJanInfo(String companyCd,Integer priorityOrderCd);
 
     /**
-     * 保存jan变的信息
+     * jan変listの情報を保存する（全削除全挿入）
      * @param priorityOrderJanReplace
      * @return
      */
@@ -24,7 +24,7 @@ public interface ClassicPriorityOrderJanReplaceService {
     String getJanInfo();
 
     /**
-     * 删除jan变list
+     * janを削除してリストを変更する
      * @param companyCd
      * @param priorityOrderCd
      * @return

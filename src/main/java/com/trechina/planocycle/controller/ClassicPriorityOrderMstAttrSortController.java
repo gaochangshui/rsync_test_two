@@ -14,7 +14,7 @@ public class ClassicPriorityOrderMstAttrSortController {
     @Autowired
     private ClassicPriorityOrderMstAttrSortService priorityOrderMstAttrSortService;
     /**
-     * 获取既存数据的排序
+     * 既存のデータのソートの取得
      * @param companyCd
      * @param priorityOrderCd
      * @return

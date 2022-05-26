@@ -164,7 +164,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
     }
 
     /**
-     * 删除カテパケ拡縮
+     * 削除カテパケ拡縮
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -176,7 +176,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
     }
 
     /**
-     * 删除カテパケ拡縮属性
+     * 削除カテパケ拡縮属性
      *
      * @param companyCd
      * @param priorityOrderCd
@@ -188,7 +188,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
     }
 
     /**
-     * 构筑属性动态列
+     * 属性動的列の構築
      * @param companyCd
      * @param priorityOrderCd
      * @param item
@@ -202,20 +202,20 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
         for (Object key: item.keySet()) {
             if (key.toString().contains("attrSmall") || key.toString().contains("attrBig")) {
                 PriorityOrderCatepakAttribute catepakAttribute = new PriorityOrderCatepakAttribute();
-                // 动态属性列表
+                // 動的属性リスト
                 catepakAttribute.setCompanyCd(companyCd);
                 catepakAttribute.setPriorityOrderCd(priorityOrderCd);
                 catepakAttribute.setCatepakCd(priorityOrderCatepak.getId());
                 if (key.toString().contains("attrSmall")) {
-                    //缩小是0
+                    //縮小は0
                     catepakAttribute.setFlg(0);
                     catepakAttribute.setAttrCd(Integer.valueOf(key.toString().replace("attrSmall", "")));
-                    // 记录列名+值
+                    // レコード列名+値
                     colValue+="attr"+idx+"='"+item.get(key)+"',";
                     idx+=1;
                 }
                 if (key.toString().contains("attrBig")) {
-                    //扩张是1
+                    //拡張は1です。
                     catepakAttribute.setFlg(1);
                     catepakAttribute.setAttrCd(Integer.valueOf(key.toString().replace("attrBig", "")));
 
@@ -233,7 +233,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
     }
 
     private void branchNumSel(PriorityOrderCatepak priorityOrderCatepak, String colValue, int idx) {
-        // 查询定番店铺数
+        // 定番店舗数の照会
         colValue = colValue.replace(("attr"+(idx -1)),"mulit_attr");
         List<String> colValueList = Arrays.asList(colValue.split(","));
         String branchNum =  priorityOrderCatepakAttributeMapper.selectForTempTable(colValueList,

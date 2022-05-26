@@ -1,14 +1,13 @@
 package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard;
-import com.trechina.planocycle.entity.po.PriorityOrderJanCard;
 
 import java.util.List;
 import java.util.Map;
 
 public interface ClassicPriorityOrderJanCardService {
     /**
-     * 获取card商品list
+     * card商品リストの取得
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -16,14 +15,14 @@ public interface ClassicPriorityOrderJanCardService {
     Map<String,Object> getPriorityOrderJanCard(String companyCd,Integer priorityOrderCd);
 
     /**
-     * 保存card商品list
+     * card商品listの保存
      * @param priorityOrderJanCard
      * @return
      */
     Map<String,Object> setPriorityOrderJanCard(List<ClassicPriorityOrderJanCard> priorityOrderJanCard);
 
     /**
-     * 删除card商品list
+     * card商品listの削除
      * @param companyCd
      * @param priorityOrderCd
      * @return

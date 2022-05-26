@@ -16,7 +16,7 @@ public class ClassicPriorityOrderJanCardController {
     private ClassicPriorityOrderJanCardService priorityOrderJanCardService;
 
     /**
-     * 获取card商品list
+     * card商品リストの取得
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -27,7 +27,7 @@ public class ClassicPriorityOrderJanCardController {
     }
 
     /**
-     * 保存card商品list
+     * card商品listの保存
      * @param priorityOrderJanCard
      * @return
      */

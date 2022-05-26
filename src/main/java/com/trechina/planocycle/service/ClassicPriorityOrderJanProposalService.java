@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface ClassicPriorityOrderJanProposalService {
     /**
-     * 获取jan变提案list
+     * jan変提案listの取得
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -16,21 +16,21 @@ public interface ClassicPriorityOrderJanProposalService {
     Map<String,Object> getPriorityOrderJanProposal(String companyCd,Integer priorityOrderCd,Integer productPowerNo,String shelfPatternNo);
 
     /**
-     * 修改jan变提案list的flag
+     * jan変提案listのflagを修正する
      * @param priorityOrderJanProposal
      * @return
      */
     Map<String,Object> setPriorityOrderJanProposal(List<PriorityOrderJanProposal> priorityOrderJanProposal);
 
     /**
-     * 保存cgi返回的jan提案list
+     * cgiが返すjan提案リストを保存する
      * @param jsonArray
      * @return
      */
     Map<String,Object> savePriorityOrderJanProposal(JSONArray jsonArray,String companyCd,Integer priorityOrderCd);
 
     /**
-     * 删除jan变提案list
+     * jan変提案listを削除する
      * @param companyCd
      * @param priorityOrderCd
      * @return

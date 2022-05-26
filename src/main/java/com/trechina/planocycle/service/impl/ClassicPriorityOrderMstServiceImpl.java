@@ -87,21 +87,21 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Autowired
     private cgiUtils cgiUtil;
     /**
-     * 获取优先顺位表list
+     * 優先順位テーブルlistの取得
      *
      * @param companyCd
      * @return
      */
     @Override
     public Map<String, Object> getPriorityOrderList(String companyCd) {
-        logger.info("获取优先顺位表参数："+companyCd);
+        logger.info("優先順位テーブルパラメータの取得："+companyCd);
         List<PriorityOrderMst> priorityOrderMstList = priorityOrderMstMapper.selectByPrimaryKey(companyCd);
-        logger.info("获取优先顺位表返回值："+priorityOrderMstList);
+        logger.info("優先順位テーブル戻り値の取得："+priorityOrderMstList);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderMstList);
     }
 
     /**
-     * 保存优先顺位表参数
+     * 優先順位テーブルパラメータの保存
      *
      * @param priorityOrderMstDto
      * @return
@@ -109,26 +109,26 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) {
-        logger.info("保存优先顺位表参数"+priorityOrderMstDto);
+        logger.info("優先順位テーブルパラメータの保存"+priorityOrderMstDto);
         String authorCd = session.getAttribute("aud").toString();
-        // check优先顺位表名称
+        // チェック優先順位テーブル名
         Integer count = priorityOrderPatternMapper.selectByPriorityOrderName(priorityOrderMstDto.getCompanyCd(),
                                                             priorityOrderMstDto.getPriorityOrderName(),
                                                             priorityOrderMstDto.getPriorityOrderCd(),authorCd);
         if (count >0) {
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
-         //把参数处理成两个表的的数据，insert
+         //パラメータを2つのテーブルのデータに処理するinsert
         priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
-        //try {
-            logger.info("保存优先顺位表参数："+priorityOrderMstDto);
+        try {
+            logger.info("優先順位テーブルパラメータの保存："+priorityOrderMstDto);
             PriorityOrderMst priorityOrderMst = new PriorityOrderMst();
             priorityOrderMst.setCompanyCd(priorityOrderMstDto.getCompanyCd());
             priorityOrderMst.setPriorityOrderCd(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMst.setPriorityOrderName(priorityOrderMstDto.getPriorityOrderName());
             priorityOrderMst.setProductPowerCd(priorityOrderMstDto.getProductPowerCd());
             priorityOrderMst.setAttrOption(priorityOrderMstDto.getAttrOption());
-            logger.info("保存优先顺位表mst表要保存的数据："+priorityOrderMst);
+            logger.info("優先順位テーブルmstテーブルが保存するデータを保存する："+priorityOrderMst);
             priorityOrderMstMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMstMapper.insert(priorityOrderMst,authorCd);
             //jannew最終テーブルデータの保存
@@ -178,17 +178,17 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 priorityOrderPattern.setShelfPatternCd(Integer.valueOf(shelfPatternList[i]));
                 priorityOrderPatternList.add(priorityOrderPattern);
             }
-            logger.info("保存优先顺位表pattert表要保存的数据："+priorityOrderPatternList.toString());
+            logger.info("優先順位テーブルpattertテーブルが保存するデータを保存する："+priorityOrderPatternList.toString());
             priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderPatternMapper.insert(priorityOrderPatternList);
             return ResultMaps.result(ResultEnum.SUCCESS);
-        //} catch (Exception e) {
-        //    logger.info("报错:"+e);
-        //    logger.error("保存优先顺位表报错："+e);
-        //    return ResultMaps.result(ResultEnum.FAILURE);
-        //}
+        } catch (Exception e) {
+            logger.info("エラーを報告:"+e);
+            logger.error("保存優先順位テーブルエラー："+e);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
     }
-    // 调用cgi保存数据
+    // cgiを呼び出してデータを保存する
     private void cgiSave(PriorityOrderMstDto priorityOrderMstDto) {
         JSONArray jsonArray = (JSONArray) JSONArray.parse(String.valueOf(priorityOrderMstDto.getPriorityData()).replaceAll(" ",""));
         String[] res = new String[jsonArray.size()];
@@ -227,7 +227,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         Map<String,Object> results= priorityDataWRFlag(priorityOrderMstDto, res, wirteReadFlag);
     }
 
-    // 处理属性保存
+    // 処理属性の保存
     private void attrSave(PriorityOrderMstDto priorityOrderMstDto,List<Map<String, Object>> array) {
 
 //        logger.info("获取rankAttributeCdList"+array);
@@ -254,7 +254,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     }
 
     /**
-     * 读写priorityorderData
+     * リードライトpriorityorderData
      * @param priorityOrderMstDto
      * @param res
      * @param wirteReadFlag
@@ -273,26 +273,23 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         if (wirteReadFlag.equals("write")){
             priorityOrderDataForCgiDto.setDataArray(res);
         }
-        logger.info("保存优先顺位表给cgi的参数"+priorityOrderDataForCgiDto);
+        logger.info("cgiに優先順位テーブルのパラメータを保存します"+priorityOrderDataForCgiDto);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("PriorityOrderData");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         Map<String,Object> resultCgi = new HashMap<>();
-        //递归调用cgi，首先去taskid
-
         String result = cgiUtil.postCgi(path,priorityOrderDataForCgiDto,tokenInfo);
-        logger.info("taskId返回："+result);
+        logger.info("taskId："+result);
         String queryPath = resourceBundle.getString("TaskQuery");
-        //带着taskId，再次请求cgi获取运行状态/数据
         resultCgi =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-        logger.info("保存优先顺位表结果："+resultCgi);
+        logger.info("優先順位テーブル結菓の保存："+resultCgi);
         return resultCgi;
 
     }
 
 
     /**
-     * 获取登录这所在企业是否有优先顺位表
+     * この企業に優先順位テーブルがあるかどうかのログインを取得します。
      *
      * @return
      */
@@ -304,7 +301,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     }
 
     /**
-     * 优先顺位表获取rank属性的动态列
+     * 優先順位テーブルrank属性の動的列の取得
      *
      * @param companyCd
      * @param productPowerCd
@@ -312,14 +309,14 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
      */
     @Override
     public Map<String, Object> getRankAttr(String companyCd, Integer productPowerCd) {
-        logger.info("优先顺位表获取rank属性的动态列："+companyCd+","+productPowerCd);
+        logger.info("優先順位テーブルrank属性の動的列の取得："+companyCd+","+productPowerCd);
         Map<String,Object> result = new HashMap<>();
         commodityScoreMasterService.productPowerParamAttrName(companyCd, productPowerCd, result);
         return ResultMaps.result(ResultEnum.SUCCESS,result);
     }
 
     /**
-     * 获取pts文件下载
+     * ptsファイルのダウンロードを取得する
      *
      * @param priorityOrderPtsDownDto
      * @param response
@@ -327,7 +324,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
      */
     @Override
     public Map<String, Object> getPtsFileDownLoad(PriorityOrderPtsDownDto priorityOrderPtsDownDto, HttpServletResponse response,String ptsDownPath) {
-        logger.info("获取pts出力参数:"+priorityOrderPtsDownDto);
+        logger.info("pts出力パラメータを取得する:"+priorityOrderPtsDownDto);
         // 从cgi获取数据
         String uuid = UUID.randomUUID().toString();
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
@@ -335,7 +332,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         priorityOrderPtsDownDto.setGuid(uuid);
         // rankAttributeCd
         List<Map<String, Object>> array = (List<Map<String, Object>>) JSONArray.parse(priorityOrderPtsDownDto.getRankAttributeList());
-        logger.info("获取rankAttributeCdList"+array);
+        logger.info("rankAttributeCdList"+array);
         String rankInfo = "";
         String attrInfo = "";
         String rankInfo_mulit = "";
@@ -376,14 +373,14 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         logger.info("获取处理完的pts出力参数:"+priorityOrderPtsDownDto);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         Map<String,Object> ptsPath = new HashMap<>();
-        //递归调用cgi，首先去taskid
+        //cgiを再帰的に呼び出し、まずtaskidに行きます。
 
         String result = cgiUtil.postCgi(path,priorityOrderPtsDownDto,tokenInfo);
-        logger.info("taskId返回："+result);
+        logger.info("taskIdリターン："+result);
         String queryPath = resourceBundle.getString("TaskQuery");
-        //带着taskId，再次请求cgi获取运行状态/数据
+        //taskIdを持っています，cgiに実行状態の取得を再度要求する
         ptsPath =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-        logger.info("pts路径返回数据："+ptsPath);
+        logger.info("ptsパスがデータを返す："+ptsPath);
 
         String filePath = ptsPath.get("data").toString();
         if (filePath.length()>1) {
@@ -391,7 +388,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
             sshFtpUtils sshFtp = new sshFtpUtils();
             try {
-                logger.info("pts全路径输出："+ptsDownPath+ptsPath.get("data").toString());
+                logger.info("ptsフルパス出力："+ptsDownPath+ptsPath.get("data").toString());
                 byte[] files = sshFtp.downLoafCgi(ptsDownPath+ptsPath.get("data").toString(),tokenInfo);
                 logger.info("files byte:"+files);
                 response.setContentType("application/Octet-stream");
@@ -402,98 +399,29 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 outputStream.close();
             } catch (IOException e) {
 //                e.printStackTrace();
-                logger.info("获取pts文件下载报错"+e);
+                logger.info("ptsファイルダウンロードエラーの取得"+e);
             }
-
-//            String pathResult = ptsPath.get("data").toString();
-//            if (pathResult.equals("-1") || pathResult.equals("2")){
-//                return ResultMaps.result(ResultEnum.FAILURE);
-//            }
-//            String[] ptsPathArr = pathResult.split("/");
-//            String fileName = ptsPathArr[ptsPathArr.length - 1];
-//            logger.info("pts文件名称"+fileName);
-//            logger.info("实例化filesOperationService");
-//            FilesOperationServiceImpl filesOperationService = new FilesOperationServiceImpl();
-//            logger.info("实例化成功filesOperationService");
-//            String usercd = (String) session.getAttribute("aud");
-//            String tempPath = resourceBundle.getString("csvPathShelf") + usercd + "/";
-//            logger.info("temppath"+tempPath);
-//            String csvPath = tempPath + fileName;
-//            logger.info("csvPath"+csvPath);
-//            filesOperationService.judgeExistsPath(tempPath);
-//            // 数据桶版本
-//            String projectIds= resourceBundle.getString("projectId");
-//            String bucketNames= resourceBundle.getString("bucketName");
-//            // The ID of your GCP project
-//            String projectId = projectIds;
-//            // The ID of your GCS bucket
-//            String bucketName = bucketNames;
-//            // The ID of your GCS object
-//            String objectName = pathResult;
-//            logger.info("objectName"+objectName);
-//            // The path to your file to upload
-//            String destFilePath  = csvPath;
-//            logger.info("destFilePath"+destFilePath);
-//            File jsonKey = new File("/secrets/.gcp-credientials.json");
-//            try {
-//                Storage storage = StorageOptions.newBuilder().setProjectId(projectId).setCredentials(GoogleCredentials
-//                        .fromStream(new FileInputStream(jsonKey))).build().getService();
-//                Blob blob = storage.get(BlobId.of(bucketName, objectName));
-//                blob.downloadTo(Paths.get(destFilePath));
-//                File files = new File(csvPath);
-//                response.setContentType("application/Octet-stream");
-////                String chars = new String(fileName.getBytes("iso8859-1"), "utf-8");
-//                response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName, "UTF-8"));
-//                try(FileInputStream ips = new FileInputStream(files);){
-//                    OutputStream outputStream = response.getOutputStream();
-//                    int len =0;
-//                    byte[] buffer  = new byte[1024];
-//                    while ((len = ips.read(buffer)) != -1){
-//                        outputStream.write(buffer,0,len);
-//                        outputStream.flush();
-//                    }
-//                    outputStream.close();
-//                    if(!files.delete()){
-//                        logger.info("删除文件失败");
-//                    }
-//                }
-//
-//            } catch (UnsupportedEncodingException e) {
-//                logger.info("下载pts报错"+e);
-//            } catch (FileNotFoundException e) {
-//                logger.info("报错:"+e);
-//            } catch (IOException e) {
-//                logger.info("报错:"+e);
-//            }
-            // 物理机版本
-//            try {
-//                response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName, "UTF-8"));
-//            } catch (UnsupportedEncodingException e) {
-//                e.printStackTrace();
-//            }
-//            sshFtpUtils sshFtp = new sshFtpUtils();
-//            sshFtp.getFile(ptsPath.get("data").toString(), csvPath, response, fileName);
         }
-        logger.info("下载成功");
+        logger.info("ダウンロード成功");
         return null;
     }
 
     /**
-     * 根据优先顺位表cd获取商品力点数表cd
+     * 優先順位テーブルcdに基づく商品力点数テーブルcdの取得
      *
      * @param priorityOrderCd
      * @return
      */
     @Override
     public Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd) {
-        logger.info("根据优先顺位表cd获取商品力点数表cd的参数"+priorityOrderCd);
+        logger.info("優先順位テーブルcdに基づいて商品力点数テーブルcdのパラメータを取得する"+priorityOrderCd);
         Map<String,Object> productPowerCd = priorityOrderMstMapper.selectProductPowerCd(priorityOrderCd);
-        logger.info("根据优先顺位表cd获取商品力点数表cd的返回值"+priorityOrderCd);
+        logger.info("優先順位テーブルcdから商品力点数テーブルcdの戻り値を取得する"+priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerCd);
     }
 
     /**
-     * 删除所有优先顺位表信息
+     * すべての優先順位テーブル情報を削除
      *
      * @param primaryKeyVO
      * @return
@@ -503,39 +431,35 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     public Map<String, Object> delPriorityOrderAllInfo(PriorityOrderPrimaryKeyVO primaryKeyVO) {
         String companyCd= primaryKeyVO.getCompanyCd();
         Integer priorityOrderCd = primaryKeyVO.getPriorityOrderCd();
-        // 删除主表
+        // マスターテーブルの削除
         delPriorityOrderMst(primaryKeyVO);
-        //删除data
         priorityOrderResultDataMapper.deleteFinal(companyCd,priorityOrderCd);
-        // 删除jan变list
         priorityOrderJanReplaceService.delJanReplaceInfo(companyCd,priorityOrderCd);
-        // 删除新规商品list
         priorityOrderJanNewService.delriorityOrderJanNewInfo(companyCd,priorityOrderCd);
-        // 删除card商品list
         priorityOrderJanCardService.delPriorityOrderJanCardInfo(companyCd,priorityOrderCd);
-        // 删除catepak扩缩
+        // 削除catepak扩缩
         priorityOrderCatePakService.delPriorityOrderCatePakInfo(companyCd,priorityOrderCd);
         priorityOrderCatePakService.delPriorityOrderCatePakAttrInfo(companyCd,priorityOrderCd);
-        // 删除jan变提案list
+        // jan変提案listを削除する
         priorityOrderJanProposalService.delPriorityOrderJanProposalInfo(companyCd,priorityOrderCd);
-        // 删除必须和不可和中间表
+        // 必須テーブルと不可テーブルの削除
         priorityOrderBranchNumService.delPriorityOrderCommodityMustInfo(companyCd,priorityOrderCd);
         priorityOrderBranchNumService.delPriorityOrderCommodityNotInfo(companyCd,priorityOrderCd);
         priorityOrderBranchNumService.delPriorityOrderBranchNumInfo(companyCd,priorityOrderCd);
-        // 删除数据的排序
+        // 削除データのソート
         priorityOrderMstAttrSortService.delPriorityAttrSortInfo(companyCd,priorityOrderCd);
-        //删除attr
+        //attrを削除
         priorityOrderMstAttrSortMapper.deleteAttrSortFinal(companyCd,priorityOrderCd);
-        // 删除jannew的属性列
+        // jannewの属性列を削除
         priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-        // 删除棚pattern关联信息
+        // 棚pattern関連情報の削除
         priorityOrderPatternMapper.deleteforid(priorityOrderCd);
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
-     * 根据productpowercd查询关联的优先顺位表cd
+     * productpowercdによる関連優先順位テーブルcdのクエリ
      *
      * @param companyCd
      * @param productPowerCd
@@ -554,14 +478,13 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         String companyCd = priorityOrderMstDto.getCompanyCd();
         Integer priorityOrderCd = priorityOrderMstDto.getPriorityOrderCd();
         String priorityData = priorityOrderMstDto.getPriorityData();
-        String tablename = "public.priorityorder" + authorCd;
         List<GoodsRankDto> goodsRank = priorityOrderDataMapper.getGoodsRank(companyCd,priorityOrderCd);
         JSONArray datas = JSON.parseArray(priorityData);
         List<Map<String, String>> keyNameList = new ArrayList<>();
         colNameList(datas, keyNameList);
         List<Map> delJanList = datas.toJavaList(Map.class).stream().filter(item -> item.get("rank_upd").equals(99999999)).collect(Collectors.toList());
+        priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
         if (!delJanList.isEmpty()) {
-            priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
             priorityOrderJanCardMapper.setDelJanList(delJanList, companyCd, priorityOrderCd);
         }
 
@@ -596,7 +519,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
 
     /**
-     * 优先顺位表主表信息删除
+     * 優先順位テーブルマスタテーブル情報削除
      * @param primaryKeyVO
      * @return
      */

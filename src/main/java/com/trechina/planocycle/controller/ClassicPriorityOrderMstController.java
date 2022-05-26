@@ -23,7 +23,7 @@ public class ClassicPriorityOrderMstController {
     String ptsDownPath;
 
     /**
-     * 获取优先顺位表list
+     * 優先順位テーブルlistの取得
      * @param companyCd
      * @return
      */
@@ -32,7 +32,7 @@ public class ClassicPriorityOrderMstController {
         return priorityOrderMstService.getPriorityOrderList(companyCd);
     }
     /**
-     * 保存优先顺位表参数
+     * 優先順位テーブルパラメータの保存
      * @param priorityOrderMstDto
      * @return
      */
@@ -42,7 +42,7 @@ public class ClassicPriorityOrderMstController {
     }
 
     /**
-     * 保存优先顺位表参数
+     * 優先順位テーブルパラメータの保存
      * @param priorityOrderMstDto
      * @return
      */
@@ -50,10 +50,9 @@ public class ClassicPriorityOrderMstController {
     public Map<String,Object> setWorkPriorityOrderMst(@RequestBody PriorityOrderMstDto priorityOrderMstDto){
         return priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
     }
-//    public Map<String,Object> getPriorityOrderAttr(@)
 
     /**
-     * 查询登陆者所在企业有没有优先顺位表
+     * この企業に優先順位テーブルがあるかどうかのログインを取得します
      * @return
      */
     @GetMapping("/getPriorityOrderExistsFlg")
@@ -62,7 +61,7 @@ public class ClassicPriorityOrderMstController {
     }
 
     /**
-     * 优先顺位表获取rank属性的动态列
+     * 優先順位テーブルrank属性の動的列の取得
      * @param companyCd
      * @param productPowerCd
      * @return
@@ -73,7 +72,7 @@ public class ClassicPriorityOrderMstController {
     }
 
     /**
-     * 根据优先顺位表cd获取商品力点数表cd
+     * 優先順位テーブルcdに基づく商品力点数テーブルcdの取得
      * @param priorityOrderCd
      * @return
      */
@@ -83,7 +82,7 @@ public class ClassicPriorityOrderMstController {
     }
 
     /**
-     * pts下载
+     * ptsファイルのダウンロードを取得する
      * @param priorityOrderPtsDownDto
      * @param response
      * @return
@@ -94,7 +93,7 @@ public class ClassicPriorityOrderMstController {
     }
 
     /**
-     * 删除所有优先顺位表信息
+     * すべての優先順位テーブル情報を削除
      * @param primaryKeyVO
      * @return
      */

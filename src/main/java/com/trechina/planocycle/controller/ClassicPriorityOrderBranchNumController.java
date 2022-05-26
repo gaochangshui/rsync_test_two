@@ -15,7 +15,7 @@ public class ClassicPriorityOrderBranchNumController {
     @Autowired
     private ClassicPriorityOrderBranchNumService priorityOrderBranchNumService;
     /**
-     * 获取smart处理之后的必须+不可商品的结果集，并保存
+     * smart処理後の必須+不可商品の結菓セットを取得し、保存
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -26,7 +26,7 @@ public class ClassicPriorityOrderBranchNumController {
     }
 
     /**
-     * 获取必须商品list
+     * 必須商品リストの取得
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -37,7 +37,7 @@ public class ClassicPriorityOrderBranchNumController {
     }
 
     /**
-     * 获取不可商品list
+     * 不可商品リストの取得
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -48,7 +48,7 @@ public class ClassicPriorityOrderBranchNumController {
     }
 
     /**
-     * 保存必须商品list
+     * 保存必須商品リスト
      * @param priorityOrderCommodityMust
      * @return
      */
@@ -58,7 +58,7 @@ public class ClassicPriorityOrderBranchNumController {
     }
 
     /**
-     * 保存不可商品list
+     * 不可商品リストの保存
      * @param priorityOrderCommodityNot
      * @return
      */

@@ -8,7 +8,7 @@ import java.util.Map;
 public interface ClassicPriorityOrderMstAttrSortService {
 
     /**
-     * 获取既存数据的排序
+     * 既存のデータのソートの取得
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -17,14 +17,14 @@ public interface ClassicPriorityOrderMstAttrSortService {
 
 
     /**
-     * 保存数据的排序
+     * 保存データのソート
      * @param priorityOrderMstAttrSort
      * @return
      */
     Map<String,Object> setPriorityAttrSort(List<PriorityOrderMstAttrSort> priorityOrderMstAttrSort);
 
     /**
-     * 删除数据的排序
+     * 削除データのソート
      * @param companyCd
      * @param priorityOrderCd
      * @return

@@ -21,7 +21,7 @@ public interface ClassicPriorityOrderCatePakService {
     Map<String,Object> setPriorityOrderCatePak(JSONArray jsonArray);
 
     /**
-     * 删除カテパケ拡縮
+     * 削除カテパケ拡縮
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -29,7 +29,7 @@ public interface ClassicPriorityOrderCatePakService {
     Integer delPriorityOrderCatePakInfo(String companyCd,Integer priorityOrderCd);
 
     /**
-     * 删除カテパケ拡縮属性
+     * 削除カテパケ拡縮属性
      * @param companyCd
      * @param priorityOrderCd
      * @return

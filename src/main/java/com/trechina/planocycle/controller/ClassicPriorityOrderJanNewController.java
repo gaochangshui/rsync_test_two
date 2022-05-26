@@ -14,7 +14,7 @@ public class ClassicPriorityOrderJanNewController {
     private ClassicPriorityOrderJanNewService priorityOrderJanNewService;
 
     /**
-     * 获取新规商品list
+     * 新規商品リストの取得
      * @param companyCd
      * @param priorityOrderCd
      * @return
@@ -25,7 +25,7 @@ public class ClassicPriorityOrderJanNewController {
     }
 
     /**
-     * 保存新规商品list
+     * 新規商品リストの保存
      * @param jsonArray
      * @return
      */
