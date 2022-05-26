@@ -168,7 +168,7 @@
   </select>
     <select id="selectTempDataByRankUpd"  resultType="java.util.Map">
         select jan_new,jan_old,pos_amount,branch_amount,unit_price,rank,rank_prop,goods_rank,rank_upd,branch_num,branch_num_upd,
-        branch_amount_upd,difference,sale_forecast
+        branch_amount_upd,difference,sale_forecast,sku
         <foreach collection="allAttrSortList" open="," item="attr" separator=",">
             coalesce(${attr}, '') as ${attr}
         </foreach>
@@ -583,11 +583,13 @@
     </delete>
     <select id="selectDynamicAttr" resultType="map">
         select tmpCore."${janCdCol}" as "jan_new", tmpCore."${janNameCol}" as "sku"
-        <foreach collection="attrTableList" index="index" item="dto" open="," separator=",">
-            <foreach collection="dto.colNum" index="i" item="colNum" separator=",">
-                tmp${index}."${colNum}" as ${dto.index}
+        <if test="attrTableList!=null">
+            <foreach collection="attrTableList" index="index" item="dto" open="," separator=",">
+                <foreach collection="dto.colNum" index="col" item="attr" separator=",">
+                    coalesce(tmp${index}."${col}", '') as ${attr}
+                </foreach>
             </foreach>
-        </foreach>
+        </if>
         from ${coreTableName} tmpCore
         <foreach collection="attrTableList" index="index" item="dto">
             <if test="index==0">

@@ -1,12 +1,14 @@
 package com.trechina.planocycle.entity.dto;
 
 import java.util.List;
+import java.util.Map;
 
 public class AttrHeaderSysDto {
     private String tableName;
-    private List<String> colNum;
-
-    private String index;
+    /**
+     * colIndex：attr1
+     */
+    private Map<String, String> colNum;
 
     private String janCdCol;
 
@@ -28,14 +30,6 @@ public class AttrHeaderSysDto {
         this.janNameCol = janNameCol;
     }
 
-    public String getIndex() {
-        return index;
-    }
-
-    public void setIndex(String index) {
-        this.index = index;
-    }
-
     public String getTableName() {
         return tableName;
     }
@@ -44,11 +38,11 @@ public class AttrHeaderSysDto {
         this.tableName = tableName;
     }
 
-    public List<String> getColNum() {
+    public Map<String, String> getColNum() {
         return colNum;
     }
 
-    public void setColNum(List<String> colNum) {
+    public void setColNum(Map<String, String> colNum) {
         this.colNum = colNum;
     }
 }
