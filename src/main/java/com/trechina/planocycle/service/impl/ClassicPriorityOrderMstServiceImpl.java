@@ -554,14 +554,13 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         String companyCd = priorityOrderMstDto.getCompanyCd();
         Integer priorityOrderCd = priorityOrderMstDto.getPriorityOrderCd();
         String priorityData = priorityOrderMstDto.getPriorityData();
-        String tablename = "public.priorityorder" + authorCd;
         List<GoodsRankDto> goodsRank = priorityOrderDataMapper.getGoodsRank(companyCd,priorityOrderCd);
         JSONArray datas = JSON.parseArray(priorityData);
         List<Map<String, String>> keyNameList = new ArrayList<>();
         colNameList(datas, keyNameList);
         List<Map> delJanList = datas.toJavaList(Map.class).stream().filter(item -> item.get("rank_upd").equals(99999999)).collect(Collectors.toList());
+        priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
         if (!delJanList.isEmpty()) {
-            priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
             priorityOrderJanCardMapper.setDelJanList(delJanList, companyCd, priorityOrderCd);
         }
 
