@@ -14,8 +14,7 @@ public interface ClassicPriorityOrderCatepakAttributeMapper {
 
     int insert(@Param("lists") List<PriorityOrderCatepakAttribute> record);
 
-    String selectForTempTable( @Param("lists") List<String> colValueList
-            ,@Param("tableName") String tableName);
+    String selectForTempTable( @Param("lists") List<String> colValueList,Integer priorityOrderCd);
 
     int insertFinalData(String companyCd, Integer priorityOrderCd);
 

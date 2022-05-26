@@ -234,11 +234,10 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
 
     private void branchNumSel(PriorityOrderCatepak priorityOrderCatepak, String colValue, int idx) {
         // 定番店舗数の照会
-        colValue = colValue.replace(("attr"+(idx -1)),"mulit_attr");
         List<String> colValueList = Arrays.asList(colValue.split(","));
         String branchNum =  priorityOrderCatepakAttributeMapper.selectForTempTable(colValueList,
-                "public.priorityorder"+session.getAttribute("aud").toString());
-        logger.info("査詢定番店鋪数"+branchNum);
+                priorityOrderCatepak.getPriorityOrderCd());
+        logger.info("査詢定番店鋪数{}",branchNum);
         if (branchNum!=null){
             priorityOrderCatepakMapper.updateBranchNum(priorityOrderCatepak.getId(),Integer.valueOf(branchNum));
         } else {
