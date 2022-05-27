@@ -15,7 +15,7 @@
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </insert>
   <select id="existJan" resultType="string">
-    select jan_new from planocycle.work_priority_order_commodity_not
+    select jan_new from priority.work_priority_order_commodity_not
     where company_cd = #{companyCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and jan_new in
     <foreach collection="janList" item="obj" open="(" close=")" separator=",">
@@ -23,9 +23,9 @@
     </foreach>
   </select>
   <insert id="setWorkForFinal">
-    insert into planocycle.work_priority_order_commodity_not
+    insert into priority.work_priority_order_commodity_not
     select company_cd,priority_order_cd,branch,jan_new
-    from planocycle.priority_order_commodity_not
+    from priority.priority_order_commodity_not
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </insert>
@@ -55,7 +55,7 @@
     limit 1
   </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderCommodityNot">
-    insert into planocycle.work_priority_order_commodity_not (company_cd, priority_order_cd, branch,
+    insert into priority.work_priority_order_commodity_not (company_cd, priority_order_cd, branch,
       jan_new)
     values
      <foreach collection="lists" item="list" separator=",">
