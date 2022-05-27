@@ -26,7 +26,7 @@
   <select id="selectForTempTable" resultType="java.lang.String">
     select max(branch_num) as branch_num from priority.work_priority_order_result_data
     where priority_order_cd=#{priorityOrderCd}
-    <foreach collection="lists" separator="and" item="list">
+    <foreach collection="lists" separator="and" open=" and " item="list">
       ${list}
     </foreach>
   </select>
