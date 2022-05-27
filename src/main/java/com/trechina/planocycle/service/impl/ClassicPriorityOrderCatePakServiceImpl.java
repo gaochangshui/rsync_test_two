@@ -112,8 +112,8 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                 }
 
             }
-            logger.info("カテパケ拡縮結果{}", jsonArray);
-            return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
+            logger.info("カテパケ拡縮結果{}", colMap);
+            return ResultMaps.result(ResultEnum.SUCCESS,colMap);
         }catch (Exception e) {
             logger.info("つかむ取カテパケ拡縮失敗：",e);
             return ResultMaps.result(ResultEnum.FAILURE);
