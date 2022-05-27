@@ -99,21 +99,23 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                 jsonArray.add(0, colMap);
             } else {
                 logger.info("つかむ取カテパケ拡縮結果集2：{}",attrMap);
-                if (!attrMap.isEmpty()) {
-                    List<String> list = new ArrayList<>();
+//                if (!attrMap.isEmpty()) {
+//                    List<String> list = new ArrayList<>();
+//
+//                    for (int i = 0; i < attrMap.size(); i++) {
+//                        list.add("attrSmall" + i);
+//                        list.add("attrBig" + i);
+//                    }
+//                    list.add("rank");
+//                    list.add("branchNum");
+//                    jsonArray.add(list);
+//                }
 
-                    for (int i = 0; i < attrMap.size(); i++) {
-                        list.add("attrSmall" + i);
-                        list.add("attrBig" + i);
-                    }
-                    list.add("rank");
-                    list.add("branchNum");
-                    jsonArray.add(list);
-                }
+                jsonArray.add(colMap);
 
             }
-            logger.info("カテパケ拡縮結果{}", colMap);
-            return ResultMaps.result(ResultEnum.SUCCESS,colMap);
+            logger.info("カテパケ拡縮結果{}", jsonArray);
+            return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
         }catch (Exception e) {
             logger.info("つかむ取カテパケ拡縮失敗：",e);
             return ResultMaps.result(ResultEnum.FAILURE);
