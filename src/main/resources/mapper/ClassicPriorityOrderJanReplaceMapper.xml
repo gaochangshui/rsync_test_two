@@ -43,7 +43,7 @@
     delete from priority.priority_order_jan_replace
     where company_cd = #{companyCd,jdbcType=VARCHAR}
   </delete>
-  <select id="selectJanInfo" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanReplaceVO">
+  <select id="selectJanInfo" resultType="com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanReplaceVO">
     select jan_old as janOld,jan_new as janNew,"${janNameCol}" as janName from priority.priority_order_jan_replace jan
     left join ${tableName} mst
     on jan.jan_new  = mst."${janCdCol}"

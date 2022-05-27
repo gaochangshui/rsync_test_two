@@ -4,6 +4,7 @@ import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanReplace;
 import com.trechina.planocycle.entity.po.PriorityOrderJanReplace;
+import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanReplaceVO;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanReplaceVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -52,7 +53,7 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
         logger.info("jan変の情報パラメータを取得する："+companyCd+","+priorityOrderCd);
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         String tableName = String.format("\"%s\".prod_%s_jan_info", coreCompany, MagicString.FIRST_CLASS_CD);
-        List<PriorityOrderJanReplaceVO> priorityOrderJanReplaceVOList = priorityOrderJanReplaceMapper
+        List<ClassicPriorityOrderJanReplaceVO> priorityOrderJanReplaceVOList = priorityOrderJanReplaceMapper
                 .selectJanInfo(companyCd,priorityOrderCd, tableName, MagicString.JAN_HEADER_JAN_CD_DEFAULT, MagicString.JAN_HEADER_JAN_NAME_DEFAULT);
         logger.info("jan変の情報戻り値を取得する："+priorityOrderJanReplaceVOList);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplaceVOList);

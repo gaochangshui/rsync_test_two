@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.PriorityOrderJanReplace;
+import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanReplaceVO;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanReplaceVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -13,8 +14,8 @@ public interface ClassicPriorityOrderJanReplaceMapper {
 
     int insert(@Param("lists") List<PriorityOrderJanReplace> record);
 
-    List<PriorityOrderJanReplaceVO> selectJanInfo(String companyCd, Integer priorityOrderCd, String tableName, String janCdCol,
-                                                  String janNameCol);
+    List<ClassicPriorityOrderJanReplaceVO> selectJanInfo(String companyCd, Integer priorityOrderCd, String tableName, String janCdCol,
+                                                         String janNameCol);
 
     String selectJanDistinct();
 
