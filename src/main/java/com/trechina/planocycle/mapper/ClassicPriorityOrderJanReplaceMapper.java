@@ -13,7 +13,8 @@ public interface ClassicPriorityOrderJanReplaceMapper {
 
     int insert(@Param("lists") List<PriorityOrderJanReplace> record);
 
-    List<PriorityOrderJanReplaceVO> selectJanInfo(String companyCd, Integer priorityOrderCd);
+    List<PriorityOrderJanReplaceVO> selectJanInfo(String companyCd, Integer priorityOrderCd, String tableName, String janCdCol,
+                                                  String janNameCol);
 
     String selectJanDistinct();
 
