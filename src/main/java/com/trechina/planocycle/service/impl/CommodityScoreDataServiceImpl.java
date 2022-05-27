@@ -62,7 +62,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String companyCd = taskIdMap.get("companyCd").toString();
 
         String authorCd = session.getAttribute("aud").toString();
-
+        if (vehicleNumCache.get(taskIdMap.get("taskID").toString()+"Exception")!=null){
+            return ResultMaps.result(ResultEnum.CGIERROR);
+        }
        if (vehicleNumCache.get(taskIdMap.get("taskID").toString())==null){
            return ResultMaps.result(ResultEnum.SUCCESS,"9");
        }
@@ -219,36 +221,48 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String smartPath = this.smartPath;
         executor.execute(() -> {
             String uuid = "";
-
+                Map<String, Object> map1 = null;
                     while (true) {
-                        Map<String, Object> map1 = cgiUtil.postCgiOfWeb(taskQuery, posResult, tokenInfo,smartPath);
+                        map1 = cgiUtil.postCgiOfWeb(taskQuery, posResult, tokenInfo,smartPath);
                         if (!"9".equals(map1.get("data"))) {
+                            if (map1.get("data")==null){
+                                vehicleNumCache.put(posResult+"Exception",map.get("msg"));
+                            }
                             break;
                         }
+
                     }
-                    Map<Object, Object> customerCondition = (Map<Object, Object>) map.get("customerCondition");
-                    if (!customerCondition.isEmpty()) {
-                        logger.info("顧客パラメータ{}", map);
-                       String groupResult = cgiUtil.postCgi(productPowerData, map, tokenInfo,smartPath);
-                        while (true){
-                            Map<String, Object> map1 = cgiUtil.postCgiOfWeb(taskQuery, groupResult, tokenInfo,smartPath);
-                            if (!"9".equals(map1.get("data"))) {
-                                break;
+                    if (map1.get("data")!=null) {
+                        Map<Object, Object> customerCondition = (Map<Object, Object>) map.get("customerCondition");
+                        if (!customerCondition.isEmpty()) {
+                            logger.info("顧客パラメータ{}", map);
+                            String groupResult = cgiUtil.postCgi(productPowerData, map, tokenInfo, smartPath);
+                            while (true) {
+                                Map<String, Object> map2 = cgiUtil.postCgiOfWeb(taskQuery, groupResult, tokenInfo, smartPath);
+                                if (!"9".equals(map2.get("data"))) {
+                                    if (map2.get("data") == null) {
+                                        vehicleNumCache.put(posResult + "Exception", "error");
+                                    }
+                                    break;
+                                }
                             }
                         }
-                    }
-                    //市場データ
-                    if (map.get("channelNm") != null && !"".equals(map.get("channelNm"))) {
-                        uuid = UUID.randomUUID().toString();
-                        map.put("mode", "market_data");
-                        map.put("guid", uuid);
-                        map.put("tableName", "planocycle.work_product_power_intage");
-                        logger.info("市場パラメータ{}", map);
-                        String intergeResult = cgiUtil.postCgi(productPowerData, map, tokenInfo,smartPath);
-                        while (true){
-                            Map<String, Object> map1 = cgiUtil.postCgiOfWeb(taskQuery, intergeResult, tokenInfo,smartPath);
-                            if (!"9".equals(map1.get("data"))) {
-                                break;
+                        //市場データ
+                        if (map.get("channelNm") != null && !"".equals(map.get("channelNm"))) {
+                            uuid = UUID.randomUUID().toString();
+                            map.put("mode", "market_data");
+                            map.put("guid", uuid);
+                            map.put("tableName", "planocycle.work_product_power_intage");
+                            logger.info("市場パラメータ{}", map);
+                            String intergeResult = cgiUtil.postCgi(productPowerData, map, tokenInfo, smartPath);
+                            while (true) {
+                                Map<String, Object> map2 = cgiUtil.postCgiOfWeb(taskQuery, intergeResult, tokenInfo, smartPath);
+                                if (!"9".equals(map2.get("data"))) {
+                                    if (map2.get("data") == null) {
+                                        vehicleNumCache.put(posResult + "Exception", "error");
+                                    }
+                                    break;
+                                }
                             }
                         }
                     }
@@ -256,7 +270,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 });
         String result =  posResult;
         logger.info("taskId返回：{}", result);
-
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 
