@@ -123,14 +123,14 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      */
     public void janProposalDataFromDB(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd, String coreCompany) {
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, shelfPatternNo);
-        //只是用品名2
-        String tableName = String.format("\"%s\".prod_0000_jan_attr_header_sys", coreCompany);
+        //only 品名2
+        String tableName = String.format("\"%s\".prod_%s_jan_attr_header_sys", coreCompany, MagicString.FIRST_CLASS_CD);
         List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
-        Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals("jan_cd")).findFirst();
+        Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals(MagicString.JAN_HEADER_JAN_CD_COL)).findFirst();
         String janCdCol = janCdOpt.get().get("sort").toString();
-        Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals("jan_name")).findFirst();
+        Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals(MagicString.JAN_HEADER_JAN_NAME_COL)).findFirst();
         String janNameCol = janNameOpt.get().get("sort").toString();
-        tableName = String.format("\"%s\".prod_0000_jan_info", coreCompany);
+        tableName = String.format("\"%s\".prod_%s_jan_info", coreCompany, MagicString.FIRST_CLASS_CD);
         List<PriorityOrderJanProposal> list = productPowerDataMapper.selectSameNameJan(productPowerNo,
                 shelfPtsData.stream().map(pts->pts.getId()+"").collect(Collectors.joining(",")), tableName, janCdCol, janNameCol);
         JSONArray datasJan = JSON.parseArray(JSON.toJSONString(list));
