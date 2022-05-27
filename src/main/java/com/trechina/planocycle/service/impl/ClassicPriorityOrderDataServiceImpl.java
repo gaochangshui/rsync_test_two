@@ -148,6 +148,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         mapColHeader.put("jan_old","旧JAN");
         mapColHeader.put("jan_new","新JAN");
         mapColHeader.put("sku","SKU");
+
         int i = 1;
         for (String s : list) {
             Map<String,Object> map = new HashMap<>();
@@ -155,7 +156,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 map.put("companyCd",s1[0]);
                 map.put("isCore",s1[1]);
                 map.put("col","\""+s1[2]+"\"");
-                map.put("tableName","\""+s1[0]+"\"");
+                map.put("tableName","\""+s1[0]+s1[1]+"\"");
                 map.put("colName","attr"+i);
                 listAttr.add(map);
                 String tableNameInfo = MessageFormat.format("\"{0}\".prod_{1}_jan_info", s1[0], s1[1]);
@@ -164,7 +165,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
                 String colName = priorityOrderDataMapper.getColName(tableNameAttr, tableNameKaisou, s1[2]);
                 mapColHeader.put("attr"+i,colName);
-                listTableName.put("\""+s1[0]+"\"",tableNameInfo);
+                listTableName.put("\""+s1[0]+s1[1]+"\"",tableNameInfo);
                 i++;
             }
             mapColHeader.put("branch_amount_upd","店@金額(円)");
