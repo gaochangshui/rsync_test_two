@@ -50,7 +50,7 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
   </select>
   <select id="selectJanDistinct" resultType="java.lang.String">
-    select array_to_string(array_agg(jan),',') from "1000".prod_0000_jan_info
+    select array_to_string(array_agg("1"),',') from "1000".prod_0000_jan_info
   </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanReplace">
     insert into priority.priority_order_jan_replace (company_cd, priority_order_cd, jan_old,
