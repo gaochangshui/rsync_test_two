@@ -44,9 +44,9 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
   </delete>
   <select id="selectJanInfo" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanReplaceVO">
-    select jan_old as janOld,jan_new as janNew,janname as janName from priority.priority_order_jan_replace jan
-    left join masterdb.jans mst
-    on jan.jan_new  = mst.jan
+    select jan_old as janOld,jan_new as janNew,"${janNameCol}" as janName from priority.priority_order_jan_replace jan
+    left join ${tableName} mst
+    on jan.jan_new  = mst."${janCdCol}"
     where company_cd = #{companyCd,jdbcType=VARCHAR}
   </select>
   <select id="selectJanDistinct" resultType="java.lang.String">
