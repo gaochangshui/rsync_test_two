@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ProductPowerWeightMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ProductPowerWeight">
+    <id column="company_cd" jdbcType="VARCHAR" property="conpanyCd" />
+    <id column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
+    <result column="market_pos_flag" jdbcType="INTEGER" property="marketPosFlag" />
+    <result column="data_cd" jdbcType="INTEGER" property="dataCd" />
+    <result column="data_weight" jdbcType="NUMERIC" property="dataWeight" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    market_pos_flag, data_cd, data_weight
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from planocycle.product_power_weight
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+  </select>
+  <delete id="deleteByPrimaryKey" >
+    update planocycle.product_power_weight set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+  </delete>
+  <delete id="delete">
+    delete from planocycle.product_power_weight
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+    and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    and deleteflg=0
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerWeight">
+    insert into planocycle.product_power_weight (company_cd, product_power_cd, market_pos_flag,
+      data_cd, data_weight,author_cd,create_time)
+    values
+    <foreach collection="lists" item="list" separator=",">
+      (#{list.conpanyCd,jdbcType=VARCHAR}, #{list.productPowerCd,jdbcType=INTEGER}, #{list.marketPosFlag,jdbcType=INTEGER},
+      #{list.dataCd,jdbcType=INTEGER}, #{list.dataWeight,jdbcType=NUMERIC},#{authorCd},now())
+    </foreach>
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.ProductPowerWeight">
+    update planocycle.product_power_weight
+    set market_pos_flag = #{marketPosFlag,jdbcType=INTEGER},
+      data_cd = #{dataCd,jdbcType=INTEGER},
+      data_weight = #{dataWeight,jdbcType=NUMERIC}
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+  </update>
+</mapper>

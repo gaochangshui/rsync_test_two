@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderMstAttrSortMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="value" jdbcType="INTEGER" property="value" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="cd" jdbcType="INTEGER" property="cd" />
+  </resultMap>
+  <resultMap id="attrTreeMap" type="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+    <result column="scat1cd" property="attrCd"/>
+    <result column="scat1nm" property="attrName"/>
+    <result column="zokusei1nm" property="classifyName"/>
+
+    <collection property="children" ofType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+      <result column="scat2cd" property="attrCd"/>
+      <result column="scat2nm" property="attrName"/>
+      <result column="zokusei2nm" property="classifyName"/>
+      <collection property="children" ofType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+        <result column="scat3cd" property="attrCd"/>
+        <result column="scat3nm" property="attrName"/>
+        <result column="zokusei3nm" property="classifyName"/>
+        <collection property="children" ofType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+          <result column="scat4cd" property="attrCd"/>
+          <result column="scat4nm" property="attrName"/>
+          <result column="zokusei4nm" property="classifyName"/>
+        </collection>
+      </collection>
+    </collection>
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, priority_order_cd, value, sort, cd
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from planocycle.priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
+    <select id="getAttrType" resultType="java.lang.Integer">
+    select type
+    from masterdb.zokusei_mst
+    where zokusei_id = #{attrId}
+    </select>
+  <select id="getAttribute" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
+    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.zokusei_mst order by zokusei_sort;
+  </select>
+  <select id="getAttrSort" resultType="java.lang.Integer">
+    select zokusei_sort
+    from masterdb.zokusei_mst
+    where zokusei_id = #{attrId}
+  </select>
+  <select id="getAttrTableName" resultType="java.lang.String">
+    select zokusei_tb_nm
+    from masterdb.zokusei_mst
+    where zokusei_id = #{attrId}
+  </select>
+  <select id="getAttrValue" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
+    select DISTINCT  msts.attrACd as attrCd,msts.attrAName as attrName,msts.jansAColnm as  jansColnm from
+    (select datas.val as attrACd , datas.nm as attrAName, mst.jans_col_nm as jansAColnm
+    from masterdb.zokusei_mst_data datas left join masterdb.zokusei_mst mst
+    on datas.zokusei_id = mst.zokusei_id
+    where  datas.zokusei_id =${attr1}) msts
+
+
+    left join masterdb.jan_mst  mst
+    <if test="attr1 == 1">
+      on mst.scat1cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 2">
+      on mst.scat2cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 3">
+      on mst.scat3cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 4">
+      on mst.scat4cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 5">
+      on mst.pkg = msts.attrACd
+    </if>
+    <if test="attr1 == 6">
+      on cast(mst.kikaku as VARCHAR) = msts.attrACd
+    </if>
+    <if test="attr1 == 7">
+      on cast(mst.irisu as VARCHAR) = msts.attrACd
+    </if>
+    <if test="attr1 == 8">
+      on mst.alcohol = msts.attrACd
+    </if>
+    <if test="attr1 == 9">
+      on mst.brand = msts.attrACd
+    </if>
+    left join
+    planocycle.shelf_pts_data_jandata d
+    on mst.jan_cd = d.jan
+
+    where pts_cd = #{ptsCd}
+  </select>
+  <select id="getGoodsAttrTree" resultMap="attrTreeMap">
+    --Tree
+    select ct1.val as scat1cd,ct1.nm as scat1nm,mst1.zokusei_nm as zokusei1nm
+         ,ct2.val as scat2cd,ct2.nm as scat2nm,mst2.zokusei_nm as zokusei2nm
+         ,ct3.val as scat3cd,ct3.nm as scat3nm,mst3.zokusei_nm as zokusei3nm
+         ,ct4.val as scat4cd,ct4.nm as scat4nm,mst4.zokusei_nm as zokusei4nm
+    from masterdb.zokusei_mst_data ct1
+           left join masterdb.zokusei_mst mst1
+                     on ct1.zokusei_id = mst1.zokusei_id
+           left join masterdb.zokusei_mst_data ct2
+                     on ct1.val = ct2.val_parent
+                       and ct2.zokusei_id  = 2
+           left join masterdb.zokusei_mst mst2
+                     on ct2.zokusei_id = mst2.zokusei_id
+           left join masterdb.zokusei_mst_data ct3
+                     on ct2.val = ct3.val_parent
+                       and ct2.zokusei_id  = 2
+                       and ct3.zokusei_id  = 3
+           left join masterdb.zokusei_mst mst3
+                     on ct3.zokusei_id = mst3.zokusei_id
+           left join masterdb.zokusei_mst_data ct4
+                     on ct3.val = ct4.val_parent
+                       and ct3.zokusei_id  = 3
+                       and ct4.zokusei_id  = 4
+           left join masterdb.zokusei_mst mst4
+                     on ct4.zokusei_id = mst4.zokusei_id
+    where ct1.zokusei_id = 1
+    order by ct1.val
+
+  </select>
+  <select id="getAttr" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo">
+    select zokusei_id as attrCd,zokusei_nm as attrName ,zokusei_tb_nm as tableName,jans_col_nm as jansColNm,zokusei_sort as sort from masterdb.zokusei_mst where type  = 0;
+  </select>
+  <select id="getAttrValues" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+    select datas.val as attrCd,datas.nm as attrName,datas.type as type,mst.zokusei_nm as classifyName
+    from masterdb.zokusei_mst_data datas
+           left join masterdb.zokusei_mst mst
+                     on mst.zokusei_id = datas.zokusei_id
+    where datas.zokusei_id = #{zokuseiId}
+  </select>
+
+  <select id="getAttrValue5" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrVO">
+    select DISTINCT  msts.attrACd,msts.attrAName,msts.jansAColnm from
+      (select datas.val as attrACd , datas.nm as attrAName, mst.jans_col_nm as jansAColnm
+       from masterdb.zokusei_mst_data datas left join masterdb.zokusei_mst mst
+                                                      on datas.zokusei_id = mst.zokusei_id
+       where  datas.zokusei_id =${attr1}) msts
+
+
+    left join masterdb.jan_mst  mst
+    <if test="attr1 == 1">
+      on mst.scat1cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 2">
+      on mst.scat2cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 3">
+      on mst.scat3cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 4">
+      on mst.scat4cd_val = msts.attrACd
+    </if>
+    <if test="attr1 == 5">
+      on mst.pkg = msts.attrACd
+    </if>
+    <if test="attr1 == 6">
+      on mst.kikaku = msts.attrACd
+    </if>
+    <if test="attr1 == 7">
+      on mst.irisu = msts.attrACd
+    </if>
+    <if test="attr1 == 8">
+      on mst.alcohol = msts.attrACd
+    </if>
+    <if test="attr1 == 9">
+      on mst.brand = msts.attrACd
+    </if>
+    left join
+    planocycle.shelf_pts_data_jandata d
+        on mst.jan_cd = d.jan
+
+    where pts_cd = #{ptsCd}
+
+  </select>
+  <select id="getfeceNum" resultType="java.lang.Integer">
+    select sum(t1.face_count) face_count
+    from planocycle.shelf_pts_data_jandata t1
+           left join masterdb.jan_mst t2
+                     on t1.jan=t2.jan_cd
+    left JOIN planocycle.shelf_pts_data t3
+    ON t3.id = t1.pts_cd
+    where cast(t2.${janCol1} as VARCHAR)  = #{attrValue1} and cast(t2.${janCol2} as VARCHAR)= #{attrValue2} and t3.shelf_pattern_cd = #{patternCd}
+    group by t2.${janCol1},t2.${janCol2}
+  </select>
+  <select id="getfeceNum1" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrFaceNum">
+    select sum(t1.face_count) faceCount,t2.${janCol1} attr1,t2.${janCol2} attr2
+    from planocycle.shelf_pts_data_jandata t1
+           left join masterdb.jan_mst t2
+                     on t1.jan=t2.jan_cd
+           left JOIN planocycle.shelf_pts_data t3
+                     ON t3.id = t1.pts_cd
+    where t3.shelf_pattern_cd = #{patternCd}
+    group by t2.${janCol1},t2.${janCol2}
+  </select>
+  <select id="getJansColNm" resultType="java.lang.String">
+    select jans_col_nm
+    from planocycle.zokusei_mst
+    where zokusei_id = #{zokuseiId}
+  </select>
+  <select id="getEditAttributeArea" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrVO">
+    select attribute1_value as attrACd,attribute2_value as attrBCd,old_zoning as existingZoning,new_zoning as newZoning,tana_count as tanaPattan,
+           zoning_num as rank,attribute1_name as attrAName,attribute2_name as attrBName
+    from planocycle.work_priority_order_space
+    where company_cd = #{companyCd} and author_cd = #{authorCd}
+    order by new_zoning desc
+  </select>
+  <select id="getAttrCol" resultType="string">
+    select jans_col_nm
+     from masterdb.zokusei_mst
+     where zokusei_id = #{zokuseiId}
+  </select>
+  <select id="getAttributeSort" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
+    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.zokusei_mst  where sort_type = 0
+    order by zokusei_sort;
+  </select>
+  <select id="getColNmforMst" resultType="java.lang.String">
+    select array_to_string(array_agg(jans_col_nm order by sort_num),',')
+    from planocycle.work_priority_order_sort sort
+           left join masterdb.zokusei_mst mst
+                     on mst.zokusei_id = sort.zokusei_id
+    where company_cd = #{companyCd} and  author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
+
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from priority.priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteAttrFinal">
+      delete from priority.priority_order_mst_attr
+      where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </delete>
+  <delete id="deleteAttrSortFinal">
+    delete from priority.priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort">
+    insert into planocycle.priority_order_mst_attrsort (company_cd, priority_order_cd, value,
+      sort, cd)
+    values
+           <foreach collection="lists" item="list" separator=",">
+           (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.value,jdbcType=INTEGER},
+      #{list.sort,jdbcType=INTEGER}, #{list.cd,jdbcType=INTEGER})
+           </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort">
+    insert into planocycle.priority_order_mst_attrsort
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        company_cd,
+      </if>
+      <if test="priorityOrderCd != null">
+        priority_order_cd,
+      </if>
+      <if test="value != null">
+        value,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="cd != null">
+        cd,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        #{companyCd,jdbcType=VARCHAR},
+      </if>
+      <if test="priorityOrderCd != null">
+        #{priorityOrderCd,jdbcType=INTEGER},
+      </if>
+      <if test="value != null">
+        #{value,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="cd != null">
+        #{cd,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <insert id="insertAttrFinal">
+    insert into priority.priority_order_mst_attr
+    select * from priority.work_priority_order_mst_attr
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </insert>
+  <insert id="insertAttrSortFinal">
+    insert into priority.priority_order_mst_attrsort
+    select * from priority.work_priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </insert>
+</mapper>

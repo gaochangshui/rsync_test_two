@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.AreasMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.Areas">
+    <id column="areacd" jdbcType="INTEGER" property="areacd" />
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <result column="areaname" jdbcType="VARCHAR" property="areaname" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    area.areacd, areaname
+  </sql>
+  <insert id="updateTransfer">
+    insert into masterdb.areas
+    select * from masterdb.areas_wk
+  </insert>
+  <delete id="delete">
+    delete from masterdb.areas
+  </delete>
+  <select id="select"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from masterdb.areas area
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+  </select>
+  <select id="selectForShelfName" resultType="com.trechina.planocycle.entity.po.Areas">
+    select
+    distinct <include refid="Base_Column_List" />
+    from masterdb.areas area
+    inner join planocycle.shelf_name_area namearea
+    on area.areacd= namearea.areacd
+    and area.company_cd =namearea.company_cd
+    inner join planocycle.shelf_name_mst shelf
+    on namearea.shelf_name_cd = shelf.id
+    where shelf.id = #{ShelfNameCd,jdbcType=INTEGER} and namearea.deleteflg=0
+
+  </select>
+</mapper>

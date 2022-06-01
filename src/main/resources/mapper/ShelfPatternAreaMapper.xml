@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ShelfPatternAreaMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ShelfPatternArea">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="shelf_pattern_cd" jdbcType="INTEGER" property="shelfPatternCd" />
+    <id column="areacd" jdbcType="INTEGER" property="areacd" />
+  </resultMap>
+  <update id="deleteByPrimaryKey" parameterType="map">
+    update planocycle.shelf_pattern_area
+    set edit_time=now(),editer_cd=#{authorCd},deleteflg=1
+    where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+      and deleteflg=0
+  </update>
+  <update id="deleteAreaCd">
+    update planocycle.shelf_pattern_area
+    set edit_time=now(),editer_cd=#{authorCd},deleteflg=1
+    where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+      and deleteflg=0 and areacd in
+        <foreach collection="areaCd" item="area" open="(" close=")" separator=",">
+          #{area}
+        </foreach>
+  </update>
+  <update id="setDelFlg">
+    update planocycle.shelf_pattern_area
+    set deleteflg=0,edit_time=now(),editer_cd=#{authorCd}
+    where areacd = #{areaCd,jdbcType=INTEGER}
+      and shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER} and deleteflg=1
+  </update>
+
+    <select id="getShelfPatternArea" resultType="java.lang.Integer">
+      select
+        areacd
+      from
+        planocycle.shelf_pattern_area
+      where shelf_pattern_cd=#{id} and company_cd=#{companyCd}
+    </select>
+    <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternArea">
+    insert into planocycle.shelf_pattern_area (company_cd, shelf_pattern_cd, areacd,create_time,author_cd
+      )
+    values
+    <foreach collection="lists" separator="," item="list">
+           (#{list.companyCd,jdbcType=VARCHAR}, #{list.shelfPatternCd,jdbcType=INTEGER}, #{list.areacd,jdbcType=INTEGER},now(),#{authorCd})
+    </foreach>
+  </insert>
+</mapper>

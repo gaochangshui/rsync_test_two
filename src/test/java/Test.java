@@ -1,0 +1,36 @@
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+
+@SpringBootTest
+public class Test {
+    private static Logger logger = LoggerFactory.getLogger(Test.class);
+
+    public static void main(String[] args) {
+        try {
+            InputStreamReader reader = new InputStreamReader(System.in);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String buffer = null;
+            while ((buffer = bufferedReader.readLine()) != null) {
+                if (buffer.equals("exit")) {
+                    System.exit(1);
+
+                }
+
+                System.out.println("負ける入内容" + buffer);
+            }
+        } catch (IOException e) {
+            logger.error("",e);
+        } finally {
+
+        }
+    }
+
+
+
+}

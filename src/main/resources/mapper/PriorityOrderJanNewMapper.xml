@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderJanNewMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderJanNew">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="jan_new" jdbcType="VARCHAR" property="janNew" />
+    <result column="rank" jdbcType="INTEGER" property="rank" />
+    <result column="branch_num" jdbcType="INTEGER" property="branchNum" />
+    <result column="branch_account" jdbcType="NUMERIC" property="branchAccount" />
+  </resultMap>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanNew">
+    insert into planocycle.work_priority_order_jan_new (priority_order_cd,company_cd, jan_new,
+      jan_rank,author_cd)
+    values
+           <foreach collection="lists" separator="," item="list">
+           (#{list.priorityOrderCd},#{list.companyCd,jdbcType=VARCHAR}, trim(#{list.janNew,jdbcType=VARCHAR}),
+            #{list.rank} :: integer,#{authorCd})
+           </foreach>
+  </insert>
+
+    <update id="updateBranchNum">
+        update planocycle.priority_order_jan_new
+        set branch_num = #{branchNum,jdbcType=INTEGER}
+        where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        and jan_new = #{janNew,jdbcType=VARCHAR}
+
+
+    </update>
+
+    <insert id="setJanNewInfo" parameterType="com.trechina.planocycle.entity.vo.JanMstPlanocycleVo">
+        insert into masterdb.jan_mst_planocycle(company_cd,jan_cd,jan_nm,tanka,tanni,width,height,scat1cd,scat2cd,scat3cd,scat4cd,scatnm,pkg,alcohol,brand
+        ,scat1cd_val,scat2cd_val,scat3cd_val,scat4cd_val,kikaku,irisu,depth
+        )
+        values
+            <foreach collection="list" item="item" separator=",">
+                (trim(#{companyCd}),trim(#{item.janCd}),trim(#{item.janName}),trim(#{item.tanka}) :: integer,trim(#{item.tanni})
+                ,trim(#{item.width}) :: integer,trim(#{item.height}) :: integer,
+                 lpad(trim(#{item.zokusei1}),4,'0'),
+                 lpad(trim(#{item.zokusei2}),4,'0'),
+                lpad(trim(#{item.zokusei3}),4,'0'),
+                 <choose>
+                   <when test="item.zokusei4 != null and item.zokusei4 != ''">
+                       lpad(trim(#{item.zokusei4}),4,'0')
+                   </when>
+                    <otherwise>
+                        null
+                    </otherwise>
+                 </choose>
+                ,trim(#{item.scatnm}),trim(#{item.zokusei5}),trim(#{item.zokusei8}),trim(#{item.zokusei9})
+                ,lpad(trim(#{item.zokusei1}),4,'0'),
+                 lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0'),
+                 lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0') || '_' || lpad(trim(#{item.zokusei3}),4,'0'),
+                 <choose>
+                     <when test="item.zokusei4 != null and item.zokusei4 != ''">
+                         lpad(trim(#{item.zokusei1}),4,'0') || '_' || lpad(trim(#{item.zokusei2}),4,'0') || '_' || lpad(trim(#{item.zokusei3}),4,'0') || '_' || lpad(trim(#{item.zokusei4}),4,'0')
+
+                     </when>
+                     <otherwise>
+                         null
+                     </otherwise>
+                 </choose>
+                ,trim(#{item.zokusei6} ):: integer
+                 ,trim(#{item.zokusei7}):: integer ,trim(#{item.depth}) :: integer
+                )
+            </foreach>
+    </insert>
+    <insert id="setWorkForFinal">
+        insert into planocycle.work_priority_order_jan_new(priority_order_cd,company_cd,author_cd,jan_new,jan_rank)
+        select priority_order_cd,company_cd,#{authorCd},jan_new,jan_rank
+        from planocycle.priority_order_jan_new
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </insert>
+    <delete id="delete">
+        delete from planocycle.priority_order_jan_new
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </delete>
+    <delete id="workDelete">
+        delete from planocycle.work_priority_order_jan_new
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+
+    </delete>
+
+    <select id="selectJanNew" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
+        select news.jan_new as janCd, COALESCE(jans.jan_nm, mstpl.jan_nm) as janName,COALESCE(jans.scat1cd_val, mstpl.scat1cd_val) as zokusei1
+             ,COALESCE(jans.scat2cd_val, mstpl.scat2cd_val) as zokusei2
+             ,COALESCE(jans.scat3cd_val, mstpl.scat3cd_val) as zokusei3,COALESCE(jans.scat4cd_val, mstpl.scat4cd_val) as zokusei4,news.jan_rank as rank
+        from planocycle.work_priority_order_jan_new news
+                 left join  masterdb.jan_mst jans
+                on news.jan_new = jans.jan_cd
+        left join masterdb.jan_mst_planocycle mstpl
+                  on news.jan_new = mstpl.jan_cd
+        where news.company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+
+        order by janCd
+  </select>
+    <select id="selectJanNewNotExistsMst" resultType="map">
+        select '' as jan_old,news.jan_new,'' as sku
+             ,string_agg(attr_cd||':'||attr_value,',' order by attr_cd asc) as attr
+            ,'' as mulit_attr,'' as pos_amount,'' as pos_before_rate,'' as branch_amount
+            ,'0' as unit_price,'+0' as unit_before_diff,'-1' as rank,'0' as branch_num
+            ,news.rank as rank_prop,news.rank as rank_upd,news.branch_num as branch_num_upd
+            ,news.branch_account  as pos_amount_upd ,'+'||news.branch_num as difference
+             ,to_number(news.branch_account::text,'9999999999999999999')*to_number(news.branch_num::text,'9999999999999999999') as sale_forecast
+        from planocycle.priority_order_jan_new news
+             left join planocycle.priority_order_jan_attribute attr
+               on  news.company_cd = attr.company_cd
+               and news.priority_order_cd = attr.priority_order_cd
+               and news.jan_new = attr.jan_new
+        where news.company_cd = #{companyCd,jdbcType=VARCHAR}
+          and news.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        and not exists(
+                select jan_new from ${tablename} temps where news.jan_new = temps.jan_new
+            )
+        group by news.jan_new,rank,branch_num,branch_account
+
+    </select>
+    <select id="selectColName" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
+        select news.jan_new as janNew,'' as janName
+             ,string_agg(attr_cd||':'||attr_value,',') as attr
+             ,news.rank,news.branch_num as branchNum,news.branch_account as branchAccount
+             ,'' as errMsg
+        from planocycle.priority_order_jan_new news
+         right join planocycle.product_power_param_attribute attr
+           on  news.company_cd = attr.company_cd
+        where attr.company_cd = #{companyCd,jdbcType=VARCHAR}
+          and attr.product_power_cd = #{productPowerNo,jdbcType=INTEGER}
+        group by news.jan_new,rank,branch_num,branch_account limit 1
+    </select>
+    <select id="selectJanNewOrAttr" resultType="java.util.Map">
+        select new.priority_order_cd,new.jan_new,rank,string_agg(attr_value,',' order by attr_cd) as attr
+        from planocycle.priority_order_jan_attribute attr
+          inner join planocycle.priority_order_jan_new new
+         on attr.priority_order_cd =new.priority_order_cd
+         and attr.jan_new = new.jan_new
+        where  new.company_cd = #{companyCd,jdbcType=VARCHAR}
+          and new.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        group by new.priority_order_cd,new.jan_new,rank
+    </select>
+    <select id="getJanMstNum" resultType="java.lang.Integer">
+        select count(1)
+        from  masterdb.jan_mst
+        where jan_cd = #{priorityOrderJanNew.janNew}
+    </select>
+    <select id="getJanMstPlanocycleNum" resultType="java.lang.Integer">
+        select count(1)
+        from  masterdb.jan_mst_planocycle
+        where jan_cd = #{priorityOrderJanNew.janNew}
+    </select>
+    <select id="getJanNameClassify" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
+        select jan_cd as janNew,jan_nm as janName,scat1cd_val,scat2cd_val,scat3cd_val,scat4cd_val from masterdb.jan_mst
+        where jan_cd in
+        <foreach collection="janNew" separator="," item="item" open="(" close=")">
+            trim(#{item})
+        </foreach>
+    </select>
+    <select id="getProductPowerData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
+        select datas.jan as janCd,datas.sku_name as janName ,datas.classify_big as zokusei1,datas.classify_middle as zokusei2,datas.classify_small as zokusei3,datas.classify_fine as zokusei4,datas.rank_result as rank
+        from planocycle.product_power_mst_data datas
+        where datas.classify_big = #{item.zokusei1} and datas.classify_middle = #{item.zokusei2} and datas.classify_small = #{item.zokusei3}
+        and product_power_cd = #{productPowerCd} and datas.jan != #{item.janCd}
+        and not exists (select jan_new from planocycle.work_priority_order_jan_new janNew where janNew.jan_new = datas.jan
+                        and janNew.author_cd = #{authorCd} and janNew.company_cd = #{item.companyCd} and janNew.priority_order_cd = #{item.priorityOrderCd}
+        )
+        union
+        select janNew.jan_new as janCd,mst.jan_nm as janName, data1.nm as zokusei1,data2.nm as zokusei2,data3.nm as zokusei3,scat4cd_val as zokusei4,janNew.jan_rank as rank
+        from planocycle.work_priority_order_jan_new janNew
+                 left join
+             masterdb.jan_mst mst
+             on mst.jan_cd = janNew.jan_new
+                 left join masterdb.zokusei_mst_data data1
+                           on mst.scat1cd_val = data1.val
+                 left join masterdb.zokusei_mst_data data2
+                           on mst.scat2cd_val = data2.val
+                 left join masterdb.zokusei_mst_data data3
+                           on mst.scat3cd_val = data3.val
+                 left join masterdb.zokusei_mst_data data4
+                           on  mst.scat4cd_val = data4.val
+        where janNew.company_cd = #{item.companyCd} and janNew.author_cd=#{authorCd} and janNew.priority_order_cd = #{item.priorityOrderCd} and janNew.jan_new != #{item.janCd}
+            and data1.nm = #{item.zokusei1} and data2.nm = #{item.zokusei2} and data3.nm = #{item.zokusei3}
+        union
+        select
+            janNew.jan_new as janCd,mst.jan_nm as janName, data1.nm as zokusei1,data2.nm as zokusei2,data3.nm as zokusei3,scat4cd_val as zokusei4,janNew.jan_rank as rank
+        from planocycle.work_priority_order_jan_new janNew
+                 left join
+             masterdb.jan_mst_planocycle mst
+             on mst.jan_cd = janNew.jan_new
+                 left join masterdb.zokusei_mst_data data1
+                           on mst.scat1cd_val = data1.val
+                 left join masterdb.zokusei_mst_data data2
+                           on mst.scat2cd_val = data2.val
+                 left join masterdb.zokusei_mst_data data3
+                           on mst.scat3cd_val = data3.val
+                 left join masterdb.zokusei_mst_data data4
+                           on  mst.scat4cd_val = data4.val
+        where janNew.company_cd = #{item.companyCd} and janNew.author_cd=#{authorCd} and janNew.priority_order_cd = #{item.priorityOrderCd} and janNew.jan_new != #{item.janCd}
+          and data1.nm = #{item.zokusei1} and data2.nm = #{item.zokusei2} and data3.nm = #{item.zokusei3}
+        order by rank
+
+    </select>
+    <select id="getJanNewInfo" resultType="com.trechina.planocycle.entity.vo.JanMstPlanocycleVo">
+        select jan_cd as janCd,jan_nm as janName,tanka,tanni,width,height,depth,scatnm,scat1cd as zokusei1,scat2cd as zokusei2,scat3cd as zokusei3
+             ,scat4cd as zokusei4,pkg as zokusei5,kikaku as zokusei6,irisu as zokusei7,alcohol as zokusei8,brand as zokusei9
+        from masterdb.jan_mst_planocycle
+        where company_cd = #{companyCd}
+        order by jan_cd
+    </select>
+    <select id="getJanNew" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
+        SELECT jan_New as janCd,jan_rank as rank
+        from planocycle.work_priority_order_jan_new
+        where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+            and author_cd=#{authorCd}
+    </select>
+    <select id="getJanNameClass" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
+        select jan_cd as janNew,jan_nm as janName,scat1cd_val,scat2cd_val,scat3cd_val,scat4cd_val from masterdb.jan_mst_planocycle
+        where company_cd = #{companyCd} and jan_cd in
+        <foreach collection="janNew" separator="," item="item" open="(" close=")">
+            trim(#{item})
+        </foreach>
+    </select>
+    <select id="getProductForWork" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
+        select jan_cd as janCd,jan_nm as janName, scat1cd_val as zokusei1,scat2cd_val as zokusei2,scat3cd_val as zokusei3,scat4cd_val as zokusei4
+        from masterdb.jan_mst_planocycle
+        where jan_cd = #{item.janCd} and company_cd = #{companyCd}
+</select>
+    <delete id="deleteByAuthorCd">
+        delete from planocycle.priority_order_jan_new where
+        company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        and author_cd=#{authorCd}
+    </delete>
+    <delete id="deleteJanNewInfo">
+        delete from masterdb.jan_mst_planocycle where company_cd = #{companyCd}
+    </delete>
+    <delete id="deleteFinalJanNewInfo">
+        delete from masterdb.jan_mst_planocycle where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </delete>
+    <insert id="insertBySelect">
+        insert into planocycle.priority_order_jan_new(priority_order_cd,company_cd,author_cd,jan_new,jan_rank,create_time,edit_time,editer_cd)
+        select priority_order_cd,company_cd,#{authorCd},jan_new,jan_rank,now(),now(),#{authorCd}
+        from planocycle.work_priority_order_jan_new
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </insert>
+
+</mapper>

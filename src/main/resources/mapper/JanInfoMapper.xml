@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.JanInfoMapper">
+    <insert id="setFinalForWork">
+        create table ${wkTable} as select * from ${finalTable}
+    </insert>
+    <delete id="dropFinal">
+        DROP TABLE IF EXISTS  ${tableName};
+    </delete>
+    <select id="getSchemaOrTableName" resultType="java.lang.String">
+        select  '"' || table_schema || '"' || '.' || '"' || table_name || '"'	from  information_schema.tables where table_schema  in ('87c6f4','1000') and "table_name" like '%wk'
+    </select>
+</mapper>

@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ShelfPtsDataJandataMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ShelfPtsDataJandata">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="pts_cd" jdbcType="INTEGER" property="ptsCd" />
+    <id column="tai_cd" jdbcType="INTEGER" property="taiCd" />
+    <id column="tana_cd" jdbcType="INTEGER" property="tanaCd" />
+    <id column="tanaposition_cd" jdbcType="INTEGER" property="tanapositionCd" />
+    <id column="jan" jdbcType="VARCHAR" property="jan" />
+    <result column="face_count" jdbcType="INTEGER" property="faceCount" />
+    <result column="face_men" jdbcType="INTEGER" property="faceMen" />
+    <result column="face_kaiten" jdbcType="INTEGER" property="faceKaiten" />
+    <result column="tumiagesu" jdbcType="INTEGER" property="tumiagesu" />
+    <result column="zaikosu" jdbcType="INTEGER" property="zaikosu" />
+    <result column="face_displayflg" jdbcType="INTEGER" property="faceDisplayflg" />
+    <result column="face_position" jdbcType="INTEGER" property="facePosition" />
+    <result column="depth_display_num" jdbcType="INTEGER" property="depthDisplayNum" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="edit_time" jdbcType="TIMESTAMP" property="editTime" />
+    <result column="editer_cd" jdbcType="VARCHAR" property="editerCd" />
+    <result column="deleteflg" jdbcType="INTEGER" property="deleteflg" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, pts_cd, tai_cd, tana_cd, tanaposition_cd, jan, face_count, face_men, 
+    face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num, 
+    create_time, author_cd, edit_time, editer_cd, deleteflg
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from planocycle.shelf_pts_data_jandata
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and pts_cd = #{ptsCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+      and tanaposition_cd = #{tanapositionCd,jdbcType=INTEGER}
+      and jan = #{jan,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from planocycle.shelf_pts_data_jandata
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and pts_cd = #{ptsCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+      and tanaposition_cd = #{tanapositionCd,jdbcType=INTEGER}
+      and jan = #{jan,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPtsDataJandata">
+    insert into planocycle.shelf_pts_data_jandata (company_cd, pts_cd, tai_cd,
+      tana_cd, tanaposition_cd, jan, 
+      face_count, face_men, face_kaiten, 
+      tumiagesu, zaikosu, face_displayflg, 
+      face_position, depth_display_num, create_time, 
+      author_cd, edit_time, editer_cd, 
+      deleteflg)
+    values (#{companyCd,jdbcType=VARCHAR}, #{ptsCd,jdbcType=INTEGER}, #{taiCd,jdbcType=INTEGER}, 
+      #{tanaCd,jdbcType=INTEGER}, #{tanapositionCd,jdbcType=INTEGER}, #{jan,jdbcType=VARCHAR},
+      #{faceCount,jdbcType=INTEGER}, #{faceMen,jdbcType=INTEGER}, #{faceKaiten,jdbcType=INTEGER}, 
+      #{tumiagesu,jdbcType=INTEGER}, #{zaikosu,jdbcType=INTEGER}, #{faceDisplayflg,jdbcType=INTEGER}, 
+      #{facePosition,jdbcType=INTEGER}, #{depthDisplayNum,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{authorCd,jdbcType=VARCHAR}, #{editTime,jdbcType=TIMESTAMP}, #{editerCd,jdbcType=VARCHAR}, 
+      #{deleteflg,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.ShelfPtsDataJandata">
+    insert into planocycle.shelf_pts_data_jandata
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        company_cd,
+      </if>
+      <if test="ptsCd != null">
+        pts_cd,
+      </if>
+      <if test="taiCd != null">
+        tai_cd,
+      </if>
+      <if test="tanaCd != null">
+        tana_cd,
+      </if>
+      <if test="tanapositionCd != null">
+        tanaposition_cd,
+      </if>
+      <if test="jan != null">
+        jan,
+      </if>
+      <if test="faceCount != null">
+        face_count,
+      </if>
+      <if test="faceMen != null">
+        face_men,
+      </if>
+      <if test="faceKaiten != null">
+        face_kaiten,
+      </if>
+      <if test="tumiagesu != null">
+        tumiagesu,
+      </if>
+      <if test="zaikosu != null">
+        zaikosu,
+      </if>
+      <if test="faceDisplayflg != null">
+        face_displayflg,
+      </if>
+      <if test="facePosition != null">
+        face_position,
+      </if>
+      <if test="depthDisplayNum != null">
+        depth_display_num,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="authorCd != null">
+        author_cd,
+      </if>
+      <if test="editTime != null">
+        edit_time,
+      </if>
+      <if test="editerCd != null">
+        editer_cd,
+      </if>
+      <if test="deleteflg != null">
+        deleteflg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        #{companyCd,jdbcType=VARCHAR},
+      </if>
+      <if test="ptsCd != null">
+        #{ptsCd,jdbcType=INTEGER},
+      </if>
+      <if test="taiCd != null">
+        #{taiCd,jdbcType=INTEGER},
+      </if>
+      <if test="tanaCd != null">
+        #{tanaCd,jdbcType=INTEGER},
+      </if>
+      <if test="tanapositionCd != null">
+        #{tanapositionCd,jdbcType=INTEGER},
+      </if>
+      <if test="jan != null">
+        #{jan,jdbcType=VARCHAR},
+      </if>
+      <if test="faceCount != null">
+        #{faceCount,jdbcType=INTEGER},
+      </if>
+      <if test="faceMen != null">
+        #{faceMen,jdbcType=INTEGER},
+      </if>
+      <if test="faceKaiten != null">
+        #{faceKaiten,jdbcType=INTEGER},
+      </if>
+      <if test="tumiagesu != null">
+        #{tumiagesu,jdbcType=INTEGER},
+      </if>
+      <if test="zaikosu != null">
+        #{zaikosu,jdbcType=INTEGER},
+      </if>
+      <if test="faceDisplayflg != null">
+        #{faceDisplayflg,jdbcType=INTEGER},
+      </if>
+      <if test="facePosition != null">
+        #{facePosition,jdbcType=INTEGER},
+      </if>
+      <if test="depthDisplayNum != null">
+        #{depthDisplayNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="authorCd != null">
+        #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null">
+        #{editTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editerCd != null">
+        #{editerCd,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteflg != null">
+        #{deleteflg,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.ShelfPtsDataJandata">
+    update planocycle.shelf_pts_data_jandata
+    <set>
+      <if test="faceCount != null">
+        face_count = #{faceCount,jdbcType=INTEGER},
+      </if>
+      <if test="faceMen != null">
+        face_men = #{faceMen,jdbcType=INTEGER},
+      </if>
+      <if test="faceKaiten != null">
+        face_kaiten = #{faceKaiten,jdbcType=INTEGER},
+      </if>
+      <if test="tumiagesu != null">
+        tumiagesu = #{tumiagesu,jdbcType=INTEGER},
+      </if>
+      <if test="zaikosu != null">
+        zaikosu = #{zaikosu,jdbcType=INTEGER},
+      </if>
+      <if test="faceDisplayflg != null">
+        face_displayflg = #{faceDisplayflg,jdbcType=INTEGER},
+      </if>
+      <if test="facePosition != null">
+        face_position = #{facePosition,jdbcType=INTEGER},
+      </if>
+      <if test="depthDisplayNum != null">
+        depth_display_num = #{depthDisplayNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="authorCd != null">
+        author_cd = #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null">
+        edit_time = #{editTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editerCd != null">
+        editer_cd = #{editerCd,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteflg != null">
+        deleteflg = #{deleteflg,jdbcType=INTEGER},
+      </if>
+    </set>
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and pts_cd = #{ptsCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+      and tanaposition_cd = #{tanapositionCd,jdbcType=INTEGER}
+      and jan = #{jan,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.ShelfPtsDataJandata">
+    update planocycle.shelf_pts_data_jandata
+    set face_count = #{faceCount,jdbcType=INTEGER},
+      face_men = #{faceMen,jdbcType=INTEGER},
+      face_kaiten = #{faceKaiten,jdbcType=INTEGER},
+      tumiagesu = #{tumiagesu,jdbcType=INTEGER},
+      zaikosu = #{zaikosu,jdbcType=INTEGER},
+      face_displayflg = #{faceDisplayflg,jdbcType=INTEGER},
+      face_position = #{facePosition,jdbcType=INTEGER},
+      depth_display_num = #{depthDisplayNum,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      author_cd = #{authorCd,jdbcType=VARCHAR},
+      edit_time = #{editTime,jdbcType=TIMESTAMP},
+      editer_cd = #{editerCd,jdbcType=VARCHAR},
+      deleteflg = #{deleteflg,jdbcType=INTEGER}
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and pts_cd = #{ptsCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+      and tanaposition_cd = #{tanapositionCd,jdbcType=INTEGER}
+      and jan = #{jan,jdbcType=VARCHAR}
+  </update>
+  <insert id="insertAll">
+    insert into planocycle.shelf_pts_data_jandata (company_cd, pts_cd, tai_cd,
+    tana_cd, tanaposition_cd, jan,
+    face_count, face_men, face_kaiten,
+    tumiagesu, zaikosu, face_displayflg,
+    face_position, depth_display_num, create_time,
+    author_cd)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.companyCd,jdbcType=VARCHAR}, #{item.ptsCd,jdbcType=INTEGER}, #{item.taiCd,jdbcType=INTEGER},
+      #{item.tanaCd,jdbcType=INTEGER}, #{item.tanapositionCd,jdbcType=INTEGER}, #{item.jan,jdbcType=VARCHAR},
+      #{item.faceCount,jdbcType=INTEGER}, #{item.faceMen,jdbcType=INTEGER}, #{item.faceKaiten,jdbcType=INTEGER},
+      #{item.tumiagesu,jdbcType=INTEGER}, #{item.zaikosu,jdbcType=INTEGER}, #{item.faceDisplayflg,jdbcType=INTEGER},
+      #{item.facePosition,jdbcType=INTEGER}, #{item.depthDisplayNum,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP},
+      #{item.authorCd,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <select id="selectByPtsCd" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from planocycle.shelf_pts_data_jandata where
+    company_cd = #{companyCd,jdbcType=VARCHAR}
+    and pts_cd = #{ptsCd,jdbcType=INTEGER}
+    order by tai_cd,tana_cd,tanaposition_cd
+  </select>
+  <select id="selectNewByPtsCd" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from planocycle.work_priority_order_pts_data_jandata where
+    company_cd = #{companyCd,jdbcType=VARCHAR}
+    and pts_cd = #{ptsCd,jdbcType=INTEGER}
+    order by tai_cd,tana_cd,tanaposition_cd
+  </select>
+</mapper>

@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderRestrictSetMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="tai_cd" jdbcType="INTEGER" property="taiCd" />
+    <id column="tana_cd" jdbcType="INTEGER" property="tanaCd" />
+    <id column="tana_type" jdbcType="INTEGER" property="tanaType" />
+    <result column="zokusei1" jdbcType="VARCHAR" property="zokusei1" />
+    <result column="zokusei2" jdbcType="VARCHAR" property="zokusei2" />
+    <result column="zokusei3" jdbcType="VARCHAR" property="zokusei3" />
+    <result column="zokusei4" jdbcType="VARCHAR" property="zokusei4" />
+    <result column="zokusei5" jdbcType="VARCHAR" property="zokusei5" />
+    <result column="zokusei6" jdbcType="VARCHAR" property="zokusei6" />
+    <result column="zokusei7" jdbcType="VARCHAR" property="zokusei7" />
+    <result column="zokusei8" jdbcType="VARCHAR" property="zokusei8" />
+    <result column="zokusei9" jdbcType="VARCHAR" property="zokusei9" />
+    <result column="zokusei10" jdbcType="VARCHAR" property="zokusei10" />
+    <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="editer_cd" jdbcType="VARCHAR" property="editerCd" />
+    <result column="edit_time" jdbcType="TIMESTAMP" property="editTime" />
+    <result column="deleteflg" jdbcType="SMALLINT" property="deleteflg" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, priority_order_cd, tai_cd, tana_cd, tana_type, zokusei1, zokusei2,
+    zokusei3, zokusei4, zokusei5, zokusei6, zokusei7, zokusei8, zokusei9, zokusei10, 
+    author_cd, create_time, editer_cd, edit_time, deleteflg
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from priority_order_restrict_set
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+      and tana_type = #{tanaType,jdbcType=INTEGER}
+  </select>
+  <select id="getPriorityOrderRestrict" resultType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
+    select tai_cd,tana_cd,tana_type,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10
+    from planocycle.work_priority_order_restrict_set resSet
+    where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd= #{priorityOrderCd}
+    and  (zokusei1 is not NULL or zokusei2 is not NULL or zokusei3 is not NULL or zokusei4 is not NULL or zokusei5 is not NULL or zokusei6 is not NULL
+      or zokusei7 is not NULL or zokusei8 is not NULL or zokusei9 is not NULL or zokusei10 is not NULL)
+
+  </select>
+  <select id="getAttrValues" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto">
+    select datas.zokusei_id as zokuseiId,datas.val as val,mst.zokusei_nm ||'-' || datas.nm as  nm
+    from      masterdb.zokusei_mst_data datas
+                left join masterdb.zokusei_mst mst
+                          on datas.zokusei_id = mst.zokusei_id
+  </select>
+  <select id="getAttrValues1" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto">
+    select zokusei_id,val ,nm
+    from masterdb.zokusei_mst_data
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from priority_order_restrict_set
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+      and tana_type = #{tanaType,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByAuthorCd">
+    delete from planocycle.priority_order_restrict_set
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd=#{authorCd,jdbcType=VARCHAR}
+  </delete>
+  <delete id="delete">
+    delete from planocycle.work_priority_order_restrict_set
+    where priority_order_cd = #{item.priorityOrderCd} and company_cd = #{item.companyCd} and author_cd = #{authorCd} and
+      zokusei1 is null and zokusei2 is null and  zokusei3 is null and  zokusei4 is null and zokusei5 is null and zokusei6 is null and zokusei7 is null and
+zokusei8 is null and zokusei9 is null and zokusei10 is null
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
+    insert into priority_order_restrict_set (company_cd, priority_order_cd, tai_cd, 
+      tana_cd, tana_type, zokusei1,
+      zokusei2, zokusei3, zokusei4, 
+      zokusei5, zokusei6, zokusei7, 
+      zokusei8, zokusei9, zokusei10, 
+      author_cd, create_time, editer_cd, 
+      edit_time, deleteflg)
+    values (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{taiCd,jdbcType=INTEGER}, 
+      #{tanaCd,jdbcType=INTEGER}, #{tanaType,jdbcType=INTEGER}, #{zokusei1,jdbcType=VARCHAR},
+      #{zokusei2,jdbcType=VARCHAR}, #{zokusei3,jdbcType=VARCHAR}, #{zokusei4,jdbcType=VARCHAR}, 
+      #{zokusei5,jdbcType=VARCHAR}, #{zokusei6,jdbcType=VARCHAR}, #{zokusei7,jdbcType=VARCHAR}, 
+      #{zokusei8,jdbcType=VARCHAR}, #{zokusei9,jdbcType=VARCHAR}, #{zokusei10,jdbcType=VARCHAR}, 
+      #{authorCd,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{editerCd,jdbcType=VARCHAR}, 
+      #{editTime,jdbcType=TIMESTAMP}, #{deleteflg,jdbcType=SMALLINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
+    insert into priority_order_restrict_set
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        company_cd,
+      </if>
+      <if test="priorityOrderCd != null">
+        priority_order_cd,
+      </if>
+      <if test="taiCd != null">
+        tai_cd,
+      </if>
+      <if test="tanaCd != null">
+        tana_cd,
+      </if>
+      <if test="tanaType != null">
+        tana_type,
+      </if>
+      <if test="zokusei1 != null">
+        zokusei1,
+      </if>
+      <if test="zokusei2 != null">
+        zokusei2,
+      </if>
+      <if test="zokusei3 != null">
+        zokusei3,
+      </if>
+      <if test="zokusei4 != null">
+        zokusei4,
+      </if>
+      <if test="zokusei5 != null">
+        zokusei5,
+      </if>
+      <if test="zokusei6 != null">
+        zokusei6,
+      </if>
+      <if test="zokusei7 != null">
+        zokusei7,
+      </if>
+      <if test="zokusei8 != null">
+        zokusei8,
+      </if>
+      <if test="zokusei9 != null">
+        zokusei9,
+      </if>
+      <if test="zokusei10 != null">
+        zokusei10,
+      </if>
+      <if test="authorCd != null">
+        author_cd,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="editerCd != null">
+        editer_cd,
+      </if>
+      <if test="editTime != null">
+        edit_time,
+      </if>
+      <if test="deleteflg != null">
+        deleteflg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        #{companyCd,jdbcType=VARCHAR},
+      </if>
+      <if test="priorityOrderCd != null">
+        #{priorityOrderCd,jdbcType=INTEGER},
+      </if>
+      <if test="taiCd != null">
+        #{taiCd,jdbcType=INTEGER},
+      </if>
+      <if test="tanaCd != null">
+        #{tanaCd,jdbcType=INTEGER},
+      </if>
+      <if test="tanaType != null">
+        #{tanaType,jdbcType=INTEGER},
+      </if>
+      <if test="zokusei1 != null">
+        #{zokusei1,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei2 != null">
+        #{zokusei2,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei3 != null">
+        #{zokusei3,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei4 != null">
+        #{zokusei4,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei5 != null">
+        #{zokusei5,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei6 != null">
+        #{zokusei6,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei7 != null">
+        #{zokusei7,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei8 != null">
+        #{zokusei8,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei9 != null">
+        #{zokusei9,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei10 != null">
+        #{zokusei10,jdbcType=VARCHAR},
+      </if>
+      <if test="authorCd != null">
+        #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editerCd != null">
+        #{editerCd,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null">
+        #{editTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflg != null">
+        #{deleteflg,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
+    update priority_order_restrict_set
+    <set>
+      <if test="zokusei1 != null">
+        zokusei1 = #{zokusei1,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei2 != null">
+        zokusei2 = #{zokusei2,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei3 != null">
+        zokusei3 = #{zokusei3,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei4 != null">
+        zokusei4 = #{zokusei4,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei5 != null">
+        zokusei5 = #{zokusei5,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei6 != null">
+        zokusei6 = #{zokusei6,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei7 != null">
+        zokusei7 = #{zokusei7,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei8 != null">
+        zokusei8 = #{zokusei8,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei9 != null">
+        zokusei9 = #{zokusei9,jdbcType=VARCHAR},
+      </if>
+      <if test="zokusei10 != null">
+        zokusei10 = #{zokusei10,jdbcType=VARCHAR},
+      </if>
+      <if test="authorCd != null">
+        author_cd = #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editerCd != null">
+        editer_cd = #{editerCd,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null">
+        edit_time = #{editTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflg != null">
+        deleteflg = #{deleteflg,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+      and tana_type = #{tanaType,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.PriorityOrderRestrictSet">
+    update priority_order_restrict_set
+    set zokusei1 = #{zokusei1,jdbcType=VARCHAR},
+      zokusei2 = #{zokusei2,jdbcType=VARCHAR},
+      zokusei3 = #{zokusei3,jdbcType=VARCHAR},
+      zokusei4 = #{zokusei4,jdbcType=VARCHAR},
+      zokusei5 = #{zokusei5,jdbcType=VARCHAR},
+      zokusei6 = #{zokusei6,jdbcType=VARCHAR},
+      zokusei7 = #{zokusei7,jdbcType=VARCHAR},
+      zokusei8 = #{zokusei8,jdbcType=VARCHAR},
+      zokusei9 = #{zokusei9,jdbcType=VARCHAR},
+      zokusei10 = #{zokusei10,jdbcType=VARCHAR},
+      author_cd = #{authorCd,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      editer_cd = #{editerCd,jdbcType=VARCHAR},
+      edit_time = #{editTime,jdbcType=TIMESTAMP},
+      deleteflg = #{deleteflg,jdbcType=SMALLINT}
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+      and tana_type = #{tanaType,jdbcType=INTEGER}
+  </update>
+    <insert id="setPriorityOrderRestrict">
+        insert into planocycle.work_priority_order_restrict_set(priority_order_cd,company_cd,tai_cd,tana_cd,tana_type,zokusei${item.zokuseiId},author_cd)
+        values (#{item.priorityOrderCd},#{item.companyCd},#{item.taiCd},#{item.tanaCd},#{item.tanaType},#{item.val},#{authorCd})
+        on conflict(company_cd,author_cd,tai_cd,tana_cd,tana_type,priority_order_cd)
+        do update set
+          zokusei${item.zokuseiId} = #{item.val}
+
+
+
+
+    </insert>
+  <insert id="insertBySelect">
+    insert into planocycle.priority_order_restrict_set(priority_order_cd,company_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,
+    zokusei7,zokusei8,zokusei9,zokusei10,tai_cd,tana_cd,author_cd,tana_type,edit_time,create_time,editer_cd)
+    select priority_order_cd,company_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,
+    zokusei7,zokusei8,zokusei9,zokusei10,tai_cd,tana_cd,author_cd,tana_type,now(),now(),author_cd
+    from planocycle.work_priority_order_restrict_set
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </insert>
+  <update id="logicDeleteByPriorityOrderCd">
+    update planocycle.priority_order_restrict_set set deleteflg=1 , editer_cd = #{authorCd} , edit_time=now()
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </update>
+</mapper>

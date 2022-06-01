@@ -1,0 +1,8 @@
+version: '3'
+services:
+  api:
+    build: .
+    ports: -"8383:8383"
+  web:
+    build: .
+    ports: -"8282:8282"

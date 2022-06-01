@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ClassicPriorityOrderMstAttrSortMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="value" jdbcType="INTEGER" property="value" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="cd" jdbcType="INTEGER" property="cd" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, priority_order_cd, value, sort
+  </sql>
+  <select id="attrValueList" resultType="string">
+    select value
+    from  priority.work_priority_order_mst_attr
+    where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from priority.priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
+  <select id="getAttrSortList" resultType="java.lang.String">
+    select value
+    from priority.work_priority_order_mst_attrsort
+    where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    order by sort
+  </select>
+  <select id="getAttrList" resultType="java.lang.String">
+    select sort
+    from  priority.work_priority_order_mst_attr
+    where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getAttrCol" resultType="java.lang.String">
+    select sort from priority.work_priority_order_mst_attr where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd} and value = #{value}
+  </select>
+  <select id="selectWKByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from priority.work_priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from priority.priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteAttrWk">
+      delete from priority.work_priority_order_mst_attr
+      where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </delete>
+  <delete id="deleteAttrSortWK">
+    delete from priority.work_priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort">
+    insert into priority.priority_order_mst_attrsort (company_cd, priority_order_cd, value,
+      sort, cd)
+    values
+           <foreach collection="lists" item="list" separator=",">
+           (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.value,jdbcType=INTEGER},
+      #{list.sort,jdbcType=INTEGER}, #{list.cd,jdbcType=INTEGER})
+           </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort">
+    insert into priority.priority_order_mst_attrsort
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        company_cd,
+      </if>
+      <if test="priorityOrderCd != null">
+        priority_order_cd,
+      </if>
+      <if test="value != null">
+        value,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="cd != null">
+        cd,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        #{companyCd,jdbcType=VARCHAR},
+      </if>
+      <if test="priorityOrderCd != null">
+        #{priorityOrderCd,jdbcType=INTEGER},
+      </if>
+      <if test="value != null">
+        #{value,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="cd != null">
+        #{cd,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <insert id="insertAttrWk">
+    insert into priority.work_priority_order_mst_attr (company_cd,priority_order_cd,value,sort,name)
+    values
+    <foreach collection="attrList" index="index" separator="," item="item" >
+             (#{companyCd},#{priorityOrderCd},#{item.value},#{item.sort},#{item.name})
+    </foreach>
+  </insert>
+  <insert id="insertAttrSortWk">
+    insert into priority.work_priority_order_mst_attrsort (company_cd,priority_order_cd,value,sort)
+    values
+    <foreach collection="attrList" index="index" separator="," item="item" >
+      (#{companyCd},#{priorityOrderCd},#{item},#{index}+1)
+    </foreach>
+  </insert>
+  <insert id="insertAttrForFinal">
+    insert into priority.work_priority_order_mst_attr
+    select  * from priority.priority_order_mst_attr
+    where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
+  </insert>
+  <insert id="insertAttrSortForFinal">
+    insert into priority.work_priority_order_mst_attrsort
+    select  * from priority.priority_order_mst_attrsort
+    where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
+  </insert>
+  <select id="selectWKRankSort" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto">
+    select mstattr.sort sort, attrsort.sort sortRank, attrsort.value "value",name from priority.work_priority_order_mst_attr mstattr
+    inner join priority.work_priority_order_mst_attrsort attrsort on mstattr.priority_order_cd=attrsort.priority_order_cd and mstattr.sort=attrsort.value
+    where attrsort.priority_order_cd=#{priorityOrderCd} and attrsort.company_cd=#{companyCd} order by attrsort.sort;
+  </select>
+
+  <select id="selectWKAttr" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto">
+    select sort, value "value" from priority.work_priority_order_mst_attr
+    where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
+  </select>
+  <select id="getAllAttrList" resultType="java.util.Map">
+    select sort,name,value
+    from  priority.work_priority_order_mst_attr
+    where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+  </select>
+</mapper>

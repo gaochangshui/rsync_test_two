@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.ClassicPriorityOrderResultDataMapper">
+    <insert id="setFinalForWork">
+        insert into priority.priority_order_result_data
+        select * from priority.work_priority_order_result_data
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </insert>
+    <delete id="deleteFinal">
+        DELETE FROM priority.priority_order_result_data WHERE company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </delete>
+    <select id="selectFinalData" resultType="map">
+        select branch_amount, unit_before_diff,sale_forecast, branch_num,rank_prop,jan_old,branch_num_upd,attr2,unit_price,
+               jan_new,attr1,attr3,mulit_attr,pos_amount_upd,pos_before_rate,rank,difference,coalesce(sku, '_') sku,pos_amount,rank_upd,
+               attr4,attr5,attr6,attr7,attr8,attr9,goods_rank
+        from priority.priority_order_result_data
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+    </select>
+    <select id="selectBranchNumByAttr" resultType="int">
+        select max(branch_num) from priority.work_priority_order_result_data resultData
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+        <foreach collection="attrValMap" index="index" item="val" open=" and " separator=" and ">
+            ${index}=#{val}
+        </foreach>
+    </select>
+</mapper>

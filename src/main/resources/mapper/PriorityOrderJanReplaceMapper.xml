@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderJanReplaceMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderJanReplace">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="jan_old" jdbcType="VARCHAR" property="janOld" />
+    <id column="jan_new" jdbcType="VARCHAR" property="janNew" />
+  </resultMap>
+  <insert id="setWorkForFinal">
+    insert into planocycle.work_priority_order_jan_replace(priority_order_cd,company_cd,author_cd,jan_old,jan_new)
+    select priority_order_cd,company_cd,#{authorCd},jan_old,jan_new
+    from planocycle.priority_order_jan_replace
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+
+  </insert>
+
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from planocycle.priority_order_jan_replace
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+  </delete>
+  <delete id="workDelete">
+    delete from planocycle.work_priority_order_jan_replace
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    and author_cd = #{authorCd,jdbcType=VARCHAR}
+  </delete>
+  <select id="selectJanInfo" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanReplaceVO">
+    select jan_old as janCd,jan_new as janNew, COALESCE(mst.jan_nm, mstpl.jan_nm) as janName,COALESCE(mst1.jan_nm, mstpl1.jan_nm) as janNewName
+    from planocycle.work_priority_order_jan_replace jan
+    left join masterdb.jan_mst mst
+    on jan.jan_old  = mst.jan_cd
+    left join masterdb.jan_mst_planocycle mstpl
+    on jan.jan_old  = mstpl.jan_cd
+    left join masterdb.jan_mst mst1
+              on jan.jan_new  = mst1.jan_cd
+    left join masterdb.jan_mst_planocycle mstpl1
+              on jan.jan_new  = mstpl1.jan_cd
+    where jan.company_cd = #{companyCd,jdbcType=VARCHAR} and jan.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    order by jan_old
+  </select>
+  <select id="selectJanDistinct" resultType="java.lang.String">
+    select array_to_string(array_agg(jan),',') from masterdb.jans
+  </select>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanReplace">
+    insert into planocycle.work_priority_order_jan_replace (company_cd, priority_order_cd, jan_old,
+      jan_new,author_cd)
+    values
+    <foreach collection="lists" separator="," item="list">
+    <if test="list.companyCd!=null and list.priorityOrderCd!=null and list.janOld!=null and list.janNew!=null">
+     (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, trim(#{list.janOld}),
+      trim(#{list.janNew}),#{authorCd,jdbcType=VARCHAR})
+    </if>
+    </foreach>
+  </insert>
+  <insert id="insertBySelect">
+    insert into planocycle.priority_order_jan_replace(priority_order_cd,company_cd,author_cd,jan_old,jan_new, editer_cd, create_time, edit_time)
+    select priority_order_cd,company_cd,#{authorCd},jan_old,jan_new,#{authorCd},now(),now()
+    from planocycle.work_priority_order_jan_replace
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    and author_cd = #{authorCd,jdbcType=VARCHAR}
+  </insert>
+  <delete id="deleteByAuthorCd">
+    delete from planocycle.priority_order_jan_replace where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    and author_cd = #{authorCd,jdbcType=VARCHAR}
+  </delete>
+</mapper>

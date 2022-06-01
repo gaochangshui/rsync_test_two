@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ClassicPriorityOrderJanCardMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="jan_old" jdbcType="VARCHAR" property="janOld" />
+  </resultMap>
+    <insert id="setFinalForWork">
+        insert into priority.priority_order_jan_card
+        select company_cd,priority_order_cd,jan_old
+        from priority.work_priority_order_jan_card
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </insert>
+    <insert id="setWorkForFinal">
+        insert into priority.work_priority_order_jan_card
+        select company_cd,priority_order_cd,jan_old
+        from priority.priority_order_jan_card
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </insert>
+    <insert id="setDelJanList">
+        insert into priority.work_priority_order_jan_card(company_cd,priority_order_cd,jan_old)
+            values
+        <foreach collection="lists" separator="," item="item">
+            (#{companyCd},#{priorityOrderCd},#{item.jan_new})
+        </foreach>
+    </insert>
+
+
+    <select id="selectExistJanCut" resultType="string">
+        select jan_old from priority.work_priority_order_jan_card
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        and jan_old in
+        <foreach collection="cutJanList" item="obj" open="(" close=")" separator=",">
+            #{obj.jan}
+        </foreach>
+    </select>
+    <delete id="deleteByJan">
+        delete from priority.work_priority_order_jan_card
+        where  company_cd = #{companyCd,jdbcType=VARCHAR}
+        and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and jan_old in
+        <foreach collection="cutJanList" item="obj" open="(" close=")" separator=",">
+            #{obj.jan}
+        </foreach>
+    </delete>
+    <select id="existJan" resultType="string">
+        select jan_old from priority.work_priority_order_jan_card
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and jan_old in
+        <foreach collection="jan" item="obj" open="(" close=")" separator=",">
+            #{obj}
+        </foreach>
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from priority.work_priority_order_jan_card
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteFinal">
+        delete from priority.priority_order_jan_card
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </delete>
+
+    <select id="selectJanCard" resultType="com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanCardVO">
+    select card.jan_old as janOld
+         ,COALESCE(jans."${janNameCol}",'') as janOldName
+         , case when rep.jan_new is not null then 'すでにJAN変商品として入力済みです。'
+                when repold.jan_old is not null then 'すでにJAN変商品として入力済みです。'
+                when pro1.jan_old is not null then 'すでにJAN変商品として入力済みです。'
+                when pro2.jan_new is not null then 'すでにJAN変商品として入力済みです。'  end as errMsg
+    from priority.work_priority_order_jan_card card
+         left join priority.priority_order_jan_replace rep
+               on card.company_cd = rep.company_cd
+                and card.jan_old = rep.jan_new
+         left join priority.priority_order_jan_replace repold
+                   on card.company_cd = repold.company_cd
+                       and card.jan_old = repold.jan_old
+        left join priority.work_priority_order_jan_proposal pro1
+        on pro1.jan_old = card.jan_old and pro1.flag = 1
+        and card.priority_order_cd = pro1.priority_order_cd
+         left join priority.work_priority_order_jan_proposal pro2
+                   on pro2.jan_new = card.jan_old and pro2.flag = 1
+                       and card.priority_order_cd = pro2.priority_order_cd
+         left join ${janMstTableName} as jans
+               on card.jan_old = jans."${janCdCol}"
+    where card.company_cd = #{companyCd,jdbcType=VARCHAR}
+    and card.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
+    <select id="checkJanReplace" resultType="java.lang.String">
+        select jan_new from priority.priority_order_jan_replace
+        where company_cd = #{list[0].companyCd}  and jan_new in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item.janOld}
+        </foreach>
+    </select>
+    <select id="checkJanReplaceOld" resultType="string">
+        select jan_old from priority.priority_order_jan_replace
+        where company_cd = #{list[0].companyCd}  and jan_old in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item.janOld}
+        </foreach>
+    </select>
+    <select id="checkJanNew" resultType="java.lang.String">
+        select jan_new from priority.work_priority_order_jan_new
+        where company_cd = #{list[0].companyCd} and priority_order_cd = #{list[0].priorityOrderCd} and jan_new in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item.janOld}
+        </foreach>
+    </select>
+    <select id="checkJanMust" resultType="java.lang.String">
+        select jan_new from priority.work_priority_order_commodity_must
+        where company_cd = #{list[0].companyCd} and priority_order_cd = #{list[0].priorityOrderCd} and jan_new in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item.janOld}
+        </foreach>
+    </select>
+    <select id="checkJanProposal" resultType="java.lang.String">
+        select jan_new from priority.work_priority_order_jan_proposal
+        where company_cd = #{list[0].companyCd} and priority_order_cd = #{list[0].priorityOrderCd} and flag=1 and jan_new in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item.janOld}
+        </foreach>
+    </select>
+    <select id="checkJanProposalOld" resultType="string">
+        select jan_old from priority.work_priority_order_jan_proposal
+        where company_cd = #{list[0].companyCd} and priority_order_cd = #{list[0].priorityOrderCd} and flag=1 and jan_old in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item.janOld}
+        </foreach>
+    </select>
+    <select id="getExistOtherMst" resultType="java.lang.String">
+        select jan_old as janOld from priority.work_priority_order_jan_card card
+
+        where not exists(select jan_old from priority.work_priority_order_jan_proposal pro1 where card.jan_old = pro1.jan_old and pro1.priority_order_cd = card.priority_order_cd and pro1.flag=1)
+          and not exists(select jan_old from priority.work_priority_order_jan_proposal pro2 where card.jan_old = pro2.jan_new and pro2.priority_order_cd = card.priority_order_cd and pro2.flag=1)
+          and not exists(select jan_old from priority.priority_order_jan_replace rep1 where card.jan_old = rep1.jan_new and rep1.company_cd = card.company_cd)
+          and not exists(select jan_old from priority.priority_order_jan_replace rep2 where card.jan_old = rep2.jan_old and rep2.company_cd = card.company_cd)
+
+          and card.priority_order_cd = #{priorityOrderCd} and card.company_cd = #{companyCd}
+    </select>
+
+    <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanCard">
+    insert into priority.work_priority_order_jan_card (company_cd, priority_order_cd, jan_old
+      )
+    values
+       <foreach collection="lists" separator="," item="list">
+        <if test="list.janOld!=null">
+       (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janOld,jdbcType=VARCHAR})
+        </if>
+       </foreach>
+  </insert>
+</mapper>

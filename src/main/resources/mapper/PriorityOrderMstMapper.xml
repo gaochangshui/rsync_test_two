@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderMstMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderMst">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <result column="priority_order_name" jdbcType="VARCHAR" property="priorityOrderName" />
+    <result column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
+    <result column="partition_flag" jdbcType="INTEGER" property="partitionFlag" />
+    <result column="partition_val" jdbcType="INTEGER" property="partitionVal" />
+  </resultMap>
+  <!-- Home画面の基本パータンList -->
+  <resultMap id="tableNameList" type="com.trechina.planocycle.entity.dto.TableNameDto">
+    <id column="priority_order_cd" jdbcType="INTEGER" property="id" />
+    <result column="priority_order_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+    <result column="author_cd" jdbcType="VARCHAR" property="authorName"/>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    company_cd, priority_order_cd, priority_order_name, product_power_cd
+  </sql>
+  <select id="getTableNameByCompanyCd" resultMap="tableNameList">
+    select
+    priority_order_cd , priority_order_name,create_time,author_cd
+    from planocycle.priority_order_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and deleteflg=0
+    and author_cd = #{authorCd,jdbcType=VARCHAR}
+    order by priority_order_cd desc
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String"
+          resultType="com.trechina.planocycle.entity.po.PriorityOrderMst">
+    select
+    priority_order_cd as priorityOrderCd, priority_order_name as priorityOrderName
+    from planocycle.priority_order_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+  </select>
+  <select id="selectPriorityOrderCount" resultType="java.lang.Integer">
+    select count(1)
+    from planocycle.shelf_pts_data pts
+    inner join planocycle.shelf_pattern_mst pattern
+    on pts.company_cd = pattern.company_cd and pts.shelf_pattern_cd = pattern.shelf_pattern_cd
+
+    where pts.company_cd = #{companyCd}
+      and pts.shelf_pattern_cd is not null
+  </select>
+  <select id="selectProductPowerCd" resultType="map">
+    SELECT product_power_cd,array_to_string(array_agg(shelf_pattern_cd),',')  as shelf_pattern_cd
+    FROM planocycle.priority_order_mst mst
+    inner join planocycle.priority_order_pattern pat
+    on mst.priority_order_cd=pat.priority_order_cd
+    where mst.priority_order_cd =#{priorityOrderCd,jdbcType=INTEGER}
+    group by product_power_cd
+  </select>
+  <select id="selectPriorityOrderCdForProdCd" resultType="java.lang.String">
+    SELECT array_to_string(array_agg(priority_order_cd),',')
+    FROM planocycle.priority_order_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    group by product_power_cd
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from planocycle.priority_order_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByAuthorCd" parameterType="map">
+    delete from planocycle.priority_order_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd=#{authorCd,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteforid">
+    delete from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMst">
+    insert into planocycle.priority_order_mst (company_cd, priority_order_cd, priority_order_name,
+      product_power_cd)
+    values (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{priorityOrderName,jdbcType=VARCHAR},
+      #{productPowerCd,jdbcType=INTEGER})
+  </insert>
+
+  <update id="logicDeleteByPriorityOrderCd" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMst">
+    update planocycle.priority_order_mst set deleteflg=1 , editer_cd= #{authorCd} , edit_time=now()
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+
+  </update>
+
+  <insert id="insertBySelect" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMst">
+    insert into planocycle.priority_order_mst (company_cd, priority_order_cd,
+    product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd,editer_cd,
+    edit_time,create_time, priority_order_name,area_name_cd)
+    select company_cd, priority_order_cd,
+    product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd,author_cd, now(),now(),#{priorityOrderName},area_name_cd
+    from planocycle.work_priority_order_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    and author_cd=#{authorCd,jdbcType=VARCHAR}
+  </insert>
+  <select id="selectByOrderName" resultType="int">
+      select count(*) from planocycle.priority_order_mst where priority_order_name=#{priorityOrderName} and deleteflg=0
+    and author_cd=#{authorCd} and company_cd=#{companyCd}
+  </select>
+  <select id="selectByPriorityOrderCd" resultType="int">
+    select count(*) from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and deleteflg=0
+  </select>
+  <select id="selectOrderMstByPriorityOrderCd" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and deleteflg=0
+  </select>
+  <select id="getPatternOrProduct" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstDto">
+    SELECT mst.product_power_cd,string_agg(pattern.shelf_pattern_cd ::VARCHAR, ',') as shelfPatternCd,mst.attr_option
+
+    from priority.priority_order_mst  mst
+           left join priority.priority_order_pattern pattern
+                     on pattern.priority_order_cd = mst.priority_order_cd
+    where mst.company_cd = #{companyCd} and mst.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    GROUP BY product_power_cd, mst.priority_order_cd,mst.attr_option
+  </select>
+  <update id="updateOrderName">
+    update planocycle.priority_order_mst set priority_order_name=#{priorityOrderName} where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    and deleteflg=0
+  </update>
+    <update id="setPartition">
+      update planocycle.work_priority_order_mst set
+        <if test="partition != null and partition != ''">
+          partition_val = #{partition} , partition_flag = 1
+        </if>
+        <if test="partition == null and partition != ''">
+          partition_val = 0 , partition_flag = 0
+        </if>
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd = #{authorCd}
+    </update>
+</mapper>

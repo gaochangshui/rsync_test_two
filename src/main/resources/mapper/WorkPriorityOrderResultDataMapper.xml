@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.WorkPriorityOrderResultDataMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <id column="jan_cd" jdbcType="VARCHAR" property="janCd" />
+    <result column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <result column="restrict_cd" jdbcType="BIGINT" property="restrictCd" />
+    <result column="sku_rank" jdbcType="BIGINT" property="skuRank" />
+    <result column="adopt_flag" jdbcType="INTEGER" property="adoptFlag" />
+    <result column="face" jdbcType="BIGINT" property="face" />
+    <result column="face_sku" jdbcType="BIGINT" property="faceSku" />
+    <result column="irisu" jdbcType="BIGINT" property="irisu" />
+    <result column="tai_cd" jdbcType="INTEGER" property="taiCd" />
+    <result column="tana_cd" jdbcType="INTEGER" property="tanaCd" />
+    <result column="tana_type" jdbcType="INTEGER" property="restrictType" />
+    <result column="face_keisan" jdbcType="BIGINT" property="faceKeisan" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, author_cd, priority_order_cd, jan_cd, restrict_cd, sku_rank, adopt_flag, face, face_sku,
+    irisu, tai_cd, tana_cd, tana_type, face_keisan
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from planocycle.work_priority_order_result_data
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and author_cd = #{authorCd,jdbcType=VARCHAR}
+      and jan_cd = #{janCd,jdbcType=VARCHAR}
+  </select>
+  <select id="getResultDataList" resultType="string">
+    SELECT  array_to_string(array_agg(DISTINCT jan_cd),',')
+    from planocycle.work_priority_order_result_data
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and author_cd = #{authorCd,jdbcType=VARCHAR}
+        and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
+  <select id="getResultDatas" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    select jan_cd ,sales_cnt as salesCnt
+    from planocycle.work_priority_order_result_data
+      where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and author_cd = #{authorCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getReorder" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    select a.scat1cd_val,a.scat2cd_val,a.scat3cd_val,a.scat4cd_val,a.brand,a.rank_result ,a.jan as janCd
+    ,row_number() over(order by b.aavg nulls last
+    <if test="sortName2 !=null">
+      ,c.aavg nulls last
+    </if>
+
+    ,a.rank_result) as resultRank
+    from
+                (select  datas.jan ,janMst.jan_nm,
+                janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.rank_result
+                from planocycle.product_power_mst_data datas
+                left join masterdb.jan_mst janMst
+                on janMst.jan_cd = datas.jan
+                where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}) a
+
+                left join
+                (select ${sortName1},avg(rank_result) aavg from (select  datas.jan ,janMst.jan_nm,
+                janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.rank_result
+                from planocycle.product_power_mst_data datas
+                left join masterdb.jan_mst janMst
+                on janMst.jan_cd = datas.jan
+                where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}) test group by ${sortName1}
+                ) b
+                on a.${sortName1}=b.${sortName1}
+                <if test="sortName2 !=null">
+                  left join
+                  (select ${sortName2},avg(rank_result) aavg from (select  datas.jan ,janMst.jan_nm,
+                  janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.rank_result
+                  from planocycle.product_power_mst_data datas
+                  left join masterdb.jan_mst janMst
+                  on janMst.jan_cd = datas.jan
+                  where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}) test group by ${sortName2}
+                  ) c
+                  on a.${sortName2}=c.${sortName2}
+                </if>
+    where  EXISTS(select jan_cd from planocycle.work_priority_order_result_data d where a.jan = d.jan_cd and d.company_cd = #{companyCd} and d.author_cd = #{authorCd} and d.priority_order_cd =#{priorityOrderCd})
+
+  </select>
+  <select id="getAttrRank" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
+
+    select distinct mm.${sortName2} as zokusei1
+    <if test="sortName2 !=null">
+                  ,mm.${sortName2} as zokusei2
+    </if>
+                  ,mm.bavvg
+    <if test="sortName2 !=null">
+                  ,mm.cavvg
+    </if>
+    from (
+    select  a.scat1cd_val,a.scat2cd_val,a.scat3cd_val,a.scat4cd_val,a.brand,a.sku_rank ,a.jan_cd,b.aavg as bavvg
+    <if test="sortName2 !=null">
+         , c.aavg as cavvg
+    </if>
+    from
+    (select  datas.jan_cd ,janMst.jan_nm,
+    janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
+    from planocycle.work_priority_order_result_data datas
+    left join masterdb.jan_mst janMst
+    on janMst.jan_cd = datas.jan_cd
+    where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}) a
+
+    inner join
+    (select${sortName1},avg(sku_rank) aavg from (select  datas.jan_cd ,janMst.jan_nm,
+    janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
+    from planocycle.work_priority_order_result_data datas
+    left join masterdb.jan_mst janMst
+    on janMst.jan_cd = datas.jan_cd
+    where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}) test group by ${sortName1}
+    ) b
+    on a.${sortName1}=b.${sortName1}
+    <if test="sortName2 !=null">
+    inner join
+    (select ${sortName2},avg(sku_rank) aavg from (select  datas.jan_cd ,janMst.jan_nm,
+    janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.sku_rank
+    from planocycle.work_priority_order_result_data datas
+    left join masterdb.jan_mst janMst
+    on janMst.jan_cd = datas.jan_cd
+    where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}) test group by ${sortName2}
+    ) c
+    on a.${sortName2}=c.${sortName2}
+    </if>
+        )mm
+
+    order by mm.bavvg
+    <if test="sortName2 !=null">
+           ,mm.cavvg
+    </if>
+
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from planocycle.work_priority_order_result_data
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and author_cd = #{authorCd,jdbcType=VARCHAR}
+      and jan_cd = #{janCd,jdbcType=VARCHAR}
+  </delete>
+  <delete id="delResultData">
+    delete from planocycle.work_priority_order_result_data
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and author_cd = #{authorCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    insert into planocycle.work_priority_order_result_data (company_cd, author_cd, priority_order_cd, jan_cd,
+      restrict_cd, sku_rank, adopt_flag, 
+      face, face_sku, irisu, 
+      tai_cd, tana_cd, tana_type,
+      face_keisan)
+    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR} ,#{priorityOrderCd,jdbcType=INTEGER}, #{janCd,jdbcType=VARCHAR},
+      #{restrictCd,jdbcType=BIGINT}, #{skuRank,jdbcType=BIGINT}, #{adoptFlag,jdbcType=INTEGER}, 
+      #{face,jdbcType=BIGINT}, #{faceSku,jdbcType=BIGINT}, #{irisu,jdbcType=BIGINT}, 
+      #{taiCd,jdbcType=INTEGER}, #{tanaCd,jdbcType=INTEGER}, #{restrictType,jdbcType=INTEGER}, 
+      #{faceKeisan,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    insert into planocycle.work_priority_order_result_data
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        company_cd,
+      </if>
+      <if test="authorCd != null">
+        author_cd,
+      </if>
+      <if test="priorityOrderCd != null">
+        priority_order_cd,
+      </if>
+      <if test="janCd != null">
+        jan_cd,
+      </if>
+      <if test="restrictCd != null">
+        restrict_cd,
+      </if>
+      <if test="skuRank != null">
+        sku_rank,
+      </if>
+      <if test="adoptFlag != null">
+        adopt_flag,
+      </if>
+      <if test="face != null">
+        face,
+      </if>
+      <if test="faceSku != null">
+        face_sku,
+      </if>
+      <if test="irisu != null">
+        irisu,
+      </if>
+      <if test="taiCd != null">
+        tai_cd,
+      </if>
+      <if test="tanaCd != null">
+        tana_cd,
+      </if>
+      <if test="restrictType != null">
+        tana_type,
+      </if>
+      <if test="faceKeisan != null">
+        face_keisan,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        #{companyCd,jdbcType=VARCHAR},
+      </if>
+      <if test="authorCd != null">
+        #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="priorityOrderCd != null">
+        #{priorityOrderCd,jdbcType=INTEGER},
+      </if>
+      <if test="janCd != null">
+        #{janCd,jdbcType=VARCHAR},
+      </if>
+      <if test="restrictCd != null">
+        #{restrictCd,jdbcType=BIGINT},
+      </if>
+      <if test="skuRank != null">
+        #{skuRank,jdbcType=BIGINT},
+      </if>
+      <if test="adoptFlag != null">
+        #{adoptFlag,jdbcType=INTEGER},
+      </if>
+      <if test="face != null">
+        #{face,jdbcType=BIGINT},
+      </if>
+      <if test="faceSku != null">
+        #{faceSku,jdbcType=BIGINT},
+      </if>
+      <if test="irisu != null">
+        #{irisu,jdbcType=BIGINT},
+      </if>
+      <if test="taiCd != null">
+        #{taiCd,jdbcType=INTEGER},
+      </if>
+      <if test="tanaCd != null">
+        #{tanaCd,jdbcType=INTEGER},
+      </if>
+      <if test="restrictType != null">
+        #{restrictType,jdbcType=INTEGER},
+      </if>
+      <if test="faceKeisan != null">
+        #{faceKeisan,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    update planocycle.work_priority_order_result_data
+    <set>
+      <if test="restrictCd != null">
+        restrict_cd = #{restrictCd,jdbcType=BIGINT},
+      </if>
+      <if test="skuRank != null">
+        sku_rank = #{skuRank,jdbcType=BIGINT},
+      </if>
+      <if test="adoptFlag != null">
+        adopt_flag = #{adoptFlag,jdbcType=INTEGER},
+      </if>
+      <if test="face != null">
+        face = #{face,jdbcType=BIGINT},
+      </if>
+      <if test="faceSku != null">
+        face_sku = #{faceSku,jdbcType=BIGINT},
+      </if>
+      <if test="irisu != null">
+        irisu = #{irisu,jdbcType=BIGINT},
+      </if>
+      <if test="taiCd != null">
+        tai_cd = #{taiCd,jdbcType=INTEGER},
+      </if>
+      <if test="tanaCd != null">
+        tana_cd = #{tanaCd,jdbcType=INTEGER},
+      </if>
+      <if test="restrictType != null">
+        tana_type = #{restrictType,jdbcType=INTEGER},
+      </if>
+      <if test="faceKeisan != null">
+        face_keisan = #{faceKeisan,jdbcType=BIGINT},
+      </if>
+    </set>
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and author_cd = #{authorCd,jdbcType=VARCHAR}
+      and jan_cd = #{janCd,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    update planocycle.work_priority_order_result_data
+    set restrict_cd = #{restrictCd,jdbcType=BIGINT},
+      sku_rank = #{skuRank,jdbcType=BIGINT},
+      adopt_flag = #{adoptFlag,jdbcType=INTEGER},
+      face = #{face,jdbcType=BIGINT},
+      face_sku = #{faceSku,jdbcType=BIGINT},
+      irisu = #{irisu,jdbcType=BIGINT},
+      tai_cd = #{taiCd,jdbcType=INTEGER},
+      tana_cd = #{tanaCd,jdbcType=INTEGER},
+      tana_type = #{restrictType,jdbcType=INTEGER},
+      face_keisan = #{faceKeisan,jdbcType=BIGINT}
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and author_cd = #{authorCd,jdbcType=VARCHAR}
+      and jan_cd = #{janCd,jdbcType=VARCHAR}
+  </update>
+
+  <update id="update">
+    <foreach collection="list" item="item" separator=";" index="index">
+      update planocycle.work_priority_order_result_data
+      <set>
+        sales_cnt = #{item.salesCnt} ::numeric
+      </set>
+      where jan_cd = #{item.janCd} ::varchar and company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
+    </foreach>
+  </update>
+  <update id="updateFace">
+    <foreach collection="list" item="item" separator=";" index="index">
+      update planocycle.work_priority_order_result_data
+      <set>
+        face = #{item.face},face_keisan = #{item.face}
+      </set>
+      where jan_cd = #{item.janCd} ::varchar and company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{item.priorityOrderCd}
+    </foreach>
+  </update>
+
+  <insert id="setResultDataList">
+    insert into planocycle.work_priority_order_result_data(priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,adopt_flag,author_cd,sort_rank)
+      values
+    <foreach collection="list" item="item" separator="," >
+        (#{priorityOrderCd},#{companyCd},#{restrictCd},#{item.jan},#{item.rankResult},0,#{authorCd},#{item.rankResult})
+    </foreach>
+  </insert>
+  <select id="getResultJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
+    select restrict_cd restrictCd,tai_cd taiCd,tana_cd tanaCd,tana_type tanaType,sku_rank skuRank,
+    COALESCE(jan.irisu, jan2.irisu) irisu,data.jan_cd janCd,
+    face_sku faceSku,face_keisan faceKeisan,face,adopt_flag adoptFlag,
+    COALESCE(jan.width, jan2.width) as janWidth,COALESCE(jan.height, jan2.height) janHeight, sort_rank sortRank,
+    case when jan3.jan_new is null then 2 else 1 end newRank
+    from planocycle.work_priority_order_result_data data
+    left join masterdb.jan_mst jan on data.jan_cd=jan.jan_cd
+    left join masterdb.jan_mst_planocycle jan2 on data.jan_cd=jan2.jan_cd and jan2.company_cd=#{companyCd}
+    left join planocycle.work_priority_order_jan_new jan3 on data.jan_cd=jan3.jan_new and data.priority_order_cd=jan3.priority_order_cd
+    and jan3.company_cd=data.company_cd
+    where data.company_cd=#{companyCd} and data.author_cd=#{authorCd} and data.priority_order_cd=#{priorityOrderCd}
+  </select>
+  <update id="updateTaiTanaBatch">
+    UPDATE planocycle.work_priority_order_result_data SET
+      tai_cd =
+      CASE concat(jan_cd,restrict_cd)
+      <foreach collection="list" item="obj">
+        WHEN concat(#{obj.janCd},#{obj.restrictCd}) THEN #{obj.taiCd}
+      </foreach>
+      ELSE tai_cd
+      END,
+      tana_cd =
+      CASE concat(jan_cd,restrict_cd)
+      <foreach collection="list" item="obj">
+        WHEN concat(#{obj.janCd},#{obj.restrictCd}) THEN #{obj.tanaCd}
+      </foreach>
+      ELSE tana_cd
+      END,
+      tana_type =
+      CASE concat(jan_cd,restrict_cd)
+      <foreach collection="list" item="obj">
+        WHEN concat(#{obj.janCd},#{obj.restrictCd}) THEN #{obj.tanaType}
+      </foreach>
+      ELSE tana_type
+      END,
+      adopt_flag =
+      CASE concat(jan_cd,restrict_cd)
+      <foreach collection="list" item="obj">
+        WHEN concat(#{obj.janCd},#{obj.restrictCd}) THEN #{obj.adoptFlag}
+      </foreach>
+      ELSE adopt_flag
+      END,
+      face_fact =
+      CASE concat(jan_cd,restrict_cd)
+      <foreach collection="list" item="obj">
+        WHEN concat(#{obj.janCd},#{obj.restrictCd}) THEN #{obj.faceFact}
+      </foreach>
+      ELSE face_fact
+      END
+      WHERE jan_cd IN
+      <foreach collection="list" item="obj" separator="," open="(" close=")">
+        #{obj.janCd}
+      </foreach>
+      and company_cd=#{companyCd} and author_cd=#{authorCd} and priority_order_cd = #{priorityOrderCd}
+  </update>
+  <update id="setSortRank">
+    <foreach collection="list" item="item" separator=";" index="index">
+      update planocycle.work_priority_order_result_data
+      <set>
+
+        sort_rank = #{item.resultRank} ::numeric
+      </set>
+      where jan_cd = #{item.janCd} ::varchar and company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
+    </foreach>
+  </update>
+  <update id="updateFaceNum">
+    <foreach collection="list" item="item" separator=";" index="index">
+      update planocycle.work_priority_order_result_data
+      <set>
+
+        face_fact = #{item.faceNum} ::numeric
+      </set>
+      where jan_cd = #{item.janCd} ::varchar and company_cd = #{item.companyCd} and author_cd = #{authorCd} and priority_order_cd = #{item.priorityOrderCd}
+    </foreach>
+  </update>
+  <insert id="setWorkForFinal">
+    insert into planocycle.work_priority_order_result_data(company_cd, author_cd, priority_order_cd, jan_cd,
+                                                           restrict_cd, sku_rank, adopt_flag,
+                                                           face, face_sku, irisu,
+                                                           tai_cd, tana_cd, tana_type,
+                                                           face_keisan,sales_cnt,face_fact,sort_rank)
+      select company_cd, #{authorCd}, priority_order_cd, jan_cd,
+                                                   restrict_cd, sku_rank, adopt_flag,
+                                                   face, face_sku, irisu,
+                                                   tai_cd, tana_cd, tana_type,
+                                                   face_keisan,sales_cnt,face_fact,sort_rank
+        from planocycle.priority_order_result_data
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and priority_order_cd = #{priorityOrderCd}
+  </insert>
+  <select id="selectByAuthorCd" resultType="com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto">
+    select tai_cd, jan_cd,tana_cd,face,face_fact from planocycle.work_priority_order_result_data where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and priority_order_cd = #{priorityOrderCd} and author_cd=#{authorCd} and adopt_flag=1
+    order by tai_cd,tana_type,sort_rank,sku_rank
+  </select>
+</mapper>

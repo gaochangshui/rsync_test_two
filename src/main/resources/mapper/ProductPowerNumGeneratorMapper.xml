@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ProductPowerNumGeneratorMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ProductPowerNumGenerator">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="usercd" jdbcType="INTEGER" property="usercd" />
+    <result column="creattime" jdbcType="TIMESTAMP" property="creattime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, usercd, creattime
+  </sql>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerNumGenerator">
+    <selectKey resultType="int" keyProperty="id" order="AFTER">
+      select  currval('planocycle.product_power_num_generator_id_seq'::regclass) as id
+    </selectKey>
+    insert into planocycle.product_power_num_generator ( usercd, creattime)
+    values ( #{usercd,jdbcType=INTEGER}, now())
+  </insert>
+
+</mapper>

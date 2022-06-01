@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ProductPowerParamAttributeMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ProductPowerParamAttribute">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
+    <id column="attr_cd" jdbcType="INTEGER" property="attrCd" />
+    <result column="attr_value" jdbcType="INTEGER" property="attrValue" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, product_power_cd, attr_cd, attr_value
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultType="com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO">
+    select
+      company_cd, product_power_cd,string_agg(attr_cd||':'||attr_value,',')  as attr
+    from planocycle.product_power_param_attribute
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+    group by company_cd, product_power_cd
+  </select>
+  <select id="selectAttrName" parameterType="map" resultType="com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO">
+    select
+      company_cd, product_power_cd,string_agg(attr_cd||':'||attr_value||'-'||attrname,',' order by attr_cd)  as attr
+    from planocycle.product_power_param_attribute para
+    left join masterdb.attribute attr
+    on para.attr_value =attr.attrcd
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    group by company_cd, product_power_cd
+  </select>
+  <update id="deleteByPrimaryKey" >
+    update planocycle.product_power_param_attribute set deleteflg=1
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+  </update>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerParamAttribute">
+    insert into planocycle.product_power_param_attribute (company_cd, product_power_cd, attr_cd,
+      attr_value)
+    values
+     <foreach collection="lists" item="list" separator=",">
+           (#{list.companyCd,jdbcType=VARCHAR}, #{list.productPowerCd,jdbcType=INTEGER}, #{list.attrCd,jdbcType=INTEGER},
+      #{list.attrValue,jdbcType=VARCHAR})
+     </foreach>
+  </insert>
+</mapper>

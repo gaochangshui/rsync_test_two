@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.WorkPriorityAllRestrictMapper">
+
+
+    <insert id="insertWKTableRestrict">
+        INSERT INTO planocycle.work_priority_all_restrict(
+        priority_all_cd, company_cd, author_cd, shelf_pattern_cd, restrict_cd, zokusei1, zokusei2, zokusei3, zokusei4, zokusei5, zokusei6, zokusei7, zokusei8, zokusei9, zokusei10, tana_cnt, sku_cnt)
+        VALUES
+        <foreach collection="allRestrictDtoList" item="list" separator=",">
+            (#{list.priorityAllCd, jdbcType=INTEGER}, #{list.companyCd, jdbcType=VARCHAR},
+            #{list.authorCd, jdbcType=VARCHAR}, #{list.patternCd, jdbcType=INTEGER},
+            #{list.restrictCd, jdbcType=INTEGER}, #{list.zokusei1, jdbcType=VARCHAR},
+            #{list.zokusei2, jdbcType=VARCHAR}, #{list.zokusei3, jdbcType=VARCHAR},
+            #{list.zokusei4, jdbcType=VARCHAR}, #{list.zokusei5, jdbcType=VARCHAR},
+            #{list.zokusei6, jdbcType=VARCHAR}, #{list.zokusei7, jdbcType=VARCHAR},
+            #{list.zokusei8, jdbcType=VARCHAR}, #{list.zokusei9, jdbcType=VARCHAR},
+            #{list.zokusei10, jdbcType=VARCHAR}, #{list.tanaCnt, jdbcType=INTEGER},
+            #{list.skuCnt, jdbcType=INTEGER})
+        </foreach>
+    </insert>
+    <delete id="deleteWKTableRestrict">
+        delete from planocycle.work_priority_all_restrict
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and priority_all_cd = #{priorityAllCd}
+    </delete>
+</mapper>

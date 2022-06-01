@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderJanProposalMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.PriorityOrderJanProposal">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="priority_order_cd" jdbcType="INTEGER" property="priorityOrderCd" />
+    <id column="jan_old" jdbcType="VARCHAR" property="janOld" />
+    <id column="jan_new" jdbcType="VARCHAR" property="janNew" />
+    <result column="flag" jdbcType="INTEGER" property="flag" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    pro.company_cd, pro.priority_order_cd, pro.jan_old, pro.jan_new, flag
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanProposalVO">
+    select
+      pro.jan_old as janOld, pro.jan_new as janNew, jans.janname as janName, flag
+    ,case when rep.jan_old is not null then 'すでにJAN変商品リストに登録済み' end as errMsg
+    from planocycle.priority_order_jan_proposal pro
+    left join planocycle.priority_order_jan_replace as rep
+    on pro.company_cd = rep.company_cd
+    and pro.priority_order_cd  =rep.priority_order_cd
+    and pro.jan_old = rep.jan_old
+    left join masterdb.jans jans
+    on pro.jan_new = jans.jan
+    where pro.company_cd = #{companyCd,jdbcType=VARCHAR}
+      and pro.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from planocycle.priority_order_jan_proposal
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="map">
+    insert into planocycle.priority_order_jan_proposal (company_cd, priority_order_cd, jan_old,
+      jan_new, flag)
+    values
+           <foreach collection="lists" separator="," item="list">
+           (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{list.janOld,jdbcType=VARCHAR},
+      #{list.janNew,jdbcType=VARCHAR}, 0)
+           </foreach>
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanProposal">
+    <foreach collection="lists" item="list" separator=";">
+    update planocycle.priority_order_jan_proposal
+    set flag = #{list.flag,jdbcType=INTEGER}
+    where company_cd = #{list.companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{list.priorityOrderCd,jdbcType=INTEGER}
+      and jan_old = #{list.janOld,jdbcType=VARCHAR}
+      and jan_new = #{list.janNew,jdbcType=VARCHAR}
+    </foreach>
+  </update>
+</mapper>

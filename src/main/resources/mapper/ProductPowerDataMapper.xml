@@ -1,0 +1,757 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.ProductPowerDataMapper">
+    <resultMap id="syokikaMap" type="com.trechina.planocycle.entity.po.ProductPowerMstData">
+        <result property="jan" jdbcType="VARCHAR" column="jan"/>
+        <result property="skuName" jdbcType="VARCHAR" column="sku_name"/>
+        <result property="classifyBig" jdbcType="VARCHAR" column="classify_big"/>
+        <result property="classifyMiddle" jdbcType="VARCHAR" column="classify_middle"/>
+        <result property="classifySmall" jdbcType="VARCHAR" column="classify_small"/>
+        <result property="classifyFine" jdbcType="VARCHAR" column="classify_fine"/>
+        <result property="pdPosAmount" jdbcType="VARCHAR" column="pos_amount"/>
+        <result property="pdPosNum" jdbcType="VARCHAR" column="pos_num"/>
+        <result property="pdBranchAmount" jdbcType="VARCHAR" column="branch_amount"/>
+        <result property="pdBranchNum" jdbcType="VARCHAR" column="branch_num"/>
+        <result property="pdCompareAmount" jdbcType="VARCHAR" column="compare_amount"/>
+        <result property="pdCompareNum" jdbcType="VARCHAR" column="compare_num"/>
+        <result property="pdBranchCompareAmount" jdbcType="VARCHAR" column="branch_compare_amount"/>
+        <result property="pdBranchCompareNum" jdbcType="VARCHAR" column="branch_compare_num"/>
+    </resultMap>
+
+    <resultMap id="allMap" type="com.trechina.planocycle.entity.po.ProductPowerMstData">
+        <result property="jan" jdbcType="VARCHAR" column="jan"/>
+        <result property="skuName" jdbcType="VARCHAR" column="skuName"/>
+        <result property="classifyBig" jdbcType="VARCHAR" column="classifyBig"/>
+        <result property="classifyMiddle" jdbcType="VARCHAR" column="classifyMiddle"/>
+        <result property="classifySmall" jdbcType="VARCHAR" column="classifySmall"/>
+        <result property="classifyFine" jdbcType="VARCHAR" column="classifyFine"/>
+        <result property="pdPosAmount" jdbcType="VARCHAR" column="pPosAmount"/>
+        <result property="pdPosNum" jdbcType="VARCHAR" column="pPosNum"/>
+        <result property="pdBranchAmount" jdbcType="VARCHAR" column="pBranchAmount"/>
+        <result property="pdBranchNum" jdbcType="VARCHAR" column="pBranchNum"/>
+        <result property="pdCompareAmount" jdbcType="VARCHAR" column="pCompareAmount"/>
+        <result property="pdCompareNum" jdbcType="VARCHAR" column="pCompareNum"/>
+        <result property="pdBranchCompareAmount" jdbcType="VARCHAR" column="pBranchCompareAmount"/>
+        <result property="pdBranchCompareNum" jdbcType="VARCHAR" column="pBranchCompareNum"/>
+        <result property="gdPosAmount" jdbcType="VARCHAR" column="gPosAmount"/>
+        <result property="gdPosNum" jdbcType="VARCHAR" column="gPosNum"/>
+        <result property="gdBranchAmount" jdbcType="VARCHAR" column="gBranchAmount"/>
+        <result property="gdBranchNum" jdbcType="VARCHAR" column="gBranchNum"/>
+        <result property="gdCompareAmount" jdbcType="VARCHAR" column="gCompareAmount"/>
+        <result property="gdCompareNum" jdbcType="VARCHAR" column="gCompareNum"/>
+        <result property="gdBranchCompareAmount" jdbcType="VARCHAR" column="gBranchCompareAmount"/>
+        <result property="gdBranchCompareNum" jdbcType="VARCHAR" column="gBranchCompareNum"/>
+    </resultMap>
+    <resultMap id="wKSyokikaMap" type="com.trechina.planocycle.entity.po.WKYobiiiternData">
+        <result property="dataCd" column="dataCd"/>
+        <result property="dataName" column="dataName"/>
+        <result property="dataSort" column="dataSort"/>
+        <result property="dataValue" column="dataValue"/>
+        <result property="jan" column="jan"/>
+    </resultMap>
+
+    <resultMap id="reserveMap" type="com.trechina.planocycle.entity.vo.ReserveMstVo">
+        <result column="data_cd" jdbcType="VARCHAR" property="valueCd"/>
+        <result column="data_name" jdbcType="VARCHAR" property="dataName"/>
+    </resultMap>
+    <insert id="insertYobilitem">
+        insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort,product_power_cd)
+        values (#{companyCd},#{authorCd},#{dataCd},#{itemName},#{dataSort},#{productPowerCd})
+        on conflict(company_cd,author_cd,data_cd,product_power_cd)
+        do update set data_name=#{itemName},author_cd=#{authorCd}
+    </insert>
+    <insert id="insertWkKokyakuForFinally">
+        insert into planocycle.work_product_power_kokyaku(company_cd,author_cd,jan,sku_name,pos_amount,
+            pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num)
+        select (company_cd,author_cd,jan,sku_name,pos_amount,
+            pos_num,branch_amount,branch_num,compare_amount,compare_num,branch_compare_amount,branch_compare_num)
+        from planocycle.product_power_kokyaku
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </insert>
+    <insert id="insertYobilitemData">
+        insert into planocycle.work_product_power_reserve_data(company_cd,author_cd,data_cd,jan,data_value,product_power_cd)
+        values
+        <foreach collection="dataList" separator="," item="item">
+            (
+                #{item.companyCd},
+                #{item.authorCd},
+                #{item.dataCd},
+                #{item.jan},
+                #{item.dataValue},
+                #{item.productPowerCd}
+            )
+        </foreach>
+    </insert>
+    <insert id="endSyokikaForWK">
+        insert into planocycle.product_power_syokika(company_cd,product_power_cd,jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
+                                                     pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,pos_store_item01,pos_store_item02,
+                                                     pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,pos_store_item08,
+                                                     pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
+                                                     pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
+                                                     pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,
+                                                     pos_compare_store_item06,pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,
+                                                     author_cd,create_time)
+            select #{companyCd},#{productPowerCd},jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
+                   pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,pos_store_item01,pos_store_item02,
+                   pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,pos_store_item08,
+                   pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
+                   pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
+                   pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,
+                   pos_compare_store_item06,pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,
+                   #{authorCd},now()
+        from planocycle.work_product_power_syokika
+        where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
+    </insert>
+    <insert id="endGroupForWK">
+        insert into planocycle.product_power_kokyaku(company_cd,product_power_cd,jan,customer_item01,customer_item02,customer_item03,customer_item04,
+                                                     customer_item05,customer_item06,customer_item07,customer_item08,customer_item09,customer_item10,
+                                                     customer_item11,customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,
+                                                     customer_store_item05,customer_store_item06,customer_store_item07,customer_store_item08,customer_store_item09,
+                                                     customer_store_item10,customer_compare_item01,customer_compare_item02,customer_compare_item03,customer_compare_item04,
+                                                     customer_compare_item05,customer_compare_item06,customer_compare_item07,customer_compare_item08,customer_compare_item09,
+                                                     customer_compare_item10,customer_compare_store_item01,customer_compare_store_item02,customer_compare_store_item03,
+                                                     customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
+                                                     customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10
+                                                    ,author_cd,create_time)
+        select #{companyCd},${productPowerCd},jan,customer_item01,customer_item02,customer_item03,customer_item04,
+               customer_item05,customer_item06,customer_item07,customer_item08,customer_item09,customer_item10,
+               customer_item11,customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,
+               customer_store_item05,customer_store_item06,customer_store_item07,customer_store_item08,customer_store_item09,
+               customer_store_item10,customer_compare_item01,customer_compare_item02,customer_compare_item03,customer_compare_item04,
+               customer_compare_item05,customer_compare_item06,customer_compare_item07,customer_compare_item08,customer_compare_item09,
+               customer_compare_item10,customer_compare_store_item01,customer_compare_store_item02,customer_compare_store_item03,
+               customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
+               customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10,#{authorCd},now()
+        from planocycle.work_product_power_kokyaku
+        where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
+    </insert>
+    <insert id="endYobiiiternForWk">
+        insert into planocycle.product_power_reserve_mst(company_cd,product_power_cd,data_cd,data_name,author_cd,create_time,data_sort)
+        select company_cd,#{productPowerCd},data_cd,data_name,#{authorCd},now(),data_sort
+        from planocycle.work_product_power_reserve_mst
+        where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
+    </insert>
+    <insert id="endYobiiiternDataForWk">
+        insert into planocycle.product_power_reserve_data(company_cd,product_power_cd,data_cd,jan,data_value,author_cd,create_time)
+        select company_cd,#{productPowerCd},data_cd,jan,data_value,#{authorCd},now()
+        from planocycle.work_product_power_reserve_data
+        where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
+    </insert>
+    <insert id="endIntageForWK">
+        insert into planocycle.product_power_intage(company_cd,product_power_cd,jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
+                                                    intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
+                                                    intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,author_cd,create_time)
+        select #{companyCd},#{productPowerCd},jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
+               intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
+               intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,#{authorCd},now()
+        from planocycle.work_product_power_intage
+        where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
+    </insert>
+    <insert id="setWKData" >
+        insert into planocycle.work_product_power_mst_data(company_cd,product_power_cd,author_cd,jan,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,
+                                                           pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,
+                                                           pos_store_item01,pos_store_item02,pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,
+                                                           pos_store_item08,pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
+                                                           pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
+                                                           pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,pos_compare_store_item06,
+                                                           pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,customer_compare_store_item01,customer_compare_store_item02,
+                                                           customer_compare_store_item03,customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
+                                                           customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10,customer_compare_item01,customer_compare_item02,customer_compare_item03,
+                                                           customer_compare_item04,customer_compare_item05,customer_compare_item06,customer_compare_item07,customer_compare_item08,customer_compare_item09,customer_compare_item10,
+                                                           customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,customer_store_item05,customer_store_item06,customer_store_item07,
+                                                           customer_store_item08,customer_store_item09,customer_store_item10,customer_item01,customer_item02,customer_item03,customer_item04,customer_item05,customer_item06,
+                                                           customer_item07,customer_item08,customer_item09,customer_item10,customer_item11,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,intage_item06,
+                                                           intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02)
+        select #{companyCd},#{productPowerCd},#{authorCd},s.jan,yobi.item1,yobi.item2,yobi.item3,yobi.item4,yobi.item5,yobi.item6,yobi.item7,yobi.item8,yobi.item9,yobi.item10,
+               pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,
+               pos_store_item01,pos_store_item02,pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,
+               pos_store_item08,pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
+               pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
+               pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,pos_compare_store_item06,
+               pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,customer_compare_store_item01,customer_compare_store_item02,
+               customer_compare_store_item03,customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
+               customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10,customer_compare_item01,customer_compare_item02,customer_compare_item03,
+               customer_compare_item04,customer_compare_item05,customer_compare_item06,customer_compare_item07,customer_compare_item08,customer_compare_item09,customer_compare_item10,
+               customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,customer_store_item05,customer_store_item06,customer_store_item07,
+               customer_store_item08,customer_store_item09,customer_store_item10,customer_item01,customer_item02,customer_item03,customer_item04,customer_item05,customer_item06,
+               customer_item07,customer_item08,customer_item09,customer_item10,customer_item11,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,intage_item06,
+               intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02
+        from  planocycle.work_product_power_syokika s
+            left join planocycle.work_product_power_kokyaku k
+                    on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd and s.product_power_cd = k.product_power_cd
+            left join planocycle.work_product_power_intage i
+                    on i.jan = s.jan and i.author_cd=s.author_cd and  s.company_cd = i.company_cd and s.product_power_cd = i.product_power_cd
+            left join (select
+                         dd.jan as jan,
+
+                         sum ( case when dd.data_cd = '31001' then dd.data_value else null end ) as item1,
+                         sum ( case when dd.data_cd = '31002' then dd.data_value else null end ) as item2,
+                         sum ( case when dd.data_cd = '31003' then dd.data_value else null end ) as item3,
+                         sum ( case when dd.data_cd = '31004' then dd.data_value else null end ) as item4,
+                         sum ( case when dd.data_cd = '31005' then dd.data_value else null end ) as item5,
+                         sum ( case when dd.data_cd = '31006' then dd.data_value else null end ) as item6,
+                         sum ( case when dd.data_cd = '31007' then dd.data_value else null end ) as item7,
+                         sum ( case when dd.data_cd = '31008' then dd.data_value else null end ) as item8,
+                         sum ( case when dd.data_cd = '31009' then dd.data_value else null end ) as item9,
+                         sum ( case when dd.data_cd = '31010' then dd.data_value else null end ) as item10
+                     from
+                         planocycle.work_product_power_reserve_mst mm
+                             inner join planocycle.work_product_power_reserve_data dd on mm.data_cd = dd.data_cd
+                             and mm.product_power_cd = dd.product_power_cd and mm.company_cd = dd.company_cd
+                     where
+                         mm.author_cd = #{authorCd}
+                       and mm.company_cd = #{companyCd}
+                        and mm.product_power_cd = #{productPowerCd}
+                     GROUP BY
+                         dd.jan
+        )as yobi
+            on yobi.jan = s.jan
+
+        where  s.author_cd=#{authorCd} and s.company_cd = #{companyCd} and s.product_power_cd = #{productPowerCd}
+        order by s.jan;
+
+    </insert>
+
+    <update id="deleteSyokika">
+        update planocycle.product_power_syokika set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </update>
+    <update id="deleteGroup">
+        update planocycle.product_power_kokyaku set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </update>
+    <update id="deleteYobiiitern">
+        update planocycle.product_power_reserve_data set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </update>
+    <update id="deleteYobiiiternData">
+        update planocycle.product_power_reserve_mst set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </update>
+    <delete id="deleteWKSyokika">
+        delete from planocycle.work_product_power_syokika where company_cd=#{companyCd}  and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteWKKokyaku">
+        delete from planocycle.work_product_power_kokyaku where company_cd=#{companyCd}  and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteWKYobiiitern">
+        delete from planocycle.work_product_power_reserve_mst where company_cd=#{companyCd}  and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteWKYobiiiternData">
+        delete from planocycle.work_product_power_reserve_data where company_cd=#{companyCd}  and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </delete>
+    <delete id="phyDeleteSyokika">
+        delete from planocycle.product_power_syokika where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+    </delete>
+    <delete id="phyDeleteGroup">
+        delete from planocycle.product_power_kokyaku where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+    </delete>
+    <delete id="phyDeleteYobiiitern">
+        delete from planocycle.product_power_reserve_mst where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+    </delete>
+    <delete id="phyDeleteYobiiiternData">
+        delete from planocycle.product_power_reserve_data where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+    </delete>
+    <delete id="phyDeleteIntage">
+        delete from planocycle.product_power_intage where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+    </delete>
+    <delete id="deleteWKData">
+        delete from planocycle.work_product_power_mst_data where company_cd =#{companyCd} and product_power_cd = #{productPowerCd}
+    </delete>
+    <delete id="deleteData">
+        delete  from planocycle.product_power_mst_data
+        where company_cd =#{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
+    </delete>
+    <delete id="deleteWKYobiiiternCd">
+        delete from planocycle.work_product_power_reserve_mst where company_cd=#{companyCd} and product_power_cd = #{productPowerCd} and author_cd=#{authorCd} and data_cd = #{valueCd}
+    </delete>
+    <delete id="deleteWKYobiiiternDataCd">
+        delete from planocycle.work_product_power_reserve_data where company_cd=#{companyCd} and product_power_cd = #{productPowerCd} and author_cd=#{authorCd} and data_cd = #{valueCd}
+    </delete>
+    <delete id="deleteWKIntage">
+        delete from planocycle.work_product_power_intage where company_cd=#{companyCd} and author_cd=#{authorCd} and product_power_cd = #{productPowerCd}
+    </delete>
+
+    <update id="deleteRankData">
+        update planocycle.product_power_mst_data set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </update>
+    <update id="setPowerMstData">
+        insert into planocycle.work_product_power_mst_data(company_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pd_pos_amount,
+                                                           pd_pos_num,pd_branch_amount,pd_branch_num,pd_compare_amount,pd_compare_num,pd_branch_compare_amount,pd_branch_compare_num,gd_pos_amount,gd_pos_num,gd_branch_amount,
+                                                           gd_branch_num,gd_compare_amount,gd_compare_num,gd_branch_compare_amount,gd_branch_compare_num
+        )
+        select s.company_cd,s.jan,s.sku_name,s.classify_big,s.classify_middle,s.classify_small,s.classify_fine,s.pos_amount,s.pos_num,s.branch_amount,s.branch_num,
+               s.compare_amount,s.compare_num,s.branch_compare_amount,s.branch_compare_num,kk.pos_amount,kk.pos_num,kk.branch_amount,kk.branch_num,kk.compare_amount,
+               kk.compare_num,kk.branch_compare_amount,kk.branch_compare_num
+
+        from planocycle.work_product_power_syokika s, planocycle.work_product_power_kokyaku kk
+
+    </update>
+    <update id="setData">
+        insert into planocycle.product_power_mst_data
+        select *
+        from planocycle.work_product_power_mst_data
+        where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
+
+    </update>
+    <update id="setWkDataRank">
+        update planocycle.work_product_power_mst_data
+        set
+                    ${colName}=
+                    case jan
+                    <foreach collection="rankCalculate" item="item" index="ind">
+                        when #{item.jan} then #{item.${colName}} ::integer
+                    </foreach>
+                    else null end
+        where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
+    </update>
+    <insert id="setWKIntageForFinally">
+        insert into planocycle.work_product_power_intage(company_cd,product_power_cd,jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
+                                                    intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
+                                                    intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,author_cd)
+        select #{companyCd},#{productPowerCd},jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
+               intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
+               intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,#{authorCd}
+        from planocycle.product_power_intage
+        where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd} and deleteflg=0
+    </insert>
+    <insert id="setSyokikaAllData">
+        insert into planocycle.work_product_power_syokika
+        <foreach collection="lists[0]" item="list" open="(" close=")" separator="," index="index">
+            ${index}
+        </foreach>
+        values
+        <foreach collection="lists" item="list" separator=","  index="index">
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </foreach>
+    </insert>
+    <insert id="setWkDataForFinally">
+        insert into planocycle.work_product_power_mst_data
+        select  *
+        from planocycle.product_power_mst_data
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+    </insert>
+    <insert id="setWkYobilitemDataForFinally">
+        insert into planocycle.work_product_power_reserve_data(company_cd,author_cd,data_cd,jan,data_value,product_power_cd)
+        select company_cd,#{authorCd},data_cd,jan,data_value,product_power_cd
+        from planocycle.product_power_reserve_data
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+    </insert>
+    <insert id="setWkYobilitemForFinally">
+        insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort,product_power_cd)
+        select company_cd,#{authorCd},data_cd,data_name,data_sort,product_power_cd
+        from planocycle.product_power_reserve_mst
+         where company_cd = #{companyCd,jdbcType=VARCHAR}
+                 and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+    </insert>
+    <insert id="setWkGroupForFinally">
+        insert into planocycle.work_product_power_kokyaku(company_cd,product_power_cd,jan,customer_item01,customer_item02,customer_item03,customer_item04,
+                                                          customer_item05,customer_item06,customer_item07,customer_item08,customer_item09,customer_item10,
+                                                          customer_item11,customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,
+                                                          customer_store_item05,customer_store_item06,customer_store_item07,customer_store_item08,customer_store_item09,
+                                                          customer_store_item10,customer_compare_item01,customer_compare_item02,customer_compare_item03,customer_compare_item04,
+                                                          customer_compare_item05,customer_compare_item06,customer_compare_item07,customer_compare_item08,customer_compare_item09,
+                                                          customer_compare_item10,customer_compare_store_item01,customer_compare_store_item02,customer_compare_store_item03,
+                                                          customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
+                                                          customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10,author_cd)
+        select #{companyCd},#{productPowerCd},jan,customer_item01,customer_item02,customer_item03,customer_item04,
+               customer_item05,customer_item06,customer_item07,customer_item08,customer_item09,customer_item10,
+               customer_item11,customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,
+               customer_store_item05,customer_store_item06,customer_store_item07,customer_store_item08,customer_store_item09,
+               customer_store_item10,customer_compare_item01,customer_compare_item02,customer_compare_item03,customer_compare_item04,
+               customer_compare_item05,customer_compare_item06,customer_compare_item07,customer_compare_item08,customer_compare_item09,
+               customer_compare_item10,customer_compare_store_item01,customer_compare_store_item02,customer_compare_store_item03,
+               customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
+               customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10
+                ,#{authorCd}
+        from planocycle.product_power_kokyaku
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+    </insert>
+    <insert id="setWkSyokikaForFinally">
+        insert into planocycle.work_product_power_syokika(company_cd,product_power_cd,jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
+                                                          pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,pos_store_item01,pos_store_item02,
+                                                          pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,pos_store_item08,
+                                                          pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
+                                                          pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
+                                                          pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,
+                                                          pos_compare_store_item06,pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,
+                                                          author_cd)
+        select #{companyCd},#{productPowerCd},jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
+               pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,pos_store_item01,pos_store_item02,
+               pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,pos_store_item08,
+               pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
+               pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
+               pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,
+               pos_compare_store_item06,pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,
+               #{authorCd}
+        from planocycle.product_power_syokika
+        where company_cd = #{companyCd} and product_power_cd = #{productPowerCd} and deleteflg=0
+    </insert>
+
+    <insert id="selectWKSyokika">
+        insert into planocycle.work_product_power_syokika(company_cd,product_power_cd,jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
+                                                          pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,pos_store_item01,pos_store_item02,
+                                                          pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,pos_store_item08,
+                                                          pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
+                                                          pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
+                                                          pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,
+                                                          pos_compare_store_item06,pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,
+                                                          author_cd)
+        values
+        <foreach collection="list" separator="," item="item">
+            (#{companyCd},#{productPowerCd},#{item},1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,#{authorCd})
+        </foreach>
+    </insert>
+    <insert id="selectWKKokyaku" >
+        insert into planocycle.work_product_power_kokyaku(company_cd,product_power_cd,jan,customer_item01,customer_item02,customer_item03,customer_item04,
+            customer_item05,customer_item06,customer_item07,customer_item08,customer_item09,customer_item10,
+            customer_item11,customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,
+            customer_store_item05,customer_store_item06,customer_store_item07,customer_store_item08,customer_store_item09,
+            customer_store_item10,customer_compare_item01,customer_compare_item02,customer_compare_item03,customer_compare_item04,
+            customer_compare_item05,customer_compare_item06,customer_compare_item07,customer_compare_item08,customer_compare_item09,
+            customer_compare_item10,customer_compare_store_item01,customer_compare_store_item02,customer_compare_store_item03,
+            customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
+            customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10
+            ,author_cd)
+            values
+            <foreach collection="list" separator="," item="item">
+                (#{companyCd},#{productPowerCd},#{item},1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,#{authorCd})
+            </foreach>
+    </insert>
+    <select id="selectShowData" resultType="map">
+        select
+        syokika.jan jan
+            <foreach collection="showList" item="item" open="," separator=",">coalesce(${item.itemCd},'') as ${item.itemCd}</foreach>
+            <foreach collection="showPreparedList" item="item" open="," separator=",">coalesce(${item.data_cd},0) as ${item.data_cd}</foreach>
+        from  planocycle.work_product_power_syokika syokika
+            <if test="prepareCd.size()>0">
+                left join (select
+                dd.jan as jan,
+                <trim suffixOverrides=",">
+                <if test="prepareCd.contains('item1')">
+                    sum ( case when dd.data_cd = '31001' then dd.data_value else 0 end ) as item1,
+                </if>
+                <if test="prepareCd.contains('item2')">
+                sum ( case when dd.data_cd = '31002' then dd.data_value else 0 end ) as item2,
+                </if>
+                <if test="prepareCd.contains('item3')">
+                sum ( case when dd.data_cd = '31003' then dd.data_value else 0 end ) as item3,
+                </if>
+                <if test="prepareCd.contains('item4')">
+                sum ( case when dd.data_cd = '31004' then dd.data_value else 0 end ) as item4,
+                </if>
+                <if test="prepareCd.contains('item5')">
+                sum ( case when dd.data_cd = '31005' then dd.data_value else 0 end ) as item5,
+                </if>
+                <if test="prepareCd.contains('item6')">
+                sum ( case when dd.data_cd = '31006' then dd.data_value else 0 end ) as item6,
+                </if>
+                <if test="prepareCd.contains('item7')">
+                sum ( case when dd.data_cd = '31007' then dd.data_value else 0 end ) as item7,
+                </if>
+                <if test="prepareCd.contains('item8')">
+                sum ( case when dd.data_cd = '31008' then dd.data_value else 0 end ) as item8,
+                </if>
+                <if test="prepareCd.contains('item9')">
+                sum ( case when dd.data_cd = '31009' then dd.data_value else 0 end ) as item9,
+                </if>
+                <if test="prepareCd.contains('item10')">
+                sum ( case when dd.data_cd = '31010' then dd.data_value else 0 end ) as item10
+                </if>
+                </trim>
+                from
+                planocycle.work_product_power_reserve_mst mm
+                inner join planocycle.work_product_power_reserve_data dd on mm.data_cd = dd.data_cd and mm.product_power_cd=dd.product_power_cd
+                where mm.product_power_cd=#{productPowerCd}
+                GROUP BY dd.jan )as  yobi on yobi.jan = syokika.jan
+            </if>
+        <if test="customerCd.length>0">
+            left join planocycle.work_product_power_kokyaku kokyaku
+            on kokyaku.jan = syokika.jan and kokyaku.product_power_cd=syokika.product_power_cd
+        </if>
+        <if test="intageCd.length>0">
+            left join planocycle.work_product_power_intage intage
+            on intage.jan = syokika.jan and intage.product_power_cd=syokika.product_power_cd
+        </if>
+        where syokika.product_power_cd=#{productPowerCd}
+        order by jan
+    </select>
+    <select id="getProductPowerMstData" resultType="com.trechina.planocycle.entity.po.ProductPowerMstData">
+        select * from planocycle.product_power_mst_data where company_cd=#{companyCd} and product_power_cd=#{productPowerCd} and deleteflg=0
+    </select>
+    <select id="syokikaPowerCdNum" resultType="java.lang.Integer">
+        select count(1) from planocycle.product_power_syokika
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </select>
+    <select id="selectSyokika" resultType="com.trechina.planocycle.entity.po.ProductPowerSyokika">
+        select * from planocycle.product_power_syokika
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+    </select>
+    <select id="groupPowerCdNum" resultType="java.lang.Integer">
+        select count(1) from planocycle.product_power_kokyaku
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </select>
+    <select id="yobiiiternPowerCdNum" resultType="java.lang.Integer">
+        select count(1) from planocycle.product_power_yobiitem
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+          and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectWKYobiiiternData" resultMap="wKSyokikaMap" >
+        select
+            dd.data_value as dataValue,dd.jan as jan,mm.data_name as dataName,mm.data_cd as dataCd
+        from  planocycle.work_product_power_reserve_mst mm
+        inner join planocycle.work_product_power_reserve_data dd
+            on mm.data_cd = dd.data_cd
+        where  mm.author_cd = #{authorCd} and mm.company_cd=#{companyCd}
+    </select>
+
+
+    <select id="getParam" resultType="com.trechina.planocycle.entity.po.ProductPowerParamVo">
+        select company_cd as company,product_power_cd as productPowerNo,customer_condition,prd_cd,rank_weight,recently_end_time,recently_flag,recently_st_time,
+               season_end_time,season_flag,season_st_time,store_cd,year_flag,common_parts_data,project,shelf_pattern_cd,channel_nm,place_nm,jan_name2col_num
+        from planocycle.product_power_param_mst
+        where company_cd=#{companyCd} and product_power_cd = #{productPowerCd} and deleteflg=0
+
+    </select>
+    <select id="getWKYobiiiternSort" resultType="java.lang.Integer">
+        SELECT max(data_sort)
+         from  planocycle.work_product_power_reserve_mst
+        where company_cd=#{companyCd} and author_cd = #{aud}
+    </select>
+    <select id="getReserve" resultMap="reserveMap">
+        select data_cd,data_name from planocycle.product_power_reserve_mst
+        where company_cd=#{companyCd} and product_power_cd = #{productPowerCd}
+        order by data_sort asc
+    </select>
+    <select id="getCheckedReserve" resultMap="reserveMap">
+        select data_cd,data_name from planocycle.product_power_reserve_mst
+        where company_cd=#{companyCd} and product_power_cd = #{productPowerCd}
+        and data_cd in
+        <foreach collection="checkedCodeList" index="index" item="item" open="(" close=")" separator=",">
+            #{item}::Integer
+        </foreach>
+        order by data_sort asc
+    </select>
+    <select id="getDynamicAllData" resultType="map">
+        select power_mst.jan
+        <foreach collection="classify" index="index" item="item" open="," separator=",">
+            jan_info."${item.sort}" as ${item.attr}
+        </foreach>
+        <foreach collection="projects" index="index" item="item" open="," separator=",">
+            power_mst."${item}", power_mst."${item}_rank"
+        </foreach>
+        ,rank_result,jan_info."${janNameColIndex}" jan_name
+        from planocycle.product_power_mst_data power_mst
+        left join ${tableName} jan_info on power_mst.jan=jan_info.${janCdColName}
+        where power_mst.company_cd=#{companyCd} and power_mst.product_power_cd=#{productPowerCd}
+        order by rank_result
+    </select>
+    <select id="getParamCount" resultType="java.lang.Integer">
+        select count(1)
+        from planocycle.product_power_param_mst
+        where company_cd=#{company} and product_power_cd =#{productPowerNo}  and deleteflg=0
+          and store_cd = #{storeCd}
+          and prd_cd = #{prdCd}
+          and recently_end_time = #{recentlyEndTime}
+          and recently_flag = #{recentlyFlag}
+          and recently_st_time = #{recentlyStTime}
+          and season_flag = #{seasonFlag}
+          and season_end_time = #{seasonEndTime}
+          and season_st_time = #{seasonStTime}
+          and  place_nm = #{placeNm}
+          and channel_nm =#{channelNm}
+    </select>
+    <select id="getSyokikaAllData" resultType="java.util.Map">
+        select power_syokika.jan as jan,
+        <foreach collection="classify" index="index" item="item" separator=",">
+            <if test="item.sort != 1">
+                case  when jan_info."${item.sort}" is null then '' else jan_info."${item.sort}"  end  as ${item.attr}
+
+            </if>
+        </foreach>
+        from planocycle.work_product_power_syokika power_syokika
+        left join ${tableName} jan_info on power_syokika.jan=jan_info.${janCdColName}
+        where power_syokika.author_cd = #{authorCd} and power_syokika.company_cd = #{companyCd} and power_syokika.product_power_cd = #{productPowerCd}
+        order by power_syokika.jan
+    </select>
+    <select id="rankCalculation" resultType="java.util.Map">
+
+    </select>
+    <select id="getProductRankCalculate" resultType="java.util.Map">
+        select s.jan,
+               <foreach collection="map" index="index" separator="," item="item">
+                   DENSE_RANK() over(order by ${index} desc ) as "${index}_rank"
+                </foreach>
+                ,DENSE_RANK() over(order by
+                <foreach collection="map" item="item" separator="+" index="index">
+                    concat(${index},0) ::decimal * ${item} :: integer /100
+                </foreach>
+                desc
+                ) as rank_result
+        from  planocycle.work_product_power_syokika s
+            left join planocycle.work_product_power_kokyaku k
+        on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd and s.product_power_cd = k.product_power_cd
+       left join planocycle.work_product_power_intage i
+                on i.jan = s.jan and i.author_cd=s.author_cd and  s.company_cd = i.company_cd and s.product_power_cd = i.product_power_cd
+        left join (select
+        dd.jan as jan,
+        sum ( case when dd.data_cd = '31001' then dd.data_value else null end ) as item1,
+        sum ( case when dd.data_cd = '31002' then dd.data_value else null end ) as item2,
+        sum ( case when dd.data_cd = '31003' then dd.data_value else null end ) as item3,
+        sum ( case when dd.data_cd = '31004' then dd.data_value else null end ) as item4,
+        sum ( case when dd.data_cd = '31005' then dd.data_value else null end ) as item5,
+        sum ( case when dd.data_cd = '31006' then dd.data_value else null end ) as item6,
+        sum ( case when dd.data_cd = '31007' then dd.data_value else null end ) as item7,
+        sum ( case when dd.data_cd = '31008' then dd.data_value else null end ) as item8,
+        sum ( case when dd.data_cd = '31009' then dd.data_value else null end ) as item9,
+        sum ( case when dd.data_cd = '31010' then dd.data_value else null end ) as item10
+        from
+        planocycle.work_product_power_reserve_mst mm
+        inner join planocycle.work_product_power_reserve_data dd on mm.data_cd = dd.data_cd
+        and mm.product_power_cd = dd.product_power_cd and mm.company_cd = dd.company_cd
+        where
+        mm.author_cd = #{authorCd}
+        and mm.company_cd = #{companyCd}
+        and mm.product_power_cd = #{productPowerCd}
+        GROUP BY
+        dd.jan
+        )as yobi
+        on yobi.jan = s.jan
+        where  s.author_cd=#{authorCd} and s.company_cd = #{companyCd} and s.product_power_cd = #{productPowerCd}
+        order by rank_result
+    </select>
+    <select id="getShowItemCd" resultType="java.lang.String">
+        select item_cd from planocycle.param_config where cast(item_value as VARCHAR) in
+        <foreach collection="list" item="item" separator="," open="(" index="index" close=")">
+            <if test="item != ''">
+                #{item}
+            </if>
+
+        </foreach>
+        order by item_value
+    </select>
+    <select id="getAllDataAttr" resultType="java.util.LinkedHashMap">
+        select datas.jan,
+        <foreach collection="classify" index="index" item="item" separator=",">
+            <if test="item.sort != 1">
+                case  when jan_info."${item.sort}" is null then '' else jan_info."${item.sort}"  end  as ${item.attr}
+            </if>
+        </foreach>
+        from planocycle.product_power_mst_data datas
+        left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
+        where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
+        order by rank_result ,datas.jan
+    </select>
+    <select id="getjan" resultType="java.lang.String">
+        select "1" from "0001".prod_0000_jan_info limit 15
+    </select>
+    <select id="getAllDataItem" resultType="java.util.LinkedHashMap">
+        select datas.jan,
+        <foreach collection="list" item="item" separator=",">
+            <if test="item !=''">
+                coalesce(datas.${item},'0') as ${item}
+            </if>
+        </foreach>
+        from planocycle.product_power_mst_data datas
+        left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
+        where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
+        order by rank_result ,datas.jan
+    </select>
+    <select id="getAllDataRank" resultType="java.util.LinkedHashMap">
+        select datas.jan,
+        <foreach collection="list" item="item" separator=",">
+               <if test="item !=''">
+                   datas."${item}_rank"
+               </if>
+        </foreach>
+
+        ,rank_result
+        from planocycle.product_power_mst_data datas
+        left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
+        where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
+        order by rank_result ,datas.jan
+    </select>
+    <select id="getYobi" resultType="java.lang.String">
+        select case data_cd when 31001 then 'item1'
+                            when 31002 then 'item2'
+                            when 31003 then 'item3'
+                            when 31004 then 'item4'
+                            when 31005 then 'item5'
+                            when 31006 then 'item6'
+                            when 31007 then 'item7'
+                            when 31008 then 'item8'
+                            when 31009 then 'item9'
+                            when 31010 then 'item10' end
+        from planocycle.work_product_power_reserve_mst
+        where company_cd = #{companyCd} and product_power_cd = #{productPowerCd} and author_cd = #{authorCd}
+    </select>
+    <select id="getYobiHeader" resultType="java.util.Map">
+        select case data_cd when 31001 then 'item1'
+                            when 31002 then 'item2'
+                            when 31003 then 'item3'
+                            when 31004 then 'item4'
+                            when 31005 then 'item5'
+                            when 31006 then 'item6'
+                            when 31007 then 'item7'
+                            when 31008 then 'item8'
+                            when 31009 then 'item9'
+                            when 31010 then 'item10' end as col,data_name as val
+        from planocycle.work_product_power_reserve_mst
+        where company_cd = #{companyCd} and product_power_cd = #{productPowerCd} and author_cd = #{authorCd}
+    </select>
+
+
+    <insert id="selectWKKIntager">
+        insert into planocycle.work_product_power_intage(company_cd,product_power_cd,jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
+            intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
+            intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,author_cd)
+        values
+        <foreach collection="list" separator="," item="item">
+            (#{companyCd},#{productPowerCd},#{item},1,2,3,4,5,6,7,8,9,10,11,12,13,14,#{authorCd})
+        </foreach>
+
+    </insert>
+    <select id="selectSameNameJan" resultType="com.trechina.planocycle.entity.po.PriorityOrderJanProposal">
+        select t1.jan as janOld,t2.jan janNew from
+        (select distinct jan, janinfo."${janNameCol}" jan_name from ${tableName} janinfo
+        inner join planocycle.shelf_pts_data_jandata jandata on janinfo."${janCol}" = jandata.jan
+         where jandata.pts_cd::varchar=any(string_to_array(#{ptsCd},','))) t1
+        inner join
+        (select distinct jan, janinfo."${janNameCol}" jan_name from ${tableName} janinfo
+        inner join planocycle.product_power_mst_data powermst on janinfo."${janCol}"=powermst.jan
+        where powermst.product_power_cd=#{productPowerNo}) t2 on t2.jan_name = t1.jan_name
+        where t1.jan!=t2.jan;
+    </select>
+    <select id="getBranch" resultType="java.lang.String">
+        select  store_cd from planocycle.product_power_param_mst
+        where product_power_cd = #{productPowerCd}
+    </select>
+    <select id="getPatternList" resultType="java.lang.String">
+        select string_agg(distinct shelf_pattern_cd::varchar, ',') as shelfPatternCd from planocycle.shelf_pattern_branch
+        where branch in
+        <foreach  collection="branchList" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

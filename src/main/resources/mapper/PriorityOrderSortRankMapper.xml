@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderSortRankMapper">
+    <insert id="insertBySelect">
+        insert into planocycle.priority_order_sort_rank(priority_order_cd,company_cd,author_cd,zokusei1_val,zokusei2_val,zokusei_rank,
+        create_time,edit_time,editer_cd)
+        select priority_order_cd,company_cd,#{authorCd},zokusei1_val,zokusei2_val,zokusei_rank,now(),now(),#{authorCd}
+        from planocycle.work_priority_order_sort_rank
+        where company_cd = #{companyCd} and author_cd = #{authorCd}
+        and priority_order_cd = #{priorityOrderCd}
+    </insert>
+    <update id="logicDeleteByPriorityOrderCd">
+        update  planocycle.priority_order_sort_rank  set deleteflg=1 , editer_cd = #{authorCd} , edit_time=now() where company_cd = #{companyCd} and author_cd = #{authorCd}
+                                                                                                                       and priority_order_cd = #{priorityOrderCd}
+    </update>
+    <delete id="deleteByAuthorCd">
+        delete from planocycle.priority_order_sort_rank
+        where company_cd = #{companyCd} and author_cd = #{authorCd}
+        and priority_order_cd = #{priorityOrderCd}
+    </delete>
+</mapper>

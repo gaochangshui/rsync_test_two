@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ShelfPatternMstMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ShelfPatternMst">
+    <id column="company_cd" jdbcType="VARCHAR" property="conpanyCd" />
+    <id column="shelf_name_cd" jdbcType="INTEGER" property="shelfNameCd" />
+    <id column="shelf_pattern_cd" jdbcType="INTEGER" property="shelfPatternCd" />
+    <result column="shelf_pattern_name" jdbcType="VARCHAR" property="shelfPatternName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="registered" jdbcType="TIMESTAMP" property="registered" />
+    <result column="maintainer_cd" jdbcType="VARCHAR" property="maintainerCd" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+    <result column="ptskey" jdbcType="TIMESTAMP" property="ptsRelationID" />
+  </resultMap>
+  <resultMap id="patternName" type="com.trechina.planocycle.entity.vo.ShelfPatternNameVO">
+    <id column="shelf_pattern_cd" jdbcType="INTEGER" property="shelfPatternCd" />
+    <result column="shelf_pattern_name" jdbcType="VARCHAR" property="shelfPatternName" />
+  </resultMap>
+  <resultMap id="getNamePatternMap" type="com.trechina.planocycle.entity.vo.ShelfNamePatternVo">
+    <id column="shelfCd" jdbcType="INTEGER" property="value"/>
+    <result column="shelfName" jdbcType="VARCHAR" property="label"/>
+    <collection property="children" ofType="com.trechina.planocycle.entity.vo.ShelfPatternChidrenVo">
+      <id column="patternCd" jdbcType="INTEGER" property="value"/>
+      <result column="patternName" jdbcType="VARCHAR" property="label"/>
+    </collection>
+
+  </resultMap>
+  <sql id="Base_Column_List">
+      shelf.company_cd,shelf.shelf_name_cd,shelf.ptskey, name.shelf_name as shelfName, shelf.shelf_pattern_cd, array_to_string(array_agg(distinct areas.areaname),',') as areaName, shelf.shelf_pattern_name, shelf.create_time, shelf.author_cd,
+      shelf.registered, shelf.maintainer_cd, shelf.modified,shelf.modified,count(branch.branch)  as branch
+  </sql>
+  <sql id="branch_column_list">
+    shelf.company_cd,shelf.shelf_name_cd,shelf.ptskey, name.shelf_name as shelfName, shelf.shelf_pattern_cd, shelf.shelf_pattern_name, shelf.create_time, shelf.author_cd,
+      shelf.registered, shelf.maintainer_cd, shelf.modified,shelf.modified,string_agg(branch.branch, ',') as storeCdStr,shelf.common_parts_data
+  </sql>
+  <sql id="groups">
+    shelf.company_cd,shelf.shelf_name_cd,name.shelf_name, shelf.shelf_pattern_cd,  shelf.shelf_pattern_name, shelf.create_time, shelf.author_cd,
+    shelf.registered, shelf.maintainer_cd, shelf.modified,shelf.modified
+  </sql>
+  <update id="updateByPtsForShelfPdCd">
+    update planocycle.shelf_pts_data
+    set shelf_pattern_cd = null,valid_flg = 0,edit_time=now() ,editer_cd=#{authorCd},start_day=null
+    where shelf_pattern_cd =#{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="branch_column_list" />
+    from planocycle.shelf_pattern_mst shelf
+<!--     left join planocycle.shelf_pattern_area pattarea-->
+<!--     on shelf.company_cd = pattarea.company_cd and pattarea.deleteflg=0-->
+<!--     and shelf.shelf_pattern_cd = pattarea.shelf_pattern_cd-->
+<!--     left join masterdb.areas areas-->
+<!--     on pattarea.areacd = areas.areacd-->
+    left join planocycle.shelf_name_mst name
+    on shelf.shelf_name_cd = name.id and name.deleteflg=0
+    left join planocycle.shelf_pattern_branch branch
+    on branch.shelf_pattern_cd = shelf.shelf_pattern_cd and branch.deleteflg=0
+    where shelf.company_cd = #{conpanyCd,jdbcType=VARCHAR} and shelf.deleteflg=0
+    group by  <include refid="groups" />
+    order by shelf.shelf_pattern_cd desc
+  </select>
+  <select id="selectPatternName" resultMap="patternName">
+    select shelf_pattern_cd,shelf_pattern_name
+    from planocycle.shelf_pattern_mst
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR} and deleteflg=0
+    order by shelf_pattern_cd desc
+  </select>
+<!--  <select id="selectPatternNameBranch" resultMap="patternName">-->
+<!--    select distinct mst.shelf_pattern_cd,mst.shelf_pattern_name-->
+<!--    from planocycle.shelf_pattern_mst mst-->
+<!--    inner join planocycle.shelf_pattern_branch branch-->
+<!--    on mst.shelf_pattern_cd = branch.shelf_pattern_cd-->
+<!--    inner join planocycle.shelf_pts_data pts-->
+<!--    on mst.shelf_pattern_cd = pts.shelf_pattern_cd-->
+<!--    where mst.company_cd = #{conpanyCd,jdbcType=VARCHAR}-->
+<!--    and pts.valid_flg =1-->
+<!--  </select>-->
+  <select id="selectPatternNameBranch" resultType="com.trechina.planocycle.entity.vo.ShelfPatternTreeVO">
+    SELECT id+1000000 as id,0 as pId,cast(id as text)||'_0' as value,shelf_name as title
+    FROM planocycle.shelf_name_mst as name
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+    and exists (
+        select shelf_name_cd
+        from planocycle.shelf_pattern_mst as pat
+        inner join planocycle.shelf_pts_data pts
+        on pat.shelf_pattern_cd = pts.shelf_pattern_cd
+        inner join planocycle.shelf_pattern_branch branch
+        on pat.shelf_pattern_cd = branch.shelf_pattern_cd
+        where name.id = pat.shelf_name_cd
+    )
+    union all
+    SELECT mst.shelf_pattern_cd as id,mst.shelf_name_cd+1000000 as pId,cast(mst.shelf_pattern_cd as text) as value,mst.shelf_pattern_name as title
+    FROM planocycle.shelf_pattern_mst mst
+    inner join planocycle.shelf_pts_data pts
+    on mst.shelf_pattern_cd = pts.shelf_pattern_cd
+    where mst.company_cd = #{conpanyCd,jdbcType=VARCHAR}
+    and exists (
+        select 1 from  planocycle.shelf_pattern_branch branch
+        where pts.shelf_pattern_cd = branch.shelf_pattern_cd
+    )
+    order by pId
+  </select>
+  <select id="selectByShePatternNoNm" resultType="java.lang.String">
+    select string_agg(shelf_pattern_cd||'@'||shelf_pattern_name,',')
+    from planocycle.shelf_pattern_mst
+    where shelf_pattern_cd in (
+    <foreach collection="item.split(',')" item="items" index="idx" separator=",">
+      #{items,jdbcType=VARCHAR}::integer
+    </foreach>)
+  </select>
+  <select id="selectDistinctName" resultType="java.lang.Integer">
+    select shelf_pattern_cd
+    from planocycle.shelf_pattern_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+
+    and shelf_pattern_name = #{shelfPatternName,jdbcType=VARCHAR}
+    and deleteflg=0
+  </select>
+    <select id="getpatternIdOfPtsKey" resultType="java.lang.Integer">
+      select shelf_pattern_cd from planocycle.shelf_pattern_mst
+      where ptskey = #{ptsKey,jdbcType=VARCHAR} and deleteflg=0
+      order by shelf_pattern_cd desc
+    </select>
+  <select id="getShelfPattern" resultType="java.lang.Integer">
+    select shelf_pattern_cd
+    from planocycle.shelf_pattern_mst
+    where shelf_name_cd =#{shelfNameCd} and company_cd=#{companyCd} and deleteflg=0
+  </select>
+  <select id="getShelfPatternForArea" resultMap="getNamePatternMap">
+    SELECT DISTINCT
+    mst.id shelfCd,
+    mst.shelf_name shelfName,
+    pattern.shelf_pattern_cd patternCd,
+    pattern.shelf_pattern_name patternName
+    FROM
+    planocycle.shelf_name_mst mst
+
+    inner JOIN planocycle.shelf_pattern_mst pattern ON mst.id = pattern.shelf_name_cd
+    AND pattern.deleteflg = 0
+    inner join planocycle.shelf_pts_data pts
+    on pattern.shelf_pattern_cd = pts.shelf_pattern_cd
+    and pts.deleteflg = 0
+    inner join planocycle.shelf_pts_data_jandata jandata
+    on pts.id = jandata.pts_cd
+<!--     LEFT JOIN planocycle.shelf_pattern_area area ON pattern.shelf_pattern_cd = area.shelf_pattern_cd-->
+<!--    AND area.deleteflg = 0 -->
+    WHERE
+    mst.deleteflg = 0
+<!--    and exists (select deleteflg from planocycle.shelf_pattern_branch as br where pattern.shelf_pattern_cd=br.shelf_pattern_cd and deleteflg = 0 )-->
+<!--          AND mst.company_cd = #{companyCd,jdbcType=VARCHAR}-->
+      </select>
+        <select id="getExcelForPattern" resultType="java.util.Map">
+
+        </select>
+  <select id="getPatternName" resultType="java.lang.String">
+    select shelf_pattern_name from planocycle.shelf_pattern_mst
+    where shelf_pattern_name in
+        <foreach collection="list" separator="," open="(" close=")" item="item">
+          #{item.shelfPatternName}
+        </foreach>
+        and company_cd = #{companyCd}
+        and deleteflg = 0
+  </select>
+    <select id="getPatternForStorel" resultType="com.trechina.planocycle.entity.vo.ShelfPatternNameVO">
+      select
+        shelf.shelf_name_cd, name.shelf_name as shelfName, shelf.shelf_pattern_cd,shelf.common_parts_data as storeIsCore, concat(name.shelf_name, '-' , shelf.shelf_pattern_name) as shelfPatternName,string_agg(branch.branch, ',') as storeCd
+      from planocycle.shelf_pattern_mst shelf
+             inner join planocycle.shelf_name_mst name
+                       on shelf.shelf_name_cd = name.id and name.deleteflg=0
+             inner join planocycle.shelf_pattern_branch branch
+                       on branch.shelf_pattern_cd = shelf.shelf_pattern_cd and branch.deleteflg=0
+             inner join planocycle.shelf_pts_data ptsdata
+                       on ptsdata.shelf_pattern_cd = shelf.shelf_pattern_cd
+      where   shelf.deleteflg=0  and shelf.company_cd = #{companyCd}
+      group by   shelf.shelf_name_cd,name.shelf_name, shelf.shelf_pattern_cd,  shelf.shelf_pattern_name,storeIsCore
+      order by shelf.shelf_pattern_cd desc
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="map">
+        delete from planocycle.shelf_pattern_mst
+        where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+          and shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+          and area = #{area,jdbcType=INTEGER}
+      </delete>
+        <update id="deleteByShelfName">
+          update planocycle.shelf_pattern_mst
+          set deleteflg=1 , maintainer_cd=#{authorCd} , modified=now()
+          where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+        </update>
+      <update id="deleteShelfPdCdHistory">
+        update planocycle.shelf_pts_data_history
+        set edit_time=now(),editer_cd=#{authorCd},deleteflg=1
+        where pattern_cd =#{id,jdbcType=INTEGER}
+      </update>
+        <update id="update">
+          update planocycle.shelf_pattern_mst set company_cd=#{conpanyCd},shelf_name_cd=#{shelfNameCd},shelf_pattern_name=#{shelfPatternName},common_parts_data = #{commonPartsData}
+            ,ptskey=#{ptsRelationID},maintainer_cd=#{maintainerCd},modified=now()
+            where shelf_pattern_cd=#{shelfPatternCd}
+        </update>
+        <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternMst">
+          <selectKey resultType="int" keyProperty="shelfPatternCd" order="AFTER">
+            select  currval('planocycle.shelf_pattern_mst_shelf_pattern_cd_seq'::regclass) as id
+          </selectKey>
+        insert into planocycle.shelf_pattern_mst (company_cd, shelf_name_cd,
+          shelf_pattern_name, ptskey, create_time,
+          author_cd, registered, maintainer_cd,
+          modified,common_parts_data)
+        values
+         (#{conpanyCd,jdbcType=VARCHAR},#{shelfNameCd,jdbcType=INTEGER},
+          #{shelfPatternName,jdbcType=VARCHAR},#{ptsRelationID,jdbcType=VARCHAR}, now(),
+          #{authorCd,jdbcType=VARCHAR}, now(), #{maintainerCd,jdbcType=VARCHAR},now(),#{commonPartsData,jdbcType=VARCHAR})
+
+      </insert>
+  <insert id="setPatternList" parameterType="java.util.List" keyColumn="shelf_pattern_cd" keyProperty="shelfPatternDto.shelfPatternCd" useGeneratedKeys="true">
+    insert into planocycle.shelf_pattern_mst(company_cd,shelf_name_cd,shelf_pattern_name,create_time,author_cd,registered,maintainer_cd,modified,ptskey,common_parts_data)
+    values
+    <foreach collection="shelfPatternDto" item="item" separator="," >
+      (#{companyCd},#{item.shelfNameCD},#{item.shelfPatternName},now(),#{authorCd},now(),#{authorCd},now(),#{item.ptsRelationID},#{item.commonPartsData})
+    </foreach>
+  </insert>
+    </mapper>

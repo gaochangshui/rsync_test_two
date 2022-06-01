@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ParamConfigMapper">
+  <select id="selectParamConfig" resultType="com.trechina.planocycle.entity.vo.ParamConfigVO">
+    select item_cd,item_value,item_name,item_type from planocycle.param_config config
+    where flag=0 order by item_value
+  </select>
+  <select id="getParamConfig" resultType="com.trechina.planocycle.entity.dto.ParamConfigDto">
+    select item_cd as colName,item_value as value,item_name as label,rank_flag as rankFlag,item_type as itemType  from planocycle.param_config config
+    where flag=0 order by item_value
+  </select>
+  <select id="getParamConfigAll" resultType="com.trechina.planocycle.entity.vo.ParamConfigVO">
+    select item_cd,item_value,item_name,flag from planocycle.param_config config
+    where item_cd like  'pos_item%' --or item_cd like  'intage%'
+    order by item_value
+  </select>
+  <select id="selectParamConfigByCd" resultType="com.trechina.planocycle.entity.vo.ParamConfigVO">
+    select item_cd,item_value,concat(item_type,'-',item_name) as item_name  from planocycle.param_config config
+    <where>
+      flag=0 and item_cd in
+        <foreach collection="cdList" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+      order by item_value
+    </where>
+  </select>
+</mapper>

@@ -1,0 +1,49 @@
+server:
+  port: 8383
+  tomcat:
+    connection-timeout: 600000
+#    context-path: /planoCycle
+#    context-path: /cocacola-planocycle-api
+spring:
+  datasource:
+    url: ${PLANO_URL}
+    username: ${PLANO_USERNAME}
+    password: ${PLANO_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      # 最小空閑連接数量
+      minimum-idle: 10
+      # 連接池最大連接数，默認是10
+      maximum-pool-size: 30
+      # 此属性控制从池返回的連接的默認自動提交行はい,默認値：true
+      auto-commit: true
+      # 空閑連接存活最大時間，默認600000（10分時計）
+      idle-timeout: 30000
+      pool-name: DatebookHikariCP
+      # 此属性控制池中連接的最長い生命周期，値0表示无限生命周期，默認1800000即30分時計
+      max-lifetime: 1800000
+      # database連接超時時間,默認30秒，即30000
+      connection-timeout: 60000
+      connection-test-query: SELECT 1
+  servlet:
+    multipart:
+      max-file-size: 30MB
+  jackson:
+    time-zone: Asia/Tokyo
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+logging:
+  file:
+    path: ${loggingFilePath}
+# 環境変量
+SystemPath: ${PORTAL_URL}
+projectIds: ${projectIds}
+bucketNames: ${bucketNames}
+ptsDownPath: ${ptsDownPath}
+productDownPath: ${productDownPath}
+smartUrlPath: ${smartUrlPath}
+# 毎个台棚按照有13个品クラス計算
+skuPerPattan: 13

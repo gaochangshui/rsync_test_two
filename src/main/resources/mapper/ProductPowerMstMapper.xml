@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ProductPowerMstMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ProductPowerMst">
+    <id column="company_cd" jdbcType="VARCHAR" property="conpanyCd" />
+    <id column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
+    <result column="product_power_name" jdbcType="VARCHAR" property="productPowerName" />
+    <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="author_name" jdbcType="VARCHAR" property="authorName" />
+    <result column="registered" jdbcType="TIMESTAMP" property="registered" />
+    <result column="maintainer_cd" jdbcType="VARCHAR" property="maintainerCd" />
+    <result column="maintainer_name" jdbcType="VARCHAR" property="maintainerName" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+  </resultMap>
+  <resultMap id="EnterPriseInfo" type="com.trechina.planocycle.entity.vo.EnterPriseInfoVO">
+    <id column="company_cd" jdbcType="VARCHAR" property="conpanyCd" />
+    <result column="product_power_name" jdbcType="VARCHAR" property="productPowerName" />
+  </resultMap>
+  <resultMap id="CommodityListInfo" type="com.trechina.planocycle.entity.vo.CommodityListInfoVO">
+    <id column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
+    <result column="product_power_name" jdbcType="VARCHAR" property="productPowerName" />
+  </resultMap>
+  <resultMap id="tableNameList" type="com.trechina.planocycle.entity.dto.TableNameDto">
+    <id column="product_power_cd" jdbcType="INTEGER" property="id" />
+    <result column="product_power_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="registered" jdbcType="VARCHAR" property="createTime"/>
+    <result column="author_name" jdbcType="VARCHAR" property="authorName"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, product_power_cd, product_power_name, author_cd, author_name, registered,
+    maintainer_cd, maintainer_name, modified
+  </sql>
+
+
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerMst">
+    insert into planocycle.product_power_mst (company_cd,product_power_cd, product_power_name,
+      author_cd, author_name, registered,
+      maintainer_cd, maintainer_name, modified
+      )
+    values (#{conpanyCd,jdbcType=VARCHAR}, #{productPowerCd,jdbcType=INTEGER}, #{productPowerName,jdbcType=VARCHAR},
+      #{authorCd,jdbcType=VARCHAR}, #{authorName,jdbcType=VARCHAR}, now(),
+      #{maintainerCd,jdbcType=VARCHAR}, #{maintainerName,jdbcType=VARCHAR}, now()
+      )
+  </insert>
+    <update id="delete">
+      update planocycle.product_power_mst set deleteflg=1 , maintainer_name =#{authorName} , maintainer_cd = #{authorCd} , modified=now()
+        where company_cd = #{companyCd,jdbcType=VARCHAR} and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+    </update>
+  <update id="update">
+
+           update  planocycle.product_power_mst set product_power_name=#{productPowerName} ,maintainer_cd=#{maintainerCd},
+                                                    maintainer_name=#{maintainerName},modified=now()
+            where company_cd=#{conpanyCd} and product_power_cd=#{productPowerCd} and deleteflg=0
+  </update>
+  <update id="setProductPowerCdForMst">
+    update planocycle.work_priority_order_mst
+    set product_power_cd = #{productPowerCd}
+    where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
+  </update>
+
+
+  <select id="selectCommodityList" parameterType="map" resultMap="CommodityListInfo">
+    select distinct
+      product_power_cd,product_power_name
+    from planocycle.product_power_mst
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
+  </select>
+  <select id="selectExistsName" resultType="java.lang.Integer">
+    SELECT count(1) FROM planocycle.product_power_mst
+    where product_power_name=#{productPowerName,jdbcType=VARCHAR}
+    and company_cd = #{companyCd,jdbcType=VARCHAR}
+    and product_power_cd!=#{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+  </select>
+  <select id="getTableNameByCompanyCd" resultMap="tableNameList">
+    select distinct
+      product_power_cd ,product_power_name ,registered ,author_name
+    from planocycle.product_power_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and deleteflg=0 and author_cd = #{authorCd}
+    order by product_power_cd desc
+  </select>
+  <select id="selectUpdExistsName" resultType="java.lang.Integer">
+    SELECT count(1) FROM planocycle.product_power_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and product_power_cd=#{productPowerCd,jdbcType=INTEGER} and deleteflg=0
+  </select>
+    <select id="getProductPowerInfo" resultType="com.trechina.planocycle.entity.vo.ProductPowerMstVo">
+      select mst.author_name as authorName,mst.registered as registered,mst.product_power_name as productPowerName
+      from planocycle.product_power_mst mst
+      where mst.product_power_cd = #{productPowerCd} and  mst.company_cd = #{companyCd}
+    </select>
+  <select id="getSkuNum" resultType="java.lang.Integer">
+    select count(datas.jan)
+    from planocycle.product_power_mst mst
+    left join planocycle.product_power_mst_data datas
+    on mst.product_power_cd = datas.product_power_cd and mst.company_cd = datas.company_cd
+    where mst.product_power_cd = #{productPowerCd} and mst.company_cd = #{companyCd}
+  </select>
+  <select id="getProductPowerCd" resultType="java.lang.Integer">
+    select product_power_cd
+    from planocycle.work_priority_order_mst
+    where company_cd = #{companyCd} and author_cd = #{authorCd}
+    and priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getpatternCd" resultType="java.lang.Integer">
+    select shelf_pattern_cd
+    from planocycle.work_priority_order_mst
+    where company_cd = #{companyCd} and author_cd = #{authorCd}
+    and priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getFaceNum" resultType="com.trechina.planocycle.entity.dto.FaceNumDataDto">
+    select  max (jandataMst.face_count) faceMaxNum,min(jandataMst.face_count) faceMinNum,avg(jandataMst.face_count) faceAvgNum
+    from (select jan,sum(face_count) face_count
+          from planocycle.shelf_pts_data ptsData
+                 left join planocycle.shelf_pts_data_jandata jandataMst
+                           on ptsData.id = jandataMst.pts_cd
+          where ptsData.shelf_pattern_cd=#{patternCd}
+          group by jan) as jandataMst
+  </select>
+
+  <select id="getSalesCntAvg" resultType="double">
+  select avg(sales_cnt)
+    from planocycle.work_priority_order_result_data
+    where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getPatternAndName" resultType="com.trechina.planocycle.entity.dto.GetPatternForProductPowerCd">
+    select shelf_pattern_cd as shelfPatternCd,shelf_name_cd as shelfNameCd from planocycle.product_power_param_mst
+    where product_power_cd = #{productPowerCd}
+  </select>
+</mapper>

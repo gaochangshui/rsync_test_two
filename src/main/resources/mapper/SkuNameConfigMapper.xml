@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.SkuNameConfigMapper">
+    <select id="getJanName2colNum" resultType="java.lang.Integer">
+        select jan_name2col_num from planocycle.sku_name_config where company_cd = #{companyCd} and class = #{paragraph}
+    </select>
+</mapper>

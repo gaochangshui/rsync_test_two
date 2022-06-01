@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ShelfPtsDataTanamstMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ShelfPtsDataTanamst">
+    <id column="company_cd" jdbcType="VARCHAR" property="companyCd" />
+    <id column="pts_cd" jdbcType="INTEGER" property="ptsCd" />
+    <id column="tai_cd" jdbcType="INTEGER" property="taiCd" />
+    <id column="tana_cd" jdbcType="INTEGER" property="tanaCd" />
+    <result column="tana_height" jdbcType="INTEGER" property="tanaHeight" />
+    <result column="tana_width" jdbcType="INTEGER" property="tanaWidth" />
+    <result column="tana_depth" jdbcType="INTEGER" property="tanaDepth" />
+    <result column="tana_thickness" jdbcType="INTEGER" property="tanaThickness" />
+    <result column="tana_type" jdbcType="INTEGER" property="tanaType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+    <result column="edit_time" jdbcType="TIMESTAMP" property="editTime" />
+    <result column="editer_cd" jdbcType="VARCHAR" property="editerCd" />
+    <result column="deleteflg" jdbcType="INTEGER" property="deleteflg" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_cd, pts_cd, tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, 
+    tana_type, create_time, author_cd, edit_time, editer_cd, deleteflg
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from planocycle.shelf_pts_data_tanamst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and pts_cd = #{ptsCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from planocycle.shelf_pts_data_tanamst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and pts_cd = #{ptsCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPtsDataTanamst">
+    insert into planocycle.shelf_pts_data_tanamst (company_cd, pts_cd, tai_cd,
+      tana_cd, tana_height, tana_width, 
+      tana_depth, tana_thickness, tana_type, 
+      create_time, author_cd, edit_time, 
+      editer_cd, deleteflg)
+    values (#{companyCd,jdbcType=VARCHAR}, #{ptsCd,jdbcType=INTEGER}, #{taiCd,jdbcType=INTEGER}, 
+      #{tanaCd,jdbcType=INTEGER}, #{tanaHeight,jdbcType=INTEGER}, #{tanaWidth,jdbcType=INTEGER}, 
+      #{tanaDepth,jdbcType=INTEGER}, #{tanaThickness,jdbcType=INTEGER}, #{tanaType,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{authorCd,jdbcType=VARCHAR}, #{editTime,jdbcType=TIMESTAMP}, 
+      #{editerCd,jdbcType=VARCHAR}, #{deleteflg,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.ShelfPtsDataTanamst">
+    insert into planocycle.shelf_pts_data_tanamst
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        company_cd,
+      </if>
+      <if test="ptsCd != null">
+        pts_cd,
+      </if>
+      <if test="taiCd != null">
+        tai_cd,
+      </if>
+      <if test="tanaCd != null">
+        tana_cd,
+      </if>
+      <if test="tanaHeight != null">
+        tana_height,
+      </if>
+      <if test="tanaWidth != null">
+        tana_width,
+      </if>
+      <if test="tanaDepth != null">
+        tana_depth,
+      </if>
+      <if test="tanaThickness != null">
+        tana_thickness,
+      </if>
+      <if test="tanaType != null">
+        tana_type,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="authorCd != null">
+        author_cd,
+      </if>
+      <if test="editTime != null">
+        edit_time,
+      </if>
+      <if test="editerCd != null">
+        editer_cd,
+      </if>
+      <if test="deleteflg != null">
+        deleteflg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyCd != null">
+        #{companyCd,jdbcType=VARCHAR},
+      </if>
+      <if test="ptsCd != null">
+        #{ptsCd,jdbcType=INTEGER},
+      </if>
+      <if test="taiCd != null">
+        #{taiCd,jdbcType=INTEGER},
+      </if>
+      <if test="tanaCd != null">
+        #{tanaCd,jdbcType=INTEGER},
+      </if>
+      <if test="tanaHeight != null">
+        #{tanaHeight,jdbcType=INTEGER},
+      </if>
+      <if test="tanaWidth != null">
+        #{tanaWidth,jdbcType=INTEGER},
+      </if>
+      <if test="tanaDepth != null">
+        #{tanaDepth,jdbcType=INTEGER},
+      </if>
+      <if test="tanaThickness != null">
+        #{tanaThickness,jdbcType=INTEGER},
+      </if>
+      <if test="tanaType != null">
+        #{tanaType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="authorCd != null">
+        #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null">
+        #{editTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editerCd != null">
+        #{editerCd,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteflg != null">
+        #{deleteflg,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.ShelfPtsDataTanamst">
+    update planocycle.shelf_pts_data_tanamst
+    <set>
+      <if test="tanaHeight != null">
+        tana_height = #{tanaHeight,jdbcType=INTEGER},
+      </if>
+      <if test="tanaWidth != null">
+        tana_width = #{tanaWidth,jdbcType=INTEGER},
+      </if>
+      <if test="tanaDepth != null">
+        tana_depth = #{tanaDepth,jdbcType=INTEGER},
+      </if>
+      <if test="tanaThickness != null">
+        tana_thickness = #{tanaThickness,jdbcType=INTEGER},
+      </if>
+      <if test="tanaType != null">
+        tana_type = #{tanaType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="authorCd != null">
+        author_cd = #{authorCd,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null">
+        edit_time = #{editTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editerCd != null">
+        editer_cd = #{editerCd,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteflg != null">
+        deleteflg = #{deleteflg,jdbcType=INTEGER},
+      </if>
+    </set>
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and pts_cd = #{ptsCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.ShelfPtsDataTanamst">
+    update planocycle.shelf_pts_data_tanamst
+    set tana_height = #{tanaHeight,jdbcType=INTEGER},
+      tana_width = #{tanaWidth,jdbcType=INTEGER},
+      tana_depth = #{tanaDepth,jdbcType=INTEGER},
+      tana_thickness = #{tanaThickness,jdbcType=INTEGER},
+      tana_type = #{tanaType,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      author_cd = #{authorCd,jdbcType=VARCHAR},
+      edit_time = #{editTime,jdbcType=TIMESTAMP},
+      editer_cd = #{editerCd,jdbcType=VARCHAR},
+      deleteflg = #{deleteflg,jdbcType=INTEGER}
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and pts_cd = #{ptsCd,jdbcType=INTEGER}
+      and tai_cd = #{taiCd,jdbcType=INTEGER}
+      and tana_cd = #{tanaCd,jdbcType=INTEGER}
+  </update>
+  <insert id="insertAll">
+    insert into planocycle.shelf_pts_data_tanamst (company_cd, pts_cd, tai_cd,
+    tana_cd, tana_height, tana_width,
+    tana_depth, tana_thickness, tana_type,
+    create_time, author_cd)
+    values
+    <foreach collection="list" item="item" separator=",">
+    (#{item.companyCd,jdbcType=VARCHAR}, #{item.ptsCd,jdbcType=INTEGER}, #{item.taiCd,jdbcType=INTEGER},
+    #{item.tanaCd,jdbcType=INTEGER}, #{item.tanaHeight,jdbcType=INTEGER}, #{item.tanaWidth,jdbcType=INTEGER},
+    #{item.tanaDepth,jdbcType=INTEGER}, #{item.tanaThickness,jdbcType=INTEGER}, #{item.tanaType,jdbcType=INTEGER},
+    #{item.createTime,jdbcType=TIMESTAMP}, #{item.authorCd,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <select id="ptsTanaCountByTai" resultType="com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount">
+    select tai_cd,count(tana_cd) tana_count,0 as tana_used_count
+    from planocycle.shelf_pts_data_tanamst t1
+    inner join planocycle.shelf_pts_data t2
+    on t1.pts_cd=t2.id
+    where t2.shelf_pattern_cd =#{shelfPatternCd}
+    group by tai_cd
+    order by tai_cd
+  </select>
+  <select id="selectByPatternCd" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataTanamst">
+    select
+    t1.company_cd, t1.pts_cd, t1.tai_cd, t1.tana_cd, t1.tana_height, t1.tana_width, t1.tana_depth, t1.tana_thickness,
+    t1.tana_type, t1.create_time, t1.author_cd, t1.edit_time, t1.editer_cd, t1.deleteflg
+    from planocycle.shelf_pts_data_tanamst t1
+    inner join planocycle.shelf_pts_data t2
+    on t1.pts_cd=t2.id
+    where t1.deleteflg=0 and t2.shelf_pattern_cd =#{shelfPatternCd}
+  </select>
+  <select id="selectByPtsCd" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from planocycle.shelf_pts_data_tanamst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and pts_cd = #{ptsCd,jdbcType=INTEGER}
+    order by tai_cd,tana_cd,tana_type
+  </select>
+  <select id="selectNewByPtsCd" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from planocycle.work_priority_order_pts_data_tanamst where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and pts_cd = #{ptsCd,jdbcType=INTEGER}
+    order by tai_cd,tana_cd,tana_type
+  </select>
+</mapper>

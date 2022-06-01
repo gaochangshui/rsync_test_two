@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ShelfNameMstMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ShelfNameMst">
+    <id column="company_cd" jdbcType="VARCHAR" property="conpanyCd" />
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="shelf_name" jdbcType="VARCHAR" property="shelfName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="author_cd" jdbcType="VARCHAR" property="authorCd" />
+  </resultMap>
+  <resultMap id="BaseResultMap2" type="com.trechina.planocycle.entity.vo.ShelfNameVO">
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="shelf_name" jdbcType="VARCHAR" property="shelfName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id,company_cd,  shelf_name, create_time, author_cd
+  </sql>
+  <update id="deleteShelfNameInfo">
+    update planocycle.shelf_name_mst
+    set deleteflg=1,edit_time=now(),editer_cd=#{authorCd}
+    where id=#{id,jdbcType=INTEGER}
+  </update>
+  <update id="update">
+    update  planocycle.shelf_name_mst
+    set company_cd=#{conpanyCd},shelf_name=#{shelfName},edit_time=now(),editer_cd=#{authorCd}
+    where id=#{id}
+  </update>
+
+    <select id="selectShelfNameInfo" resultType="com.trechina.planocycle.entity.vo.ShelfNameDataVO">
+    select
+        shelf.id,shelf.company_cd, array_to_string(array_agg(areas.areaname),',') as areaName, shelf.shelf_name as shelfName,
+           shelf.create_time as createTime, shelf.author_cd as authorCd
+    from planocycle.shelf_name_mst shelf
+    left join planocycle.shelf_name_area namearea
+    on shelf.company_cd = namearea.company_cd and namearea.deleteflg=0
+    and shelf.id = namearea.shelf_name_cd
+    left join masterdb.areas areas
+    on namearea.areacd = areas.areacd
+      and areas.company_cd = namearea.company_cd
+    where shelf.company_cd = #{conpanyCd,jdbcType=VARCHAR} and shelf.deleteflg=0
+    group by shelf.id,shelf.company_cd, shelf.shelf_name ,shelf.create_time, shelf.author_cd
+    order by shelf.id desc
+  </select>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfNameMst">
+    <selectKey resultType="int" keyProperty="id" order="AFTER">
+      select  currval('planocycle.shelf_name_mst_id_seq'::regclass) as id
+    </selectKey>
+    insert into planocycle.shelf_name_mst (company_cd,
+      shelf_name, create_time, author_cd
+      )
+    values
+           (#{conpanyCd,jdbcType=VARCHAR},
+      #{shelfName,jdbcType=VARCHAR}, now(), #{authorCd,jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <select id="selectShelfName" parameterType="java.lang.String" resultMap="BaseResultMap2">
+    select
+    distinct (shelf_name),id,shelf_name
+    from planocycle.shelf_name_mst
+    where company_cd = #{conpanyCd,jdbcType=VARCHAR} and deleteflg=0
+    order by id desc
+  </select>
+  <select id="selShelfNameInfoById" resultType="com.trechina.planocycle.entity.vo.ShelfNameUpdVO">
+    select
+      shelf.id,shelf.company_cd, areas.areaname as areaName, shelf.shelf_name as shelfName,
+      shelf.create_time as createTime, shelf.author_cd as authorCd
+    from planocycle.shelf_name_mst shelf
+     left join masterdb.areas areas
+     on shelf.area = areas.areacd
+    where shelf.id = #{id,jdbcType=INTEGER} and shelf.deleteflg=0 and areas.deleteflg=0
+  </select>
+  <select id="selectDistinctName" resultType="java.lang.Integer">
+    select id from planocycle.shelf_name_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and shelf_name = #{shelfName,jdbcType=VARCHAR}
+    and deleteflg=0
+  </select>
+
+  <select id="selectShelfPatternTree" resultType="com.trechina.planocycle.entity.vo.ShelfPatternTreeVO">
+    SELECT
+      id+1000000 as id,0 as pId,cast(id as text)||'_0' as value,shelf_name as title
+    FROM planocycle.shelf_name_mst as name
+    where company_cd = #{companyCd}
+      and exists (select shelf_name_cd from planocycle.shelf_pattern_mst as pat where name.id = pat.shelf_name_cd
+        and exists (select deleteflg from planocycle.shelf_pts_data_history as hst where pat.shelf_pattern_cd = hst.pattern_cd and hst.deleteflg = 0)
+        and exists (select deleteflg from planocycle.shelf_pattern_branch as br where pat.shelf_pattern_cd=br.shelf_pattern_cd and deleteflg = 0 )
+      )
+
+    union all
+
+    SELECT
+      shelf_pattern_cd as id,shelf_name_cd+1000000 as pId,cast(shelf_pattern_cd as text) as value,shelf_pattern_name as title
+    FROM planocycle.shelf_pattern_mst pat
+    where company_cd = #{companyCd}
+      and exists (select deleteflg from planocycle.shelf_pts_data_history as hst where pat.shelf_pattern_cd = hst.pattern_cd and hst.deleteflg = 0)
+      and exists (select deleteflg from planocycle.shelf_pattern_branch as br where pat.shelf_pattern_cd=br.shelf_pattern_cd and deleteflg = 0 )
+    order by pId
+  </select>
+  <select id="selectPatternCd" resultType="java.lang.Integer">
+    select shelf_pattern_cd from planocycle.shelf_pattern_mst
+    where shelf_name_cd = #{id,jdbcType=INTEGER} and deleteflg=0
+  </select>
+</mapper>
