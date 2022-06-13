@@ -601,7 +601,7 @@
     <select id="getProductRankCalculate" resultType="java.util.Map">
         select s.jan,
                <foreach collection="map" index="index" separator="," item="item">
-                   DENSE_RANK() over(order by ${index} desc ) as "${index}_rank"
+                   DENSE_RANK() over(order by ${index} ::decimal desc ) as "${index}_rank"
                 </foreach>
                 ,DENSE_RANK() over(order by
                 <foreach collection="map" item="item" separator="+" index="index">
