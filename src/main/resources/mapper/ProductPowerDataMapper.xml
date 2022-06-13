@@ -599,21 +599,30 @@
 
     </select>
     <select id="getProductRankCalculate" resultType="java.util.Map">
-        select s.jan,
-               <foreach collection="map" index="index" separator="," item="item">
-                   DENSE_RANK() over(order by ${index} ::decimal desc ) as "${index}_rank"
-                </foreach>
-                ,DENSE_RANK() over(order by
-                <foreach collection="map" item="item" separator="+" index="index">
-                    concat(${index},0) ::decimal * ${item} :: integer /100
-                </foreach>
-                desc
-                ) as rank_result
-        from  planocycle.work_product_power_syokika s
-            left join planocycle.work_product_power_kokyaku k
-        on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd and s.product_power_cd = k.product_power_cd
-       left join planocycle.work_product_power_intage i
-                on i.jan = s.jan and i.author_cd=s.author_cd and  s.company_cd = i.company_cd and s.product_power_cd = i.product_power_cd
+        select msts.*
+        ,DENSE_RANK() over(order by
+        <foreach collection="map" item="item" separator="+" index="index">
+            "${index}_rank" ::INTEGER * ${item} :: integer
+        </foreach>
+        asc
+        ) as rank_result
+               from
+               (select s.jan,
+        <foreach collection="map" index="index" separator="," item="item">DENSE_RANK() over(order by ${index} ::decimal
+            desc ) as "${index}_rank"
+        </foreach>
+
+        from planocycle
+
+        .work_product_power_syokika s
+        left join planocycle.work_product_power_kokyaku k
+        on k.jan = s.jan and k.author_cd=s. author_cd and s.company_cd = k.company_cd and s.
+        product_power_cd = k.
+        product_power_cd
+        left join planocycle.
+        work_product_power_intage i
+        on i.jan = s .jan and i.author_cd=s.author_cd and s.company_cd
+        = i.company_cd and s.product_power_cd = i.product_power_cd
         left join (select
         dd.jan as jan,
         sum ( case when dd.data_cd = '31001' then dd.data_value else null end ) as item1,
@@ -638,7 +647,8 @@
         dd.jan
         )as yobi
         on yobi.jan = s.jan
-        where  s.author_cd=#{authorCd} and s.company_cd = #{companyCd} and s.product_power_cd = #{productPowerCd}
+        where s.author_cd=#{authorCd} and s.company_cd = #{companyCd} and s.product_power_cd = #{productPowerCd}
+        ) as msts
         order by rank_result
     </select>
     <select id="getShowItemCd" resultType="java.lang.String">
