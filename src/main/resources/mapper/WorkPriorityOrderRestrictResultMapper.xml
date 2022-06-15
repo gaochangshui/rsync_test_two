@@ -182,7 +182,7 @@
   <select id="getProductPowerData" resultType="com.trechina.planocycle.entity.dto.ProductPowerDataDto">
 
     select mst.jan,mst.jan_new,rank_result,mst.jan_rank
-    from ( select distinct mstData.jan,mstData.sku_name,replaces.jan_new,janMst.brand,
+    from ( select distinct mstData.jan,'' as sku_name,replaces.jan_new,janMst.brand,
     janMst.kikaku,janMst.pkg,janMst.irisu,janMst.alcohol,janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,mstData.rank_result,janNews.jan_rank,2 as datasort
     from
     planocycle.product_power_mst_data  mstData
