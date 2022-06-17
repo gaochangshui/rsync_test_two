@@ -332,9 +332,9 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         String commonPartsData = priorityOrderAttrDto.getCommonPartsData();
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
         String prodMstClass = jsonObject.get("prodMstClass").toString();
-        String storeIsCore = jsonObject.get("storeIsCore").toString();
+        //String storeIsCore = jsonObject.get("storeIsCore").toString();
         String prodIsCore = jsonObject.get("prodIsCore").toString();
-        String storeMstClass = jsonObject.get("storeMstClass").toString();
+        //String storeMstClass = jsonObject.get("storeMstClass").toString();
         GetCommonPartsDataDto getCommonPartsDataDto = new GetCommonPartsDataDto();
         String coreCompany = sysConfigMapper.selectSycConfig("core_company");
         String isCompanyCd = null;
@@ -343,17 +343,17 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         } else {
             isCompanyCd = companyCd;
         }
-        String storeIsCompanyCd = null;
-        if ("1".equals(storeIsCore)) {
-            storeIsCompanyCd = coreCompany;
-        } else {
-            storeIsCompanyCd = companyCd;
-        }
+        //String storeIsCompanyCd = null;
+        //if ("1".equals(storeIsCore)) {
+        //    storeIsCompanyCd = coreCompany;
+        //} else {
+        //    storeIsCompanyCd = companyCd;
+        //}
         getCommonPartsDataDto.setProKaisouTable(MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass));
         getCommonPartsDataDto.setProAttrTable(MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass));
         getCommonPartsDataDto.setProInfoTable(MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass));
-        getCommonPartsDataDto.setStoreInfoTable(MessageFormat.format("\"{0}\".ten_{1}_ten_info", storeIsCompanyCd, storeMstClass));
-        getCommonPartsDataDto.setStoreKaisouTable(MessageFormat.format("\"{0}\".ten_{1}_ten_kaisou_header_sys", storeIsCompanyCd, storeMstClass));
+        //getCommonPartsDataDto.setStoreInfoTable(MessageFormat.format("\"{0}\".ten_{1}_ten_info", storeIsCompanyCd, storeMstClass));
+        //getCommonPartsDataDto.setStoreKaisouTable(MessageFormat.format("\"{0}\".ten_{1}_ten_kaisou_header_sys", storeIsCompanyCd, storeMstClass));
         return getCommonPartsDataDto;
     }
 
