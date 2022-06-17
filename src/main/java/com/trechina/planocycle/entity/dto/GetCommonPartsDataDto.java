@@ -3,11 +3,11 @@ package com.trechina.planocycle.entity.dto;
 public class GetCommonPartsDataDto {
 
     /**
-     * 商品屬性表
+     * 商品属性テーブル
      */
     private String proAttrTable;
     /**
-     * 商品信息表
+     * 商品情報シート
      */
     private String proInfoTable;
     /**
@@ -15,15 +15,15 @@ public class GetCommonPartsDataDto {
      */
     private String proKaisouTable;
     /**
-     * 店鋪head表
+     * 店舗ヘッドテーブル
      */
     private String storeAttrTable;
     /**
-     * 商品屬性表
+     * 店舗属性テーブル
      */
     private String storeKaisouTable;
     /**
-     * 店鋪信息表
+     * 店舗情報テーブル
      */
     private String storeInfoTable;
 

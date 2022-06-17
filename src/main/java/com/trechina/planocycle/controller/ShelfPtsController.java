@@ -92,7 +92,7 @@ public class ShelfPtsController {
      * 棚pattern別pts情報の取得
      *
      * @param companyCd
-     * @param List
+     * @param
      * @return
      */
     @GetMapping("/getPtsInfoOfPattern")
