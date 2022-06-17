@@ -27,6 +27,11 @@ public class GetCommonPartsDataDto {
      */
     private String storeInfoTable;
 
+    private String proZokuseiMstTable;
+
+    private String proZokuseiDataTable;
+
+
     public String getProAttrTable() {
         return proAttrTable;
     }
@@ -75,6 +80,22 @@ public class GetCommonPartsDataDto {
         this.storeKaisouTable = storeKaisouTable;
     }
 
+    public String getProZokuseiMstTable() {
+        return proZokuseiMstTable;
+    }
+
+    public void setProZokuseiMstTable(String proZokuseiMstTable) {
+        this.proZokuseiMstTable = proZokuseiMstTable;
+    }
+
+    public String getProZokuseiDataTable() {
+        return proZokuseiDataTable;
+    }
+
+    public void setProZokuseiDataTable(String proZokuseiDataTable) {
+        this.proZokuseiDataTable = proZokuseiDataTable;
+    }
+
     @Override
     public String toString() {
         return "GetCommonPartsDataDto{" +
@@ -84,6 +105,8 @@ public class GetCommonPartsDataDto {
                 ", storeAttrTable='" + storeAttrTable + '\'' +
                 ", storeKaisouTable='" + storeKaisouTable + '\'' +
                 ", storeInfoTable='" + storeInfoTable + '\'' +
+                ", proZokuseiMstTable='" + proZokuseiMstTable + '\'' +
+                ", proZokuseiDataTable='" + proZokuseiDataTable + '\'' +
                 '}';
     }
 }
