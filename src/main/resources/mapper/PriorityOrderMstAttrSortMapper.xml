@@ -45,7 +45,13 @@
     where zokusei_id = #{attrId}
     </select>
   <select id="getAttribute" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.zokusei_mst order by zokusei_sort;
+    select * from (select "1"  ,"2" as attrName,"3" as attrCd from ${attrTableName}
+                   where  "1" != 'jan_cd' and "1" != 'jan_name'
+                   union
+                    select "1" as attrCd ,"2" as attrName,"3" from ${kaisouTableName}
+                   where  "1" != 'jan_cd' and "1" != 'jan_name' and "1" like '%_cd')as mst
+
+    order by "3" :: integer
   </select>
   <select id="getAttrSort" resultType="java.lang.Integer">
     select zokusei_sort

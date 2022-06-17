@@ -1,5 +1,8 @@
 package com.trechina.planocycle.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderSpaceDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
 import com.trechina.planocycle.entity.po.*;
@@ -21,7 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +50,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     private WorkPriorityOrderSpaceMapper workPriorityOrderSpaceMapper;
     @Autowired
     private WorkPriorityOrderRestrictSetMapper workPriorityOrderRestrictSetMapper;
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
 
 
 
@@ -79,8 +88,9 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
      * 属性1と属性2の取得
      */
     @Override
-    public Map<String, Object> getAttribute() {
-        List<PriorityOrderAttrListVo> attributeList = priorityOrderMstAttrSortMapper.getAttribute();
+    public Map<String, Object> getAttribute(PriorityOrderAttrDto priorityOrderAttrDto) {
+        GetCommonPartsDataDto commonTableName = this.getCommonTableName(priorityOrderAttrDto);
+        List<PriorityOrderAttrListVo> attributeList = priorityOrderMstAttrSortMapper.getAttribute(commonTableName.getProAttrTable(),commonTableName.getProKaisouTable());
         return ResultMaps.result(ResultEnum.SUCCESS, attributeList);
     }
 
@@ -313,6 +323,38 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         //クリアワーク_priority_order_pts_data_jandata
         shelfPtsDataMapper.deletePtsDataJandata(id);
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public GetCommonPartsDataDto getCommonTableName(PriorityOrderAttrDto priorityOrderAttrDto) {
+        //{"dateIsCore":"1","storeLevel":"3","storeIsCore":"1","storeMstClass":"0000","prodIsCore":"1","prodMstClass":"0000"}
+        String companyCd = priorityOrderAttrDto.getCompanyCd();
+        String commonPartsData = priorityOrderAttrDto.getCommonPartsData();
+        JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
+        String prodMstClass = jsonObject.get("prodMstClass").toString();
+        String storeIsCore = jsonObject.get("storeIsCore").toString();
+        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        String storeMstClass = jsonObject.get("storeMstClass").toString();
+        GetCommonPartsDataDto getCommonPartsDataDto = new GetCommonPartsDataDto();
+        String coreCompany = sysConfigMapper.selectSycConfig("core_company");
+        String isCompanyCd = null;
+        if ("1".equals(prodIsCore)) {
+            isCompanyCd = coreCompany;
+        } else {
+            isCompanyCd = companyCd;
+        }
+        String storeIsCompanyCd = null;
+        if ("1".equals(storeIsCore)) {
+            storeIsCompanyCd = coreCompany;
+        } else {
+            storeIsCompanyCd = companyCd;
+        }
+        getCommonPartsDataDto.setProKaisouTable(MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass));
+        getCommonPartsDataDto.setProAttrTable(MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass));
+        getCommonPartsDataDto.setProInfoTable(MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass));
+        getCommonPartsDataDto.setStoreInfoTable(MessageFormat.format("\"{0}\".ten_{1}_ten_info", storeIsCompanyCd, storeMstClass));
+        getCommonPartsDataDto.setStoreKaisouTable(MessageFormat.format("\"{0}\".ten_{1}_ten_kaisou_header_sys", storeIsCompanyCd, storeMstClass));
+        return getCommonPartsDataDto;
     }
 
 
