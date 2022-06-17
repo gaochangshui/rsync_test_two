@@ -296,6 +296,12 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Override
     public Map<String, Object> getPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd) {
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
+
+        ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));
+        ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(patternCd));
+        ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(patternCd));
+        ptsDetailData.setSkuNum(shelfPtsDataMapper.getSkuNum(patternCd));
+
         List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
         List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
         List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
