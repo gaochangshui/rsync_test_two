@@ -26,6 +26,23 @@ public class PriorityOrderRestrictDto {
     private Integer restrictCd;
     private Integer skuNum;
     private Integer faceNum;
+    private Integer areaRatio;
+
+    public String getCompanyCd() {
+        return companyCd;
+    }
+
+    public void setCompanyCd(String companyCd) {
+        this.companyCd = companyCd;
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
+    }
 
     public String getZokusei1() {
         return zokusei1;
@@ -187,6 +204,14 @@ public class PriorityOrderRestrictDto {
         this.zokuseiName10 = zokuseiName10;
     }
 
+    public Integer getRestrictCd() {
+        return restrictCd;
+    }
+
+    public void setRestrictCd(Integer restrictCd) {
+        this.restrictCd = restrictCd;
+    }
+
     public Integer getSkuNum() {
         return skuNum;
     }
@@ -203,34 +228,19 @@ public class PriorityOrderRestrictDto {
         this.faceNum = faceNum;
     }
 
-    public Integer getRestrictCd() {
-        return restrictCd;
+    public Integer getAreaRatio() {
+        return areaRatio;
     }
 
-    public void setRestrictCd(Integer restrictCd) {
-        this.restrictCd = restrictCd;
-    }
-
-    public String getCompanyCd() {
-        return companyCd;
-    }
-
-    public void setCompanyCd(String companyCd) {
-        this.companyCd = companyCd;
-    }
-
-    public Integer getPriorityOrderCd() {
-        return priorityOrderCd;
-    }
-
-    public void setPriorityOrderCd(Integer priorityOrderCd) {
-        this.priorityOrderCd = priorityOrderCd;
+    public void setAreaRatio(Integer areaRatio) {
+        this.areaRatio = areaRatio;
     }
 
     @Override
     public String toString() {
         return "PriorityOrderRestrictDto{" +
                 "companyCd='" + companyCd + '\'' +
+                ", priorityOrderCd=" + priorityOrderCd +
                 ", zokusei1='" + zokusei1 + '\'' +
                 ", zokusei2='" + zokusei2 + '\'' +
                 ", zokusei3='" + zokusei3 + '\'' +
@@ -254,6 +264,7 @@ public class PriorityOrderRestrictDto {
                 ", restrictCd=" + restrictCd +
                 ", skuNum=" + skuNum +
                 ", faceNum=" + faceNum +
+                ", areaRatio=" + areaRatio +
                 '}';
     }
 }

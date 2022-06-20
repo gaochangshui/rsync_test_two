@@ -4,12 +4,15 @@
     <select id="getRestrictData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictDto">
         select rmst.zokusei1,rmst.zokusei2,rmst.zokusei3,rmst.zokusei4,rmst.zokusei5,rmst.zokusei6,
                rmst.zokusei7,rmst.zokusei8,rmst.zokusei9,rmst.zokusei10,rmst.restrict_cd,
-               coalesce( sum(datas.face_fact),0) as faceNum,coalesce(count(datas.jan_cd),0) as skuNum
+               coalesce( sum(datas.face_fact),0) as faceNum,coalesce(count(datas.jan_cd),0) as skuNum,
+               round(sum (case when  width = 0 then 69 else width+2 end)/19360 * 100) as areaRatio
         from planocycle.work_priority_order_restrict_result rmst
                  left join
              planocycle.work_priority_order_result_data datas
              on rmst.restrict_cd = datas.restrict_cd  and datas.adopt_flag=1 and datas.company_cd=rmst.company_cd
                  and datas.priority_order_cd=rmst.priority_order_cd
+                 left join masterdb.jan_mst janmst
+                           on datas.jan_cd = janmst.jan_cd
         where   rmst.company_cd = #{companyCd} and rmst.author_cd = #{authorCd} and rmst.priority_order_cd = #{priorityOrderCd} and datas.face_fact != 0
         GROUP BY zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10,rmst.restrict_cd
         order by restrict_cd

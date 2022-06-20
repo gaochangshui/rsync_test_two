@@ -59,4 +59,6 @@ public interface PriorityOrderMstMapper {
     int setPartition(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd,@Param("authorCd")String authorCd,@Param("partition")Integer partition );
 
     PriorityOrderMstDto getPatternOrProduct(@Param("companyCd")String companyCd, @Param("priorityOrderCd")Integer priorityOrderCd);
+
+    Integer getWidthAll(Integer priorityOrderCd);
 }
