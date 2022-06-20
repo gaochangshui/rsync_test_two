@@ -158,6 +158,21 @@
             trim(#{item})
         </foreach>
     </select>
+    <select id="getDynamicJanNameClassify" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
+        select "1" as janNew,"2" as janName
+           <foreach collection="col" item="item1" index="index1" separator="," open=",">
+               <foreach collection="col" item="item2" index="index2" separator="||'_'||">
+                   <if test="index2&lt;=index1">
+                       "${item2}"
+                   </if>
+               </foreach>
+               as scat${index1+1}cdVal
+           </foreach>
+           from ${tableName} where "1" in
+        <foreach collection="janNew" separator="," item="item" open="(" close=")">
+            trim(#{item})
+        </foreach>
+    </select>
     <select id="getProductPowerData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
         select datas.jan as janCd,datas.sku_name as janName ,datas.classify_big as zokusei1,datas.classify_middle as zokusei2,datas.classify_small as zokusei3,datas.classify_fine as zokusei4,datas.rank_result as rank
         from planocycle.product_power_mst_data datas
