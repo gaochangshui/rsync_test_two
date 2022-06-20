@@ -1,5 +1,8 @@
 package com.trechina.planocycle.service.impl;
 
+import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
@@ -9,8 +12,10 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
+import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +26,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewService {
@@ -34,7 +40,13 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Autowired
     private PriorityOrderDataMapper priorityOrderDataMapper;
     @Autowired
+    private PriorityOrderMstMapper priorityOrderMstMapper;
+    @Autowired
     private PriorityOrderJanReplaceService priorityOrderJanReplaceService;
+    @Autowired
+    private PriorityOrderMstAttrSortService priorityOrderMstAttrSortService;
+    @Autowired
+    private JanClassifyMapper janClassifyMapper;
     @Autowired
     private PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
     @Autowired
@@ -76,8 +88,14 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      *
      */
     @Override
-    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        List<PriorityOrderJanNewVO> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getJanNameClassify(janCd);
+    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
+        GetCommonPartsDataDto commonTableName = priorityOrderMstAttrSortService.getCommonTableName(attrDto);
+
+        List<Map<String, Object>> janClassify = janClassifyMapper.getColCdClassify(commonTableName.getProKaisouTable());
+        List<String> col = janClassify.stream().filter(map -> !MapUtils.getString(map, "attr").equals("jan_cd") &&
+                MapUtils.getString(map, "attr").endsWith("_cd")).map(map->MapUtils.getString(map, "sort")).collect(Collectors.toList());
+        List<PriorityOrderJanNewVO> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getDynamicJanNameClassify(commonTableName.getProInfoTable(), col, janCd);
         if (priorityOrderJanNewVOList == null){
 
             return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);

@@ -138,4 +138,8 @@
         </if>
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd = #{authorCd}
     </update>
+  <select id="selectCommonPartsData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrDto">
+    select common_parts_data,priority_order_cd,company_cd  from planocycle.work_priority_order_mst
+    where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
 </mapper>

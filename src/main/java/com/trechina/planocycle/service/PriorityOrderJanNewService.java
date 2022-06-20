@@ -24,7 +24,7 @@ public interface PriorityOrderJanNewService {
      *
      */
 
-    Map<String,Object> getPriorityOrderJanNewInfo(String[] janNew,String companyCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    Map<String,Object> getPriorityOrderJanNewInfo(String[] janNew,String companyCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
     /**
      *保存新規商品list
