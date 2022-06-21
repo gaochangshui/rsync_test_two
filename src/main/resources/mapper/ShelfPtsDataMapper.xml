@@ -199,9 +199,6 @@
       <foreach collection="ptsTanaVoList" separator="," item="item" >
         (#{companyCd},#{id},#{item.taiCd},#{item.tanaCd},#{item.tanaHeight},#{item.tanaWidth},#{item.tanaDepth},#{item.tanaThickness}
         ,#{item.tanaType},now(),#{authorCd},now(),#{authorCd})
-        on conflict(company_cd,pts_cd,tai_cd,tana_cd)
-        do update set
-        tana_height = #{item.tanaHeight} and tana_width = #{item.tanaWidth} and tana_depth = #{item.tanaDepth}
       </foreach>
 
   </insert>
@@ -510,6 +507,9 @@
   </delete>
   <delete id="deleteFinalPtsDataJandata">
     delete from planocycle.priority_order_pts_data_jandata where pts_cd=#{ptsCd}
+  </delete>
+  <delete id="deleteTana">
+    delete from planocycle.work_priority_order_pts_data_tanamst where pts_cd=#{ptsCd} and tai_cd = #{taiCd}
   </delete>
   <select id="selectPtsCdByAuthorCd" resultMap="BaseResultMap">
     select id,file_name from planocycle.work_priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}

@@ -454,7 +454,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             String companyCd = ptsTanaVoList.get(0).getCompanyCd();
             String authorCd = httpSession.getAttribute("aud").toString();
             Integer taiCd = ptsTanaVoList.get(0).getTaiCd();
+
             Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+            shelfPtsDataMapper.deleteTana(taiCd,id);
             shelfPtsDataMapper.updTanaSize(ptsTanaVoList,id,authorCd,companyCd);
         } catch (Exception e) {
             e.printStackTrace();
