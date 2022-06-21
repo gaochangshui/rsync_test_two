@@ -9,11 +9,13 @@ import java.util.Map;
 
 @Mapper
 public interface ZokuseiMstMapper {
-    int insertBatch(@Param("lists") List<Zokusei> lists);
+    int insertBatch(String companyCd, String classCd, @Param("lists") List<Zokusei> lists);
 
     List<Map<String, Object>> selectHeader(String tableName);
 
     List<String> selectAllAttrTable(String schema);
 
     List<String> selectAllKaisouTable(String schema);
+
+    void delete(String companyCd, String classCd);
 }

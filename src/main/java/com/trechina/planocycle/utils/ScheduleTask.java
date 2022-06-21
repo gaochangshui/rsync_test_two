@@ -25,4 +25,8 @@ public class ScheduleTask {
         //logger.info("定時調度任務--janInfo表同期開始");
         //tableTransferService.getJanInfoTransfer();
     }
+
+    public void syncZokuseiMst(){
+        tableTransferService.syncZokuseiMst();
+    }
 }

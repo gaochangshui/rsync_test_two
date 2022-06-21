@@ -8,6 +8,15 @@ public class Zokusei {
     private Integer zokuseiSort;
     private Integer type;
     private Integer sortType;
+    private Integer zokuseiCol;
+
+    public Integer getZokuseiCol() {
+        return zokuseiCol;
+    }
+
+    public void setZokuseiCol(Integer zokuseiCol) {
+        this.zokuseiCol = zokuseiCol;
+    }
 
     public String getCompanyCd() {
         return companyCd;
