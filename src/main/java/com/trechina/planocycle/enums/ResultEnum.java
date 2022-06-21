@@ -10,6 +10,7 @@ public enum ResultEnum {
     CGICANCEL(20003,"cgi手動取消"),
     CGIERROR(20004,"cgi報錯"),
     SIZEISZERO(20005,"数据はい空"),
+    SMTDATAISNULL(20006,"face不存在"),
     NAMEISEXISTS(30001,"名称已経存在"),
     NOTDATAS(30002,"没有数据"),
     JANNOTESISTS(30003,"jan不存在"),

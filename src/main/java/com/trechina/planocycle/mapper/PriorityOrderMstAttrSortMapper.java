@@ -69,4 +69,6 @@ public interface PriorityOrderMstAttrSortMapper {
     void insertAttrSortFinal(String companyCd, Integer priorityOrderCd);
 
     void deleteAttrSortFinal(String companyCd, Integer priorityOrderCd);
+
+    void updAttrSort(List<String> asList);
 }

@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TableTransferServiceImpl implements TableTransferService {
@@ -78,5 +80,19 @@ public class TableTransferServiceImpl implements TableTransferService {
             }
         }
         return 0;
+    }
+
+
+    public void setZokuseiData(String company,String classCd,Integer zokuseiId,Integer col){
+        List<String> list = new ArrayList();
+        int a = 9;
+        while (a!=1) {
+            list.add(a + "");
+            a = a - 2;
+
+        }
+        list.add("1");
+        list = list.stream().sorted().collect(Collectors.toList());
+
     }
 }
