@@ -1,5 +1,6 @@
 package com.trechina.planocycle.controller;
 
+import com.trechina.planocycle.entity.vo.AutoDetectVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderMstVO;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,4 +137,8 @@ public class PriorityOrderMstController {
         return priorityOrderMstService.getVariousMst(companyCd,priorityOrderCd,flag);
     }
 
+    @PostMapping("/autoDetect")
+    public Map<String,Object> autoDetect(@RequestBody AutoDetectVo autoDetectVo){
+        return priorityOrderMstService.autoDetect(autoDetectVo);
+    }
 }

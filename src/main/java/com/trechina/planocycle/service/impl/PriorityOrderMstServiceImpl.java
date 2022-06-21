@@ -1,6 +1,9 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.*;
@@ -10,6 +13,7 @@ import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
 import com.trechina.planocycle.utils.cgiUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -116,6 +120,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private ThreadPoolTaskExecutor executor;
     @Autowired
     private VehicleNumCache vehicleNumCache;
+    @Autowired
+    private ZokuseiMstMapper zokuseiMstMapper;
+    @Autowired
+    private PriorityOrderRestrictSetService restrictSetService;
 
     /**
      * 優先順位テーブルリストの取得
@@ -931,6 +939,95 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplace);
         }
         return ResultMaps.result(ResultEnum.FAILURE);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Object> autoDetect(AutoDetectVo autoDetectVo) {
+        WorkPriorityOrderMst priorityOrderMst = new WorkPriorityOrderMst();
+        BeanUtils.copyProperties(autoDetectVo, priorityOrderMst);
+        String aud = session.getAttribute("aud").toString();
+        priorityOrderMst.setAuthorCd(aud);
+        workPriorityOrderMstMapper.insert(priorityOrderMst);
+
+        PriorityOrderAttrDto attrDto = new PriorityOrderAttrDto();
+        BeanUtils.copyProperties(autoDetectVo, attrDto);
+        GetCommonPartsDataDto commonTableName = priorityOrderMstAttrSortService.getCommonTableName(attrDto);
+
+        List<PriorityOderAttrSet> attrSets = new ArrayList<>();
+
+        if (autoDetectVo.getIsAutoDetect().equals(MagicString.AUTO_DETECT)) {
+            Integer shelfPatternCd = autoDetectVo.getShelfPatternCd();
+            String classCd = commonTableName.getProInfoTable().split("_")[1];
+
+            List<Zokusei> zokuseiList = zokuseiMstMapper.selectByZokuseiId(autoDetectVo.getCompanyCd(), autoDetectVo.getPriorityOrderCd(),
+                    Joiner.on(",").join(Lists.newArrayList(autoDetectVo.getAttribute1(), autoDetectVo.getAttribute2())), classCd);
+
+            List<Map<String, Object>> headers = zokuseiMstMapper.selectHeader(commonTableName.getProKaisouTable());
+            List<Integer> cdList = headers.stream().filter(map -> MapUtils.getString(map, "col").endsWith("_cd")).map(map -> MapUtils.getInteger(map, "sort")).collect(Collectors.toList());
+            List<Map<String, Object>> maps = workPriorityOrderMstMapper.selectByAttr(shelfPatternCd, commonTableName.getProInfoTable(), zokuseiList, cdList);
+            PriorityOderAttrSet priorityOderAttrSet = null;
+            for (Zokusei zokusei : zokuseiList) {
+                Map<String, List<Map<String, Object>>> janByZokusei = maps.stream().collect(Collectors.groupingBy(map -> Joiner.on(",")
+                        .join(Lists.newArrayList(MapUtils.getString(map, MagicString.TAI_CD), MapUtils.getString(map, MagicString.TANA_CD))),
+                        LinkedHashMap::new, Collectors.toList()));
+
+                for (Map.Entry<String, List<Map<String, Object>>> entry : janByZokusei.entrySet()) {
+                    List<Map<String, Object>> value = entry.getValue();
+                    String key = entry.getKey();
+
+                    int total = value.size();
+                    List<String> sortByValue = new ArrayList<>();
+                    int topN = 2;
+
+                    Map<String, Long> countMap = value.stream()
+                            .collect(Collectors.groupingBy(map -> MapUtils.getString(map, zokusei.getZokuseiId() + ""), Collectors.counting()));
+
+                    for (Map.Entry<String, Long> itemEntry : countMap.entrySet()) {
+                        Long count = itemEntry.getValue();
+                        long percent = Math.round(count / (double) total * 100);
+                        if(percent >= 90){
+                            priorityOderAttrSet = new PriorityOderAttrSet();
+                            BeanUtils.copyProperties(autoDetectVo, priorityOderAttrSet);
+                            priorityOderAttrSet.setTaiCd(Integer.parseInt(key.split(",")[0]));
+                            priorityOderAttrSet.setTanaCd(Integer.parseInt(key.split(",")[1]));
+                            priorityOderAttrSet.setZokuseiId(zokusei.getZokuseiId());
+                            priorityOderAttrSet.setVal(itemEntry.getKey());
+                            priorityOderAttrSet.setTanaType(0);
+
+                            attrSets.add(priorityOderAttrSet);
+                            restrictSetService.setPriorityOrderRestrict(priorityOderAttrSet);
+                        }else{
+                            if(sortByValue.isEmpty()|| sortByValue.size()<topN){
+                                sortByValue.add(itemEntry.getKey());
+                            }else{
+                                for (int i = 0; i < topN; i++) {
+                                    String s = sortByValue.get(i);
+                                    if (countMap.get(s)>percent) {
+                                        sortByValue.set(i, itemEntry.getKey());
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    for (String s : sortByValue) {
+                        priorityOderAttrSet = new PriorityOderAttrSet();
+                        BeanUtils.copyProperties(autoDetectVo, priorityOderAttrSet);
+                        priorityOderAttrSet.setTaiCd(Integer.parseInt(key.split(",")[0]));
+                        priorityOderAttrSet.setTanaCd(Integer.parseInt(key.split(",")[1]));
+                        priorityOderAttrSet.setZokuseiId(zokusei.getZokuseiId());
+                        priorityOderAttrSet.setVal(s);
+                        priorityOderAttrSet.setTanaType(0);
+
+                        attrSets.add(priorityOderAttrSet);
+                        restrictSetService.setPriorityOrderRestrict(priorityOderAttrSet);
+                    }
+                }
+            }
+        }
+
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
 
