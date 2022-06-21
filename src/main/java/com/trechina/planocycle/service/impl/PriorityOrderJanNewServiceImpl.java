@@ -92,7 +92,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd, Integer priorityOrderCd,String attrList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //priorityOrderMstAttrSortMapper.updAttrSort(Arrays.asList(attrList.split(",")));
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
-        GetCommonPartsDataDto commonTableName = priorityOrderMstAttrSortService.getCommonTableName(attrDto);
+        GetCommonPartsDataDto commonTableName = priorityOrderMstAttrSortService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
 
         List<Map<String, Object>> janClassify = janClassifyMapper.getColCdClassify(commonTableName.getProKaisouTable());
         List<String> col = janClassify.stream().filter(map -> !MapUtils.getString(map, "attr").equals("jan_cd") &&

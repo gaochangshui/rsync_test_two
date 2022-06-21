@@ -8,6 +8,7 @@ import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
+import com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
@@ -23,11 +24,9 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -86,8 +85,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
      */
     @Override
     public Map<String, Object> getAttribute(PriorityOrderAttrDto priorityOrderAttrDto) {
-        GetCommonPartsDataDto commonTableName = this.getCommonTableName(priorityOrderAttrDto);
-        List<PriorityOrderAttrListVo> attributeList = priorityOrderMstAttrSortMapper.getAttribute(commonTableName.getProZokuseiMstTable());
+        GetCommonPartsDataDto commonTableName = this.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(),priorityOrderAttrDto.getCompanyCd());
+        List<PriorityOrderAttrListVo> attributeList = priorityOrderMstAttrSortMapper.getAttribute(commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         return ResultMaps.result(ResultEnum.SUCCESS, attributeList);
     }
 
@@ -106,31 +105,66 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     @Override
     public Map<String, Object> getAttributeList() {
 
-        List<Map<String, Object>> goodsAttrTree = priorityOrderMstAttrSortMapper.getGoodsAttrTree();
+        List<Map<String,Object>> goodsAttrTree = priorityOrderMstAttrSortMapper.getGoodsAttrTree();
+        for (Map<String, Object> objectMap : goodsAttrTree) {
+            objectMap.put("attrCd",objectMap.get("attrcd"));
+            objectMap.put("attrName",objectMap.get("attrname"));
+            objectMap.put("zokuseiId",objectMap.get("zokusei_id"));
+            objectMap.remove("attrcd");
+            objectMap.remove("attrname");
+            objectMap.remove("zokusei_id");
+        }
+        List<Map<String,Object>> jsonArray = this.listToTree(goodsAttrTree, "attrCd", "pid", "children");
+
+        Map<String,Object> map = new HashMap<>();
+
+            map.put("values",jsonArray);
+            map.put("attrName","商品分類");
+            map.put("attrCd",0);
+
+           List attr = new ArrayList<>();
+           attr.add(map);
+           List<PriorityOrderAttrValueVo> attr1 = priorityOrderMstAttrSortMapper.getAttr();
+           attr.addAll(attr1);
 
 
-        //PriorityOrderAttrValueVo priorityOrderAttrValueVo = new PriorityOrderAttrValueVo();
-        //priorityOrderAttrValueVo.setValues(goodsAttrTree);
-        //priorityOrderAttrValueVo.setAttrName("商品分類");
-        //priorityOrderAttrValueVo.setAttrCd(0);
-        //List<PriorityOrderAttrValueVo> attr = new ArrayList<>();
-        //attr.add(priorityOrderAttrValueVo);
-        //List<PriorityOrderAttrValueVo> attr1 = priorityOrderMstAttrSortMapper.getAttr();
-        //for (PriorityOrderAttrValueVo orderAttrValueVo : attr1) {
-        //    attr.add(orderAttrValueVo);
-        //}
-        //
-        //for (PriorityOrderAttrValueVo priorityOrderAttrListVo : attr) {
-        //    if (priorityOrderAttrListVo.getAttrCd() != 0) {
-        //        List<PriorityOrderAttrValue> attrValues = priorityOrderMstAttrSortMapper.getAttrValues(priorityOrderAttrListVo.getAttrCd());
-        //        priorityOrderAttrListVo.setValues(attrValues);
-        //    }
-        //}
-        //
-        //Stream<PriorityOrderAttrValueVo> sorted = attr.stream().sorted(Comparator.comparing(PriorityOrderAttrValueVo::getAttrCd));
+
+           Stream<PriorityOrderAttrValueVo> sorted = attr.stream().sorted(Comparator.comparing(PriorityOrderAttrValueVo::getAttrCd));
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
+    public static List listToTree(List arr, String id, String pid, String child){
+        List r = new ArrayList();
+        Map<String,Object> hash = new HashMap<>();
+        //将数组转为Object的形式，key为数组中的id
+        for(int i=0;i<arr.size();i++){
+            Map<String,Object> json = (Map<String,Object>) arr.get(i);
+            hash.put((String) json.get(id), json);
+        }
+        //遍历结果集
+        for(int j=0;j<arr.size();j++){
+            //单条记录
+            Map<String,Object> aVal = (Map<String,Object>) arr.get(j);
+            //在hash中取出key为单条记录中pid的值
+            Map<String,Object> hashVP = (Map<String,Object>) hash.get(aVal.get(pid).toString());
+            //如果记录的pid存在，则说明它有父节点，将她添加到孩子节点的集合中
+            if(hashVP!=null){
+                //检查是否有child属性
+                if(hashVP.get(child)!=null){
+                    List ch = (List) hashVP.get(child);
+                    ch.add(aVal);
+                    hashVP.put(child, ch);
+                }else{
+                    List ch = new ArrayList();
+                    ch.add(aVal);
+                    hashVP.put(child, ch);
+                }
+            }else{
+                r.add(aVal);
+            }
+        }
+        return r;
+    }
 
     /**
      * 属性1属性2の組合せに対応する面積を取得
@@ -325,16 +359,16 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     }
 
     @Override
-    public GetCommonPartsDataDto getCommonTableName(PriorityOrderAttrDto priorityOrderAttrDto) {
+    public GetCommonPartsDataDto getCommonTableName(String commonPartsData,String companyCd ) {
         //{"dateIsCore":"1","storeLevel":"3","storeIsCore":"1","storeMstClass":"0000","prodIsCore":"1","prodMstClass":"0000"}
-        String companyCd = priorityOrderAttrDto.getCompanyCd();
-        String commonPartsData = priorityOrderAttrDto.getCommonPartsData();
+
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
         String prodMstClass = jsonObject.get("prodMstClass").toString();
-
         String prodIsCore = jsonObject.get("prodIsCore").toString();
 
         GetCommonPartsDataDto getCommonPartsDataDto = new GetCommonPartsDataDto();
+        getCommonPartsDataDto.setProdMstClass(prodMstClass);
+
         String coreCompany = sysConfigMapper.selectSycConfig("core_company");
         String isCompanyCd = null;
         if ("1".equals(prodIsCore)) {
@@ -342,18 +376,19 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         } else {
             isCompanyCd = companyCd;
         }
-        if (jsonObject.get("storeIsCore").toString() !=null) {
-            String storeIsCore = jsonObject.get("storeIsCore").toString();
-            String storeMstClass = jsonObject.get("storeMstClass").toString();
-            String storeIsCompanyCd = null;
-            if ("1".equals(storeIsCore)) {
-                storeIsCompanyCd = coreCompany;
-            } else {
-                storeIsCompanyCd = companyCd;
-            }
-            getCommonPartsDataDto.setStoreInfoTable(MessageFormat.format("\"{0}\".ten_{1}_ten_info", storeIsCompanyCd, storeMstClass));
-            getCommonPartsDataDto.setStoreKaisouTable(MessageFormat.format("\"{0}\".ten_{1}_ten_kaisou_header_sys", storeIsCompanyCd, storeMstClass));
-        }
+        getCommonPartsDataDto.setProdIsCore(isCompanyCd);
+        //if (jsonObject.get("storeIsCore").toString() !=null) {
+        //    String storeIsCore = jsonObject.get("storeIsCore").toString();
+        //    String storeMstClass = jsonObject.get("storeMstClass").toString();
+        //    String storeIsCompanyCd = null;
+        //    if ("1".equals(storeIsCore)) {
+        //        storeIsCompanyCd = coreCompany;
+        //    } else {
+        //        storeIsCompanyCd = companyCd;
+        //    }
+        //    getCommonPartsDataDto.setStoreInfoTable(MessageFormat.format("\"{0}\".ten_{1}_ten_info", storeIsCompanyCd, storeMstClass));
+        //    getCommonPartsDataDto.setStoreKaisouTable(MessageFormat.format("\"{0}\".ten_{1}_ten_kaisou_header_sys", storeIsCompanyCd, storeMstClass));
+        //}
 
 
         getCommonPartsDataDto.setProKaisouTable(MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass));

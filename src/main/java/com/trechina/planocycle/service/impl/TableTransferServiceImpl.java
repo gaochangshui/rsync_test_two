@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +106,6 @@ public class TableTransferServiceImpl implements TableTransferService {
     }
 
     @Override
-    @PostConstruct
     @Transactional(rollbackFor = Exception.class)
     public void syncZokuseiMst() {
         String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
