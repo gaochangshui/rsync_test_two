@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ZokuseiMstMapper">
+    <insert id="insertBatch">
+        inert into masterdb.planocycle_zokuser_mst values
+        <foreach collection="lists" item="item">
+            #{companyCd}, #{classCd}, #{item.zokuseriId}, #{item.zokuseriNm}, #{item.zokuseiSort}, #{item.type}, #{item.sortType}
+        </foreach>
+    </insert>
+    <select id="selectHeader" resultType="map">
+        select "1" as col,"2" name,"3" sort,0 as "type" from ${tableName}
+        where "1" not like 'jan%'
+        order by "3"::integer
+    </select>
+    <select id="selectAllAttrTable" resultType="string">
+        select "table_name" from information_schema.tables
+        where table_schema=#{schema} and "table_name" like 'prod_%_jan_attr_header_sys';
+    </select>
+    <select id="selectAllKaisouTable" resultType="string">
+        select "table_name" from information_schema.tables
+        where table_schema=#{schema} and "table_name" like 'prod_%_kaisou_header_sys';
+    </select>
+</mapper>
