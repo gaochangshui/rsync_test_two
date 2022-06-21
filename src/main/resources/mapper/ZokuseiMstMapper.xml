@@ -10,7 +10,7 @@
     </insert>
     <insert id="insertZokuseiData">
         insert into masterdb.planocycle_zokusei_mst_data(zokusei_id,type,nm,company_cd,class_cd,val,val_parent)
-        select distinct #{zokuseiId}, null,"${col+1}",#{company},#{classCd}
+        select distinct #{zokuseiId}, 1,"${col+1}",#{company},#{classCd}
                <foreach open="," collection="list" item="item" separator="|| '_' ||">
                    <if test="item &lt;= col">
                         "${item}"
@@ -29,7 +29,7 @@
     <insert id="insertZokuseiData1">
         insert into masterdb.planocycle_zokusei_mst_data(zokusei_id,val,val_parent,type,nm,company_cd,class_cd)
         select distinct #{zokuseiId},COALESCE("${col}", ''),null
-        ,null,"${col}",#{company},#{classCd}
+        ,0,"${col}",#{company},#{classCd}
         from "${company}".prod_${classCd}_jan_info
     </insert>
     <select id="selectHeader" resultType="map">

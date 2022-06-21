@@ -172,4 +172,8 @@ public interface ShelfPtsDataMapper {
             , Map<String,Object> attrTableName, List<Map<String,Object>> listAttr);
 
     List<LinkedHashMap<String, Object>> getColHeader(Map<String, Object> listTableName, List<Map<String, Object>> listAttr);
+
+    void updTanaSize(List<PtsTanaVo> ptsTanaVoList,Integer id,String authorCd,String companyCd);
+
+    void deleteTana(Integer taiCd, Integer ptsCd);
 }

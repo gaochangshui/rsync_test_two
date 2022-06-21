@@ -54,7 +54,7 @@
     where zokusei_id = #{attrId}
     </select>
   <select id="getAttribute" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
+    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
   </select>
   <select id="getAttrSort" resultType="java.lang.Integer">
     select zokusei_sort
@@ -108,35 +108,9 @@
 
     where pts_cd = #{ptsCd}
   </select>
-  <select id="getGoodsAttrTree" resultMap="attrTreeMap">
+  <select id="getGoodsAttrTree" resultType="map">
     --Tree
-    select ct1.val as scat1cd,ct1.nm as scat1nm,mst1.zokusei_nm as zokusei1nm
-         ,ct2.val as scat2cd,ct2.nm as scat2nm,mst2.zokusei_nm as zokusei2nm
-         ,ct3.val as scat3cd,ct3.nm as scat3nm,mst3.zokusei_nm as zokusei3nm
-         ,ct4.val as scat4cd,ct4.nm as scat4nm,mst4.zokusei_nm as zokusei4nm
-    from masterdb.zokusei_mst_data ct1
-           left join masterdb.zokusei_mst mst1
-                     on ct1.zokusei_id = mst1.zokusei_id
-           left join masterdb.zokusei_mst_data ct2
-                     on ct1.val = ct2.val_parent
-                       and ct2.zokusei_id  = 2
-           left join masterdb.zokusei_mst mst2
-                     on ct2.zokusei_id = mst2.zokusei_id
-           left join masterdb.zokusei_mst_data ct3
-                     on ct2.val = ct3.val_parent
-                       and ct2.zokusei_id  = 2
-                       and ct3.zokusei_id  = 3
-           left join masterdb.zokusei_mst mst3
-                     on ct3.zokusei_id = mst3.zokusei_id
-           left join masterdb.zokusei_mst_data ct4
-                     on ct3.val = ct4.val_parent
-                       and ct3.zokusei_id  = 3
-                       and ct4.zokusei_id  = 4
-           left join masterdb.zokusei_mst mst4
-                     on ct4.zokusei_id = mst4.zokusei_id
-    where ct1.zokusei_id = 1
-    order by ct1.val
-
+    select val,val_parent,nm from masterdb.planocycle_zokusei_mst_data a  where company_cd ='1000' and class_cd = '0000' and type = '1'
   </select>
   <select id="getAttr" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo">
     select zokusei_id as attrCd,zokusei_nm as attrName ,zokusei_tb_nm as tableName,jans_col_nm as jansColNm,zokusei_sort as sort from masterdb.zokusei_mst where type  = 0;

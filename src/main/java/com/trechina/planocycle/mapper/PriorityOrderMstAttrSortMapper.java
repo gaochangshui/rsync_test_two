@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface PriorityOrderMstAttrSortMapper {
@@ -40,7 +41,7 @@ public interface PriorityOrderMstAttrSortMapper {
     List<PriorityOrderAttrVO> getAttrValue5(@Param("attr1") Integer a1cd,@Param("ptsCd")Integer ptsCd);
 
     //商品分類属性構造の取得
-    List<PriorityOrderAttrValue> getGoodsAttrTree();
+    List<Map<String,Object>> getGoodsAttrTree();
 
     //商品分類以外の属性数
     List<PriorityOrderAttrValueVo> getAttr();

@@ -1,6 +1,8 @@
 package com.trechina.planocycle.entity.vo;
 
 public class PtsTanaVo {
+    private String companyCd;
+    private Integer priorityOrderCd;
     private Integer taiCd;
     private Integer tanaCd;
     private Integer tanaHeight;
@@ -65,10 +67,28 @@ public class PtsTanaVo {
         this.tanaType = tanaType;
     }
 
+    public String getCompanyCd() {
+        return companyCd;
+    }
+
+    public void setCompanyCd(String companyCd) {
+        this.companyCd = companyCd;
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
+    }
+
     @Override
     public String toString() {
         return "PtsTanaVo{" +
-                "taiCd=" + taiCd +
+                "companyCd='" + companyCd + '\'' +
+                ", priorityOrderCd=" + priorityOrderCd +
+                ", taiCd=" + taiCd +
                 ", tanaCd=" + tanaCd +
                 ", tanaHeight=" + tanaHeight +
                 ", tanaWidth=" + tanaWidth +
