@@ -1,5 +1,8 @@
 package com.trechina.planocycle.service;
 
+import java.util.List;
+import java.util.Map;
+
 public interface TableTransferService {
     int getAreasTransfer();
 
@@ -11,5 +14,7 @@ public interface TableTransferService {
 
     int getJanInfoTransfer();
 
-    void setZokuseiData(String company,String classCd,Integer zokuseiId,Integer col);
+    void setZokuseiData(String company,String classCd,Integer zokuseiId,Integer col, List<Map<String, Object>> cdList);
+
+    void syncZokuseiMst();
 }

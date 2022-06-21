@@ -80,15 +80,6 @@ class PlanoCycleApiApplicationTests {
     }
 
     @Test
-    public void test10(){
-        String company = "0001";
-        String classCd = "0000";
-        Integer col = 5;
-        Integer zokuseiId = 2;
-
-          tableTransferService.setZokuseiData(company,classCd,zokuseiId,col);
-    }
-    @Test
     public void test() throws NoSuchFieldException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         List<ProductPowerMstData> dataList = new ArrayList<>();
         ProductPowerMstData data = null;

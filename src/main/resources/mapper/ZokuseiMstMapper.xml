@@ -2,29 +2,33 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.ZokuseiMstMapper">
     <insert id="insertBatch">
-        inert into masterdb.planocycle_zokuser_mst values
-        <foreach collection="lists" item="item">
-            #{companyCd}, #{classCd}, #{item.zokuseriId}, #{item.zokuseriNm}, #{item.zokuseiSort}, #{item.type}, #{item.sortType}
+        insert into masterdb.planocycle_zokusei_mst values
+        <foreach collection="lists" item="item" separator=",">
+        (#{companyCd}, #{classCd}, #{item.zokuseiId}, #{item.zokuseiNm}, #{item.zokuseiSort}, #{item.type},
+        #{item.sortType}, #{item.zokuseiCol})
         </foreach>
     </insert>
     <insert id="insertZokuseiData">
-        insert into masterdb.planocycle_zokusei_mst_data(zokusei_id,val,val_parent,type,nm,company_cd,class_cd)
-        select distinct #{zokuseiId},
-               <foreach collection="list" item="item" separator="|| '_' ||">
-                   "${item}"
-               </foreach>
-                ,
-                <foreach collection="list" item="item" separator="|| '_' ||">
-                    <if test="item != col">
+        insert into masterdb.planocycle_zokusei_mst_data(zokusei_id,type,nm,company_cd,class_cd,val,val_parent)
+        select distinct #{zokuseiId}, null,"${col+1}",#{company},#{classCd}
+               <foreach open="," collection="list" item="item" separator="|| '_' ||">
+                   <if test="item &lt;= col">
                         "${item}"
-                    </if>
-                </foreach>
-                ,null,"${col+1}",#{company},#{classCd}
+                   </if>
+               </foreach>
+               <trim suffixOverrides=",">
+                   <foreach open="," collection="list" index="index" item="item" separator="|| '_' ||">
+                       <if test="index==0 and item == col">null</if>
+                       <if test="item &lt; col">
+                           "${item}"
+                       </if>
+                   </foreach>
+               </trim>
         from "${company}".prod_${classCd}_jan_info
     </insert>
     <insert id="insertZokuseiData1">
         insert into masterdb.planocycle_zokusei_mst_data(zokusei_id,val,val_parent,type,nm,company_cd,class_cd)
-        select distinct #{zokuseiId},"${col}",null
+        select distinct #{zokuseiId},COALESCE("${col}", ''),null
         ,null,"${col}",#{company},#{classCd}
         from "${company}".prod_${classCd}_jan_info
     </insert>
@@ -45,4 +49,10 @@
         select count(1) from "${company}".prod_${classCd}_jan_kaisou_header_sys
         where "3" = cast(#{col} as varchar)
     </select>
+    <delete id="delete">
+        delete from masterdb.planocycle_zokusei_mst where company_cd=#{companyCd} and class_cd=#{classCd}
+    </delete>
+    <delete id="deleteData">
+        delete from masterdb.planocycle_zokusei_mst_data where company_cd=#{companyCd} and class_cd=#{classCd}
+    </delete>
 </mapper>
