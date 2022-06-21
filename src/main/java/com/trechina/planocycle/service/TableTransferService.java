@@ -10,4 +10,6 @@ public interface TableTransferService {
     int getAttrTransfer();
 
     int getJanInfoTransfer();
+
+    void setZokuseiData(String company,String classCd,Integer zokuseiId,Integer col);
 }

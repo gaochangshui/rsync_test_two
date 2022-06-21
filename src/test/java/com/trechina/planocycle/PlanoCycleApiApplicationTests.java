@@ -5,6 +5,7 @@ import com.trechina.planocycle.entity.dto.PriorityAllResultDataDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderMstService;
+import com.trechina.planocycle.service.TableTransferService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -59,6 +60,8 @@ class PlanoCycleApiApplicationTests {
     ProductPowerDataMapper productPowerDataMapper;
     @Autowired
     JanClassifyMapper janClassifyMapper;
+    @Autowired
+    TableTransferService tableTransferService;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
@@ -76,7 +79,15 @@ class PlanoCycleApiApplicationTests {
         return stu1;
     }
 
+    @Test
+    public void test10(){
+        String company = "0001";
+        String classCd = "0000";
+        Integer col = 5;
+        Integer zokuseiId = 2;
 
+          tableTransferService.setZokuseiData(company,classCd,zokuseiId,col);
+    }
     @Test
     public void test() throws NoSuchFieldException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         List<ProductPowerMstData> dataList = new ArrayList<>();

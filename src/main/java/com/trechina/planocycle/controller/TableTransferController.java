@@ -51,4 +51,9 @@ public class TableTransferController {
     public int janInfoTransfer() {
         return tableTransferService.getJanInfoTransfer();
     }
+
+    @GetMapping("setZokuseiData")
+    public  void setZokuseiData(String company,String classCd,Integer zokuseiId,Integer col){
+        tableTransferService.setZokuseiData(company,classCd,zokuseiId,col);
+    }
 }

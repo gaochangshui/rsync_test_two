@@ -23,6 +23,8 @@ public class TableTransferServiceImpl implements TableTransferService {
     private JansMapper jansMapper;
     @Autowired
     private JanInfoMapper janInfoMapper;
+    @Autowired
+    private ZokuseiMstMapper zokuseiMstMapper;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -84,15 +86,20 @@ public class TableTransferServiceImpl implements TableTransferService {
 
 
     public void setZokuseiData(String company,String classCd,Integer zokuseiId,Integer col){
-        List<String> list = new ArrayList();
-        int a = 9;
-        while (a!=1) {
-            list.add(a + "");
-            a = a - 2;
+        Integer integer = zokuseiMstMapper.selectExist(company, classCd, col);
+        if (integer >0) {
+            List<String> list = new ArrayList();
+            int a = 9;
+            while (a != 1) {
+                list.add(a + "");
+                a = a - 2;
 
+            }
+
+            list = list.stream().sorted().collect(Collectors.toList());
+            zokuseiMstMapper.insertZokuseiData(company, classCd, zokuseiId, col, list);
+        }else {
+            zokuseiMstMapper.insertZokuseiData1(company, classCd, zokuseiId, col);
         }
-        list.add("1");
-        list = list.stream().sorted().collect(Collectors.toList());
-
     }
 }
