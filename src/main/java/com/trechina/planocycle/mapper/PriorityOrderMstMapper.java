@@ -61,5 +61,7 @@ public interface PriorityOrderMstMapper {
 
     PriorityOrderMstDto getPatternOrProduct(@Param("companyCd")String companyCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 
+    Integer getWidthAll(Integer priorityOrderCd);
+
     PriorityOrderAttrDto selectCommonPartsData(@Param("companyCd")String companyCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 }

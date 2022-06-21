@@ -8,6 +8,23 @@ public class PriorityOrderRestDto {
 
     private Integer skuNum;
     private Integer faceNum;
+    private Integer areaRatio;
+
+    public String getCompanyCd() {
+        return companyCd;
+    }
+
+    public void setCompanyCd(String companyCd) {
+        this.companyCd = companyCd;
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
+    }
 
     public Integer getRestrictCd() {
         return restrictCd;
@@ -41,29 +58,24 @@ public class PriorityOrderRestDto {
         this.faceNum = faceNum;
     }
 
-    public String getCompanyCd() {
-        return companyCd;
+    public Integer getAreaRatio() {
+        return areaRatio;
     }
 
-    public void setCompanyCd(String companyCd) {
-        this.companyCd = companyCd;
-    }
-
-    public Integer getPriorityOrderCd() {
-        return priorityOrderCd;
-    }
-
-    public void setPriorityOrderCd(Integer priorityOrderCd) {
-        this.priorityOrderCd = priorityOrderCd;
+    public void setAreaRatio(Integer areaRatio) {
+        this.areaRatio = areaRatio;
     }
 
     @Override
     public String toString() {
         return "PriorityOrderRestDto{" +
-                "restrictCd='" + restrictCd + '\'' +
+                "companyCd='" + companyCd + '\'' +
+                ", priorityOrderCd=" + priorityOrderCd +
+                ", restrictCd=" + restrictCd +
                 ", restrictName='" + restrictName + '\'' +
                 ", skuNum=" + skuNum +
                 ", faceNum=" + faceNum +
+                ", areaRatio=" + areaRatio +
                 '}';
     }
 }

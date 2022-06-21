@@ -17,5 +17,13 @@ public interface ZokuseiMstMapper {
 
     List<String> selectAllKaisouTable(String schema);
 
+    void insertZokuseiData(String company, String classCd, Integer zokuseiId, Integer col, List<Integer> list);
+
+    Integer selectExist(String company, String classCd, Integer col);
+
+    void insertZokuseiData1(String company, String classCd, Integer zokuseiId, Integer col);
+
     void delete(String companyCd, String classCd);
+
+    void deleteData(String companyCd, String classCd);
 }

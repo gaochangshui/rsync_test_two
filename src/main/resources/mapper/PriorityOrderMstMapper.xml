@@ -116,7 +116,15 @@
     where mst.company_cd = #{companyCd} and mst.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     GROUP BY product_power_cd, mst.priority_order_cd,mst.attr_option
   </select>
-  <update id="updateOrderName">
+    <select id="getWidthAll" resultType="java.lang.Integer">
+      select sum(tana_width) from planocycle.work_priority_order_mst mst
+                                    left join planocycle.shelf_pts_data ptsdata
+                                              on ptsdata.shelf_pattern_cd = mst.shelf_pattern_cd
+                                    left join planocycle.shelf_pts_data_tanamst tanamst
+                                              on tanamst.pts_cd = ptsdata.id
+      where priority_order_cd =#{priorityOrderCd}
+    </select>
+    <update id="updateOrderName">
     update planocycle.priority_order_mst set priority_order_name=#{priorityOrderName} where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     and deleteflg=0
   </update>

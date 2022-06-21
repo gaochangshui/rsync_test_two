@@ -456,7 +456,10 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //cgiを呼び出す
 
         Map<String, Object> data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd,tokenInfo);
-        if (data.get("data") != null && data.get("data") != "") {
+        if (data.get("data")==null || "".equals(data.get("data"))){
+            vehicleNumCache.put("faceIsNull"+uuid,1);
+        }
+        if (data.get("data") != null && !"".equals(data.get("data"))) {
             String[] strResult = data.get("data").toString().split("@");
             String[] strSplit = null;
             List<WorkPriorityOrderResultData> list = new ArrayList<>();
@@ -553,8 +556,14 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
         if (vehicleNumCache.get("PatternCdNotExist"+taskId)!=null){
             vehicleNumCache.remove("PatternCdNotExist"+taskId);
+            return ResultMaps.result(ResultEnum.SMTDATAISNULL);
+        }
+
+        if (vehicleNumCache.get("faceIsNull"+taskId)!=null){
+            vehicleNumCache.remove("faceIsNull"+taskId);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
+
         if (vehicleNumCache.get(taskId) != null){
             vehicleNumCache.remove(taskId);
             return ResultMaps.result(ResultEnum.SUCCESS,"success");
@@ -670,7 +679,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         String queryPath = resourceBundle.getString("TaskQuery");
         //taskIdを持って、再度cgiに運転状態/データの取得を要求する
         resultCgi = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-        logger.info("保存優先順位表結果：{}", resultCgi);
+        logger.info("smt返回face数：{}", resultCgi);
         return resultCgi;
     }
 

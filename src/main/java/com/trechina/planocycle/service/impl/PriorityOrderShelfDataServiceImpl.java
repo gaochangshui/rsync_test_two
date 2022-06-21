@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.mapper.PriorityOrderMstMapper;
 import com.trechina.planocycle.mapper.PriorityOrderRestrictSetMapper;
 import com.trechina.planocycle.mapper.PriorityOrderShelfDataMapper;
 import com.trechina.planocycle.mapper.WorkPriorityOrderResultDataMapper;
@@ -29,6 +30,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Autowired
     private WorkPriorityOrderResultDataMapper workPriorityOrderResultDataMapper;
     @Autowired
+    private PriorityOrderMstMapper priorityOrderMstMapper;
+    @Autowired
     private HttpSession session;
 
     /**
@@ -41,7 +44,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
 
         String authorCd = session.getAttribute("aud").toString();
-        List<PriorityOrderRestrictDto> restrictData = priorityOrderShelfDataMapper.getRestrictData(companyCd, authorCd,priorityOrderCd);
+        Integer tanaWidth = priorityOrderMstMapper.getWidthAll(priorityOrderCd);
+        List<PriorityOrderRestrictDto> restrictData = priorityOrderShelfDataMapper.getRestrictData(companyCd, authorCd,priorityOrderCd,tanaWidth);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
         Class clazz = PriorityOrderRestrictDto.class;
         for (int i = 1; i <= 10; i++) {
@@ -84,6 +88,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             priorityOrderRestDto.setRestrictName(s);
             priorityOrderRestDto.setFaceNum(restrictDatum.getFaceNum());
             priorityOrderRestDto.setSkuNum(restrictDatum.getSkuNum());
+            priorityOrderRestDto.setAreaRatio(restrictDatum.getAreaRatio());
             list.add(priorityOrderRestDto);
         }
 

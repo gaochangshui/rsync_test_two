@@ -5,6 +5,8 @@ import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.TableTransferService;
 import org.apache.commons.collections4.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,7 @@ public class TableTransferServiceImpl implements TableTransferService {
     private SysConfigMapper sysConfigMapper;
     @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
+    private Logger logger = LoggerFactory.getLogger(TableTransferServiceImpl.class);
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -90,6 +93,19 @@ public class TableTransferServiceImpl implements TableTransferService {
         return 0;
     }
 
+
+    public void setZokuseiData(String company,String classCd,Integer zokuseiId,Integer col, List<Map<String, Object>> headerMap){
+        List<Integer> cdList = headerMap.stream().filter(map -> MapUtils.getString(map, "col").endsWith("_cd"))
+                .map(map->MapUtils.getInteger(map, "sort")).collect(Collectors.toList());
+        logger.info("{}",cdList);
+
+        if(cdList.isEmpty()){
+            zokuseiMstMapper.insertZokuseiData1(company, classCd, zokuseiId, col);
+        }else {
+            zokuseiMstMapper.insertZokuseiData(company, classCd, zokuseiId, col, cdList);
+        }
+    }
+
     @Override
     @PostConstruct
     @Transactional(rollbackFor = Exception.class)
@@ -105,6 +121,7 @@ public class TableTransferServiceImpl implements TableTransferService {
                 String classCd = kaisouTbName.split("_")[1];
                 kaisouTbName = "\""+company+"\"."+kaisouTbName;
 
+                zokuseiMstMapper.deleteData(company, classCd);
                 List<Map<String, Object>> headerMap = zokuseiMstMapper.selectHeader(kaisouTbName);
                 List<Zokusei> zokuseiList = new ArrayList<>();
                 for (Map<String, Object> header : headerMap) {
@@ -129,11 +146,12 @@ public class TableTransferServiceImpl implements TableTransferService {
                         zokusei.setZokuseiCol(colI);
 
                         zokuseiList.add(zokusei);
-                        zokuseiMstMapper.delete(company, classCd);
+                        this.setZokuseiData(company, classCd, zokusei.getZokuseiId(), colI, headerMap);
                     }
 
                     colIndex++;
                 }
+                zokuseiMstMapper.delete(company, classCd);
                 zokuseiMstMapper.insertBatch(company, classCd, zokuseiList);
 
                 String attrTbName = "\""+company+"\".prod_"+classCd+"_jan_attr_header_sys";
@@ -142,15 +160,17 @@ public class TableTransferServiceImpl implements TableTransferService {
                 List<Zokusei> attrZokuseiList = new ArrayList<>();
                 for (Map<String, Object> header : attrHeaderMap) {
                     Zokusei zokusei = new Zokusei();
+                    Integer colI = MapUtils.getInteger(header, "sort");
                     zokusei.setZokuseiId(colIndex);
                     zokusei.setZokuseiNm(MapUtils.getString(header, "name"));
                     zokusei.setCompanyCd(company);
                     zokusei.setClassCd(classCd);
                     zokusei.setType(MapUtils.getInteger(header, "type"));
                     zokusei.setZokuseiSort(MapUtils.getInteger(header, "sort"));
-                    zokusei.setZokuseiCol(MapUtils.getInteger(header, "sort"));
+                    zokusei.setZokuseiCol(colI);
 
                     attrZokuseiList.add(zokusei);
+                    this.setZokuseiData(company, classCd, zokusei.getZokuseiId(), colI, attrHeaderMap);
                     colIndex++;
                 }
                 zokuseiMstMapper.insertBatch(company, classCd, attrZokuseiList);
