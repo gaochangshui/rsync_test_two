@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface PriorityOrderRestrictSetMapper {
@@ -28,9 +29,16 @@ public interface PriorityOrderRestrictSetMapper {
 
     int setPriorityOrderRestrict(@Param("item") PriorityOderAttrSet priorityOderAttrSet, @Param("authorCd") String authorCd);
 
-    List<PriorityOrderRestrictSet> getPriorityOrderRestrict(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    List<PriorityOrderRestrictSet> getPriorityOrderRestrict(@Param("companyCd")String companyCd,
+                                       @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
+
+    List<Map<String, Object>> getDynamicPriorityOrderRestrict(@Param("companyCd")String companyCd,
+                                                       @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd,
+                                                       @Param("zokuseiList")List<String> zokuseiList);
     //名前の前に大分類nameがついている
     List<PriorityOrderAttrValueDto> getAttrValues();
+
+    List<PriorityOrderAttrValueDto> getDynamicAttrValues(String companyCd, String classCd);
 
     List<PriorityOrderAttrValueDto> getAttrValues1();
 

@@ -948,6 +948,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         BeanUtils.copyProperties(autoDetectVo, priorityOrderMst);
         String aud = session.getAttribute("aud").toString();
         priorityOrderMst.setAuthorCd(aud);
+        workPriorityOrderMstMapper.deleteByAuthorCd(autoDetectVo.getCompanyCd(), aud, autoDetectVo.getPriorityOrderCd());
         workPriorityOrderMstMapper.insert(priorityOrderMst);
 
         PriorityOrderAttrDto attrDto = new PriorityOrderAttrDto();

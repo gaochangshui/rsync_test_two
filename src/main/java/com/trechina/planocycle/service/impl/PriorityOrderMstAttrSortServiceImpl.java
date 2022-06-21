@@ -342,18 +342,18 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         } else {
             isCompanyCd = companyCd;
         }
-        if (jsonObject.get("storeIsCore").toString() !=null) {
-            String storeIsCore = jsonObject.get("storeIsCore").toString();
-            String storeMstClass = jsonObject.get("storeMstClass").toString();
-            String storeIsCompanyCd = null;
-            if ("1".equals(storeIsCore)) {
-                storeIsCompanyCd = coreCompany;
-            } else {
-                storeIsCompanyCd = companyCd;
-            }
-            getCommonPartsDataDto.setStoreInfoTable(MessageFormat.format("\"{0}\".ten_{1}_ten_info", storeIsCompanyCd, storeMstClass));
-            getCommonPartsDataDto.setStoreKaisouTable(MessageFormat.format("\"{0}\".ten_{1}_ten_kaisou_header_sys", storeIsCompanyCd, storeMstClass));
-        }
+//        if (jsonObject.get("storeIsCore")!=null && jsonObject.get("storeIsCore").toString() !=null) {
+//            String storeIsCore = jsonObject.get("storeIsCore").toString();
+//            String storeMstClass = jsonObject.get("storeMstClass").toString();
+//            String storeIsCompanyCd = null;
+//            if ("1".equals(storeIsCore)) {
+//                storeIsCompanyCd = coreCompany;
+//            } else {
+//                storeIsCompanyCd = companyCd;
+//            }
+//            getCommonPartsDataDto.setStoreInfoTable(MessageFormat.format("\"{0}\".ten_{1}_ten_info", storeIsCompanyCd, storeMstClass));
+//            getCommonPartsDataDto.setStoreKaisouTable(MessageFormat.format("\"{0}\".ten_{1}_ten_kaisou_header_sys", storeIsCompanyCd, storeMstClass));
+//        }
 
 
         getCommonPartsDataDto.setProKaisouTable(MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass));
