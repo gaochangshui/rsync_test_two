@@ -192,6 +192,19 @@
     where pattern_cd = #{patternId,jdbcType=INTEGER}
   </update>
   <update id="setFinalPtsData"></update>
+  <insert id="updTanaSize">
+    insert into planocycle.work_priority_order_pts_data_tanamst(company_cd,pts_cd,tai_cd,tana_cd,tana_height,tana_width,tana_depth,tana_thickness
+    ,tana_type,create_time,author_cd,edit_time,editer_cd)
+    values
+      <foreach collection="ptsTanaVoList" separator="," item="item" >
+        (#{companyCd},#{id},#{item.taiCd},#{item.tanaCd},#{item.tanaHeight},#{item.tanaWidth},#{item.tanaDepth},#{item.tanaThickness}
+        ,#{item.tanaType},now(),#{authorCd},now(),#{authorCd})
+        on conflict(company_cd,pts_cd,tai_cd,tana_cd)
+        do update set
+        tana_height = #{item.tanaHeight} and tana_width = #{item.tanaWidth} and tana_depth = #{item.tanaDepth}
+      </foreach>
+
+  </insert>
   <insert id="setDisplay">
     insert into planocycle.work_priority_order_sort(priority_order_cd,company_cd,author_cd,zokusei_id,sort_num)
     values
@@ -580,7 +593,7 @@
     select id from planocycle.priority_order_pts_data where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
   </select>
     <select id="getpatternCd" resultType="java.lang.Integer">
-      select
+      select shelf_pattern_cd from planocycle.shelf_pattern_mst where
     </select>
   <select id="getPtsCdByPatternCd" resultMap="BaseResultMap">
     select id,file_name from planocycle.shelf_pts_data where company_cd=#{companyCd} and shelf_pattern_cd::varchar=any(string_to_array(#{patternCd},','))

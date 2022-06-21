@@ -295,8 +295,37 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      */
     @Override
     public Map<String, Object> getPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd) {
-        PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
+        String authorCd = httpSession.getAttribute("aud").toString();
+        //ptsCdの取得
+        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+        if (id !=null) {
+            //クリアワーク_priority_order_pts_data
+            shelfPtsDataMapper.deletePtsData(id);
+            //クリアワーク_priority_order_pts_data_taimst
+            shelfPtsDataMapper.deletePtsTaimst(id);
+            //クリアワーク_priority_order_pts_data_tanamst
+            shelfPtsDataMapper.deletePtsTanamst(id);
+            //クリアワーク_priority_order_pts_data_version
+            shelfPtsDataMapper.deletePtsVersion(id);
+        }
+        Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
+        PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
+                .withPriorityOrderCd(priorityOrderCd)
+                .withOldPtsCd(ptsCd)
+                .withCompanyCd(companyCd)
+                .withAuthorCd(authorCd).build();
+        ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
+        String modeName = shelfPtsDataVersion.getModename();
+        //modeNameはptsをダウンロードするファイル名として
+        priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
+        //既存のptsからデータをクエリーする
+        shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
+        Integer newId = priorityOrderPtsDataDto.getId();
+        shelfPtsDataMapper.insertPtsTaimst(ptsCd, newId, authorCd);
+        shelfPtsDataMapper.insertPtsTanamst(ptsCd, newId, authorCd);
+        shelfPtsDataMapper.insertPtsVersion(ptsCd, newId, authorCd);
 
+        PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
         ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));
         ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(patternCd));
         ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(patternCd));
@@ -416,6 +445,20 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         writer.flush();
 
         this.generateCsv(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, writer);
+    }
+
+    @Override
+    public void setPtsTanaSize(List<PtsTanaVo> ptsTanaVoList) {
+        try {
+            Integer priorityOrderCd = ptsTanaVoList.get(0).getPriorityOrderCd();
+            String companyCd = ptsTanaVoList.get(0).getCompanyCd();
+            String authorCd = httpSession.getAttribute("aud").toString();
+            Integer taiCd = ptsTanaVoList.get(0).getTaiCd();
+            Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+            shelfPtsDataMapper.updTanaSize(ptsTanaVoList,id,authorCd,companyCd);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void generateCsv(ShelfPtsDataVersion shelfPtsDataVersion, List<ShelfPtsDataTaimst> shelfPtsDataTaimst,

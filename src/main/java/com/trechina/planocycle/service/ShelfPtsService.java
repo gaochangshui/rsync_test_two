@@ -5,6 +5,7 @@ import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
 import com.trechina.planocycle.entity.vo.PtsCsvVO;
+import com.trechina.planocycle.entity.vo.PtsTanaVo;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -116,4 +117,6 @@ public interface ShelfPtsService {
      * @throws IOException
      */
     void downloadPtsCsv(PtsCsvVO ptsCsvVO, HttpServletResponse response) throws IOException;
+
+    void setPtsTanaSize(List<PtsTanaVo> ptsTanaVoList);
 }
