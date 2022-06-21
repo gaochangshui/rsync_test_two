@@ -21,6 +21,16 @@ public class WorkPriorityOrderMst {
 
     private Short partitionVal;
 
+    private String commonPartsData;
+
+    public String getCommonPartsData() {
+        return commonPartsData;
+    }
+
+    public void setCommonPartsData(String commonPartsData) {
+        this.commonPartsData = commonPartsData;
+    }
+
     public String getCompanyCd() {
         return companyCd;
     }

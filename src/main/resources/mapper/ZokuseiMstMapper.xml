@@ -55,4 +55,8 @@
     <delete id="deleteData">
         delete from masterdb.planocycle_zokusei_mst_data where company_cd=#{companyCd} and class_cd=#{classCd}
     </delete>
+    <select id="selectByZokuseiId" resultType="com.trechina.planocycle.entity.po.Zokusei">
+        select zokusei_id,zokusei_col  from masterdb.planocycle_zokusei_mst where zokusei_id::varchar=any(string_to_array(#{zokuseiId},','))
+        and company_cd=#{companyCd} and class_cd=#{classCd}
+    </select>
 </mapper>

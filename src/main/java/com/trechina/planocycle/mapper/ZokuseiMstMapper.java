@@ -26,4 +26,6 @@ public interface ZokuseiMstMapper {
     void delete(String companyCd, String classCd);
 
     void deleteData(String companyCd, String classCd);
+
+    List<Zokusei> selectByZokuseiId(String companyCd, Integer priorityOrderCd, String zokuseiId, String classCd);
 }

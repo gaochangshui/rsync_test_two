@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service;
 
+import com.trechina.planocycle.entity.vo.AutoDetectVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderMstVO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,4 +118,6 @@ public interface PriorityOrderMstService {
      * @throws InvocationTargetException
      */
     Map<String,Object> getVariousMst(String companyCd,Integer priorityOrderCd,Integer flag) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException;
+
+    Map<String, Object> autoDetect(AutoDetectVo autoDetectVo);
 }

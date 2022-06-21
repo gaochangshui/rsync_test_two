@@ -2,8 +2,12 @@ package com.trechina.planocycle.constant;
 
 public class MagicString {
     public static final String CORE_COMPANY = "core_company";
-
+    public static final Integer AUTO_DETECT = 1;
     public static final String FIRST_CLASS_CD = "0000";
+
+    public static final String TAI_CD = "tai_cd";
+    public static final String TANA_CD = "tana_cd";
+    public static final String TANAPOSITION_CD = "tanaposition_cd";
 
     public static final String JAN_HEADER_JAN_CD_COL = "jan_cd";
     public static final String JAN_HEADER_JAN_NAME_COL = "jan_name";

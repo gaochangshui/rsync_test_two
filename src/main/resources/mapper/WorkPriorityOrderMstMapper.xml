@@ -11,13 +11,14 @@
     <result column="attribute2" jdbcType="SMALLINT" property="attribute2" />
     <result column="partition_flag" jdbcType="SMALLINT" property="partitionFlag" />
     <result column="partition_val" jdbcType="SMALLINT" property="partitionVal" />
+    <result column="common_parts_data" jdbcType="VARCHAR" property="commonPartsData" />
   </resultMap>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderMst">
     insert into planocycle.work_priority_order_mst (company_cd, author_cd,area_name_cd, priority_order_cd, product_power_cd,
-      shelf_pattern_cd, attribute1, attribute2, 
+      shelf_pattern_cd, attribute1, attribute2, common_parts_data,
       partition_flag, partition_val)
     values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR},#{areaNameCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{productPowerCd,jdbcType=INTEGER},
-      #{shelfPatternCd,jdbcType=BIGINT}, #{attribute1,jdbcType=SMALLINT}, #{attribute2,jdbcType=SMALLINT}, 
+      #{shelfPatternCd,jdbcType=BIGINT}, #{attribute1,jdbcType=SMALLINT}, #{attribute2,jdbcType=SMALLINT}, #{commonPartsData}::json,
       #{partitionFlag,jdbcType=SMALLINT}, #{partitionVal,jdbcType=SMALLINT})
   </insert>
   <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderMst">
@@ -114,5 +115,20 @@
     </select>
   <select id="getProductPowerCd" resultType="java.lang.Integer">
     select product_power_cd from planocycle.work_priority_order_mst where company_cd =#{companyCd} and  priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="selectByAttr" resultType="map">
+    select tai_cd,tana_cd,tanaposition_cd
+    <foreach open="," collection="zokuseiList" item="item" separator=",">
+        <foreach collection="cdList" item="cdItem" separator="|| '_' ||">
+            <if test="cdItem &lt;= item.zokuseiCol">
+                janinfo."${cdItem}"
+            </if>
+        </foreach> as "${item.zokuseiId}"
+    </foreach>
+    from planocycle.shelf_pts_data ptsdata
+    inner join planocycle.shelf_pts_data_jandata jandata on ptsdata.id=jandata.pts_cd
+    inner join ${janInfoTB} janinfo on janinfo."1"=jandata.jan
+    where shelf_pattern_cd=#{shelfPatternCd}
+    order by tai_cd,tana_cd,tanaposition_cd
   </select>
 </mapper>
