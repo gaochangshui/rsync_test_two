@@ -26,10 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class PriorityOrderRestrictSetServiceImpl implements PriorityOrderRestrictSetService {
@@ -80,20 +77,25 @@ public class PriorityOrderRestrictSetServiceImpl implements PriorityOrderRestric
         GetCommonPartsDataDto commonTableName = priorityOrderMstAttrSortService
                 .getCommonTableName(workPriorityOrderMst.getCommonPartsData(), companyCd);
 
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getDynamicAttrValues(companyCd, commonTableName.getProdMstClass());
-        List<Map<String, Object>> priorityOrderRestrict = priorityOrderRestrictSetMapper.getDynamicPriorityOrderRestrict(companyCd, authorCd,priorityOrderCd, zokuseiList);
+        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getDynamicAttrValues(commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        List<LinkedHashMap<String,Object>> priorityOrderRestrict = priorityOrderRestrictSetMapper.getDynamicPriorityOrderRestrict(companyCd, authorCd,priorityOrderCd, zokuseiList);
 
-        for (Map<String, Object> priorityOrderRestrictSet : priorityOrderRestrict) {
+        for (LinkedHashMap<String, Object> priorityOrderRestrictSet : priorityOrderRestrict) {
             for (int i = 0; i < zokuseiList.size(); i++) {
                 int finalI = i;
+                String zokuseiId = zokuseiList.get(finalI);
                 Optional<PriorityOrderAttrValueDto> any = attrValues.stream().filter(attr ->
-                        MapUtils.getString(priorityOrderRestrictSet, zokuseiList.get(finalI)) != null &&
-                                attr.getVal().equals(MapUtils.getString(priorityOrderRestrictSet, zokuseiList.get(finalI)))
+                        MapUtils.getString(priorityOrderRestrictSet, zokuseiId) != null &&
+                                attr.getVal().equals(MapUtils.getString(priorityOrderRestrictSet, zokuseiId))
                                 && attr.getZokuseiId() == (finalI + 1)).findAny();
+                if(Strings.isNullOrEmpty(MapUtils.getString(priorityOrderRestrictSet, MagicString.ZOKUSEI_PREFIX+(i+1)))){
+                    priorityOrderRestrictSet.put(MagicString.ZOKUSEI_PREFIX+(i+1), null);
+                }
+
                 if(any.isPresent()){
                     priorityOrderRestrictSet.put("zokuseiName"+(i+1), any.get().getNm());
                 }else{
-                    priorityOrderRestrictSet.put("zokuseiName"+(i+1), "");
+                    priorityOrderRestrictSet.put("zokuseiName"+(i+1), null);
                 }
             }
         }

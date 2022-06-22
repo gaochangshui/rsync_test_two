@@ -52,7 +52,7 @@
                 left join masterdb.zokusei_mst mst
                           on datas.zokusei_id = mst.zokusei_id
   </select>
-  <select id="getDynamicPriorityOrderRestrict" resultType="map">
+  <select id="getDynamicPriorityOrderRestrict" resultType="java.util.LinkedHashMap">
     select tai_cd as "taiCd",tana_cd as "tanaCd",tana_type  as "tanaType"
     <foreach collection="zokuseiList" open="," item="item" separator=",">
       coalesce(${item}, '') as "${item}"

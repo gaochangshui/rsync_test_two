@@ -6,6 +6,7 @@ import com.trechina.planocycle.entity.po.PriorityOrderRestrictSet;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,9 +33,9 @@ public interface PriorityOrderRestrictSetMapper {
     List<PriorityOrderRestrictSet> getPriorityOrderRestrict(@Param("companyCd")String companyCd,
                                        @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 
-    List<Map<String, Object>> getDynamicPriorityOrderRestrict(@Param("companyCd")String companyCd,
-                                                       @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd,
-                                                       @Param("zokuseiList")List<String> zokuseiList);
+    List<LinkedHashMap<String, Object>> getDynamicPriorityOrderRestrict(@Param("companyCd")String companyCd,
+                                                                        @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd,
+                                                                        @Param("zokuseiList")List<String> zokuseiList);
     //名前の前に大分類nameがついている
     List<PriorityOrderAttrValueDto> getAttrValues();
 
