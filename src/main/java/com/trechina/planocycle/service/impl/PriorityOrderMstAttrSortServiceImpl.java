@@ -103,15 +103,17 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
      */
     @Override
     public Map<String, Object> getAttributeList( PriorityOrderAttrDto priorityOrderAttrDto) {
-
-        List<Map<String,Object>> goodsAttrTree = priorityOrderMstAttrSortMapper.getGoodsAttrTree();
+        GetCommonPartsDataDto commonTableName = this.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
+        List<Map<String,Object>> goodsAttrTree = priorityOrderMstAttrSortMapper.getGoodsAttrTree(commonTableName.getProdMstClass(),commonTableName.getProdIsCore());
         for (Map<String, Object> objectMap : goodsAttrTree) {
             objectMap.put("attrCd",objectMap.get("attrcd"));
             objectMap.put("attrName",objectMap.get("attrname"));
             objectMap.put("zokuseiId",objectMap.get("zokusei_id"));
+            objectMap.put("classifyName",objectMap.get("zokusei_nm"));
             objectMap.remove("attrcd");
             objectMap.remove("attrname");
             objectMap.remove("zokusei_id");
+            objectMap.remove("zokusei_nm");
         }
         List<Map<String,Object>> jsonArray = this.listToTree(goodsAttrTree, "attrCd", "pid", "children");
 
@@ -123,7 +125,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
            List attr = new ArrayList<>();
            attr.add(map);
-           List<PriorityOrderAttrValueVo> attr1 = priorityOrderMstAttrSortMapper.getAttr();
+           List<PriorityOrderAttrValueVo> attr1 = priorityOrderMstAttrSortMapper.getAttr(commonTableName.getProdMstClass(),commonTableName.getProdIsCore());
            attr.addAll(attr1);
 
 
