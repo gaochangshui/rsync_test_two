@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Service
@@ -103,7 +102,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
      * 属性の分類および商品分類リストの取得
      */
     @Override
-    public Map<String, Object> getAttributeList() {
+    public Map<String, Object> getAttributeList( PriorityOrderAttrDto priorityOrderAttrDto) {
 
         List<Map<String,Object>> goodsAttrTree = priorityOrderMstAttrSortMapper.getGoodsAttrTree();
         for (Map<String, Object> objectMap : goodsAttrTree) {
@@ -129,8 +128,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
 
 
-           Stream<PriorityOrderAttrValueVo> sorted = attr.stream().sorted(Comparator.comparing(PriorityOrderAttrValueVo::getAttrCd));
-        return ResultMaps.result(ResultEnum.SUCCESS);
+            attr.stream().sorted(Comparator.comparing(PriorityOrderAttrValueVo::getAttrCd));
+        return ResultMaps.result(ResultEnum.SUCCESS,attr);
     }
 
     public static List listToTree(List arr, String id, String pid, String child){

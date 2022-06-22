@@ -49,9 +49,9 @@ public class PriorityOrderMstAttrSortController {
     /**
      * つかむ取属性的分類及商品分類列表
      */
-    @GetMapping("/getAttributeList")
-    public Map<String,Object> getAttributeList(){
-        return priorityOrderMstAttrSortService.getAttributeList();
+    @PostMapping("/getAttributeList")
+    public Map<String,Object> getAttributeList(@RequestBody PriorityOrderAttrDto priorityOrderAttrDto){
+        return priorityOrderMstAttrSortService.getAttributeList(priorityOrderAttrDto);
     }
 
     /**
