@@ -3,6 +3,7 @@ package com.trechina.planocycle.service.impl;
 import com.trechina.planocycle.entity.po.PriorityOrderNumGenerator;
 import com.trechina.planocycle.entity.po.ProductPowerNumGenerator;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.mapper.BasicPatternNumGeneratorMapper;
 import com.trechina.planocycle.mapper.PriorityOrderNumGeneratorMapper;
 import com.trechina.planocycle.mapper.ProductPowerNumGeneratorMapper;
 import com.trechina.planocycle.service.IDGeneratorService;
@@ -24,6 +25,8 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
 
     @Autowired
     private ProductPowerNumGeneratorMapper productPowerNumGeneratorMapper;
+    @Autowired
+    private BasicPatternNumGeneratorMapper basicPatternNumGeneratorMapper;
     /**
      * 自動採番、および戻る
      *
@@ -67,6 +70,14 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
         priorityOrderNumGenerator.setUsercd(session.getAttribute("aud").toString());
         Integer id = priorityOrderNumGeneratorMapper.insertPriority(priorityOrderNumGenerator);
         logger.info("優先順位表自動取号：{}",priorityOrderNumGenerator.getId());
+        return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderNumGenerator.getId());
+    }
+
+    @Override
+    public Map<String, Object> basicPatternIDGenerator() {
+        PriorityOrderNumGenerator priorityOrderNumGenerator = new PriorityOrderNumGenerator();
+        priorityOrderNumGenerator.setUsercd(session.getAttribute("aud").toString());
+        Integer id = basicPatternNumGeneratorMapper.insertBasicPattern(priorityOrderNumGenerator);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderNumGenerator.getId());
     }
 }
