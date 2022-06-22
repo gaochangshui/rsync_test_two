@@ -42,7 +42,7 @@
     select tai_cd,tana_cd,tana_type,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10
     from planocycle.work_priority_order_restrict_set resSet
     where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd= #{priorityOrderCd}
-    and  (zokusei1 is not NULL or zokusei2 is not NULL or zokusei3 is not NULL or zokusei4 is not NULL or zokusei5 is not NULL or zokusei6 is not NULL
+      and  (zokusei1 is not NULL or zokusei2 is not NULL or zokusei3 is not NULL or zokusei4 is not NULL or zokusei5 is not NULL or zokusei6 is not NULL
       or zokusei7 is not NULL or zokusei8 is not NULL or zokusei9 is not NULL or zokusei10 is not NULL)
 
   </select>
@@ -51,6 +51,25 @@
     from      masterdb.zokusei_mst_data datas
                 left join masterdb.zokusei_mst mst
                           on datas.zokusei_id = mst.zokusei_id
+  </select>
+  <select id="getDynamicPriorityOrderRestrict" resultType="java.util.LinkedHashMap">
+    select tai_cd as "taiCd",tana_cd as "tanaCd",tana_type  as "tanaType"
+    <foreach collection="zokuseiList" open="," item="item" separator=",">
+      coalesce(${item}, '') as "${item}"
+    </foreach>
+    from planocycle.work_priority_order_restrict_set resSet
+    where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd= #{priorityOrderCd}
+    and (<foreach collection="zokuseiList" item="item" separator=" or ">
+    ${item} is not NULL
+  </foreach>)
+  </select>
+  <select id="getDynamicAttrValues" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto">
+    select datas.zokusei_id as zokuseiId,datas.val as val,mst.zokusei_nm ||'-' || datas.nm as  nm
+    from      masterdb.planocycle_zokusei_mst_data datas
+                left join masterdb.planocycle_zokusei_mst mst
+                          on datas.zokusei_id = mst.zokusei_id and datas.company_cd=mst.company_cd
+                            and datas.class_cd=mst.class_cd
+    where datas.company_cd=#{companyCd} and datas.class_cd=#{classCd}
   </select>
   <select id="getAttrValues1" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto">
     select zokusei_id,val ,nm

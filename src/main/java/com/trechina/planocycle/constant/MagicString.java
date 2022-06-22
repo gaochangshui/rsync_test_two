@@ -9,6 +9,10 @@ public class MagicString {
     public static final String TANA_CD = "tana_cd";
     public static final String TANAPOSITION_CD = "tanaposition_cd";
 
+    public static final String ZOKUSEI_COUNT_ITEM = "zokusei_count";
+
+    public static final String ZOKUSEI_PREFIX = "zokusei";
+
     public static final String JAN_HEADER_JAN_CD_COL = "jan_cd";
     public static final String JAN_HEADER_JAN_NAME_COL = "jan_name";
     /**
