@@ -46,7 +46,7 @@ public interface PriorityOrderMstAttrSortService {
     /**
      * つかむ取属性的分クラス及商品分クラス列表
      */
-    Map<String, Object> getAttributeList();
+    Map<String, Object> getAttributeList( PriorityOrderAttrDto priorityOrderAttrDto);
 
 
     /**
