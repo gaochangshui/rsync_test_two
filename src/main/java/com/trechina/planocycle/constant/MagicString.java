@@ -23,4 +23,7 @@ public class MagicString {
      * SKU単位-品名1
      */
     public static final Integer PRODUCT_TYPE_SKU = 2;
+
+    public static final String ZOKUSEI_PREFIX = "zokusei";
+    public static final String ZOKUSEI_COUNT = "zokusei_count";
 }
