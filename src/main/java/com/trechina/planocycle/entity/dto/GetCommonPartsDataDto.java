@@ -30,6 +30,8 @@ public class GetCommonPartsDataDto {
     private String proZokuseiMstTable;
 
     private String proZokuseiDataTable;
+    private String prodMstClass;
+    private String prodIsCore;
 
 
     public String getProAttrTable() {
@@ -96,6 +98,22 @@ public class GetCommonPartsDataDto {
         this.proZokuseiDataTable = proZokuseiDataTable;
     }
 
+    public String getProdMstClass() {
+        return prodMstClass;
+    }
+
+    public void setProdMstClass(String prodMstClass) {
+        this.prodMstClass = prodMstClass;
+    }
+
+    public String getProdIsCore() {
+        return prodIsCore;
+    }
+
+    public void setProdIsCore(String prodIsCore) {
+        this.prodIsCore = prodIsCore;
+    }
+
     @Override
     public String toString() {
         return "GetCommonPartsDataDto{" +
@@ -107,6 +125,8 @@ public class GetCommonPartsDataDto {
                 ", storeInfoTable='" + storeInfoTable + '\'' +
                 ", proZokuseiMstTable='" + proZokuseiMstTable + '\'' +
                 ", proZokuseiDataTable='" + proZokuseiDataTable + '\'' +
+                ", prodMstClass='" + prodMstClass + '\'' +
+                ", prodIsCore='" + prodIsCore + '\'' +
                 '}';
     }
 }

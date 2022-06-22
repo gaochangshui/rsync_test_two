@@ -8,25 +8,13 @@
     <result column="sort" jdbcType="INTEGER" property="sort" />
     <result column="cd" jdbcType="INTEGER" property="cd" />
   </resultMap>
-  <resultMap id="attrTreeMap" type="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
-    <result column="scat1cd" property="attrCd"/>
-    <result column="scat1nm" property="attrName"/>
-    <result column="zokusei1nm" property="classifyName"/>
-
-    <collection property="children" ofType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
-      <result column="scat2cd" property="attrCd"/>
-      <result column="scat2nm" property="attrName"/>
-      <result column="zokusei2nm" property="classifyName"/>
-      <collection property="children" ofType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
-        <result column="scat3cd" property="attrCd"/>
-        <result column="scat3nm" property="attrName"/>
-        <result column="zokusei3nm" property="classifyName"/>
-        <collection property="children" ofType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
-          <result column="scat4cd" property="attrCd"/>
-          <result column="scat4nm" property="attrName"/>
-          <result column="zokusei4nm" property="classifyName"/>
-        </collection>
-      </collection>
+  <resultMap id="attrTreeMap" type="com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo">
+    <result column="attrCd" property="attrCd"/>
+    <result column="attrName" property="attrName"/>
+    <collection property="values" ofType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+      <result column="val" property="attrCd"/>
+      <result column="nm" property="attrName"/>
+      <result column="attrName" property="classifyName"/>
     </collection>
   </resultMap>
   <sql id="Base_Column_List">
@@ -110,11 +98,22 @@
   </select>
   <select id="getGoodsAttrTree" resultType="map">
     --Tree
-    select val,val_parent,nm from masterdb.planocycle_zokusei_mst_data a  where company_cd ='1000' and class_cd = '0000' and type = '1'
+    select val as attrCd,coalesce(val_parent,'')as pid ,nm as attrName,zokusei_id  from masterdb.planocycle_zokusei_mst_data a  where company_cd ='1000' and class_cd = '0000' and type = '1'
   </select>
-  <select id="getAttr" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo">
-    select zokusei_id as attrCd,zokusei_nm as attrName ,zokusei_tb_nm as tableName,jans_col_nm as jansColNm,zokusei_sort as sort from masterdb.zokusei_mst where type  = 0;
-  </select>
+  <select id="getAttr" resultMap="attrTreeMap">
+    select
+      mst.zokusei_id as attrCd,
+      mst.zokusei_nm as attrName,
+      mst.zokusei_col as tableName,
+      datas.val,
+      datas.nm
+    from
+      masterdb.planocycle_zokusei_mst as   mst
+        INNER join masterdb.planocycle_zokusei_mst_data  as datas
+                  on mst.zokusei_id = datas.zokusei_id  and datas.company_cd = mst.company_cd and datas.class_cd = mst.class_cd and datas.type ='0'
+    where
+      mst.class_cd = '0000' and mst.company_cd = '1000';
+</select>
   <select id="getAttrValues" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
     select datas.val as attrCd,datas.nm as attrName,datas.type as type,mst.zokusei_nm as classifyName
     from masterdb.zokusei_mst_data datas

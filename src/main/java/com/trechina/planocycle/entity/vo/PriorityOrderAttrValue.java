@@ -8,8 +8,19 @@ public class PriorityOrderAttrValue {
     private String type;
     private String attrName;
     private String classifyName;
+    private String pid;
+
+
     private List<PriorityOrderAttrValue> children;
     private Boolean show = true;
+
+    public String getPid() {
+        return pid;
+    }
+
+    public void setPid(String pid) {
+        this.pid = pid;
+    }
 
     public String getAttrCd() {
         return attrCd;

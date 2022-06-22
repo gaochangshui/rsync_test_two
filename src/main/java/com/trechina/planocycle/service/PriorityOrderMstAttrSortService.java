@@ -66,5 +66,5 @@ public interface PriorityOrderMstAttrSortService {
     /**
      *
      */
-    GetCommonPartsDataDto getCommonTableName(PriorityOrderAttrDto priorityOrderAttrDto);
+    GetCommonPartsDataDto getCommonTableName(String commonPartsData,String companyCd);
 }

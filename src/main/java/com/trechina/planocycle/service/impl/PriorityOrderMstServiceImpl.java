@@ -953,7 +953,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         PriorityOrderAttrDto attrDto = new PriorityOrderAttrDto();
         BeanUtils.copyProperties(autoDetectVo, attrDto);
-        GetCommonPartsDataDto commonTableName = priorityOrderMstAttrSortService.getCommonTableName(attrDto);
+        GetCommonPartsDataDto commonTableName = priorityOrderMstAttrSortService.getCommonTableName(attrDto.getCommonPartsData(),autoDetectVo.getCompanyCd());
 
         List<PriorityOderAttrSet> attrSets = new ArrayList<>();
 

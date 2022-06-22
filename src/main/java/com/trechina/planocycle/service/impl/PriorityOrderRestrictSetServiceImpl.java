@@ -77,12 +77,10 @@ public class PriorityOrderRestrictSetServiceImpl implements PriorityOrderRestric
 
         List<String> zokuseiList = CommonUtil.getZokuseiList(Integer.parseInt(zokusei));
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        PriorityOrderAttrDto priorityOrderAttrDto = new PriorityOrderAttrDto();
-        priorityOrderAttrDto.setCompanyCd(companyCd);
-        priorityOrderAttrDto.setCommonPartsData(workPriorityOrderMst.getCommonPartsData());
-        GetCommonPartsDataDto commonTableName = priorityOrderMstAttrSortService.getCommonTableName(priorityOrderAttrDto);
+        GetCommonPartsDataDto commonTableName = priorityOrderMstAttrSortService
+                .getCommonTableName(workPriorityOrderMst.getCommonPartsData(), companyCd);
 
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getDynamicAttrValues(companyCd, "0000");
+        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getDynamicAttrValues(companyCd, commonTableName.getProdMstClass());
         List<Map<String, Object>> priorityOrderRestrict = priorityOrderRestrictSetMapper.getDynamicPriorityOrderRestrict(companyCd, authorCd,priorityOrderCd, zokuseiList);
 
         for (Map<String, Object> priorityOrderRestrictSet : priorityOrderRestrict) {
