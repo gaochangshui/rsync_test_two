@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
-@RestController("/planocycle/BasicPatternMst")
+@RestController("/planoCycle/BasicPatternMst")
 public class BasicPatternMstController {
 
     @PostMapping("/autoDetect")
