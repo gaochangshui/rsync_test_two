@@ -133,6 +133,15 @@ public class ShelfPtsController {
     }
 
     /**
+     *
+     */
+    @GetMapping("")
+    public  Map<String,Object> getNewPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd){
+        return shelfPtsService.getNewPtsDetailData(patternCd,companyCd,priorityOrderCd);
+
+    }
+
+    /**
      * 陳列順設定追加
      * @param workPriorityOrderSort
      * @return

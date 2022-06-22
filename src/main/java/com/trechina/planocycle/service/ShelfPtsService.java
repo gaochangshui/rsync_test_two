@@ -119,4 +119,6 @@ public interface ShelfPtsService {
     void downloadPtsCsv(PtsCsvVO ptsCsvVO, HttpServletResponse response) throws IOException;
 
     void setPtsTanaSize(List<PtsTanaVo> ptsTanaVoList);
+
+    Map<String, Object> getNewPtsDetailData(Integer patternCd, String companyCd, Integer priorityOrderCd);
 }

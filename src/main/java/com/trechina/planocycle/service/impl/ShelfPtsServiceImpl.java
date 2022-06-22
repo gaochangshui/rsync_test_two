@@ -336,13 +336,10 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
         if (ptsDetailData != null){
             ptsDetailData.setPtsTaiList(taiData);
+            ptsDetailData.setPtsTanaVoList(tanaData);
+            ptsDetailData.setPtsJanDataList(janData);
         }
-       if (ptsDetailData != null) {
-           ptsDetailData.setPtsTanaVoList(tanaData);
-       }
-       if (ptsDetailData != null) {
-           ptsDetailData.setPtsJanDataList(janData);
-       }
+
 
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
@@ -461,6 +458,20 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Map<String, Object> getNewPtsDetailData(Integer patternCd, String companyCd, Integer priorityOrderCd) {
+        PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
+        ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));
+        ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(patternCd));
+        ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(patternCd));
+        ptsDetailData.setSkuNum(shelfPtsDataMapper.getSkuNum(patternCd));
+
+        List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
+        List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
+        List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
+        return null;
     }
 
     public void generateCsv(ShelfPtsDataVersion shelfPtsDataVersion, List<ShelfPtsDataTaimst> shelfPtsDataTaimst,

@@ -115,7 +115,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             objectMap.remove("zokusei_id");
             objectMap.remove("zokusei_nm");
         }
-        List<Map<String,Object>> jsonArray = this.listToTree(goodsAttrTree, "attrCd", "pid", "children");
+        List<Map<String,Object>> jsonArray = listToTree(goodsAttrTree, "attrCd", "pid", "children");
 
         Map<String,Object> map = new HashMap<>();
 
@@ -127,8 +127,6 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
            attr.add(map);
            List<PriorityOrderAttrValueVo> attr1 = priorityOrderMstAttrSortMapper.getAttr(commonTableName.getProdMstClass(),commonTableName.getProdIsCore());
            attr.addAll(attr1);
-
-
 
             attr.stream().sorted(Comparator.comparing(PriorityOrderAttrValueVo::getAttrCd));
         return ResultMaps.result(ResultEnum.SUCCESS,attr);
