@@ -65,6 +65,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
         workPriorityOrderMstMapper.deleteByAuthorCd(autoDetectVO.getCompanyCd(), aud, autoDetectVO.getPriorityOrderCd());
         workPriorityOrderMstMapper.insert(priorityOrderMst);
+        List<Integer> list = Arrays.asList(zokuseiIds.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
 
         List<Integer> cdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable(), commonTableName.getProAttrTable());
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(companyCd,
