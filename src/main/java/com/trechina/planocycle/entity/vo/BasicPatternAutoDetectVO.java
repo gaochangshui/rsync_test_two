@@ -2,7 +2,7 @@ package com.trechina.planocycle.entity.vo;
 
 public class BasicPatternAutoDetectVO {
     private String companyCd;
-    private Integer basicPatternCd;
+    private Integer priorityOrderCd;
     private String commonPartsData;
     private Integer shelfPatternCd;
     private String attrList;
@@ -15,12 +15,12 @@ public class BasicPatternAutoDetectVO {
         this.companyCd = companyCd;
     }
 
-    public Integer getBasicPatternCd() {
-        return basicPatternCd;
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
     }
 
-    public void setBasicPatternCd(Integer basicPatternCd) {
-        this.basicPatternCd = basicPatternCd;
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
     }
 
     public String getCommonPartsData() {

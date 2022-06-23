@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.BasicPatternRestrictResultMapper">
+
+    <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.BasicPatternRestrictResult">
+            <result property="priorityOrderCd" column="priority_order_cd" jdbcType="BIGINT"/>
+            <result property="companyCd" column="company_cd" jdbcType="VARCHAR"/>
+            <result property="authorCd" column="author_cd" jdbcType="VARCHAR"/>
+            <result property="restrictCd" column="restrict_cd" jdbcType="BIGINT"/>
+            <result property="skuCnt" column="sku_cnt" jdbcType="BIGINT"/>
+            <result property="zokusei1" column="zokusei1" jdbcType="VARCHAR"/>
+            <result property="zokusei2" column="zokusei2" jdbcType="VARCHAR"/>
+            <result property="zokusei3" column="zokusei3" jdbcType="VARCHAR"/>
+            <result property="zokusei4" column="zokusei4" jdbcType="VARCHAR"/>
+            <result property="zokusei5" column="zokusei5" jdbcType="VARCHAR"/>
+            <result property="zokusei6" column="zokusei6" jdbcType="VARCHAR"/>
+            <result property="zokusei7" column="zokusei7" jdbcType="VARCHAR"/>
+            <result property="zokusei8" column="zokusei8" jdbcType="VARCHAR"/>
+            <result property="zokusei9" column="zokusei9" jdbcType="VARCHAR"/>
+            <result property="zokusei10" column="zokusei10" jdbcType="VARCHAR"/>
+            <result property="zokusei11" column="zokusei11" jdbcType="VARCHAR"/>
+            <result property="zokusei12" column="zokusei12" jdbcType="VARCHAR"/>
+            <result property="zokusei13" column="zokusei13" jdbcType="VARCHAR"/>
+            <result property="zokusei14" column="zokusei14" jdbcType="VARCHAR"/>
+            <result property="zokusei15" column="zokusei15" jdbcType="VARCHAR"/>
+            <result property="zokusei16" column="zokusei16" jdbcType="VARCHAR"/>
+            <result property="zokusei17" column="zokusei17" jdbcType="VARCHAR"/>
+            <result property="zokusei18" column="zokusei18" jdbcType="VARCHAR"/>
+            <result property="zokusei19" column="zokusei19" jdbcType="VARCHAR"/>
+            <result property="zokusei20" column="zokusei20" jdbcType="VARCHAR"/>
+            <result property="zokusei21" column="zokusei21" jdbcType="VARCHAR"/>
+            <result property="zokusei22" column="zokusei22" jdbcType="VARCHAR"/>
+            <result property="zokusei23" column="zokusei23" jdbcType="VARCHAR"/>
+            <result property="zokusei24" column="zokusei24" jdbcType="VARCHAR"/>
+            <result property="zokusei25" column="zokusei25" jdbcType="VARCHAR"/>
+            <result property="zokusei26" column="zokusei26" jdbcType="VARCHAR"/>
+            <result property="zokusei27" column="zokusei27" jdbcType="VARCHAR"/>
+            <result property="zokusei28" column="zokusei28" jdbcType="VARCHAR"/>
+            <result property="zokusei29" column="zokusei29" jdbcType="VARCHAR"/>
+            <result property="zokusei30" column="zokusei30" jdbcType="VARCHAR"/>
+            <result property="zokusei31" column="zokusei31" jdbcType="VARCHAR"/>
+            <result property="zokusei32" column="zokusei32" jdbcType="VARCHAR"/>
+            <result property="zokusei33" column="zokusei33" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        priority_order_cd,company_cd,author_cd,
+        restrict_cd,sku_cnt,zokusei1,
+        zokusei2,zokusei3,zokusei4,
+        zokusei5,zokusei6,zokusei7,
+        zokusei8,zokusei9,zokusei10,
+        zokusei11,zokusei12,zokusei13,
+        zokusei14,zokusei15,zokusei16,
+        zokusei17,zokusei18,zokusei19,
+        zokusei20,zokusei21,zokusei22,
+        zokusei23,zokusei24,zokusei25,
+        zokusei26,zokusei27,zokusei28,
+        zokusei29,zokusei30,zokusei31,
+        zokusei32,zokusei33
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from basic_pattern_restrict_result
+        where 
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from basic_pattern_restrict_result
+        where 
+    </delete>
+    <insert id="insert">
+        insert into basic_pattern_restrict_result
+        ( priority_order_cd,company_cd,author_cd
+        ,restrict_cd,sku_cnt,zokusei1
+        ,zokusei2,zokusei3,zokusei4
+        ,zokusei5,zokusei6,zokusei7
+        ,zokusei8,zokusei9,zokusei10
+        ,zokusei11,zokusei12,zokusei13
+        ,zokusei14,zokusei15,zokusei16
+        ,zokusei17,zokusei18,zokusei19
+        ,zokusei20,zokusei21,zokusei22
+        ,zokusei23,zokusei24,zokusei25
+        ,zokusei26,zokusei27,zokusei28
+        ,zokusei29,zokusei30,zokusei31
+        ,zokusei32,zokusei33)
+        values (#{priorityOrderCd,jdbcType=BIGINT},#{companyCd,jdbcType=VARCHAR},#{authorCd,jdbcType=VARCHAR}
+        ,#{restrictCd,jdbcType=BIGINT},#{skuCnt,jdbcType=BIGINT},#{zokusei1,jdbcType=VARCHAR}
+        ,#{zokusei2,jdbcType=VARCHAR},#{zokusei3,jdbcType=VARCHAR},#{zokusei4,jdbcType=VARCHAR}
+        ,#{zokusei5,jdbcType=VARCHAR},#{zokusei6,jdbcType=VARCHAR},#{zokusei7,jdbcType=VARCHAR}
+        ,#{zokusei8,jdbcType=VARCHAR},#{zokusei9,jdbcType=VARCHAR},#{zokusei10,jdbcType=VARCHAR}
+        ,#{zokusei11,jdbcType=VARCHAR},#{zokusei12,jdbcType=VARCHAR},#{zokusei13,jdbcType=VARCHAR}
+        ,#{zokusei14,jdbcType=VARCHAR},#{zokusei15,jdbcType=VARCHAR},#{zokusei16,jdbcType=VARCHAR}
+        ,#{zokusei17,jdbcType=VARCHAR},#{zokusei18,jdbcType=VARCHAR},#{zokusei19,jdbcType=VARCHAR}
+        ,#{zokusei20,jdbcType=VARCHAR},#{zokusei21,jdbcType=VARCHAR},#{zokusei22,jdbcType=VARCHAR}
+        ,#{zokusei23,jdbcType=VARCHAR},#{zokusei24,jdbcType=VARCHAR},#{zokusei25,jdbcType=VARCHAR}
+        ,#{zokusei26,jdbcType=VARCHAR},#{zokusei27,jdbcType=VARCHAR},#{zokusei28,jdbcType=VARCHAR}
+        ,#{zokusei29,jdbcType=VARCHAR},#{zokusei30,jdbcType=VARCHAR},#{zokusei31,jdbcType=VARCHAR}
+        ,#{zokusei32,jdbcType=VARCHAR},#{zokusei33,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective">
+        insert into basic_pattern_restrict_result
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="priorityOrderCd != null">priority_order_cd,</if>
+                <if test="companyCd != null">company_cd,</if>
+                <if test="authorCd != null">author_cd,</if>
+                <if test="restrictCd != null">restrict_cd,</if>
+                <if test="skuCnt != null">sku_cnt,</if>
+                <if test="zokusei1 != null">zokusei1,</if>
+                <if test="zokusei2 != null">zokusei2,</if>
+                <if test="zokusei3 != null">zokusei3,</if>
+                <if test="zokusei4 != null">zokusei4,</if>
+                <if test="zokusei5 != null">zokusei5,</if>
+                <if test="zokusei6 != null">zokusei6,</if>
+                <if test="zokusei7 != null">zokusei7,</if>
+                <if test="zokusei8 != null">zokusei8,</if>
+                <if test="zokusei9 != null">zokusei9,</if>
+                <if test="zokusei10 != null">zokusei10,</if>
+                <if test="zokusei11 != null">zokusei11,</if>
+                <if test="zokusei12 != null">zokusei12,</if>
+                <if test="zokusei13 != null">zokusei13,</if>
+                <if test="zokusei14 != null">zokusei14,</if>
+                <if test="zokusei15 != null">zokusei15,</if>
+                <if test="zokusei16 != null">zokusei16,</if>
+                <if test="zokusei17 != null">zokusei17,</if>
+                <if test="zokusei18 != null">zokusei18,</if>
+                <if test="zokusei19 != null">zokusei19,</if>
+                <if test="zokusei20 != null">zokusei20,</if>
+                <if test="zokusei21 != null">zokusei21,</if>
+                <if test="zokusei22 != null">zokusei22,</if>
+                <if test="zokusei23 != null">zokusei23,</if>
+                <if test="zokusei24 != null">zokusei24,</if>
+                <if test="zokusei25 != null">zokusei25,</if>
+                <if test="zokusei26 != null">zokusei26,</if>
+                <if test="zokusei27 != null">zokusei27,</if>
+                <if test="zokusei28 != null">zokusei28,</if>
+                <if test="zokusei29 != null">zokusei29,</if>
+                <if test="zokusei30 != null">zokusei30,</if>
+                <if test="zokusei31 != null">zokusei31,</if>
+                <if test="zokusei32 != null">zokusei32,</if>
+                <if test="zokusei33 != null">zokusei33,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="priorityOrderCd != null">#{priorityOrderCd,jdbcType=BIGINT},</if>
+                <if test="companyCd != null">#{companyCd,jdbcType=VARCHAR},</if>
+                <if test="authorCd != null">#{authorCd,jdbcType=VARCHAR},</if>
+                <if test="restrictCd != null">#{restrictCd,jdbcType=BIGINT},</if>
+                <if test="skuCnt != null">#{skuCnt,jdbcType=BIGINT},</if>
+                <if test="zokusei1 != null">#{zokusei1,jdbcType=VARCHAR},</if>
+                <if test="zokusei2 != null">#{zokusei2,jdbcType=VARCHAR},</if>
+                <if test="zokusei3 != null">#{zokusei3,jdbcType=VARCHAR},</if>
+                <if test="zokusei4 != null">#{zokusei4,jdbcType=VARCHAR},</if>
+                <if test="zokusei5 != null">#{zokusei5,jdbcType=VARCHAR},</if>
+                <if test="zokusei6 != null">#{zokusei6,jdbcType=VARCHAR},</if>
+                <if test="zokusei7 != null">#{zokusei7,jdbcType=VARCHAR},</if>
+                <if test="zokusei8 != null">#{zokusei8,jdbcType=VARCHAR},</if>
+                <if test="zokusei9 != null">#{zokusei9,jdbcType=VARCHAR},</if>
+                <if test="zokusei10 != null">#{zokusei10,jdbcType=VARCHAR},</if>
+                <if test="zokusei11 != null">#{zokusei11,jdbcType=VARCHAR},</if>
+                <if test="zokusei12 != null">#{zokusei12,jdbcType=VARCHAR},</if>
+                <if test="zokusei13 != null">#{zokusei13,jdbcType=VARCHAR},</if>
+                <if test="zokusei14 != null">#{zokusei14,jdbcType=VARCHAR},</if>
+                <if test="zokusei15 != null">#{zokusei15,jdbcType=VARCHAR},</if>
+                <if test="zokusei16 != null">#{zokusei16,jdbcType=VARCHAR},</if>
+                <if test="zokusei17 != null">#{zokusei17,jdbcType=VARCHAR},</if>
+                <if test="zokusei18 != null">#{zokusei18,jdbcType=VARCHAR},</if>
+                <if test="zokusei19 != null">#{zokusei19,jdbcType=VARCHAR},</if>
+                <if test="zokusei20 != null">#{zokusei20,jdbcType=VARCHAR},</if>
+                <if test="zokusei21 != null">#{zokusei21,jdbcType=VARCHAR},</if>
+                <if test="zokusei22 != null">#{zokusei22,jdbcType=VARCHAR},</if>
+                <if test="zokusei23 != null">#{zokusei23,jdbcType=VARCHAR},</if>
+                <if test="zokusei24 != null">#{zokusei24,jdbcType=VARCHAR},</if>
+                <if test="zokusei25 != null">#{zokusei25,jdbcType=VARCHAR},</if>
+                <if test="zokusei26 != null">#{zokusei26,jdbcType=VARCHAR},</if>
+                <if test="zokusei27 != null">#{zokusei27,jdbcType=VARCHAR},</if>
+                <if test="zokusei28 != null">#{zokusei28,jdbcType=VARCHAR},</if>
+                <if test="zokusei29 != null">#{zokusei29,jdbcType=VARCHAR},</if>
+                <if test="zokusei30 != null">#{zokusei30,jdbcType=VARCHAR},</if>
+                <if test="zokusei31 != null">#{zokusei31,jdbcType=VARCHAR},</if>
+                <if test="zokusei32 != null">#{zokusei32,jdbcType=VARCHAR},</if>
+                <if test="zokusei33 != null">#{zokusei33,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.BasicPatternRestrictResult">
+        update basic_pattern_restrict_result
+        <set>
+                <if test="priorityOrderCd != null">
+                    priority_order_cd = #{priorityOrderCd,jdbcType=BIGINT},
+                </if>
+                <if test="companyCd != null">
+                    company_cd = #{companyCd,jdbcType=VARCHAR},
+                </if>
+                <if test="authorCd != null">
+                    author_cd = #{authorCd,jdbcType=VARCHAR},
+                </if>
+                <if test="restrictCd != null">
+                    restrict_cd = #{restrictCd,jdbcType=BIGINT},
+                </if>
+                <if test="skuCnt != null">
+                    sku_cnt = #{skuCnt,jdbcType=BIGINT},
+                </if>
+                <if test="zokusei1 != null">
+                    zokusei1 = #{zokusei1,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei2 != null">
+                    zokusei2 = #{zokusei2,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei3 != null">
+                    zokusei3 = #{zokusei3,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei4 != null">
+                    zokusei4 = #{zokusei4,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei5 != null">
+                    zokusei5 = #{zokusei5,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei6 != null">
+                    zokusei6 = #{zokusei6,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei7 != null">
+                    zokusei7 = #{zokusei7,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei8 != null">
+                    zokusei8 = #{zokusei8,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei9 != null">
+                    zokusei9 = #{zokusei9,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei10 != null">
+                    zokusei10 = #{zokusei10,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei11 != null">
+                    zokusei11 = #{zokusei11,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei12 != null">
+                    zokusei12 = #{zokusei12,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei13 != null">
+                    zokusei13 = #{zokusei13,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei14 != null">
+                    zokusei14 = #{zokusei14,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei15 != null">
+                    zokusei15 = #{zokusei15,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei16 != null">
+                    zokusei16 = #{zokusei16,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei17 != null">
+                    zokusei17 = #{zokusei17,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei18 != null">
+                    zokusei18 = #{zokusei18,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei19 != null">
+                    zokusei19 = #{zokusei19,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei20 != null">
+                    zokusei20 = #{zokusei20,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei21 != null">
+                    zokusei21 = #{zokusei21,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei22 != null">
+                    zokusei22 = #{zokusei22,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei23 != null">
+                    zokusei23 = #{zokusei23,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei24 != null">
+                    zokusei24 = #{zokusei24,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei25 != null">
+                    zokusei25 = #{zokusei25,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei26 != null">
+                    zokusei26 = #{zokusei26,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei27 != null">
+                    zokusei27 = #{zokusei27,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei28 != null">
+                    zokusei28 = #{zokusei28,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei29 != null">
+                    zokusei29 = #{zokusei29,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei30 != null">
+                    zokusei30 = #{zokusei30,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei31 != null">
+                    zokusei31 = #{zokusei31,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei32 != null">
+                    zokusei32 = #{zokusei32,jdbcType=VARCHAR},
+                </if>
+                <if test="zokusei33 != null">
+                    zokusei33 = #{zokusei33,jdbcType=VARCHAR},
+                </if>
+        </set>
+        where  
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.BasicPatternRestrictResult">
+        update basic_pattern_restrict_result
+        set 
+            priority_order_cd =  #{priorityOrderCd,jdbcType=BIGINT},
+            company_cd =  #{companyCd,jdbcType=VARCHAR},
+            author_cd =  #{authorCd,jdbcType=VARCHAR},
+            restrict_cd =  #{restrictCd,jdbcType=BIGINT},
+            sku_cnt =  #{skuCnt,jdbcType=BIGINT},
+            zokusei1 =  #{zokusei1,jdbcType=VARCHAR},
+            zokusei2 =  #{zokusei2,jdbcType=VARCHAR},
+            zokusei3 =  #{zokusei3,jdbcType=VARCHAR},
+            zokusei4 =  #{zokusei4,jdbcType=VARCHAR},
+            zokusei5 =  #{zokusei5,jdbcType=VARCHAR},
+            zokusei6 =  #{zokusei6,jdbcType=VARCHAR},
+            zokusei7 =  #{zokusei7,jdbcType=VARCHAR},
+            zokusei8 =  #{zokusei8,jdbcType=VARCHAR},
+            zokusei9 =  #{zokusei9,jdbcType=VARCHAR},
+            zokusei10 =  #{zokusei10,jdbcType=VARCHAR},
+            zokusei11 =  #{zokusei11,jdbcType=VARCHAR},
+            zokusei12 =  #{zokusei12,jdbcType=VARCHAR},
+            zokusei13 =  #{zokusei13,jdbcType=VARCHAR},
+            zokusei14 =  #{zokusei14,jdbcType=VARCHAR},
+            zokusei15 =  #{zokusei15,jdbcType=VARCHAR},
+            zokusei16 =  #{zokusei16,jdbcType=VARCHAR},
+            zokusei17 =  #{zokusei17,jdbcType=VARCHAR},
+            zokusei18 =  #{zokusei18,jdbcType=VARCHAR},
+            zokusei19 =  #{zokusei19,jdbcType=VARCHAR},
+            zokusei20 =  #{zokusei20,jdbcType=VARCHAR},
+            zokusei21 =  #{zokusei21,jdbcType=VARCHAR},
+            zokusei22 =  #{zokusei22,jdbcType=VARCHAR},
+            zokusei23 =  #{zokusei23,jdbcType=VARCHAR},
+            zokusei24 =  #{zokusei24,jdbcType=VARCHAR},
+            zokusei25 =  #{zokusei25,jdbcType=VARCHAR},
+            zokusei26 =  #{zokusei26,jdbcType=VARCHAR},
+            zokusei27 =  #{zokusei27,jdbcType=VARCHAR},
+            zokusei28 =  #{zokusei28,jdbcType=VARCHAR},
+            zokusei29 =  #{zokusei29,jdbcType=VARCHAR},
+            zokusei30 =  #{zokusei30,jdbcType=VARCHAR},
+            zokusei31 =  #{zokusei31,jdbcType=VARCHAR},
+            zokusei32 =  #{zokusei32,jdbcType=VARCHAR},
+            zokusei33 =  #{zokusei33,jdbcType=VARCHAR}
+        where  
+    </update>
+    <delete id="deleteByPriorityCd">
+        delete from planocycle.work_basic_pattern_restrict_result
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+    </delete>
+    <insert id="insertBatch" parameterType="com.trechina.planocycle.entity.po.BasicPatternRestrictResult" useGeneratedKeys="true"
+            keyProperty="restrictCd" keyColumn="restrict_cd">
+        insert into planocycle.work_basic_pattern_restrict_result
+        ( priority_order_cd,company_cd,author_cd
+        ,restrict_cd,sku_cnt,zokusei1
+        ,zokusei2,zokusei3,zokusei4
+        ,zokusei5,zokusei6,zokusei7
+        ,zokusei8,zokusei9,zokusei10
+        ,zokusei11,zokusei12,zokusei13
+        ,zokusei14,zokusei15,zokusei16
+        ,zokusei17,zokusei18,zokusei19
+        ,zokusei20,zokusei21,zokusei22
+        ,zokusei23,zokusei24,zokusei25
+        ,zokusei26,zokusei27,zokusei28
+        ,zokusei29,zokusei30,zokusei31
+        ,zokusei32,zokusei33)
+        values
+            <foreach collection="lists" item="item" separator=",">
+                (#{item.priorityOrderCd,jdbcType=BIGINT},#{item.companyCd,jdbcType=VARCHAR},#{item.authorCd,jdbcType=VARCHAR}
+                ,#{item.restrictCd,jdbcType=BIGINT},#{item.skuCnt,jdbcType=BIGINT},#{item.zokusei1,jdbcType=VARCHAR}
+                ,#{item.zokusei2,jdbcType=VARCHAR},#{item.zokusei3,jdbcType=VARCHAR},#{item.zokusei4,jdbcType=VARCHAR}
+                ,#{item.zokusei5,jdbcType=VARCHAR},#{item.zokusei6,jdbcType=VARCHAR},#{item.zokusei7,jdbcType=VARCHAR}
+                ,#{item.zokusei8,jdbcType=VARCHAR},#{item.zokusei9,jdbcType=VARCHAR},#{item.zokusei10,jdbcType=VARCHAR}
+                ,#{item.zokusei11,jdbcType=VARCHAR},#{item.zokusei12,jdbcType=VARCHAR},#{item.zokusei13,jdbcType=VARCHAR}
+                ,#{item.zokusei14,jdbcType=VARCHAR},#{item.zokusei15,jdbcType=VARCHAR},#{item.zokusei16,jdbcType=VARCHAR}
+                ,#{item.zokusei17,jdbcType=VARCHAR},#{item.zokusei18,jdbcType=VARCHAR},#{item.zokusei19,jdbcType=VARCHAR}
+                ,#{item.zokusei20,jdbcType=VARCHAR},#{item.zokusei21,jdbcType=VARCHAR},#{item.zokusei22,jdbcType=VARCHAR}
+                ,#{item.zokusei23,jdbcType=VARCHAR},#{item.zokusei24,jdbcType=VARCHAR},#{item.zokusei25,jdbcType=VARCHAR}
+                ,#{item.zokusei26,jdbcType=VARCHAR},#{item.zokusei27,jdbcType=VARCHAR},#{item.zokusei28,jdbcType=VARCHAR}
+                ,#{item.zokusei29,jdbcType=VARCHAR},#{item.zokusei30,jdbcType=VARCHAR},#{item.zokusei31,jdbcType=VARCHAR}
+                ,#{item.zokusei32,jdbcType=VARCHAR},#{item.zokusei33,jdbcType=VARCHAR})
+            </foreach>
+    </insert>
+</mapper>

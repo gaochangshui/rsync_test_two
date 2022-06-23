@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.ZokuseiMapper">
+  <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.ZokuseiMst">
+    <result property="companyCd" column="company_cd" jdbcType="VARCHAR"/>
+    <result property="classCd" column="class_cd" jdbcType="VARCHAR"/>
+    <result property="zokuseiId" column="zokusei_id" jdbcType="SMALLINT"/>
+    <result property="zokuseiNm" column="zokusei_nm" jdbcType="VARCHAR"/>
+    <result property="zokuseiSort" column="zokusei_sort" jdbcType="SMALLINT"/>
+    <result property="type" column="type" jdbcType="SMALLINT"/>
+    <result property="sortType" column="sort_type" jdbcType="SMALLINT"/>
+    <result property="zokuseiCol" column="zokusei_col" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    company_cd,class_cd,zokusei_id,
+        zokusei_nm,zokusei_sort,type,
+        sort_type,zokusei_col
+  </sql>
+
+  <select id="selectZokusei" resultType="com.trechina.planocycle.entity.po.ZokuseiMst">
+    select zokusei_id,zokusei_col from masterdb.planocycle_zokusei_mst where
+    company_cd=#{companyCd} and class_cd=#{classCd} and zokusei_id::varchar=any(string_to_array(#{zokuseiIds}, ','))
+  </select>
+  <select id="selectCdHeader" resultType="int">
+    select "3" from ${tableName} where "6"::integer=1 and "1" not like 'jan%'
+  </select>
+</mapper>
