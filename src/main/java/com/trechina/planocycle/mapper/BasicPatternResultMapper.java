@@ -7,7 +7,7 @@ import java.util.Map;
 @Mapper
 public interface BasicPatternResultMapper {
 
-    List<Map<String,Object>> getAttrComposeList(String companyCd, Integer priorityOrderCd,List<String> attrList);
+    List<Map<String,Object>> getAttrComposeList(String companyCd, Integer priorityOrderCd,List<String> attrList,String classCd,String company);
 
     List<Map<String,Object>> getAttrHeaderName(List<String> attrList, String classCd,String companyCd);
 }

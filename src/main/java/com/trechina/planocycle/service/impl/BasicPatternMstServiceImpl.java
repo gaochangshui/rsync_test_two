@@ -45,6 +45,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     private BasicPatternRestrictRelationMapper restrictRelationMapper;
     @Autowired
     private BasicPatternAttrMapper basicMapperMapper;
+    @Autowired
+    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -60,6 +62,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         List<Integer> cdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable(), commonTableName.getProAttrTable());
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(companyCd,
                 classCd, zokuseiIds);
+        priorityOrderMstAttrSortMapper.setAttrList(companyCd,priorityOrderCd,cdList);
         List<ShelfPtsDataTanamst> tanamsts = shelfPtsDataTanamst.selectByPatternCd((long) shelfPatternCd);
         List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd, zokuseiMsts, cdList);
         String aud = session.getAttribute("aud").toString();

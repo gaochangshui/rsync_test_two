@@ -59,6 +59,8 @@ public interface ShelfPtsDataMapper {
 
     //pts台数
     Integer getTaiNum(@Param("patternCd")Integer patternCd);
+    //新pts台数
+    Integer getNewTaiNum(@Param("priorityOrderCd")Integer priorityOrderCd);
     //pts総セグメント数
     Integer getTanaNum(@Param("patternCd")Integer patternCd);
     //face数
