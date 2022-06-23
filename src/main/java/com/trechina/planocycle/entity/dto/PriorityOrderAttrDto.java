@@ -4,6 +4,7 @@ public class PriorityOrderAttrDto {
     private String companyCd;
     private Integer priorityOrderCd;
     private String commonPartsData;
+    private Integer ShelfPatternCd;
 
     public String getCompanyCd() {
         return companyCd;
@@ -29,12 +30,21 @@ public class PriorityOrderAttrDto {
         this.commonPartsData = commonPartsData;
     }
 
+    public Integer getShelfPatternCd() {
+        return ShelfPatternCd;
+    }
+
+    public void setShelfPatternCd(Integer shelfPatternCd) {
+        ShelfPatternCd = shelfPatternCd;
+    }
+
     @Override
     public String toString() {
         return "PriorityOrderAttrDto{" +
                 "companyCd='" + companyCd + '\'' +
                 ", priorityOrderCd=" + priorityOrderCd +
                 ", commonPartsData='" + commonPartsData + '\'' +
+                ", ShelfPatternCd=" + ShelfPatternCd +
                 '}';
     }
 }

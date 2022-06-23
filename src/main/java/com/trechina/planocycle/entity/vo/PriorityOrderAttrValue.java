@@ -4,8 +4,7 @@ import java.util.List;
 
 public class PriorityOrderAttrValue {
     private String attrCd;
-    private String val;
-    private String type;
+    private String classifyCd;
     private String attrName;
     private String classifyName;
     private List<PriorityOrderAttrValue> children;
@@ -19,20 +18,12 @@ public class PriorityOrderAttrValue {
         this.attrCd = attrCd;
     }
 
-    public String getVal() {
-        return val;
+    public String getClassifyCd() {
+        return classifyCd;
     }
 
-    public void setVal(String val) {
-        this.val = val;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setClassifyCd(String classifyCd) {
+        this.classifyCd = classifyCd;
     }
 
     public String getAttrName() {
@@ -65,18 +56,5 @@ public class PriorityOrderAttrValue {
 
     public void setShow(Boolean show) {
         this.show = show;
-    }
-
-    @Override
-    public String toString() {
-        return "PriorityOrderAttrValue{" +
-                "attrCd='" + attrCd + '\'' +
-                ", val='" + val + '\'' +
-                ", type='" + type + '\'' +
-                ", attrName='" + attrName + '\'' +
-                ", classifyName='" + classifyName + '\'' +
-                ", children=" + children +
-                ", show=" + show +
-                '}';
     }
 }

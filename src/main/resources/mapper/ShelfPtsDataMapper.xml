@@ -462,6 +462,15 @@
                                                              from planocycle.priority_order_pts_data_jandata
     where pts_cd = #{ptsCd} and company_cd = #{companyCd}
   </insert>
+  <insert id="updTanaSize">
+    insert into planocycle.work_priority_order_pts_data_tanamst(company_cd,pts_cd,tai_cd,tana_cd,tana_height,tana_width,tana_depth,tana_thickness
+    ,tana_type,create_time,author_cd,edit_time,editer_cd)
+    values
+    <foreach collection="ptsTanaVoList" separator="," item="item" >
+      (#{companyCd},#{id},#{item.taiCd},#{item.tanaCd},#{item.tanaHeight},#{item.tanaWidth},#{item.tanaDepth},#{item.tanaThickness}
+      ,#{item.tanaType},now(),#{authorCd},now(),#{authorCd})
+    </foreach>
+  </insert>
   <delete id="deletePtsTaimst">
     delete from planocycle.work_priority_order_pts_data_taimst where pts_cd=#{ptsCd}
   </delete>
@@ -498,7 +507,10 @@
   <delete id="deleteFinalPtsDataJandata">
     delete from planocycle.priority_order_pts_data_jandata where pts_cd=#{ptsCd}
   </delete>
-  <select id="selectPtsCdByAuthorCd" resultMap="BaseResultMap">
+    <delete id="deleteTana">
+      delete from planocycle.work_priority_order_pts_data_tanamst where pts_cd=#{id} and tai_cd = #{taiCd}
+    </delete>
+    <select id="selectPtsCdByAuthorCd" resultMap="BaseResultMap">
     select id,file_name from planocycle.work_priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
     and authorcd=#{authorCd} and shelf_pattern_cd=#{patternCd} and deleteflg=0
   </select>

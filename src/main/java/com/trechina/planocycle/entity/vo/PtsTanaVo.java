@@ -8,6 +8,8 @@ public class PtsTanaVo {
     private Integer tanaDepth;
     private Integer tanaThickness;
     private Integer tanaType;
+    private String companyCd;
+    private Integer priorityOrderCd;
 
     public Integer getTaiCd() {
         return taiCd;
@@ -65,6 +67,22 @@ public class PtsTanaVo {
         this.tanaType = tanaType;
     }
 
+    public String getCompanyCd() {
+        return companyCd;
+    }
+
+    public void setCompanyCd(String companyCd) {
+        this.companyCd = companyCd;
+    }
+
+    public Integer getPriorityOrderCd() {
+        return priorityOrderCd;
+    }
+
+    public void setPriorityOrderCd(Integer priorityOrderCd) {
+        this.priorityOrderCd = priorityOrderCd;
+    }
+
     @Override
     public String toString() {
         return "PtsTanaVo{" +
@@ -75,6 +93,8 @@ public class PtsTanaVo {
                 ", tanaDepth=" + tanaDepth +
                 ", tanaThickness=" + tanaThickness +
                 ", tanaType=" + tanaType +
+                ", companyCd='" + companyCd + '\'' +
+                ", priorityOrderCd=" + priorityOrderCd +
                 '}';
     }
 }

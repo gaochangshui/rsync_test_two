@@ -42,8 +42,9 @@ public interface PriorityOrderMstAttrSortMapper {
     //商品分類属性構造の取得
     List<PriorityOrderAttrValue> getGoodsAttrTree();
 
+
     //商品分類以外の属性数
-    List<PriorityOrderAttrValueVo> getAttr();
+    List<PriorityOrderAttrValueVo> getAttr(String companyCd, String classCd);
 
     //zookuseiIdに基づいて対応する属性と属性タイプを取得する
     List<PriorityOrderAttrValue> getAttrValues(@Param("zokuseiId") Integer zokuseiId);
@@ -69,4 +70,9 @@ public interface PriorityOrderMstAttrSortMapper {
     void insertAttrSortFinal(String companyCd, Integer priorityOrderCd);
 
     void deleteAttrSortFinal(String companyCd, Integer priorityOrderCd);
+
+
+    List<String> getAttrList(String companyCd, Integer priorityOrderCd);
+
+
 }

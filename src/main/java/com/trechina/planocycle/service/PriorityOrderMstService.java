@@ -54,6 +54,8 @@ public interface PriorityOrderMstService {
      */
     Map<String, Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition);
 
+
+
     /**
      * 表示自動計算実行ステータス
      * @param taskId

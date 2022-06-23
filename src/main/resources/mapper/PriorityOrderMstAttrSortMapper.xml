@@ -29,6 +29,16 @@
       </collection>
     </collection>
   </resultMap>
+  <resultMap id="attrListMap" type="com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo">
+    <result column="zokusei_id" property="attrCd"/>
+    <result column="zokusei_nm" property="attrName"/>
+    <collection property="children" ofType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+      <result column="val" property="attrCd"/>
+      <result column="nm" property="attrName"/>
+      <result column="zokusei_id" property="classifyCd"/>
+      <result column="zokusei_nm" property="classifyName"/>
+    </collection>
+  </resultMap>
   <sql id="Base_Column_List">
     company_cd, priority_order_cd, value, sort, cd
   </sql>
@@ -129,9 +139,17 @@
     order by ct1.val
 
   </select>
-  <select id="getAttr" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo">
-    select zokusei_id as attrCd,zokusei_nm as attrName ,zokusei_tb_nm as tableName,jans_col_nm as jansColNm,zokusei_sort as sort from masterdb.zokusei_mst where type  = 0;
-  </select>
+  <select id="getAttr" resultMap="attrListMap">
+    select
+      mst.zokusei_id,
+      zokusei_nm ,
+      val ,nm
+    from
+      masterdb.planocycle_zokusei_mst  mst
+        left join masterdb.planocycle_zokusei_mst_data datas on datas.class_cd = mst.class_cd and datas.company_cd = mst.company_cd and datas.zokusei_id = mst.zokusei_id
+    where
+      mst.company_cd = #{companyCd} and mst.class_cd = #{classCd};
+</select>
   <select id="getAttrValues" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
     select datas.val as attrCd,datas.nm as attrName,datas.type as type,mst.zokusei_nm as classifyName
     from masterdb.zokusei_mst_data datas
@@ -231,6 +249,9 @@
                      on mst.zokusei_id = sort.zokusei_id
     where company_cd = #{companyCd} and  author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
 
+  </select>
+  <select id="getAttrList" resultType="java.lang.String">
+    select value from  planocycle.priority_order_mst_attrsort where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority.priority_order_mst_attrsort

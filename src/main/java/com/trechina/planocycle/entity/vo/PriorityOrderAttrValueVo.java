@@ -5,10 +5,8 @@ import java.util.List;
 public class PriorityOrderAttrValueVo {
    private Integer attrCd;
    private String attrName;
-   private String tableName;
-   private String jansColNm;
    private Integer sort;
-   private List<PriorityOrderAttrValue> values;
+   private List<PriorityOrderAttrValue> children;
    private Boolean show =true;
 
     public Integer getAttrCd() {
@@ -27,22 +25,6 @@ public class PriorityOrderAttrValueVo {
         this.attrName = attrName;
     }
 
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public String getJansColNm() {
-        return jansColNm;
-    }
-
-    public void setJansColNm(String jansColNm) {
-        this.jansColNm = jansColNm;
-    }
-
     public Integer getSort() {
         return sort;
     }
@@ -51,12 +33,12 @@ public class PriorityOrderAttrValueVo {
         this.sort = sort;
     }
 
-    public List<PriorityOrderAttrValue> getValues() {
-        return values;
+    public List<PriorityOrderAttrValue> getChildren() {
+        return children;
     }
 
-    public void setValues(List<PriorityOrderAttrValue> values) {
-        this.values = values;
+    public void setChildren(List<PriorityOrderAttrValue> children) {
+        this.children = children;
     }
 
     public Boolean getShow() {
@@ -65,18 +47,5 @@ public class PriorityOrderAttrValueVo {
 
     public void setShow(Boolean show) {
         this.show = show;
-    }
-
-    @Override
-    public String toString() {
-        return "PriorityOrderAttrValueVo{" +
-                "attrCd=" + attrCd +
-                ", attrName='" + attrName + '\'' +
-                ", tableName='" + tableName + '\'' +
-                ", jansColNm='" + jansColNm + '\'' +
-                ", sort=" + sort +
-                ", values=" + values +
-                ", show=" + show +
-                '}';
     }
 }
