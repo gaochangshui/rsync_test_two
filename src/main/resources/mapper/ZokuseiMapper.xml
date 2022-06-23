@@ -19,7 +19,7 @@
   </sql>
 
   <select id="selectZokusei" resultType="com.trechina.planocycle.entity.po.ZokuseiMst">
-    select * from masterdb.planocycle_zokusei_mst where
-    company_cd=#{companyCd} and class_cd=#{classCd}
+    select zokusei_id,zokusei_col from masterdb.planocycle_zokusei_mst where
+    company_cd=#{companyCd} and class_cd=#{classCd} and zokusei_id::varchar=any(string_to_array(zokuseiIds, ','))
   </select>
 </mapper>

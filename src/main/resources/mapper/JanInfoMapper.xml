@@ -10,4 +10,15 @@
     <select id="getSchemaOrTableName" resultType="java.lang.String">
         select  '"' || table_schema || '"' || '.' || '"' || table_name || '"'	from  information_schema.tables where table_schema  in ('87c6f4','1000') and "table_name" like '%wk'
     </select>
+    <select id="selectJanClassify" resultType="map">
+        select tai_cd as "taiCd",tana_cd as "tanaCd",tanaposition_cd as "tanapositionCd", jan, janmst.width as "width"
+        <foreach collection="zokuseiList" item="item" open="," separator=",">
+            ${item.zokuseiCol} as "${item.zokuseiId}"
+        </foreach>
+        from shelf_pts_data ptsdata
+        inner join shelf_pts_data_jandata jandata on jandata.pts_cd=ptsdata.id
+        inner join ${janInfoTb} janinfo on jandata.jan = janinfo."1"
+        inner join masterdb.jan_mst janmst on janmst.jan_cd=jandata.jan
+        where shelf_pattern_cd=#{shelfPatternCd};
+    </select>
 </mapper>

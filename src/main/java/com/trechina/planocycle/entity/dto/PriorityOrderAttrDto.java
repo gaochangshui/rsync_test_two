@@ -1,11 +1,9 @@
-package com.trechina.planocycle.entity.vo;
+package com.trechina.planocycle.entity.dto;
 
-public class BasicPatternAutoDetectVO {
+public class PriorityOrderAttrDto {
     private String companyCd;
     private Integer priorityOrderCd;
     private String commonPartsData;
-    private Integer shelfPatternCd;
-    private String attrList;
 
     public String getCompanyCd() {
         return companyCd;
@@ -31,19 +29,12 @@ public class BasicPatternAutoDetectVO {
         this.commonPartsData = commonPartsData;
     }
 
-    public Integer getShelfPatternCd() {
-        return shelfPatternCd;
-    }
-
-    public void setShelfPatternCd(Integer shelfPatternCd) {
-        this.shelfPatternCd = shelfPatternCd;
-    }
-
-    public String getAttrList() {
-        return attrList;
-    }
-
-    public void setAttrList(String attrList) {
-        this.attrList = attrList;
+    @Override
+    public String toString() {
+        return "PriorityOrderAttrDto{" +
+                "companyCd='" + companyCd + '\'' +
+                ", priorityOrderCd=" + priorityOrderCd +
+                ", commonPartsData='" + commonPartsData + '\'' +
+                '}';
     }
 }

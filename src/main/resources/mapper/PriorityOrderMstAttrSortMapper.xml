@@ -45,7 +45,7 @@
     where zokusei_id = #{attrId}
     </select>
   <select id="getAttribute" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.zokusei_mst order by zokusei_sort;
+    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
   </select>
   <select id="getAttrSort" resultType="java.lang.Integer">
     select zokusei_sort
