@@ -10,7 +10,7 @@
     </delete>
     <insert id="insertBatch" parameterType="com.trechina.planocycle.entity.po.BasicPatternRestrictResult">
         insert into planocycle.work_basic_pattern_attr_compose
-        ( priority_order_cd,company_cd,author_cd,zokusei1
+        ( priority_order_cd,company_cd,author_cd,restrict_cd,zokusei1
         ,zokusei2,zokusei3,zokusei4
         ,zokusei5,zokusei6,zokusei7
         ,zokusei8,zokusei9,zokusei10
@@ -24,7 +24,7 @@
         ,zokusei32,zokusei33)
         values
         <foreach collection="lists" item="item" separator=",">
-            (#{item.priorityOrderCd,jdbcType=BIGINT},#{item.companyCd,jdbcType=VARCHAR},#{item.authorCd,jdbcType=VARCHAR}
+            (#{item.priorityOrderCd,jdbcType=BIGINT},#{item.companyCd,jdbcType=VARCHAR},#{item.authorCd,jdbcType=VARCHAR},#{item.restrictCd,jdbcType=VARCHAR},
             ,#{item.zokusei1,jdbcType=VARCHAR}
             ,#{item.zokusei2,jdbcType=VARCHAR},#{item.zokusei3,jdbcType=VARCHAR},#{item.zokusei4,jdbcType=VARCHAR}
             ,#{item.zokusei5,jdbcType=VARCHAR},#{item.zokusei6,jdbcType=VARCHAR},#{item.zokusei7,jdbcType=VARCHAR}
