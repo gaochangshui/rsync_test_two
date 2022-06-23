@@ -56,7 +56,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         GetCommonPartsDataDto commonTableName = getCommonTableName(commonPartsData, companyCd);
         String classCd = commonTableName.getProdMstClass();
         String zokuseiIds = autoDetectVO.getAttrList();
-        List<Integer> list = Arrays.asList(zokuseiIds).stream().map(Integer::parseInt).collect(Collectors.toList());
+        List<Integer> list = Arrays.asList(zokuseiIds.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
 
         List<Integer> cdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable(), commonTableName.getProAttrTable());
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(companyCd,
