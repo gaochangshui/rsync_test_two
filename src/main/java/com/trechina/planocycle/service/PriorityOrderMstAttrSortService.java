@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service;
 
+import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderSpaceDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
@@ -35,7 +36,7 @@ public interface PriorityOrderMstAttrSortService {
     /**
      * つかむ取属性1和属性2
      */
-    Map<String, Object> getAttribute();
+    Map<String, Object> getAttribute(PriorityOrderAttrDto priorityOrderAttrDto);
     /**
      * 陳列設定つかむ取属性1和属性2
      */

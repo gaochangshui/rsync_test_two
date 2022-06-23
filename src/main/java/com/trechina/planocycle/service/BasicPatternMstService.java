@@ -1,5 +1,7 @@
 package com.trechina.planocycle.service;
 
-public interface BasicPatternMstService {
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 
+public interface BasicPatternMstService {
+    GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd );
 }

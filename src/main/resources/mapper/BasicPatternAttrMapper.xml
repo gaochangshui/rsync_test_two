@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.BasicPatternAttrMapper">
+    <select id="getAttribute" resultType="com.trechina.planocycle.entity.dto.BasicPatternAttrListDto">
+        select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
+    </select>
+</mapper>

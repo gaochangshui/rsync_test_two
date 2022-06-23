@@ -1,5 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderSpaceDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
 import com.trechina.planocycle.entity.po.*;
@@ -21,7 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +48,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     private WorkPriorityOrderSpaceMapper workPriorityOrderSpaceMapper;
     @Autowired
     private WorkPriorityOrderRestrictSetMapper workPriorityOrderRestrictSetMapper;
+    @Autowired
+    private BasicPatternMstServiceImpl BasicPatternMstService;
 
 
 
@@ -79,8 +86,9 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
      * 属性1と属性2の取得
      */
     @Override
-    public Map<String, Object> getAttribute() {
-        List<PriorityOrderAttrListVo> attributeList = priorityOrderMstAttrSortMapper.getAttribute();
+    public Map<String, Object> getAttribute(PriorityOrderAttrDto priorityOrderAttrDto) {
+        GetCommonPartsDataDto commonTableName = BasicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(),priorityOrderAttrDto.getCompanyCd());
+        List<PriorityOrderAttrListVo> attributeList = priorityOrderMstAttrSortMapper.getAttribute(commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         return ResultMaps.result(ResultEnum.SUCCESS, attributeList);
     }
 

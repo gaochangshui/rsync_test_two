@@ -5,15 +5,17 @@ import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
-
+@Service
 public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
     @Autowired
     private SysConfigMapper sysConfigMapper;
 
-    public GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd ) {
+    @Override
+    public  GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd ) {
         //{"dateIsCore":"1","storeLevel":"3","storeIsCore":"1","storeMstClass":"0000","prodIsCore":"1","prodMstClass":"0000"}
 
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);

@@ -31,7 +31,7 @@ public interface PriorityOrderMstAttrSortMapper {
     String getAttrTableName(@Param("attrId") Integer attrId);
 
     //属性リストの取得
-    List<PriorityOrderAttrListVo> getAttribute();
+    List<PriorityOrderAttrListVo> getAttribute(String companyCd,String classCd);
     //陳列設定属性リストの取得
     List<PriorityOrderAttrListVo> getAttributeSort();
 
