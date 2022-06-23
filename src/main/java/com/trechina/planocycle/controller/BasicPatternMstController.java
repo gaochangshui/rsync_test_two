@@ -20,7 +20,6 @@ public class BasicPatternMstController {
 
     @PostMapping("/autoDetect")
     public Map<String, Object> autoDetect(@RequestBody BasicPatternAutoDetectVO basePatternAutoDetectVO){
-        basicPatternMstService.autoDetect(basePatternAutoDetectVO);
-        return ResultMaps.result(ResultEnum.SUCCESS);
+        return basicPatternMstService.autoDetect(basePatternAutoDetectVO);
     }
 }
