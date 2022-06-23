@@ -275,6 +275,11 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
+  <delete id="deleteAttrList">
+    delete from planocycle.work_priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort">
     insert into planocycle.priority_order_mst_attrsort (company_cd, priority_order_cd, value,
       sort, cd)

@@ -69,7 +69,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         List<Integer> cdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable(), commonTableName.getProAttrTable());
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(companyCd,
                 classCd, zokuseiIds);
-        priorityOrderMstAttrSortMapper.setAttrList(companyCd,priorityOrderCd,cdList);
+        priorityOrderMstAttrSortMapper.deleteAttrList(companyCd,priorityOrderCd);
+        priorityOrderMstAttrSortMapper.setAttrList(companyCd,priorityOrderCd,list);
         List<ShelfPtsDataTanamst> tanamsts = shelfPtsDataTanamst.selectByPatternCd((long) shelfPatternCd);
         List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd, zokuseiMsts, cdList);
 
