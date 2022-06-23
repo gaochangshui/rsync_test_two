@@ -11,7 +11,6 @@ import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.BasicPatternMstService;
-import com.trechina.planocycle.utils.CommonUtil;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.sql.Array;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,6 +40,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     private BasicPatternRestrictResultMapper restrictResultMapper;
     @Autowired
     private BasicPatternRestrictRelationMapper restrictRelationMapper;
+    @Autowired
+    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
 
     @Override
     public Map<String, Object> autoDetect(BasicPatternAutoDetectVO autoDetectVO) {
@@ -56,6 +56,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         List<Integer> cdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable(), commonTableName.getProAttrTable());
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(companyCd,
                 classCd, zokuseiIds);
+        priorityOrderMstAttrSortMapper.setAttrList(companyCd,priorityOrderCd,cdList);
         List<ShelfPtsDataTanamst> tanamsts = shelfPtsDataTanamst.selectByPatternCd((long) shelfPatternCd);
         List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd, zokuseiMsts, cdList);
         String aud = session.getAttribute("aud").toString();

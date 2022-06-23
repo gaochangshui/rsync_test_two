@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderSpaceDto;
@@ -305,14 +306,17 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     public Map<String, Object> getAttrGroup(PriorityOrderAttrDto priorityOrderAttrDto) {
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
         GetCommonPartsDataDto commonTableName = BasicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
-        List<Map<String, Object>> restrictList = basicPatternResultMapper.getAttrComposeList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd(), attrList);
-        List<Map<String,Object>> attrHeaderName = basicPatternResultMapper.getAttrHeaderName(attrList, commonTableName.getProdMstClass(),
-                commonTableName.getProdIsCore());
-        Map<String, Object> map = new HashMap<>();
-        for (Map<String, Object> objectMap : attrHeaderName) {
-            map.put("zokusei"+objectMap.get("zokusei_id").toString(),objectMap.get("zokusei_nm"));
-        }
-        restrictList.add(0,map);
+
+
+        List<Map<String, Object>> restrictList = basicPatternResultMapper.getAttrComposeList(priorityOrderAttrDto.getCompanyCd()
+                , priorityOrderAttrDto.getPriorityOrderCd(), attrList,commonTableName.getProdMstClass(),commonTableName.getProdIsCore());
+        for (Map<String, Object> objectMap : restrictList) {
+            JSONObject jsonObject = JSONObject.parseObject(objectMap.get("json").toString());
+            for (Map.Entry<String, Object> stringObjectEntry : objectMap.entrySet()) {
+               stringObjectEntry.setValue(jsonObject.get(stringObjectEntry.getValue()));
+            }
+            objectMap.remove("json");
+            }
         return ResultMaps.result(ResultEnum.SUCCESS, restrictList);
     }
 

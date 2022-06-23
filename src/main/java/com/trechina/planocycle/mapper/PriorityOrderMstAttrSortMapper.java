@@ -75,7 +75,7 @@ public interface PriorityOrderMstAttrSortMapper {
     List<String> getAttrList(String companyCd, Integer priorityOrderCd);
 
 
-    void setAttrList(String companyCd,Integer priorityOrderCd,List<String> attrList);
+    void setAttrList(String companyCd,Integer priorityOrderCd,List<Integer> attrList);
 
 
 }
