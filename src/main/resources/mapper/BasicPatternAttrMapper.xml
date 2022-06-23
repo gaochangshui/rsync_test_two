@@ -24,7 +24,7 @@
         ,zokusei32,zokusei33)
         values
         <foreach collection="lists" item="item" separator=",">
-            (#{item.priorityOrderCd,jdbcType=BIGINT},#{item.companyCd,jdbcType=VARCHAR},#{item.authorCd,jdbcType=VARCHAR},#{item.restrictCd,jdbcType=VARCHAR},
+            (#{item.priorityOrderCd,jdbcType=BIGINT},#{item.companyCd,jdbcType=VARCHAR},#{item.authorCd,jdbcType=VARCHAR},#{item.restrictCd,jdbcType=VARCHAR}
             ,#{item.zokusei1,jdbcType=VARCHAR}
             ,#{item.zokusei2,jdbcType=VARCHAR},#{item.zokusei3,jdbcType=VARCHAR},#{item.zokusei4,jdbcType=VARCHAR}
             ,#{item.zokusei5,jdbcType=VARCHAR},#{item.zokusei6,jdbcType=VARCHAR},#{item.zokusei7,jdbcType=VARCHAR}
