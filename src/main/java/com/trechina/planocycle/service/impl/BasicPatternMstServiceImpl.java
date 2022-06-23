@@ -11,7 +11,6 @@ import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.BasicPatternMstService;
-import com.trechina.planocycle.utils.CommonUtil;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.sql.Array;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,11 +56,13 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         GetCommonPartsDataDto commonTableName = getCommonTableName(commonPartsData, companyCd);
         String classCd = commonTableName.getProdMstClass();
         String zokuseiIds = autoDetectVO.getAttrList();
+        List<Integer> list = Arrays.asList(zokuseiIds).stream().map(Integer::parseInt).collect(Collectors.toList());
 
         List<Integer> cdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable(), commonTableName.getProAttrTable());
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(companyCd,
                 classCd, zokuseiIds);
-        priorityOrderMstAttrSortMapper.setAttrList(companyCd,priorityOrderCd,cdList);
+        priorityOrderMstAttrSortMapper.deleteAttrList(companyCd,priorityOrderCd);
+        priorityOrderMstAttrSortMapper.setAttrList(companyCd,priorityOrderCd,list);
         List<ShelfPtsDataTanamst> tanamsts = shelfPtsDataTanamst.selectByPatternCd((long) shelfPatternCd);
         List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd, zokuseiMsts, cdList);
         String aud = session.getAttribute("aud").toString();
