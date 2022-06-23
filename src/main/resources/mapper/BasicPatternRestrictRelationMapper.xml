@@ -21,11 +21,24 @@
         restrict_cd,area
     </sql>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List" />
-        from basic_pattern_restrict_relation
-        where 
+    <select id="selectByPrimaryKey" resultType="map">
+        select json_object_agg(val, nm) json,tai_cd as "taiCd",tana_cd as "tanaCd",
+               tana_position as "tanaPosition", restrict_cd as "restrictCd", area
+        <foreach collection="zokuseiList" open="," item="item" separator=",">
+            ${item}
+        </foreach>
+        from planocycle.work_basic_pattern_restrict_result result
+        inner join planocycle.work_basic_pattern_restrict_relation relation on result.restrict_cd=result.restrict_cd
+            and priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+        inner join masterdb.planocycle_zokusei_mst_data zokuseidata
+            on zokuseidata.class_cd=#{classCd} and zokuseidata.company_cd=#{companyCd}
+        <foreach collection="zokuseiList" item="item" open="and (" separator="or" close=")" >
+            val=${item}
+        </foreach>
+        where priority_order_cd=#{priorityOrderCd}
+        <foreach collection="zokuseiList" open="GROUP BY" item="item" separator=",">
+            ${item}
+        </foreach>
     </select>
 
     <delete id="deleteByPrimaryKey">

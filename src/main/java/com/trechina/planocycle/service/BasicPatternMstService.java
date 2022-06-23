@@ -9,4 +9,6 @@ import java.util.Map;
 public interface BasicPatternMstService {
     Map<String, Object> autoDetect(BasicPatternAutoDetectVO basePatternAutoDetectVO);
     GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd);
+
+    Map<String, Object> getAttrDisplay(String companyCd, Integer priorityOrderCd);
 }

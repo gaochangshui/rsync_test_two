@@ -14,10 +14,10 @@
   </resultMap>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderMst">
     insert into planocycle.work_priority_order_mst (company_cd, author_cd,area_name_cd, priority_order_cd, product_power_cd,
-      shelf_pattern_cd, attribute1, attribute2, 
+      shelf_pattern_cd, attribute1, attribute2, common_parts_data,
       partition_flag, partition_val)
     values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR},#{areaNameCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{productPowerCd,jdbcType=INTEGER},
-      #{shelfPatternCd,jdbcType=BIGINT}, #{attribute1,jdbcType=SMALLINT}, #{attribute2,jdbcType=SMALLINT}, 
+      #{shelfPatternCd,jdbcType=BIGINT}, #{attribute1,jdbcType=SMALLINT}, #{attribute2,jdbcType=SMALLINT}, #{commonPartsData}::json,
       #{partitionFlag,jdbcType=SMALLINT}, #{partitionVal,jdbcType=SMALLINT})
   </insert>
   <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderMst">
@@ -96,7 +96,7 @@
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
   <select id="selectByAuthorCd" resultMap="BaseResultMap">
-    select shelf_pattern_cd,partition_flag,partition_val
+    select shelf_pattern_cd,partition_flag,partition_val, common_parts_data
     from planocycle.work_priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd=#{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

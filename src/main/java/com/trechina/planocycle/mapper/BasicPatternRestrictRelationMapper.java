@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.BasicPatternRestrictRelationDto;
 import com.trechina.planocycle.entity.po.BasicPatternRestrictRelation;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -20,7 +21,8 @@ public interface BasicPatternRestrictRelationMapper {
 
     int insertSelective(BasicPatternRestrictRelation record);
 
-    BasicPatternRestrictRelation selectByPrimaryKey(Long id);
+    List<Map<String, Object>> selectByPrimaryKey(Integer priorityOrderCd, String companyCd,
+                                                 List<String> zokuseiList, String classCd);
 
     int updateByPrimaryKeySelective(BasicPatternRestrictRelation record);
 
