@@ -16,6 +16,7 @@ import com.trechina.planocycle.utils.ResultMaps;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
@@ -42,7 +43,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     private BasicPatternRestrictResultMapper restrictResultMapper;
     @Autowired
     private BasicPatternRestrictRelationMapper restrictRelationMapper;
+    @Autowired
+    private BasicPatternAttrMapper basicMapperMapper;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> autoDetect(BasicPatternAutoDetectVO autoDetectVO) {
         Integer shelfPatternCd = autoDetectVO.getShelfPatternCd();
@@ -60,6 +64,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd, zokuseiMsts, cdList);
         String aud = session.getAttribute("aud").toString();
 
+        basicMapperMapper.delete(priorityOrderCd, companyCd);
+
         Map<String, BasicPatternRestrictResult> classify = getJanInfoClassify(classifyList, companyCd,
                 zokuseiIds, aud, (long) autoDetectVO.getPriorityOrderCd());
         restrictResultMapper.deleteByPriorityCd(autoDetectVO.getPriorityOrderCd(), companyCd);
@@ -72,6 +78,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         }
         List<BasicPatternRestrictResult> basicPatternRestrictResults = new ArrayList<>(classify.values());
         restrictResultMapper.insertBatch(basicPatternRestrictResults);
+        basicMapperMapper.insertBatch(basicPatternRestrictResults);
+
         ArrayList<String> zokuseiList = Lists.newArrayList(zokuseiIds.split(","));
 
         restrictRelationMapper.deleteByPrimaryKey(priorityOrderCd, companyCd);
