@@ -22,10 +22,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.MessageFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,11 +51,13 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         String commonPartsData = autoDetectVO.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = getCommonTableName(commonPartsData, companyCd);
         String classCd = commonTableName.getProdMstClass();
-        String zokuseiIds = "3,5";
+        String zokuseiIds = autoDetectVO.getAttrList();
+
+        List<Integer> cdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable(), commonTableName.getProAttrTable());
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(companyCd,
                 classCd, zokuseiIds);
         List<ShelfPtsDataTanamst> tanamsts = shelfPtsDataTanamst.selectByPatternCd((long) shelfPatternCd);
-        List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd, zokuseiMsts);
+        List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd, zokuseiMsts, cdList);
         String aud = session.getAttribute("aud").toString();
 
         Map<String, BasicPatternRestrictResult> classify = getJanInfoClassify(classifyList, companyCd,
@@ -85,22 +85,35 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
             for (int i = 0; i < jans.size(); i++) {
                 Map<String, Object> janMap = jans.get(i);
-                Integer width = MapUtils.getInteger(janMap, "width");
-                int percent = BigDecimal.valueOf(width).divide(BigDecimal.valueOf(tanaWidth))
+                double width = MapUtils.getDouble(janMap, "width");
+                int percent = BigDecimal.valueOf(width).divide(BigDecimal.valueOf(tanaWidth), BigDecimal.ROUND_UP)
                         .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
                 janMap.put("area", percent);
+                janMap.put("priorityOrderCd", priorityOrderCd);
+                janMap.put("companyCd", companyCd);
+                janMap.put("authorCd", aud);
 
                 StringBuilder key = new StringBuilder();
                 for (String zokusei : zokuseiList) {
+                    if(key.length()>0){
+                        key.append(",");
+                    }
                     key.append(MapUtils.getString(janMap, zokusei));
                 }
 
-                BasicPatternRestrictResult basicPatternRestrictResult = classify.get(key);
+                BasicPatternRestrictResult basicPatternRestrictResult = classify.get(key.toString());
                 janMap.put("restrictCd", basicPatternRestrictResult.getRestrictCd());
 
                 jans.set(i, janMap);
-                restrictRelationMapper.insertBatch(jans);
             }
+
+            final int[] index = {1};
+            Comparator<Map<String, Object>> area = Comparator.comparing(map->MapUtils.getInteger(map, "area"));
+            jans.stream().sorted(area.reversed()).forEach(map->{
+                map.put("tanaPosition", index[0]);
+                index[0]++;
+            });
+            restrictRelationMapper.insertBatch(jans);
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS);
@@ -122,11 +135,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
             if (!classify.containsKey(classifyId.toString())) {
                 BasicPatternRestrictResult result = new BasicPatternRestrictResult();
-                Class<? extends BasicPatternRestrictResult> aClass = result.getClass();
                 for (String zokusei : zokuseiList) {
                     Method method = null;
                     try {
-                        method = aClass.getMethod("setZokusei" + zokusei);
+                        method = result.getClass().getMethod("setZokusei" + zokusei, String.class);
                         method.invoke(result, MapUtils.getString(map, zokusei));
                     } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                         throw new RuntimeException(e);
@@ -174,6 +186,12 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         //    getCommonPartsDataDto.setStoreKaisouTable(MessageFormat.format("\"{0}\".ten_{1}_ten_kaisou_header_sys", storeIsCompanyCd, storeMstClass));
         //}
 
-        return null;
+        getCommonPartsDataDto.setProKaisouTable(MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass));
+        getCommonPartsDataDto.setProAttrTable(MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass));
+        getCommonPartsDataDto.setProInfoTable(MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass));
+        getCommonPartsDataDto.setProZokuseiDataTable(MessageFormat.format("\"{0}\".zokusei_{1}_mst_data", isCompanyCd, prodMstClass));
+        getCommonPartsDataDto.setProZokuseiMstTable(MessageFormat.format("\"{0}\".zokusei_{1}_mst", isCompanyCd, prodMstClass));
+
+        return getCommonPartsDataDto;
     }
 }

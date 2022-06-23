@@ -11,14 +11,37 @@
         select  '"' || table_schema || '"' || '.' || '"' || table_name || '"'	from  information_schema.tables where table_schema  in ('87c6f4','1000') and "table_name" like '%wk'
     </select>
     <select id="selectJanClassify" resultType="map">
-        select tai_cd as "taiCd",tana_cd as "tanaCd",tanaposition_cd as "tanapositionCd", jan, janmst.width as "width"
+        select tai_cd as "taiCd",tana_cd as "tanaCd", sum(janmst.width) as "width"
         <foreach collection="zokuseiList" item="item" open="," separator=",">
-            ${item.zokuseiCol} as "${item.zokuseiId}"
+            <if test="cdList[cdList.size-1]>=item.zokuseiCol">
+                <foreach collection="cdList" item="item1" separator="|| '_' ||">
+                    <if test="item1&lt;=item.zokuseiCol">
+                        "${item1}"
+                    </if>
+                </foreach>
+            </if>
+            <if test="cdList[cdList.size-1]&lt;item.zokuseiCol">
+                "${item.zokuseiCol}"
+            </if>
+            as "${item.zokuseiId}"
         </foreach>
-        from shelf_pts_data ptsdata
-        inner join shelf_pts_data_jandata jandata on jandata.pts_cd=ptsdata.id
+        from planocycle.shelf_pts_data ptsdata
+        inner join planocycle.shelf_pts_data_jandata jandata on jandata.pts_cd=ptsdata.id
         inner join ${janInfoTb} janinfo on jandata.jan = janinfo."1"
         inner join masterdb.jan_mst janmst on janmst.jan_cd=jandata.jan
-        where shelf_pattern_cd=#{shelfPatternCd};
+        where shelf_pattern_cd=#{shelfPatternCd}
+        group by "taiCd", "tanaCd"
+        <foreach collection="zokuseiList" item="item" open="," separator=",">
+            <if test="cdList[cdList.size-1]>=item.zokuseiCol">
+                <foreach collection="cdList" item="item1" separator="|| '_' ||">
+                    <if test="item1&lt;=item.zokuseiCol">
+                        "${item1}"
+                    </if>
+                </foreach>
+            </if>
+            <if test="cdList[cdList.size-1]&lt;item.zokuseiCol">
+                "${item.zokuseiCol}"
+            </if>
+        </foreach>
     </select>
 </mapper>

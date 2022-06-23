@@ -348,12 +348,12 @@
         where  
     </update>
     <delete id="deleteByPriorityCd">
-        delete from work_basic_pattern_restrict_result
+        delete from planocycle.work_basic_pattern_restrict_result
         where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
     </delete>
     <insert id="insertBatch" parameterType="com.trechina.planocycle.entity.po.BasicPatternRestrictResult" useGeneratedKeys="true"
             keyProperty="restrictCd" keyColumn="restrict_cd">
-        insert into basic_pattern_restrict_result
+        insert into planocycle.work_basic_pattern_restrict_result
         ( priority_order_cd,company_cd,author_cd
         ,restrict_cd,sku_cnt,zokusei1
         ,zokusei2,zokusei3,zokusei4
@@ -368,20 +368,20 @@
         ,zokusei29,zokusei30,zokusei31
         ,zokusei32,zokusei33)
         values
-            <foreach collection="lists" item="item">
-                (#{priorityOrderCd,jdbcType=BIGINT},#{companyCd,jdbcType=VARCHAR},#{authorCd,jdbcType=VARCHAR}
-                ,#{restrictCd,jdbcType=BIGINT},#{skuCnt,jdbcType=BIGINT},#{zokusei1,jdbcType=VARCHAR}
-                ,#{zokusei2,jdbcType=VARCHAR},#{zokusei3,jdbcType=VARCHAR},#{zokusei4,jdbcType=VARCHAR}
-                ,#{zokusei5,jdbcType=VARCHAR},#{zokusei6,jdbcType=VARCHAR},#{zokusei7,jdbcType=VARCHAR}
-                ,#{zokusei8,jdbcType=VARCHAR},#{zokusei9,jdbcType=VARCHAR},#{zokusei10,jdbcType=VARCHAR}
-                ,#{zokusei11,jdbcType=VARCHAR},#{zokusei12,jdbcType=VARCHAR},#{zokusei13,jdbcType=VARCHAR}
-                ,#{zokusei14,jdbcType=VARCHAR},#{zokusei15,jdbcType=VARCHAR},#{zokusei16,jdbcType=VARCHAR}
-                ,#{zokusei17,jdbcType=VARCHAR},#{zokusei18,jdbcType=VARCHAR},#{zokusei19,jdbcType=VARCHAR}
-                ,#{zokusei20,jdbcType=VARCHAR},#{zokusei21,jdbcType=VARCHAR},#{zokusei22,jdbcType=VARCHAR}
-                ,#{zokusei23,jdbcType=VARCHAR},#{zokusei24,jdbcType=VARCHAR},#{zokusei25,jdbcType=VARCHAR}
-                ,#{zokusei26,jdbcType=VARCHAR},#{zokusei27,jdbcType=VARCHAR},#{zokusei28,jdbcType=VARCHAR}
-                ,#{zokusei29,jdbcType=VARCHAR},#{zokusei30,jdbcType=VARCHAR},#{zokusei31,jdbcType=VARCHAR}
-                ,#{zokusei32,jdbcType=VARCHAR},#{zokusei33,jdbcType=VARCHAR})
+            <foreach collection="lists" item="item" separator=",">
+                (#{item.priorityOrderCd,jdbcType=BIGINT},#{item.companyCd,jdbcType=VARCHAR},#{item.authorCd,jdbcType=VARCHAR}
+                ,#{item.restrictCd,jdbcType=BIGINT},#{item.skuCnt,jdbcType=BIGINT},#{item.zokusei1,jdbcType=VARCHAR}
+                ,#{item.zokusei2,jdbcType=VARCHAR},#{item.zokusei3,jdbcType=VARCHAR},#{item.zokusei4,jdbcType=VARCHAR}
+                ,#{item.zokusei5,jdbcType=VARCHAR},#{item.zokusei6,jdbcType=VARCHAR},#{item.zokusei7,jdbcType=VARCHAR}
+                ,#{item.zokusei8,jdbcType=VARCHAR},#{item.zokusei9,jdbcType=VARCHAR},#{item.zokusei10,jdbcType=VARCHAR}
+                ,#{item.zokusei11,jdbcType=VARCHAR},#{item.zokusei12,jdbcType=VARCHAR},#{item.zokusei13,jdbcType=VARCHAR}
+                ,#{item.zokusei14,jdbcType=VARCHAR},#{item.zokusei15,jdbcType=VARCHAR},#{item.zokusei16,jdbcType=VARCHAR}
+                ,#{item.zokusei17,jdbcType=VARCHAR},#{item.zokusei18,jdbcType=VARCHAR},#{item.zokusei19,jdbcType=VARCHAR}
+                ,#{item.zokusei20,jdbcType=VARCHAR},#{item.zokusei21,jdbcType=VARCHAR},#{item.zokusei22,jdbcType=VARCHAR}
+                ,#{item.zokusei23,jdbcType=VARCHAR},#{item.zokusei24,jdbcType=VARCHAR},#{item.zokusei25,jdbcType=VARCHAR}
+                ,#{item.zokusei26,jdbcType=VARCHAR},#{item.zokusei27,jdbcType=VARCHAR},#{item.zokusei28,jdbcType=VARCHAR}
+                ,#{item.zokusei29,jdbcType=VARCHAR},#{item.zokusei30,jdbcType=VARCHAR},#{item.zokusei31,jdbcType=VARCHAR}
+                ,#{item.zokusei32,jdbcType=VARCHAR},#{item.zokusei33,jdbcType=VARCHAR})
             </foreach>
     </insert>
 </mapper>

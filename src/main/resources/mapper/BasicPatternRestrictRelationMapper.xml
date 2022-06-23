@@ -28,8 +28,8 @@
         where 
     </select>
 
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-        delete from work_basic_pattern_restrict_relation
+    <delete id="deleteByPrimaryKey">
+        delete from planocycle.work_basic_pattern_restrict_relation
         where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
     </delete>
     <insert id="insert">
@@ -108,12 +108,12 @@
         where  
     </update>
     <insert id="insertBatch">
-        insert into work_basic_pattern_restrict_relation
+        insert into planocycle.work_basic_pattern_restrict_relation
         ( priority_order_cd,company_cd,author_cd
         ,tai_cd,tana_cd,tana_position
         ,restrict_cd,area)
         values
-            <foreach collection="lists" item="item">
+            <foreach collection="lists" item="item" separator=",">
                 (#{item.priorityOrderCd,jdbcType=BIGINT},#{item.companyCd,jdbcType=VARCHAR},#{item.authorCd,jdbcType=VARCHAR}
                 ,#{item.taiCd,jdbcType=OTHER},#{item.tanaCd,jdbcType=OTHER},#{item.tanaPosition,jdbcType=SMALLINT}
                 ,#{item.restrictCd,jdbcType=BIGINT},#{item.area,jdbcType=BIGINT})

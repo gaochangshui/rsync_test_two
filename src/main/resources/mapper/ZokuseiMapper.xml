@@ -20,6 +20,9 @@
 
   <select id="selectZokusei" resultType="com.trechina.planocycle.entity.po.ZokuseiMst">
     select zokusei_id,zokusei_col from masterdb.planocycle_zokusei_mst where
-    company_cd=#{companyCd} and class_cd=#{classCd} and zokusei_id::varchar=any(string_to_array(zokuseiIds, ','))
+    company_cd=#{companyCd} and class_cd=#{classCd} and zokusei_id::varchar=any(string_to_array(#{zokuseiIds}, ','))
+  </select>
+  <select id="selectCdHeader" resultType="int">
+    select "3" from ${tableName} where "6"::integer=1 and "1" not like 'jan%'
   </select>
 </mapper>
