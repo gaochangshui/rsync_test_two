@@ -642,4 +642,11 @@
       on ${index}."1" = ${}
     </foreach>
   </select>
+  <select id="getNewTaiNum" resultType="java.lang.Integer">
+    select count(taiMst.tai_cd) taiNum
+    from planocycle.shelf_pts_data ptsData
+           left join planocycle.shelf_pts_data_taimst taiMst
+                     on ptsData.id = taiMst.pts_cd
+    where ptsData.shelf_pattern_cd=#{patternCd}
+  </select>
 </mapper>

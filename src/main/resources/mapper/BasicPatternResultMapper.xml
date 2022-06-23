@@ -15,7 +15,7 @@
         from masterdb.planocycle_zokusei_mst
         where  zokusei_id in
         <foreach collection="attrList" item="item" separator="," open="(" close=")">
-            #{item}
+            #{item} ::integer
         </foreach>
         and company_cd = #{companyCd} and class_cd = #{classCd}
     </select>

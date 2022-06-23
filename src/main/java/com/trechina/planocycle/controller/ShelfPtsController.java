@@ -131,6 +131,15 @@ public class ShelfPtsController {
         return shelfPtsService.getPtsDetailData(patternCd,companyCd,priorityOrderCd);
 
     }
+    /**
+     *
+     */
+    @GetMapping("")
+    public  Map<String,Object> getNewPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd){
+        return shelfPtsService.getNewPtsDetailData(patternCd,companyCd,priorityOrderCd);
+
+    }
+    
 
     /**
      * 陳列順設定追加
@@ -167,7 +176,7 @@ public class ShelfPtsController {
      * 新しいpts棚段数の修正
      */
     @PostMapping("setPtsTanaSize")
-    public  void setPtsTanaSize(@RequestBody List<PtsTanaVo> ptsTanaVoList){
-        shelfPtsService.setPtsTanaSize(ptsTanaVoList);
+    public  Map<String,Object> setPtsTanaSize(@RequestBody List<PtsTanaVo> ptsTanaVoList){
+        return shelfPtsService.setPtsTanaSize(ptsTanaVoList);
     }
 }

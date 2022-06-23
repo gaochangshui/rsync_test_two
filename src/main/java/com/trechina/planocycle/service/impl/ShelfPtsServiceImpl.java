@@ -606,7 +606,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     @Override
-    public void setPtsTanaSize(List<PtsTanaVo> ptsTanaVoList) {
+    public Map<String,Object> setPtsTanaSize(List<PtsTanaVo> ptsTanaVoList) {
         try {
             Integer priorityOrderCd = ptsTanaVoList.get(0).getPriorityOrderCd();
             String companyCd = ptsTanaVoList.get(0).getCompanyCd();
@@ -619,5 +619,20 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public Map<String, Object> getNewPtsDetailData(Integer patternCd, String companyCd, Integer priorityOrderCd) {
+        PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsNewDetailData(patternCd);
+        ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));
+        ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(patternCd));
+        ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(patternCd));
+        ptsDetailData.setSkuNum(shelfPtsDataMapper.getSkuNum(patternCd));
+
+        List<PtsTaiVo> taiData = shelfPtsDataMapper.getNewTaiData(patternCd);
+        List<PtsTanaVo> tanaData = shelfPtsDataMapper.getNewTanaData(patternCd);
+        List<PtsJanDataVo> janData = shelfPtsDataMapper.getNewJanData(patternCd);
+        return null;
     }
 }

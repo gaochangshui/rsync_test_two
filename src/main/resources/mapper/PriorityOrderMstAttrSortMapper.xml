@@ -42,6 +42,13 @@
   <sql id="Base_Column_List">
     company_cd, priority_order_cd, value, sort, cd
   </sql>
+  <insert id="setAttrList">
+    insert into work_priority_order_mst_attrsort(company_cd,priority_order_cd,value)
+    values
+  <foreach collection="attrList" separator="," item="item">
+    (#{companyCd},#{priorityOrderCd},#{item})
+  </foreach>
+  </insert>
   <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
