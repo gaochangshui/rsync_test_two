@@ -4,22 +4,15 @@
     <select id="getAttrComposeList" resultType="java.util.Map">
         select
         <foreach collection="attrList" item="item" separator="," >
-            zokusei${item}
+            zokusei${item} as zokuseiid${item}
         </foreach>
-        ,json_object_agg ( val, nm ) as json
+        ,color.value as color
         from planocycle.work_basic_pattern_attr_compose compose
-        inner join masterdb.planocycle_zokusei_mst_data zokuseidata on zokuseidata.class_cd = #{classCd}
-        and zokuseidata.company_cd = #{company}
-        and
-            <foreach collection="attrList" open="(" close=")" separator="or" item="item">
-                 val = zokusei${item}
-            </foreach>
+        left join planocycle.priority_order_color color
+        on color.id = compose.restrict_cd
         where
-         priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-        group by
-        <foreach collection="attrList" item="item" separator="," >
-            zokusei${item}
-        </foreach>
+        priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+
     </select>
     <select id="getAttrHeaderName" resultType="java.util.Map">
         select zokusei_id ,zokusei_nm

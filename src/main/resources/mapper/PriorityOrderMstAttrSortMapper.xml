@@ -56,19 +56,11 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
-    <select id="getAttrType" resultType="java.lang.Integer">
-    select type
-    from masterdb.zokusei_mst
-    where zokusei_id = #{attrId}
-    </select>
+
   <select id="getAttribute" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
     select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
   </select>
-  <select id="getAttrSort" resultType="java.lang.Integer">
-    select zokusei_sort
-    from masterdb.zokusei_mst
-    where zokusei_id = #{attrId}
-  </select>
+
   <select id="getAttrTableName" resultType="java.lang.String">
     select zokusei_tb_nm
     from masterdb.zokusei_mst
@@ -258,7 +250,17 @@
 
   </select>
   <select id="getAttrList" resultType="java.lang.String">
-    select value from  planocycle.priority_order_mst_attrsort where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    select value from  planocycle.work_priority_order_mst_attrsort where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getAttrName" resultType="java.util.Map">
+    select val,nm from  masterdb.planocycle_zokusei_mst_data
+    where company_cd = #{companyCd} and class_cd = #{classCd}
+  </select>
+  <select id="getAttrDistinct" resultType="java.util.Map">
+    select DISTINCT zokusei${attr} as zokuseiid${attr},nm as zokusei${attr} from planocycle.priority_order_restrict_result
+       left join masterdb.planocycle_zokusei_mst_data mstdata
+        on zokusei${attr} = val and mstdata.class_cd = #{classCd} and mstdata.company_cd = #{companyCd}
+        where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority.priority_order_mst_attrsort
@@ -289,43 +291,7 @@
       #{list.sort,jdbcType=INTEGER}, #{list.cd,jdbcType=INTEGER})
            </foreach>
   </insert>
-  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort">
-    insert into planocycle.priority_order_mst_attrsort
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="companyCd != null">
-        company_cd,
-      </if>
-      <if test="priorityOrderCd != null">
-        priority_order_cd,
-      </if>
-      <if test="value != null">
-        value,
-      </if>
-      <if test="sort != null">
-        sort,
-      </if>
-      <if test="cd != null">
-        cd,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="companyCd != null">
-        #{companyCd,jdbcType=VARCHAR},
-      </if>
-      <if test="priorityOrderCd != null">
-        #{priorityOrderCd,jdbcType=INTEGER},
-      </if>
-      <if test="value != null">
-        #{value,jdbcType=INTEGER},
-      </if>
-      <if test="sort != null">
-        #{sort,jdbcType=INTEGER},
-      </if>
-      <if test="cd != null">
-        #{cd,jdbcType=INTEGER},
-      </if>
-    </trim>
-  </insert>
+
   <insert id="insertAttrFinal">
     insert into priority.priority_order_mst_attr
     select * from priority.work_priority_order_mst_attr

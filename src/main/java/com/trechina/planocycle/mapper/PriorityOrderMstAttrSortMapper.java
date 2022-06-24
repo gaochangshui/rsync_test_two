@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface PriorityOrderMstAttrSortMapper {
@@ -17,15 +18,8 @@ public interface PriorityOrderMstAttrSortMapper {
 
     int insert(@Param("lists") List<PriorityOrderMstAttrSort> record);
 
-    int insertSelective(PriorityOrderMstAttrSort record);
 
     List<PriorityOrderMstAttrSort> selectByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
-
-    //属性に従ってtype値を取得
-    int getAttrType(@Param("attrId") Integer attrId);
-
-    //コンプライアンス属性取得sort
-    int getAttrSort(@Param("attrId") Integer attrId);
 
     //属性に従ってtableNameを取得
     String getAttrTableName(@Param("attrId") Integer attrId);
@@ -78,4 +72,7 @@ public interface PriorityOrderMstAttrSortMapper {
     void setAttrList(String companyCd,Integer priorityOrderCd,List<Integer> attrList);
     void deleteAttrList(String companyCd,Integer priorityOrderCd);
 
+    List<Map<String,Object>> getAttrName(String classCd, String companyCd, List<Integer> attrs);
+
+    List<Map<String,Object>> getAttrDistinct(String classCd, String companyCd,Integer priorityOrderCd,String attr);
 }
