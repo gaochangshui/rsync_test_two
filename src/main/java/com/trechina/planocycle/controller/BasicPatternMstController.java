@@ -20,7 +20,7 @@ public class BasicPatternMstController {
     }
 
     @GetMapping("/getAttrDisplay")
-    public Map<String,Object> getAttrDisplay(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public Map<String,Object> getAttrDisplay(String companyCd,Integer priorityOrderCd) {
         return basicPatternMstService.getAttrDisplay(companyCd,priorityOrderCd);
     }
 }
