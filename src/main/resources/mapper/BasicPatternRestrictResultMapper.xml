@@ -61,11 +61,11 @@
         zokusei32,zokusei33
     </sql>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKey" resultType="map">
         select
         <include refid="Base_Column_List" />
-        from basic_pattern_restrict_result
-        where 
+        from planocycle.basic_pattern_restrict_result
+        where priority_order_cd=#{priorityOrderCd}
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
@@ -384,4 +384,20 @@
                 ,#{item.zokusei32,jdbcType=VARCHAR},#{item.zokusei33,jdbcType=VARCHAR})
             </foreach>
     </insert>
+
+    <select id="selectJanZokusei" resultType="map">
+        select face_count as "faceCount",jan
+            <foreach collection="attrList" item="item1" open="," separator=",">
+                <if test="item1.zokuseiCol > (allCdList.size-1)">"${item1.zokuseiCol}"</if>
+                <if test="item1.zokuseiCol &lt;= (allCdList.size-1)">
+                    <foreach collection="allCdList" item="item2" separator="|| '_' ||">
+                        "${item1.zokuseiCol}"
+                    </foreach>
+                </if>
+                as "zokusei${item1.zokuseiId}"
+            </foreach>
+        from planocycle.shelf_pts_data_jandata jandata
+        inner join ${proInfoTable} janinfo on  janinfo."1"=jandata.jan
+        where pts_cd=${ptsCd}
+    </select>
 </mapper>

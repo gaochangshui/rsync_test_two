@@ -11,4 +11,6 @@ public interface BasicPatternMstService {
     GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd);
 
     Map<String, Object> getAttrDisplay(String companyCd, Integer priorityOrderCd);
+
+    Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd, Integer partition);
 }

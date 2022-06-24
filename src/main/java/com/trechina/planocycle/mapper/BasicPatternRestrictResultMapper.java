@@ -1,9 +1,11 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.BasicPatternRestrictResult;
+import com.trechina.planocycle.entity.po.ZokuseiMst;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author 10218504
@@ -23,10 +25,11 @@ public interface BasicPatternRestrictResultMapper {
 
     int insertSelective(BasicPatternRestrictResult record);
 
-    BasicPatternRestrictResult selectByPrimaryKey(Long id);
+    List<Map<String, Object>> selectByPrimaryKey(Integer priorityOrderCd);
 
     int updateByPrimaryKeySelective(BasicPatternRestrictResult record);
 
     int updateByPrimaryKey(BasicPatternRestrictResult record);
 
+    List<Map<String, Object>> selectJanZokusei(Integer ptsCd, List<ZokuseiMst> attrList, List<Integer> allCdList, String proInfoTable);
 }
