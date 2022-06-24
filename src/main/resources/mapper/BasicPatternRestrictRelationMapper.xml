@@ -22,23 +22,20 @@
     </sql>
 
     <select id="selectByPrimaryKey" resultType="map">
-        select json_object_agg(val, nm) json,tai_cd as "taiCd",tana_cd as "tanaCd",
-               tana_position as "tanaPosition", restrict_cd as "restrictCd", area
-        <foreach collection="zokuseiList" open="," item="item" separator=",">
-            ${item}
-        </foreach>
-        from planocycle.work_basic_pattern_restrict_result result
-        inner join planocycle.work_basic_pattern_restrict_relation relation on result.restrict_cd=result.restrict_cd
-            and priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
-        inner join masterdb.planocycle_zokusei_mst_data zokuseidata
-            on zokuseidata.class_cd=#{classCd} and zokuseidata.company_cd=#{companyCd}
-        <foreach collection="zokuseiList" item="item" open="and (" separator="or" close=")" >
-            val=${item}
-        </foreach>
-        where priority_order_cd=#{priorityOrderCd}
-        <foreach collection="zokuseiList" open="GROUP BY" item="item" separator=",">
-            ${item}
-        </foreach>
+        select tai_cd as "taiCd",tana_cd as "tanaCd",json,
+               tana_position as "tanaPosition", result.restrict_cd as "restrictCd", area,value color
+        <foreach collection="zokuseiList" open="," item="item" separator=",">${item}</foreach>
+        from (select restrict_cd<foreach collection="zokuseiList" open="," close="," item="item" separator=",">${item}</foreach>
+               json_object_agg ( val, nm ) json from planocycle.work_basic_pattern_restrict_result result
+        INNER JOIN masterdb.planocycle_zokusei_mst_data zokuseidata ON zokuseidata.class_cd = #{classCd}
+        AND zokuseidata.company_cd = #{companyCd}
+        <foreach collection="zokuseiList" item="item" open="and (" separator="or" close=")" > val=${item}</foreach>
+        where priority_order_cd = #{priorityOrderCd}  group by restrict_cd
+        <foreach collection="zokuseiList" item="item" open="," separator="," >${item}</foreach>
+        ) result inner join planocycle.work_basic_pattern_restrict_relation relation on result.restrict_cd=relation.restrict_cd
+        and relation.priority_order_cd=#{priorityOrderCd}
+        inner join planocycle.priority_order_color color on color.id=relation.restrict_cd
+        order by tai_Cd, tana_cd, tana_position
     </select>
 
     <delete id="deleteByPrimaryKey">

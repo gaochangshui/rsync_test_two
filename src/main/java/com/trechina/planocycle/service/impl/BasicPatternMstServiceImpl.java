@@ -222,8 +222,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         String aud = session.getAttribute("aud").toString();
         WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, aud,priorityOrderCd);
         GetCommonPartsDataDto commonTableName = getCommonTableName(priorityOrderMst.getCommonPartsData(), companyCd);
-        List<Map<String, Object>> basicPatternRestrictRelationDto = restrictRelationMapper.selectByPrimaryKey(priorityOrderCd, companyCd, zokuseiList,
-                commonTableName.getProdMstClass());
+        List<Map<String, Object>> basicPatternRestrictRelationDto = restrictRelationMapper.selectByPrimaryKey(priorityOrderCd,
+                commonTableName.getProdIsCore(), zokuseiList,commonTableName.getProdMstClass());
         Map<String, List<Map<String, Object>>> relationByTaiTana = basicPatternRestrictRelationDto.stream()
                 .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.TAI_CD) + "," + MapUtils.getString(map, MagicString.TANA_CD)));
 
@@ -231,21 +231,31 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
         for (Map.Entry<String, List<Map<String, Object>>> entry : relationByTaiTana.entrySet()) {
             String key = entry.getKey();
+
             Map<String, Object> resultMap = new LinkedHashMap<>();
             resultMap.put(MagicString.TAI_CD, key.split(",")[0]);
             resultMap.put(MagicString.TANA_CD, key.split(",")[1]);
 
+            List<Map<String, Object>> groups = new ArrayList<>();
             for (Map<String, Object> itemMap : entry.getValue()) {
                 StringBuilder name = new StringBuilder();
+                StringBuilder cd = new StringBuilder();
                 for (String zokuseiId : zokuseiList) {
                     String attrCd = MapUtils.getString(itemMap, zokuseiId);
-                    if(name.length()>0){
-                        name.append(",");
+                    if (name.length() > 0) {
+                        name.append("-");
+                        cd.append("-");
                     }
                     name.append(JSONObject.parseObject(itemMap.get("json").toString()).get(attrCd));
+                    cd.append(attrCd);
+
+                    itemMap.remove(zokuseiId);
                 }
-                itemMap.put("name", name);
-                resultMap.put("groups", itemMap);
+                itemMap.remove("json");
+                itemMap.put("name", name.toString());
+                itemMap.put("cd", cd.toString());
+                groups.add(itemMap);
+                resultMap.put("groups", groups);
             }
 
             resultList.add(resultMap);
