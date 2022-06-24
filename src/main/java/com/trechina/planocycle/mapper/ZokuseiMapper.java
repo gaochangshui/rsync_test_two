@@ -9,5 +9,5 @@ import java.util.List;
 public interface ZokuseiMapper {
     List<ZokuseiMst> selectZokusei(String companyCd, String classCd, String zokuseiIds);
 
-    List<Integer> selectCdHeader(String tableName, String attrTableName);
+    List<Integer> selectCdHeader(String tableName);
 }

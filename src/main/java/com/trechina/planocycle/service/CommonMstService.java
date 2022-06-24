@@ -33,6 +33,10 @@ public interface CommonMstService {
                                                              List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations,
                                                              Integer minFace);
 
+//    Map<String, List<PriorityOrderResultDataDto>> commSetJanForShelf(Short partitionFlag, Short partitionVal,
+//                                                                     List<PtsTaiVo> taiData, List<PriorityOrderResultDataDto> workPriorityOrderResultData,
+//                                                                     List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations, Integer minFace);
+
     List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData);
 
     CommonPartsDto getCommonPartsData(Integer productPowerCd, String companyCd);
