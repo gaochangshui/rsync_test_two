@@ -40,7 +40,7 @@
     </collection>
   </resultMap>
   <sql id="Base_Column_List">
-    company_cd, priority_order_cd, value, sort, cd
+    company_cd, priority_order_cd, value, cd
   </sql>
   <insert id="setAttrList">
     insert into planocycle.work_priority_order_mst_attrsort(company_cd,priority_order_cd,value)
@@ -52,7 +52,7 @@
   <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from planocycle.priority_order_mst_attrsort
+    from planocycle.work_priority_order_mst_attrsort
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
