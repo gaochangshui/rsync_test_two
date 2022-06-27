@@ -437,7 +437,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         String commonPartsData = workPriorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = getCommonTableName(commonPartsData, companyCd);
         List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
-        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(companyCd, commonTableName.getProdMstClass(), Joiner.on(",").join(allCdList));
+        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
 
         List<Map<String, Object>> zokuseiList = restrictResultMapper.selectJanZokusei(ptsCd, zokuseiMsts, allCdList,
                 commonTableName.getProInfoTable());
@@ -446,17 +446,20 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         for (int i = 0; i < zokuseiList.size(); i++) {
             Map<String, Object> zokusei = zokuseiList.get(i);
             for (Map<String, Object> restrict : restrictResult) {
-                boolean isEquals = true;
+                int equalsCount = 0;
                 for (Integer integer : attrList) {
                     String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer);
                     String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer);
 
-                    if(!restrictKey.equals(zokuseiKey)){
-                        isEquals = false;
+                    if(restrictKey.equals(zokuseiKey)){
+                        equalsCount++;
                     }
+                    System.out.println("restrictKey:"+restrictKey+",zokuseiKey:"+zokuseiKey+",result:"+equalsCount);
                 }
-                if(isEquals){
-                    zokusei.put("restrictCd", MapUtils.getInteger(restrict, "restrictCd"));
+
+                if(equalsCount == attrList.size()){
+                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
+                    zokusei.put("restrictCd", restrictCd);
                 }
             }
 

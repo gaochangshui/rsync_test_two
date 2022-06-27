@@ -45,7 +45,7 @@ public class ZokuseiMst implements Serializable {
     /**
      * 
      */
-    private String zokuseiCol;
+    private Integer zokuseiCol;
 
     private static final long serialVersionUID = 1L;
 
@@ -150,14 +150,14 @@ public class ZokuseiMst implements Serializable {
     /**
      * 
      */
-    public String getZokuseiCol() {
+    public Integer getZokuseiCol() {
         return zokuseiCol;
     }
 
     /**
      * 
      */
-    public void setZokuseiCol(String zokuseiCol) {
+    public void setZokuseiCol(Integer zokuseiCol) {
         this.zokuseiCol = zokuseiCol;
     }
 
