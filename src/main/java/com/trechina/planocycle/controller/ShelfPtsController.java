@@ -134,7 +134,7 @@ public class ShelfPtsController {
     /**
      *
      */
-    @GetMapping("")
+    @GetMapping("getNewPtsDetailData")
     public  Map<String,Object> getNewPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd){
         return shelfPtsService.getNewPtsDetailData(patternCd,companyCd,priorityOrderCd);
 

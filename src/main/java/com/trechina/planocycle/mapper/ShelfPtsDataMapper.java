@@ -63,6 +63,10 @@ public interface ShelfPtsDataMapper {
     Integer getNewTaiNum(@Param("priorityOrderCd")Integer priorityOrderCd);
     //pts総セグメント数
     Integer getTanaNum(@Param("patternCd")Integer patternCd);
+
+    Integer getNewTanaNum(@Param("priorityOrderCd")Integer priorityOrderCd);
+    //pts幅と
+    Map<String,Object> getNewTanaWidth(@Param("priorityOrderCd")Integer priorityOrderCd);
     //face数
     Integer getFaceNum(@Param("patternCd")Integer patternCd);
     //新しいface数

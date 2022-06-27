@@ -44,42 +44,38 @@
     and priority_order_cd = #{priorityOrderCd}
   </select>
   <select id="getReorder" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
-    select a.scat1cd_val,a.scat2cd_val,a.scat3cd_val,a.scat4cd_val,a.brand,a.rank_result ,a.jan as janCd
-    ,row_number() over(order by b.aavg nulls last
-    <if test="sortName2 !=null">
-      ,c.aavg nulls last
+    select  resultdata.jan as janCd,avgattr1,row_number() over(order by avgattr1
+    <if test="sortName2 != null">
+      ,avgattr2
     </if>
+    ,rank_result,resultdata.jan) as resultRank
+    from  planocycle.work_basic_pattern_restrict_result_data resultdata
+        left join planocycle.product_power_mst_data promst
+                  on promst.jan = resultdata.jan and promst.product_power_cd = #{productPowerCd}
+        left join "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info attrmst
+                  on attrmst."1" = promst.jan
+        left join (
+                    select attrmst."${sortName1}",avg(promst.rank_result) as avgattr1
+                    from planocycle.product_power_mst_data promst
+                        left join "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info attrmst
+                        on attrmst."1" = promst.jan
+                    where promst.product_power_cd = #{productPowerCd}
+                    GROUP BY attrmst."${sortName1}"
+      ) attr1
+            on attr1."${sortName1}" = attrmst."${sortName1}"
+            <if test="sortName2 != null">
+              left join (
+              select attrmst."${sortName2}",avg(promst.rank_result) as avgattr2
+              from planocycle.product_power_mst_data promst
+              left join "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info attrmst
+              on attrmst."1" = promst.jan
+              where promst.product_power_cd = #{productPowerCd}
+              GROUP BY attrmst."${sortName2}"
+              )attr2
+              on attr2."${sortName2}" = attrmst."${sortName2}"
+            </if>
 
-    ,a.rank_result) as resultRank
-    from
-                (select  datas.jan ,janMst.jan_nm,
-                janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.rank_result
-                from planocycle.product_power_mst_data datas
-                left join masterdb.jan_mst janMst
-                on janMst.jan_cd = datas.jan
-                where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}) a
-
-                left join
-                (select ${sortName1},avg(rank_result) aavg from (select  datas.jan ,janMst.jan_nm,
-                janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.rank_result
-                from planocycle.product_power_mst_data datas
-                left join masterdb.jan_mst janMst
-                on janMst.jan_cd = datas.jan
-                where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}) test group by ${sortName1}
-                ) b
-                on a.${sortName1}=b.${sortName1}
-                <if test="sortName2 !=null">
-                  left join
-                  (select ${sortName2},avg(rank_result) aavg from (select  datas.jan ,janMst.jan_nm,
-                  janMst.scat1cd_val,janMst.scat2cd_val,janMst.scat3cd_val,janMst.scat4cd_val,janMst.brand,datas.rank_result
-                  from planocycle.product_power_mst_data datas
-                  left join masterdb.jan_mst janMst
-                  on janMst.jan_cd = datas.jan
-                  where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}) test group by ${sortName2}
-                  ) c
-                  on a.${sortName2}=c.${sortName2}
-                </if>
-    where  EXISTS(select jan_cd from planocycle.work_priority_order_result_data d where a.jan = d.jan_cd and d.company_cd = #{companyCd} and d.author_cd = #{authorCd} and d.priority_order_cd =#{priorityOrderCd})
+            where resultdata.priority_order_cd  = #{priorityOrderCd}
 
   </select>
   <select id="getAttrRank" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
@@ -387,12 +383,12 @@
   </update>
   <update id="setSortRank">
     <foreach collection="list" item="item" separator=";" index="index">
-      update planocycle.work_priority_order_result_data
+      update planocycle.work_basic_pattern_restrict_result_data
       <set>
 
-        sort_rank = #{item.resultRank} ::numeric
+        sku_rank = #{item.resultRank} ::integer
       </set>
-      where jan_cd = #{item.janCd} ::varchar and company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
+      where jan = #{item.janCd} ::varchar and company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
     </foreach>
   </update>
   <update id="updateFaceNum">

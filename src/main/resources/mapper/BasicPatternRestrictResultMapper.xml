@@ -347,8 +347,17 @@
             zokusei33 =  #{zokusei33,jdbcType=VARCHAR}
         where  
     </update>
+    <insert id="setFinalForWork">
+        insert into planocycle.basic_pattern_restrict_result
+        select  * from  planocycle.work_basic_pattern_restrict_result
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+    </insert>
     <delete id="deleteByPriorityCd">
         delete from planocycle.work_basic_pattern_restrict_result
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+    </delete>
+    <delete id="deleteFinal">
+        delete from planocycle.basic_pattern_restrict_result
         where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
     </delete>
     <insert id="insertBatch" parameterType="com.trechina.planocycle.entity.po.BasicPatternRestrictResult" useGeneratedKeys="true"

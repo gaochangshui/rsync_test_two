@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrFaceNum;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
@@ -56,7 +57,8 @@ public interface PriorityOrderMstAttrSortMapper {
 
 
     //つかむ取列名
-    String getColNmforMst(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    List<String> getColNmforMst(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd,
+                                @Param("commonTableName")GetCommonPartsDataDto commonTableName);
 
     int deleteAttrFinal(String companyCd, Integer priorityOrderCd);
 
@@ -74,5 +76,5 @@ public interface PriorityOrderMstAttrSortMapper {
 
     List<Map<String,Object>> getAttrName(String classCd, String companyCd, List<Integer> attrs);
 
-    List<Map<String,Object>> getAttrDistinct(String classCd, String companyCd,Integer priorityOrderCd,String attr);
+    List<Map<String,Object>> getAttrDistinct(String classCd, String companyCd,Integer priorityOrderCd,String attr,Integer id ,Integer width);
 }

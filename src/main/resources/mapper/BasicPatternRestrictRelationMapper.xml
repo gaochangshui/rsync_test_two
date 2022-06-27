@@ -42,6 +42,14 @@
         delete from planocycle.work_basic_pattern_restrict_relation
         where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
     </delete>
+    <delete id="deleteFinal">
+        delete from planocycle.basic_pattern_restrict_relation
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+    </delete>
+    <delete id="deleteTana">
+        delete from planocycle.basic_pattern_restrict_relation
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd} and tai_cd = #{taiCd}
+    </delete>
     <insert id="insert">
         insert into basic_pattern_restrict_relation
         ( priority_order_cd,company_cd,author_cd
@@ -115,8 +123,36 @@
             tana_position =  #{tanaPosition,jdbcType=SMALLINT},
             restrict_cd =  #{restrictCd,jdbcType=BIGINT},
             area =  #{area,jdbcType=BIGINT}
-        where  
+        where  priority_order_cd =  #{priorityOrderCd,jdbcType=BIGINT},
+            company_cd =  #{companyCd,jdbcType=VARCHAR},
+            tai_cd =  #{taiCd,jdbcType=OTHER},
+            tana_cd =  #{tanaCd,jdbcType=OTHER},
+            tana_position =  #{tanaPosition,jdbcType=SMALLINT}
     </update>
+    <update id="update">
+        update planocycle.work_basic_pattern_restrict_relation
+        set restrict_cd =  #{restrictCd,jdbcType=BIGINT},
+            area =  #{area,jdbcType=BIGINT}
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd} and tai_cd = #{taiCd}
+          and tana_cd = #{tanaCd} and tana_position = #{tanaPosition}
+    </update>
+    <insert id="setTaiInfo">
+        insert into planocycle.work_basic_pattern_restrict_relation(priority_order_cd,company_cd,
+                                                               author_cd,tai_cd,tana_cd,tana_position,restrict_cd,area)
+        values
+        <foreach collection="ptsTanaVoList" item="list" separator=",">
+               <foreach collection="list.group" item="item" separator="," >
+                   (#{priorityOrderCd,jdbcType=BIGINT},#{companyCd,jdbcType=VARCHAR},#{authorCd,jdbcType=VARCHAR}
+                   ,#{list.taiCd,jdbcType=OTHER},#{list.tanaCd,jdbcType=OTHER},#{item.tanaPosition,jdbcType=SMALLINT}
+                   ,#{item.restrictCd,jdbcType=BIGINT},#{item.area,jdbcType=BIGINT})
+               </foreach>
+        </foreach>
+    </insert>
+    <insert id="setFinalForWork">
+        insert into planocycle.basic_pattern_restrict_relation
+        select * from planocycle.work_basic_pattern_restrict_relation
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </insert>
     <insert id="insertBatch">
         insert into planocycle.work_basic_pattern_restrict_relation
         ( priority_order_cd,company_cd,author_cd

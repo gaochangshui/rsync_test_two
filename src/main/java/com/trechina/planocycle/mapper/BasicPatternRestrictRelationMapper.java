@@ -1,7 +1,7 @@
 package com.trechina.planocycle.mapper;
 
-import com.trechina.planocycle.entity.dto.BasicPatternRestrictRelationDto;
 import com.trechina.planocycle.entity.po.BasicPatternRestrictRelation;
+import com.trechina.planocycle.entity.vo.PtsTanaVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -30,4 +30,14 @@ public interface BasicPatternRestrictRelationMapper {
 
     int insertBatch(List<Map<String, Object>> lists);
 
+
+    int update(BasicPatternRestrictRelation record);
+
+    void deleteFinal(String companyCd, String authorCd, Integer priorityOrderCd);
+
+    void setFinalForWork(String companyCd, String authorCd, Integer priorityOrderCd);
+
+    void deleteTana(Integer taiCd, String companyCd, Integer priorityOrderCd);
+
+    void setTaiInfo(List<PtsTanaVo> ptsTanaVoList,String companyCd, Integer priorityOrderCd,String authorCd);
 }

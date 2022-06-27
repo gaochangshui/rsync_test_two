@@ -73,7 +73,10 @@ public class PriorityOrderMstController {
     public Map<String,Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition){
         return priorityOrderMstService.autoCalculation(companyCd,priorityOrderCd,partition);
     }
-
+    @GetMapping("/getNewReorder")
+    Map<String, Object>getNewReorder(String companyCd,Integer priorityOrderCd){
+        return priorityOrderMstService.getNewReorder(companyCd,priorityOrderCd);
+    }
     /**
      * 表示自動計算実行ステータス
      * @param taskId

@@ -1,5 +1,9 @@
 package com.trechina.planocycle.entity.vo;
 
+import com.trechina.planocycle.entity.po.BasicPatternRestrictRelation;
+
+import java.util.List;
+
 public class PtsTanaVo {
     private Integer taiCd;
     private Integer tanaCd;
@@ -10,6 +14,7 @@ public class PtsTanaVo {
     private Integer tanaType;
     private String companyCd;
     private Integer priorityOrderCd;
+    private List<BasicPatternRestrictRelation> group;
 
     public Integer getTaiCd() {
         return taiCd;
@@ -83,6 +88,14 @@ public class PtsTanaVo {
         this.priorityOrderCd = priorityOrderCd;
     }
 
+    public List<BasicPatternRestrictRelation> getGroup() {
+        return group;
+    }
+
+    public void setGroup(List<BasicPatternRestrictRelation> group) {
+        this.group = group;
+    }
+
     @Override
     public String toString() {
         return "PtsTanaVo{" +
@@ -95,6 +108,7 @@ public class PtsTanaVo {
                 ", tanaType=" + tanaType +
                 ", companyCd='" + companyCd + '\'' +
                 ", priorityOrderCd=" + priorityOrderCd +
+                ", group=" + group +
                 '}';
     }
 }

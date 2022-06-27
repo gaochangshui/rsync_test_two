@@ -4,9 +4,10 @@
     <select id="getAttrComposeList" resultType="java.util.Map">
         select
         <foreach collection="attrList" item="item" separator="," >
-            zokusei${item} as zokuseiid${item}
+            zokusei${item}
         </foreach>
-        ,color.value as color
+        ,color.value as color,
+        restrict_cd as "restrictCd"
         from planocycle.work_basic_pattern_attr_compose compose
         left join planocycle.priority_order_color color
         on color.id = compose.restrict_cd

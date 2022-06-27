@@ -111,9 +111,13 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         GetCommonPartsDataDto commonTableName = BasicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
         List<Integer> attrs = attrList.stream().map(Integer::parseInt).collect(Collectors.toList());
         List<String> mainColor = priorityOrderColorMapper.getMainColor();
+        Map<String, Object> newTanaWidth = shelfPtsDataMapper.getNewTanaWidth(priorityOrderAttrDto.getPriorityOrderCd());
+        Integer id = Integer.parseInt(newTanaWidth.get("id").toString());
+        Integer width = Integer.parseInt(newTanaWidth.get("width").toString());
         List list = new ArrayList();
         for (String s : attrList) {
-            List<Map<String, Object>> attrDistinct = priorityOrderMstAttrSortMapper.getAttrDistinct(commonTableName.getProdMstClass(), commonTableName.getProdIsCore(),priorityOrderAttrDto.getPriorityOrderCd(), s);
+            List<Map<String, Object>> attrDistinct = priorityOrderMstAttrSortMapper.getAttrDistinct(commonTableName.getProdMstClass()
+                    , commonTableName.getProdIsCore(),priorityOrderAttrDto.getPriorityOrderCd(), s,id,width);
             for (int i = 0; i < attrDistinct.size(); i++) {
                 attrDistinct.get(i).put("color",mainColor.get(i));
             }
@@ -327,8 +331,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
             for (Map<String, Object> map : attrName) {
                 for (String s : attrList) {
-                    if (objectMap.get("zokuseiid"+s).equals(map.get("val"))){
-                        objectMap.put("zokusei"+s,map.get("nm"));
+                    if (objectMap.get("zokusei"+s).equals(map.get("val"))){
+                        objectMap.put("zokuseiName"+s,map.get("nm"));
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.trechina.planocycle.controller;
 
+import com.trechina.planocycle.entity.po.BasicPatternRestrictRelation;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,11 @@ public class BasicPatternMstController {
         return basicPatternMstService.getAttrDisplay(companyCd,priorityOrderCd);
     }
 
+    @PostMapping("/setAttrDisplay")
+    public Map<String,Object> setAttrDisplay(@RequestBody BasicPatternRestrictRelation basicPatternRestrictRelation) {
+        return basicPatternMstService.setAttrDisplay(basicPatternRestrictRelation);
+    }
+
     /**
      * 自動計算
      * @return
@@ -31,4 +37,6 @@ public class BasicPatternMstController {
     public Map<String,Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition){
         return basicPatternMstService.autoCalculation(companyCd,priorityOrderCd,partition);
     }
+
+
 }

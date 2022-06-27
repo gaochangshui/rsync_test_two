@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.FaceNumDataDto;
-import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
-import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
@@ -19,7 +16,6 @@ import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.ibatis.util.MapUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -268,8 +264,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             String key = entry.getKey();
 
             Map<String, Object> resultMap = new LinkedHashMap<>();
-            resultMap.put(MagicString.TAI_CD, key.split(",")[0]);
-            resultMap.put(MagicString.TANA_CD, key.split(",")[1]);
+            resultMap.put(MagicString.TAI_CD, Integer.valueOf(key.split(",")[0]));
+            resultMap.put(MagicString.TANA_CD, Integer.valueOf(key.split(",")[1]));
 
             List<Map<String, Object>> groups = new ArrayList<>();
             for (Map<String, Object> itemMap : entry.getValue()) {
@@ -426,6 +422,12 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             vehicleNumCache.put(uuid,1);
         });
         return ResultMaps.result(ResultEnum.SUCCESS,uuid);
+    }
+
+    @Override
+    public Map<String, Object> setAttrDisplay( BasicPatternRestrictRelation basicPatternRestrictRelation) {
+        //restrictRelationMapper.update(basicPatternRestrictRelation);
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     private void setPtsJandataByRestrictCd(Integer priorityOrderCd, Integer patternCd, String companyCd, String authorCd){

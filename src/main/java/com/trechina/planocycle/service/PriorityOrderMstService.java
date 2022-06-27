@@ -70,6 +70,15 @@ public interface PriorityOrderMstService {
     Map<String, Object>getReorder(String companyCd,Integer priorityOrderCd,Integer productPowerCd,String authorCd);
 
     /**
+     * xin重新計算rank排序
+     * @param companyCd
+     * @param priorityOrderCd
+
+     * @return
+     */
+    Map<String, Object>getNewReorder(String companyCd,Integer priorityOrderCd);
+
+    /**
      * 新規時清空対応一時表所有信息
      * @param companyCd
      * @return

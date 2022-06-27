@@ -1,10 +1,6 @@
 package com.trechina.planocycle.mapper;
 
-import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
-import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
-import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -41,9 +37,9 @@ public interface WorkPriorityOrderResultDataMapper {
     List<WorkPriorityOrderResultData>  getResultDatas(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     //再計算rank
-    List<WorkPriorityOrderResultData> getReorder(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("productPowerCd")Integer productPowerCd,
-                                                 @Param("priorityOrderCd")Integer priorityOrderCd,@Param("sortName1")String sortName1,
-                                                 @Param("sortName2")String sortName2);
+    List<WorkPriorityOrderResultData> getReorder(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd, @Param("productPowerCd")Integer productPowerCd,
+                                                 @Param("priorityOrderCd")Integer priorityOrderCd, @Param("commonTableName")GetCommonPartsDataDto getCommonPartsDataDto
+                                    , @Param("sortName1")String sortName1, @Param("sortName2")String sortName2);
 
     //属性ランキングの取得
     List<PriorityOrderJanNewDto> getAttrRank(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd, @Param("sortName1")String sortName1,

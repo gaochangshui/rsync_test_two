@@ -26,4 +26,9 @@ public interface BasicPatternRestrictResultDataMapper {
     int updateByPrimaryKey(BasicPatternRestrictResultData record);
 
     void insertBatch(List<Integer> attrList, List<Map<String, Object>> zokuseiList, Integer priorityOrderCd, String companyCd, String authorCd);
+
+    void deleteFinal(String companyCd, String authorCd, Integer priorityOrderCd);
+
+    void setFinalForWork(String companyCd, String authorCd, Integer priorityOrderCd);
+
 }

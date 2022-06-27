@@ -116,6 +116,16 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private ThreadPoolTaskExecutor executor;
     @Autowired
     private VehicleNumCache vehicleNumCache;
+    @Autowired
+    private BasicPatternRestrictResultMapper basicPatternRestrictResultMapper;
+    @Autowired
+    private BasicPatternRestrictRelationMapper basicPatternRestrictRelationMapper;
+    @Autowired
+    private BasicPatternAttrMapper basicPatternAttrMapper;
+    @Autowired
+    private BasicPatternRestrictResultDataMapper basicPatternRestrictResultDataMapper;
+    @Autowired
+    private BasicPatternMstService basicPatternMstService;
 
     /**
      * 優先順位テーブルリストの取得
@@ -575,33 +585,71 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     public Map<String, Object> getReorder(String companyCd, Integer priorityOrderCd,Integer productPowerCd,String authorCd) {
 
 
-        String colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd);
-        if (colNmforMst == null || colNmforMst.equals("")) {
+        //String colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd);
+        //if (colNmforMst == null || colNmforMst.equals("")) {
+        //    return ResultMaps.result(ResultEnum.SUCCESS);
+        //}
+        //String[] split = colNmforMst.split(",");
+        //List<PriorityOrderJanNewDto> reorder = null;
+        //List<WorkPriorityOrderResultData> reorder1 = null;
+        //if (split.length == 1) {
+        //
+        //    reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,productPowerCd, priorityOrderCd, split[0], null);
+        //
+        //} else {
+        //
+        //    reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,productPowerCd, priorityOrderCd, split[0], split[1]);
+        //
+        //
+        //}
+        //int j = 1;
+        //for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder1) {
+        //    workPriorityOrderResultData.setResultRank(j++);
+        //
+        //}
+        //
+        //workPriorityOrderResultDataMapper.setSortRank(reorder1, companyCd, authorCd, priorityOrderCd);
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+    /**
+     * rankソートの再計算
+     *
+     * @param companyCd
+     * @return
+     */
+    @Override
+    public Map<String, Object> getNewReorder(String companyCd, Integer priorityOrderCd) {
+        String authorCd = session.getAttribute("aud").toString();
+        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+
+        String commonPartsData = workPriorityOrderMst.getCommonPartsData();
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+
+        List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
+        if (colNmforMst.isEmpty()) {
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
-        String[] split = colNmforMst.split(",");
-        List<PriorityOrderJanNewDto> reorder = null;
-        List<WorkPriorityOrderResultData> reorder1 = null;
-        if (split.length == 1) {
 
-            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,productPowerCd, priorityOrderCd, split[0], null);
+        List<WorkPriorityOrderResultData> reorder1 = null;
+        if (colNmforMst.size() == 1) {
+
+            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), null);
 
         } else {
 
-            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,productPowerCd, priorityOrderCd, split[0], split[1]);
+            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), colNmforMst.get(1));
 
 
         }
-        int j = 1;
-        for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder1) {
-            workPriorityOrderResultData.setResultRank(j++);
-
-        }
+        //int j = 1;
+        //for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder1) {
+        //    workPriorityOrderResultData.setResultRank(j++);
+        //
+        //}
 
         workPriorityOrderResultDataMapper.setSortRank(reorder1, companyCd, authorCd, priorityOrderCd);
-        return ResultMaps.result(ResultEnum.SUCCESS, reorder);
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
-
     /**
      * 新規作成時に対応するテンポラリ・テーブルのすべての情報をクリア
      *
@@ -736,6 +784,19 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             //ptsデータの保存
             shelfPtsService.saveFinalPtsData(companyCd, authorCd, priorityOrderCd);
 
+            //work_basic_pattern_restrict_relation保存rank、元のデータを削除
+            basicPatternRestrictRelationMapper.deleteFinal(companyCd, authorCd, priorityOrderCd);
+            basicPatternRestrictRelationMapper.setFinalForWork(companyCd, authorCd, priorityOrderCd);
+
+            //work_basic_pattern_attr_compose保存＃ホゾン＃
+            basicPatternAttrMapper.deleteFinal(companyCd, authorCd, priorityOrderCd);
+            basicPatternAttrMapper.setFinalForWork(companyCd, authorCd, priorityOrderCd);
+            //work_basic_pattern_restrict_result保存＃ホゾン＃
+            basicPatternRestrictResultMapper.deleteFinal(companyCd, authorCd, priorityOrderCd);
+            basicPatternRestrictResultMapper.setFinalForWork(companyCd, authorCd, priorityOrderCd);
+            //work_basic_pattern_restrict_result_data 保存＃ホゾン＃
+            basicPatternRestrictResultDataMapper.deleteFinal(companyCd, authorCd, priorityOrderCd);
+            basicPatternRestrictResultDataMapper.setFinalForWork(companyCd, authorCd, priorityOrderCd);
 
         } catch (Exception exception) {
             logger.error("保存臨時表数据到實際表報錯", exception);

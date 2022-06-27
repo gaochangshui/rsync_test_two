@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.BasicPatternAttrMapper">
+    <insert id="setFinalForWork">
+        insert into planocycle.basic_pattern_attr_compose
+        select  * from  planocycle.work_basic_pattern_attr_compose
+        where priority_order_cd=#{priorityOrderCd}
+          and company_cd=#{companyCd}
+    </insert>
     <select id="getAttribute" resultType="com.trechina.planocycle.entity.dto.BasicPatternAttrListDto">
         select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
     </select>
     <delete id="delete">
         delete from planocycle.work_basic_pattern_attr_compose where priority_order_cd=#{priorityOrderCd}
         and company_cd=#{companyCd}
+    </delete>
+    <delete id="deleteFinal">
+        delete from planocycle.basic_pattern_attr_compose where priority_order_cd=#{priorityOrderCd}
+                                                                 and company_cd=#{companyCd}
     </delete>
     <insert id="insertBatch" parameterType="com.trechina.planocycle.entity.po.BasicPatternRestrictResult">
         insert into planocycle.work_basic_pattern_attr_compose

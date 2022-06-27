@@ -5,7 +5,6 @@ import com.trechina.planocycle.entity.po.BasicPatternRestrictResult;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface BasicPatternAttrMapper {
@@ -15,4 +14,8 @@ public interface BasicPatternAttrMapper {
     void delete(Integer priorityOrderCd, String companyCd);
 
     int insertBatch(List<BasicPatternRestrictResult> lists);
+
+    void deleteFinal(String companyCd, String authorCd, Integer priorityOrderCd);
+
+    void setFinalForWork(String companyCd, String authorCd, Integer priorityOrderCd);
 }

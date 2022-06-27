@@ -2,7 +2,7 @@ package com.trechina.planocycle.controller;
 
 
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
-import com.trechina.planocycle.service.BasicPatternAttrService;
+import com.trechina.planocycle.service.impl.BasicPatternAttrServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +15,7 @@ import java.util.Map;
 @RequestMapping("planoCycle/BasicPatternAttr")
 public class BasicPatternAttrController {
     @Autowired
-    private BasicPatternAttrService basicPatternAttrService;
+    private BasicPatternAttrServiceImpl basicPatternAttrService;
     /**
      *つかむ取属性1と属性2
      */
