@@ -94,10 +94,10 @@
         where priority_order_cd = #{priorityOrderCd,jdbcType=BIGINT}
     </insert>
     <insert id="insertBatch">
-        insert into planocycle.work_basic_pattern_restrict_result_data(priority_order_cd,company_cd,author_cd,jan,face
-        ) values
+        insert into planocycle.work_basic_pattern_restrict_result_data(priority_order_cd,company_cd,author_cd,jan,face,
+        restrict_cd) values
         <foreach collection="zokuseiList" item="janItem" separator=",">
-            (#{priorityOrderCd},#{companyCd},#{authorCd},#{janItem.jan},#{janItem.faceCount})
+            (#{priorityOrderCd},#{companyCd},#{authorCd},#{janItem.jan},#{janItem.faceCount},#{janItem.restrictCd})
         </foreach>
     </insert>
 </mapper>
