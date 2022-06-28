@@ -182,4 +182,6 @@ public interface ShelfPtsDataMapper {
     void deleteTana(Integer taiCd, Integer id);
 
     void updTanaSize(List<PtsTanaVo> ptsTanaVoList, Integer id, String authorCd, String companyCd);
+
+    void insertPtsData1(PriorityOrderPtsDataDto priorityOrderPtsDataDto);
 }

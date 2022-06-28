@@ -352,7 +352,7 @@
     select company_cd,#{id},tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,
     now(),now(),#{authorCd},#{authorCd}
     from planocycle.shelf_pts_data_tanamst
-    where pts_cd=#{ptsCd} and deleteflg=0
+    where pts_cd=#{ptsCd}
   </insert>
   <insert id="insertPtsVersion">
     insert into planocycle.work_priority_order_pts_data_version(company_cd,
@@ -470,6 +470,13 @@
       (#{companyCd},#{id},#{item.taiCd},#{item.tanaCd},#{item.tanaHeight},#{item.tanaWidth},#{item.tanaDepth},#{item.tanaThickness}
       ,#{item.tanaType},now(),#{authorCd},now(),#{authorCd})
     </foreach>
+  </insert>
+  <insert id="insertPtsData1">
+    insert into planocycle.work_priority_order_pts_data(id,company_cd,file_name,authorcd,shelf_pattern_cd,valid_flg,
+                                                        start_day,edit_time,create_time,editer_cd,priority_order_cd)
+    select #{id},company_cd,#{fileName},#{authorCd},shelf_pattern_cd,valid_flg,start_day,now(),now(),#{authorCd}, #{priorityOrderCd}
+    from planocycle.shelf_pts_data
+    where id=#{oldPtsCd} and deleteflg=0
   </insert>
   <delete id="deletePtsTaimst">
     delete from planocycle.work_priority_order_pts_data_taimst where pts_cd=#{ptsCd}
