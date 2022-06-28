@@ -442,6 +442,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             restrictRelationMapper.update(basicPatternRestrictRelation,authorCd);
         }else {
             List<BasicPatternRestrictRelation> tanaAttrList = restrictRelationMapper.getTanaAttrList(basicPatternRestrictRelation);
+            if (tanaAttrList.isEmpty()){
+                return ResultMaps.result(ResultEnum.SUCCESS);
+            }
             int i = 1;
             for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
                 patternRestrictRelation.setTanaPosition(i++);

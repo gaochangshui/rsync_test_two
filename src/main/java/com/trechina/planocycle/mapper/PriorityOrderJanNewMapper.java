@@ -18,7 +18,7 @@ public interface PriorityOrderJanNewMapper {
     int delete(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
     int workDelete(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    List<PriorityOrderJanNewDto> selectJanNew(@Param("companyCd") String companyCd,@Param("priorityOrderCd") Integer priorityOrderCd
+    List<Map<String,Object>> selectJanNew(@Param("companyCd") String companyCd,@Param("priorityOrderCd") Integer priorityOrderCd
             , @Param("commonTableName") GetCommonPartsDataDto commonTableName,@Param("list")List<Map<String,Object>> attrList);
 
     List<Map<String, Object>> selectJanNewNotExistsMst(String companyCd, Integer priorityOrderCd, String tablename);

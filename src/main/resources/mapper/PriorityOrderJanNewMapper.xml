@@ -84,16 +84,16 @@
 
     </delete>
 
-    <select id="selectJanNew" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
-        select news.jan_new as janCd,news.jan_rank as rank
+    <select id="selectJanNew" resultType="map">
+        select news.jan_new as janCd,news.jan_rank as rank,
+                <foreach collection="list" item="item" separator=",">
+                    "${item.zokusei_col}" as zokuseiName${item.zokusei_id}
+                </foreach>
         from planocycle.work_priority_order_jan_new news
                  left join  "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info jans
-                on news.jan_new = jans.jan_cd
-        left join masterdb.jan_mst_planocycle mstpl
-                  on news.jan_new = mstpl.jan_cd
+                on news.jan_new = jans."1"
         where news.company_cd = #{companyCd,jdbcType=VARCHAR}
           and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-
         order by janCd
   </select>
     <select id="selectJanNewNotExistsMst" resultType="map">

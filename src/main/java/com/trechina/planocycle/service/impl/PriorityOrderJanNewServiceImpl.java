@@ -68,23 +68,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
         List<Integer> attrs = Arrays.stream(attrList.split(",")).map(Integer::parseInt).collect(Collectors.toList());
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrs, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
-        List<PriorityOrderJanNewDto> priorityOrderJanNewVOS = priorityOrderJanNewMapper.selectJanNew(companyCd,priorityOrderCd,commonTableName,zokuseiCol);
+        List<Map<String,Object>> priorityOrderJanNewVOS = priorityOrderJanNewMapper.selectJanNew(companyCd,priorityOrderCd,commonTableName,zokuseiCol);
             logger.info("つかむ取新規商品list返回結果集b：{}",priorityOrderJanNewVOS);
-            List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
-            Class clazz = PriorityOrderJanNewDto.class;
-        for (int i = 1; i <= 4; i++) {
-            Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
-            Method setMethod = clazz.getMethod("set"+"Zokusei"+i, String.class);
-            for (PriorityOrderAttrValueDto attrValue : attrValues) {
-                for (PriorityOrderJanNewDto priorityOrderJanNewVO : priorityOrderJanNewVOS) {
-                    if (getMethod.invoke(priorityOrderJanNewVO)!=null && getMethod.invoke(priorityOrderJanNewVO).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
-                        setMethod.invoke(priorityOrderJanNewVO,attrValue.getNm());
-                    }
-
-
-                }
-            }
-        }
            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanNewVOS);
     }
     /**
@@ -130,9 +115,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         for (PriorityOrderJanNew orderJanNew : priorityOrderJanNew) {
             companyCd = orderJanNew.getCompanyCd();
             priorityOrderCd = orderJanNew.getPriorityOrderCd();
-
         }
-
         priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
         if(priorityOrderJanNew.get(0).getJanNew() != null) {
             priorityOrderJanNewMapper.insert(priorityOrderJanNew, authorCd);
