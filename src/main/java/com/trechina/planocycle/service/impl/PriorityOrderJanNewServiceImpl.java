@@ -91,7 +91,6 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      */
     @Override
     public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd, Integer priorityOrderCd,String attrList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        //priorityOrderMstAttrSortMapper.updAttrSort(Arrays.asList(attrList.split(",")));
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
 

@@ -432,8 +432,26 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> setAttrDisplay( BasicPatternRestrictRelation basicPatternRestrictRelation) {
-        restrictRelationMapper.update(basicPatternRestrictRelation);
+        String authorCd = session.getAttribute("aud").toString();
+        String companyCd = basicPatternRestrictRelation.getCompanyCd();
+        Long priorityOrderCd = basicPatternRestrictRelation.getPriorityOrderCd();
+        restrictRelationMapper.deleteForTanaPosition(basicPatternRestrictRelation);
+        if (basicPatternRestrictRelation.getRestrictCd()!= null){
+            restrictRelationMapper.update(basicPatternRestrictRelation,authorCd);
+        }else {
+            List<BasicPatternRestrictRelation> tanaAttrList = restrictRelationMapper.getTanaAttrList(basicPatternRestrictRelation);
+            int i = 1;
+            for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
+                patternRestrictRelation.setTanaPosition(i++);
+            }
+            Integer taiCd = Integer.valueOf(basicPatternRestrictRelation.getTaiCd().toString());
+            Integer tanaCd = Integer.valueOf(basicPatternRestrictRelation.getTanaCd().toString());
+            restrictRelationMapper.deleteTanas(taiCd,tanaCd,companyCd,priorityOrderCd.intValue());
+            restrictRelationMapper.updateTanaPosition(tanaAttrList,authorCd);
+        }
+
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
