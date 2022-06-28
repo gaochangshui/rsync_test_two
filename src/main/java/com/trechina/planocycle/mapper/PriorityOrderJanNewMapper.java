@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
 import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
@@ -17,7 +18,8 @@ public interface PriorityOrderJanNewMapper {
     int delete(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
     int workDelete(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    List<PriorityOrderJanNewDto> selectJanNew(String companyCd, Integer priorityOrderCd);
+    List<PriorityOrderJanNewDto> selectJanNew(@Param("companyCd") String companyCd,@Param("priorityOrderCd") Integer priorityOrderCd
+            , @Param("commonTableName") GetCommonPartsDataDto commonTableName,@Param("list")List<Map<String,Object>> attrList);
 
     List<Map<String, Object>> selectJanNewNotExistsMst(String companyCd, Integer priorityOrderCd, String tablename);
 
@@ -57,5 +59,5 @@ public interface PriorityOrderJanNewMapper {
     //ワークシート情報の表示
     List<JanMstPlanocycleVo> getJanNewInfo(@Param("companyCd")String companyCd);
 
-    List<PriorityOrderJanNewVO> getDynamicJanNameClassify(@Param("tableName") String tableName, @Param("col") List<String> col, @Param("janNew") String [] janNew);
+    List<Map<String,Object>> getDynamicJanNameClassify(@Param("tableName") String tableName, @Param("col") List<Map<String,Object>> col, @Param("janNew") String [] janNew);
 }

@@ -85,11 +85,9 @@
     </delete>
 
     <select id="selectJanNew" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
-        select news.jan_new as janCd, COALESCE(jans.jan_nm, mstpl.jan_nm) as janName,COALESCE(jans.scat1cd_val, mstpl.scat1cd_val) as zokusei1
-             ,COALESCE(jans.scat2cd_val, mstpl.scat2cd_val) as zokusei2
-             ,COALESCE(jans.scat3cd_val, mstpl.scat3cd_val) as zokusei3,COALESCE(jans.scat4cd_val, mstpl.scat4cd_val) as zokusei4,news.jan_rank as rank
+        select news.jan_new as janCd,news.jan_rank as rank
         from planocycle.work_priority_order_jan_new news
-                 left join  masterdb.jan_mst jans
+                 left join  "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info jans
                 on news.jan_new = jans.jan_cd
         left join masterdb.jan_mst_planocycle mstpl
                   on news.jan_new = mstpl.jan_cd
@@ -227,16 +225,11 @@
         from masterdb.jan_mst_planocycle
         where jan_cd = #{item.janCd} and company_cd = #{companyCd}
 </select>
-    <select id="getDynamicJanNameClassify" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
-        select "1" as janNew,"2" as janName
-        <foreach collection="col" item="item1" index="index1" separator="," open=",">
-            <foreach collection="col" item="item2" index="index2" separator="||'_'||">
-                <if test="index2&lt;=index1">
-                    "${item2}"
-                </if>
-            </foreach>
-            as scat${index1+1}cdVal
-        </foreach>
+    <select id="getDynamicJanNameClassify" resultType="map">
+        select "1" as "janNew","2" as "janName",
+               <foreach collection="col" item="item" separator=",">
+                   "${item.zokusei_col}" as zokuseiName${item.zokusei_id}
+               </foreach>
         from ${tableName} where "1" in
         <foreach collection="janNew" separator="," item="item" open="(" close=")">
             trim(#{item})

@@ -16,7 +16,7 @@ public interface PriorityOrderJanNewService {
      * @param priorityOrderCd
      * @return
      */
-    Map<String,Object> getPriorityOrderJanNew(String companyCd,Integer priorityOrderCd, Integer productPowerNo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    Map<String,Object> getPriorityOrderJanNew(String companyCd,Integer priorityOrderCd, Integer productPowerNo,String attrList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     /**
      * つかむ取新規jan的名字分クラス
      * @param janNew

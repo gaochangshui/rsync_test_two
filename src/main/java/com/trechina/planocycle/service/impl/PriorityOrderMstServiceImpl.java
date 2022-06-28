@@ -971,8 +971,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd, aud);
         if (flag == 0) {
             //取得janNew情報
-            Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
-            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanNew.get("data"));
+            //Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
+            //return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanNew.get("data"));
         }
         if (flag == 2) {
             ////取得janCut情報

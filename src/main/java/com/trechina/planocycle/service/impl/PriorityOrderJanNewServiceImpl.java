@@ -6,7 +6,6 @@ import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
 import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
-import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.BasicPatternMstService;
@@ -15,7 +14,6 @@ import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
 import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
-import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +51,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     private PriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
     private JanClassifyMapper janClassifyMapper;
+    @Autowired
+    private ZokuseiMstMapper zokuseiMstMapper;
     /**
      * 新規janListの取得
      *
@@ -61,10 +61,14 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      * @return
      */
     @Override
-    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo,String attrList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
             logger.info("つかむ取新規商品list参数：{}{}{}",companyCd,",",priorityOrderCd);
-            List<PriorityOrderJanNewDto> priorityOrderJanNewVOS = priorityOrderJanNewMapper.selectJanNew(companyCd,priorityOrderCd);
+        PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
+        List<Integer> attrs = Arrays.stream(attrList.split(",")).map(Integer::parseInt).collect(Collectors.toList());
+        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrs, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        List<PriorityOrderJanNewDto> priorityOrderJanNewVOS = priorityOrderJanNewMapper.selectJanNew(companyCd,priorityOrderCd,commonTableName,zokuseiCol);
             logger.info("つかむ取新規商品list返回結果集b：{}",priorityOrderJanNewVOS);
             List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
             Class clazz = PriorityOrderJanNewDto.class;
@@ -93,71 +97,21 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd, Integer priorityOrderCd,String attrList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
-
-        List<Map<String, Object>> janClassify = janClassifyMapper.getColCdClassify(commonTableName.getProKaisouTable());
-        List<String> col = janClassify.stream().filter(map -> !MapUtils.getString(map, "attr").equals("jan_cd") &&
-                MapUtils.getString(map, "attr").endsWith("_cd")).map(map->MapUtils.getString(map, "sort")).collect(Collectors.toList());
-        List<PriorityOrderJanNewVO> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getDynamicJanNameClassify(commonTableName.getProInfoTable(), col, janCd);
-        if (priorityOrderJanNewVOList == null){
-
-            return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
-        }
+        List<Integer> attrs = Arrays.stream(attrList.split(",")).map(Integer::parseInt).collect(Collectors.toList());
+        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrs, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        List<Map<String,Object>> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getDynamicJanNameClassify(commonTableName.getProInfoTable(), zokuseiCol, janCd);
         List<String> listNew = new ArrayList();
-        for (PriorityOrderJanNewVO priorityOrderJanNewVO : priorityOrderJanNewVOList) {
-            listNew.add( priorityOrderJanNewVO.getJanNew());
+        for (Map<String,Object> priorityOrderJanNewVO : priorityOrderJanNewVOList) {
+            listNew.add( priorityOrderJanNewVO.get("janNew").toString());
         }
         List<String> list = Arrays.asList(janCd);
         List<String> listDisparitStr = ListDisparityUtils.getListDisparitStr(list, listNew);
         String [] array = new String[listDisparitStr.size()];
         listDisparitStr.toArray(array);
-        Class clazz = PriorityOrderJanNewVO.class;
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
-        String [] result=null;
-        if(array.length>0) {
-            List<PriorityOrderJanNewVO> janNameClass = priorityOrderJanNewMapper.getJanNameClass(array, companyCd);
-            List listNew1 = new ArrayList();
-            for (PriorityOrderJanNewVO nameClass : janNameClass) {
-                priorityOrderJanNewVOList.add(nameClass);
-                listNew1.add(nameClass.getJanNew());
-            }
-            List<String> strings = Arrays.asList(array);
-            List<String> lists = ListDisparityUtils.getListDisparitStr(strings, listNew1);
-            result = new String[lists.size()];
-            lists.toArray(result);
-        }
 
-        for (int i = 1; i <= 4; i++) {
-            Method getMethod = clazz.getMethod("get"+"Scat"+i+"cdVal");
-            Method setMethod = clazz.getMethod("set"+"Scat"+i+"cdVal", String.class);
-            for (PriorityOrderAttrValueDto attrValue : attrValues) {
-                for (PriorityOrderJanNewVO priorityOrderJanNewVO : priorityOrderJanNewVOList) {
-                    if (getMethod.invoke(priorityOrderJanNewVO)!=null && getMethod.invoke(priorityOrderJanNewVO).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
-                        setMethod.invoke(priorityOrderJanNewVO,attrValue.getNm());
-                    }
-                }
-
-            }
-        }
-        List<PriorityOrderJanNewDto> priorityOrderJanNewDtos = new ArrayList<>();
-        PriorityOrderJanNewDto priorityOrderJanNewDto = null;
-        for (PriorityOrderJanNewVO priorityOrderJanNewVO : priorityOrderJanNewVOList) {
-            priorityOrderJanNewDto = new PriorityOrderJanNewDto();
-            priorityOrderJanNewDto.setJanName(priorityOrderJanNewVO.getJanName());
-            priorityOrderJanNewDto.setJanCd(priorityOrderJanNewVO.getJanNew());
-            priorityOrderJanNewDto.setZokusei1(priorityOrderJanNewVO.getScat1cdVal());
-            priorityOrderJanNewDto.setZokusei2(priorityOrderJanNewVO.getScat2cdVal());
-            priorityOrderJanNewDto.setZokusei3(priorityOrderJanNewVO.getScat3cdVal());
-            priorityOrderJanNewDto.setZokusei4(priorityOrderJanNewVO.getScat4cdVal());
-            priorityOrderJanNewDtos.add(priorityOrderJanNewDto);
-        }
         Map<String,Object> map = new HashMap<>();
-        if (array.length==0){
             map.put("array",array);
-        }else {
-            map.put("array",result);
-        }
-
-        map.put("priorityOrderJanNewVOList",priorityOrderJanNewDtos);
+        map.put("priorityOrderJanNewVOList",priorityOrderJanNewVOList);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
