@@ -1,10 +1,14 @@
 package com.trechina.planocycle.service.impl;
 
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanReplace;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanReplaceVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.PriorityOrderDataMapper;
 import com.trechina.planocycle.mapper.PriorityOrderJanReplaceMapper;
+import com.trechina.planocycle.mapper.WorkPriorityOrderMstMapper;
+import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
@@ -25,6 +29,10 @@ public class PriorityOrderJanReplaceServiceImpl implements PriorityOrderJanRepla
     private PriorityOrderJanReplaceMapper priorityOrderJanReplaceMapper;
     @Autowired
     private PriorityOrderDataMapper priorityOrderDataMapper;
+    @Autowired
+    private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
+    @Autowired
+    private BasicPatternMstService basicPatternMstService;
     /**
      * jan変の情報を取得する
      *
@@ -35,7 +43,10 @@ public class PriorityOrderJanReplaceServiceImpl implements PriorityOrderJanRepla
     @Override
     public Map<String, Object> getPriorityOrderJanInfo(String companyCd, Integer priorityOrderCd) {
         logger.info("つかむ取jan変的信息参数：{}{}{}",companyCd,",",priorityOrderCd);
-        List<PriorityOrderJanReplaceVO> priorityOrderJanReplaceVOList = priorityOrderJanReplaceMapper.selectJanInfo(companyCd,priorityOrderCd);
+        String authorCd = session.getAttribute("aud").toString();
+        WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd,priorityOrderCd);
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(priorityOrderMst.getCommonPartsData(), companyCd);
+        List<PriorityOrderJanReplaceVO> priorityOrderJanReplaceVOList = priorityOrderJanReplaceMapper.selectJanInfo(companyCd,priorityOrderCd,commonTableName);
         logger.info("つかむ取jan変的信息返回値：{}",priorityOrderJanReplaceVOList);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplaceVOList);
     }

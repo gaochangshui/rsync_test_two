@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanCard;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanCardVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -13,7 +14,7 @@ public interface PriorityOrderJanCardMapper {
 
     int workDelete(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
 
-    List<PriorityOrderJanCardVO> selectJanCard(String companyCd, Integer priorityOrderCd);
+    List<PriorityOrderJanCardVO> selectJanCard(String companyCd, Integer priorityOrderCd, GetCommonPartsDataDto commonTableName);
 
     int insert(@Param("lists") List<PriorityOrderJanCard> record,@Param("authorCd")String authorCd);
     //最終テーブルデータをテンポラリ・テーブルに移動

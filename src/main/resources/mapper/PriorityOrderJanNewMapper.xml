@@ -227,6 +227,21 @@
         from masterdb.jan_mst_planocycle
         where jan_cd = #{item.janCd} and company_cd = #{companyCd}
 </select>
+    <select id="getDynamicJanNameClassify" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
+        select "1" as janNew,"2" as janName
+        <foreach collection="col" item="item1" index="index1" separator="," open=",">
+            <foreach collection="col" item="item2" index="index2" separator="||'_'||">
+                <if test="index2&lt;=index1">
+                    "${item2}"
+                </if>
+            </foreach>
+            as scat${index1+1}cdVal
+        </foreach>
+        from ${tableName} where "1" in
+        <foreach collection="janNew" separator="," item="item" open="(" close=")">
+            trim(#{item})
+        </foreach>
+    </select>
     <delete id="deleteByAuthorCd">
         delete from planocycle.priority_order_jan_new where
         company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

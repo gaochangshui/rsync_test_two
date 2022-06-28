@@ -56,4 +56,6 @@ public interface PriorityOrderJanNewMapper {
 
     //ワークシート情報の表示
     List<JanMstPlanocycleVo> getJanNewInfo(@Param("companyCd")String companyCd);
+
+    List<PriorityOrderJanNewVO> getDynamicJanNameClassify(@Param("tableName") String tableName, @Param("col") List<String> col, @Param("janNew") String [] janNew);
 }

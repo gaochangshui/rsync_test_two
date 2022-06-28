@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.*;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
@@ -26,7 +28,6 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -432,7 +433,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
     @Override
     public Map<String, Object> setAttrDisplay( BasicPatternRestrictRelation basicPatternRestrictRelation) {
-        //restrictRelationMapper.update(basicPatternRestrictRelation);
+        restrictRelationMapper.update(basicPatternRestrictRelation);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

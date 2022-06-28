@@ -25,16 +25,12 @@
     and author_cd = #{authorCd,jdbcType=VARCHAR}
   </delete>
   <select id="selectJanInfo" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanReplaceVO">
-    select jan_old as janCd,jan_new as janNew, COALESCE(mst.jan_nm, mstpl.jan_nm) as janName,COALESCE(mst1.jan_nm, mstpl1.jan_nm) as janNewName
+    select jan_old as janCd,jan_new as janNew, mst."2" as janName,mst1."2" as janNewName
     from planocycle.work_priority_order_jan_replace jan
-    left join masterdb.jan_mst mst
-    on jan.jan_old  = mst.jan_cd
-    left join masterdb.jan_mst_planocycle mstpl
-    on jan.jan_old  = mstpl.jan_cd
-    left join masterdb.jan_mst mst1
-              on jan.jan_new  = mst1.jan_cd
-    left join masterdb.jan_mst_planocycle mstpl1
-              on jan.jan_new  = mstpl1.jan_cd
+           left join "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info mst
+                     on jan.jan_old  = mst."1"
+           left join "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info mst1
+                     on jan.jan_new  = mst1."1"
     where jan.company_cd = #{companyCd,jdbcType=VARCHAR} and jan.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     order by jan_old
   </select>

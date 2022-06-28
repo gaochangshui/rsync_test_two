@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMst;
@@ -59,4 +60,6 @@ public interface PriorityOrderMstMapper {
     int setPartition(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd,@Param("authorCd")String authorCd,@Param("partition")Integer partition );
 
     PriorityOrderMstDto getPatternOrProduct(@Param("companyCd")String companyCd, @Param("priorityOrderCd")Integer priorityOrderCd);
+
+    PriorityOrderAttrDto selectCommonPartsData(@Param("companyCd")String companyCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 }

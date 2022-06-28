@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanReplace;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanReplaceVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -15,7 +16,7 @@ public interface PriorityOrderJanReplaceMapper {
 
     int insert(@Param("lists") List<PriorityOrderJanReplace> record,@Param("authorCd")String authorCd);
 
-    List<PriorityOrderJanReplaceVO> selectJanInfo(String companyCd, Integer priorityOrderCd);
+    List<PriorityOrderJanReplaceVO> selectJanInfo(String companyCd, Integer priorityOrderCd, GetCommonPartsDataDto commonTableName);
 
     int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
     String selectJanDistinct();

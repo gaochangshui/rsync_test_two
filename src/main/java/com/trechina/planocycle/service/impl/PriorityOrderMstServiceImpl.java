@@ -976,13 +976,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
         if (flag == 2) {
             ////取得janCut情報
-            List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd, priorityOrderCd);
-            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCut);
+            //List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd, priorityOrderCd);
+            //return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCut);
         }
         if (flag == 1) {
             //取得jan変情報
-            List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd, priorityOrderCd);
-            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplace);
+            //List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd, priorityOrderCd);
+            //return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplace);
         }
         return ResultMaps.result(ResultEnum.FAILURE);
     }
