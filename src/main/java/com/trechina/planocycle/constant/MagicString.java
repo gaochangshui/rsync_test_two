@@ -31,4 +31,6 @@ public class MagicString {
     public static final String TANA_CD = "tanaCd";
 
     public static final String SET_ZOKUSEI = "setZokusei";
+
+    public static final String RESTRICT_CD = "restrictCd";
 }

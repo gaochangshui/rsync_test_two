@@ -4,7 +4,9 @@ import com.trechina.planocycle.entity.dto.CommonPartsDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictRelation;
+import com.trechina.planocycle.entity.po.ZokuseiMst;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,11 @@ public interface CommonMstService {
 //    Map<String, List<PriorityOrderResultDataDto>> commSetJanForShelf(Short partitionFlag, Short partitionVal,
 //                                                                     List<PtsTaiVo> taiData, List<PriorityOrderResultDataDto> workPriorityOrderResultData,
 //                                                                     List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations, Integer minFace);
+
+    @Transactional(rollbackFor = Exception.class)
+    Map<String, Object> commSetJanForShelf(Integer patternCd, String companyCd, Integer priorityOrderCd,
+                                           Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
+                                           List<Map<String, Object>> restrictResult, List<Integer> attrList);
 
     List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData);
 

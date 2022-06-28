@@ -3,6 +3,8 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
@@ -11,6 +13,7 @@ import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.BasicPatternMstService;
+import com.trechina.planocycle.service.CommonMstService;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -77,6 +80,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     private BasicPatternRestrictResultDataMapper restrictResultDataMapper;
     @Autowired
     private PriorityOrderMstAttrSortMapper attrSortMapper;
+    @Autowired
+    private CommonMstService commonMstService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -298,7 +303,17 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         executor.execute(() -> {
             //商品力点数表cdを取得する
             Integer patternCd = productPowerMstMapper.getpatternCd(companyCd, authorCd, priorityOrderCd);
-            this.setPtsJandataByRestrictCd(priorityOrderCd, patternCd,companyCd, authorCd);
+            List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
+            List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
+            WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+            String commonPartsData = workPriorityOrderMst.getCommonPartsData();
+            GetCommonPartsDataDto commonTableName = getCommonTableName(commonPartsData, companyCd);
+            List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
+            List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
+            List<Map<String, Object>> restrictResult = restrictResultMapper.selectByPrimaryKey(priorityOrderCd);
+
+            this.setPtsJandataByRestrictCd(priorityOrderCd, patternCd,companyCd, authorCd, attrList, zokuseiMsts,
+                    commonTableName, allCdList,restrictResult);
             Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, authorCd, priorityOrderCd);
 
             Integer minFaceNum = 1;
@@ -332,7 +347,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     }
                 }
                 if (!newList.isEmpty()) {
-
                     workPriorityOrderResultDataMapper.setResultDataList(newList, workPriorityOrderRestrictResult.getRestrictCd(), companyCd, authorCd, priorityOrderCd);
                 }
 
@@ -346,56 +360,56 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             String[] array = resultDataList.split(",");
             //cgiを呼び出す
 
-//            Map<String, Object> data = priorityOrderMstService.getFaceKeisanForCgi(array, companyCd, patternCd, authorCd,tokenInfo);
-//            if (data.get("data") != null && data.get("data") != "") {
-//                String[] strResult = data.get("data").toString().split("@");
-//                String[] strSplit = null;
-//                List<WorkPriorityOrderResultData> list = new ArrayList<>();
-//                WorkPriorityOrderResultData orderResultData = null;
-//                for (int i = 0; i < strResult.length; i++) {
-//                    orderResultData = new WorkPriorityOrderResultData();
-//                    strSplit = strResult[i].split(" ");
-//                    orderResultData.setSalesCnt(Double.valueOf(strSplit[1]));
-//                    orderResultData.setJanCd(strSplit[0]);
-//
-//
-//                    list.add(orderResultData);
-//                }
-//                workPriorityOrderResultDataMapper.update(list, companyCd, authorCd, priorityOrderCd);
-//
-//
-//                //古いptsの平均値、最大値最小値を取得
-//                FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(patternCd);
-//                minFaceNum = faceNum.getFaceMinNum();
-//                DecimalFormat df = new DecimalFormat("#.00");
-//                //salescntAvgを取得し、小数点を2桁保持
-//                Double salesCntAvg = productPowerMstMapper.getSalesCntAvg(companyCd, authorCd, priorityOrderCd);
-//                String format = df.format(salesCntAvg);
-//                salesCntAvg = Double.valueOf(format);
-//
-//                List<WorkPriorityOrderResultData> resultDatas = workPriorityOrderResultDataMapper.getResultDatas(companyCd, authorCd, priorityOrderCd);
-//
-//                Double d = null;
-//                for (WorkPriorityOrderResultData resultData : resultDatas) {
-//                    resultData.setPriorityOrderCd(priorityOrderCd);
-//                    if (resultData.getSalesCnt() != null) {
-//                        d = resultData.getSalesCnt() * faceNum.getFaceAvgNum() / salesCntAvg;
-//
-//                        if (d > faceNum.getFaceMaxNum()) {
-//                            resultData.setFace(Long.valueOf(faceNum.getFaceMaxNum()));
-//                        } else if (d < faceNum.getFaceMinNum()) {
-//                            resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
-//                        } else {
-//                            resultData.setFace(d.longValue());
-//                        }
-//
-//                    } else {
-//                        resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
-//                    }
-//
-//                }
-//                workPriorityOrderResultDataMapper.updateFace(resultDatas, companyCd, authorCd);
-//            }
+            Map<String, Object> data = priorityOrderMstService.getFaceKeisanForCgi(array, companyCd, patternCd, authorCd,tokenInfo);
+            if (data.get("data") != null && data.get("data") != "") {
+                String[] strResult = data.get("data").toString().split("@");
+                String[] strSplit = null;
+                List<WorkPriorityOrderResultData> list = new ArrayList<>();
+                WorkPriorityOrderResultData orderResultData = null;
+                for (int i = 0; i < strResult.length; i++) {
+                    orderResultData = new WorkPriorityOrderResultData();
+                    strSplit = strResult[i].split(" ");
+                    orderResultData.setSalesCnt(Double.valueOf(strSplit[1]));
+                    orderResultData.setJanCd(strSplit[0]);
+
+
+                    list.add(orderResultData);
+                }
+                workPriorityOrderResultDataMapper.update(list, companyCd, authorCd, priorityOrderCd);
+
+
+                //古いptsの平均値、最大値最小値を取得
+                FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(patternCd);
+                minFaceNum = faceNum.getFaceMinNum();
+                DecimalFormat df = new DecimalFormat("#.00");
+                //salescntAvgを取得し、小数点を2桁保持
+                Double salesCntAvg = productPowerMstMapper.getSalesCntAvg(companyCd, authorCd, priorityOrderCd);
+                String format = df.format(salesCntAvg);
+                salesCntAvg = Double.valueOf(format);
+
+                List<WorkPriorityOrderResultData> resultDatas = workPriorityOrderResultDataMapper.getResultDatas(companyCd, authorCd, priorityOrderCd);
+
+                Double d = null;
+                for (WorkPriorityOrderResultData resultData : resultDatas) {
+                    resultData.setPriorityOrderCd(priorityOrderCd);
+                    if (resultData.getSalesCnt() != null) {
+                        d = resultData.getSalesCnt() * faceNum.getFaceAvgNum() / salesCntAvg;
+
+                        if (d > faceNum.getFaceMaxNum()) {
+                            resultData.setFace(Long.valueOf(faceNum.getFaceMaxNum()));
+                        } else if (d < faceNum.getFaceMinNum()) {
+                            resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
+                        } else {
+                            resultData.setFace(d.longValue());
+                        }
+
+                    } else {
+                        resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
+                    }
+
+                }
+                workPriorityOrderResultDataMapper.updateFace(resultDatas, companyCd, authorCd);
+            }
             //属性別に並べ替える
             priorityOrderMstService.getReorder(companyCd, priorityOrderCd,productPowerCd,authorCd);
             //商品を並べる
@@ -408,24 +422,23 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 vehicleNumCache.put("PatternCdNotExist"+uuid,1);
             }
 
-            List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.getResultJans(companyCd, authorCd, priorityOrderCd);
-            List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(shelfPatternCd.intValue());
-
             Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
             Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
 
-            Map<String, List<PriorityOrderResultDataDto>> finalSetJanResultData = null;
+            Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd.intValue(), companyCd, priorityOrderCd, minFaceNum, zokuseiMsts, allCdList,
+                    restrictResult, attrList);
 
-            for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : finalSetJanResultData.entrySet()) {
-                String taiTanaKey = entry.getKey();
-                List<PriorityOrderResultDataDto> resultDataDtos = finalSetJanResultData.get(taiTanaKey);
-                workPriorityOrderResultDataMapper.updateTaiTanaBatch(companyCd, priorityOrderCd, authorCd, resultDataDtos);
+            if (MapUtils.getInteger(resultMap, "code").equals(ResultEnum.FAILURE.getCode())) {
+                vehicleNumCache.put(uuid,2);
+            }else{
+                //ptsを一時テーブルに保存
+                String tmpData = MapUtils.getString(resultMap, "data");
+                List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(tmpData, new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
+                }.getType());
+                shelfPtsService.basicSaveWorkPtsData(companyCd, authorCd, priorityOrderCd, workData);
+                vehicleNumCache.put(uuid,1);
+
             }
-
-            //ptsを一時テーブルに保存
-            shelfPtsService.saveWorkPtsData(companyCd, authorCd, priorityOrderCd);
-            vehicleNumCache.put(uuid,1);
         });
         return ResultMaps.result(ResultEnum.SUCCESS,uuid);
     }
@@ -436,20 +449,33 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    private void setPtsJandataByRestrictCd(Integer priorityOrderCd, Integer patternCd, String companyCd, String authorCd){
+    @Override
+    public Map<String, Object> autoTaskId(String taskId) {
+        if (vehicleNumCache.get("janNotExist"+taskId)!=null){
+            vehicleNumCache.remove("janNotExist"+taskId);
+            return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
+        }
+        if (vehicleNumCache.get("PatternCdNotExist"+taskId)!=null){
+            vehicleNumCache.remove("PatternCdNotExist"+taskId);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
+
+        if (vehicleNumCache.get(taskId) != null){
+            vehicleNumCache.remove(taskId);
+            if(Objects.equals(vehicleNumCache.get(taskId), 2)){
+                return ResultMaps.result(ResultEnum.FAILURE,"tana'height not enough");
+            }
+            return ResultMaps.result(ResultEnum.SUCCESS,"success");
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS,"9");
+    }
+
+    private void setPtsJandataByRestrictCd(Integer priorityOrderCd, Integer patternCd, String companyCd, String authorCd, List<Integer> attrList,
+                                           List<ZokuseiMst> zokuseiMsts, GetCommonPartsDataDto commonTableName, List<Integer> allCdList,
+                                           List<Map<String, Object>> restrictResult){
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
-        List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
-        List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
-        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-
-        String commonPartsData = workPriorityOrderMst.getCommonPartsData();
-        GetCommonPartsDataDto commonTableName = getCommonTableName(commonPartsData, companyCd);
-        List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
-        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
-
-        List<Map<String, Object>> zokuseiList = restrictResultMapper.selectJanZokusei(ptsCd, zokuseiMsts, allCdList,
+        List<Map<String, Object>> zokuseiList = restrictResultMapper.selectJanZokusei(priorityOrderCd, ptsCd, zokuseiMsts, allCdList,
                 commonTableName.getProInfoTable());
-        List<Map<String, Object>> restrictResult = restrictResultMapper.selectByPrimaryKey(priorityOrderCd);
 
         for (int i = 0; i < zokuseiList.size(); i++) {
             Map<String, Object> zokusei = zokuseiList.get(i);
@@ -462,7 +488,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     if(restrictKey.equals(zokuseiKey)){
                         equalsCount++;
                     }
-                    System.out.println("restrictKey:"+restrictKey+",zokuseiKey:"+zokuseiKey+",result:"+equalsCount);
                 }
 
                 if(equalsCount == attrList.size()){

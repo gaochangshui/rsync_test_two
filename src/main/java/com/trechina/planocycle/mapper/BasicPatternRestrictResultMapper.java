@@ -31,7 +31,7 @@ public interface BasicPatternRestrictResultMapper {
 
     int updateByPrimaryKey(BasicPatternRestrictResult record);
 
-    List<Map<String, Object>> selectJanZokusei(Integer ptsCd, List<ZokuseiMst> attrList, List<Integer> allCdList, String proInfoTable);
+    List<Map<String, Object>> selectJanZokusei(Integer priorityOrderCd, Integer ptsCd, List<ZokuseiMst> attrList, List<Integer> allCdList, String proInfoTable);
 
     void deleteFinal(String companyCd, String authorCd, Integer priorityOrderCd);
 

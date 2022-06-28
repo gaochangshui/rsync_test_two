@@ -38,5 +38,15 @@ public class BasicPatternMstController {
         return basicPatternMstService.autoCalculation(companyCd,priorityOrderCd,partition);
     }
 
+    /**
+     * 表示自動計算実行ステータス
+     * @param taskId
+     * @return
+     */
+    @GetMapping("/autoTaskId")
+    public Map<String, Object> autoTaskId(String taskId){
+        return basicPatternMstService.autoTaskId(taskId);
+    }
+
 
 }

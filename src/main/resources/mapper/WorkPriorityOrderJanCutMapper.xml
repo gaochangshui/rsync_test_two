@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.WorkPriorityOrderJanCutMapper">
+    <select id="selectJanCut" resultType="map">
+        select jan, restrict_cd as "restrictCd"
+        from planocycle.work_priority_order_cut cut
+        inner join planocycle.work_basic_pattern_restrict_result_data resultdata
+            on cut.priority_order_cd= resultdata.priority_order_cd and cut.jan_cd = resultdata.jan
+        where resultdata.priority_order_cd=#{priorityOrderCd} and not exists(select * from planocycle.work_priority_order_jan_replace replace
+        where replace.priority_order_cd=cut.priority_order_cd and replace.jan_old=cut.jan_cd)
+    </select>
+</mapper>
