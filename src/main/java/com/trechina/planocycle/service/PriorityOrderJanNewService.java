@@ -1,6 +1,5 @@
 package com.trechina.planocycle.service;
 
-import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
 import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,7 +38,7 @@ public interface PriorityOrderJanNewService {
      * @param
      * @return
      */
-    Map<String, Object> getSimilarity(PriorityOrderJanNewDto priorityOrderJanNewDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    Map<String, Object> getSimilarity(Map<String,Object> map ) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     /**
      * 新規不存在商品詳細情報
      * @param janMstPlanocycleVo

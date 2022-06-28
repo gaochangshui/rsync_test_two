@@ -1,6 +1,5 @@
 package com.trechina.planocycle.controller;
 
-import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
 import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
@@ -55,8 +54,8 @@ public class PriorityOrderJanNewController {
      * @return
      */
     @PostMapping("getSimilarity")
-    public Map<String, Object> getSimilarity(@RequestBody PriorityOrderJanNewDto priorityOrderJanNewDto) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        return priorityOrderJanNewService.getSimilarity(priorityOrderJanNewDto);
+    public Map<String, Object> getSimilarity(@RequestBody Map<String,Object> map) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        return priorityOrderJanNewService.getSimilarity(map);
     }
 
     /**

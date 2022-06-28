@@ -126,13 +126,16 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
 
     /**
      * 分類によって商品の力点数表を除いて同類の商品を抽出する
-     * @param priorityOrderJanNewVO
+     * @param
      * @return
      */
     @Override
-    public Map<String, Object> getSimilarity(PriorityOrderJanNewDto priorityOrderJanNewVO) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Map<String, Object> getSimilarity(Map<String,Object> map) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        String companyCd = map.get("companyCd").toString();
+        Integer priorityOrderCd = Integer.valueOf(map.get("priorityOrderCd").toString());
+        PriorityOrderJanNewDto priorityOrderJanNewVO= new PriorityOrderJanNewDto();
         String aud = session.getAttribute("aud").toString();
-        Integer productPowerCd = productPowerMstMapper.getProductPowerCd(priorityOrderJanNewVO.getCompanyCd(), aud,priorityOrderJanNewVO.getPriorityOrderCd());
+        Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, aud,priorityOrderCd);
         List<PriorityOrderJanNewDto> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, priorityOrderJanNewVO,aud);
         for (PriorityOrderJanNewDto productPowerDatum : productPowerData) {
             if (productPowerDatum.getJanName() == null){

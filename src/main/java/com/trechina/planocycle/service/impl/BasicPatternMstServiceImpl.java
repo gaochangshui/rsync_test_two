@@ -275,13 +275,18 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             resultMap.put(MagicString.TANA_CD, Integer.valueOf(key.split(",")[1]));
 
             List<Map<String, Object>> groups = new ArrayList<>();
+
             for (Map<String, Object> itemMap : entry.getValue()) {
                 for (String zokuseiId : zokuseiList) {
-                    String attrCd = MapUtils.getString(itemMap, zokuseiId);
-                    itemMap.put(zokuseiId.replace(MagicString.ZOKUSEI_PREFIX,"zokuseiName"), JSONObject.parseObject(itemMap.get("json").toString()).get(attrCd));
+                    if (itemMap.containsKey(zokuseiId)) {
+                        String attrCd = MapUtils.getString(itemMap, zokuseiId);
+                        itemMap.put(zokuseiId.replace(MagicString.ZOKUSEI_PREFIX, "zokuseiName"), JSONObject.parseObject(itemMap.get("json").toString()).get(attrCd));
+                    }
                 }
                 itemMap.remove("json");
-                groups.add(itemMap);
+                if (itemMap.containsKey(zokuseiList.get(0))) {
+                    groups.add(itemMap);
+                }
                 resultMap.put("groups", groups);
             }
 

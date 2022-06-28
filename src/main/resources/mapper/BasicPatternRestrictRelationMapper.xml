@@ -22,20 +22,31 @@
     </sql>
 
     <select id="selectByPrimaryKey" resultType="map">
-        select tai_cd as "taiCd",tana_cd as "tanaCd",json,
+        select 	tanamst.tai_cd as "taiCd",tanamst.tana_cd as "tanaCd",json,
                tana_position as "tanaPosition", result.restrict_cd as "restrictCd", area,value color
         <foreach collection="zokuseiList" open="," item="item" separator=",">${item}</foreach>
-        from (select restrict_cd<foreach collection="zokuseiList" open="," close="," item="item" separator=",">${item}</foreach>
+        from planocycle.work_priority_order_pts_data ptsdata
+        left join
+        planocycle.work_priority_order_pts_data_tanamst tanamst
+        on tanamst.pts_cd = ptsdata.id
+        left join planocycle.work_basic_pattern_restrict_relation relation on  relation.priority_order_cd=#{priorityOrderCd}
+            and  tanamst.tai_cd = relation.tai_cd and tanamst.tana_cd = relation.tana_cd
+        left join
+             (select restrict_cd<foreach collection="zokuseiList" open="," close="," item="item" separator=",">${item}</foreach>
                json_object_agg ( val, nm ) json from planocycle.work_basic_pattern_restrict_result result
         INNER JOIN masterdb.planocycle_zokusei_mst_data zokuseidata ON zokuseidata.class_cd = #{classCd}
         AND zokuseidata.company_cd = #{companyCd}
         <foreach collection="zokuseiList" item="item" open="and (" separator="or" close=")" > val=${item}</foreach>
         where priority_order_cd = #{priorityOrderCd}  group by restrict_cd
         <foreach collection="zokuseiList" item="item" open="," separator="," >${item}</foreach>
-        ) result inner join planocycle.work_basic_pattern_restrict_relation relation on result.restrict_cd=relation.restrict_cd
-        and relation.priority_order_cd=#{priorityOrderCd}
-        inner join planocycle.priority_order_color color on color.id=relation.restrict_cd
-        order by tai_Cd, tana_cd, tana_position
+        ) result
+        on result.restrict_cd=relation.restrict_cd
+        left join planocycle.priority_order_color color on color.id=relation.restrict_cd
+        where ptsdata.priority_order_cd = #{priorityOrderCd}
+        order by
+        tanamst.tai_Cd,
+        tanamst.tana_cd,
+        tana_position
     </select>
     <select id="getTanaAttrList" resultType="com.trechina.planocycle.entity.po.BasicPatternRestrictRelation">
         select tai_cd,tana_cd,tana_position,restrict_cd,area,priority_order_cd,company_cd
