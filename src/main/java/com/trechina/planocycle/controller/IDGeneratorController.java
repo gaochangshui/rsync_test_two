@@ -48,4 +48,14 @@ public class IDGeneratorController {
     public Map<String,Object> priorityAllID(){
         return idGeneratorService.priorityAllID();
     }
+
+    /**
+     * 基本pattern自動番号付け
+     * @return
+     */
+    @GetMapping("/getBasicPatternID")
+    public Map<String,Object> getBasicPatternID(){
+        return idGeneratorService.basicPatternIDGenerator();
+    }
+
 }

@@ -462,6 +462,15 @@
                                                              from planocycle.priority_order_pts_data_jandata
     where pts_cd = #{ptsCd} and company_cd = #{companyCd}
   </insert>
+  <insert id="updTanaSize">
+    insert into planocycle.work_priority_order_pts_data_tanamst(company_cd,pts_cd,tai_cd,tana_cd,tana_height,tana_width,tana_depth,tana_thickness
+    ,tana_type,create_time,author_cd,edit_time,editer_cd)
+    values
+    <foreach collection="ptsTanaVoList" separator="," item="item" >
+      (#{companyCd},#{id},#{item.taiCd},#{item.tanaCd},#{item.tanaHeight},#{item.tanaWidth},#{item.tanaDepth},#{item.tanaThickness}
+      ,#{item.tanaType},now(),#{authorCd},now(),#{authorCd})
+    </foreach>
+  </insert>
   <delete id="deletePtsTaimst">
     delete from planocycle.work_priority_order_pts_data_taimst where pts_cd=#{ptsCd}
   </delete>
@@ -498,7 +507,10 @@
   <delete id="deleteFinalPtsDataJandata">
     delete from planocycle.priority_order_pts_data_jandata where pts_cd=#{ptsCd}
   </delete>
-  <select id="selectPtsCdByAuthorCd" resultMap="BaseResultMap">
+    <delete id="deleteTana">
+      delete from planocycle.work_priority_order_pts_data_tanamst where pts_cd=#{id} and tai_cd = #{taiCd}
+    </delete>
+    <select id="selectPtsCdByAuthorCd" resultMap="BaseResultMap">
     select id,file_name from planocycle.work_priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
     and authorcd=#{authorCd} and shelf_pattern_cd=#{patternCd} and deleteflg=0
   </select>
@@ -560,7 +572,7 @@
       janData.tumiagesu,janData.zaikosu,janData.face_displayflg,janData.face_position,janData.depth_display_num
     from
       planocycle.work_priority_order_pts_data ptsData
-        left join
+        inner join
       planocycle.work_priority_order_pts_data_jandata janData
       on ptsData."id" =  janData.pts_cd
     where ptsData.priority_order_cd = #{priorityOrderCd}
@@ -629,5 +641,26 @@
       ${item} as ${index}
       on ${index}."1" = ${}
     </foreach>
+  </select>
+  <select id="getNewTaiNum" resultType="java.lang.Integer">
+    select count(taiMst.tai_cd) taiNum
+    from planocycle.work_priority_order_pts_data ptsData
+           left join planocycle.work_priority_order_pts_data_taimst taiMst
+                     on ptsData.id = taiMst.pts_cd
+    where ptsdata.priority_order_cd = #{priorityOrderCd}
+  </select>
+    <select id="getNewTanaNum" resultType="java.lang.Integer">
+      select count(tanaMst.tana_cd) taiNum
+      from planocycle.work_priority_order_pts_data ptsData
+             left join planocycle.work_priority_order_pts_data_tanamst tanaMst
+                       on ptsData.id = tanaMst.pts_cd
+      where ptsdata.priority_order_cd = #{priorityOrderCd}
+    </select>
+  <select id="getNewTanaWidth" resultType="java.util.Map">
+    select sum(tana_width) width,id from planocycle.work_priority_order_pts_data ptsdata
+                                  left join planocycle.work_priority_order_pts_data_tanamst tanamst
+                                            on ptsdata.id = tanamst.pts_cd
+    where ptsdata.priority_order_cd = #{priorityOrderCd}
+    group by id
   </select>
 </mapper>

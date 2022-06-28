@@ -1,5 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
@@ -7,10 +9,13 @@ import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
+import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +26,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewService {
@@ -39,6 +45,14 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     private PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
     @Autowired
     private ProductPowerMstMapper productPowerMstMapper;
+    @Autowired
+    private BasicPatternMstService basicPatternMstService;
+    @Autowired
+    private PriorityOrderMstAttrSortService priorityOrderMstAttrSortService;
+    @Autowired
+    private PriorityOrderMstMapper priorityOrderMstMapper;
+    @Autowired
+    private JanClassifyMapper janClassifyMapper;
     /**
      * 新規janListの取得
      *
@@ -76,15 +90,22 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      *
      */
     @Override
-    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        List<PriorityOrderJanNewVO> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getJanNameClassify(janCd);
+    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd, Integer priorityOrderCd,String attrList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //priorityOrderMstAttrSortMapper.updAttrSort(Arrays.asList(attrList.split(",")));
+        PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
+
+        List<Map<String, Object>> janClassify = janClassifyMapper.getColCdClassify(commonTableName.getProKaisouTable());
+        List<String> col = janClassify.stream().filter(map -> !MapUtils.getString(map, "attr").equals("jan_cd") &&
+                MapUtils.getString(map, "attr").endsWith("_cd")).map(map->MapUtils.getString(map, "sort")).collect(Collectors.toList());
+        List<PriorityOrderJanNewVO> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getDynamicJanNameClassify(commonTableName.getProInfoTable(), col, janCd);
         if (priorityOrderJanNewVOList == null){
 
             return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
         }
         List<String> listNew = new ArrayList();
         for (PriorityOrderJanNewVO priorityOrderJanNewVO : priorityOrderJanNewVOList) {
-           listNew.add( priorityOrderJanNewVO.getJanNew());
+            listNew.add( priorityOrderJanNewVO.getJanNew());
         }
         List<String> list = Arrays.asList(janCd);
         List<String> listDisparitStr = ListDisparityUtils.getListDisparitStr(list, listNew);
@@ -116,8 +137,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                     }
                 }
 
-                }
             }
+        }
         List<PriorityOrderJanNewDto> priorityOrderJanNewDtos = new ArrayList<>();
         PriorityOrderJanNewDto priorityOrderJanNewDto = null;
         for (PriorityOrderJanNewVO priorityOrderJanNewVO : priorityOrderJanNewVOList) {

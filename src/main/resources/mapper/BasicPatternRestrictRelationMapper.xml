@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.BasicPatternRestrictRelationMapper">
+
+    <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.BasicPatternRestrictRelation">
+            <result property="priorityOrderCd" column="priority_order_cd" jdbcType="BIGINT"/>
+            <result property="companyCd" column="company_cd" jdbcType="VARCHAR"/>
+            <result property="authorCd" column="author_cd" jdbcType="VARCHAR"/>
+            <result property="taiCd" column="tai_cd" jdbcType="OTHER"/>
+            <result property="tanaCd" column="tana_cd" jdbcType="OTHER"/>
+            <result property="tanaPosition" column="tana_position" jdbcType="SMALLINT"/>
+            <result property="restrictCd" column="restrict_cd" jdbcType="BIGINT"/>
+            <result property="area" column="area" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        priority_order_cd,company_cd,author_cd,
+        tai_cd,tana_cd,tana_position,
+        restrict_cd,area
+    </sql>
+
+    <select id="selectByPrimaryKey" resultType="map">
+        select tai_cd as "taiCd",tana_cd as "tanaCd",json,
+               tana_position as "tanaPosition", result.restrict_cd as "restrictCd", area,value color
+        <foreach collection="zokuseiList" open="," item="item" separator=",">${item}</foreach>
+        from (select restrict_cd<foreach collection="zokuseiList" open="," close="," item="item" separator=",">${item}</foreach>
+               json_object_agg ( val, nm ) json from planocycle.work_basic_pattern_restrict_result result
+        INNER JOIN masterdb.planocycle_zokusei_mst_data zokuseidata ON zokuseidata.class_cd = #{classCd}
+        AND zokuseidata.company_cd = #{companyCd}
+        <foreach collection="zokuseiList" item="item" open="and (" separator="or" close=")" > val=${item}</foreach>
+        where priority_order_cd = #{priorityOrderCd}  group by restrict_cd
+        <foreach collection="zokuseiList" item="item" open="," separator="," >${item}</foreach>
+        ) result inner join planocycle.work_basic_pattern_restrict_relation relation on result.restrict_cd=relation.restrict_cd
+        and relation.priority_order_cd=#{priorityOrderCd}
+        inner join planocycle.priority_order_color color on color.id=relation.restrict_cd
+        order by tai_Cd, tana_cd, tana_position
+    </select>
+
+    <delete id="deleteByPrimaryKey">
+        delete from planocycle.work_basic_pattern_restrict_relation
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+    </delete>
+    <delete id="deleteFinal">
+        delete from planocycle.basic_pattern_restrict_relation
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+    </delete>
+    <delete id="deleteTana">
+        delete from planocycle.basic_pattern_restrict_relation
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd} and tai_cd = #{taiCd}
+    </delete>
+    <insert id="insert">
+        insert into basic_pattern_restrict_relation
+        ( priority_order_cd,company_cd,author_cd
+        ,tai_cd,tana_cd,tana_position
+        ,restrict_cd,area)
+        values (#{priorityOrderCd,jdbcType=BIGINT},#{companyCd,jdbcType=VARCHAR},#{authorCd,jdbcType=VARCHAR}
+        ,#{taiCd,jdbcType=OTHER},#{tanaCd,jdbcType=OTHER},#{tanaPosition,jdbcType=SMALLINT}
+        ,#{restrictCd,jdbcType=BIGINT},#{area,jdbcType=BIGINT})
+    </insert>
+    <insert id="insertSelective">
+        insert into basic_pattern_restrict_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="priorityOrderCd != null">priority_order_cd,</if>
+                <if test="companyCd != null">company_cd,</if>
+                <if test="authorCd != null">author_cd,</if>
+                <if test="taiCd != null">tai_cd,</if>
+                <if test="tanaCd != null">tana_cd,</if>
+                <if test="tanaPosition != null">tana_position,</if>
+                <if test="restrictCd != null">restrict_cd,</if>
+                <if test="area != null">area,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="priorityOrderCd != null">#{priorityOrderCd,jdbcType=BIGINT},</if>
+                <if test="companyCd != null">#{companyCd,jdbcType=VARCHAR},</if>
+                <if test="authorCd != null">#{authorCd,jdbcType=VARCHAR},</if>
+                <if test="taiCd != null">#{taiCd,jdbcType=OTHER},</if>
+                <if test="tanaCd != null">#{tanaCd,jdbcType=OTHER},</if>
+                <if test="tanaPosition != null">#{tanaPosition,jdbcType=SMALLINT},</if>
+                <if test="restrictCd != null">#{restrictCd,jdbcType=BIGINT},</if>
+                <if test="area != null">#{area,jdbcType=BIGINT},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.BasicPatternRestrictRelation">
+        update basic_pattern_restrict_relation
+        <set>
+                <if test="priorityOrderCd != null">
+                    priority_order_cd = #{priorityOrderCd,jdbcType=BIGINT},
+                </if>
+                <if test="companyCd != null">
+                    company_cd = #{companyCd,jdbcType=VARCHAR},
+                </if>
+                <if test="authorCd != null">
+                    author_cd = #{authorCd,jdbcType=VARCHAR},
+                </if>
+                <if test="taiCd != null">
+                    tai_cd = #{taiCd,jdbcType=OTHER},
+                </if>
+                <if test="tanaCd != null">
+                    tana_cd = #{tanaCd,jdbcType=OTHER},
+                </if>
+                <if test="tanaPosition != null">
+                    tana_position = #{tanaPosition,jdbcType=SMALLINT},
+                </if>
+                <if test="restrictCd != null">
+                    restrict_cd = #{restrictCd,jdbcType=BIGINT},
+                </if>
+                <if test="area != null">
+                    area = #{area,jdbcType=BIGINT},
+                </if>
+        </set>
+        where  
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.BasicPatternRestrictRelation">
+        update basic_pattern_restrict_relation
+        set 
+            priority_order_cd =  #{priorityOrderCd,jdbcType=BIGINT},
+            company_cd =  #{companyCd,jdbcType=VARCHAR},
+            author_cd =  #{authorCd,jdbcType=VARCHAR},
+            tai_cd =  #{taiCd,jdbcType=OTHER},
+            tana_cd =  #{tanaCd,jdbcType=OTHER},
+            tana_position =  #{tanaPosition,jdbcType=SMALLINT},
+            restrict_cd =  #{restrictCd,jdbcType=BIGINT},
+            area =  #{area,jdbcType=BIGINT}
+        where  priority_order_cd =  #{priorityOrderCd,jdbcType=BIGINT},
+            company_cd =  #{companyCd,jdbcType=VARCHAR},
+            tai_cd =  #{taiCd,jdbcType=OTHER},
+            tana_cd =  #{tanaCd,jdbcType=OTHER},
+            tana_position =  #{tanaPosition,jdbcType=SMALLINT}
+    </update>
+    <update id="update">
+        update planocycle.work_basic_pattern_restrict_relation
+        set restrict_cd =  #{restrictCd,jdbcType=BIGINT},
+            area =  #{area,jdbcType=BIGINT}
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd} and tai_cd = #{taiCd}
+          and tana_cd = #{tanaCd} and tana_position = #{tanaPosition}
+    </update>
+    <insert id="setTaiInfo">
+        insert into planocycle.work_basic_pattern_restrict_relation(priority_order_cd,company_cd,
+                                                               author_cd,tai_cd,tana_cd,tana_position,restrict_cd,area)
+        values
+        <foreach collection="ptsTanaVoList" item="list" separator=",">
+               <foreach collection="list.group" item="item" separator="," >
+                   (#{priorityOrderCd,jdbcType=BIGINT},#{companyCd,jdbcType=VARCHAR},#{authorCd,jdbcType=VARCHAR}
+                   ,#{list.taiCd,jdbcType=OTHER},#{list.tanaCd,jdbcType=OTHER},#{item.tanaPosition,jdbcType=SMALLINT}
+                   ,#{item.restrictCd,jdbcType=BIGINT},#{item.area,jdbcType=BIGINT})
+               </foreach>
+        </foreach>
+    </insert>
+    <insert id="setFinalForWork">
+        insert into planocycle.basic_pattern_restrict_relation
+        select * from planocycle.work_basic_pattern_restrict_relation
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </insert>
+    <insert id="insertBatch">
+        insert into planocycle.work_basic_pattern_restrict_relation
+        ( priority_order_cd,company_cd,author_cd
+        ,tai_cd,tana_cd,tana_position
+        ,restrict_cd,area)
+        values
+            <foreach collection="lists" item="item" separator=",">
+                (#{item.priorityOrderCd,jdbcType=BIGINT},#{item.companyCd,jdbcType=VARCHAR},#{item.authorCd,jdbcType=VARCHAR}
+                ,#{item.taiCd,jdbcType=OTHER},#{item.tanaCd,jdbcType=OTHER},#{item.tanaPosition,jdbcType=SMALLINT}
+                ,#{item.restrictCd,jdbcType=BIGINT},#{item.area,jdbcType=BIGINT})
+            </foreach>
+    </insert>
+</mapper>

@@ -116,7 +116,11 @@
     where mst.company_cd = #{companyCd} and mst.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     GROUP BY product_power_cd, mst.priority_order_cd,mst.attr_option
   </select>
-  <update id="updateOrderName">
+    <select id="selectCommonPartsData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrDto">
+      select common_parts_data,priority_order_cd,company_cd  from planocycle.work_priority_order_mst
+      where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </select>
+    <update id="updateOrderName">
     update planocycle.priority_order_mst set priority_order_name=#{priorityOrderName} where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     and deleteflg=0
   </update>

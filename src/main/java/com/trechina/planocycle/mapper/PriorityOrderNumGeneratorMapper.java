@@ -12,4 +12,5 @@ public interface PriorityOrderNumGeneratorMapper {
 
     PriorityOrderNumGenerator selectByPrimaryKey(Integer id);
 
+
 }

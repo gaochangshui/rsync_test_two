@@ -1,13 +1,18 @@
 package com.trechina.planocycle.service.impl;
 
+import com.trechina.planocycle.entity.po.Zokusei;
 import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.TableTransferService;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TableTransferServiceImpl implements TableTransferService {
@@ -21,7 +26,10 @@ public class TableTransferServiceImpl implements TableTransferService {
     private JansMapper jansMapper;
     @Autowired
     private JanInfoMapper janInfoMapper;
-
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
+    @Autowired
+    private ZokuseiMstMapper zokuseiMstMapper;
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int getAreasTransfer() {
@@ -78,5 +86,89 @@ public class TableTransferServiceImpl implements TableTransferService {
             }
         }
         return 0;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void syncZokuseiMst() {
+        String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
+        String[] companyList = syncCompanyList.split(",");
+        for (String company : companyList) {
+            List<String> kaisouTableNameList = zokuseiMstMapper.selectAllKaisouTable(company);
+
+            int colIndex = 1;
+            for (String kaisouTbName : kaisouTableNameList) {
+                colIndex = 1;
+                String classCd = kaisouTbName.split("_")[1];
+                kaisouTbName = "\""+company+"\"."+kaisouTbName;
+
+                zokuseiMstMapper.deleteData(company, classCd);
+                List<Map<String, Object>> headerMap = zokuseiMstMapper.selectHeader(kaisouTbName);
+                List<Zokusei> zokuseiList = new ArrayList<>();
+                for (Map<String, Object> header : headerMap) {
+                    String col = MapUtils.getString(header, "col");
+                    if(col.endsWith("_cd")){
+                        continue;
+                    }
+                    List<Map<String, Object>> collect = headerMap.stream()
+                            .filter(map -> MapUtils.getString(map, "col").equals(col.split("_")[0]+"_cd"))
+                            .collect(Collectors.toList());
+                    if(!collect.isEmpty()){
+                        Map<String, Object> cdMap = collect.get(0);
+                        Integer colI = MapUtils.getInteger(cdMap, "sort");
+
+                        Zokusei zokusei = new Zokusei();
+                        zokusei.setZokuseiId(colIndex);
+                        zokusei.setZokuseiNm(MapUtils.getString(header, "name"));
+                        zokusei.setCompanyCd(company);
+                        zokusei.setClassCd(classCd);
+                        zokusei.setType(MapUtils.getInteger(header, "type"));
+                        zokusei.setZokuseiSort(MapUtils.getInteger(header, "sort"));
+                        zokusei.setZokuseiCol(colI);
+
+                        zokuseiList.add(zokusei);
+                        this.setZokuseiData(company, classCd, zokusei.getZokuseiId(), colI, headerMap);
+                    }
+
+                    colIndex++;
+                }
+                zokuseiMstMapper.delete(company, classCd);
+                zokuseiMstMapper.insertBatch(company, classCd, zokuseiList);
+
+                String attrTbName = "\""+company+"\".prod_"+classCd+"_jan_attr_header_sys";
+                List<Map<String, Object>> attrHeaderMap = zokuseiMstMapper.selectHeader(attrTbName);
+
+                List<Zokusei> attrZokuseiList = new ArrayList<>();
+                for (Map<String, Object> header : attrHeaderMap) {
+                    Zokusei zokusei = new Zokusei();
+                    Integer colI = MapUtils.getInteger(header, "sort");
+                    zokusei.setZokuseiId(colIndex);
+                    zokusei.setZokuseiNm(MapUtils.getString(header, "name"));
+                    zokusei.setCompanyCd(company);
+                    zokusei.setClassCd(classCd);
+                    zokusei.setType(MapUtils.getInteger(header, "type"));
+                    zokusei.setZokuseiSort(MapUtils.getInteger(header, "sort"));
+                    zokusei.setZokuseiCol(colI);
+
+                    attrZokuseiList.add(zokusei);
+                    this.setZokuseiData(company, classCd, zokusei.getZokuseiId(), colI, attrHeaderMap);
+                    colIndex++;
+                }
+                zokuseiMstMapper.insertBatch(company, classCd, attrZokuseiList);
+            }
+        }
+    }
+
+
+    public void setZokuseiData(String company,String classCd,Integer zokuseiId,Integer col, List<Map<String, Object>> headerMap){
+        List<Integer> cdList = headerMap.stream().filter(map -> MapUtils.getString(map, "col").endsWith("_cd"))
+                .map(map->MapUtils.getInteger(map, "sort")).collect(Collectors.toList());
+
+
+        if(cdList.isEmpty()){
+            zokuseiMstMapper.insertZokuseiData1(company, classCd, zokuseiId, col);
+        }else {
+            zokuseiMstMapper.insertZokuseiData(company, classCd, zokuseiId, col, cdList);
+        }
     }
 }

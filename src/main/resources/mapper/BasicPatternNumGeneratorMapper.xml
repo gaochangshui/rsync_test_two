@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.BasicPatternNumGeneratorMapper">
+    <insert id="insertBasicPattern">
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            select  currval('shelf_display.basic_pattern_num_generator_id_seq'::regclass) as id
+        </selectKey>
+        insert into shelf_display.basic_pattern_num_generator ( usercd, creattime)
+        values ( #{usercd,jdbcType=INTEGER}, now())
+    </insert>
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.BasicPatternResultMapper">
+    <select id="getAttrComposeList" resultType="java.util.Map">
+        select
+        <foreach collection="attrList" item="item" separator="," >
+            zokusei${item}
+        </foreach>
+        ,color.value as color,
+        restrict_cd as "restrictCd"
+        from planocycle.work_basic_pattern_attr_compose compose
+        left join planocycle.priority_order_color color
+        on color.id = compose.restrict_cd
+        where
+        priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and restrict_cd != 9999
+
+    </select>
+    <select id="getAttrHeaderName" resultType="java.util.Map">
+        select zokusei_id ,zokusei_nm
+        from masterdb.planocycle_zokusei_mst
+        where  zokusei_id in
+        <foreach collection="attrList" item="item" separator="," open="(" close=")">
+            #{item} ::integer
+        </foreach>
+        and company_cd = #{companyCd} and class_cd = #{classCd}
+    </select>
+
+
+</mapper>

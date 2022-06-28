@@ -59,8 +59,14 @@ public interface ShelfPtsDataMapper {
 
     //pts台数
     Integer getTaiNum(@Param("patternCd")Integer patternCd);
+    //新pts台数
+    Integer getNewTaiNum(@Param("priorityOrderCd")Integer priorityOrderCd);
     //pts総セグメント数
     Integer getTanaNum(@Param("patternCd")Integer patternCd);
+
+    Integer getNewTanaNum(@Param("priorityOrderCd")Integer priorityOrderCd);
+    //pts幅と
+    Map<String,Object> getNewTanaWidth(@Param("priorityOrderCd")Integer priorityOrderCd);
     //face数
     Integer getFaceNum(@Param("patternCd")Integer patternCd);
     //新しいface数
@@ -172,4 +178,8 @@ public interface ShelfPtsDataMapper {
             , Map<String,Object> attrTableName, List<Map<String,Object>> listAttr);
 
     List<LinkedHashMap<String, Object>> getColHeader(Map<String, Object> listTableName, List<Map<String, Object>> listAttr);
+
+    void deleteTana(Integer taiCd, Integer id);
+
+    void updTanaSize(List<PtsTanaVo> ptsTanaVoList, Integer id, String authorCd, String companyCd);
 }

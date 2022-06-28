@@ -29,29 +29,38 @@
       </collection>
     </collection>
   </resultMap>
+  <resultMap id="attrListMap" type="com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo">
+    <result column="zokusei_id" property="attrCd"/>
+    <result column="zokusei_nm" property="attrName"/>
+    <collection property="children" ofType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
+      <result column="val" property="attrCd"/>
+      <result column="nm" property="attrName"/>
+      <result column="zokusei_id" property="classifyCd"/>
+      <result column="zokusei_nm" property="classifyName"/>
+    </collection>
+  </resultMap>
   <sql id="Base_Column_List">
-    company_cd, priority_order_cd, value, sort, cd
+    company_cd, priority_order_cd, value, cd
   </sql>
+  <insert id="setAttrList">
+    insert into planocycle.work_priority_order_mst_attrsort(company_cd,priority_order_cd,value)
+    values
+  <foreach collection="attrList" separator="," item="item">
+    (#{companyCd},#{priorityOrderCd},#{item})
+  </foreach>
+  </insert>
   <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from planocycle.priority_order_mst_attrsort
+    from planocycle.work_priority_order_mst_attrsort
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
-    <select id="getAttrType" resultType="java.lang.Integer">
-    select type
-    from masterdb.zokusei_mst
-    where zokusei_id = #{attrId}
-    </select>
+
   <select id="getAttribute" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.zokusei_mst order by zokusei_sort;
+    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
   </select>
-  <select id="getAttrSort" resultType="java.lang.Integer">
-    select zokusei_sort
-    from masterdb.zokusei_mst
-    where zokusei_id = #{attrId}
-  </select>
+
   <select id="getAttrTableName" resultType="java.lang.String">
     select zokusei_tb_nm
     from masterdb.zokusei_mst
@@ -129,9 +138,17 @@
     order by ct1.val
 
   </select>
-  <select id="getAttr" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValueVo">
-    select zokusei_id as attrCd,zokusei_nm as attrName ,zokusei_tb_nm as tableName,jans_col_nm as jansColNm,zokusei_sort as sort from masterdb.zokusei_mst where type  = 0;
-  </select>
+  <select id="getAttr" resultMap="attrListMap">
+    select
+      mst.zokusei_id,
+      zokusei_nm ,
+      val ,nm
+    from
+      masterdb.planocycle_zokusei_mst  mst
+        left join masterdb.planocycle_zokusei_mst_data datas on datas.class_cd = mst.class_cd and datas.company_cd = mst.company_cd and datas.zokusei_id = mst.zokusei_id
+    where
+      mst.company_cd = #{companyCd} and mst.class_cd = #{classCd};
+</select>
   <select id="getAttrValues" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrValue">
     select datas.val as attrCd,datas.nm as attrName,datas.type as type,mst.zokusei_nm as classifyName
     from masterdb.zokusei_mst_data datas
@@ -224,13 +241,41 @@
     select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.zokusei_mst  where sort_type = 0
     order by zokusei_sort;
   </select>
-  <select id="getColNmforMst" resultType="java.lang.String">
-    select array_to_string(array_agg(jans_col_nm order by sort_num),',')
-    from planocycle.work_priority_order_sort sort
-           left join masterdb.zokusei_mst mst
-                     on mst.zokusei_id = sort.zokusei_id
-    where company_cd = #{companyCd} and  author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
 
+  <select id="getAttrList" resultType="java.lang.String">
+    select value from  planocycle.work_priority_order_mst_attrsort where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getAttrName" resultType="java.util.Map">
+    select val,nm from  masterdb.planocycle_zokusei_mst_data
+    where company_cd = #{companyCd} and class_cd = #{classCd}
+    and zokusei_id in
+    <foreach collection="attrs" separator="," item="item" open="(" close=")">
+      #{item}
+    </foreach>
+  </select>
+  <select id="getAttrDistinct" resultType="java.util.Map">
+    select DISTINCT result.zokusei${attr} as zokusei${attr},nm as "zokuseiName${attr}",
+                    round(sum(relation.area*tana_width)/${width}) as area,mst.zokusei_nm as "classifyName"
+    from planocycle.work_basic_pattern_restrict_result result
+           inner join planocycle.work_basic_pattern_restrict_relation relation
+                      on relation.restrict_cd = result.restrict_cd
+                        and result.priority_order_cd = relation.priority_order_cd
+           left join masterdb.planocycle_zokusei_mst_data mstdata
+        on zokusei${attr} = val and mstdata.class_cd = #{classCd} and mstdata.company_cd = #{companyCd}
+           left join masterdb.planocycle_zokusei_mst mst on mstdata.zokusei_id = mst.zokusei_id and mst.class_cd = #{classCd}
+      and mst.company_cd = #{companyCd}
+           left join planocycle.work_priority_order_pts_data_tanamst tanamst
+                     on tanamst.pts_cd =#{id} and tanamst.tai_cd = relation.tai_cd and tanamst.tana_cd = relation.tana_cd
+        where result.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        group by zokusei${attr},nm,mst.zokusei_nm
+  </select>
+  <select id="getColNmforMst" resultType="java.lang.String">
+    select (zokusei_col)::INTEGER as "attrSort"
+    from planocycle.work_priority_order_sort sort
+           left join masterdb.planocycle_zokusei_mst mst
+                     on mst.zokusei_id = sort.zokusei_id and mst.company_cd = #{commonTableName.prodIsCore}
+                       and mst.class_cd = #{commonTableName.prodMstClass}
+    where sort.company_cd = #{companyCd} and  sort.author_cd = #{authorCd} and sort.priority_order_cd = #{priorityOrderCd}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority.priority_order_mst_attrsort
@@ -247,6 +292,11 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
+  <delete id="deleteAttrList">
+    delete from planocycle.work_priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort">
     insert into planocycle.priority_order_mst_attrsort (company_cd, priority_order_cd, value,
       sort, cd)
@@ -256,43 +306,7 @@
       #{list.sort,jdbcType=INTEGER}, #{list.cd,jdbcType=INTEGER})
            </foreach>
   </insert>
-  <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort">
-    insert into planocycle.priority_order_mst_attrsort
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="companyCd != null">
-        company_cd,
-      </if>
-      <if test="priorityOrderCd != null">
-        priority_order_cd,
-      </if>
-      <if test="value != null">
-        value,
-      </if>
-      <if test="sort != null">
-        sort,
-      </if>
-      <if test="cd != null">
-        cd,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="companyCd != null">
-        #{companyCd,jdbcType=VARCHAR},
-      </if>
-      <if test="priorityOrderCd != null">
-        #{priorityOrderCd,jdbcType=INTEGER},
-      </if>
-      <if test="value != null">
-        #{value,jdbcType=INTEGER},
-      </if>
-      <if test="sort != null">
-        #{sort,jdbcType=INTEGER},
-      </if>
-      <if test="cd != null">
-        #{cd,jdbcType=INTEGER},
-      </if>
-    </trim>
-  </insert>
+
   <insert id="insertAttrFinal">
     insert into priority.priority_order_mst_attr
     select * from priority.work_priority_order_mst_attr

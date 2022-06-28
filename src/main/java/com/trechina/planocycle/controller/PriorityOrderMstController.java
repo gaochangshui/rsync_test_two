@@ -73,7 +73,10 @@ public class PriorityOrderMstController {
     public Map<String,Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition){
         return priorityOrderMstService.autoCalculation(companyCd,priorityOrderCd,partition);
     }
-
+    @GetMapping("/getNewReorder")
+    Map<String, Object>getNewReorder(String companyCd,Integer priorityOrderCd){
+        return priorityOrderMstService.getNewReorder(companyCd,priorityOrderCd);
+    }
     /**
      * 表示自動計算実行ステータス
      * @param taskId
@@ -133,6 +136,7 @@ public class PriorityOrderMstController {
      */
     @GetMapping("/getVariousMst")
     public Map<String,Object> getVariousMst(String companyCd,Integer priorityOrderCd,Integer flag) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+
         return priorityOrderMstService.getVariousMst(companyCd,priorityOrderCd,flag);
     }
 

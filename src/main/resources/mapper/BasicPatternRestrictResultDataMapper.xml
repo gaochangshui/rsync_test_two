@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.BasicPatternRestrictResultDataMapper">
+
+    <resultMap id="BaseResultMap" type="com.trechina.planocycle.entity.po.BasicPatternRestrictResultData">
+            <id property="restrictCd" column="restrict_cd" jdbcType="BIGINT"/>
+            <id property="priorityOrderCd" column="priority_order_cd" jdbcType="BIGINT"/>
+            <result property="companyCd" column="company_cd" jdbcType="VARCHAR"/>
+            <result property="authorCd" column="author_cd" jdbcType="VARCHAR"/>
+            <result property="face" column="face" jdbcType="BIGINT"/>
+            <result property="faceFact" column="face_fact" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        restrict_cd,priority_order_cd,company_cd,
+        author_cd,face,face_fact
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from work_basic_pattern_restrict_result_data
+        where  restrict_cd = #{restrictCd,jdbcType=BIGINT} AND priority_order_cd = #{priorityOrderCd,jdbcType=BIGINT} 
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from planocycle.work_basic_pattern_restrict_result_data
+        where  priority_order_cd = #{priorityOrderCd,jdbcType=BIGINT}
+    </delete>
+    <delete id="deleteFinal">
+        delete from planocycle.basic_pattern_restrict_result_data
+        where  priority_order_cd = #{priorityOrderCd,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert">
+        insert into work_basic_pattern_restrict_result_data
+        ( restrict_cd,priority_order_cd,company_cd
+        ,author_cd,face,face_fact
+        )
+        values (#{restrictCd,jdbcType=BIGINT},#{priorityOrderCd,jdbcType=BIGINT},#{companyCd,jdbcType=VARCHAR}
+        ,#{authorCd,jdbcType=VARCHAR},#{face,jdbcType=BIGINT},#{faceFact,jdbcType=BIGINT}
+        )
+    </insert>
+    <insert id="insertSelective">
+        insert into work_basic_pattern_restrict_result_data
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="restrictCd != null">restrict_cd,</if>
+                <if test="priorityOrderCd != null">priority_order_cd,</if>
+                <if test="companyCd != null">company_cd,</if>
+                <if test="authorCd != null">author_cd,</if>
+                <if test="face != null">face,</if>
+                <if test="faceFact != null">face_fact,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="restrictCd != null">#{restrictCd,jdbcType=BIGINT},</if>
+                <if test="priorityOrderCd != null">#{priorityOrderCd,jdbcType=BIGINT},</if>
+                <if test="companyCd != null">#{companyCd,jdbcType=VARCHAR},</if>
+                <if test="authorCd != null">#{authorCd,jdbcType=VARCHAR},</if>
+                <if test="face != null">#{face,jdbcType=BIGINT},</if>
+                <if test="faceFact != null">#{faceFact,jdbcType=BIGINT},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.BasicPatternRestrictResultData">
+        update work_basic_pattern_restrict_result_data
+        <set>
+                <if test="companyCd != null">
+                    company_cd = #{companyCd,jdbcType=VARCHAR},
+                </if>
+                <if test="authorCd != null">
+                    author_cd = #{authorCd,jdbcType=VARCHAR},
+                </if>
+                <if test="face != null">
+                    face = #{face,jdbcType=BIGINT},
+                </if>
+                <if test="faceFact != null">
+                    face_fact = #{faceFact,jdbcType=BIGINT},
+                </if>
+        </set>
+        where   restrict_cd = #{restrictCd,jdbcType=BIGINT} AND priority_order_cd = #{priorityOrderCd,jdbcType=BIGINT} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.BasicPatternRestrictResultData">
+        update work_basic_pattern_restrict_result_data
+        set 
+            company_cd =  #{companyCd,jdbcType=VARCHAR},
+            author_cd =  #{authorCd,jdbcType=VARCHAR},
+            face =  #{face,jdbcType=BIGINT},
+            face_fact =  #{faceFact,jdbcType=BIGINT}
+        where   restrict_cd = #{restrictCd,jdbcType=BIGINT} AND priority_order_cd = #{priorityOrderCd,jdbcType=BIGINT} 
+    </update>
+    <insert id="setFinalForWork">
+        insert into planocycle.basic_pattern_restrict_result_data
+        select * from   planocycle.work_basic_pattern_restrict_result_data
+        where priority_order_cd = #{priorityOrderCd,jdbcType=BIGINT}
+    </insert>
+    <insert id="insertBatch">
+        insert into planocycle.work_basic_pattern_restrict_result_data(priority_order_cd,company_cd,author_cd,jan,face,
+        restrict_cd) values
+        <foreach collection="zokuseiList" item="janItem" separator=",">
+            (#{priorityOrderCd},#{companyCd},#{authorCd},#{janItem.jan},#{janItem.faceCount},#{janItem.restrictCd})
+        </foreach>
+    </insert>
+</mapper>

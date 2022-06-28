@@ -54,6 +54,8 @@ public interface PriorityOrderMstService {
      */
     Map<String, Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition);
 
+
+
     /**
      * 表示自動計算実行ステータス
      * @param taskId
@@ -66,6 +68,15 @@ public interface PriorityOrderMstService {
      * @return
      */
     Map<String, Object>getReorder(String companyCd,Integer priorityOrderCd,Integer productPowerCd,String authorCd);
+
+    /**
+     * xin重新計算rank排序
+     * @param companyCd
+     * @param priorityOrderCd
+
+     * @return
+     */
+    Map<String, Object>getNewReorder(String companyCd,Integer priorityOrderCd);
 
     /**
      * 新規時清空対応一時表所有信息

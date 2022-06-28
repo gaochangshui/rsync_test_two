@@ -12,7 +12,6 @@ import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictRelation;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
-import com.trechina.planocycle.service.ClassicPriorityOrderMstService;
 import com.trechina.planocycle.service.CommonMstService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
@@ -173,6 +172,21 @@ public class CommonMstServiceImpl implements CommonMstService {
         return finalSetJanResultData;
     }
 
+    /**
+     * set jans for shelf
+     * @param partitionFlag
+     * @param partitionVal
+     * @param taiData
+     * @param workPriorityOrderResultData
+     * @param workPriorityOrderRestrictRelations
+     * @return
+     */
+//    @Override
+//    public Map<String, List<PriorityOrderResultDataDto>> commSetJanForShelf(Short partitionFlag, Short partitionVal,
+//        List<PtsTaiVo> taiData, List<PriorityOrderResultDataDto> workPriorityOrderResultData,
+//        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations) {
+//
+//    }
 
     /**
      * cut face数で置けるかどうか

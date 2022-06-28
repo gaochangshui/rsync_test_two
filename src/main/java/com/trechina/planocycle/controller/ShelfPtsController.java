@@ -5,6 +5,7 @@ import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
 import com.trechina.planocycle.entity.vo.PtsCsvVO;
+import com.trechina.planocycle.entity.vo.PtsTanaVo;
 import com.trechina.planocycle.service.ShelfPtsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -130,6 +131,15 @@ public class ShelfPtsController {
         return shelfPtsService.getPtsDetailData(patternCd,companyCd,priorityOrderCd);
 
     }
+    /**
+     *
+     */
+    @GetMapping("getNewPtsDetailData")
+    public  Map<String,Object> getNewPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd){
+        return shelfPtsService.getNewPtsDetailData(patternCd,companyCd,priorityOrderCd);
+
+    }
+    
 
     /**
      * 陳列順設定追加
@@ -160,5 +170,13 @@ public class ShelfPtsController {
     @PostMapping("downloadPtsCsv")
     public  void downloadPtsCsv(@RequestBody PtsCsvVO ptsCsvVO, HttpServletResponse response) throws IOException {
         shelfPtsService.downloadPtsCsv(ptsCsvVO, response);
+    }
+
+    /**
+     * 新しいpts棚段数の修正
+     */
+    @PostMapping("setPtsTanaSize")
+    public  Map<String,Object> setPtsTanaSize(@RequestBody List<PtsTanaVo> ptsTanaVoList){
+        return shelfPtsService.setPtsTanaSize(ptsTanaVoList);
     }
 }
