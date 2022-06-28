@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableMap;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.CommonPartsDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
@@ -9,16 +10,22 @@ import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.Areas;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictRelation;
+import com.trechina.planocycle.entity.po.ZokuseiMst;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommonMstService;
 import com.trechina.planocycle.utils.ResultMaps;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,6 +41,22 @@ public class CommonMstServiceImpl implements CommonMstService {
     private ProductPowerParamMstMapper productPowerParamMstMapper;
     @Autowired
     private ClassicPriorityOrderMstMapper priorityOrderMstMapper;
+    @Autowired
+    private ShelfPtsDataJandataMapper jandataMapper;
+    @Autowired
+    private BasicPatternRestrictRelationMapper restrictRelationMapper;
+
+    @Autowired
+    private WorkPriorityOrderJanCutMapper janCutMapper;
+    @Autowired
+    private WorkPriorityOrderJanNewMapper janNewMapper;
+    @Autowired
+    private PriorityOrderPtsDataMapper priorityOrderPtsDataMapper;
+    @Autowired
+    private BasicPatternRestrictResultMapper basicRestrictResultMapper;
+    @Autowired
+    private HttpSession session;
+
     @Override
     public Map<String, Object> getAreaInfo(String companyCd) {
         List<Areas> areasList = areasMapper.select(companyCd);
@@ -174,19 +197,116 @@ public class CommonMstServiceImpl implements CommonMstService {
 
     /**
      * set jans for shelf
-     * @param partitionFlag
-     * @param partitionVal
-     * @param taiData
-     * @param workPriorityOrderResultData
-     * @param workPriorityOrderRestrictRelations
      * @return
      */
-//    @Override
-//    public Map<String, List<PriorityOrderResultDataDto>> commSetJanForShelf(Short partitionFlag, Short partitionVal,
-//        List<PtsTaiVo> taiData, List<PriorityOrderResultDataDto> workPriorityOrderResultData,
-//        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations) {
-//
-//    }
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Object> commSetJanForShelf(Integer patternCd, String companyCd, Integer priorityOrderCd,
+                                                  Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
+                                                  List<Map<String, Object>> restrictResult, List<Integer> attrList) {
+        String aud = session.getAttribute("aud").toString();
+        List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd);
+        List<Map<String, Object>> relationMap = restrictRelationMapper.selectByPriorityOrderCd(priorityOrderCd);
+        List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
+        List<Map<String, Object>> cutList = janCutMapper.selectJanCut(priorityOrderCd);
+
+        //jan group relation restrict_cd
+        List<Map<String, Object>> newList = janNewMapper.selectJanNew(priorityOrderCd, zokuseiMsts, allCdList);
+        for (int i = 0; i < newList.size(); i++) {
+            Map<String, Object> zokusei = newList.get(i);
+            for (Map<String, Object> restrict : restrictResult) {
+                int equalsCount = 0;
+                for (Integer integer : attrList) {
+                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer);
+                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer);
+
+                    if(restrictKey.equals(zokuseiKey)){
+                        equalsCount++;
+                    }
+                }
+
+                if(equalsCount == attrList.size()){
+                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
+                    zokusei.put("restrictCd", restrictCd);
+                }
+            }
+
+            newList.set(i, zokusei);
+        }
+
+        Integer partitionVal = 0;
+        Integer topPartitionVal = 0;
+
+        Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd = janResult.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd));
+        Map<String, List<Map<String, Object>>> relationGroupTaiTana = relationMap.stream().collect(Collectors.groupingBy(map -> MapUtils.getInteger(map, MagicString.TAI_CD)
+                + "_" + MapUtils.getInteger(map, MagicString.TANA_CD), LinkedHashMap::new, Collectors.toList()));
+
+        List<PriorityOrderResultDataDto> adoptJan = new ArrayList<>();
+        for (Map.Entry<String, List<Map<String, Object>>> entry : relationGroupTaiTana.entrySet()) {
+            String groupKey = entry.getKey();
+            String taiCd = groupKey.split("_")[0];
+            String tanaCd = groupKey.split("_")[1];
+
+            List<Map<String, Object>> tanaMst = tanaList.stream().filter(map -> MapUtils.getString(map, MagicString.TAI_CD).equals(taiCd) &&
+                    MapUtils.getString(map, MagicString.TANA_CD).equals(tanaCd)).collect(Collectors.toList());
+            if(tanaMst.isEmpty()){
+                continue;
+            }
+
+            Map<String, Object> mst = tanaMst.get(0);
+            Integer tanaWidth = MapUtils.getInteger(mst, "tanaWidth");
+            Integer tanaHeight = MapUtils.getInteger(mst, "tanaHeight");
+
+            List<Map<String, Object>> relationList = entry.getValue();
+            for (Map<String, Object> relation : relationList) {
+                String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
+                Integer area = MapUtils.getInteger(relation, "area");
+                Integer groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).intValue();
+                Long usedArea = 0L;
+
+                List<PriorityOrderResultDataDto> jans = janResultByRestrictCd.get(restrictCd);
+                for (PriorityOrderResultDataDto jan : jans) {
+                    PriorityOrderResultDataDto newJanDto = new PriorityOrderResultDataDto();
+                    List<Map<String, Object>> cutJan = cutList.stream().filter(map -> MapUtils.getString(map, "jan").equals(jan.getJanCd())).collect(Collectors.toList());
+                    if(!cutJan.isEmpty()){
+                        List<Map<String, Object>> newJanList = newList.stream().filter(map -> MapUtils.getString(map, MagicString.RESTRICT_CD).equals(restrictCd)).collect(Collectors.toList());
+                        if(newJanList.isEmpty()){
+                            continue;
+                        }
+
+                        Map<String, Object> newJan = newJanList.get(0);
+                        newJanDto.setJanCd(MapUtils.getString(newJan, "jan"));
+                        newJanDto.setFace(MapUtils.getLong(newJan, "face"));
+                        newJanDto.setRestrictCd(MapUtils.getLong(newJan, MagicString.RESTRICT_CD));
+                        newJanDto.setJanWidth(MapUtils.getLong(newJan, "width"));
+                        newJanDto.setJanHeight(MapUtils.getLong(newJan, "height"));
+                    }else{
+                        BeanUtils.copyProperties(jan, newJanDto);
+                    }
+
+                    Long width = jan.getJanWidth();
+                    Long face = jan.getFace();
+                    Long janWidth = width + partitionVal;
+                    Long janHeight = jan.getJanHeight() + topPartitionVal;
+
+                    if(janHeight>tanaHeight){
+                        return ImmutableMap.of(ResultEnum.FAILURE.name(), "height not enough");
+                    }
+
+                    if(janWidth*face + usedArea <= groupArea){
+                        usedArea += janWidth*face;
+                    }else{
+                        boolean setJanByCutFace = isSetJanByCutFace(adoptJan, area, usedArea, partitionVal, minFace, newJanDto);
+                        if(setJanByCutFace){
+                            adoptJan.add(newJanDto);
+                            usedArea+=newJanDto.getJanWidth()*newJanDto.getFaceFact()+partitionVal;
+                        }
+                    }
+                }
+            }
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS, adoptJan);
+    }
 
     /**
      * cut face数で置けるかどうか

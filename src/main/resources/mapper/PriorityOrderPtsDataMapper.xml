@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderPtsDataMapper">
+    <select id="selectTanaMstByPatternCd" resultType="map">
+        select tai_cd "taiCd", tana_cd "tanaCd", tana_height "tanaHeight", tana_width "tanaWidth" from planocycle.priority_order_pts_data_tanamst tanamst
+        inner join planocycle.priority_order_pts_data ptsdata on ptsdata.id=tanamst.pts_cd
+        where shelf_pattern_cd=#{shelfPatternCd} and priority_order_cd=#{priorityOrderCd}
+    </select>
+    <insert id="insertBatch">
+        insert into planocycle.priority_order_pts_data_jandata()
+    </insert>
+</mapper>

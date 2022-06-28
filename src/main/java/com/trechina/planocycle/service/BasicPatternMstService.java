@@ -16,4 +16,6 @@ public interface BasicPatternMstService {
     Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd, Integer partition);
 
     Map<String, Object> setAttrDisplay( BasicPatternRestrictRelation basicPatternRestrictRelation);
+
+    Map<String, Object> autoTaskId(String taskId);
 }

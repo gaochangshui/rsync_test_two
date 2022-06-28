@@ -2,10 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
-import com.trechina.planocycle.entity.dto.ShelfPtsDto;
-import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
-import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -497,6 +494,51 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
         List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(workPriorityOrderResultData);
+
+        //既存の新しいptsを検出し,削除してから保存する
+        //新しいptsにデータがあるptsCd
+        ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectWorkPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
+        //テンポラリ・テーブルのptscd
+        Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
+
+        PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
+                .withPriorityOrderCd(priorityOrderCd)
+                .withOldPtsCd(ptsCd)
+                .withCompanyCd(companyCd)
+                .withAuthorCd(authorCd).build();
+
+        if(Optional.ofNullable(shelfPtsData).isPresent()){
+            Integer oldPtsCd = shelfPtsData.getId();
+            shelfPtsDataMapper.deletePtsData(oldPtsCd);
+            shelfPtsDataMapper.deletePtsTaimst(oldPtsCd);
+            shelfPtsDataMapper.deletePtsTanamst(oldPtsCd);
+            shelfPtsDataMapper.deletePtsVersion(oldPtsCd);
+            shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
+        }
+
+        ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
+        String modeName = shelfPtsDataVersion.getModename();
+        //modeNameはptsをダウンロードするファイル名として
+        priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
+        //既存のptsからデータをクエリーする
+        shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
+        Integer id = priorityOrderPtsDataDto.getId();
+        shelfPtsDataMapper.insertPtsTaimst(ptsCd, id, authorCd);
+        shelfPtsDataMapper.insertPtsTanamst(ptsCd, id, authorCd);
+        shelfPtsDataMapper.insertPtsVersion(ptsCd, id, authorCd);
+
+        if (!positionResultData.isEmpty()) {
+            shelfPtsDataMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
+        }
+    }
+
+    @Override
+    public void basicSaveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, List<WorkPriorityOrderResultDataDto> resultData) {
+        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
+
+        //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
+        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(resultData);
 
         //既存の新しいptsを検出し,削除してから保存する
         //新しいptsにデータがあるptsCd

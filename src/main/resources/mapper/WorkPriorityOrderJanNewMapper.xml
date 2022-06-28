@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.WorkPriorityOrderJanNewMapper">
+    <select id="selectJanNew" resultType="map">
+        select jan, restrict_cd as "restrictCd",face,sku_rank,jan_rank, width, height
+        <foreach collection="attrList" item="item1" open="," separator=",">
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">"${item1.zokuseiCol}"</if>
+            <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
+                <foreach collection="allCdList" item="item2" separator="|| '_' ||">
+                    <if test="item2 &lt;= item1.zokuseiCol">
+                        "${item2}"
+                    </if>
+                </foreach>
+            </if>
+            as "zokusei${item1.zokuseiId}"
+        </foreach>
+        from planocycle.work_priority_order_jan_new new
+        inner join planocycle.work_priority_order_result_data resultdata
+            on new.priority_order_cd= resultdata.priority_order_cd and new.jan_cd = resultdata.jan
+        inner join ${proInfoTable} janinfo on  janinfo."1"=jandata.jan
+        inner join planocycle.work_basic_pattern_restrict_result restrictresult on restrictresult.priority_order_cd = resultdata.priority_order_cd
+        inner join masterdb.jan_mst janmst on janmst.jan_cd = new.jan_new
+        where resultdata.priority_order_cd=#{priorityOrderCd} order by sku_rank,jan_rank
+    </select>
+</mapper>
