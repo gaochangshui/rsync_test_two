@@ -6,9 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
-import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
@@ -31,6 +29,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -99,6 +98,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         WorkPriorityOrderMst priorityOrderMst = new WorkPriorityOrderMst();
         BeanUtils.copyProperties(autoDetectVO, priorityOrderMst);
         priorityOrderMst.setAuthorCd(aud);
+        priorityOrderMst.setShelfPatternCd((long)shelfPatternCd);
 
         workPriorityOrderMstMapper.deleteByAuthorCd(autoDetectVO.getCompanyCd(), aud, autoDetectVO.getPriorityOrderCd());
         workPriorityOrderMstMapper.insert(priorityOrderMst);
