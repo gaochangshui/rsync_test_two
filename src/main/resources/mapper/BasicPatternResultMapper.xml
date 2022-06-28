@@ -12,7 +12,7 @@
         left join planocycle.priority_order_color color
         on color.id = compose.restrict_cd
         where
-        priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and restrict_cd != 9999
 
     </select>
     <select id="getAttrHeaderName" resultType="java.util.Map">

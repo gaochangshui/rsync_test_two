@@ -136,7 +136,7 @@ public class PriorityOrderMstController {
      */
     @GetMapping("/getVariousMst")
     public Map<String,Object> getVariousMst(String companyCd,Integer priorityOrderCd,Integer flag) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        
+
         return priorityOrderMstService.getVariousMst(companyCd,priorityOrderCd,flag);
     }
 
