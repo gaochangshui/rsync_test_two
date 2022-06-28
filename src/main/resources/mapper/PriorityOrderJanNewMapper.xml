@@ -84,18 +84,16 @@
 
     </delete>
 
-    <select id="selectJanNew" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
-        select news.jan_new as janCd, COALESCE(jans.jan_nm, mstpl.jan_nm) as janName,COALESCE(jans.scat1cd_val, mstpl.scat1cd_val) as zokusei1
-             ,COALESCE(jans.scat2cd_val, mstpl.scat2cd_val) as zokusei2
-             ,COALESCE(jans.scat3cd_val, mstpl.scat3cd_val) as zokusei3,COALESCE(jans.scat4cd_val, mstpl.scat4cd_val) as zokusei4,news.jan_rank as rank
+    <select id="selectJanNew" resultType="map">
+        select news.jan_new as janCd,news.jan_rank as rank,
+                <foreach collection="list" item="item" separator=",">
+                    "${item.zokusei_col}" as zokuseiName${item.zokusei_id}
+                </foreach>
         from planocycle.work_priority_order_jan_new news
-                 left join  masterdb.jan_mst jans
-                on news.jan_new = jans.jan_cd
-        left join masterdb.jan_mst_planocycle mstpl
-                  on news.jan_new = mstpl.jan_cd
+                 left join  "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info jans
+                on news.jan_new = jans."1"
         where news.company_cd = #{companyCd,jdbcType=VARCHAR}
           and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-
         order by janCd
   </select>
     <select id="selectJanNewNotExistsMst" resultType="map">
@@ -227,6 +225,16 @@
         from masterdb.jan_mst_planocycle
         where jan_cd = #{item.janCd} and company_cd = #{companyCd}
 </select>
+    <select id="getDynamicJanNameClassify" resultType="map">
+        select "1" as "janNew","2" as "janName",
+               <foreach collection="col" item="item" separator=",">
+                   "${item.zokusei_col}" as zokuseiName${item.zokusei_id}
+               </foreach>
+        from ${tableName} where "1" in
+        <foreach collection="janNew" separator="," item="item" open="(" close=")">
+            trim(#{item})
+        </foreach>
+    </select>
     <delete id="deleteByAuthorCd">
         delete from planocycle.priority_order_jan_new where
         company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

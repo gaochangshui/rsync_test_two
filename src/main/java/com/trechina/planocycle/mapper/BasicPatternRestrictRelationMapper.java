@@ -3,6 +3,7 @@ package com.trechina.planocycle.mapper;
 import com.trechina.planocycle.entity.po.BasicPatternRestrictRelation;
 import com.trechina.planocycle.entity.vo.PtsTanaVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ public interface BasicPatternRestrictRelationMapper {
     int insertBatch(List<Map<String, Object>> lists);
 
 
-    int update(BasicPatternRestrictRelation record);
+    int update(@Param("item") BasicPatternRestrictRelation record,@Param("authorCd")String authorCd);
 
     void deleteFinal(String companyCd, String authorCd, Integer priorityOrderCd);
 
@@ -40,5 +41,13 @@ public interface BasicPatternRestrictRelationMapper {
 
     void deleteTana(Integer taiCd, String companyCd, Integer priorityOrderCd);
 
+    void deleteTanas(Integer taiCd,Integer tanaCd, String companyCd, Integer priorityOrderCd);
+
     void setTaiInfo(List<PtsTanaVo> ptsTanaVoList,String companyCd, Integer priorityOrderCd,String authorCd);
+
+    List<BasicPatternRestrictRelation> getTanaAttrList(@Param("item") BasicPatternRestrictRelation basicPatternRestrictRelation);
+
+    void deleteForTanaPosition(@Param("item") BasicPatternRestrictRelation basicPatternRestrictRelation);
+
+    void updateTanaPosition(@Param("list") List<BasicPatternRestrictRelation> tanaAttrList,@Param("authorCd")String authorCd);
 }

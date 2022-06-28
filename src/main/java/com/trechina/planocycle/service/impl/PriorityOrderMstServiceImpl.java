@@ -971,18 +971,18 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd, aud);
         if (flag == 0) {
             //取得janNew情報
-            Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
-            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanNew.get("data"));
+            //Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
+            //return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanNew.get("data"));
         }
         if (flag == 2) {
             ////取得janCut情報
-            List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd, priorityOrderCd);
-            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCut);
+            //List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd, priorityOrderCd);
+            //return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCut);
         }
         if (flag == 1) {
             //取得jan変情報
-            List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd, priorityOrderCd);
-            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplace);
+            //List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd, priorityOrderCd);
+            //return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplace);
         }
         return ResultMaps.result(ResultEnum.FAILURE);
     }

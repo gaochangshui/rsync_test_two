@@ -1,10 +1,14 @@
 package com.trechina.planocycle.service.impl;
 
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanCard;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanCardVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.PriorityOrderDataMapper;
 import com.trechina.planocycle.mapper.PriorityOrderJanCardMapper;
+import com.trechina.planocycle.mapper.WorkPriorityOrderMstMapper;
+import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.PriorityOrderJanCardService;
 import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -30,6 +34,10 @@ public class PriorityOrderJanCardServiceImpl implements PriorityOrderJanCardServ
 
     @Autowired
     private PriorityOrderDataMapper priorityOrderDataMapper;
+    @Autowired
+    private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
+    @Autowired
+    private BasicPatternMstService basicPatternMstService;
     /**
      * card商品リストを取得
      *
@@ -40,7 +48,10 @@ public class PriorityOrderJanCardServiceImpl implements PriorityOrderJanCardServ
     @Override
     public Map<String, Object> getPriorityOrderJanCard(String companyCd, Integer priorityOrderCd) {
         logger.info("つかむ取card商品list参数:{}{}{}",companyCd,",",priorityOrderCd);
-        List<PriorityOrderJanCardVO> priorityOrderJanCardVOS = priorityOrderJanCardMapper.selectJanCard(companyCd, priorityOrderCd);
+        String authorCd = session.getAttribute("aud").toString();
+        WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd,priorityOrderCd);
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(priorityOrderMst.getCommonPartsData(), companyCd);
+        List<PriorityOrderJanCardVO> priorityOrderJanCardVOS = priorityOrderJanCardMapper.selectJanCard(companyCd, priorityOrderCd,commonTableName);
         logger.info("つかむ取card商品list返回値：{}",priorityOrderJanCardVOS);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCardVOS);
     }

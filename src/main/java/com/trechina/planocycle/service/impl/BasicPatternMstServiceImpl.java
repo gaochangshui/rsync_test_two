@@ -6,7 +6,9 @@ import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.*;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
@@ -29,7 +31,6 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -279,13 +280,18 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             resultMap.put(MagicString.TANA_CD, Integer.valueOf(key.split(",")[1]));
 
             List<Map<String, Object>> groups = new ArrayList<>();
+
             for (Map<String, Object> itemMap : entry.getValue()) {
                 for (String zokuseiId : zokuseiList) {
-                    String attrCd = MapUtils.getString(itemMap, zokuseiId);
-                    itemMap.put(zokuseiId.replace(MagicString.ZOKUSEI_PREFIX,"zokuseiName"), JSONObject.parseObject(itemMap.get("json").toString()).get(attrCd));
+                    if (itemMap.containsKey(zokuseiId)) {
+                        String attrCd = MapUtils.getString(itemMap, zokuseiId);
+                        itemMap.put(zokuseiId.replace(MagicString.ZOKUSEI_PREFIX, "zokuseiName"), JSONObject.parseObject(itemMap.get("json").toString()).get(attrCd));
+                    }
                 }
                 itemMap.remove("json");
-                groups.add(itemMap);
+                if (itemMap.containsKey(zokuseiList.get(0))) {
+                    groups.add(itemMap);
+                }
                 resultMap.put("groups", groups);
             }
 
@@ -444,8 +450,29 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> setAttrDisplay( BasicPatternRestrictRelation basicPatternRestrictRelation) {
-        //restrictRelationMapper.update(basicPatternRestrictRelation);
+        String authorCd = session.getAttribute("aud").toString();
+        String companyCd = basicPatternRestrictRelation.getCompanyCd();
+        Long priorityOrderCd = basicPatternRestrictRelation.getPriorityOrderCd();
+        restrictRelationMapper.deleteForTanaPosition(basicPatternRestrictRelation);
+        if (basicPatternRestrictRelation.getRestrictCd()!= null){
+            restrictRelationMapper.update(basicPatternRestrictRelation,authorCd);
+        }else {
+            List<BasicPatternRestrictRelation> tanaAttrList = restrictRelationMapper.getTanaAttrList(basicPatternRestrictRelation);
+            if (tanaAttrList.isEmpty()){
+                return ResultMaps.result(ResultEnum.SUCCESS);
+            }
+            int i = 1;
+            for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
+                patternRestrictRelation.setTanaPosition(i++);
+            }
+            Integer taiCd = Integer.valueOf(basicPatternRestrictRelation.getTaiCd().toString());
+            Integer tanaCd = Integer.valueOf(basicPatternRestrictRelation.getTanaCd().toString());
+            restrictRelationMapper.deleteTanas(taiCd,tanaCd,companyCd,priorityOrderCd.intValue());
+            restrictRelationMapper.updateTanaPosition(tanaAttrList,authorCd);
+        }
+
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
