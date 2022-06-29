@@ -40,7 +40,7 @@ public interface PriorityOrderJanNewMapper {
 
     List<Map<String,Object>> getProductPowerData(@Param("productPowerCd")Integer productPowerCd
             , @Param("attrMap") List<Map<String,Object>> attrMap,@Param("authorCd")String authorCd
-            ,@Param("tableName") String tableName,@Param("priorityOrderCd")Integer priorityOrderCd);
+            ,@Param("tableName") String tableName,@Param("priorityOrderCd")Integer priorityOrderCd,String janCd);
 
     PriorityOrderJanNewDto getProductForWork( @Param("item") PriorityOrderJanNewDto priorityOrderJanNewVO,@Param("companyCd")String companyCd);
 

@@ -166,7 +166,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                 }
             }
         }
-        List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, list,aud,commonTableName.getProInfoTable(),priorityOrderCd);
+        List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, list,aud,commonTableName.getProInfoTable(),priorityOrderCd,janCd);
 
       map.put("janCd",janCd);
       map.put("rank",rankResult);
