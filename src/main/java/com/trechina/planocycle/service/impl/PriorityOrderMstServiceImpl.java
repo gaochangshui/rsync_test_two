@@ -618,8 +618,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      * @return
      */
     @Override
-    public Map<String, Object> getNewReorder(String companyCd, Integer priorityOrderCd) {
-        String authorCd = session.getAttribute("aud").toString();
+    public Map<String, Object> getNewReorder(String companyCd, Integer priorityOrderCd, String authorCd) {
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
 
         String commonPartsData = workPriorityOrderMst.getCommonPartsData();

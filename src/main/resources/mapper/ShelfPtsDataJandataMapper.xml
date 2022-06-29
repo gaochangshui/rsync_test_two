@@ -287,12 +287,12 @@
   </select>
   <select id="selectJanByPatternCd" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
     select jan "janCd", sku_rank,"restrictCd",face, width janWidth,height janHeight,irisu from
-    (select coalesce(jan_new, jan) jan, sku_rank, restrict_cd "restrictCd", face from planocycle.shelf_pts_data_jandata jandata left join
+    (select coalesce(jan_new, jandata.jan) jan, sku_rank, restrict_cd "restrictCd", face from planocycle.shelf_pts_data_jandata jandata left join
     planocycle.work_basic_pattern_restrict_result_data resultdata on resultdata.jan=jandata.jan
     and resultdata.priority_order_cd=#{priorityOrderCd} and resultdata.company_cd=#{companyCd} and resultdata.author_cd=#{authorCd}
     left join planocycle.work_priority_order_jan_replace janreplace on janreplace.jan_old=janreplace.jan_new
     and janreplace.company_cd=resultdata.company_cd and resultdata.author_cd=janreplace.author_cd
     and resultdata.priority_order_cd=janreplace.priority_order_cd
-    order sku_rank) tmp left join masterdb.jan_mst janmst on janmst.jan_cd=tmp.jan
+    order by sku_rank) tmp left join masterdb.jan_mst janmst on janmst.jan_cd=tmp.jan
   </select>
 </mapper>

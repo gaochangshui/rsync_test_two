@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.ImmutableMap;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.CommonPartsDto;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.Areas;
@@ -203,15 +204,15 @@ public class CommonMstServiceImpl implements CommonMstService {
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> commSetJanForShelf(Integer patternCd, String companyCd, Integer priorityOrderCd,
                                                   Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
-                                                  List<Map<String, Object>> restrictResult, List<Integer> attrList) {
-        String aud = session.getAttribute("aud").toString();
+                                                  List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
+                                                  GetCommonPartsDataDto commonTableName) {
         List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd);
         List<Map<String, Object>> relationMap = restrictRelationMapper.selectByPriorityOrderCd(priorityOrderCd);
         List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
         List<Map<String, Object>> cutList = janCutMapper.selectJanCut(priorityOrderCd);
 
         //jan group relation restrict_cd
-        List<Map<String, Object>> newList = janNewMapper.selectJanNew(priorityOrderCd, zokuseiMsts, allCdList);
+        List<Map<String, Object>> newList = janNewMapper.selectJanNew(priorityOrderCd, allCdList, zokuseiMsts, commonTableName.getProInfoTable());
         for (int i = 0; i < newList.size(); i++) {
             Map<String, Object> zokusei = newList.get(i);
             for (Map<String, Object> restrict : restrictResult) {

@@ -76,7 +76,7 @@ public interface PriorityOrderMstService {
 
      * @return
      */
-    Map<String, Object>getNewReorder(String companyCd,Integer priorityOrderCd);
+    Map<String, Object> getNewReorder(String companyCd, Integer priorityOrderCd, String authorCd);
 
     /**
      * 新規時清空対応一時表所有信息
