@@ -214,7 +214,7 @@
     <select id="getDynamicJanNameClassify" resultType="map">
         select "1" as "janCd","2" as "janName",
                <foreach collection="col" item="item" separator=",">
-                   "${item.zokusei_col}" as zokuseiName${item.zokusei_id}
+                   "${item.zokusei_col}" as "zokuseiName${item.zokusei_id}"
                </foreach>
         from ${tableName} where "1" in
         <foreach collection="janNew" separator="," item="item" open="(" close=")">
