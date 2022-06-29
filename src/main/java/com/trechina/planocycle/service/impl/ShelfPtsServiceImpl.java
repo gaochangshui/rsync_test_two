@@ -331,20 +331,21 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         shelfPtsDataMapper.insertPtsVersion(ptsCd, newId, authorCd);
 
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
-        ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));
-        ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(patternCd));
-        ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(patternCd));
-        ptsDetailData.setSkuNum(shelfPtsDataMapper.getSkuNum(patternCd));
 
-        List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
-        List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
-        List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
         if (ptsDetailData != null){
+            ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));
+            ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(patternCd));
+            ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(patternCd));
+            ptsDetailData.setSkuNum(shelfPtsDataMapper.getSkuNum(patternCd));
+
+            List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
+            List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
+            List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
+
             ptsDetailData.setPtsTaiList(taiData);
             ptsDetailData.setPtsTanaVoList(tanaData);
             ptsDetailData.setPtsJanDataList(janData);
         }
-
 
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }

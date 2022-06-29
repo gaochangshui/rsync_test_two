@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -154,6 +155,14 @@ class PlanoCycleApiApplicationTests {
 
     @Test
     public  void test8(){
-        //priorityOrderMstService.getNewReorder("0001",12345,846,"10215814");
+        List<Map<String,Object>> map1 =new ArrayList<>();
+        map1.add(new HashMap(){{put("rank",1);put("jan","1");put("flag",1);}});
+        map1.add(new HashMap(){{put("rank",2);put("jan","2");put("flag",1);}});
+        map1.add(new HashMap(){{put("rank",3);put("jan","3");put("flag",1);}});
+        map1.add(new HashMap(){{put("rank",1);put("jan","1");put("flag",2);}});
+        map1.add(new HashMap(){{put("rank",2);put("jan","2");put("flag",2);}});
+        map1.add(new HashMap(){{put("rank",3);put("jan","3");put("flag",2);}});
+
+        System.out.println(map1);
     }
 }
