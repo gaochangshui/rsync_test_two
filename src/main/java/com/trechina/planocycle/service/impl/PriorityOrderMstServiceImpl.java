@@ -630,13 +630,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         List<WorkPriorityOrderResultData> reorder = null;
         if (colNmforMst.isEmpty()) {
-            workPriorityOrderResultDataMapper.getProductReorder(companyCd,authorCd,workPriorityOrderMst.getProductPowerCd(),priorityOrderCd);
+            reorder = workPriorityOrderResultDataMapper.getProductReorder(companyCd,authorCd,workPriorityOrderMst.getProductPowerCd(),priorityOrderCd);
         }else if (colNmforMst.size() == 1) {
             reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), null);
         } else if (colNmforMst.size() == 2){
             reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), colNmforMst.get(1));
         }
-        
+
         workPriorityOrderResultDataMapper.setSortRank(reorder, companyCd, authorCd, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

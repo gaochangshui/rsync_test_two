@@ -38,7 +38,9 @@ public interface PriorityOrderJanNewMapper {
     List<PriorityOrderJanNewVO> getJanNameClassify(@Param("janNew") String [] janNew);
     List<PriorityOrderJanNewVO> getJanNameClass(@Param("janNew") String [] janNew,@Param("companyCd")String companyCd);
 
-    List<PriorityOrderJanNewDto> getProductPowerData(@Param("productPowerCd")Integer productPowerCd, @Param("item") PriorityOrderJanNewDto priorityOrderJanNewVO,@Param("authorCd")String authorCd);
+    List<Map<String,Object>> getProductPowerData(@Param("productPowerCd")Integer productPowerCd
+            , @Param("attrMap") List<Map<String,Object>> attrMap,@Param("authorCd")String authorCd,@Param("tableName") String tableName);
+
     PriorityOrderJanNewDto getProductForWork( @Param("item") PriorityOrderJanNewDto priorityOrderJanNewVO,@Param("companyCd")String companyCd);
 
     List<PriorityOrderJanNewDto> getJanNew(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);

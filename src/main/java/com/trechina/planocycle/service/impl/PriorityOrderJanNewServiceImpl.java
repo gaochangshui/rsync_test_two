@@ -2,8 +2,6 @@ package com.trechina.planocycle.service.impl;
 
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
 import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -22,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -133,35 +130,45 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     public Map<String, Object> getSimilarity(Map<String,Object> map) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String companyCd = map.get("companyCd").toString();
         Integer priorityOrderCd = Integer.valueOf(map.get("priorityOrderCd").toString());
-        PriorityOrderJanNewDto priorityOrderJanNewVO= new PriorityOrderJanNewDto();
         String aud = session.getAttribute("aud").toString();
+        PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
         Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, aud,priorityOrderCd);
-        List<PriorityOrderJanNewDto> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, priorityOrderJanNewVO,aud);
-        for (PriorityOrderJanNewDto productPowerDatum : productPowerData) {
-            if (productPowerDatum.getJanName() == null){
-                PriorityOrderJanNewDto productForWork = priorityOrderJanNewMapper.getProductForWork(productPowerDatum, priorityOrderJanNewVO.getCompanyCd());
-                productPowerDatum.setJanName(productForWork.getJanName());
-                productPowerDatum.setZokusei1(productForWork.getZokusei1());
-                productPowerDatum.setZokusei2(productForWork.getZokusei2());
-                productPowerDatum.setZokusei3(productForWork.getZokusei3());
-                productPowerDatum.setZokusei4(productForWork.getZokusei4());
-            }
+        map.remove("companyCd");
+        map.remove("priorityOrderCd");
+        List<Map<String,Object>> list = new ArrayList<>();
+        for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+            Map<String,Object> newMap = new HashMap<>();
+           newMap.put("zokuseiId",stringObjectEntry.getKey().split("zokusei")[1]);
+           newMap.put("zokuseiValue",stringObjectEntry.getValue());
+           list.add(newMap);
         }
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
-        Class clazz = PriorityOrderJanNewDto.class;
-        for (int i = 1; i <= 4; i++) {
-            Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
-
-            Method setMethod = clazz.getMethod("set"+"Zokusei"+i, String.class);
-            for (PriorityOrderJanNewDto priorityOrderJanNewDto : productPowerData) {
-                for (PriorityOrderAttrValueDto attrValue : attrValues) {
-                    if (getMethod.invoke(priorityOrderJanNewDto)!=null&&getMethod.invoke(priorityOrderJanNewDto).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
-                        setMethod.invoke(priorityOrderJanNewDto,attrValue.getNm());
-                    }
-
-                }
-            }
-        }
+        List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, list,aud,commonTableName.getProInfoTable());
+        //for (PriorityOrderJanNewDto productPowerDatum : productPowerData) {
+        //    if (productPowerDatum.getJanName() == null){
+        //        PriorityOrderJanNewDto productForWork = priorityOrderJanNewMapper.getProductForWork(productPowerDatum, priorityOrderJanNewVO.getCompanyCd());
+        //        productPowerDatum.setJanName(productForWork.getJanName());
+        //        productPowerDatum.setZokusei1(productForWork.getZokusei1());
+        //        productPowerDatum.setZokusei2(productForWork.getZokusei2());
+        //        productPowerDatum.setZokusei3(productForWork.getZokusei3());
+        //        productPowerDatum.setZokusei4(productForWork.getZokusei4());
+        //    }
+        //}
+        //List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
+        //Class clazz = PriorityOrderJanNewDto.class;
+        //for (int i = 1; i <= 4; i++) {
+        //    Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
+        //
+        //    Method setMethod = clazz.getMethod("set"+"Zokusei"+i, String.class);
+        //    for (PriorityOrderJanNewDto priorityOrderJanNewDto : productPowerData) {
+        //        for (PriorityOrderAttrValueDto attrValue : attrValues) {
+        //            if (getMethod.invoke(priorityOrderJanNewDto)!=null&&getMethod.invoke(priorityOrderJanNewDto).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
+        //                setMethod.invoke(priorityOrderJanNewDto,attrValue.getNm());
+        //            }
+        //
+        //        }
+        //    }
+        //}
 
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerData);
     }
