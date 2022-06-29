@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,6 +51,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
     private WorkPriorityOrderJanNewAttrMapper workPriorityOrderJanNewAttrMapper;
+    @Autowired
+    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     /**
      * 新規janListの取得
      *
@@ -60,12 +61,13 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      * @return
      */
     @Override
-    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo,String attrList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo) {
 
             logger.info("つかむ取新規商品list参数：{}{}{}",companyCd,",",priorityOrderCd);
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
-        List<Integer> attrs = Arrays.stream(attrList.split(",")).map(Integer::parseInt).collect(Collectors.toList());
+        List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
+        List<Integer> attrs = attrList.stream().map(Integer::parseInt).collect(Collectors.toList());
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrs, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
         List<Map<String,Object>> priorityOrderJanNewVOS = priorityOrderJanNewMapper.selectJanNew(companyCd,priorityOrderCd,commonTableName,zokuseiCol);
             logger.info("つかむ取新規商品list返回結果集b：{}",priorityOrderJanNewVOS);
@@ -78,13 +80,12 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      *
      */
     @Override
-    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd, Integer priorityOrderCd,String attrList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd, Integer priorityOrderCd) {
         String authorCd = session.getAttribute("aud").toString();
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
-        List<Integer> attrs = Arrays.stream(attrList.split(",")).map(Integer::parseInt).collect(Collectors.toList());
-        workPriorityOrderJanNewAttrMapper.deleteWork(companyCd,priorityOrderCd);
-        workPriorityOrderJanNewAttrMapper.insert(attrs,companyCd,priorityOrderCd,authorCd);
+        List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
+        List<Integer> attrs = attrList.stream().map(Integer::parseInt).collect(Collectors.toList());
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrs, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
         List<Map<String,Object>> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getDynamicJanNameClassify(commonTableName.getProInfoTable(), zokuseiCol, janCd);
         List<String> listNew = new ArrayList();
@@ -132,7 +133,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      * @return
      */
     @Override
-    public Map<String, Object> getSimilarity(Map<String,Object> map) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Map<String, Object> getSimilarity(Map<String,Object> map) {
         String companyCd = map.get("companyCd").toString();
         Integer priorityOrderCd = Integer.valueOf(map.get("priorityOrderCd").toString());
         String aud = session.getAttribute("aud").toString();
