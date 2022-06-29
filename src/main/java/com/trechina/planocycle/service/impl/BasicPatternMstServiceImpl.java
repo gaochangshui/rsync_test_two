@@ -7,9 +7,12 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
+import com.trechina.planocycle.entity.dto.FaceNumDataDto;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
+import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
-import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.BasicPatternMstService;
@@ -455,17 +458,21 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = basicPatternRestrictRelation.getCompanyCd();
         Long priorityOrderCd = basicPatternRestrictRelation.getPriorityOrderCd();
-        restrictRelationMapper.deleteForTanaPosition(basicPatternRestrictRelation);
         if (basicPatternRestrictRelation.getRestrictCd()!= null){
+            restrictRelationMapper.deleteForTanaPosition(basicPatternRestrictRelation);
             restrictRelationMapper.update(basicPatternRestrictRelation,authorCd);
         }else {
             List<BasicPatternRestrictRelation> tanaAttrList = restrictRelationMapper.getTanaAttrList(basicPatternRestrictRelation);
-            if (tanaAttrList.isEmpty()){
-                return ResultMaps.result(ResultEnum.SUCCESS);
-            }
-            int i = 1;
-            for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
-                patternRestrictRelation.setTanaPosition(i++);
+            if (tanaAttrList.size()>1){
+                tanaAttrList = tanaAttrList.stream()
+                        .filter(item -> !item.getTanaPosition().equals(basicPatternRestrictRelation.getTanaPosition())).collect(Collectors.toList());
+                int i = 1;
+                for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
+                    patternRestrictRelation.setTanaPosition(i++);
+                }
+
+            }else {
+                tanaAttrList.get(0).setRestrictCd(9999L);
             }
             Integer taiCd = Integer.valueOf(basicPatternRestrictRelation.getTaiCd().toString());
             Integer tanaCd = Integer.valueOf(basicPatternRestrictRelation.getTanaCd().toString());

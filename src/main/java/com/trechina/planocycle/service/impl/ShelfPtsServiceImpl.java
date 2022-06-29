@@ -318,7 +318,13 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         //modeNameはptsをダウンロードするファイル名として
         priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
         //既存のptsからデータをクエリーする
-        shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
+        if (id != null){
+            priorityOrderPtsDataDto.setId(id);
+            shelfPtsDataMapper.insertPtsData1(priorityOrderPtsDataDto);
+        }else {
+            shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
+        }
+
         Integer newId = priorityOrderPtsDataDto.getId();
         shelfPtsDataMapper.insertPtsTaimst(ptsCd, newId, authorCd);
         shelfPtsDataMapper.insertPtsTanamst(ptsCd, newId, authorCd);
