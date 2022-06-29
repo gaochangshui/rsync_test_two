@@ -211,6 +211,27 @@ public class CommonMstServiceImpl implements CommonMstService {
         List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
         List<Map<String, Object>> cutList = janCutMapper.selectJanCut(priorityOrderCd);
 
+        Integer currentTaiCd=1;
+        for (int i = 0; i < tanaList.size(); i++) {
+            Map<String, Object> tana = tanaList.get(i);
+
+            Integer taiCd = MapUtils.getInteger(tana, MagicString.TAI_CD);
+
+            if(i==(tanaList.size()-1)){
+                tana.put("height", MapUtils.getInteger(tana, "taiHeight")-MapUtils.getInteger(tana, "tanaHeight"));
+                continue;
+            }
+
+            Map<String, Object> nextTana = tanaList.get(i + 1);
+            Integer nextTaiCd = MapUtils.getInteger(nextTana, MagicString.TAI_CD);
+            if(!Objects.equals(currentTaiCd, nextTaiCd)){
+                tana.put("height", MapUtils.getInteger(tana, "taiHeight")-MapUtils.getInteger(tana, "tanaHeight"));
+            }else{
+                tana.put("height", MapUtils.getInteger(nextTana, "tanaHeight")-MapUtils.getInteger(tana, "tanaHeight")-MapUtils.getInteger(tana, "tanaThickness"));
+            }
+            currentTaiCd = taiCd;
+        }
+
         //jan group relation restrict_cd
         List<Map<String, Object>> newList = janNewMapper.selectJanNew(priorityOrderCd, allCdList, zokuseiMsts, commonTableName.getProInfoTable());
         for (int i = 0; i < newList.size(); i++) {
@@ -256,7 +277,7 @@ public class CommonMstServiceImpl implements CommonMstService {
 
             Map<String, Object> mst = tanaMst.get(0);
             Integer tanaWidth = MapUtils.getInteger(mst, "tanaWidth");
-            Integer tanaHeight = MapUtils.getInteger(mst, "tanaHeight");
+            Integer tanaHeight = MapUtils.getInteger(mst, "height");
 
             List<Map<String, Object>> relationList = entry.getValue();
             for (Map<String, Object> relation : relationList) {
@@ -265,7 +286,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 Integer groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).intValue();
                 Long usedArea = 0L;
 
-                List<PriorityOrderResultDataDto> jans = janResultByRestrictCd.get(restrictCd);
+                List<PriorityOrderResultDataDto> jans = janResultByRestrictCd.get(Long.valueOf(restrictCd));
                 for (PriorityOrderResultDataDto jan : jans) {
                     PriorityOrderResultDataDto newJanDto = new PriorityOrderResultDataDto();
                     List<Map<String, Object>> cutJan = cutList.stream().filter(map -> MapUtils.getString(map, "jan").equals(jan.getJanCd())).collect(Collectors.toList());
@@ -278,11 +299,15 @@ public class CommonMstServiceImpl implements CommonMstService {
                         Map<String, Object> newJan = newJanList.get(0);
                         newJanDto.setJanCd(MapUtils.getString(newJan, "jan"));
                         newJanDto.setFace(MapUtils.getLong(newJan, "face"));
+                        newJanDto.setTaiCd(MapUtils.getInteger(newJan, "taiCd"));
+                        newJanDto.setTanaCd(MapUtils.getInteger(newJan, "tanaCd"));
+                        newJanDto.setFaceFact(MapUtils.getLong(newJan, "face"));
                         newJanDto.setRestrictCd(MapUtils.getLong(newJan, MagicString.RESTRICT_CD));
                         newJanDto.setJanWidth(MapUtils.getLong(newJan, "width"));
                         newJanDto.setJanHeight(MapUtils.getLong(newJan, "height"));
                     }else{
                         BeanUtils.copyProperties(jan, newJanDto);
+                        newJanDto.setFaceFact(jan.getFace());
                     }
 
                     Long width = jan.getJanWidth();
@@ -290,12 +315,13 @@ public class CommonMstServiceImpl implements CommonMstService {
                     Long janWidth = width + partitionVal;
                     Long janHeight = jan.getJanHeight() + topPartitionVal;
 
-                    if(janHeight>tanaHeight){
-                        return ImmutableMap.of(ResultEnum.FAILURE.name(), "height not enough");
-                    }
+//                    if(janHeight>tanaHeight){
+//                        return ImmutableMap.of(ResultEnum.FAILURE.name(), "height not enough");
+//                    }
 
                     if(janWidth*face + usedArea <= groupArea){
-                        usedArea += janWidth*face;
+                        usedArea += janWidth*face + partitionVal;
+                        adoptJan.add(newJanDto);
                     }else{
                         boolean setJanByCutFace = isSetJanByCutFace(adoptJan, area, usedArea, partitionVal, minFace, newJanDto);
                         if(setJanByCutFace){
