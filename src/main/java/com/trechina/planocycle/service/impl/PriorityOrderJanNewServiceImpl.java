@@ -90,7 +90,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         List<Map<String,Object>> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getDynamicJanNameClassify(commonTableName.getProInfoTable(), zokuseiCol, janCd);
         List<String> listNew = new ArrayList();
         for (Map<String,Object> priorityOrderJanNewVO : priorityOrderJanNewVOList) {
-            listNew.add( priorityOrderJanNewVO.get("janNew").toString());
+            listNew.add( priorityOrderJanNewVO.get("janCd").toString());
         }
         List<String> list = Arrays.asList(janCd);
         List<String> listDisparitStr = ListDisparityUtils.getListDisparitStr(list, listNew);
