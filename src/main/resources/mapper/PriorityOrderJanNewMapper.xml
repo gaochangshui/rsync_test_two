@@ -85,7 +85,7 @@
     </delete>
 
     <select id="selectJanNew" resultType="map">
-        select news.jan_new as "janCd",news.jan_rank as "rank","2" as "janName"
+        select news.jan_new as "janCd",news.jan_rank as "rank","2" as "janName",
                 <foreach collection="list" item="item" separator=",">
                     "${item.zokusei_col}" as "zokuseiName${item.zokusei_id}"
                 </foreach>
@@ -94,7 +94,7 @@
                 on news.jan_new = jans."1"
         where news.company_cd = #{companyCd,jdbcType=VARCHAR}
           and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-        order by janCd
+        order by "janCd"
   </select>
     <select id="selectJanNewNotExistsMst" resultType="map">
         select '' as jan_old,news.jan_new,'' as sku

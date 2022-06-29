@@ -159,10 +159,22 @@ class PlanoCycleApiApplicationTests {
         map1.add(new HashMap(){{put("rank",1);put("jan","1");put("flag",1);}});
         map1.add(new HashMap(){{put("rank",2);put("jan","2");put("flag",1);}});
         map1.add(new HashMap(){{put("rank",3);put("jan","3");put("flag",1);}});
-        map1.add(new HashMap(){{put("rank",1);put("jan","1");put("flag",2);}});
-        map1.add(new HashMap(){{put("rank",2);put("jan","2");put("flag",2);}});
-        map1.add(new HashMap(){{put("rank",3);put("jan","3");put("flag",2);}});
+        List<Map<String,Object>> map2 = new ArrayList<>();
+        map2.add(new HashMap(){{put("rank",1);put("jan","1");put("flag",2);}});
+        map2.add(new HashMap(){{put("rank",2);put("jan","2");put("flag",2);}});
+        map2.add(new HashMap(){{put("rank",3);put("jan","3");put("flag",2);}});
+
+        for (Map<String, Object> objectMap : map2) {
+            map1.add(Integer.valueOf(objectMap.get("rank").toString())-1,objectMap);
+        }
+
+        int i =1;
+        for (Map<String, Object> objectMap : map1) {
+            objectMap.put("rank",i++);
+        }
 
         System.out.println(map1);
+
+
     }
 }
