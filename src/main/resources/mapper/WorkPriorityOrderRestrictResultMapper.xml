@@ -181,15 +181,29 @@
   </select>
   <select id="getProductPowerData" resultType="com.trechina.planocycle.entity.dto.ProductPowerDataDto">
 
-    select
-      resultdata.jan as janCd,row_number() over(order by rank_result) as resultRank
-    from
-      planocycle.shelf_pts_data  ptsdata
-        left join
-      planocycle.shelf_pts_data_jandata jandata
-      on ptsdata.id = jandata.pts_cd
-        left join planocycle.product_power_mst_data mstdata
-                  on jandata.jan = mstdata.jan and mstdata.product_power_cd =#{productPowerCd}
-     where ptsdata.shelf_pattern_cd = #{patternCd}
+    select jan_new as janNew,"row_number"() over(order by rank_result,jan_new) as rankResult from (
+                                                                            select
+           COALESCE(replaces.jan_new,jandata.jan) as jan_new, case when rank_result is null then 9999 else rank_result end rank_result
+         from
+           planocycle.shelf_pts_data  ptsdata
+             left join
+           planocycle.shelf_pts_data_jandata jandata
+           on ptsdata.id = jandata.pts_cd
+             left join planocycle.product_power_mst_data mstdata
+                       on jandata.jan = mstdata.jan and mstdata.product_power_cd =#{productPowerCd}
+             left join planocycle.work_priority_order_jan_replace replaces
+                       on replaces.jan_old = mstData.jan  and replaces.company_cd = #{companyCd} and  replaces.priority_order_cd = #{priorityOrderCd}
+         where ptsdata.shelf_pattern_cd = #{patternCd}
+
+           and not EXISTS(select * from  planocycle.work_priority_order_cut card where jandata.jan = card.jan_cd  and card.company_cd = #{companyCd}
+              and card.priority_order_cd = #{priorityOrderCd})
+           and not exists (select jan_new from planocycle.work_priority_order_jan_new janNews where jandata.jan = janNews.jan_new and  janNews.priority_order_cd = #{priorityOrderCd}
+                and janNews.company_cd =#{companyCd})
+         union
+         select jan_new,jan_rank
+         from planocycle.work_priority_order_jan_new janNews where   janNews.priority_order_cd = #{priorityOrderCd}
+              and janNews.company_cd = #{companyCd}	)as datas
+
+
   </select>
 </mapper>

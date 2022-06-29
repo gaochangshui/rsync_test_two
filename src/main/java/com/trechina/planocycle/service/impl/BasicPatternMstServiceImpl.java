@@ -330,39 +330,15 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             //まず社員番号に従ってワークシートのデータを削除します
             workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
             //制約条件の取得
-            List<WorkPriorityOrderRestrictResult> resultList = workPriorityOrderRestrictResultMapper.getResultList(companyCd, authorCd, priorityOrderCd);
-            // 1.制約条件で該当商品を探す
-            for (WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult : resultList) {
-                List<ProductPowerDataDto> newList = new ArrayList<>();
-                workPriorityOrderRestrictResult.setPriorityOrderCd(priorityOrderCd);
-                List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData( companyCd, productPowerCd, authorCd,patternCd);
-
-                for (ProductPowerDataDto productPowerDatum : productPowerData) {
-
-                    if (productPowerDatum.getJanNew() != null) {
-                        productPowerDatum.setJan(productPowerDatum.getJanNew());
-                    }
-                    if (productPowerDatum.getRankNewResult()!=null){
-                        productPowerDatum.setRankResult(productPowerDatum.getRankNewResult());
-                    }
+            List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData( companyCd
+                    ,priorityOrderCd, productPowerCd, authorCd,patternCd);
+                if (!productPowerData.isEmpty()) {
+                    workPriorityOrderResultDataMapper.setResultDataList(productPowerData, companyCd, authorCd, priorityOrderCd);
                 }
-                for (ProductPowerDataDto productPowerDatum : productPowerData) {
-                    newList.add(productPowerDatum);
-                    if (newList.size() % 1000 == 0 && !newList.isEmpty()) {
-                        workPriorityOrderResultDataMapper.setResultDataList(newList, workPriorityOrderRestrictResult.getRestrictCd(), companyCd, authorCd, priorityOrderCd);
-                        newList.clear();
-
-                    }
-                }
-                if (!newList.isEmpty()) {
-                    workPriorityOrderResultDataMapper.setResultDataList(newList, workPriorityOrderRestrictResult.getRestrictCd(), companyCd, authorCd, priorityOrderCd);
-                }
-
-            }
 
             String resultDataList = workPriorityOrderResultDataMapper.getResultDataList(companyCd, authorCd, priorityOrderCd);
             if (resultDataList == null) {
-                //return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
+              
                 vehicleNumCache.put("janNotExist"+uuid,1);
             }
             String[] array = resultDataList.split(",");
