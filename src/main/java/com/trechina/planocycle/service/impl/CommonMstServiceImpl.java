@@ -205,7 +205,7 @@ public class CommonMstServiceImpl implements CommonMstService {
     public Map<String, Object> commSetJanForShelf(Integer patternCd, String companyCd, Integer priorityOrderCd,
                                                   Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
                                                   List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
-                                                  GetCommonPartsDataDto commonTableName) {
+                                                  GetCommonPartsDataDto commonTableName, short partitionVal, short topPartitionVal) {
         List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd);
         List<Map<String, Object>> relationMap = restrictRelationMapper.selectByPriorityOrderCd(priorityOrderCd);
         List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
@@ -256,13 +256,11 @@ public class CommonMstServiceImpl implements CommonMstService {
             newList.set(i, zokusei);
         }
 
-        Integer partitionVal = 0;
-        Integer topPartitionVal = 0;
-
         Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd = janResult.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd));
         Map<String, List<Map<String, Object>>> relationGroupTaiTana = relationMap.stream().collect(Collectors.groupingBy(map -> MapUtils.getInteger(map, MagicString.TAI_CD)
                 + "_" + MapUtils.getInteger(map, MagicString.TANA_CD), LinkedHashMap::new, Collectors.toList()));
 
+        List<Map<String, Object>> noRestrictList = new ArrayList<>();
         List<PriorityOrderResultDataDto> adoptJan = new ArrayList<>();
         for (Map.Entry<String, List<Map<String, Object>>> entry : relationGroupTaiTana.entrySet()) {
             String groupKey = entry.getKey();
@@ -280,14 +278,22 @@ public class CommonMstServiceImpl implements CommonMstService {
             Integer tanaHeight = MapUtils.getInteger(mst, "height");
 
             List<Map<String, Object>> relationList = entry.getValue();
+            relationList = relationList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, MagicString.RESTRICT_CD))).collect(Collectors.toList());
             for (Map<String, Object> relation : relationList) {
                 String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
+                if(restrictCd.equals(MagicString.NO_RESTRICT_CD+"")){
+                    noRestrictList.add(relation);
+                    continue;
+                }
                 Integer area = MapUtils.getInteger(relation, "area");
                 Integer groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).intValue();
                 Long usedArea = 0L;
 
                 List<PriorityOrderResultDataDto> jans = janResultByRestrictCd.get(Long.valueOf(restrictCd));
                 for (PriorityOrderResultDataDto jan : jans) {
+                    if(Objects.equals(jan.getAdoptFlag(), 1)){
+                        continue;
+                    }
                     PriorityOrderResultDataDto newJanDto = new PriorityOrderResultDataDto();
                     List<Map<String, Object>> cutJan = cutList.stream().filter(map -> MapUtils.getString(map, "jan").equals(jan.getJanCd())).collect(Collectors.toList());
                     if(!cutJan.isEmpty()){
@@ -315,17 +321,23 @@ public class CommonMstServiceImpl implements CommonMstService {
                     Long janWidth = width + partitionVal;
                     Long janHeight = jan.getJanHeight() + topPartitionVal;
 
-//                    if(janHeight>tanaHeight){
+//                    if(janHeight+topPartitionVal>tanaHeight){
 //                        return ImmutableMap.of(ResultEnum.FAILURE.name(), "height not enough");
 //                    }
 
                     if(janWidth*face + usedArea <= groupArea){
                         usedArea += janWidth*face + partitionVal;
+                        newJanDto.setTaiCd(Integer.parseInt(taiCd));
+                        newJanDto.setTanaCd(Integer.parseInt(tanaCd));
                         adoptJan.add(newJanDto);
+                        jan.setAdoptFlag(1);
                     }else{
                         boolean setJanByCutFace = isSetJanByCutFace(adoptJan, area, usedArea, partitionVal, minFace, newJanDto);
                         if(setJanByCutFace){
+                            newJanDto.setTaiCd(Integer.parseInt(taiCd));
+                            newJanDto.setTanaCd(Integer.parseInt(tanaCd));
                             adoptJan.add(newJanDto);
+                            jan.setAdoptFlag(1);
                             usedArea+=newJanDto.getJanWidth()*newJanDto.getFaceFact()+partitionVal;
                         }
                     }

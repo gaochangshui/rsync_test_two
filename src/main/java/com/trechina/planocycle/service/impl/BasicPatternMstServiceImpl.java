@@ -128,7 +128,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         }
         List<BasicPatternRestrictResult> basicPatternRestrictResults = new ArrayList<>(classify.values());
         BasicPatternRestrictResult result = new BasicPatternRestrictResult();
-        result.setRestrictCd(9999L);
+        result.setRestrictCd(MagicString.NO_RESTRICT_CD);
         result.setAuthorCd(aud);
         result.setCompanyCd(companyCd);
         result.setPriorityOrderCd((long)priorityOrderCd);
@@ -408,9 +408,14 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
             Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
             Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
+            if(partitionFlag.equals(0)){
+                partitionVal = 0;
+            }
+            Short topPartitionVal = 0;
 
-            Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd.intValue(), companyCd, priorityOrderCd, minFaceNum, zokuseiMsts, allCdList,
-                    restrictResult, attrList, authorCd, commonTableName);
+            Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd.intValue(), companyCd, priorityOrderCd,
+                    minFaceNum, zokuseiMsts, allCdList,
+                    restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal);
 
             if (MapUtils.getInteger(resultMap, "code").equals(ResultEnum.FAILURE.getCode())) {
                 vehicleNumCache.put(uuid,2);
