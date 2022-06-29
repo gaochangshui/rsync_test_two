@@ -50,6 +50,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     private JanClassifyMapper janClassifyMapper;
     @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
+    @Autowired
+    private WorkPriorityOrderJanNewAttrMapper workPriorityOrderJanNewAttrMapper;
     /**
      * 新規janListの取得
      *
@@ -77,9 +79,12 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      */
     @Override
     public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd, Integer priorityOrderCd,String attrList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        String authorCd = session.getAttribute("aud").toString();
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
         List<Integer> attrs = Arrays.stream(attrList.split(",")).map(Integer::parseInt).collect(Collectors.toList());
+        workPriorityOrderJanNewAttrMapper.deleteWork(companyCd,priorityOrderCd);
+        workPriorityOrderJanNewAttrMapper.insert(attrs,companyCd,priorityOrderCd,authorCd);
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrs, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
         List<Map<String,Object>> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getDynamicJanNameClassify(commonTableName.getProInfoTable(), zokuseiCol, janCd);
         List<String> listNew = new ArrayList();
@@ -133,17 +138,31 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         String aud = session.getAttribute("aud").toString();
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
+
         Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, aud,priorityOrderCd);
         map.remove("companyCd");
         map.remove("priorityOrderCd");
+
+
         List<Map<String,Object>> list = new ArrayList<>();
+        List<Integer> attrList = new ArrayList();
         for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
             Map<String,Object> newMap = new HashMap<>();
            newMap.put("zokuseiId",stringObjectEntry.getKey().split("zokusei")[1]);
            newMap.put("zokuseiValue",stringObjectEntry.getValue());
            list.add(newMap);
+           attrList.add(Integer.valueOf(stringObjectEntry.getKey().split("zokusei")[1]));
         }
-        List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, list,aud,commonTableName.getProInfoTable());
+        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        for (Map<String, Object> objectMap : list) {
+            for (Map<String, Object> stringObjectMap : zokuseiCol) {
+                if (objectMap.get("zokuseiId").equals(stringObjectMap.get("zokusei_id")+"")){
+                    objectMap.put("zokuseiCol",stringObjectMap.get("zokusei_col"));
+                }
+            }
+        }
+        List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, list,aud,commonTableName.getProInfoTable(),priorityOrderCd);
+
         //for (PriorityOrderJanNewDto productPowerDatum : productPowerData) {
         //    if (productPowerDatum.getJanName() == null){
         //        PriorityOrderJanNewDto productForWork = priorityOrderJanNewMapper.getProductForWork(productPowerDatum, priorityOrderJanNewVO.getCompanyCd());

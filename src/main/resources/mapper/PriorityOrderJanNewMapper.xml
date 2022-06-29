@@ -157,19 +157,34 @@
         </foreach>
     </select>
     <select id="getProductPowerData" resultType="map">
-        select jan,"2",
-               <foreach collection="attrMap" separator="," index="index">
-                   "${index}"
+        select jan as "janCd","2" as "janName",rank_result as "rankResult",
+               <foreach collection="attrMap" separator="," item="item">
+                   "${item.zokuseiCol}" as "zokusei${item.zokuseiId}"
                </foreach>
         from
             planocycle.product_power_mst_data mstdata
-                left join "1000".prod_0000_jan_info janinfo
+                left join ${tableName} janinfo
                           on janinfo."1" = mstdata.jan
         where mstdata.product_power_cd =#{productPowerCd}
-            <foreach collection="attrMap" item="item" index="index">
-                and janinfo."${index}" = #{item}
+            <foreach collection="attrMap" item="item">
+                and janinfo."${item.zokuseiCol}" = #{item.zokuseiValue}
             </foreach>
-
+        and not exists (select jan_new from planocycle.work_priority_order_jan_new janNew where janNew.jan_new = mstdata.jan
+          and janNew.priority_order_cd = #{priorityOrderCd}
+        )
+        union
+        select jan_new ,"2" ,jan_rank ,
+        <foreach collection="attrMap" separator="," item="item">
+            "${item.zokuseiCol}" as "zokusei${item.zokuseiId}"
+        </foreach>
+        from planocycle.work_priority_order_jan_new janNew
+        left join ${tableName} janinfo
+        on janinfo."1" = janNew.jan_new
+        where janNew.priority_order_cd = #{priorityOrderCd}
+        <foreach collection="attrMap" item="item">
+            and janinfo."${item.zokuseiCol}" = #{item.zokuseiValue}
+        </foreach>
+        order by "rankResult","janCd"
     </select>
     <select id="getJanNewInfo" resultType="com.trechina.planocycle.entity.vo.JanMstPlanocycleVo">
         select jan_cd as janCd,jan_nm as janName,tanka,tanni,width,height,depth,scatnm,scat1cd as zokusei1,scat2cd as zokusei2,scat3cd as zokusei3

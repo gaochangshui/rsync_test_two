@@ -77,8 +77,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Autowired
     private WorkPriorityOrderSortMapper workPriorityOrderSortMapper;
     @Autowired
-    private WorkPriorityOrderSortRankMapper workPriorityOrderSortRankMapper;
-    @Autowired
     private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
     @Autowired
     private PriorityOrderJanNewMapper priorityOrderJanNewMapper;
@@ -663,8 +661,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
         //Sortテーブルをクリア
         workPriorityOrderSortMapper.delete(companyCd, authorCd, priorityOrderCd);
-        //SortRankテーブルをクリア
-        workPriorityOrderSortRankMapper.delete(companyCd, authorCd, priorityOrderCd);
         //janNewテーブルをクリア
         priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
         //クリアjan_replace
@@ -820,7 +816,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderRestrictSetMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         workPriorityOrderResultDataMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         workPriorityOrderSortMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
-        workPriorityOrderSortRankMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         workPriorityOrderSpaceMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
 
         //ptsIdの取得
