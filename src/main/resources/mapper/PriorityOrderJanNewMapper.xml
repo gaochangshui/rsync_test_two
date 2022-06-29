@@ -85,9 +85,9 @@
     </delete>
 
     <select id="selectJanNew" resultType="map">
-        select news.jan_new as janCd,news.jan_rank as rank,
+        select news.jan_new as "janCd",news.jan_rank as "rank","2" as "janName"
                 <foreach collection="list" item="item" separator=",">
-                    "${item.zokusei_col}" as zokuseiName${item.zokusei_id}
+                    "${item.zokusei_col}" as "zokuseiName${item.zokusei_id}"
                 </foreach>
         from planocycle.work_priority_order_jan_new news
                  left join  "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info jans
@@ -157,9 +157,9 @@
         </foreach>
     </select>
     <select id="getProductPowerData" resultType="map">
-        select jan as "janCd","2" as "janName",rank_result as "rankResult",
+        select jan as "janCd","2" as "janName",rank_result as rank,
                <foreach collection="attrMap" separator="," item="item">
-                   "${item.zokuseiCol}" as "zokusei${item.zokuseiId}"
+                   "${item.zokuseiCol}" as "zokuseiName${item.zokuseiId}"
                </foreach>
         from
             planocycle.product_power_mst_data mstdata
@@ -184,7 +184,7 @@
         <foreach collection="attrMap" item="item">
             and janinfo."${item.zokuseiCol}" = #{item.zokuseiValue}
         </foreach>
-        order by "rankResult","janCd"
+        order by rank,"janCd"
     </select>
     <select id="getJanNewInfo" resultType="com.trechina.planocycle.entity.vo.JanMstPlanocycleVo">
         select jan_cd as janCd,jan_nm as janName,tanka,tanni,width,height,depth,scatnm,scat1cd as zokusei1,scat2cd as zokusei2,scat3cd as zokusei3
