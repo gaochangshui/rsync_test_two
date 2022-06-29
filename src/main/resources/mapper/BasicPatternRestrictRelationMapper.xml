@@ -56,7 +56,7 @@
     </select>
     <select id="selectByPriorityOrderCd" resultType="map">
         select tai_cd "taiCd",tana_cd "tanaCd",tana_position "tanaPosition",restrict_cd "restrictCd",area "area"
-        from planocycle.work_basic_pattern_strict_relation relation where priority_order_cd=#{priorityOrderCd}
+        from planocycle.work_basic_pattern_restrict_relation relation where priority_order_cd=#{priorityOrderCd}
     </select>
     <delete id="deleteByPrimaryKey">
         delete from planocycle.work_basic_pattern_restrict_relation

@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.dto.CommonPartsDto;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictRelation;
@@ -42,7 +43,8 @@ public interface CommonMstService {
     @Transactional(rollbackFor = Exception.class)
     Map<String, Object> commSetJanForShelf(Integer patternCd, String companyCd, Integer priorityOrderCd,
                                            Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
-                                           List<Map<String, Object>> restrictResult, List<Integer> attrList);
+                                           List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
+                                           GetCommonPartsDataDto commonTableName);
 
     List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData);
 

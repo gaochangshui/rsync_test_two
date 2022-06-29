@@ -420,7 +420,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 workPriorityOrderResultDataMapper.updateFace(resultDatas, companyCd, authorCd);
             }
             //属性別に並べ替える
-            priorityOrderMstService.getReorder(companyCd, priorityOrderCd,productPowerCd,authorCd);
+            priorityOrderMstService.getNewReorder(companyCd, priorityOrderCd, authorCd);
             //商品を並べる
             WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
             Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
@@ -435,7 +435,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
 
             Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd.intValue(), companyCd, priorityOrderCd, minFaceNum, zokuseiMsts, allCdList,
-                    restrictResult, attrList);
+                    restrictResult, attrList, authorCd, commonTableName);
 
             if (MapUtils.getInteger(resultMap, "code").equals(ResultEnum.FAILURE.getCode())) {
                 vehicleNumCache.put(uuid,2);
@@ -519,7 +519,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer);
                     String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer);
 
-                    if(restrictKey.equals(zokuseiKey)){
+                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
                         equalsCount++;
                     }
                 }
