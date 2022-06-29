@@ -635,7 +635,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         } else if (colNmforMst.size() == 2){
             reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), colNmforMst.get(1));
         }
-        
+
         workPriorityOrderResultDataMapper.setSortRank(reorder, companyCd, authorCd, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

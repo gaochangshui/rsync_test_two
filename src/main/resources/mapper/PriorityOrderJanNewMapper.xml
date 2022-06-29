@@ -156,48 +156,19 @@
             trim(#{item})
         </foreach>
     </select>
-    <select id="getProductPowerData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
-        select datas.jan as janCd,datas.sku_name as janName ,datas.classify_big as zokusei1,datas.classify_middle as zokusei2,datas.classify_small as zokusei3,datas.classify_fine as zokusei4,datas.rank_result as rank
-        from planocycle.product_power_mst_data datas
-        where datas.classify_big = #{item.zokusei1} and datas.classify_middle = #{item.zokusei2} and datas.classify_small = #{item.zokusei3}
-        and product_power_cd = #{productPowerCd} and datas.jan != #{item.janCd}
-        and not exists (select jan_new from planocycle.work_priority_order_jan_new janNew where janNew.jan_new = datas.jan
-                        and janNew.author_cd = #{authorCd} and janNew.company_cd = #{item.companyCd} and janNew.priority_order_cd = #{item.priorityOrderCd}
-        )
-        union
-        select janNew.jan_new as janCd,mst.jan_nm as janName, data1.nm as zokusei1,data2.nm as zokusei2,data3.nm as zokusei3,scat4cd_val as zokusei4,janNew.jan_rank as rank
-        from planocycle.work_priority_order_jan_new janNew
-                 left join
-             masterdb.jan_mst mst
-             on mst.jan_cd = janNew.jan_new
-                 left join masterdb.zokusei_mst_data data1
-                           on mst.scat1cd_val = data1.val
-                 left join masterdb.zokusei_mst_data data2
-                           on mst.scat2cd_val = data2.val
-                 left join masterdb.zokusei_mst_data data3
-                           on mst.scat3cd_val = data3.val
-                 left join masterdb.zokusei_mst_data data4
-                           on  mst.scat4cd_val = data4.val
-        where janNew.company_cd = #{item.companyCd} and janNew.author_cd=#{authorCd} and janNew.priority_order_cd = #{item.priorityOrderCd} and janNew.jan_new != #{item.janCd}
-            and data1.nm = #{item.zokusei1} and data2.nm = #{item.zokusei2} and data3.nm = #{item.zokusei3}
-        union
-        select
-            janNew.jan_new as janCd,mst.jan_nm as janName, data1.nm as zokusei1,data2.nm as zokusei2,data3.nm as zokusei3,scat4cd_val as zokusei4,janNew.jan_rank as rank
-        from planocycle.work_priority_order_jan_new janNew
-                 left join
-             masterdb.jan_mst_planocycle mst
-             on mst.jan_cd = janNew.jan_new
-                 left join masterdb.zokusei_mst_data data1
-                           on mst.scat1cd_val = data1.val
-                 left join masterdb.zokusei_mst_data data2
-                           on mst.scat2cd_val = data2.val
-                 left join masterdb.zokusei_mst_data data3
-                           on mst.scat3cd_val = data3.val
-                 left join masterdb.zokusei_mst_data data4
-                           on  mst.scat4cd_val = data4.val
-        where janNew.company_cd = #{item.companyCd} and janNew.author_cd=#{authorCd} and janNew.priority_order_cd = #{item.priorityOrderCd} and janNew.jan_new != #{item.janCd}
-          and data1.nm = #{item.zokusei1} and data2.nm = #{item.zokusei2} and data3.nm = #{item.zokusei3}
-        order by rank
+    <select id="getProductPowerData" resultType="map">
+        select jan,"2",
+               <foreach collection="attrMap" separator="," index="index">
+                   "${index}"
+               </foreach>
+        from
+            planocycle.product_power_mst_data mstdata
+                left join "1000".prod_0000_jan_info janinfo
+                          on janinfo."1" = mstdata.jan
+        where mstdata.product_power_cd =#{productPowerCd}
+            <foreach collection="attrMap" item="item" index="index">
+                and janinfo."${index}" = #{item}
+            </foreach>
 
     </select>
     <select id="getJanNewInfo" resultType="com.trechina.planocycle.entity.vo.JanMstPlanocycleVo">

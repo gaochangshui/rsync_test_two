@@ -423,7 +423,7 @@
   </select>
     <select id="getProductReorder" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
       select
-        resultdata.jan,row_number() over(order by rank_result)
+        resultdata.jan as janCd,row_number() over(order by rank_result) as resultRank
       from
         planocycle.work_basic_pattern_restrict_result_data resultdata
           left join planocycle.product_power_mst_data mstdata
