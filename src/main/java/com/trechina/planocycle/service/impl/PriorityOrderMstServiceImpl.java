@@ -626,28 +626,18 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
 
         List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
+
+
+        List<WorkPriorityOrderResultData> reorder = null;
         if (colNmforMst.isEmpty()) {
-            return ResultMaps.result(ResultEnum.SUCCESS);
+            workPriorityOrderResultDataMapper.getProductReorder(companyCd,authorCd,workPriorityOrderMst.getProductPowerCd(),priorityOrderCd);
+        }else if (colNmforMst.size() == 1) {
+            reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), null);
+        } else if (colNmforMst.size() == 2){
+            reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), colNmforMst.get(1));
         }
-
-        List<WorkPriorityOrderResultData> reorder1 = null;
-        if (colNmforMst.size() == 1) {
-
-            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), null);
-
-        } else {
-
-            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), colNmforMst.get(1));
-
-
-        }
-        //int j = 1;
-        //for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder1) {
-        //    workPriorityOrderResultData.setResultRank(j++);
-        //
-        //}
-
-        workPriorityOrderResultDataMapper.setSortRank(reorder1, companyCd, authorCd, priorityOrderCd);
+        
+        workPriorityOrderResultDataMapper.setSortRank(reorder, companyCd, authorCd, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
     /**

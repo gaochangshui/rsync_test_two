@@ -262,8 +262,8 @@
                         and result.priority_order_cd = relation.priority_order_cd
            left join masterdb.planocycle_zokusei_mst_data mstdata
         on zokusei${attr} = val and mstdata.class_cd = #{classCd} and mstdata.company_cd = #{companyCd}
-           left join masterdb.planocycle_zokusei_mst mst on mstdata.zokusei_id = mst.zokusei_id and mst.class_cd = #{classCd}
-      and mst.company_cd = #{companyCd}
+           inner join masterdb.planocycle_zokusei_mst mst on mstdata.zokusei_id = mst.zokusei_id and mst.class_cd = #{classCd}
+      and mst.company_cd = #{companyCd} and mst.zokusei_id = #{attr} ::integer
            left join planocycle.work_priority_order_pts_data_tanamst tanamst
                      on tanamst.pts_cd =#{id} and tanamst.tai_cd = relation.tai_cd and tanamst.tana_cd = relation.tana_cd
         where result.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
