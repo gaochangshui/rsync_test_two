@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.dto.FaceNumDataDto;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
@@ -336,7 +335,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             for (WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult : resultList) {
                 List<ProductPowerDataDto> newList = new ArrayList<>();
                 workPriorityOrderRestrictResult.setPriorityOrderCd(priorityOrderCd);
-                List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, companyCd, productPowerCd, authorCd);
+                List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData( companyCd, productPowerCd, authorCd,patternCd);
 
                 for (ProductPowerDataDto productPowerDatum : productPowerData) {
 

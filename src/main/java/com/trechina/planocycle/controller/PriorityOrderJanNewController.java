@@ -23,8 +23,8 @@ public class PriorityOrderJanNewController {
      * @return
      */
     @GetMapping("/getPriorityOrderJanNew")
-    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo,String attrList) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        return priorityOrderJanNewService.getPriorityOrderJanNew(companyCd,priorityOrderCd,productPowerNo,attrList);
+    public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        return priorityOrderJanNewService.getPriorityOrderJanNew(companyCd,priorityOrderCd,productPowerNo);
     }
 
     /**
@@ -44,8 +44,8 @@ public class PriorityOrderJanNewController {
      *
      */
     @GetMapping("getPriorityOrderJanNewInfo")
-    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd, Integer priorityOrderCd,String attrList) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        return priorityOrderJanNewService.getPriorityOrderJanNewInfo(janCd,companyCd,priorityOrderCd,attrList);
+    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd, Integer priorityOrderCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        return priorityOrderJanNewService.getPriorityOrderJanNewInfo(janCd,companyCd,priorityOrderCd);
     }
 
     /**
