@@ -60,4 +60,6 @@ public interface WorkPriorityOrderResultDataMapper {
 
     //ユーザ編集faceNum
     int updateFaceNum(@Param("list") List<PriorityOrderRestrictJanDto> list,@Param("authorCd")String authorCd);
+
+    List<WorkPriorityOrderResultData> getProductReorder(String companyCd, String authorCd, Integer productPowerCd, Integer priorityOrderCd);
 }
