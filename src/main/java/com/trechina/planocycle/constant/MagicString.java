@@ -33,4 +33,6 @@ public class MagicString {
     public static final String SET_ZOKUSEI = "setZokusei";
 
     public static final String RESTRICT_CD = "restrictCd";
+
+    public static final Long NO_RESTRICT_CD = 9999L;
 }

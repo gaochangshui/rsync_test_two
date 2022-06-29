@@ -44,7 +44,7 @@ public interface CommonMstService {
     Map<String, Object> commSetJanForShelf(Integer patternCd, String companyCd, Integer priorityOrderCd,
                                            Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
                                            List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
-                                           GetCommonPartsDataDto commonTableName);
+                                           GetCommonPartsDataDto commonTableName, short partitionVal, short topTartitionVal);
 
     List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData);
 
