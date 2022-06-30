@@ -438,22 +438,19 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = basicPatternRestrictRelation.getCompanyCd();
         Long priorityOrderCd = basicPatternRestrictRelation.getPriorityOrderCd();
-        if (basicPatternRestrictRelation.getRestrictCd()!= null){
-            restrictRelationMapper.deleteForTanaPosition(basicPatternRestrictRelation);
-            restrictRelationMapper.update(basicPatternRestrictRelation,authorCd);
-        }else {
+        if (basicPatternRestrictRelation.getRestrictCd()== null){
+            basicPatternRestrictRelation.setRestrictCd(9999L);
+        }
+        restrictRelationMapper.deleteForTanaPosition(basicPatternRestrictRelation);
+        restrictRelationMapper.update(basicPatternRestrictRelation,authorCd);
+        if (basicPatternRestrictRelation.getRestrictCd()== 9999){
+
             List<BasicPatternRestrictRelation> tanaAttrList = restrictRelationMapper.getTanaAttrList(basicPatternRestrictRelation);
-            if (tanaAttrList.size()>1){
-                tanaAttrList = tanaAttrList.stream()
-                        .filter(item -> !item.getTanaPosition().equals(basicPatternRestrictRelation.getTanaPosition())).collect(Collectors.toList());
                 int i = 1;
                 for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
                     patternRestrictRelation.setTanaPosition(i++);
                 }
 
-            }else {
-                tanaAttrList.get(0).setRestrictCd(9999L);
-            }
             Integer taiCd = Integer.valueOf(basicPatternRestrictRelation.getTaiCd().toString());
             Integer tanaCd = Integer.valueOf(basicPatternRestrictRelation.getTanaCd().toString());
             restrictRelationMapper.deleteTanas(taiCd,tanaCd,companyCd,priorityOrderCd.intValue());

@@ -13,6 +13,7 @@ public class PtsJanDataVo {
     private Integer faceDisplayflg;
     private Integer facePosition;
     private Integer depthDisplayNum;
+    private Boolean add;
 
     public Integer getTaiCd() {
         return taiCd;
@@ -110,6 +111,14 @@ public class PtsJanDataVo {
         this.depthDisplayNum = depthDisplayNum;
     }
 
+    public Boolean getAdd() {
+        return add;
+    }
+
+    public void setAdd(Boolean add) {
+        this.add = add;
+    }
+
     @Override
     public String toString() {
         return "PtsJanDataVo{" +
@@ -125,6 +134,7 @@ public class PtsJanDataVo {
                 ", faceDisplayflg=" + faceDisplayflg +
                 ", facePosition=" + facePosition +
                 ", depthDisplayNum=" + depthDisplayNum +
+                ", add=" + add +
                 '}';
     }
 }

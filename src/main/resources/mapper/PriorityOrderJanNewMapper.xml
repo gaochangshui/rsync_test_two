@@ -157,36 +157,26 @@
         </foreach>
     </select>
     <select id="getProductPowerData" resultType="map">
-        select jan as "janCd","2" as "janName",rank_result as rank,
+        select jandata.jan as "janCd","2" as "janName",rank_result as rank,
                <foreach collection="attrMap" separator="," item="item">
                    "${item.zokuseiCol}" as "zokuseiName${item.zokuseiId}"
                </foreach>
         from
+        planocycle.shelf_pts_data ptsdata
+            left join planocycle.shelf_pts_data_jandata jandata
+            on ptsdata.id = jandata.pts_cd
+        left join
             planocycle.product_power_mst_data mstdata
+            on jandata.jan = mstdata.jan and mstdata.product_power_cd =#{productPowerCd}
                 left join ${tableName} janinfo
                           on janinfo."1" = mstdata.jan
-        where mstdata.product_power_cd =#{productPowerCd}
-          and jan != #{janCd}
+        where
             <foreach collection="attrMap" item="item">
                 and janinfo."${item.zokuseiCol}" = #{item.zokuseiValue}
             </foreach>
-        and not exists (select jan_new from planocycle.work_priority_order_jan_new janNew where janNew.jan_new = mstdata.jan
-          and janNew.priority_order_cd = #{priorityOrderCd}
-
+            and ptsdata.shelf_pattern_cd = #{shelfPatternCd}
         )
-        union
-        select jan_new ,"2" ,jan_rank ,
-        <foreach collection="attrMap" separator="," item="item">
-            "${item.zokuseiCol}" as "zokusei${item.zokuseiId}"
-        </foreach>
-        from planocycle.work_priority_order_jan_new janNew
-        left join ${tableName} janinfo
-        on janinfo."1" = janNew.jan_new
-        where janNew.priority_order_cd = #{priorityOrderCd}
-        <foreach collection="attrMap" item="item">
-            and janinfo."${item.zokuseiCol}" = #{item.zokuseiValue}
-        </foreach>
-        and jan_new != #{janCd}
+
         order by rank,"janCd"
     </select>
     <select id="getJanNewInfo" resultType="com.trechina.planocycle.entity.vo.JanMstPlanocycleVo">
