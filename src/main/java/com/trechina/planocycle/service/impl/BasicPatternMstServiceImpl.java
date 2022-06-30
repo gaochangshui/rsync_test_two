@@ -36,6 +36,10 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 @Service
@@ -312,7 +316,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         String authorCd = session.getAttribute("aud").toString();
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         String uuid = UUID.randomUUID().toString();
-        executor.execute(() -> {
+        Future<?> future = executor.submit(() -> {
             try{
                 //商品力点数表cdを取得する
                 Integer patternCd = productPowerMstMapper.getpatternCd(companyCd, authorCd, priorityOrderCd);
@@ -437,6 +441,14 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 vehicleNumCache.put(uuid,2);
             }
         });
+
+        try {
+            future.get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }catch (TimeoutException e) {
+            return ResultMaps.result(ResultEnum.SUCCESS, uuid);
+        }
         return ResultMaps.result(ResultEnum.SUCCESS,uuid);
     }
 

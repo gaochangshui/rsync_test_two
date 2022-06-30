@@ -565,27 +565,13 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         //既存の新しいptsを検出し,削除してから保存する
         //新しいptsにデータがあるptsCd
         ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectWorkPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
-        //テンポラリ・テーブルのptscd
-        Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
-
-        PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
-                .withPriorityOrderCd(priorityOrderCd)
-                .withOldPtsCd(ptsCd)
-                .withCompanyCd(companyCd)
-                .withAuthorCd(authorCd).build();
 
         if(Optional.ofNullable(shelfPtsData).isPresent()){
             Integer oldPtsCd = shelfPtsData.getId();
             shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
-        }
-
-        ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
-        String modeName = shelfPtsDataVersion.getModename();
-        //modeNameはptsをダウンロードするファイル名として
-        priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
-
-        if (!positionResultData.isEmpty()) {
-            shelfPtsDataMapper.insertPtsDataJandata(positionResultData, ptsCd, companyCd, authorCd);
+            if (!positionResultData.isEmpty()) {
+                shelfPtsDataMapper.insertPtsDataJandata(positionResultData, oldPtsCd, companyCd, authorCd);
+            }
         }
     }
     /**
