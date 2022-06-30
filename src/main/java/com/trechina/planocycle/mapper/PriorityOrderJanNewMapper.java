@@ -40,7 +40,8 @@ public interface PriorityOrderJanNewMapper {
 
     List<Map<String,Object>> getProductPowerData(@Param("productPowerCd")Integer productPowerCd
             , @Param("attrMap") List<Map<String,Object>> attrMap,@Param("authorCd")String authorCd
-            ,@Param("tableName") String tableName,@Param("priorityOrderCd")Integer priorityOrderCd,long shelfPatternCd);
+            ,@Param("tableName") String tableName,@Param("priorityOrderCd")Integer priorityOrderCd,long shelfPatternCd,
+            @Param("janList") List<Map<String,Object>> janList);
 
     PriorityOrderJanNewDto getProductForWork( @Param("item") PriorityOrderJanNewDto priorityOrderJanNewVO,@Param("companyCd")String companyCd);
 
@@ -63,4 +64,6 @@ public interface PriorityOrderJanNewMapper {
     List<JanMstPlanocycleVo> getJanNewInfo(@Param("companyCd")String companyCd);
 
     List<Map<String,Object>> getDynamicJanNameClassify(@Param("tableName") String tableName, @Param("col") List<Map<String,Object>> col, @Param("janNew") String [] janNew);
+
+    List<String> getErrorMsgJan(String companyCd, Integer priorityOrderCd);
 }

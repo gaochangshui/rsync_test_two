@@ -141,7 +141,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         Integer priorityOrderCd = Integer.valueOf(map.get("priorityOrderCd").toString());
         List<Map<String,Object>> data = (List<Map<String,Object>>)map.get("data");
         String aud = session.getAttribute("aud").toString();
-
+        List<String> errorMsgJan = priorityOrderJanNewMapper.getErrorMsgJan(companyCd, priorityOrderCd);
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
         WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, aud,priorityOrderCd);
@@ -170,9 +170,25 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                 }
             }
         }
-        List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, list,aud,commonTableName.getProInfoTable(),priorityOrderCd,shelfPatternCd);
-        productPowerData = this.janSort(productPowerData,data);
-        return ResultMaps.result(ResultEnum.SUCCESS,productPowerData);
+        List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, list,aud
+                ,commonTableName.getProInfoTable(),priorityOrderCd,shelfPatternCd,data);
+        for (Map<String, Object> datum : data) {
+            for (String s : errorMsgJan) {
+                if (s.equals(datum.get("janCd"))){
+                    datum.put("errMsg","現状棚に並んでいる可能性がありますので削除してください。");
+                }else {
+                    datum.put("errMsg","");
+                }
+            }
+        }
+        if (!productPowerData.isEmpty()) {
+            productPowerData = this.janSort(productPowerData, data);
+        }
+        List list1 = new ArrayList();
+        list1.add(data);
+        list1.add(productPowerData);
+
+        return ResultMaps.result(ResultEnum.SUCCESS,list1);
     }
     /**
      * 商品詳細は新規では存在しません

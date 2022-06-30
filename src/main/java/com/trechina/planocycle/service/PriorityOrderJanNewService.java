@@ -38,7 +38,7 @@ public interface PriorityOrderJanNewService {
      * @param
      * @return
      */
-    Map<String, Object> getSimilarity(Map<String,Object> map ) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    Map<String, Object> getSimilarity(Map<String,Object> map ) ;
     /**
      * 新規不存在商品詳細情報
      * @param janMstPlanocycleVo
