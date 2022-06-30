@@ -2,15 +2,17 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import com.trechina.planocycle.entity.dto.*;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
+import com.trechina.planocycle.entity.dto.ShelfPtsDto;
+import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
+import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
-import com.trechina.planocycle.service.CommonMstService;
-import com.trechina.planocycle.service.PriorityOrderMstService;
-import com.trechina.planocycle.service.ShelfPatternService;
-import com.trechina.planocycle.service.ShelfPtsService;
+import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import org.slf4j.Logger;
@@ -29,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ShelfPtsServiceImpl implements ShelfPtsService {
@@ -40,7 +43,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Autowired
     private ShelfPatternService shelfPatternService;
     @Autowired
-    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+    private PriorityOrderJanNewService janNewService;
     @Autowired
     private PriorityOrderMstService priorityOrderMstService;
     @Autowired
@@ -544,6 +547,18 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
 
+        List<WorkPriorityOrderResultDataDto> janNewList = resultData.stream().filter(dto -> dto.getRank()!=null && dto.getRank().equals(-1L)).collect(Collectors.toList());
+        List<WorkPriorityOrderResultDataDto> janList = resultData.stream().filter(dto -> dto.getRank()==null || !dto.getRank().equals(-1L)).collect(Collectors.toList());
+        if(!janNewList.isEmpty()){
+            List<Map<String, Object>> janNewMapList = new Gson().fromJson(new Gson().toJson(janNewList), new TypeToken<List<Map<String, Object>>>() {
+            }.getType());
+            List<Map<String, Object>> janMapList = new Gson().fromJson(new Gson().toJson(janList), new TypeToken<List<Map<String, Object>>>() {
+            }.getType());
+            List<Map<String, Object>> mapList = janNewService.janSort(janMapList, janNewMapList);
+            resultData = new Gson().fromJson(new Gson().toJson(mapList), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
+            }.getType());
+        }
+
         //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
         List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(resultData);
 
@@ -561,10 +576,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 
         if(Optional.ofNullable(shelfPtsData).isPresent()){
             Integer oldPtsCd = shelfPtsData.getId();
-            shelfPtsDataMapper.deletePtsData(oldPtsCd);
-            shelfPtsDataMapper.deletePtsTaimst(oldPtsCd);
-            shelfPtsDataMapper.deletePtsTanamst(oldPtsCd);
-            shelfPtsDataMapper.deletePtsVersion(oldPtsCd);
             shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
         }
 
@@ -572,15 +583,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         String modeName = shelfPtsDataVersion.getModename();
         //modeNameはptsをダウンロードするファイル名として
         priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
-        //既存のptsからデータをクエリーする
-        shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
-        Integer id = priorityOrderPtsDataDto.getId();
-        shelfPtsDataMapper.insertPtsTaimst(ptsCd, id, authorCd);
-        shelfPtsDataMapper.insertPtsTanamst(ptsCd, id, authorCd);
-        shelfPtsDataMapper.insertPtsVersion(ptsCd, id, authorCd);
 
         if (!positionResultData.isEmpty()) {
-            shelfPtsDataMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
+            shelfPtsDataMapper.insertPtsDataJandata(positionResultData, ptsCd, companyCd, authorCd);
         }
     }
     /**

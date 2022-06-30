@@ -18,7 +18,9 @@ public enum ResultEnum {
     DATAISTOOLARGE(40003,"数据量を過ぎて大"),
     CLASSIFY_NOT_EXIST(40004,"classify not exist"),
     VERSION_ERROR(40005,"version error"),
-    JANCDINEXISTENCE(50004,"JAN不存在");
+    JANCDINEXISTENCE(50004,"JAN不存在"),
+
+    HEIGHT_NOT_ENOUGH(60001,"height not enough");
 
     private Integer code;
     private String msg;
