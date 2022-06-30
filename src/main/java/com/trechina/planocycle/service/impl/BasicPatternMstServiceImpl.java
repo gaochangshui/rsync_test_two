@@ -107,7 +107,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         List<Integer> list = Arrays.asList(zokuseiIds.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
 
         List<Integer> cdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
-        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(companyCd,
+        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(),
                 classCd, zokuseiIds);
         priorityOrderMstAttrSortMapper.deleteAttrList(companyCd,priorityOrderCd);
         priorityOrderMstAttrSortMapper.setAttrList(companyCd,priorityOrderCd,list);
@@ -408,7 +408,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
             Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
             Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
-            if(partitionFlag.equals(0)){
+            if(partitionFlag==null  || partitionFlag.equals((short)0)){
                 partitionVal = 0;
             }
             Short topPartitionVal = 0;
