@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,51 +42,9 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         String authorCd = session.getAttribute("aud").toString();
         List<PriorityOrderRestrictDto> restrictData = priorityOrderShelfDataMapper.getRestrictData(companyCd, authorCd,priorityOrderCd);
         List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
-        Class clazz = PriorityOrderRestrictDto.class;
-        for (int i = 1; i <= 10; i++) {
-            Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
-            Method getMethodName = clazz.getMethod("get"+"ZokuseiName"+i);
-            Method setMethod = clazz.getMethod("set"+"ZokuseiName"+i, String.class);
-            for (PriorityOrderRestrictDto priorityOrderRestrictDto : restrictData) {
-                for (PriorityOrderAttrValueDto attrValue : attrValues) {
-                    if (getMethod.invoke(priorityOrderRestrictDto)!=null&&getMethod.invoke(priorityOrderRestrictDto).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
-                        setMethod.invoke(priorityOrderRestrictDto,attrValue.getNm());
-                    }
-                    if (getMethodName.invoke(priorityOrderRestrictDto)==null ){
-                        setMethod.invoke(priorityOrderRestrictDto,"");
-                    }
-
-                }
-            }
-        }
 
 
-
-        List<PriorityOrderRestDto> list = new ArrayList<>();
-        PriorityOrderRestDto priorityOrderRestDto =null;
-        Class c = PriorityOrderRestrictDto.class;
-        for (PriorityOrderRestrictDto restrictDatum : restrictData) {
-            priorityOrderRestDto = new PriorityOrderRestDto();
-            priorityOrderRestDto.setRestrictCd(restrictDatum.getRestrictCd());
-            String s = "";
-            for (int i = 1; i <= 10; i++){
-                Method getMethod = c.getMethod("get"+"ZokuseiName"+i);
-                if (getMethod.invoke(restrictDatum)!=null && !getMethod.invoke(restrictDatum).equals("")){
-                         s+= "->"+getMethod.invoke(restrictDatum);
-                }
-            }
-            if (!s.equals("")) {
-                s = s.substring(2);
-            }else {
-                s="_";
-            }
-            priorityOrderRestDto.setRestrictName(s);
-            priorityOrderRestDto.setFaceNum(restrictDatum.getFaceNum());
-            priorityOrderRestDto.setSkuNum(restrictDatum.getSkuNum());
-            list.add(priorityOrderRestDto);
-        }
-
-        return ResultMaps.result(ResultEnum.SUCCESS,list);
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
     /**
      * 新規では基本パター制約別janの詳細情報を取得

@@ -31,7 +31,7 @@
           when repold.jan_old is not null then 'すでにJAN変商品として入力済みです。'
           when new.jan_new is not null then 'すでに新規商品として入力済みです。'
              else ''
-             end as errMsg
+             end as "errMsg"
         from planocycle.work_priority_order_cut  cut
           left join "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info mst
                     on cut.jan_cd = mst."1"

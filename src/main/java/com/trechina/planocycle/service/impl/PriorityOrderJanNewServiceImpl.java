@@ -153,6 +153,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         mapAttr.remove("janCd");
         mapAttr.remove("janName");
         mapAttr.remove("rank");
+        mapAttr.remove("errMsg");
         List<Map<String,Object>> list = new ArrayList<>();
         List<Integer> attrList = new ArrayList();
         for (Map.Entry<String, Object> stringObjectEntry : mapAttr.entrySet()) {
