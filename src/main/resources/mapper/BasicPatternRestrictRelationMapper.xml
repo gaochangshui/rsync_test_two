@@ -52,8 +52,7 @@
         select tai_cd,tana_cd,tana_position,restrict_cd,area,priority_order_cd,company_cd
         from planocycle.work_basic_pattern_restrict_relation
         where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd}  and priority_order_cd = #{item.priorityOrderCd}
-
-        order by tana_position
+        order by restrict_cd,tana_position
     </select>
     <select id="selectByPriorityOrderCd" resultType="map">
         select tai_cd "taiCd",tana_cd "tanaCd",tana_position "tanaPosition",restrict_cd "restrictCd",area "area"
