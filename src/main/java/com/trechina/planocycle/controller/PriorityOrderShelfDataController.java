@@ -50,6 +50,11 @@ public class PriorityOrderShelfDataController {
     public Map<String,Object> getPlatformShedData(String companyCd,Integer priorityOrderCd){
         return  priorityOrderShelfDataService.getPlatformShedData(companyCd,priorityOrderCd);
     }
+
+    @GetMapping("getNewPlatformShedData")
+    public Map<String,Object> getNewPlatformShedData(String companyCd,Integer priorityOrderCd){
+        return  priorityOrderShelfDataService.getNewPlatformShedData(companyCd,priorityOrderCd);
+    }
     /**
      * 新規では基本的なパタ台棚別jansの詳細情報を入手
      * @param priorityOrderPlatformShedDto

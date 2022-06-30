@@ -41,4 +41,6 @@ public interface PriorityOrderShelfDataService {
      * @return
      */
     Map<String,Object> setFaceNumForData( List<PriorityOrderRestrictJanDto> priorityOrderRestrictJanDto);
+
+    Map<String, Object> getNewPlatformShedData(String companyCd, Integer priorityOrderCd);
 }
