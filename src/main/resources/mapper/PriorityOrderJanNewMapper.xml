@@ -228,11 +228,11 @@
         </foreach>
     </select>
     <select id="getErrorMsgJan" resultType="java.lang.String">
-        SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as errMsg
+        SELECT jan_new as jan_new
         from planocycle.work_priority_order_jan_replace
         where priority_order_cd = #{priorityOrderCd}
         union
-        SELECT jan_old as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as errMsg
+        SELECT jan_old as jan_new
         from planocycle.work_priority_order_jan_replace
               where   priority_order_cd = #{priorityOrderCd}
     </select>

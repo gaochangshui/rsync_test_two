@@ -173,12 +173,10 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, list,aud
                 ,commonTableName.getProInfoTable(),priorityOrderCd,shelfPatternCd,data);
         for (Map<String, Object> datum : data) {
-            for (String s : errorMsgJan) {
-                if (s.equals(datum.get("janCd"))){
-                    datum.put("errMsg","現状棚に並んでいる可能性がありますので削除してください。");
-                }else {
-                    datum.put("errMsg","");
-                }
+            if (errorMsgJan.contains(datum.get("janCd").toString())){
+                datum.put("errMsg","現状棚に並んでいる可能性がありますので削除してください。");
+            }else {
+                datum.put("errMsg","");
             }
         }
         if (!productPowerData.isEmpty()) {
