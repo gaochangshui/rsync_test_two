@@ -286,7 +286,10 @@ public class CommonMstServiceImpl implements CommonMstService {
             for (Map<String, Object> relation : relationList) {
                 String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
                 List<PriorityOrderResultDataDto> jans = janResultByRestrictCd.get(Long.valueOf(restrictCd));
-                this.doSetJan(cutList, newList, partitionVal, topPartitionVal, minFace, adoptJan, jans, relation,tanaWidth, tanaHeight, taiCd, tanaCd);
+                Map<String, Object> resultMap = this.doSetJan(cutList, newList, partitionVal, topPartitionVal, minFace, adoptJan, jans, relation, tanaWidth, tanaHeight, taiCd, tanaCd);
+                if(resultMap!=null){
+                    return resultMap;
+                }
             }
         }
 
@@ -318,7 +321,10 @@ public class CommonMstServiceImpl implements CommonMstService {
 
                     notAdoptJan = notAdoptJan.stream().sorted(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
                     for (Map<String, Object> relation : entry.getValue()) {
-                        this.doSetJan(cutList, newList, partitionVal, topPartitionVal, minFace, adoptJan, notAdoptJan, relation,tanaWidth, tanaHeight, taiCd, tanaCd);
+                        Map<String, Object> resultMap = this.doSetJan(cutList, newList, partitionVal, topPartitionVal, minFace, adoptJan, notAdoptJan, relation,tanaWidth, tanaHeight, taiCd, tanaCd);
+                        if(resultMap!=null){
+                            return resultMap;
+                        }
                     }
                 }
             }
@@ -327,7 +333,7 @@ public class CommonMstServiceImpl implements CommonMstService {
         return ResultMaps.result(ResultEnum.SUCCESS, adoptJan);
     }
 
-    private void doSetJan(List<Map<String, Object>> cutList, List<Map<String, Object>> newList, short partitionVal, short topPartitionVal,
+    private Map<String, Object> doSetJan(List<Map<String, Object>> cutList, List<Map<String, Object>> newList, short partitionVal, short topPartitionVal,
                           Integer minFace, List<PriorityOrderResultDataDto> adoptJan, List<PriorityOrderResultDataDto> jans,
                           Map<String, Object> relation, Integer tanaWidth, Integer tanaHeight, String taiCd, String tanaCd){
         String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
@@ -367,9 +373,14 @@ public class CommonMstServiceImpl implements CommonMstService {
             Long janWidth = width + partitionVal;
             Long janHeight = jan.getJanHeight() + topPartitionVal;
 
-//            if(janHeight+topPartitionVal>tanaHeight){
-//                return ImmutableMap.of(ResultEnum.FAILURE.name(), "height not enough");
-//            }
+            if(janHeight+topPartitionVal>tanaHeight){
+                Map<String, Object> errInfo = new HashMap<>();
+                errInfo.put("taiCd", Integer.parseInt(taiCd));
+                errInfo.put("tanaCd", Integer.parseInt(tanaCd));
+                errInfo.put("janHeight", janHeight);
+                errInfo.put("jan", jan);
+                return ImmutableMap.of(ResultEnum.HEIGHT_NOT_ENOUGH.name(), errInfo);
+            }
 
             if(janWidth*face + usedArea <= groupArea){
                 usedArea += janWidth*face + partitionVal;
@@ -388,6 +399,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
             }
         }
+
+        return null;
     }
 
     /**
