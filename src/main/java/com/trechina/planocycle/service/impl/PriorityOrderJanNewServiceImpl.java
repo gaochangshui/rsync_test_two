@@ -3,6 +3,7 @@ package com.trechina.planocycle.service.impl;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
 import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -54,6 +55,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     private WorkPriorityOrderJanNewAttrMapper workPriorityOrderJanNewAttrMapper;
     @Autowired
     private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+    @Autowired
+    private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
     /**
      * 新規janListの取得
      *
@@ -136,22 +139,23 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     public Map<String, Object> getSimilarity(Map<String,Object> map) {
         String companyCd = map.get("companyCd").toString();
         Integer priorityOrderCd = Integer.valueOf(map.get("priorityOrderCd").toString());
-        String janCd = map.get("janCd").toString();
-        Integer rankResult = Integer.valueOf(map.get("rank").toString());
+        List<Map<String,Object>> data = (List<Map<String,Object>>)map.get("data");
         String aud = session.getAttribute("aud").toString();
+
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
+        WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, aud,priorityOrderCd);
+        Integer productPowerCd = priorityOrderMst.getProductPowerCd();
+        Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
 
-        Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, aud,priorityOrderCd);
-        map.remove("companyCd");
-        map.remove("priorityOrderCd");
-        map.remove("janCd");
-        map.remove("rank");
-
-
+        Map<String, Object> mapAttr =new HashMap<>();
+        mapAttr.putAll(data.get(0));
+        mapAttr.remove("janCd");
+        mapAttr.remove("janName");
+        mapAttr.remove("rank");
         List<Map<String,Object>> list = new ArrayList<>();
         List<Integer> attrList = new ArrayList();
-        for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+        for (Map.Entry<String, Object> stringObjectEntry : mapAttr.entrySet()) {
             Map<String,Object> newMap = new HashMap<>();
            newMap.put("zokuseiId",stringObjectEntry.getKey().split("zokuseiName")[1]);
            newMap.put("zokuseiValue",stringObjectEntry.getValue());
@@ -166,11 +170,10 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                 }
             }
         }
-        List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, list,aud,commonTableName.getProInfoTable(),priorityOrderCd,janCd);
+        List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, list,aud,commonTableName.getProInfoTable(),priorityOrderCd,shelfPatternCd);
 
-      map.put("janCd",janCd);
-      map.put("rank",rankResult);
-      productPowerData.add(map);
+
+
         productPowerData= productPowerData.stream().sorted(Comparator.comparing(map1-> MapUtils.getInteger(map1,"rank"))).collect(Collectors.toList());
 
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerData);

@@ -52,6 +52,7 @@
         select tai_cd,tana_cd,tana_position,restrict_cd,area,priority_order_cd,company_cd
         from planocycle.work_basic_pattern_restrict_relation
         where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd}  and priority_order_cd = #{item.priorityOrderCd}
+
         order by tana_position
     </select>
     <select id="selectByPriorityOrderCd" resultType="map">
@@ -79,6 +80,7 @@
     <delete id="deleteTanas">
         delete from planocycle.work_basic_pattern_restrict_relation
         where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd} and tai_cd = #{taiCd} AND tana_cd = #{tanaCd}
+
     </delete>
     <insert id="insert">
         insert into basic_pattern_restrict_relation
