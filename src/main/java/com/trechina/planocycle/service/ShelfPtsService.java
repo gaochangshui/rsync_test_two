@@ -125,5 +125,12 @@ public interface ShelfPtsService {
 
     Map<String,Object> setPtsTanaSize(List<PtsTanaVo> ptsTanaVoList);
 
+    /**
+     * 棚pattern関連ptsの詳細(新)の取得
+     * @param patternCd
+     * @param companyCd
+     * @param priorityOrderCd
+     * @return
+     */
     Map<String, Object> getNewPtsDetailData(Integer patternCd, String companyCd, Integer priorityOrderCd);
 }

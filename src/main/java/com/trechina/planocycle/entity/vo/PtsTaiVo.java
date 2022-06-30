@@ -6,6 +6,8 @@ public class PtsTaiVo {
     private Integer taiWidth;
     private Integer taiDepth;
     private String taiName;
+    private Boolean add;
+
     public Integer getTaiCd() {
         return taiCd;
     }
@@ -46,6 +48,14 @@ public class PtsTaiVo {
         this.taiName = taiName;
     }
 
+    public Boolean getAdd() {
+        return add;
+    }
+
+    public void setAdd(Boolean add) {
+        this.add = add;
+    }
+
     @Override
     public String toString() {
         return "PtsTaiVo{" +
@@ -54,6 +64,7 @@ public class PtsTaiVo {
                 ", taiWidth=" + taiWidth +
                 ", taiDepth=" + taiDepth +
                 ", taiName='" + taiName + '\'' +
+                ", add=" + add +
                 '}';
     }
 }

@@ -692,22 +692,51 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
+    /**
+     * 棚pattern関連ptsの詳細(新)の取得
+     * @param patternCd
+     * @param companyCd
+     * @param priorityOrderCd
+     * @return
+     */
     @Override
     public Map<String, Object> getNewPtsDetailData(Integer patternCd, String companyCd, Integer priorityOrderCd) {
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsNewDetailData(priorityOrderCd);
 
-        if (ptsDetailData!=null) {
+        if (ptsDetailData != null) {
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getNewTaiNum(priorityOrderCd));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getNewTanaNum(priorityOrderCd));
             ptsDetailData.setFaceNum(shelfPtsDataMapper.getNewFaceNum(priorityOrderCd));
             ptsDetailData.setSkuNum(shelfPtsDataMapper.getNewSkuNum(priorityOrderCd));
-
-            List<PtsTaiVo> taiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);
-            List<PtsTanaVo> tanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
-            List<PtsJanDataVo> janData = shelfPtsDataMapper.getNewJanData(priorityOrderCd);
-            ptsDetailData.setPtsTaiList(taiData);
-            ptsDetailData.setPtsTanaVoList(tanaData);
-            ptsDetailData.setPtsJanDataList(janData);
+            //新台、棚、商品データ
+            List<PtsTaiVo> newTaiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);
+            List<PtsTanaVo> newTanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
+            List<PtsJanDataVo> newJanData = shelfPtsDataMapper.getNewJanData(priorityOrderCd);
+            //既存台、棚、商品データ
+            List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
+            List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
+            List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
+            //新規台、棚、商品の標識
+            newTaiData.stream()
+                    .filter(map -> taiData.stream().noneMatch(map1 -> map1.getTaiCd().equals(map.getTaiCd())))
+                    .forEach(map -> map.setAdd(true));
+            newTanaData.stream()
+                    .filter(map -> tanaData.stream().noneMatch(map1 -> map1.getTaiCd().equals(map.getTaiCd())
+                            && map1.getTanaCd().equals(map.getTanaCd())
+                            && map1.getTanaHeight().equals(map.getTanaHeight())
+                    ))
+                    .forEach(map -> map.setAdd(true));
+            newJanData.stream()
+                    .filter(map -> janData.stream().noneMatch(map1 -> map1.getJan().equals(map.getJan())
+                            && map1.getTaiCd().equals(map.getTaiCd())
+                            && map1.getTanaCd().equals(map.getTanaCd())
+                            && map1.getTanapositionCd().equals(map.getTanapositionCd())
+                            && map1.getFaceCount().equals(map.getFaceCount())
+                    ))
+                    .forEach(map -> map.setAdd(true));
+            ptsDetailData.setPtsTaiList(newTaiData);
+            ptsDetailData.setPtsTanaVoList(newTanaData);
+            ptsDetailData.setPtsJanDataList(newJanData);
         }
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
