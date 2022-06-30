@@ -171,11 +171,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
             }
         }
         List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(productPowerCd, list,aud,commonTableName.getProInfoTable(),priorityOrderCd,shelfPatternCd);
-
-
-
-        productPowerData= productPowerData.stream().sorted(Comparator.comparing(map1-> MapUtils.getInteger(map1,"rank"))).collect(Collectors.toList());
-
+        productPowerData = this.janSort(productPowerData,data);
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerData);
     }
     /**
