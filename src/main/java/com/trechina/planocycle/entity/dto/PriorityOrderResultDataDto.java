@@ -15,6 +15,8 @@ public class PriorityOrderResultDataDto {
 
     private Long sortRank;
 
+    private Long rank;
+
     private Integer adoptFlag;
 
     private Long face;
@@ -38,6 +40,14 @@ public class PriorityOrderResultDataDto {
 
     private Long janWidth;
     private Long janHeight;
+
+    public Long getRank() {
+        return rank;
+    }
+
+    public void setRank(Long rank) {
+        this.rank = rank;
+    }
 
     public Long getNewRank() {
         return newRank;
