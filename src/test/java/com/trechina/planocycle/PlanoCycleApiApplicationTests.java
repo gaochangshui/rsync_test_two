@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityAllResultDataDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +59,8 @@ class PlanoCycleApiApplicationTests {
     WorkPriorityAllResultDataMapper workPriorityAllResultDataMapper;
     @Autowired
     ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
+    PriorityOrderJanNewService priorityOrderJanNewService;
     @Autowired
     JanClassifyMapper janClassifyMapper;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -156,24 +159,17 @@ class PlanoCycleApiApplicationTests {
     @Test
     public  void test8(){
         List<Map<String,Object>> map1 =new ArrayList<>();
-        map1.add(new HashMap(){{put("rank",1);put("jan","1");put("flag",1);}});
-        map1.add(new HashMap(){{put("rank",2);put("jan","2");put("flag",1);}});
-        map1.add(new HashMap(){{put("rank",3);put("jan","3");put("flag",1);}});
+        map1.add(new HashMap(){{put("rank",7);put("jan","1");put("flag",1);}});
+        map1.add(new HashMap(){{put("rank",28);put("jan","2");put("flag",1);}});
+        map1.add(new HashMap(){{put("rank",9);put("jan","3");put("flag",1);}});
         List<Map<String,Object>> map2 = new ArrayList<>();
         map2.add(new HashMap(){{put("rank",1);put("jan","1");put("flag",2);}});
         map2.add(new HashMap(){{put("rank",2);put("jan","2");put("flag",2);}});
         map2.add(new HashMap(){{put("rank",3);put("jan","3");put("flag",2);}});
 
-        for (Map<String, Object> objectMap : map2) {
-            map1.add(Integer.valueOf(objectMap.get("rank").toString())-1,objectMap);
-        }
+        List<Map<String, Object>> list = priorityOrderJanNewService.janSort(map1, map2);
 
-        int i =1;
-        for (Map<String, Object> objectMap : map1) {
-            objectMap.put("rank",i++);
-        }
-
-        System.out.println(map1);
+        System.out.println(list);
 
 
     }

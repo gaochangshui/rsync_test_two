@@ -202,4 +202,21 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         return ResultMaps.result(ResultEnum.SUCCESS,janNewInfo);
     }
 
+    @Override
+    public List<Map<String, Object>> janSort(List<Map<String, Object>> ptsJanList, List<Map<String, Object>> JanNewList) {
+        ptsJanList = ptsJanList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, "rank"))).collect(Collectors.toList());
+        int i = 1;
+        for (Map<String, Object> objectMap : ptsJanList) {
+            objectMap.put("rank",i++);
+        }
+        for (Map<String, Object> objectMap : JanNewList) {
+            ptsJanList.add(Integer.valueOf(objectMap.get("rank").toString())-1,objectMap);
+        }
+        i = 1;
+        for (Map<String, Object> objectMap : ptsJanList) {
+            objectMap.put("rank",i++);
+        }
+        return ptsJanList;
+    }
+
 }

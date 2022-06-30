@@ -51,4 +51,6 @@ public interface PriorityOrderJanNewService {
      * @return
      */
     Map<String,Object>getJanNewInfo(String companyCd);
+
+    List<Map<String,Object>> janSort(List<Map<String,Object>>ptsJanList,List<Map<String,Object>>JanNewList );
 }
