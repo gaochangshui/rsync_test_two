@@ -171,12 +171,10 @@
                 left join ${tableName} janinfo
                           on janinfo."1" = mstdata.jan
         where
+        ptsdata.shelf_pattern_cd = #{shelfPatternCd}
             <foreach collection="attrMap" item="item">
                 and janinfo."${item.zokuseiCol}" = #{item.zokuseiValue}
             </foreach>
-            and ptsdata.shelf_pattern_cd = #{shelfPatternCd}
-        )
-
         order by rank,"janCd"
     </select>
     <select id="getJanNewInfo" resultType="com.trechina.planocycle.entity.vo.JanMstPlanocycleVo">
