@@ -240,6 +240,9 @@ public class CommonMstServiceImpl implements CommonMstService {
         for (int i = 0; i < newList.size(); i++) {
             Map<String, Object> zokusei = newList.get(i);
             for (Map<String, Object> restrict : restrictResult) {
+                if (Objects.equals(MapUtils.getLong(restrict, "restrict_cd"), MagicString.NO_RESTRICT_CD)) {
+                    continue;
+                }
                 int equalsCount = 0;
                 for (Integer integer : attrList) {
                     String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer);
@@ -378,7 +381,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 errInfo.put("taiCd", Integer.parseInt(taiCd));
                 errInfo.put("tanaCd", Integer.parseInt(tanaCd));
                 errInfo.put("janHeight", janHeight);
-                errInfo.put("jan", jan);
+                errInfo.put("jan", jan.getJanCd());
                 return ImmutableMap.of("code",ResultEnum.HEIGHT_NOT_ENOUGH.getCode(),"data", errInfo);
             }
 

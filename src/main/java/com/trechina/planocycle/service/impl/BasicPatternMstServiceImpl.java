@@ -480,8 +480,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         }
 
         if (vehicleNumCache.get("setJanHeightError"+taskId)!=null){
+            Object o = vehicleNumCache.get("setJanHeightError" + taskId);
             vehicleNumCache.remove("setJanHeightError"+taskId);
-            return ResultMaps.result(ResultEnum.HEIGHT_NOT_ENOUGH, vehicleNumCache.get("setJanHeightError"+taskId));
+            return ResultMaps.result(ResultEnum.HEIGHT_NOT_ENOUGH, o);
         }
 
         if (vehicleNumCache.get(taskId) != null){
