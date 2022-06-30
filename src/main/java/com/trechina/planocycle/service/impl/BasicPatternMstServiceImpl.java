@@ -422,7 +422,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                         minFaceNum, zokuseiMsts, allCdList,
                         restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal);
 
-                if (MapUtils.getInteger(resultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
+                if (resultMap!=null && MapUtils.getInteger(resultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
                     vehicleNumCache.put("setJanHeightError"+uuid,resultMap.get("data"));
                 }else{
                     //ptsを一時テーブルに保存

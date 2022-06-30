@@ -576,10 +576,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 
         if(Optional.ofNullable(shelfPtsData).isPresent()){
             Integer oldPtsCd = shelfPtsData.getId();
-            shelfPtsDataMapper.deletePtsData(oldPtsCd);
-            shelfPtsDataMapper.deletePtsTaimst(oldPtsCd);
-            shelfPtsDataMapper.deletePtsTanamst(oldPtsCd);
-            shelfPtsDataMapper.deletePtsVersion(oldPtsCd);
             shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
         }
 
@@ -587,15 +583,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         String modeName = shelfPtsDataVersion.getModename();
         //modeNameはptsをダウンロードするファイル名として
         priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
-        //既存のptsからデータをクエリーする
-        shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
-        Integer id = priorityOrderPtsDataDto.getId();
-        shelfPtsDataMapper.insertPtsTaimst(ptsCd, id, authorCd);
-        shelfPtsDataMapper.insertPtsTanamst(ptsCd, id, authorCd);
-        shelfPtsDataMapper.insertPtsVersion(ptsCd, id, authorCd);
 
         if (!positionResultData.isEmpty()) {
-            shelfPtsDataMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
+            shelfPtsDataMapper.insertPtsDataJandata(positionResultData, ptsCd, companyCd, authorCd);
         }
     }
     /**

@@ -379,7 +379,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 errInfo.put("tanaCd", Integer.parseInt(tanaCd));
                 errInfo.put("janHeight", janHeight);
                 errInfo.put("jan", jan);
-                return ImmutableMap.of(ResultEnum.HEIGHT_NOT_ENOUGH.name(), errInfo);
+                return ImmutableMap.of("code",ResultEnum.HEIGHT_NOT_ENOUGH.getCode(),"data", errInfo);
             }
 
             if(janWidth*face + usedArea <= groupArea){
