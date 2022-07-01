@@ -745,8 +745,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             priorityOrderResultDataMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
             //スペースの保存、元のデータの削除
-            priorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            priorityOrderSpaceMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
+            //priorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
+            //priorityOrderSpaceMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
             //cutを保存し、元のデータを削除
             priorityOrderJanCardMapper.deleteByAuthorCd(companyCd, priorityOrderCd, authorCd);
@@ -771,16 +771,21 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             basicPatternRestrictRelationMapper.deleteFinal(companyCd, authorCd, priorityOrderCd);
             basicPatternRestrictRelationMapper.setFinalForWork(companyCd, authorCd, priorityOrderCd);
 
-            //work_basic_pattern_attr_compose保存＃ホゾン＃
+            //basic_pattern_attr_compose保存＃ホゾン＃
             basicPatternAttrMapper.deleteFinal(companyCd, authorCd, priorityOrderCd);
             basicPatternAttrMapper.setFinalForWork(companyCd, authorCd, priorityOrderCd);
-            //work_basic_pattern_restrict_result保存＃ホゾン＃
+
+            //basic_pattern_restrict_result保存＃ホゾン＃
             basicPatternRestrictResultMapper.deleteFinal(companyCd, authorCd, priorityOrderCd);
             basicPatternRestrictResultMapper.setFinalForWork(companyCd, authorCd, priorityOrderCd);
-            //work_basic_pattern_restrict_result_data 保存＃ホゾン＃
+
+            //basic_pattern_restrict_result_data 保存＃ホゾン＃
             basicPatternRestrictResultDataMapper.deleteFinal(companyCd, authorCd, priorityOrderCd);
             basicPatternRestrictResultDataMapper.setFinalForWork(companyCd, authorCd, priorityOrderCd);
 
+            //priority_order_mst_attrsort 保存＃ホゾン＃
+            priorityOrderMstAttrSortMapper.deletFinal(companyCd,priorityOrderCd);
+            priorityOrderMstAttrSortMapper.setFinalForWork(companyCd,priorityOrderCd);
         } catch (Exception exception) {
             logger.error("保存臨時表数据到實際表報錯", exception);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -902,8 +907,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         if(orderNameCount>0){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
+        Map<String, Object> objectMap = priorityOrderMstService.saveAllWorkPriorityOrder(priorityOrderMstVO);
 
-        return ResultMaps.result(ResultEnum.SUCCESS);
+        return objectMap;
     }
 
     /**
