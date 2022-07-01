@@ -41,4 +41,9 @@ public interface PriorityOrderShelfDataService {
      * @return
      */
     Map<String,Object> setFaceNumForData( List<PriorityOrderRestrictJanDto> priorityOrderRestrictJanDto);
+
+    /**
+     *
+     */
+    List<Map<String ,Object>> getPtsGroup(String companyCd, Integer priorityOrderCd);
 }

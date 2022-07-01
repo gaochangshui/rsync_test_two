@@ -22,4 +22,6 @@ public interface WorkPriorityOrderMstMapper {
     Integer getShelfName(@Param("shelfPattern")Integer shelfPattern);
 
 
+
+
 }

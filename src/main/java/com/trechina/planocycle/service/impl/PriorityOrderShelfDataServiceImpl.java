@@ -1,12 +1,17 @@
 package com.trechina.planocycle.service.impl;
 
+import com.google.common.base.Joiner;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
+import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
+import com.trechina.planocycle.entity.po.ZokuseiMst;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.PriorityOrderRestrictSetMapper;
-import com.trechina.planocycle.mapper.PriorityOrderShelfDataMapper;
-import com.trechina.planocycle.mapper.WorkPriorityOrderResultDataMapper;
+import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.PriorityOrderShelfDataService;
 import com.trechina.planocycle.utils.ResultMaps;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 
@@ -28,6 +33,28 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Autowired
     private WorkPriorityOrderResultDataMapper workPriorityOrderResultDataMapper;
     @Autowired
+    private BasicPatternRestrictResultMapper basicPatternRestrictResultMapper;
+    @Autowired
+    private BasicPatternRestrictResultDataMapper restrictResultDataMapper;
+    @Autowired
+    private PriorityOrderMstAttrSortMapper attrSortMapper;
+    @Autowired
+    private BasicPatternMstService basicPatternMstService;
+    @Autowired
+    private ZokuseiMapper zokuseiMapper;
+    @Autowired
+    private BasicPatternRestrictResultMapper restrictResultMapper;
+    @Autowired
+    private BasicPatternRestrictRelationMapper restrictRelationMapper;
+    @Autowired
+    private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
+    @Autowired
+    private ShelfPtsDataMapper shelfPtsDataMapper;
+    @Autowired
+    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+    @Autowired
+    private ZokuseiMstMapper zokuseiMstMapper;
+    @Autowired
     private HttpSession session;
 
     /**
@@ -36,15 +63,42 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
      * @return
      */
     @Override
-    public Map<String, Object> getRestrictData(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-
-
+    public Map<String, Object> getRestrictData(String companyCd,Integer priorityOrderCd)  {
         String authorCd = session.getAttribute("aud").toString();
-        List<PriorityOrderRestrictDto> restrictData = priorityOrderShelfDataMapper.getRestrictData(companyCd, authorCd,priorityOrderCd);
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
+        List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
+        List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
 
+        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd);
 
-        return ResultMaps.result(ResultEnum.SUCCESS);
+        Map<String, List<Map<String, Object>>> listMap = ptsGroup.stream().collect(Collectors.groupingBy(map -> {
+            String attrKey = "";
+            for (Integer col : attrList) {
+                if (attrKey.equals("")){
+                    attrKey += map.get("zokuseiName" + col);
+                }else {
+                    attrKey +="->"+ map.get("zokuseiName" + col);
+                }
+            }
+
+            return attrKey;
+
+        }));
+        List<Map<String,Object>> list = new ArrayList<>();
+        for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : listMap.entrySet()) {
+            Map<String,Object> map = new HashMap<>();
+            map.put("restrictName",stringListEntry.getKey());
+            map.put("restrictCd",stringListEntry.getValue().get(0).get("restrictCd"));
+            int face = 0;
+            int sku =stringListEntry.getValue().size();
+            for (Map<String, Object> objectMap : stringListEntry.getValue()) {
+            face = face + Integer.parseInt(objectMap.get("faceCount").toString());
+            }
+            map.put("faceNum",face);
+            map.put("skuNum",sku);
+            list.add(map);
+        }
+        list= list.stream().sorted(Comparator.comparing(map7->MapUtils.getInteger(map7,"restrictCd"))).collect(Collectors.toList());
+        return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
     /**
      * 新規では基本パター制約別janの詳細情報を取得
@@ -52,26 +106,14 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
      * @return
      */
     @Override
-    public Map<String, Object> getRestrictJans(PriorityOrderRestDto priorityOrderRestDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        String aud = session.getAttribute("aud").toString();
+    public Map<String, Object> getRestrictJans(PriorityOrderRestDto priorityOrderRestDto) {
+        Integer priorityOrderCd = priorityOrderRestDto.getPriorityOrderCd();
+        String companyCd = priorityOrderRestDto.getCompanyCd();
+        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd);
 
+        ptsGroup= ptsGroup.stream().filter(map->map.get("restrictCd").toString().equals(priorityOrderRestDto.getRestrictCd()+"")).collect(Collectors.toList());
 
-        List<PriorityOrderRestrictJanDto> restrictJans = priorityOrderShelfDataMapper.getRestrictJans(priorityOrderRestDto,aud);
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
-        Class clazz = PriorityOrderRestrictJanDto.class;
-        for (int i = 1; i <= 10; i++) {
-            Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
-            Method setMethod = clazz.getMethod("set"+"ZokuseiName"+i, String.class);
-            for (PriorityOrderRestrictJanDto priorityOrderRestrictJanDto : restrictJans) {
-                for (PriorityOrderAttrValueDto attrValue : attrValues) {
-                    if (getMethod.invoke(priorityOrderRestrictJanDto)!=null&&getMethod.invoke(priorityOrderRestrictJanDto).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
-                        setMethod.invoke(priorityOrderRestrictJanDto,attrValue.getNm());
-                    }
-
-                }
-            }
-        }
-        return ResultMaps.result(ResultEnum.SUCCESS,restrictJans);
+        return ResultMaps.result(ResultEnum.SUCCESS,ptsGroup);
     }
 
     /**
@@ -122,6 +164,44 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         String authorCd = session.getAttribute("aud").toString();
         workPriorityOrderResultDataMapper.updateFaceNum(priorityOrderRestrictJanDto,authorCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public List<Map<String, Object>> getPtsGroup(String companyCd,Integer priorityOrderCd) {
+        String authorCd = session.getAttribute("aud").toString();
+        List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
+        List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
+        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        String commonPartsData = workPriorityOrderMst.getCommonPartsData();
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
+        List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
+        List<Map<String, Object>> restrictResult = restrictResultMapper.selectByPrimaryKey(priorityOrderCd);
+        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectNewJanZokusei(priorityOrderCd, id, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol);
+        for (int i = 0; i < zokuseiList.size(); i++) {
+            Map<String, Object> zokusei = zokuseiList.get(i);
+            for (Map<String, Object> restrict : restrictResult) {
+                int equalsCount = 0;
+                for (Integer integer : attrList) {
+                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer);
+                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer);
+
+                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
+                        equalsCount++;
+                    }
+                }
+
+                if(equalsCount == attrList.size()){
+                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
+                    zokusei.put("restrictCd", restrictCd);
+                }
+            }
+
+            zokuseiList.set(i, zokusei);
+        }
+        return zokuseiList;
     }
 
 }
