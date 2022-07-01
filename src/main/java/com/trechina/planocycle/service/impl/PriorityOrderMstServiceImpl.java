@@ -851,6 +851,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         PriorityOrderAttrDto priorityOrderAttrDto = new PriorityOrderAttrDto();
         priorityOrderAttrDto.setCompanyCd(companyCd);
         priorityOrderAttrDto.setPriorityOrderCd(priorityOrderCd);
+        priorityOrderAttrDto.setCommonPartsData(workPriorityOrderMst.getCommonPartsData());
         Map<String, Object> attributeList = priorityOrderMstAttrSortService.getAttributeList(priorityOrderAttrDto);
         Map<String, Object> attrGroup = priorityOrderMstAttrSortService.getAttrGroup(priorityOrderAttrDto);
 
@@ -885,6 +886,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, workPriorityOrderMst.getProductPowerCd());
         Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, workPriorityOrderMst.getProductPowerCd());
         productPowerInfo.setSku(skuNum);
+
+        Map<String, Object> attrDisplay = basicPatternMstService.getAttrDisplay(companyCd, priorityOrderCd);
         //商品の詳細
         List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd);
         map.put("workPriorityOrderMst",workPriorityOrderMst);
@@ -892,12 +895,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         map.put("attributeList",attributeList.get("data"));
         map.put("attrGroup",attrGroup.get("data"));
         map.put("workPriorityOrderSort",workPriorityOrderSort);
-        map.put("platformShedData",platformShedData);
+        //map.put("platformShedData",platformShedData);
         map.put("restrictData",restrictData.get("data"));
         map.put("ptsDetailData",ptsDetailData);
         map.put("ptsNewDetailData",ptsNewDetailData.get("data"));
         map.put("productPowerInfo",productPowerInfo);
-        map.put("janNewInfo",janNewInfo);
+        map.put("attrDisplay",attrDisplay.get("data"));
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
