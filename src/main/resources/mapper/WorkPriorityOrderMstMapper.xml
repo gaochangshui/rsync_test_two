@@ -13,11 +13,11 @@
     <result column="partition_val" jdbcType="SMALLINT" property="partitionVal" />
   </resultMap>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderMst">
-    insert into planocycle.work_priority_order_mst (company_cd, author_cd,area_name_cd, priority_order_cd, product_power_cd,
-      shelf_pattern_cd, attribute1, attribute2, common_parts_data,
+    insert into planocycle.work_priority_order_mst (company_cd, author_cd, priority_order_cd, product_power_cd,
+      shelf_pattern_cd , common_parts_data,
       partition_flag, partition_val)
-    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR},#{areaNameCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{productPowerCd,jdbcType=INTEGER},
-      #{shelfPatternCd,jdbcType=BIGINT}, #{attribute1,jdbcType=SMALLINT}, #{attribute2,jdbcType=SMALLINT}, #{commonPartsData}::json,
+    values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{productPowerCd,jdbcType=INTEGER},
+      #{shelfPatternCd,jdbcType=BIGINT}, #{commonPartsData}::json,
       #{partitionFlag,jdbcType=SMALLINT}, #{partitionVal,jdbcType=SMALLINT})
   </insert>
   <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderMst">
@@ -82,10 +82,10 @@
     </trim>
   </insert>
   <insert id="setWorkForFinal">
-    insert into planocycle.work_priority_order_mst(priority_order_cd,company_cd,author_cd,product_power_cd,shelf_pattern_cd,attribute1
-    ,attribute2,partition_flag,partition_val,area_name_cd)
-    select priority_order_cd,company_cd,#{authorCd},product_power_cd,shelf_pattern_cd,attribute1
-                            ,attribute2,partition_flag,partition_val,area_name_cd
+    insert into planocycle.work_priority_order_mst(priority_order_cd,company_cd,author_cd,product_power_cd,shelf_pattern_cd
+    ,attribute2,partition_flag,partition_val,common_parts_data,top_partition_val)
+    select priority_order_cd,company_cd,#{authorCd},product_power_cd,shelf_pattern_cd
+                            ,partition_flag,partition_val,common_parts_data,top_partition_val
     from planocycle.priority_order_mst
       where company_cd =  #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
