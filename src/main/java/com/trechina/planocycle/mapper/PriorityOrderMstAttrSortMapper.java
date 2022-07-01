@@ -81,4 +81,6 @@ public interface PriorityOrderMstAttrSortMapper {
     void deletFinal(String companyCd, Integer priorityOrderCd);
 
     void setFinalForWork(String companyCd, Integer priorityOrderCd);
+
+    void delete(String companyCd, Integer priorityOrderCd);
 }

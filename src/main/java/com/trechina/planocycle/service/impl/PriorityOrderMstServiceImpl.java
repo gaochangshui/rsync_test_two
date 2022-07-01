@@ -669,6 +669,16 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         priorityOrderJanReplaceMapper.workDelete(companyCd, authorCd, priorityOrderCd);
         //クリアワーク_priority_order_Cutテーブル
         priorityOrderJanCardMapper.workDelete(companyCd, priorityOrderCd, authorCd);
+        //sortテーブルをクリア
+        priorityOrderMstAttrSortMapper.delete(companyCd,priorityOrderCd);
+        //composeテーブルをクリア
+        basicPatternAttrMapper.delete(priorityOrderCd,companyCd);
+
+        basicPatternRestrictRelationMapper.deleteByPrimaryKey(priorityOrderCd,companyCd);
+
+        basicPatternRestrictResultMapper.deleteByPriorityCd(priorityOrderCd,companyCd);
+
+        basicPatternRestrictResultDataMapper.deleteByPrimaryKey(priorityOrderCd);
         //ptsCdの取得
         Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
         //クリアワーク_priority_order_pts_data
@@ -810,6 +820,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         Integer id = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);
         String aud = session.getAttribute("aud").toString();
         priorityOrderMstService.deleteWorkTable(companyCd, priorityOrderCd);
+
         priorityOrderJanCardMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         priorityOrderJanReplaceMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         priorityOrderJanNewMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
@@ -900,6 +911,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         if (isEdit > 0) {
             //編集→名前の更新
             priorityOrderMstMapper.updateOrderName(priorityOrderCd, priorityOrderName);
+            Map<String, Object> objectMap = priorityOrderMstService.saveAllWorkPriorityOrder(priorityOrderMstVO);
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
 
