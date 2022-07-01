@@ -2,7 +2,6 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.ImmutableMap;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.CommonPartsDto;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
@@ -375,15 +374,15 @@ public class CommonMstServiceImpl implements CommonMstService {
             Long face = jan.getFace();
             Long janWidth = width + partitionVal;
             Long janHeight = jan.getJanHeight() + topPartitionVal;
-
-            if(janHeight+topPartitionVal>tanaHeight){
-                Map<String, Object> errInfo = new HashMap<>();
-                errInfo.put("taiCd", Integer.parseInt(taiCd));
-                errInfo.put("tanaCd", Integer.parseInt(tanaCd));
-                errInfo.put("janHeight", janHeight);
-                errInfo.put("jan", jan.getJanCd());
-                return ImmutableMap.of("code",ResultEnum.HEIGHT_NOT_ENOUGH.getCode(),"data", errInfo);
-            }
+            //
+            //if(janHeight+topPartitionVal>tanaHeight){
+            //    Map<String, Object> errInfo = new HashMap<>();
+            //    errInfo.put("taiCd", Integer.parseInt(taiCd));
+            //    errInfo.put("tanaCd", Integer.parseInt(tanaCd));
+            //    errInfo.put("janHeight", janHeight);
+            //    errInfo.put("jan", jan.getJanCd());
+            //    return ImmutableMap.of("code",ResultEnum.HEIGHT_NOT_ENOUGH.getCode(),"data", errInfo);
+            //}
 
             if(janWidth*face + usedArea <= groupArea){
                 usedArea += janWidth*face + partitionVal;

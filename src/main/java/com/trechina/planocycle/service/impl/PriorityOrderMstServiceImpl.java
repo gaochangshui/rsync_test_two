@@ -901,7 +901,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         sortSettings.put("noRestrictionNum",productPowerInfo.getNoRestrictionNum());
 
         Map<String,Object> shelfPatternSettings = new HashMap<>();
-        shelfPatternSettings.put("shelfPatternCd",workPriorityOrderMst.getProductPowerCd());
+        shelfPatternSettings.put("shelfPatternCd",workPriorityOrderMst.getShelfPatternCd());
         shelfPatternSettings.put("shelfCd",workPriorityOrderMst.getShelfCd());
         shelfPatternSettings.put("commonPartsData",workPriorityOrderMst.getCommonPartsData());
         shelfPatternSettings.put("attrList",attrList);
