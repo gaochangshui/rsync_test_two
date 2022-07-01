@@ -72,4 +72,10 @@
          and company_cd=#{companyCd} and class_cd=#{classCd}
 
     </select>
+    <select id="getzokuseiName" resultType="java.util.Map">
+        select
+            zokusei_id,zokusei_nm
+        from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
+        order by zokusei_id
+    </select>
 </mapper>
