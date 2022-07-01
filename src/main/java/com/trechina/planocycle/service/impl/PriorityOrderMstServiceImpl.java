@@ -905,6 +905,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         shelfPatternSettings.put("shelfCd",workPriorityOrderMst.getShelfCd());
         shelfPatternSettings.put("commonPartsData",workPriorityOrderMst.getCommonPartsData());
         shelfPatternSettings.put("attrList",attrList);
+        shelfPatternSettings.put("taiNum",shelfPtsDataMapper.getTaiNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+        shelfPatternSettings.put("tanaNum",shelfPtsDataMapper.getTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
         //商品の詳細
         map.put("shelfPatternSettings",shelfPatternSettings);
         map.put("attributeList",attributeList.get("data"));
