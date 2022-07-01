@@ -888,18 +888,30 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         productPowerInfo.setSku(skuNum);
 
         Map<String, Object> attrDisplay = basicPatternMstService.getAttrDisplay(companyCd, priorityOrderCd);
+        Map<String,Object> sortSettings = new HashMap<>();
+        sortSettings.put("workPriorityOrderSort",workPriorityOrderSort);
+        sortSettings.put("partitionFlag",workPriorityOrderMst.getPartitionFlag());
+        sortSettings.put("partitionVal",workPriorityOrderMst.getPartitionVal());
+        sortSettings.put("topPartitionVal",workPriorityOrderMst.getTopPartitionVal());
+        sortSettings.put("productPowerCd",workPriorityOrderMst.getProductPowerCd());
+        sortSettings.put("productPowerName",productPowerInfo.getProductPowerName());
+        sortSettings.put("authorName",productPowerInfo.getAuthorName());
+        sortSettings.put("registered",productPowerInfo.getRegistered());
+        sortSettings.put("sku",productPowerInfo.getSku());
+        sortSettings.put("noRestrictionNum",productPowerInfo.getNoRestrictionNum());
+
+        Map<String,Object> shelfPatternSession = new HashMap<>();
+        shelfPatternSession.put("shelfPatternCd",workPriorityOrderMst.getProductPowerCd());
+        shelfPatternSession.put("shelfCd",workPriorityOrderMst.getShelfCd());
+        shelfPatternSession.put("commonPartsData",workPriorityOrderMst.getCommonPartsData());
+        shelfPatternSession.put("attrList",attrList);
         //商品の詳細
-        List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd);
-        map.put("workPriorityOrderMst",workPriorityOrderMst);
-        map.put("attrList",attrList);
+        map.put("shelfPatternSession",shelfPatternSession);
         map.put("attributeList",attributeList.get("data"));
         map.put("attrGroup",attrGroup.get("data"));
-        map.put("workPriorityOrderSort",workPriorityOrderSort);
-        //map.put("platformShedData",platformShedData);
-        map.put("restrictData",restrictData.get("data"));
+        map.put("SortSettings",sortSettings);
         map.put("ptsDetailData",ptsDetailData);
         map.put("ptsNewDetailData",ptsNewDetailData.get("data"));
-        map.put("productPowerInfo",productPowerInfo);
         map.put("attrDisplay",attrDisplay.get("data"));
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }

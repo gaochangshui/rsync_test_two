@@ -103,7 +103,7 @@
   </select>
   <select id="getWorkPriorityOrderMst" resultType="com.trechina.planocycle.entity.vo.WorkPriorityOrderMstEditVo">
     select product_power_cd as productPowerCd,shelf_pattern_cd as shelfPatternCd,common_parts_data as commonPartsData
-         ,partition_flag as partitionFlag,partition_val as partitionVal
+         ,partition_flag as partitionFlag,partition_val as partitionVal,top_partition_val
     from planocycle.work_priority_order_mst
     where priority_order_cd = #{priorityOrderCd} and company_cd = #{companyCd} and author_cd = #{authorCd}
   </select>
