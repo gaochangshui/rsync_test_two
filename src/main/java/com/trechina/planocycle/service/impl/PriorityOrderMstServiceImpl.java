@@ -881,12 +881,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             ptsDetailData.setPtsJanDataList(janData);
         }
         Map<String, Object> ptsNewDetailData = shelfPtsService.getNewPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue(),companyCd, priorityOrderCd);
-
+        Map<String, Object> ptsInfoTemp = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue(),priorityOrderCd);
         //商品力情報
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, workPriorityOrderMst.getProductPowerCd());
         Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, workPriorityOrderMst.getProductPowerCd());
         productPowerInfo.setSku(skuNum);
-
+        PtsDetailDataVo ptsDetailDataVo = (PtsDetailDataVo)ptsNewDetailData.get("data");
         Map<String, Object> attrDisplay = basicPatternMstService.getAttrDisplay(companyCd, priorityOrderCd);
         Map<String,Object> sortSettings = new HashMap<>();
         sortSettings.put("workPriorityOrderSort",workPriorityOrderSort);
@@ -907,6 +907,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         shelfPatternSettings.put("attrList",attrList);
         shelfPatternSettings.put("taiNum",shelfPtsDataMapper.getTaiNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
         shelfPatternSettings.put("tanaNum",shelfPtsDataMapper.getTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+        shelfPatternSettings.put("faceNum",ptsDetailData.getFaceNum());
+        shelfPatternSettings.put("skuNum",ptsDetailData.getSkuNum());
+
+        shelfPatternSettings.put("newTaiNum",ptsDetailDataVo.getTaiNum());
+        shelfPatternSettings.put("newTanaNum",ptsDetailDataVo.getTanaNum());
+        shelfPatternSettings.put("newSkuNum",ptsDetailDataVo.getSkuNum());
+        shelfPatternSettings.put("newFaceNum",ptsDetailData.getFaceNum());
         //商品の詳細
         map.put("shelfPatternSettings",shelfPatternSettings);
         map.put("attributeList",attributeList.get("data"));
