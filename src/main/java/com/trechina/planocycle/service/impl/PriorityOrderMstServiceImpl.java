@@ -905,15 +905,18 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         shelfPatternSettings.put("shelfCd",workPriorityOrderMst.getShelfCd());
         shelfPatternSettings.put("commonPartsData",workPriorityOrderMst.getCommonPartsData());
         shelfPatternSettings.put("attrList",attrList);
-        shelfPatternSettings.put("taiNum",shelfPtsDataMapper.getTaiNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
-        shelfPatternSettings.put("tanaNum",shelfPtsDataMapper.getTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
-        shelfPatternSettings.put("faceNum",ptsDetailData.getFaceNum());
-        shelfPatternSettings.put("skuNum",ptsDetailData.getSkuNum());
+        Map<String,Object> tanapattanNum = new HashMap<>();
 
-        shelfPatternSettings.put("newTaiNum",ptsDetailDataVo.getTaiNum());
-        shelfPatternSettings.put("newTanaNum",ptsDetailDataVo.getTanaNum());
-        shelfPatternSettings.put("newSkuNum",ptsDetailDataVo.getSkuNum());
-        shelfPatternSettings.put("newFaceNum",ptsDetailData.getFaceNum());
+        tanapattanNum.put("taiNum",shelfPtsDataMapper.getTaiNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+        tanapattanNum.put("tanaNum",shelfPtsDataMapper.getTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+        tanapattanNum.put("faceNum",ptsDetailData.getFaceNum());
+        tanapattanNum.put("skuNum",ptsDetailData.getSkuNum());
+
+        tanapattanNum.put("newTaiNum",ptsDetailDataVo.getTaiNum());
+        tanapattanNum.put("newTanaNum",ptsDetailDataVo.getTanaNum());
+        tanapattanNum.put("newSkuNum",ptsDetailDataVo.getSkuNum());
+        tanapattanNum.put("newFaceNum",ptsDetailData.getFaceNum());
+        shelfPatternSettings.put("tanapattanNum",tanapattanNum);
         //商品の詳細
         map.put("shelfPatternSettings",shelfPatternSettings);
         map.put("attributeList",attributeList.get("data"));
