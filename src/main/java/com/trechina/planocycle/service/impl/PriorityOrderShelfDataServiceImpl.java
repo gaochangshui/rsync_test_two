@@ -71,14 +71,17 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
 
         List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd);
-
+        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        String commonPartsData = workPriorityOrderMst.getCommonPartsData();
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+        List<Map<String, Object>> zokuseiNameList = zokuseiMstMapper.getzokuseiName(commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         Map<String, List<Map<String, Object>>> listMap = ptsGroup.stream().collect(Collectors.groupingBy(map -> {
             String attrKey = "";
             for (Integer col : attrList) {
                 if (attrKey.equals("")){
-                    attrKey += map.get("zokuseiName" + col);
+                    attrKey += zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+map.get("zokuseiName" + col);
                 }else {
-                    attrKey +="->"+ map.get("zokuseiName" + col);
+                    attrKey +="->"+zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+ map.get("zokuseiName" + col);
                 }
             }
 
@@ -93,7 +96,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             int face = 0;
             int sku =stringListEntry.getValue().size();
             for (Map<String, Object> objectMap : stringListEntry.getValue()) {
-            face = face + Integer.parseInt(objectMap.get("faceCount").toString());
+            face = face + Integer.parseInt(objectMap.get("faceNum").toString());
             }
             map.put("faceNum",face);
             map.put("skuNum",sku);
@@ -113,8 +116,10 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         String companyCd = priorityOrderRestDto.getCompanyCd();
         List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd);
 
-        ptsGroup= ptsGroup.stream().filter(map->map.get("restrictCd").toString().equals(priorityOrderRestDto.getRestrictCd()+"")).collect(Collectors.toList());
-
+        ptsGroup= ptsGroup.stream().filter(map->map.get("restrictCd").toString().equals(priorityOrderRestDto.getRestrictCd()+""))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanaCd")))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd")))
+                .collect(Collectors.toList());
         return ResultMaps.result(ResultEnum.SUCCESS,ptsGroup);
     }
 
@@ -141,7 +146,11 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         String companyCd = priorityOrderPlatformShedDto.getCompanyCd();
         List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd);
         ptsGroup= ptsGroup.stream().filter(map->map.get("taiCd").toString().equals(priorityOrderPlatformShedDto.getTaiCd()+"")&&
-                map.get("tanaCd").toString().equals(priorityOrderPlatformShedDto.getTanaCd()+"") ).collect(Collectors.toList());
+                map.get("tanaCd").toString().equals(priorityOrderPlatformShedDto.getTanaCd()+""))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"janCd")))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanaCd")))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd")))
+                .collect(Collectors.toList());
 
         return ResultMaps.result(ResultEnum.SUCCESS,ptsGroup);
     }

@@ -89,10 +89,11 @@
 
   <insert id="insertBySelect" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMst">
     insert into planocycle.priority_order_mst (company_cd, priority_order_cd,
-    product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd,editer_cd,
-    edit_time,create_time, priority_order_name,area_name_cd)
+    product_power_cd,shelf_pattern_cd,partition_flag,partition_val,author_cd,editer_cd,
+    edit_time,create_time, priority_order_name,common_parts_data,top_partition_val)
     select company_cd, priority_order_cd,
-    product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd,author_cd, now(),now(),#{priorityOrderName},area_name_cd
+    product_power_cd,shelf_pattern_cd,attribute1,attribute2,partition_flag,partition_val,author_cd,author_cd, now(),now(),#{priorityOrderName}
+    ,common_parts_data,top_partition_val
     from planocycle.work_priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     and author_cd=#{authorCd,jdbcType=VARCHAR}
