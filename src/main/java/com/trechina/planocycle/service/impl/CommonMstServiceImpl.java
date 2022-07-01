@@ -230,7 +230,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             if(!Objects.equals(currentTaiCd, nextTaiCd)){
                 tana.put("height", MapUtils.getInteger(tana, "taiHeight")-MapUtils.getInteger(tana, "tanaHeight"));
             }else{
-                tana.put("height", MapUtils.getInteger(nextTana, "tanaHeight")-MapUtils.getInteger(tana, "tanaHeight")-MapUtils.getInteger(tana, "tanaThickness"));
+                tana.put("height", MapUtils.getInteger(nextTana, "tanaHeight")-MapUtils.getInteger(tana, "tanaHeight")-MapUtils.getInteger(nextTana, "tanaThickness"));
             }
             currentTaiCd = taiCd;
         }

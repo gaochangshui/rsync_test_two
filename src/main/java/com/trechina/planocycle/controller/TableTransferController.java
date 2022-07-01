@@ -51,4 +51,9 @@ public class TableTransferController {
     public int janInfoTransfer() {
         return tableTransferService.getJanInfoTransfer();
     }
+
+    @GetMapping("syncZokuseiMst")
+    public void syncZokuseiMst() {
+        tableTransferService.syncZokuseiMst();
+    }
 }
