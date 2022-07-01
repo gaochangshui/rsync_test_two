@@ -907,8 +907,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         Map<String,Object> shelfPatternSettings = new HashMap<>();
         Map<String,Object> tanapattanNum = new HashMap<>();
-        tanapattanNum.put("shelfPatternCd",workPriorityOrderMst.getShelfPatternCd());
-        tanapattanNum.put("shelfCd",workPriorityOrderMst.getShelfCd());
+        shelfPatternSettings.put("shelfPatternCd",workPriorityOrderMst.getShelfPatternCd());
+        shelfPatternSettings.put("shelfCd",workPriorityOrderMst.getShelfCd());
         tanapattanNum.put("shelfPatternName",ptsInfoTemps.get("shelfPatternName"));
         tanapattanNum.put("shelfName",ptsInfoTemps.get("shelfName"));
         shelfPatternSettings.put("commonPartsData",workPriorityOrderMst.getCommonPartsData());
