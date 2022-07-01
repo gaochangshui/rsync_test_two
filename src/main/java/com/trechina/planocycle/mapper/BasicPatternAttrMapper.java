@@ -18,4 +18,6 @@ public interface BasicPatternAttrMapper {
     void deleteFinal(String companyCd, String authorCd, Integer priorityOrderCd);
 
     void setFinalForWork(String companyCd, String authorCd, Integer priorityOrderCd);
+
+    void setWorkForFinal(String companyCd, Integer priorityOrderCd);
 }

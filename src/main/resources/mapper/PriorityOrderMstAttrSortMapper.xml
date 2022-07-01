@@ -55,6 +55,12 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </insert>
+  <insert id="setWorkForFinal">
+    insert into planocycle.work_priority_order_mst_attrsort
+    select * from planocycle.priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </insert>
   <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />

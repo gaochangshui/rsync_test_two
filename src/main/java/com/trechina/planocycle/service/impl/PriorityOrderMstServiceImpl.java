@@ -831,9 +831,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderResultDataMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         workPriorityOrderSortMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         workPriorityOrderSpaceMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
+        priorityOrderMstAttrSortMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        basicPatternAttrMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        basicPatternRestrictRelationMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        basicPatternRestrictResultMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        basicPatternRestrictResultDataMapper.setWorkForFinal(companyCd,priorityOrderCd);
 
         //ptsIdの取得
-
         shelfPtsDataMapper.insertWorkPtsData(companyCd, aud, priorityOrderCd);
         shelfPtsDataMapper.insertWorkPtsTaiData(companyCd, aud, id);
         shelfPtsDataMapper.insertWorkPtsTanaData(companyCd, aud, id);
@@ -866,6 +870,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         //商品力点数表情報
         Map<String, Object> taiNumTanaNum = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue(), priorityOrderCd);
+        //sort情报
+        List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
         //陳列順情報の取得
         List<WorkPriorityOrderSortVo> workPriorityOrderSort = shelfPtsDataMapper.getDisplays(companyCd, aud, priorityOrderCd);
         //基本スタンド別情報の取得
@@ -873,7 +879,21 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //基本制約別情報の取得
         Map<String, Object> restrictData = priorityOrderShelfDataService.getRestrictData(companyCd, priorityOrderCd);
         //pts詳細の取得
-        Map<String, Object> ptsDetailData = shelfPtsService.getPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue(), companyCd, priorityOrderCd);
+        PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue());
+
+        if (ptsDetailData != null){
+            ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+            ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+            ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+            ptsDetailData.setSkuNum(shelfPtsDataMapper.getSkuNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+
+            List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(workPriorityOrderMst.getShelfPatternCd().intValue());
+            List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(workPriorityOrderMst.getShelfPatternCd().intValue());
+            List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(workPriorityOrderMst.getShelfPatternCd().intValue());
+            ptsDetailData.setPtsTaiList(taiData);
+            ptsDetailData.setPtsTanaVoList(tanaData);
+            ptsDetailData.setPtsJanDataList(janData);
+        }
         //商品力情報
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, workPriorityOrderMst.getProductPowerCd());
         Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, workPriorityOrderMst.getProductPowerCd());
@@ -881,13 +901,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //商品の詳細
         List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd);
         map.put("workPriorityOrderMst",workPriorityOrderMst);
-        map.put("workPriorityOrderSpace",workPriorityOrderSpace);
+        map.put("attrList",attrList);
         map.put("workPriorityOrderRestrictSet",workPriorityOrderRestrictSet);
         map.put("taiNumTanaNum",taiNumTanaNum.get("data"));
         map.put("workPriorityOrderSort",workPriorityOrderSort);
         map.put("platformShedData",platformShedData);
         map.put("restrictData",restrictData.get("data"));
-        map.put("ptsDetailData",ptsDetailData.get("data"));
+        map.put("ptsDetailData",ptsDetailData);
         map.put("productPowerInfo",productPowerInfo);
         map.put("janNewInfo",janNewInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,map);

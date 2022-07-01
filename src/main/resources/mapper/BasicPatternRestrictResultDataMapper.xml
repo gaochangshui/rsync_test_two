@@ -88,6 +88,11 @@
             face_fact =  #{faceFact,jdbcType=BIGINT}
         where   restrict_cd = #{restrictCd,jdbcType=BIGINT} AND priority_order_cd = #{priorityOrderCd,jdbcType=BIGINT} 
     </update>
+    <insert id="setWorkForFinal">
+        insert into planocycle.work_basic_pattern_restrict_result_data
+        select * from   planocycle.basic_pattern_restrict_result_data
+        where priority_order_cd = #{priorityOrderCd,jdbcType=BIGINT}
+    </insert>
     <insert id="setFinalForWork">
         insert into planocycle.basic_pattern_restrict_result_data
         select * from   planocycle.work_basic_pattern_restrict_result_data

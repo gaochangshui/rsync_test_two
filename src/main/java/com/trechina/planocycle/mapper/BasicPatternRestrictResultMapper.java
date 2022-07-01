@@ -40,4 +40,6 @@ public interface BasicPatternRestrictResultMapper {
     List<Map<String, Object>> selectNewJanZokusei(Integer priorityOrderCd, Integer ptsCd, List<ZokuseiMst> attrList
             , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName);
 
+    void setWorkForFinal(String companyCd, Integer priorityOrderCd);
+
 }

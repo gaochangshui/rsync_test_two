@@ -2,7 +2,10 @@ package com.trechina.planocycle.service.impl;
 
 import com.google.common.base.Joiner;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.*;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderRestDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
 import com.trechina.planocycle.entity.po.ZokuseiMst;
@@ -18,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -135,23 +137,13 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Override
     public Map<String, Object> getPlatformShedJans(PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-        String aud = session.getAttribute("aud").toString();
-        List<PriorityOrderRestrictJanDto> platformShedJans = priorityOrderShelfDataMapper.getPlatformShedJans(priorityOrderPlatformShedDto,aud);
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues1();
-        Class clazz = PriorityOrderRestrictJanDto.class;
-        for (int i = 1; i <= 10; i++) {
-            Method getMethod = clazz.getMethod("get"+"Zokusei"+i);
-            Method setMethod = clazz.getMethod("set"+"ZokuseiName"+i, String.class);
-            for (PriorityOrderRestrictJanDto priorityOrderRestrictJanDto : platformShedJans) {
-                for (PriorityOrderAttrValueDto attrValue : attrValues) {
-                    if (getMethod.invoke(priorityOrderRestrictJanDto)!=null&&getMethod.invoke(priorityOrderRestrictJanDto).equals(attrValue.getVal()) && attrValue.getZokuseiId()==i){
-                        setMethod.invoke(priorityOrderRestrictJanDto,attrValue.getNm());
-                    }
+        Integer priorityOrderCd = priorityOrderPlatformShedDto.getPriorityOrderCd();
+        String companyCd = priorityOrderPlatformShedDto.getCompanyCd();
+        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd);
+        ptsGroup= ptsGroup.stream().filter(map->map.get("taiCd").toString().equals(priorityOrderPlatformShedDto.getTaiCd()+"")&&
+                map.get("tanaCd").toString().equals(priorityOrderPlatformShedDto.getTanaCd()+"") ).collect(Collectors.toList());
 
-                }
-            }
-        }
-        return ResultMaps.result(ResultEnum.SUCCESS,platformShedJans);
+        return ResultMaps.result(ResultEnum.SUCCESS,ptsGroup);
     }
     /**
      * faceNumの保存
