@@ -2,7 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderJanCgiDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
 import com.trechina.planocycle.entity.po.*;
@@ -25,7 +25,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
@@ -848,28 +847,14 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd, aud);
         Integer shelfCd = workPriorityOrderMstMapper.getShelfName(workPriorityOrderMst.getShelfPatternCd().intValue());
         workPriorityOrderMst.setShelfCd(shelfCd);
-
-
-        //スペース情報
-        List<PriorityOrderAttrVO> workPriorityOrderSpace = priorityOrderSpaceMapper.workPriorityOrderSpace(companyCd, aud, priorityOrderCd);
-        //setテーブル情報
-        List<PriorityOrderRestrictSet> workPriorityOrderRestrictSet = priorityOrderRestrictSetMapper.getPriorityOrderRestrict(companyCd, aud, priorityOrderCd);
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
-        Class clazz = PriorityOrderRestrictSet.class;
-        for (int i = 1; i <= 10; i++) {
-            Method getMethod = clazz.getMethod("get" + "Zokusei" + i);
-            Method setMethod = clazz.getMethod("set" + "ZokuseiName" + i, String.class);
-            for (PriorityOrderRestrictSet priorityOrderRestrictSet : workPriorityOrderRestrictSet) {
-                for (PriorityOrderAttrValueDto attrValue : attrValues) {
-                    if (getMethod.invoke(priorityOrderRestrictSet) != null && getMethod.invoke(priorityOrderRestrictSet).equals(attrValue.getVal()) && attrValue.getZokuseiId() == i) {
-                        setMethod.invoke(priorityOrderRestrictSet, attrValue.getNm());
-                    }
-                }
-            }
-        }
+        //group保存
+        PriorityOrderAttrDto priorityOrderAttrDto = new PriorityOrderAttrDto();
+        priorityOrderAttrDto.setCompanyCd(companyCd);
+        priorityOrderAttrDto.setPriorityOrderCd(priorityOrderCd);
+        Map<String, Object> attributeList = priorityOrderMstAttrSortService.getAttributeList(priorityOrderAttrDto);
+        Map<String, Object> attrGroup = priorityOrderMstAttrSortService.getAttrGroup(priorityOrderAttrDto);
 
         //商品力点数表情報
-        Map<String, Object> taiNumTanaNum = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue(), priorityOrderCd);
         //sort情报
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
         //陳列順情報の取得
@@ -894,6 +879,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             ptsDetailData.setPtsTanaVoList(tanaData);
             ptsDetailData.setPtsJanDataList(janData);
         }
+        Map<String, Object> ptsNewDetailData = shelfPtsService.getNewPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue(),companyCd, priorityOrderCd);
+
         //商品力情報
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, workPriorityOrderMst.getProductPowerCd());
         Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, workPriorityOrderMst.getProductPowerCd());
@@ -902,12 +889,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd);
         map.put("workPriorityOrderMst",workPriorityOrderMst);
         map.put("attrList",attrList);
-        map.put("workPriorityOrderRestrictSet",workPriorityOrderRestrictSet);
-        map.put("taiNumTanaNum",taiNumTanaNum.get("data"));
+        map.put("attributeList",attributeList.get("data"));
+        map.put("attrGroup",attrGroup.get("data"));
         map.put("workPriorityOrderSort",workPriorityOrderSort);
         map.put("platformShedData",platformShedData);
         map.put("restrictData",restrictData.get("data"));
         map.put("ptsDetailData",ptsDetailData);
+        map.put("ptsNewDetailData",ptsNewDetailData.get("data"));
         map.put("productPowerInfo",productPowerInfo);
         map.put("janNewInfo",janNewInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,map);

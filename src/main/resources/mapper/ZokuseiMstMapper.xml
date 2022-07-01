@@ -60,7 +60,7 @@
                                                                               and company_cd=#{companyCd} and class_cd=#{classCd}
     </select>
     <select id="getZokuseiCol" resultType="map">
-        select case when "3" is null then zokusei_col :: integer else (zokusei_col :: INTEGER+1) end as zokusei_col,mst.zokusei_id
+        select case when "3" is null then zokusei_col :: integer else (zokusei_col :: INTEGER+1) end as zokusei_col,mst.zokusei_id,zokusei_col as cd_col
         from masterdb.planocycle_zokusei_mst mst
         left join "${companyCd}".prod_${classCd}_jan_kaisou_header_sys kaisou
         on kaisou."3" = trim(mst.zokusei_col :: VARCHAR)

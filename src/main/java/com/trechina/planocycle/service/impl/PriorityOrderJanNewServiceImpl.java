@@ -228,7 +228,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
             if (Integer.valueOf(objectMap.get("rank").toString())>ptsJanList.size()){
                 ptsJanList.add(objectMap);
             }else {
-                ptsJanList.add(Integer.valueOf(objectMap.get("rank").toString()) - 1, objectMap);
+            ptsJanList.add(Integer.valueOf(objectMap.get("rank").toString())-1,objectMap);
             }
         }
         i = 1;

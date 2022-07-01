@@ -83,7 +83,7 @@
   </insert>
   <insert id="setWorkForFinal">
     insert into planocycle.work_priority_order_mst(priority_order_cd,company_cd,author_cd,product_power_cd,shelf_pattern_cd
-    ,attribute2,partition_flag,partition_val,common_parts_data,top_partition_val)
+    ,partition_flag,partition_val,common_parts_data,top_partition_val)
     select priority_order_cd,company_cd,#{authorCd},product_power_cd,shelf_pattern_cd
                             ,partition_flag,partition_val,common_parts_data,top_partition_val
     from planocycle.priority_order_mst
@@ -102,7 +102,7 @@
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
   <select id="getWorkPriorityOrderMst" resultType="com.trechina.planocycle.entity.vo.WorkPriorityOrderMstEditVo">
-    select product_power_cd as productPowerCd,shelf_pattern_cd as shelfPatternCd,attribute1 as attrA,attribute2 as attrB,area_name_cd as areaNameCd
+    select product_power_cd as productPowerCd,shelf_pattern_cd as shelfPatternCd
          ,partition_flag as partitionFlag,partition_val as partitionVal
     from planocycle.work_priority_order_mst
     where priority_order_cd = #{priorityOrderCd} and company_cd = #{companyCd} and author_cd = #{authorCd}
