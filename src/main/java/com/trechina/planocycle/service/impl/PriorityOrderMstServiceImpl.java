@@ -764,10 +764,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             priorityOrderSortMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderSortMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
-            //sort_を保存rank、元のデータを削除
-            priorityOrderSortRankMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            priorityOrderSortRankMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
-
             //ptsデータの保存
             shelfPtsService.saveFinalPtsData(companyCd, authorCd, priorityOrderCd);
 

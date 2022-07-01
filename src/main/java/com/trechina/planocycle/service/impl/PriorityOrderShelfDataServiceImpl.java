@@ -204,4 +204,11 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         return zokuseiList;
     }
 
+    @Override
+    public Map<String, Object> getNewPlatformShedData(String companyCd, Integer priorityOrderCd) {
+        String authorCd = session.getAttribute("aud").toString();
+        List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getNewPlatformShedData(companyCd, authorCd,priorityOrderCd);
+        return ResultMaps.result(ResultEnum.SUCCESS,platformShedData);
+    }
+
 }

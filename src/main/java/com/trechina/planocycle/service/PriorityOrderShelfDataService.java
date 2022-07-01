@@ -46,4 +46,6 @@ public interface PriorityOrderShelfDataService {
      *
      */
     List<Map<String ,Object>> getPtsGroup(String companyCd, Integer priorityOrderCd);
+
+    Map<String, Object> getNewPlatformShedData(String companyCd, Integer priorityOrderCd);
 }
