@@ -15,7 +15,7 @@ public class PtsTanaVo {
     private String companyCd;
     private Integer priorityOrderCd;
     private List<BasicPatternRestrictRelation> group;
-    private Boolean add;
+    private String remarks;
 
     public Integer getTaiCd() {
         return taiCd;
@@ -97,12 +97,12 @@ public class PtsTanaVo {
         this.group = group;
     }
 
-    public Boolean getAdd() {
-        return add;
+    public String getRemarks() {
+        return remarks;
     }
 
-    public void setAdd(Boolean add) {
-        this.add = add;
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 
     @Override
@@ -118,7 +118,7 @@ public class PtsTanaVo {
                 ", companyCd='" + companyCd + '\'' +
                 ", priorityOrderCd=" + priorityOrderCd +
                 ", group=" + group +
-                ", add=" + add +
+                ", remarks=" + remarks +
                 '}';
     }
 }

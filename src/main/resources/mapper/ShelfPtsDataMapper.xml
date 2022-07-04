@@ -555,7 +555,7 @@
   </select>
   <select id="getNewTaiData" resultType="com.trechina.planocycle.entity.vo.PtsTaiVo">
     select
-      taiMst.tai_cd,taiMst.tai_height,taiMst.tai_width,taiMst.tai_depth,taiMst.tai_name,false as add
+      taiMst.tai_cd,taiMst.tai_height,taiMst.tai_width,taiMst.tai_depth,taiMst.tai_name
     from
       planocycle.work_priority_order_pts_data ptsData
         left join
@@ -565,18 +565,19 @@
   </select>
   <select id="getNewTanaData" resultType="com.trechina.planocycle.entity.vo.PtsTanaVo">
     select
-      tanaMst.tai_cd,tanaMst.tana_cd,tanaMst.tana_height,tanaMst.tana_width,tanaMst.tana_depth,tanaMst.tana_thickness,tanaMst.tana_type,false as add
+      tanaMst.tai_cd,tanaMst.tana_cd,tanaMst.tana_height,tanaMst.tana_width,tanaMst.tana_depth,tanaMst.tana_thickness,tanaMst.tana_type,'' as remarks
     from
       planocycle.work_priority_order_pts_data ptsData
         left join
       planocycle.work_priority_order_pts_data_tanamst tanaMst
       on ptsData."id" =  tanaMst.pts_cd
     where ptsData.priority_order_cd = #{priorityOrderCd}
+    order by tanaMst.tai_cd,tanaMst.tana_cd
   </select>
   <select id="getNewJanData" resultType="com.trechina.planocycle.entity.vo.PtsJanDataVo">
     select
       janData.tai_cd,janData.tana_cd,janData.tanaposition_cd,janData.jan,janData.face_count,janData.face_men,janData.face_kaiten,
-      janData.tumiagesu,janData.zaikosu,janData.face_displayflg,janData.face_position,janData.depth_display_num,false as add
+      janData.tumiagesu,janData.zaikosu,janData.face_displayflg,janData.face_position,janData.depth_display_num,'' as remarks
     from
       planocycle.work_priority_order_pts_data ptsData
         inner join

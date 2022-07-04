@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -709,27 +711,53 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             List<PtsTanaVo> newTanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
             List<PtsJanDataVo> newJanData = shelfPtsDataMapper.getNewJanData(priorityOrderCd);
             //既存台、棚、商品データ
-            List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
             List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
-            //新規台、棚、商品の標識
-            newTaiData.stream()
-                    .filter(map -> taiData.stream().noneMatch(map1 -> map1.getTaiCd().equals(map.getTaiCd())))
-                    .forEach(map -> map.setAdd(true));
+            //棚、商品の変更チェック
+            //棚変更：高さ変更
+            logger.info("start,{}",System.currentTimeMillis());
+            newTanaData.stream()
+                    .filter(map -> tanaData.stream().anyMatch(map1 -> map1.getTaiCd().equals(map.getTaiCd())
+                            && map1.getTanaCd().equals(map.getTanaCd())
+                            && !map1.getTanaHeight().equals(map.getTanaHeight())
+                    ))
+                    .forEach(map -> map.setRemarks(MagicString.MSG_HEIGHT_CHANGE.replace("{height}", String.valueOf(
+                            tanaData.stream().filter(map1 ->
+                                    map1.getTaiCd().equals(map.getTaiCd())
+                                            && map1.getTanaCd().equals(map.getTanaCd())).findFirst().get().getTanaHeight()))));
+            //棚変更：棚新規作成
             newTanaData.stream()
                     .filter(map -> tanaData.stream().noneMatch(map1 -> map1.getTaiCd().equals(map.getTaiCd())
                             && map1.getTanaCd().equals(map.getTanaCd())
-                            && map1.getTanaHeight().equals(map.getTanaHeight())
                     ))
-                    .forEach(map -> map.setAdd(true));
+                    .forEach(map -> map.setRemarks(MagicString.MSG_NEW_TANA));
+            //商品変更：新規商品
             newJanData.stream()
                     .filter(map -> janData.stream().noneMatch(map1 -> map1.getJan().equals(map.getJan())
-                            && map1.getTaiCd().equals(map.getTaiCd())
-                            && map1.getTanaCd().equals(map.getTanaCd())
-                            && map1.getTanapositionCd().equals(map.getTanapositionCd())
-                            && map1.getFaceCount().equals(map.getFaceCount())
                     ))
-                    .forEach(map -> map.setAdd(true));
+                    .forEach(map -> map.setRemarks(MagicString.MSG_NEW_JAN));
+            //商品変更：位置変更
+            newJanData.stream()
+                    .filter(map -> janData.stream().anyMatch(map1 -> map1.getJan().equals(map.getJan())
+                            && (!map1.getTaiCd().equals(map.getTaiCd())
+                            || !map1.getTanaCd().equals(map.getTanaCd())
+                            || !map1.getTanapositionCd().equals(map.getTanapositionCd()))
+                    ))
+                    .forEach(map -> {
+                        PtsJanDataVo oldPtsJanDataVo = janData.stream().filter(map1 -> map1.getJan().equals(map.getJan())).findFirst().get();
+                        map.setRemarks(MagicString.MSG_TANA_POSITION_CHANGE.replace("{tai}", String.valueOf(oldPtsJanDataVo.getTaiCd()))
+                                .replace("{tana}", String.valueOf(oldPtsJanDataVo.getTanaCd()))
+                                .replace("{position}", String.valueOf(oldPtsJanDataVo.getTanapositionCd())));
+                    });
+            //商品変更：フェース変更
+            newJanData.stream()
+                    .filter(map -> janData.stream().anyMatch(map1 -> map1.getJan().equals(map.getJan())
+                            && !map1.getFaceCount().equals(map.getFaceCount())
+                    ))
+                    .forEach(map -> map.setRemarks((StringUtils.hasLength(map.getRemarks()) ? map.getRemarks() + "," : "")
+                            + MagicString.MSG_FACE_CHANGE
+                            + janData.stream().filter(map1 -> map1.getJan().equals(map.getJan())).findFirst().get().getFaceCount()));
+            logger.info("end,{}", System.currentTimeMillis());
             ptsDetailData.setPtsTaiList(newTaiData);
             ptsDetailData.setPtsTanaVoList(newTanaData);
             ptsDetailData.setPtsJanDataList(newJanData);
