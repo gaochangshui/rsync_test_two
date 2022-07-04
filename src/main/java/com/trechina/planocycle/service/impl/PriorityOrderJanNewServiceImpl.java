@@ -187,6 +187,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
 
         List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(priorityOrderCd,
                 zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,shelfPatternCd,productPowerCd,mapAttr);
+
         for (Map<String, Object> datum : data) {
             if (errorMsgJan.contains(datum.get("janCd").toString())){
                 datum.put("errMsg","現状棚に並んでいる可能性がありますので削除してください。");
@@ -194,6 +195,15 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                 datum.put("errMsg","");
             }
         }
+        for (Map<String, Object> productPowerDatum : productPowerData) {
+            for (Map<String, Object> datum : data) {
+                if (productPowerDatum.get("janCd").toString().equals(datum.get("janCd"))){
+                    datum.put("errMsg","pts棚に並んでいる可能性がありますので削除してください。");
+                }
+
+            }
+        }
+
         if (!productPowerData.isEmpty()) {
             productPowerData = this.janSort(productPowerData, data, "rank");
         }
@@ -214,7 +224,6 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     public Map<String, Object> setJanNewInfo(List<JanMstPlanocycleVo> janMstPlanocycleVo) {
         String companyCd = janMstPlanocycleVo.get(0).getCompanyCd();
 
-
         priorityOrderJanNewMapper.deleteJanNewInfo(companyCd);
         priorityOrderJanNewMapper.setJanNewInfo(janMstPlanocycleVo,companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
@@ -234,6 +243,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     public List<Map<String, Object>> janSort(List<Map<String, Object>> ptsJanList, List<Map<String, Object>> JanNewList, String rankName) {
         ptsJanList = ptsJanList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
         JanNewList = JanNewList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
+        JanNewList = JanNewList.stream().filter(map->!map.get("errMsg").toString().equals("pts棚に並んでいる可能性がありますので削除してください。")).collect(Collectors.toList());
         int i = 1;
         for (Map<String, Object> objectMap : ptsJanList) {
             objectMap.put(rankName,i++);
