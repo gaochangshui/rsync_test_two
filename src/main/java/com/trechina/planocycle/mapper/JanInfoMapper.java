@@ -14,5 +14,6 @@ public interface JanInfoMapper {
     int setFinalForWork(@Param("finalTable")String finalTable,@Param("wkTable")String wkTable);
     void dropFinal(@Param("tableName") String tableName);
 
-    List<Map<String, Object>> selectJanClassify(String janInfoTb, Integer shelfPatternCd, List<ZokuseiMst> zokuseiList, List<Integer> cdList);
+    List<Map<String, Object>> selectJanClassify(String janInfoTb, Integer shelfPatternCd, List<ZokuseiMst> zokuseiList, List<Integer> cdList,
+                                                Map<String, String> sizeAndIrisuMap);
 }
