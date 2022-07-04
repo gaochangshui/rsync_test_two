@@ -91,7 +91,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
      *
      */
     @Override
-    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd, Integer priorityOrderCd) {
+    public Map<String, Object> getPriorityOrderJanNewInfo(String[] janCd,String companyCd, Integer priorityOrderCd,Integer model) {
 
         String authorCd = session.getAttribute("aud").toString();
         List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
@@ -104,7 +104,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
 
         List<Map<String,Object>> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getDynamicJanNameClassify(priorityOrderCd,
-                zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,janCd);
+                zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,janCd,model);
         List<String> listNew = new ArrayList();
         for (Map<String,Object> priorityOrderJanNewVO : priorityOrderJanNewVOList) {
             listNew.add( priorityOrderJanNewVO.get("janCd").toString());
