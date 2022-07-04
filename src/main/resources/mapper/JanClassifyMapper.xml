@@ -13,4 +13,8 @@
         select "1" as attr, "2" as attr_val, "3" as sort, "4" as "colSort" from ${tableName}  where "1" like '%_cd'
         order by "3"::integer;
     </select>
+    <select id="getSizeAndIrisu" resultType="java.util.Map">
+        select "1" "attr","3" "attrVal" from "9999".prod_0000_jan_attr_header_sys
+        where "1" in ('width', 'height', 'irisu');
+    </select>
 </mapper>

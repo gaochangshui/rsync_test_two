@@ -312,7 +312,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     @Override
-    public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd, Integer partition) {
+    public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd, Integer partition, Integer heightSpace) {
         String authorCd = session.getAttribute("aud").toString();
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         String uuid = UUID.randomUUID().toString();
@@ -335,7 +335,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
                 Integer minFaceNum = 1;
                 //仕切り板の厚さと仕切り板を使用して保存するかどうか
-                priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition);
+                priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition, heightSpace);
                 //まず社員番号に従ってワークシートのデータを削除します
                 workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
                 //制約条件の取得

@@ -548,7 +548,12 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
 
         List<WorkPriorityOrderResultDataDto> janNewList = resultData.stream().filter(dto -> dto.getRank()!=null && dto.getRank().equals(-1L)).collect(Collectors.toList());
-        List<WorkPriorityOrderResultDataDto> janList = resultData.stream().filter(dto -> dto.getRank()==null || !dto.getRank().equals(-1L)).collect(Collectors.toList());
+        List<WorkPriorityOrderResultDataDto> janList = resultData.stream().filter(dto -> dto.getRank()==null || !dto.getRank().equals(-1L))
+                .peek(dto->{
+                    if(dto.getRank()==null){
+                        dto.setRank(dto.getSkuRank());
+                    }
+                }).collect(Collectors.toList());
         if(!janNewList.isEmpty()){
             List<Map<String, Object>> janNewMapList = new Gson().fromJson(new Gson().toJson(janNewList), new TypeToken<List<Map<String, Object>>>() {
             }.getType());

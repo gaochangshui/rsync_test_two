@@ -286,7 +286,11 @@
     order by tai_cd,tana_cd,tanaposition_cd
   </select>
   <select id="selectJanByPatternCd" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
-    select jan "janCd", sku_rank,"restrictCd",face, width janWidth,height janHeight,irisu,tai_cd "taiCd", tana_cd "tanaCd" from
+    select jan "janCd", sku_rank,"restrictCd",face,tai_cd "taiCd", tana_cd "tanaCd"
+    <foreach collection="attrHeaderList" open="," item="item" separator=",">
+      coalesce(janmst."${item.attrVal}", '0') as "${item.attr}"
+    </foreach>
+    from
     (select coalesce(jan_new, jandata.jan) jan, sku_rank, restrict_cd "restrictCd", face,tai_cd,tana_cd from
     planocycle.shelf_pts_data_jandata jandata inner join planocycle.shelf_pts_data ptsdata on ptsdata.id=jandata.pts_cd
     inner join planocycle.work_basic_pattern_restrict_result_data resultdata on resultdata.jan=jandata.jan
@@ -295,6 +299,6 @@
     and janreplace.company_cd=resultdata.company_cd and resultdata.author_cd=janreplace.author_cd
     and resultdata.priority_order_cd=janreplace.priority_order_cd
      where shelf_pattern_cd=#{patternCd}
-    order by sku_rank) tmp left join masterdb.jan_mst janmst on janmst.jan_cd=tmp.jan
+    order by sku_rank) tmp left join "9999".prod_0000_jan_info janmst on janmst."1"=tmp.jan
   </select>
 </mapper>
