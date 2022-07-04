@@ -75,13 +75,14 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         String commonPartsData = workPriorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
         List<Map<String, Object>> zokuseiNameList = zokuseiMstMapper.getzokuseiName(commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+
         Map<String, List<Map<String, Object>>> listMap = ptsGroup.stream().collect(Collectors.groupingBy(map -> {
             String attrKey = "";
             for (Integer col : attrList) {
                 if (attrKey.equals("")){
-                    attrKey += zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+map.get("zokuseiName" + col);
+                    attrKey += zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+map.get("zokusei" + col);
                 }else {
-                    attrKey +="->"+zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+ map.get("zokuseiName" + col);
+                    attrKey +="->"+zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+ map.get("zokusei" + col);
                 }
             }
 
@@ -90,8 +91,16 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         }));
         List<Map<String,Object>> list = new ArrayList<>();
         for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : listMap.entrySet()) {
+            String attrKey = "";
+            for (Integer col : attrList) {
+                if (attrKey.equals("")){
+                    attrKey += zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+stringListEntry.getValue().get(0).get("zokuseiName"+col);
+                }else {
+                    attrKey +="->"+zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+ stringListEntry.getValue().get(0).get("zokuseiName"+col);;
+                }
+            }
             Map<String,Object> map = new HashMap<>();
-            map.put("restrictName",stringListEntry.getKey());
+            map.put("restrictName",attrKey);
             map.put("restrictCd",stringListEntry.getValue().get(0).get("restrictCd"));
             int face = 0;
             int sku =stringListEntry.getValue().size();

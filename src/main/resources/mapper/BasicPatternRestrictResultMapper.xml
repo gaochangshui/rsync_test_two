@@ -434,7 +434,8 @@
         <foreach collection="attrName" separator="," item="item" index="index">
             "${item.zokusei_col}" as "zokuseiName${item.zokusei_id}"
         </foreach>
-        ,tai_cd as "taiCd",tana_cd as "tanaCd","row_number"() over(order by tai_cd,tana_cd,coalesce(jan_new, jan)) as rank
+        ,tai_cd as "taiCd",tana_cd as "tanaCd","row_number"() over(order by tai_cd,tana_cd,coalesce(jan_new, jan)) as rank,
+        "2" as "janName"
         from planocycle.work_priority_order_pts_data_jandata jandata
         left join planocycle.work_priority_order_jan_replace replace on replace.priority_order_cd=#{priorityOrderCd} and jan_old=jandata.jan
         inner join ${proInfoTable} janinfo on  janinfo."1"=jandata.jan

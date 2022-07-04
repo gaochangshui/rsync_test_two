@@ -25,6 +25,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
@@ -880,15 +881,19 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             ptsDetailData.setPtsTanaVoList(tanaData);
             ptsDetailData.setPtsJanDataList(janData);
         }
-        Map<String, Object> ptsNewDetailData = shelfPtsService.getNewPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue(),companyCd, priorityOrderCd);
 
+        Map<String, Object> ptsNewDetailData = shelfPtsService.getNewPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue(),companyCd, priorityOrderCd);
+        Map<String, Object> ptsInfoTemp = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue(),priorityOrderCd);
         //商品力情報
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, workPriorityOrderMst.getProductPowerCd());
         Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, workPriorityOrderMst.getProductPowerCd());
         productPowerInfo.setSku(skuNum);
-
+        PtsDetailDataVo ptsDetailDataVo = (PtsDetailDataVo)ptsNewDetailData.get("data");
+        Map<String, Object> ptsInfoTemps =(Map<String, Object>)ptsInfoTemp.get("data");
         Map<String, Object> attrDisplay = basicPatternMstService.getAttrDisplay(companyCd, priorityOrderCd);
         Map<String,Object> sortSettings = new HashMap<>();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        String format = simpleDateFormat.format(productPowerInfo.getRegistered());
         sortSettings.put("workPriorityOrderSort",workPriorityOrderSort);
         sortSettings.put("partitionFlag",workPriorityOrderMst.getPartitionFlag());
         sortSettings.put("partitionVal",workPriorityOrderMst.getPartitionVal());
@@ -896,25 +901,37 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         sortSettings.put("productPowerCd",workPriorityOrderMst.getProductPowerCd());
         sortSettings.put("productPowerName",productPowerInfo.getProductPowerName());
         sortSettings.put("authorName",productPowerInfo.getAuthorName());
-        sortSettings.put("registered",productPowerInfo.getRegistered());
+        sortSettings.put("registered",format);
         sortSettings.put("sku",productPowerInfo.getSku());
         sortSettings.put("noRestrictionNum",productPowerInfo.getNoRestrictionNum());
 
         Map<String,Object> shelfPatternSettings = new HashMap<>();
-        shelfPatternSettings.put("shelfPatternCd",workPriorityOrderMst.getProductPowerCd());
+        Map<String,Object> tanapattanNum = new HashMap<>();
+        shelfPatternSettings.put("shelfPatternCd",workPriorityOrderMst.getShelfPatternCd());
         shelfPatternSettings.put("shelfCd",workPriorityOrderMst.getShelfCd());
+        tanapattanNum.put("shelfPatternName",ptsInfoTemps.get("shelfPatternName"));
+        tanapattanNum.put("shelfName",ptsInfoTemps.get("shelfName"));
         shelfPatternSettings.put("commonPartsData",workPriorityOrderMst.getCommonPartsData());
         shelfPatternSettings.put("attrList",attrList);
-        shelfPatternSettings.put("taiNum",shelfPtsDataMapper.getTaiNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
-        shelfPatternSettings.put("tanaNum",shelfPtsDataMapper.getTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+
+
+        tanapattanNum.put("taiNum",shelfPtsDataMapper.getTaiNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+        tanapattanNum.put("tanaNum",shelfPtsDataMapper.getTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+        tanapattanNum.put("faceNum",ptsDetailData.getFaceNum());
+        tanapattanNum.put("skuNum",ptsDetailData.getSkuNum());
+
+        tanapattanNum.put("newTaiNum",ptsDetailDataVo.getTaiNum());
+        tanapattanNum.put("newTanaNum",ptsDetailDataVo.getTanaNum());
+        tanapattanNum.put("newSkuNum",ptsDetailDataVo.getSkuNum());
+        tanapattanNum.put("newFaceNum",ptsDetailData.getFaceNum());
+        shelfPatternSettings.put("tanapattanNum",tanapattanNum);
         //商品の詳細
         map.put("shelfPatternSettings",shelfPatternSettings);
-        map.put("attributeList",attributeList.get("data"));
-        map.put("attrGroup",attrGroup.get("data"));
         map.put("SortSettings",sortSettings);
         map.put("ptsDetailData",ptsDetailData);
         map.put("ptsNewDetailData",ptsNewDetailData.get("data"));
         map.put("attrDisplay",attrDisplay.get("data"));
+        map.put("ptsInfoTemp",ptsInfoTemp.get("data"));
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
