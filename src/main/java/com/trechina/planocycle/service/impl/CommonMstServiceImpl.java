@@ -59,6 +59,8 @@ public class CommonMstServiceImpl implements CommonMstService {
     private HttpSession session;
     @Autowired
     private PriorityOrderJanNewService priorityOrderJanNewService;
+    @Autowired
+    private JanClassifyMapper janClassifyMapper;
 
     @Override
     public Map<String, Object> getAreaInfo(String companyCd) {
@@ -146,14 +148,14 @@ public class CommonMstServiceImpl implements CommonMstService {
                     }
 
                     Long faceSku = Optional.ofNullable(priorityOrderResultData.getFaceSku()).orElse(1L);
-                    Long janWidth = Optional.ofNullable(priorityOrderResultData.getJanWidth()).orElse(0L);
+                    Long janWidth = Optional.ofNullable(priorityOrderResultData.getWidth()).orElse(0L);
                     Long face = priorityOrderResultData.getFace();
 
                     //商品幅nullまたは0の場合はデフォルト幅67 mm、faceSku>1の必要にfaceSkuを乗じます
                     if (janWidth == 0) {
                         janWidth = 67 * faceSku;
                     }
-                    priorityOrderResultData.setJanWidth(janWidth);
+                    priorityOrderResultData.setWidth(janWidth);
 
                     long janTotalWidth = janWidth * face + partitionVal;
                     if (janTotalWidth + usedWidth <= width) {
@@ -208,7 +210,9 @@ public class CommonMstServiceImpl implements CommonMstService {
                                                   Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
                                                   List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
                                                   GetCommonPartsDataDto commonTableName, short partitionVal, short topPartitionVal) {
-        List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd);
+        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu();
+
+        List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd, sizeAndIrisu);
         List<Map<String, Object>> relationMap = restrictRelationMapper.selectByPriorityOrderCd(priorityOrderCd);
         List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
         List<Map<String, Object>> cutList = janCutMapper.selectJanCut(priorityOrderCd);
@@ -235,7 +239,8 @@ public class CommonMstServiceImpl implements CommonMstService {
         }
 
         //jan group relation restrict_cd
-        List<Map<String, Object>> newList = janNewMapper.selectJanNew(priorityOrderCd, allCdList, zokuseiMsts, commonTableName.getProInfoTable());
+        List<Map<String, Object>> newList = janNewMapper.selectJanNew(priorityOrderCd, allCdList, zokuseiMsts, commonTableName.getProInfoTable(),
+                sizeAndIrisu);
         for (int i = 0; i < newList.size(); i++) {
             Map<String, Object> zokusei = newList.get(i);
             for (Map<String, Object> restrict : restrictResult) {
@@ -363,17 +368,18 @@ public class CommonMstServiceImpl implements CommonMstService {
                 newJanDto.setFaceFact(jan.getFace());
                 newJanDto.setRank(-1L);
                 newJanDto.setRestrictCd(MapUtils.getLong(newJan, MagicString.RESTRICT_CD));
-                newJanDto.setJanWidth(MapUtils.getLong(newJan, "width"));
-                newJanDto.setJanHeight(MapUtils.getLong(newJan, "height"));
+                newJanDto.setWidth(MapUtils.getLong(newJan, "width"));
+                newJanDto.setHeight(MapUtils.getLong(newJan, "height"));
+                newJanDto.setIrisu(MapUtils.getLong(newJan, "irisu"));
             }else{
                 BeanUtils.copyProperties(jan, newJanDto);
                 newJanDto.setFaceFact(jan.getFace());
             }
 
-            Long width = jan.getJanWidth();
+            Long width = jan.getWidth();
             Long face = jan.getFace();
             Long janWidth = width + partitionVal;
-            Long janHeight = jan.getJanHeight() + topPartitionVal;
+            Long janHeight = jan.getHeight() + topPartitionVal;
             //
             //if(janHeight+topPartitionVal>tanaHeight){
             //    Map<String, Object> errInfo = new HashMap<>();
@@ -397,7 +403,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     newJanDto.setTanaCd(Integer.parseInt(tanaCd));
                     adoptJan.add(newJanDto);
                     jan.setAdoptFlag(1);
-                    usedArea+=newJanDto.getJanWidth()*newJanDto.getFaceFact()+partitionVal;
+                    usedArea+=newJanDto.getWidth()*newJanDto.getFaceFact()+partitionVal;
                 }
             }
         }
@@ -426,7 +432,7 @@ public class CommonMstServiceImpl implements CommonMstService {
     private boolean isSetJanByCutFace(List<PriorityOrderResultDataDto> resultDataDtoList, double width, double usedWidth, long partitionVal,
                                       long minFace, PriorityOrderResultDataDto targetResultData){
         Long face = targetResultData.getFace();
-        Long janWidth = targetResultData.getJanWidth();
+        Long janWidth = targetResultData.getWidth();
 
         //使用可能な幅が残ります(仕切りがある場合を考慮する必要があります)
         double remainderWidth = width - usedWidth;
@@ -456,7 +462,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             }
 
             //最小faceで放置すると、どのくらいの幅が必要か(仕切りがある場合を考慮する必要がある)+残りの無駄な幅
-            long needWidth = targetResultData.getJanWidth() * minFace + partitionVal;
+            long needWidth = targetResultData.getWidth() * minFace + partitionVal;
             PriorityOrderResultDataDto currentResultData = null;
             for (int i = resultDataDtoByIrisu.size()-1; i >= 0 ; i--) {
                 currentResultData = resultDataDtoByIrisu.get(i);
@@ -465,7 +471,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 //最小face以下ではcutできません
                 //現在の商品は1つのface数を減らして、目標の商品を置くことができますか
                 //Cut 1つのfaceの幅に残りの幅を加えてターゲットの上に置くのに必要な幅を満たすことができるかどうか
-                if(faceFact > minFace && currentResultData.getJanWidth() + remainderWidth >= needWidth){
+                if(faceFact > minFace && currentResultData.getWidth() + remainderWidth >= needWidth){
                     currentResultData.setFaceFact(faceFact -  1);
                     targetResultData.setFaceFact(minFace);
                     isSetByCut = true;

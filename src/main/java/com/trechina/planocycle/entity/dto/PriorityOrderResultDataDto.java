@@ -38,8 +38,16 @@ public class PriorityOrderResultDataDto {
     private Long faceKeisan;
     private Double salesCnt;
 
-    private Long janWidth;
-    private Long janHeight;
+    private Long width;
+    private Long height;
+
+    public Long getHeight() {
+        return height;
+    }
+
+    public void setHeight(Long height) {
+        this.height = height;
+    }
 
     public Long getRank() {
         return rank;
@@ -193,19 +201,11 @@ public class PriorityOrderResultDataDto {
         this.salesCnt = salesCnt;
     }
 
-    public Long getJanWidth() {
-        return janWidth;
+    public Long getWidth() {
+        return width;
     }
 
-    public void setJanWidth(Long janWidth) {
-        this.janWidth = janWidth;
-    }
-
-    public Long getJanHeight() {
-        return janHeight;
-    }
-
-    public void setJanHeight(Long janHeight) {
-        this.janHeight = janHeight;
+    public void setWidth(Long width) {
+        this.width = width;
     }
 }

@@ -133,6 +133,9 @@
         <if test="partition == null and partition != ''">
           partition_val = 0 , partition_flag = 0
         </if>
+        <if test="heightSpace != null and heightSpace != ''">
+          top_partition_val = #{heightSpace}
+        </if>
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd = #{authorCd}
     </update>
 </mapper>

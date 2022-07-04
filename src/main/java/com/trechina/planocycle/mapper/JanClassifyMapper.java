@@ -15,4 +15,6 @@ public interface JanClassifyMapper {
     List<Map<String, Object>> getJanClassify(@Param("tableName") String tableName);
 
     List<Map<String, Object>> getColCdClassify(@Param("tableName") String tableName);
+
+    List<Map<String, Object>> getSizeAndIrisu();
 }
