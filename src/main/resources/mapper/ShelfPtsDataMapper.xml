@@ -493,6 +493,10 @@
   <delete id="deletePtsDataJandata">
     delete from planocycle.work_priority_order_pts_data_jandata where pts_cd=#{ptsCd}
   </delete>
+  <delete id="deletePtsJandataByPriorityOrderCd">
+    delete from planocycle.work_priority_order_pts_data_jandata where pts_cd in (select id from planocycle.work_priority_order_pts_data
+    where priority_order_cd=#{priorityOrderCd})
+  </delete>
   <delete id="deleteWorkPtsData">
     delete from planocycle.priority_order_pts_data where id=#{ptsCd}
   </delete>
