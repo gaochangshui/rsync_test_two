@@ -159,9 +159,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd);
         ptsGroup= ptsGroup.stream().filter(map->map.get("taiCd").toString().equals(priorityOrderPlatformShedDto.getTaiCd()+"")&&
                 map.get("tanaCd").toString().equals(priorityOrderPlatformShedDto.getTanaCd()+""))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"janCd")))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanaCd")))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd")))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank")))
                 .collect(Collectors.toList());
 
         return ResultMaps.result(ResultEnum.SUCCESS,ptsGroup);
