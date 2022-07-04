@@ -63,7 +63,7 @@ public interface PriorityOrderJanNewMapper {
     List<JanMstPlanocycleVo> getJanNewInfo(@Param("companyCd")String companyCd);
 
     List<Map<String,Object>> getDynamicJanNameClassify(Integer priorityOrderCd, List<ZokuseiMst> attrList
-            , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName,String [] janCd);
+            , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName,String [] janCd,Integer model);
 
     List<String> getErrorMsgJan(String companyCd, Integer priorityOrderCd);
 }

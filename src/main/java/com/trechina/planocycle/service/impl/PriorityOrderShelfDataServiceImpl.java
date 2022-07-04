@@ -15,6 +15,8 @@ import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.PriorityOrderShelfDataService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.apache.commons.collections4.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +60,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
     private HttpSession session;
-
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
      * 新規では基本的なパター制約に関する情報を入手
      * @param companyCd
@@ -71,6 +73,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
 
         List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd);
+        logger.info("ptsGroup：{}",ptsGroup);
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         String commonPartsData = workPriorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
@@ -171,7 +174,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setFaceNumForData(List<PriorityOrderRestrictJanDto> priorityOrderRestrictJanDto) {
-        String authorCd = session.getAttribute("aud").toString();
+        logger.info("faceを保存するパラメータは:{}",priorityOrderRestrictJanDto);
         Integer ptsCd = workPriorityOrderResultDataMapper.getPtsCd(priorityOrderRestrictJanDto.get(0).getPriorityOrderCd());
         workPriorityOrderResultDataMapper.updateFaceNum(priorityOrderRestrictJanDto,ptsCd);
         return ResultMaps.result(ResultEnum.SUCCESS);

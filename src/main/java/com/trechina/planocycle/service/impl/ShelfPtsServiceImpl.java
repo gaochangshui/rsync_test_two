@@ -363,12 +363,10 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Override
     public Map<String, Object> setDisplay(List<WorkPriorityOrderSort> workPriorityOrderSort) {
         String aud = httpSession.getAttribute("aud").toString();
-        String companyCd = null;
-        for (WorkPriorityOrderSort priorityOrderSort : workPriorityOrderSort) {
-            companyCd=  priorityOrderSort.getCompanyCd();
-        }
-        shelfPtsDataMapper.deleteDisplay(companyCd,aud);
-        if (workPriorityOrderSort.isEmpty()){
+        String companyCd = workPriorityOrderSort.get(0).getCompanyCd();
+        Integer priorityOrderCd = workPriorityOrderSort.get(0).getPriorityOrderCd();
+        shelfPtsDataMapper.deleteDisplay(companyCd,priorityOrderCd);
+        if (workPriorityOrderSort.get(0).getSortNum() == null){
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
         shelfPtsDataMapper.setDisplay(workPriorityOrderSort,aud);
