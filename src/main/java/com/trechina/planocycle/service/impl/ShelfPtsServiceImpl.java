@@ -658,14 +658,12 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Transactional(rollbackFor = Exception.class)
     public Map<String,Object> setPtsTanaSize(List<PtsTanaVo> ptsTanaVoList) {
         try {
+
             Integer priorityOrderCd = ptsTanaVoList.get(0).getPriorityOrderCd();
             String companyCd = ptsTanaVoList.get(0).getCompanyCd();
             String authorCd = httpSession.getAttribute("aud").toString();
             Integer taiCd = ptsTanaVoList.get(0).getTaiCd();
-            //List<BasicPatternRestrictRelation> list = new ArrayList<>();
-            //for (PtsTanaVo ptsTanaVo : ptsTanaVoList) {
-            //    list.addAll(ptsTanaVo.getGroup());
-            //}
+            shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
             for (PtsTanaVo ptsTanaVo : ptsTanaVoList) {
                 if (ptsTanaVo.getGroup().isEmpty()){
                     ArrayList<BasicPatternRestrictRelation> group = new ArrayList<>();

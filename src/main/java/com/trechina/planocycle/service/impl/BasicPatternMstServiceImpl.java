@@ -2,7 +2,6 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -114,7 +113,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         priorityOrderMst.setShelfPatternCd((long)shelfPatternCd);
 
         shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
-        workPriorityOrderMstMapper.deleteByAuthorCd(autoDetectVO.getCompanyCd(), aud, autoDetectVO.getPriorityOrderCd());
         workPriorityOrderMstMapper.insert(priorityOrderMst);
         List<Integer> list = Arrays.asList(zokuseiIds.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
 
@@ -469,6 +467,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = basicPatternRestrictRelation.getCompanyCd();
         Long priorityOrderCd = basicPatternRestrictRelation.getPriorityOrderCd();
+        shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd.intValue());
         if (basicPatternRestrictRelation.getRestrictCd()== null){
             basicPatternRestrictRelation.setRestrictCd(9999L);
         }

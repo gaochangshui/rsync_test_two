@@ -467,8 +467,8 @@
     ,tana_type,create_time,author_cd,edit_time,editer_cd)
     values
     <foreach collection="ptsTanaVoList" separator="," item="item" >
-      (#{companyCd},#{id},#{item.taiCd},#{item.tanaCd},#{item.tanaHeight},#{item.tanaWidth},#{item.tanaDepth},#{item.tanaThickness}
-      ,#{item.tanaType},now(),#{authorCd},now(),#{authorCd})
+      (#{companyCd},#{id},#{item.taiCd},#{item.tanaCd},#{item.tanaHeight},#{item.tanaWidth},#{item.tanaDepth},#{item.tanaThickness},1
+      ,now(),#{authorCd},now(),#{authorCd})
     </foreach>
   </insert>
   <insert id="insertPtsData1">

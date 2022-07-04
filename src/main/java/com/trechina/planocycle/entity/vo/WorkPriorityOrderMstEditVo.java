@@ -14,7 +14,9 @@ public class WorkPriorityOrderMstEditVo {
     private Short partitionVal;
 
     private String commonPartsData;
+
     private Integer topPartitionVal;
+    private Integer topPartitionFlag;
 
     public Integer getProductPowerCd() {
         return productPowerCd;
@@ -72,6 +74,14 @@ public class WorkPriorityOrderMstEditVo {
         this.topPartitionVal = topPartitionVal;
     }
 
+    public Integer getTopPartitionFlag() {
+        return topPartitionFlag;
+    }
+
+    public void setTopPartitionFlag(Integer topPartitionFlag) {
+        this.topPartitionFlag = topPartitionFlag;
+    }
+
     @Override
     public String toString() {
         return "WorkPriorityOrderMstEditVo{" +
@@ -82,6 +92,7 @@ public class WorkPriorityOrderMstEditVo {
                 ", partitionVal=" + partitionVal +
                 ", commonPartsData='" + commonPartsData + '\'' +
                 ", topPartitionVal=" + topPartitionVal +
+                ", topPartitionFlag=" + topPartitionFlag +
                 '}';
     }
 }

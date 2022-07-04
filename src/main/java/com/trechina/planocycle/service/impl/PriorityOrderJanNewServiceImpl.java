@@ -12,8 +12,6 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
-import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
-import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.apache.commons.collections4.MapUtils;
@@ -35,19 +33,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Autowired
     private PriorityOrderJanNewMapper priorityOrderJanNewMapper;
     @Autowired
-    private PriorityOrderJanAttributeMapper priorityOrderJanAttributeMapper;
-    @Autowired
-    private PriorityOrderDataMapper priorityOrderDataMapper;
-    @Autowired
-    private PriorityOrderJanReplaceService priorityOrderJanReplaceService;
-    @Autowired
-    private PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
-    @Autowired
-    private ProductPowerMstMapper productPowerMstMapper;
-    @Autowired
     private BasicPatternMstService basicPatternMstService;
-    @Autowired
-    private PriorityOrderMstAttrSortService priorityOrderMstAttrSortService;
     @Autowired
     private PriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
@@ -58,6 +44,9 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     private PriorityOrderMstAttrSortMapper attrSortMapper;
     @Autowired
     private ZokuseiMapper zokuseiMapper;
+    @Autowired
+    private ShelfPtsDataMapper shelfPtsDataMapper;
+
     /**
      * 新規janListの取得
      *
@@ -132,6 +121,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = null;
         Integer priorityOrderCd = null;
+        shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
         for (PriorityOrderJanNew orderJanNew : priorityOrderJanNew) {
             companyCd = orderJanNew.getCompanyCd();
             priorityOrderCd = orderJanNew.getPriorityOrderCd();
@@ -197,6 +187,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
 
         List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(priorityOrderCd,
                 zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,shelfPatternCd,productPowerCd,mapAttr);
+
         for (Map<String, Object> datum : data) {
             if (errorMsgJan.contains(datum.get("janCd").toString())){
                 datum.put("errMsg","現状棚に並んでいる可能性がありますので削除してください。");
@@ -204,6 +195,15 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                 datum.put("errMsg","");
             }
         }
+        for (Map<String, Object> productPowerDatum : productPowerData) {
+            for (Map<String, Object> datum : data) {
+                if (productPowerDatum.get("janCd").toString().equals(datum.get("janCd"))){
+                    datum.put("errMsg","pts棚に並んでいる可能性がありますので削除してください。");
+                }
+
+            }
+        }
+
         if (!productPowerData.isEmpty()) {
             productPowerData = this.janSort(productPowerData, data, "rank");
         }
@@ -224,7 +224,6 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     public Map<String, Object> setJanNewInfo(List<JanMstPlanocycleVo> janMstPlanocycleVo) {
         String companyCd = janMstPlanocycleVo.get(0).getCompanyCd();
 
-
         priorityOrderJanNewMapper.deleteJanNewInfo(companyCd);
         priorityOrderJanNewMapper.setJanNewInfo(janMstPlanocycleVo,companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
@@ -244,6 +243,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     public List<Map<String, Object>> janSort(List<Map<String, Object>> ptsJanList, List<Map<String, Object>> JanNewList, String rankName) {
         ptsJanList = ptsJanList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
         JanNewList = JanNewList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
+        JanNewList = JanNewList.stream().filter(map->!map.get("errMsg").toString().equals("pts棚に並んでいる可能性がありますので削除してください。")).collect(Collectors.toList());
         int i = 1;
         for (Map<String, Object> objectMap : ptsJanList) {
             objectMap.put(rankName,i++);
