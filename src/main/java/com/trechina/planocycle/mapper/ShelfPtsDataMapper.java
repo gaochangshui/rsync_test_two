@@ -135,6 +135,7 @@ public interface ShelfPtsDataMapper {
     int deleteWorkPtsData(@Param("ptsCd")Integer ptsCd);
 
     int deletePtsDataJandata(@Param("ptsCd")Integer ptsCd);
+    int deletePtsJandataByPriorityOrderCd(Integer priorityOrderCd);
 
     ShelfPtsData selectPtsCdByAuthorCd(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,
                               @Param("priorityOrderCd")Integer priorityOrderCd, @Param("patternCd") Long patternCd);
