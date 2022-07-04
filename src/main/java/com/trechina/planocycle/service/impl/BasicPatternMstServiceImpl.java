@@ -428,7 +428,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 if(partitionFlag==null  || partitionFlag.equals((short)0)){
                     partitionVal = 0;
                 }
-                Short topPartitionVal = 0;
+                Short topPartitionVal = null;
                 if (finalHeightSpace!=null) {
                     topPartitionVal = finalHeightSpace.shortValue();
                 }
