@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.WorkPriorityOrderJanNewMapper">
     <select id="selectJanNew" resultType="map">
-        select jan_new as jan,face,sku_rank,jan_rank, width, height
+        select jan_new as jan,face,sku_rank,jan_rank, width, height,irisu
         <foreach collection="attrList" item="item1" open="," separator=",">
             <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">"${item1.zokuseiCol}"</if>
             <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
