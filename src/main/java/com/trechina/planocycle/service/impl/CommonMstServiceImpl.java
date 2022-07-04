@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableMap;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.CommonPartsDto;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
@@ -209,7 +210,7 @@ public class CommonMstServiceImpl implements CommonMstService {
     public Map<String, Object> commSetJanForShelf(Integer patternCd, String companyCd, Integer priorityOrderCd,
                                                   Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
                                                   List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
-                                                  GetCommonPartsDataDto commonTableName, short partitionVal, short topPartitionVal) {
+                                                  GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal) {
         List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu();
 
         List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd, sizeAndIrisu);
@@ -340,7 +341,7 @@ public class CommonMstServiceImpl implements CommonMstService {
         return ResultMaps.result(ResultEnum.SUCCESS, adoptJan);
     }
 
-    private Map<String, Object> doSetJan(List<Map<String, Object>> cutList, List<Map<String, Object>> newList, short partitionVal, short topPartitionVal,
+    private Map<String, Object> doSetJan(List<Map<String, Object>> cutList, List<Map<String, Object>> newList, Short partitionVal, Short topPartitionVal,
                           Integer minFace, List<PriorityOrderResultDataDto> adoptJan, List<PriorityOrderResultDataDto> jans,
                           Map<String, Object> relation, Integer tanaWidth, Integer tanaHeight, String taiCd, String tanaCd){
         String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
@@ -367,6 +368,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 newJanDto.setTanaCd(MapUtils.getInteger(newJan, "tanaCd"));
                 newJanDto.setFaceFact(jan.getFace());
                 newJanDto.setRank(-1L);
+                newJanDto.setSkuRank(MapUtils.getLong(newJan, "sku_rank"));
                 newJanDto.setRestrictCd(MapUtils.getLong(newJan, MagicString.RESTRICT_CD));
                 newJanDto.setWidth(MapUtils.getLong(newJan, "width"));
                 newJanDto.setHeight(MapUtils.getLong(newJan, "height"));
@@ -379,16 +381,19 @@ public class CommonMstServiceImpl implements CommonMstService {
             Long width = jan.getWidth();
             Long face = jan.getFace();
             Long janWidth = width + partitionVal;
-            Long janHeight = jan.getHeight() + topPartitionVal;
-            //
-            //if(janHeight+topPartitionVal>tanaHeight){
-            //    Map<String, Object> errInfo = new HashMap<>();
-            //    errInfo.put("taiCd", Integer.parseInt(taiCd));
-            //    errInfo.put("tanaCd", Integer.parseInt(tanaCd));
-            //    errInfo.put("janHeight", janHeight);
-            //    errInfo.put("jan", jan.getJanCd());
-            //    return ImmutableMap.of("code",ResultEnum.HEIGHT_NOT_ENOUGH.getCode(),"data", errInfo);
-            //}
+
+            if(topPartitionVal!=null){
+                Long janHeight = jan.getHeight() + topPartitionVal;
+                if(janHeight+topPartitionVal>tanaHeight){
+                    Map<String, Object> errInfo = new HashMap<>();
+                    errInfo.put("taiCd", Integer.parseInt(taiCd));
+                    errInfo.put("tanaCd", Integer.parseInt(tanaCd));
+                    errInfo.put("janHeight", janHeight);
+                    errInfo.put("jan", jan.getJanCd());
+                    errInfo.put("restrictCd", jan.getRestrictCd());
+                    return ImmutableMap.of("code",ResultEnum.HEIGHT_NOT_ENOUGH.getCode(),"data", errInfo);
+                }
+            }
 
             if(janWidth*face + usedArea <= groupArea){
                 usedArea += janWidth*face + partitionVal;

@@ -51,26 +51,13 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Autowired
     private PriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
-    private JanClassifyMapper janClassifyMapper;
-    @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
-    @Autowired
-    private WorkPriorityOrderJanNewAttrMapper workPriorityOrderJanNewAttrMapper;
-    @Autowired
-    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     @Autowired
     private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
     @Autowired
     private PriorityOrderMstAttrSortMapper attrSortMapper;
     @Autowired
     private ZokuseiMapper zokuseiMapper;
-    @Autowired
-    private BasicPatternRestrictResultMapper restrictResultMapper;
-    @Autowired
-    private BasicPatternRestrictResultMapper basicPatternRestrictResultMapper;
-
-
-
     /**
      * 新規janListの取得
      *
@@ -218,7 +205,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
             }
         }
         if (!productPowerData.isEmpty()) {
-            productPowerData = this.janSort(productPowerData, data);
+            productPowerData = this.janSort(productPowerData, data, "rank");
         }
         List list1 = new ArrayList();
         list1.add(data);
@@ -254,23 +241,23 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     }
 
     @Override
-    public List<Map<String, Object>> janSort(List<Map<String, Object>> ptsJanList, List<Map<String, Object>> JanNewList) {
-        ptsJanList = ptsJanList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, "rank"))).collect(Collectors.toList());
-        JanNewList = JanNewList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, "rank"))).collect(Collectors.toList());
+    public List<Map<String, Object>> janSort(List<Map<String, Object>> ptsJanList, List<Map<String, Object>> JanNewList, String rankName) {
+        ptsJanList = ptsJanList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
+        JanNewList = JanNewList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
         int i = 1;
         for (Map<String, Object> objectMap : ptsJanList) {
-            objectMap.put("rank",i++);
+            objectMap.put(rankName,i++);
         }
         for (Map<String, Object> objectMap : JanNewList) {
-            if (Integer.parseInt(objectMap.get("rank").toString())>ptsJanList.size()){
+            if (Integer.parseInt(objectMap.get(rankName).toString())>ptsJanList.size()){
                 ptsJanList.add(objectMap);
             }else {
-            ptsJanList.add(Integer.parseInt(objectMap.get("rank").toString())-1,objectMap);
+            ptsJanList.add(Integer.parseInt(objectMap.get(rankName).toString())-1,objectMap);
             }
         }
         i = 1;
         for (Map<String, Object> objectMap : ptsJanList) {
-            objectMap.put("rank",i++);
+            objectMap.put(rankName,i++);
         }
         return ptsJanList;
     }
