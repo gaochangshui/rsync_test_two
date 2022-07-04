@@ -51,15 +51,13 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Autowired
     private PriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
-    private JanClassifyMapper janClassifyMapper;
-    @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
-    private WorkPriorityOrderJanNewAttrMapper workPriorityOrderJanNewAttrMapper;
-    @Autowired
-    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
-    @Autowired
     private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
+    @Autowired
+    private PriorityOrderMstAttrSortMapper attrSortMapper;
+    @Autowired
+    private ZokuseiMapper zokuseiMapper;
     /**
      * 新規janListの取得
      *
