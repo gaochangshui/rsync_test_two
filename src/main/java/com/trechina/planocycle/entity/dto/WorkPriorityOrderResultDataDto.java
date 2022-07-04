@@ -18,6 +18,46 @@ public class WorkPriorityOrderResultDataDto {
     private Integer facePosition;
     private Integer depthDisplayNum;
 
+    private Long skuRank;
+
+    private Long newRank;
+
+    private Long sortRank;
+
+    private Long rank;
+
+    public Long getSkuRank() {
+        return skuRank;
+    }
+
+    public void setSkuRank(Long skuRank) {
+        this.skuRank = skuRank;
+    }
+
+    public Long getNewRank() {
+        return newRank;
+    }
+
+    public void setNewRank(Long newRank) {
+        this.newRank = newRank;
+    }
+
+    public Long getSortRank() {
+        return sortRank;
+    }
+
+    public void setSortRank(Long sortRank) {
+        this.sortRank = sortRank;
+    }
+
+    public Long getRank() {
+        return rank;
+    }
+
+    public void setRank(Long rank) {
+        this.rank = rank;
+    }
+
     public Long getFaceFact() {
         return faceFact;
     }

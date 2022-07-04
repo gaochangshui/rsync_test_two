@@ -321,6 +321,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
     @Override
     public Map<String, Object> getAttrGroup(PriorityOrderAttrDto priorityOrderAttrDto) {
+
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
         GetCommonPartsDataDto commonTableName = BasicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
         List<Integer> attrs = attrList.stream().map(Integer::parseInt).collect(Collectors.toList());

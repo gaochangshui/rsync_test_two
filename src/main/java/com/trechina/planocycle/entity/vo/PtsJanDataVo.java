@@ -13,6 +13,7 @@ public class PtsJanDataVo {
     private Integer faceDisplayflg;
     private Integer facePosition;
     private Integer depthDisplayNum;
+    private String remarks;
 
     public Integer getTaiCd() {
         return taiCd;
@@ -110,6 +111,14 @@ public class PtsJanDataVo {
         this.depthDisplayNum = depthDisplayNum;
     }
 
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
     @Override
     public String toString() {
         return "PtsJanDataVo{" +
@@ -125,6 +134,7 @@ public class PtsJanDataVo {
                 ", faceDisplayflg=" + faceDisplayflg +
                 ", facePosition=" + facePosition +
                 ", depthDisplayNum=" + depthDisplayNum +
+                ", remarks=" + remarks +
                 '}';
     }
 }

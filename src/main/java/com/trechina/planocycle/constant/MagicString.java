@@ -31,4 +31,28 @@ public class MagicString {
     public static final String TANA_CD = "tanaCd";
 
     public static final String SET_ZOKUSEI = "setZokusei";
+
+    public static final String RESTRICT_CD = "restrictCd";
+
+    public static final Long NO_RESTRICT_CD = 9999L;
+    /**
+     * 棚変更：高さ変更
+     */
+    public static final String MSG_HEIGHT_CHANGE= "高さ変更 元：{height}mm";
+    /**
+     * 棚変更：棚新規作成
+     */
+    public static final String MSG_NEW_TANA = "棚新規作成";
+    /**
+     * 商品変更：新規商品
+     */
+    public static final String MSG_NEW_JAN = "新規商品";
+    /**
+     * 商品変更：位置変更
+     */
+    public static final String MSG_TANA_POSITION_CHANGE = "位置変更 元：{tai}-{tana}-{position}";
+    /**
+     * 商品変更：フェース変更
+     */
+    public static final String MSG_FACE_CHANGE = "フェース変更 元：";
 }

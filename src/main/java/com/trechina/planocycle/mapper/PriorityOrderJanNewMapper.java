@@ -2,6 +2,7 @@ package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
+import com.trechina.planocycle.entity.po.ZokuseiMst;
 import com.trechina.planocycle.entity.vo.JanMstPlanocycleVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -17,7 +18,8 @@ public interface PriorityOrderJanNewMapper {
     int delete(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
     int workDelete(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    List<PriorityOrderJanNewDto> selectJanNew(String companyCd, Integer priorityOrderCd);
+    List<Map<String,Object>> selectJanNew(String companyCd,Integer priorityOrderCd, List<ZokuseiMst> attrList
+            , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName);
 
     List<Map<String, Object>> selectJanNewNotExistsMst(String companyCd, Integer priorityOrderCd, String tablename);
 
@@ -36,7 +38,10 @@ public interface PriorityOrderJanNewMapper {
     List<PriorityOrderJanNewVO> getJanNameClassify(@Param("janNew") String [] janNew);
     List<PriorityOrderJanNewVO> getJanNameClass(@Param("janNew") String [] janNew,@Param("companyCd")String companyCd);
 
-    List<PriorityOrderJanNewDto> getProductPowerData(@Param("productPowerCd")Integer productPowerCd, @Param("item") PriorityOrderJanNewDto priorityOrderJanNewVO,@Param("authorCd")String authorCd);
+    List<Map<String,Object>> getProductPowerData(Integer priorityOrderCd, List<ZokuseiMst> attrList
+            , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName,Long shelfPatternCd
+            ,Integer productPowerCd,Map<String,Object> mapAttr);
+
     PriorityOrderJanNewDto getProductForWork( @Param("item") PriorityOrderJanNewDto priorityOrderJanNewVO,@Param("companyCd")String companyCd);
 
     List<PriorityOrderJanNewDto> getJanNew(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
@@ -57,5 +62,8 @@ public interface PriorityOrderJanNewMapper {
     //ワークシート情報の表示
     List<JanMstPlanocycleVo> getJanNewInfo(@Param("companyCd")String companyCd);
 
-    List<PriorityOrderJanNewVO> getDynamicJanNameClassify(@Param("tableName") String tableName, @Param("col") List<String> col, @Param("janNew") String [] janNew);
+    List<Map<String,Object>> getDynamicJanNameClassify(Integer priorityOrderCd, List<ZokuseiMst> attrList
+            , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName,String [] janCd,Integer model);
+
+    List<String> getErrorMsgJan(String companyCd, Integer priorityOrderCd);
 }

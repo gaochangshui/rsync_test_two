@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityAllResultDataDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +19,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,6 +59,8 @@ class PlanoCycleApiApplicationTests {
     WorkPriorityAllResultDataMapper workPriorityAllResultDataMapper;
     @Autowired
     ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
+    PriorityOrderJanNewService priorityOrderJanNewService;
     @Autowired
     JanClassifyMapper janClassifyMapper;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -154,6 +158,19 @@ class PlanoCycleApiApplicationTests {
 
     @Test
     public  void test8(){
-        //priorityOrderMstService.getNewReorder("0001",12345,846,"10215814");
+        List<Map<String,Object>> map1 =new ArrayList<>();
+        map1.add(new HashMap(){{put("rank",7);put("jan","1");put("flag",1);}});
+        map1.add(new HashMap(){{put("rank",28);put("jan","2");put("flag",1);}});
+        map1.add(new HashMap(){{put("rank",9);put("jan","3");put("flag",1);}});
+        List<Map<String,Object>> map2 = new ArrayList<>();
+        map2.add(new HashMap(){{put("rank",1);put("jan","1");put("flag",2);}});
+        map2.add(new HashMap(){{put("rank",2);put("jan","2");put("flag",2);}});
+        map2.add(new HashMap(){{put("rank",3);put("jan","3");put("flag",2);}});
+
+        List<Map<String, Object>> list = priorityOrderJanNewService.janSort(map1, map2, "rank");
+
+        System.out.println(list);
+
+
     }
 }

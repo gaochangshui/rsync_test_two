@@ -5,8 +5,8 @@ import com.trechina.planocycle.entity.po.PriorityOrderJanReplace;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanReplaceVO;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.PriorityOrderDataMapper;
 import com.trechina.planocycle.mapper.PriorityOrderJanReplaceMapper;
+import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
 import com.trechina.planocycle.mapper.WorkPriorityOrderMstMapper;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
@@ -28,11 +28,11 @@ public class PriorityOrderJanReplaceServiceImpl implements PriorityOrderJanRepla
     @Autowired
     private PriorityOrderJanReplaceMapper priorityOrderJanReplaceMapper;
     @Autowired
-    private PriorityOrderDataMapper priorityOrderDataMapper;
-    @Autowired
     private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
     @Autowired
     private BasicPatternMstService basicPatternMstService;
+    @Autowired
+    private ShelfPtsDataMapper shelfPtsDataMapper;
     /**
      * jan変の情報を取得する
      *
@@ -63,6 +63,7 @@ public class PriorityOrderJanReplaceServiceImpl implements PriorityOrderJanRepla
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = null;
         Integer priorityOrderCd =null;
+        shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
         for (PriorityOrderJanReplace orderJanReplace : priorityOrderJanReplace) {
            companyCd = orderJanReplace.getCompanyCd();
             priorityOrderCd = orderJanReplace.getPriorityOrderCd();

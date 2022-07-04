@@ -30,7 +30,7 @@
   </delete>
   <delete id="deleteDisplay">
     delete from planocycle.work_priority_order_sort
-    where company_cd = #{companyCd} and author_cd = #{authorCd}
+    where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
   </delete>
   <update id="delShelfHistoryInfo">
     update  planocycle.shelf_pts_data_history
@@ -352,7 +352,7 @@
     select company_cd,#{id},tai_cd, tana_cd, tana_height, tana_width, tana_depth, tana_thickness, tana_type,
     now(),now(),#{authorCd},#{authorCd}
     from planocycle.shelf_pts_data_tanamst
-    where pts_cd=#{ptsCd} and deleteflg=0
+    where pts_cd=#{ptsCd}
   </insert>
   <insert id="insertPtsVersion">
     insert into planocycle.work_priority_order_pts_data_version(company_cd,
@@ -467,9 +467,16 @@
     ,tana_type,create_time,author_cd,edit_time,editer_cd)
     values
     <foreach collection="ptsTanaVoList" separator="," item="item" >
-      (#{companyCd},#{id},#{item.taiCd},#{item.tanaCd},#{item.tanaHeight},#{item.tanaWidth},#{item.tanaDepth},#{item.tanaThickness}
-      ,#{item.tanaType},now(),#{authorCd},now(),#{authorCd})
+      (#{companyCd},#{id},#{item.taiCd},#{item.tanaCd},#{item.tanaHeight},#{item.tanaWidth},#{item.tanaDepth},#{item.tanaThickness},1
+      ,now(),#{authorCd},now(),#{authorCd})
     </foreach>
+  </insert>
+  <insert id="insertPtsData1">
+    insert into planocycle.work_priority_order_pts_data(id,company_cd,file_name,authorcd,shelf_pattern_cd,valid_flg,
+                                                        start_day,edit_time,create_time,editer_cd,priority_order_cd)
+    select #{id},company_cd,#{fileName},#{authorCd},shelf_pattern_cd,valid_flg,start_day,now(),now(),#{authorCd}, #{priorityOrderCd}
+    from planocycle.shelf_pts_data
+    where id=#{oldPtsCd} and deleteflg=0
   </insert>
   <delete id="deletePtsTaimst">
     delete from planocycle.work_priority_order_pts_data_taimst where pts_cd=#{ptsCd}
@@ -485,6 +492,10 @@
   </delete>
   <delete id="deletePtsDataJandata">
     delete from planocycle.work_priority_order_pts_data_jandata where pts_cd=#{ptsCd}
+  </delete>
+  <delete id="deletePtsJandataByPriorityOrderCd">
+    delete from planocycle.work_priority_order_pts_data_jandata where pts_cd in (select id from planocycle.work_priority_order_pts_data
+    where priority_order_cd=#{priorityOrderCd})
   </delete>
   <delete id="deleteWorkPtsData">
     delete from planocycle.priority_order_pts_data where id=#{ptsCd}
@@ -558,18 +569,19 @@
   </select>
   <select id="getNewTanaData" resultType="com.trechina.planocycle.entity.vo.PtsTanaVo">
     select
-      tanaMst.tai_cd,tanaMst.tana_cd,tanaMst.tana_height,tanaMst.tana_width,tanaMst.tana_depth,tanaMst.tana_thickness,tanaMst.tana_type
+      tanaMst.tai_cd,tanaMst.tana_cd,tanaMst.tana_height,tanaMst.tana_width,tanaMst.tana_depth,tanaMst.tana_thickness,tanaMst.tana_type,'' as remarks
     from
       planocycle.work_priority_order_pts_data ptsData
         left join
       planocycle.work_priority_order_pts_data_tanamst tanaMst
       on ptsData."id" =  tanaMst.pts_cd
     where ptsData.priority_order_cd = #{priorityOrderCd}
+    order by tanaMst.tai_cd,tanaMst.tana_cd
   </select>
   <select id="getNewJanData" resultType="com.trechina.planocycle.entity.vo.PtsJanDataVo">
     select
       janData.tai_cd,janData.tana_cd,janData.tanaposition_cd,janData.jan,janData.face_count,janData.face_men,janData.face_kaiten,
-      janData.tumiagesu,janData.zaikosu,janData.face_displayflg,janData.face_position,janData.depth_display_num
+      janData.tumiagesu,janData.zaikosu,janData.face_displayflg,janData.face_position,janData.depth_display_num,'' as remarks
     from
       planocycle.work_priority_order_pts_data ptsData
         inner join

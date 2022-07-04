@@ -18,8 +18,8 @@ public interface WorkPriorityOrderRestrictResultMapper {
     int deleteByAuthorCd(String companyCd, String authorCd,Integer priorityOrderCd);
     List<WorkPriorityOrderRestrictResult> getResultList(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    List<ProductPowerDataDto> getProductPowerData(@Param("item")WorkPriorityOrderRestrictResult priorityOrderRestrictResults,@Param("companyCd")String companyCd
-    ,@Param("productPowerCd")Integer productPowerCd,@Param("authorCd")String authorCd);
+    List<ProductPowerDataDto> getProductPowerData(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd
+    ,@Param("productPowerCd")Integer productPowerCd,@Param("authorCd")String authorCd,@Param("patternCd")Integer patternCd);
 
     int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
 

@@ -28,4 +28,8 @@ public interface ZokuseiMstMapper {
     void deleteData(String companyCd, String classCd);
 
     List<Zokusei> selectByZokuseiId(String companyCd, Integer priorityOrderCd, String zokuseiId, String classCd);
+
+    List<Map<String,Object>> getZokuseiCol(List<Integer> attrList ,String companyCd, String classCd);
+
+    List<Map<String,Object>> getzokuseiName(@Param("companyCd") String companyCd,@Param("classCd")String classCd);
 }

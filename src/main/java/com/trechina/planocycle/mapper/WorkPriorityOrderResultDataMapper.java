@@ -23,7 +23,7 @@ public interface WorkPriorityOrderResultDataMapper {
 
     int updateByPrimaryKey(WorkPriorityOrderResultData record);
 
-    int setResultDataList(@Param("list") List<ProductPowerDataDto> productPowerDataDtoList, @Param("restrictCd") Long restrictCd, @Param("companyCd") String companyCd,
+    int setResultDataList(@Param("list") List<ProductPowerDataDto> productPowerDataDtoList, @Param("companyCd") String companyCd,
                           @Param("authorCd") String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     int delResultData(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("priorityOrderCd") Integer priorityOrderCd);
@@ -59,5 +59,9 @@ public interface WorkPriorityOrderResultDataMapper {
     int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd")String authorCd);
 
     //ユーザ編集faceNum
-    int updateFaceNum(@Param("list") List<PriorityOrderRestrictJanDto> list,@Param("authorCd")String authorCd);
+    int updateFaceNum(@Param("list") List<PriorityOrderRestrictJanDto> list,@Param("ptsCd")Integer ptsCd);
+
+    List<WorkPriorityOrderResultData> getProductReorder(String companyCd, String authorCd, Integer productPowerCd, Integer priorityOrderCd);
+
+    Integer getPtsCd(Integer priorityOrderCd);
 }

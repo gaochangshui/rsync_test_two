@@ -40,14 +40,26 @@
     </collection>
   </resultMap>
   <sql id="Base_Column_List">
-    company_cd, priority_order_cd, value, cd
+    company_cd, priority_order_cd, value, sort
   </sql>
   <insert id="setAttrList">
-    insert into planocycle.work_priority_order_mst_attrsort(company_cd,priority_order_cd,value)
+    insert into planocycle.work_priority_order_mst_attrsort(company_cd,priority_order_cd,value,sort)
     values
-  <foreach collection="attrList" separator="," item="item">
-    (#{companyCd},#{priorityOrderCd},#{item})
+  <foreach collection="attrList" separator="," item="item" index="index">
+    (#{companyCd},#{priorityOrderCd},#{item},#{index})
   </foreach>
+  </insert>
+  <insert id="setFinalForWork">
+    insert into planocycle.priority_order_mst_attrsort
+    select * from planocycle.work_priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </insert>
+  <insert id="setWorkForFinal">
+    insert into planocycle.work_priority_order_mst_attrsort
+    select * from planocycle.priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </insert>
   <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
     select
@@ -262,8 +274,8 @@
                         and result.priority_order_cd = relation.priority_order_cd
            left join masterdb.planocycle_zokusei_mst_data mstdata
         on zokusei${attr} = val and mstdata.class_cd = #{classCd} and mstdata.company_cd = #{companyCd}
-           left join masterdb.planocycle_zokusei_mst mst on mstdata.zokusei_id = mst.zokusei_id and mst.class_cd = #{classCd}
-      and mst.company_cd = #{companyCd}
+           inner join masterdb.planocycle_zokusei_mst mst on mstdata.zokusei_id = mst.zokusei_id and mst.class_cd = #{classCd}
+      and mst.company_cd = #{companyCd} and mst.zokusei_id = #{attr} ::integer
            left join planocycle.work_priority_order_pts_data_tanamst tanamst
                      on tanamst.pts_cd =#{id} and tanamst.tai_cd = relation.tai_cd and tanamst.tana_cd = relation.tana_cd
         where result.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
@@ -293,6 +305,16 @@
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
   <delete id="deleteAttrList">
+    delete from planocycle.work_priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <delete id="deletFinal">
+    delete from planocycle.priority_order_mst_attrsort
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <delete id="delete">
     delete from planocycle.work_priority_order_mst_attrsort
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

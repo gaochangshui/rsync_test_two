@@ -1,7 +1,10 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.trechina.planocycle.entity.dto.*;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderJanCgiDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -22,8 +25,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
@@ -76,8 +78,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private WorkPriorityOrderSpaceMapper workPriorityOrderSpaceMapper;
     @Autowired
     private WorkPriorityOrderSortMapper workPriorityOrderSortMapper;
-    @Autowired
-    private WorkPriorityOrderSortRankMapper workPriorityOrderSortRankMapper;
     @Autowired
     private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
     @Autowired
@@ -413,142 +413,142 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd,Integer partition) {
 
 
-        String authorCd = session.getAttribute("aud").toString();
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        String uuid = UUID.randomUUID().toString();
-        executor.execute(() -> {
-        //商品力点数表cdを取得する
-        Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, authorCd, priorityOrderCd);
-        Integer patternCd = productPowerMstMapper.getpatternCd(companyCd, authorCd, priorityOrderCd);
-        Integer minFaceNum = 1;
-        //仕切り板の厚さと仕切り板を使用して保存するかどうか
-        priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition);
-        //まず社員番号に従ってワークシートのデータを削除します
-        workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
-        //制約条件の取得
-        List<WorkPriorityOrderRestrictResult> resultList = workPriorityOrderRestrictResultMapper.getResultList(companyCd, authorCd, priorityOrderCd);
-        // 1.制約条件で該当商品を探す
-        for (WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult : resultList) {
-            List<ProductPowerDataDto> newList = new ArrayList<>();
-            workPriorityOrderRestrictResult.setPriorityOrderCd(priorityOrderCd);
-            List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, companyCd, productPowerCd, authorCd);
-
-            for (ProductPowerDataDto productPowerDatum : productPowerData) {
-
-                if (productPowerDatum.getJanNew() != null) {
-                    productPowerDatum.setJan(productPowerDatum.getJanNew());
-                }
-                if (productPowerDatum.getRankNewResult()!=null){
-                    productPowerDatum.setRankResult(productPowerDatum.getRankNewResult());
-                }
-            }
-            for (ProductPowerDataDto productPowerDatum : productPowerData) {
-                newList.add(productPowerDatum);
-                if (newList.size() % 1000 == 0 && !newList.isEmpty()) {
-                    workPriorityOrderResultDataMapper.setResultDataList(newList, workPriorityOrderRestrictResult.getRestrictCd(), companyCd, authorCd, priorityOrderCd);
-                    newList.clear();
-
-                }
-            }
-            if (!newList.isEmpty()) {
-
-                workPriorityOrderResultDataMapper.setResultDataList(newList, workPriorityOrderRestrictResult.getRestrictCd(), companyCd, authorCd, priorityOrderCd);
-            }
-
-        }
-
-        String resultDataList = workPriorityOrderResultDataMapper.getResultDataList(companyCd, authorCd, priorityOrderCd);
-        if (resultDataList == null) {
-            //return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
-            vehicleNumCache.put("janNotExist"+uuid,1);
-        }
-        String[] array = resultDataList.split(",");
-        //cgiを呼び出す
-
-        Map<String, Object> data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd,tokenInfo);
-        if (data.get("data") != null && data.get("data") != "") {
-            String[] strResult = data.get("data").toString().split("@");
-            String[] strSplit = null;
-            List<WorkPriorityOrderResultData> list = new ArrayList<>();
-            WorkPriorityOrderResultData orderResultData = null;
-            for (int i = 0; i < strResult.length; i++) {
-                orderResultData = new WorkPriorityOrderResultData();
-                strSplit = strResult[i].split(" ");
-                orderResultData.setSalesCnt(Double.valueOf(strSplit[1]));
-                orderResultData.setJanCd(strSplit[0]);
-
-
-                list.add(orderResultData);
-            }
-            workPriorityOrderResultDataMapper.update(list, companyCd, authorCd, priorityOrderCd);
-
-
-            //古いptsの平均値、最大値最小値を取得
-            FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(patternCd);
-            minFaceNum = faceNum.getFaceMinNum();
-            DecimalFormat df = new DecimalFormat("#.00");
-            //salescntAvgを取得し、小数点を2桁保持
-            Double salesCntAvg = productPowerMstMapper.getSalesCntAvg(companyCd, authorCd, priorityOrderCd);
-            String format = df.format(salesCntAvg);
-            salesCntAvg = Double.valueOf(format);
-
-            List<WorkPriorityOrderResultData> resultDatas = workPriorityOrderResultDataMapper.getResultDatas(companyCd, authorCd, priorityOrderCd);
-
-            Double d = null;
-            for (WorkPriorityOrderResultData resultData : resultDatas) {
-                resultData.setPriorityOrderCd(priorityOrderCd);
-                if (resultData.getSalesCnt() != null) {
-                    d = resultData.getSalesCnt() * faceNum.getFaceAvgNum() / salesCntAvg;
-
-                    if (d > faceNum.getFaceMaxNum()) {
-                        resultData.setFace(Long.valueOf(faceNum.getFaceMaxNum()));
-                    } else if (d < faceNum.getFaceMinNum()) {
-                        resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
-                    } else {
-                        resultData.setFace(d.longValue());
-                    }
-
-                } else {
-                    resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
-                }
-
-            }
-            workPriorityOrderResultDataMapper.updateFace(resultDatas, companyCd, authorCd);
-        }
-        //属性別に並べ替える
-        this.getReorder(companyCd, priorityOrderCd,productPowerCd,authorCd);
-        //商品を並べる
-        WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
-
-        if (shelfPatternCd == null) {
-            //logger.info("shelfPatternCd:{}不存在", shelfPatternCd);
-            //return ResultMaps.result(ResultEnum.FAILURE);
-            vehicleNumCache.put("PatternCdNotExist"+uuid,1);
-        }
-
-        List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.getResultJans(companyCd, authorCd, priorityOrderCd);
-        List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(shelfPatternCd.intValue());
-
-        Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
-        Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
-
-        Map<String, List<PriorityOrderResultDataDto>> finalSetJanResultData =
-                commonMstService.commSetJan(partitionFlag, partitionVal, taiData,
-                        workPriorityOrderResultData, workPriorityOrderRestrictRelations, minFaceNum);
-
-        for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : finalSetJanResultData.entrySet()) {
-            String taiTanaKey = entry.getKey();
-            List<PriorityOrderResultDataDto> resultDataDtos = finalSetJanResultData.get(taiTanaKey);
-            workPriorityOrderResultDataMapper.updateTaiTanaBatch(companyCd, priorityOrderCd, authorCd, resultDataDtos);
-        }
-
-        //ptsを一時テーブルに保存
-        shelfPtsService.saveWorkPtsData(companyCd, authorCd, priorityOrderCd);
-            vehicleNumCache.put(uuid,1);
-    });
-        return ResultMaps.result(ResultEnum.SUCCESS,uuid);
+    //    String authorCd = session.getAttribute("aud").toString();
+    //    String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
+    //    String uuid = UUID.randomUUID().toString();
+    //    executor.execute(() -> {
+    //    //商品力点数表cdを取得する
+    //    Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, authorCd, priorityOrderCd);
+    //    Integer patternCd = productPowerMstMapper.getpatternCd(companyCd, authorCd, priorityOrderCd);
+    //    Integer minFaceNum = 1;
+    //    //仕切り板の厚さと仕切り板を使用して保存するかどうか
+    //    priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition);
+    //    //まず社員番号に従ってワークシートのデータを削除します
+    //    workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
+    //    //制約条件の取得
+    //    List<WorkPriorityOrderRestrictResult> resultList = workPriorityOrderRestrictResultMapper.getResultList(companyCd, authorCd, priorityOrderCd);
+    //    // 1.制約条件で該当商品を探す
+    //    for (WorkPriorityOrderRestrictResult workPriorityOrderRestrictResult : resultList) {
+    //        List<ProductPowerDataDto> newList = new ArrayList<>();
+    //        workPriorityOrderRestrictResult.setPriorityOrderCd(priorityOrderCd);
+    //        List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData(workPriorityOrderRestrictResult, companyCd, productPowerCd, authorCd);
+    //
+    //        for (ProductPowerDataDto productPowerDatum : productPowerData) {
+    //
+    //            if (productPowerDatum.getJanNew() != null) {
+    //                productPowerDatum.setJan(productPowerDatum.getJanNew());
+    //            }
+    //            if (productPowerDatum.getRankNewResult()!=null){
+    //                productPowerDatum.setRankResult(productPowerDatum.getRankNewResult());
+    //            }
+    //        }
+    //        for (ProductPowerDataDto productPowerDatum : productPowerData) {
+    //            newList.add(productPowerDatum);
+    //            if (newList.size() % 1000 == 0 && !newList.isEmpty()) {
+    //                workPriorityOrderResultDataMapper.setResultDataList(newList, workPriorityOrderRestrictResult.getRestrictCd(), companyCd, authorCd, priorityOrderCd);
+    //                newList.clear();
+    //
+    //            }
+    //        }
+    //        if (!newList.isEmpty()) {
+    //
+    //            workPriorityOrderResultDataMapper.setResultDataList(newList, workPriorityOrderRestrictResult.getRestrictCd(), companyCd, authorCd, priorityOrderCd);
+    //        }
+    //
+    //    }
+    //
+    //    String resultDataList = workPriorityOrderResultDataMapper.getResultDataList(companyCd, authorCd, priorityOrderCd);
+    //    if (resultDataList == null) {
+    //        //return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
+    //        vehicleNumCache.put("janNotExist"+uuid,1);
+    //    }
+    //    String[] array = resultDataList.split(",");
+    //    //cgiを呼び出す
+    //
+    //    Map<String, Object> data = getFaceKeisanForCgi(array, companyCd, patternCd, authorCd,tokenInfo);
+    //    if (data.get("data") != null && data.get("data") != "") {
+    //        String[] strResult = data.get("data").toString().split("@");
+    //        String[] strSplit = null;
+    //        List<WorkPriorityOrderResultData> list = new ArrayList<>();
+    //        WorkPriorityOrderResultData orderResultData = null;
+    //        for (int i = 0; i < strResult.length; i++) {
+    //            orderResultData = new WorkPriorityOrderResultData();
+    //            strSplit = strResult[i].split(" ");
+    //            orderResultData.setSalesCnt(Double.valueOf(strSplit[1]));
+    //            orderResultData.setJanCd(strSplit[0]);
+    //
+    //
+    //            list.add(orderResultData);
+    //        }
+    //        workPriorityOrderResultDataMapper.update(list, companyCd, authorCd, priorityOrderCd);
+    //
+    //
+    //        //古いptsの平均値、最大値最小値を取得
+    //        FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(patternCd);
+    //        minFaceNum = faceNum.getFaceMinNum();
+    //        DecimalFormat df = new DecimalFormat("#.00");
+    //        //salescntAvgを取得し、小数点を2桁保持
+    //        Double salesCntAvg = productPowerMstMapper.getSalesCntAvg(companyCd, authorCd, priorityOrderCd);
+    //        String format = df.format(salesCntAvg);
+    //        salesCntAvg = Double.valueOf(format);
+    //
+    //        List<WorkPriorityOrderResultData> resultDatas = workPriorityOrderResultDataMapper.getResultDatas(companyCd, authorCd, priorityOrderCd);
+    //
+    //        Double d = null;
+    //        for (WorkPriorityOrderResultData resultData : resultDatas) {
+    //            resultData.setPriorityOrderCd(priorityOrderCd);
+    //            if (resultData.getSalesCnt() != null) {
+    //                d = resultData.getSalesCnt() * faceNum.getFaceAvgNum() / salesCntAvg;
+    //
+    //                if (d > faceNum.getFaceMaxNum()) {
+    //                    resultData.setFace(Long.valueOf(faceNum.getFaceMaxNum()));
+    //                } else if (d < faceNum.getFaceMinNum()) {
+    //                    resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
+    //                } else {
+    //                    resultData.setFace(d.longValue());
+    //                }
+    //
+    //            } else {
+    //                resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
+    //            }
+    //
+    //        }
+    //        workPriorityOrderResultDataMapper.updateFace(resultDatas, companyCd, authorCd);
+    //    }
+    //    //属性別に並べ替える
+    //    this.getReorder(companyCd, priorityOrderCd,productPowerCd,authorCd);
+    //    //商品を並べる
+    //    WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+    //    Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
+    //
+    //    if (shelfPatternCd == null) {
+    //        //logger.info("shelfPatternCd:{}不存在", shelfPatternCd);
+    //        //return ResultMaps.result(ResultEnum.FAILURE);
+    //        vehicleNumCache.put("PatternCdNotExist"+uuid,1);
+    //    }
+    //
+    //    List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityOrderRestrictRelationMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+    //    List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.getResultJans(companyCd, authorCd, priorityOrderCd);
+    //    List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(shelfPatternCd.intValue());
+    //
+    //    Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
+    //    Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
+    //
+    //    Map<String, List<PriorityOrderResultDataDto>> finalSetJanResultData =
+    //            commonMstService.commSetJan(partitionFlag, partitionVal, taiData,
+    //                    workPriorityOrderResultData, workPriorityOrderRestrictRelations, minFaceNum);
+    //
+    //    for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : finalSetJanResultData.entrySet()) {
+    //        String taiTanaKey = entry.getKey();
+    //        List<PriorityOrderResultDataDto> resultDataDtos = finalSetJanResultData.get(taiTanaKey);
+    //        workPriorityOrderResultDataMapper.updateTaiTanaBatch(companyCd, priorityOrderCd, authorCd, resultDataDtos);
+    //    }
+    //
+    //    //ptsを一時テーブルに保存
+    //    shelfPtsService.saveWorkPtsData(companyCd, authorCd, priorityOrderCd);
+    //        vehicleNumCache.put(uuid,1);
+    //});
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
 
@@ -618,36 +618,25 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      * @return
      */
     @Override
-    public Map<String, Object> getNewReorder(String companyCd, Integer priorityOrderCd) {
-        String authorCd = session.getAttribute("aud").toString();
+    public Map<String, Object> getNewReorder(String companyCd, Integer priorityOrderCd, String authorCd) {
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
 
         String commonPartsData = workPriorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
 
         List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
+
+
+        List<WorkPriorityOrderResultData> reorder = null;
         if (colNmforMst.isEmpty()) {
-            return ResultMaps.result(ResultEnum.SUCCESS);
+            reorder = workPriorityOrderResultDataMapper.getProductReorder(companyCd,authorCd,workPriorityOrderMst.getProductPowerCd(),priorityOrderCd);
+        }else if (colNmforMst.size() == 1) {
+            reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), null);
+        } else if (colNmforMst.size() == 2){
+            reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), colNmforMst.get(1));
         }
 
-        List<WorkPriorityOrderResultData> reorder1 = null;
-        if (colNmforMst.size() == 1) {
-
-            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), null);
-
-        } else {
-
-            reorder1 = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), colNmforMst.get(1));
-
-
-        }
-        //int j = 1;
-        //for (WorkPriorityOrderResultData workPriorityOrderResultData : reorder1) {
-        //    workPriorityOrderResultData.setResultRank(j++);
-        //
-        //}
-
-        workPriorityOrderResultDataMapper.setSortRank(reorder1, companyCd, authorCd, priorityOrderCd);
+        workPriorityOrderResultDataMapper.setSortRank(reorder, companyCd, authorCd, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
     /**
@@ -674,14 +663,22 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
         //Sortテーブルをクリア
         workPriorityOrderSortMapper.delete(companyCd, authorCd, priorityOrderCd);
-        //SortRankテーブルをクリア
-        workPriorityOrderSortRankMapper.delete(companyCd, authorCd, priorityOrderCd);
         //janNewテーブルをクリア
         priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
         //クリアjan_replace
         priorityOrderJanReplaceMapper.workDelete(companyCd, authorCd, priorityOrderCd);
         //クリアワーク_priority_order_Cutテーブル
         priorityOrderJanCardMapper.workDelete(companyCd, priorityOrderCd, authorCd);
+        //sortテーブルをクリア
+        priorityOrderMstAttrSortMapper.delete(companyCd,priorityOrderCd);
+        //composeテーブルをクリア
+        basicPatternAttrMapper.delete(priorityOrderCd,companyCd);
+
+        basicPatternRestrictRelationMapper.deleteByPrimaryKey(priorityOrderCd,companyCd);
+
+        basicPatternRestrictResultMapper.deleteByPriorityCd(priorityOrderCd,companyCd);
+
+        basicPatternRestrictResultDataMapper.deleteByPrimaryKey(priorityOrderCd);
         //ptsCdの取得
         Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
         //クリアワーク_priority_order_pts_data
@@ -757,9 +754,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             priorityOrderResultDataMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderResultDataMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
-            //スペースの保存、元のデータの削除
-            priorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            priorityOrderSpaceMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
             //cutを保存し、元のデータを削除
             priorityOrderJanCardMapper.deleteByAuthorCd(companyCd, priorityOrderCd, authorCd);
@@ -777,10 +771,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             priorityOrderSortMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderSortMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
-            //sort_を保存rank、元のデータを削除
-            priorityOrderSortRankMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            priorityOrderSortRankMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
-
             //ptsデータの保存
             shelfPtsService.saveFinalPtsData(companyCd, authorCd, priorityOrderCd);
 
@@ -788,16 +778,21 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             basicPatternRestrictRelationMapper.deleteFinal(companyCd, authorCd, priorityOrderCd);
             basicPatternRestrictRelationMapper.setFinalForWork(companyCd, authorCd, priorityOrderCd);
 
-            //work_basic_pattern_attr_compose保存＃ホゾン＃
+            //basic_pattern_attr_compose保存＃ホゾン＃
             basicPatternAttrMapper.deleteFinal(companyCd, authorCd, priorityOrderCd);
             basicPatternAttrMapper.setFinalForWork(companyCd, authorCd, priorityOrderCd);
-            //work_basic_pattern_restrict_result保存＃ホゾン＃
+
+            //basic_pattern_restrict_result保存＃ホゾン＃
             basicPatternRestrictResultMapper.deleteFinal(companyCd, authorCd, priorityOrderCd);
             basicPatternRestrictResultMapper.setFinalForWork(companyCd, authorCd, priorityOrderCd);
-            //work_basic_pattern_restrict_result_data 保存＃ホゾン＃
+
+            //basic_pattern_restrict_result_data 保存＃ホゾン＃
             basicPatternRestrictResultDataMapper.deleteFinal(companyCd, authorCd, priorityOrderCd);
             basicPatternRestrictResultDataMapper.setFinalForWork(companyCd, authorCd, priorityOrderCd);
 
+            //priority_order_mst_attrsort 保存＃ホゾン＃
+            priorityOrderMstAttrSortMapper.deletFinal(companyCd,priorityOrderCd);
+            priorityOrderMstAttrSortMapper.setFinalForWork(companyCd,priorityOrderCd);
         } catch (Exception exception) {
             logger.error("保存臨時表数据到實際表報錯", exception);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -822,6 +817,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         Integer id = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);
         String aud = session.getAttribute("aud").toString();
         priorityOrderMstService.deleteWorkTable(companyCd, priorityOrderCd);
+
         priorityOrderJanCardMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         priorityOrderJanReplaceMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         priorityOrderJanNewMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
@@ -831,11 +827,14 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         workPriorityOrderRestrictSetMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         workPriorityOrderResultDataMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         workPriorityOrderSortMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
-        workPriorityOrderSortRankMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
         workPriorityOrderSpaceMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
+        priorityOrderMstAttrSortMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        basicPatternAttrMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        basicPatternRestrictRelationMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        basicPatternRestrictResultMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        basicPatternRestrictResultDataMapper.setWorkForFinal(companyCd,priorityOrderCd);
 
         //ptsIdの取得
-
         shelfPtsDataMapper.insertWorkPtsData(companyCd, aud, priorityOrderCd);
         shelfPtsDataMapper.insertWorkPtsTaiData(companyCd, aud, id);
         shelfPtsDataMapper.insertWorkPtsTanaData(companyCd, aud, id);
@@ -846,28 +845,17 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd, aud);
         Integer shelfCd = workPriorityOrderMstMapper.getShelfName(workPriorityOrderMst.getShelfPatternCd().intValue());
         workPriorityOrderMst.setShelfCd(shelfCd);
-
-
-        //スペース情報
-        List<PriorityOrderAttrVO> workPriorityOrderSpace = priorityOrderSpaceMapper.workPriorityOrderSpace(companyCd, aud, priorityOrderCd);
-        //setテーブル情報
-        List<PriorityOrderRestrictSet> workPriorityOrderRestrictSet = priorityOrderRestrictSetMapper.getPriorityOrderRestrict(companyCd, aud, priorityOrderCd);
-        List<PriorityOrderAttrValueDto> attrValues = priorityOrderRestrictSetMapper.getAttrValues();
-        Class clazz = PriorityOrderRestrictSet.class;
-        for (int i = 1; i <= 10; i++) {
-            Method getMethod = clazz.getMethod("get" + "Zokusei" + i);
-            Method setMethod = clazz.getMethod("set" + "ZokuseiName" + i, String.class);
-            for (PriorityOrderRestrictSet priorityOrderRestrictSet : workPriorityOrderRestrictSet) {
-                for (PriorityOrderAttrValueDto attrValue : attrValues) {
-                    if (getMethod.invoke(priorityOrderRestrictSet) != null && getMethod.invoke(priorityOrderRestrictSet).equals(attrValue.getVal()) && attrValue.getZokuseiId() == i) {
-                        setMethod.invoke(priorityOrderRestrictSet, attrValue.getNm());
-                    }
-                }
-            }
-        }
+        //group保存
+        PriorityOrderAttrDto priorityOrderAttrDto = new PriorityOrderAttrDto();
+        priorityOrderAttrDto.setCompanyCd(companyCd);
+        priorityOrderAttrDto.setPriorityOrderCd(priorityOrderCd);
+        priorityOrderAttrDto.setCommonPartsData(workPriorityOrderMst.getCommonPartsData());
+        Map<String, Object> attributeList = priorityOrderMstAttrSortService.getAttributeList(priorityOrderAttrDto);
+        Map<String, Object> attrGroup = priorityOrderMstAttrSortService.getAttrGroup(priorityOrderAttrDto);
 
         //商品力点数表情報
-        Map<String, Object> taiNumTanaNum = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue(), priorityOrderCd);
+        //sort情报
+        List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
         //陳列順情報の取得
         List<WorkPriorityOrderSortVo> workPriorityOrderSort = shelfPtsDataMapper.getDisplays(companyCd, aud, priorityOrderCd);
         //基本スタンド別情報の取得
@@ -875,23 +863,73 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //基本制約別情報の取得
         Map<String, Object> restrictData = priorityOrderShelfDataService.getRestrictData(companyCd, priorityOrderCd);
         //pts詳細の取得
-        Map<String, Object> ptsDetailData = shelfPtsService.getPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue(), companyCd, priorityOrderCd);
+        PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue());
+
+        if (ptsDetailData != null){
+            ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+            ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+            ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+            ptsDetailData.setSkuNum(shelfPtsDataMapper.getSkuNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+
+            List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(workPriorityOrderMst.getShelfPatternCd().intValue());
+            List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(workPriorityOrderMst.getShelfPatternCd().intValue());
+            List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(workPriorityOrderMst.getShelfPatternCd().intValue());
+            ptsDetailData.setPtsTaiList(taiData);
+            ptsDetailData.setPtsTanaVoList(tanaData);
+            ptsDetailData.setPtsJanDataList(janData);
+        }
+
+        Map<String, Object> ptsNewDetailData = shelfPtsService.getNewPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue(),companyCd, priorityOrderCd);
+        Map<String, Object> ptsInfoTemp = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue(),priorityOrderCd);
         //商品力情報
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, workPriorityOrderMst.getProductPowerCd());
         Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, workPriorityOrderMst.getProductPowerCd());
         productPowerInfo.setSku(skuNum);
+        PtsDetailDataVo ptsDetailDataVo = (PtsDetailDataVo)ptsNewDetailData.get("data");
+        Map<String, Object> ptsInfoTemps =(Map<String, Object>)ptsInfoTemp.get("data");
+        Map<String, Object> attrDisplay = basicPatternMstService.getAttrDisplay(companyCd, priorityOrderCd);
+        Map<String,Object> sortSettings = new HashMap<>();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        String format = simpleDateFormat.format(productPowerInfo.getRegistered());
+        sortSettings.put("workPriorityOrderSort",workPriorityOrderSort);
+        sortSettings.put("partitionFlag",workPriorityOrderMst.getPartitionFlag());
+        sortSettings.put("partitionVal",workPriorityOrderMst.getPartitionVal());
+        sortSettings.put("heightSpaceFlag",workPriorityOrderMst.getTopPartitionFlag());
+        sortSettings.put("heightSpace",workPriorityOrderMst.getTopPartitionVal());
+        sortSettings.put("productPowerCd",workPriorityOrderMst.getProductPowerCd());
+        sortSettings.put("productPowerName",productPowerInfo.getProductPowerName());
+        sortSettings.put("authorName",productPowerInfo.getAuthorName());
+        sortSettings.put("registered",format);
+        sortSettings.put("sku",productPowerInfo.getSku());
+        sortSettings.put("noRestrictionNum",productPowerInfo.getNoRestrictionNum());
+
+        Map<String,Object> shelfPatternSettings = new HashMap<>();
+        Map<String,Object> tanapattanNum = new HashMap<>();
+        shelfPatternSettings.put("shelfPatternCd",workPriorityOrderMst.getShelfPatternCd());
+        shelfPatternSettings.put("shelfCd",workPriorityOrderMst.getShelfCd());
+        tanapattanNum.put("shelfPatternName",ptsInfoTemps.get("shelfPatternName"));
+        tanapattanNum.put("shelfName",ptsInfoTemps.get("shelfName"));
+        shelfPatternSettings.put("commonPartsData",workPriorityOrderMst.getCommonPartsData());
+        shelfPatternSettings.put("attrList",attrList);
+
+
+        tanapattanNum.put("taiNum",shelfPtsDataMapper.getTaiNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+        tanapattanNum.put("tanaNum",shelfPtsDataMapper.getTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
+        tanapattanNum.put("faceNum",ptsDetailData.getFaceNum());
+        tanapattanNum.put("skuNum",ptsDetailData.getSkuNum());
+
+        tanapattanNum.put("newTaiNum",ptsDetailDataVo.getTaiNum());
+        tanapattanNum.put("newTanaNum",ptsDetailDataVo.getTanaNum());
+        tanapattanNum.put("newSkuNum",ptsDetailDataVo.getSkuNum());
+        tanapattanNum.put("newFaceNum",ptsDetailData.getFaceNum());
+        shelfPatternSettings.put("tanapattanNum",tanapattanNum);
         //商品の詳細
-        List<JanMstPlanocycleVo> janNewInfo = priorityOrderJanNewMapper.getJanNewInfo(companyCd);
-        map.put("workPriorityOrderMst",workPriorityOrderMst);
-        map.put("workPriorityOrderSpace",workPriorityOrderSpace);
-        map.put("workPriorityOrderRestrictSet",workPriorityOrderRestrictSet);
-        map.put("taiNumTanaNum",taiNumTanaNum.get("data"));
-        map.put("workPriorityOrderSort",workPriorityOrderSort);
-        map.put("platformShedData",platformShedData);
-        map.put("restrictData",restrictData.get("data"));
-        map.put("ptsDetailData",ptsDetailData.get("data"));
-        map.put("productPowerInfo",productPowerInfo);
-        map.put("janNewInfo",janNewInfo);
+        map.put("shelfPatternSettings",shelfPatternSettings);
+        map.put("SortSettings",sortSettings);
+        map.put("ptsDetailData",ptsDetailData);
+        map.put("ptsNewDetailData",ptsNewDetailData.get("data"));
+        map.put("attrDisplay",attrDisplay.get("data"));
+        map.put("ptsInfoTemp",ptsInfoTemp.get("data"));
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
@@ -913,6 +951,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         if (isEdit > 0) {
             //編集→名前の更新
             priorityOrderMstMapper.updateOrderName(priorityOrderCd, priorityOrderName);
+            Map<String, Object> objectMap = priorityOrderMstService.saveAllWorkPriorityOrder(priorityOrderMstVO);
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
 
@@ -920,8 +959,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         if(orderNameCount>0){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
+        Map<String, Object> objectMap = priorityOrderMstService.saveAllWorkPriorityOrder(priorityOrderMstVO);
 
-        return ResultMaps.result(ResultEnum.SUCCESS);
+        return objectMap;
     }
 
     /**
@@ -966,9 +1006,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Override
     public Map<String, Object> getVariousMst(String companyCd, Integer priorityOrderCd, Integer flag) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        String aud = session.getAttribute("aud").toString();
+        String authorCd = session.getAttribute("aud").toString();
         //商品力点数表情報
-        WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd, aud);
+        WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd, authorCd);
+        WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd,priorityOrderCd);
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(priorityOrderMst.getCommonPartsData(), companyCd);
         if (flag == 0) {
             //取得janNew情報
             Map<String, Object> priorityOrderJanNew = priorityOrderJanNewService.getPriorityOrderJanNew(companyCd, priorityOrderCd, workPriorityOrderMst.getProductPowerCd());
@@ -976,13 +1018,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
         if (flag == 2) {
             ////取得janCut情報
-            //List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd, priorityOrderCd);
-            //return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCut);
+            List<PriorityOrderJanCardVO> priorityOrderJanCut = priorityOrderJanCardMapper.selectJanCard(companyCd, priorityOrderCd,commonTableName);
+            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCut);
         }
         if (flag == 1) {
             //取得jan変情報
-            //List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd, priorityOrderCd);
-            //return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplace);
+            List<PriorityOrderJanReplaceVO> priorityOrderJanReplace = priorityOrderJanReplaceMapper.selectJanInfo(companyCd, priorityOrderCd,commonTableName);
+            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplace);
         }
         return ResultMaps.result(ResultEnum.FAILURE);
     }

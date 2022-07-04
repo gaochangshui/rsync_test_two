@@ -84,19 +84,40 @@
 
     </delete>
 
-    <select id="selectJanNew" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
-        select news.jan_new as janCd, COALESCE(jans.jan_nm, mstpl.jan_nm) as janName,COALESCE(jans.scat1cd_val, mstpl.scat1cd_val) as zokusei1
-             ,COALESCE(jans.scat2cd_val, mstpl.scat2cd_val) as zokusei2
-             ,COALESCE(jans.scat3cd_val, mstpl.scat3cd_val) as zokusei3,COALESCE(jans.scat4cd_val, mstpl.scat4cd_val) as zokusei4,news.jan_rank as rank
+    <select id="selectJanNew" resultType="map">
+        select news.jan_new as "janCd","2" as "janName",news.jan_rank as "rank"
+        <foreach collection="attrList" item="item1" open="," separator=",">
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">"${item1.zokuseiCol}"</if>
+            <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
+                <foreach collection="allCdList" item="item2" separator="|| '_' ||">
+                    <if test="item2 &lt;= item1.zokuseiCol">
+                        "${item2}"
+                    </if>
+                </foreach>
+            </if>
+            as "zokusei${item1.zokuseiId}"
+        </foreach>
+        ,
+        <foreach collection="attrName" separator="," item="item" index="index">
+            "${item.zokusei_col}" as "zokuseiName${item.zokusei_id}"
+        </foreach>
+        ,case when rep.jan_new is not null then 'すでにJAN変商品として入力済みです。'
+        when repold.jan_old is not null then 'すでにJAN変商品として入力済みです。'
+        else '' end as "errMsg"
         from planocycle.work_priority_order_jan_new news
-                 left join  masterdb.jan_mst jans
-                on news.jan_new = jans.jan_cd
-        left join masterdb.jan_mst_planocycle mstpl
-                  on news.jan_new = mstpl.jan_cd
+        left join  ${proInfoTable} jans
+        on news.jan_new = jans."1"
+        left join planocycle.work_priority_order_jan_replace rep
+        on news.company_cd = rep.company_cd
+        and news.jan_new = rep.jan_new
+        and news.priority_order_cd = rep.priority_order_cd
+        left join planocycle.work_priority_order_jan_replace repold
+        on news.company_cd = repold.company_cd
+        and news.jan_new = repold.jan_old
+        and news.priority_order_cd = repold.priority_order_cd
         where news.company_cd = #{companyCd,jdbcType=VARCHAR}
-          and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-
-        order by janCd
+        and news.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        order by "janCd"
   </select>
     <select id="selectJanNewNotExistsMst" resultType="map">
         select '' as jan_old,news.jan_new,'' as sku
@@ -158,48 +179,36 @@
             trim(#{item})
         </foreach>
     </select>
-    <select id="getProductPowerData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderJanNewDto">
-        select datas.jan as janCd,datas.sku_name as janName ,datas.classify_big as zokusei1,datas.classify_middle as zokusei2,datas.classify_small as zokusei3,datas.classify_fine as zokusei4,datas.rank_result as rank
-        from planocycle.product_power_mst_data datas
-        where datas.classify_big = #{item.zokusei1} and datas.classify_middle = #{item.zokusei2} and datas.classify_small = #{item.zokusei3}
-        and product_power_cd = #{productPowerCd} and datas.jan != #{item.janCd}
-        and not exists (select jan_new from planocycle.work_priority_order_jan_new janNew where janNew.jan_new = datas.jan
-                        and janNew.author_cd = #{authorCd} and janNew.company_cd = #{item.companyCd} and janNew.priority_order_cd = #{item.priorityOrderCd}
-        )
-        union
-        select janNew.jan_new as janCd,mst.jan_nm as janName, data1.nm as zokusei1,data2.nm as zokusei2,data3.nm as zokusei3,scat4cd_val as zokusei4,janNew.jan_rank as rank
-        from planocycle.work_priority_order_jan_new janNew
-                 left join
-             masterdb.jan_mst mst
-             on mst.jan_cd = janNew.jan_new
-                 left join masterdb.zokusei_mst_data data1
-                           on mst.scat1cd_val = data1.val
-                 left join masterdb.zokusei_mst_data data2
-                           on mst.scat2cd_val = data2.val
-                 left join masterdb.zokusei_mst_data data3
-                           on mst.scat3cd_val = data3.val
-                 left join masterdb.zokusei_mst_data data4
-                           on  mst.scat4cd_val = data4.val
-        where janNew.company_cd = #{item.companyCd} and janNew.author_cd=#{authorCd} and janNew.priority_order_cd = #{item.priorityOrderCd} and janNew.jan_new != #{item.janCd}
-            and data1.nm = #{item.zokusei1} and data2.nm = #{item.zokusei2} and data3.nm = #{item.zokusei3}
-        union
-        select
-            janNew.jan_new as janCd,mst.jan_nm as janName, data1.nm as zokusei1,data2.nm as zokusei2,data3.nm as zokusei3,scat4cd_val as zokusei4,janNew.jan_rank as rank
-        from planocycle.work_priority_order_jan_new janNew
-                 left join
-             masterdb.jan_mst_planocycle mst
-             on mst.jan_cd = janNew.jan_new
-                 left join masterdb.zokusei_mst_data data1
-                           on mst.scat1cd_val = data1.val
-                 left join masterdb.zokusei_mst_data data2
-                           on mst.scat2cd_val = data2.val
-                 left join masterdb.zokusei_mst_data data3
-                           on mst.scat3cd_val = data3.val
-                 left join masterdb.zokusei_mst_data data4
-                           on  mst.scat4cd_val = data4.val
-        where janNew.company_cd = #{item.companyCd} and janNew.author_cd=#{authorCd} and janNew.priority_order_cd = #{item.priorityOrderCd} and janNew.jan_new != #{item.janCd}
-          and data1.nm = #{item.zokusei1} and data2.nm = #{item.zokusei2} and data3.nm = #{item.zokusei3}
-        order by rank
+    <select id="getProductPowerData" resultType="map">
+        select * from (select jandata.jan as "janCd","2" as "janName"
+        <foreach collection="attrList" item="item1" open="," separator=",">
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">"${item1.zokuseiCol}"</if>
+            <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
+                <foreach collection="allCdList" item="item2" separator="|| '_' ||">
+                    <if test="item2 &lt;= item1.zokuseiCol">
+                        "${item2}"
+                    </if>
+                </foreach>
+            </if>
+            as "zokusei${item1.zokuseiId}"
+        </foreach>
+        ,
+        <foreach collection="attrName" separator="," item="item" index="index">
+            "${item.zokusei_col}" as "zokuseiName${item.zokusei_id}"
+        </foreach>
+        ,coalesce (prodata.rank_result,9999) as rank
+        from planocycle.shelf_pts_data ptsdata
+        left join planocycle.shelf_pts_data_jandata jandata
+        on ptsdata.id = jandata.pts_cd
+        left join planocycle.product_power_mst_data prodata
+        on prodata.jan = jandata.jan and prodata.product_power_cd = #{productPowerCd}
+        left join ${proInfoTable} janinfo
+        on janinfo."1" = jandata.jan
+        where ptsdata.shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}) mst
+        where
+              <foreach collection="mapAttr" separator=" and " item="item" index="index" >
+                  mst.${index} = #{item}
+              </foreach>
 
     </select>
     <select id="getJanNewInfo" resultType="com.trechina.planocycle.entity.vo.JanMstPlanocycleVo">
@@ -227,20 +236,68 @@
         from masterdb.jan_mst_planocycle
         where jan_cd = #{item.janCd} and company_cd = #{companyCd}
 </select>
-    <select id="getDynamicJanNameClassify" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanNewVO">
-        select "1" as janNew,"2" as janName
-        <foreach collection="col" item="item1" index="index1" separator="," open=",">
-            <foreach collection="col" item="item2" index="index2" separator="||'_'||">
-                <if test="index2&lt;=index1">
-                    "${item2}"
-                </if>
-            </foreach>
-            as scat${index1+1}cdVal
+    <select id="getDynamicJanNameClassify" resultType="map">
+        select "1" as "janCd","2" as "janName"
+        <foreach collection="attrList" item="item1" open="," separator=",">
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">"${item1.zokuseiCol}"</if>
+            <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
+                <foreach collection="allCdList" item="item2" separator="|| '_' ||">
+                    <if test="item2 &lt;= item1.zokuseiCol">
+                        "${item2}"
+                    </if>
+                </foreach>
+            </if>
+            as "zokusei${item1.zokuseiId}"
         </foreach>
-        from ${tableName} where "1" in
-        <foreach collection="janNew" separator="," item="item" open="(" close=")">
-            trim(#{item})
+        ,
+        <foreach collection="attrName" separator="," item="item" index="index">
+            "${item.zokusei_col}" as "zokuseiName${item.zokusei_id}"
         </foreach>
+        <if test="model == 0">
+            ,case when rep.jan_new is not null then 'すでにJAN変商品として入力済みです。'
+            when repold.jan_old is not null then 'すでにJAN変商品として入力済みです。'
+            else '' end as "errMsg"
+        </if>
+        <if test="model == 2">
+            ,case when rep.jan_new is not null then 'すでにJAN変商品として入力済みです。'
+            when repold.jan_old is not null then 'すでにJAN変商品として入力済みです。'
+                when news.jan_new is not null then 'すでに新规商品として入力済みです'
+            else '' end as "errMsg"
+        </if>
+        from ${proInfoTable} info
+        <if test="model == 0">
+        left join planocycle.work_priority_order_jan_replace rep
+        on  info."1" = rep.jan_new
+        and  rep.priority_order_cd = #{priorityOrderCd}
+        left join planocycle.work_priority_order_jan_replace repold
+        on  info."1" = repold.jan_old
+        and  repold.priority_order_cd = #{priorityOrderCd}
+        </if>
+        <if test="model == 2">
+            left join planocycle.work_priority_order_jan_replace rep
+            on  info."1" = rep.jan_new
+            and  rep.priority_order_cd = #{priorityOrderCd}
+            left join planocycle.work_priority_order_jan_replace repold
+            on  info."1" = repold.jan_old
+            and  repold.priority_order_cd = #{priorityOrderCd}
+            left join planocycle.work_priority_order_jan_new news
+            on  info."1" = news.jan_new
+            and  news.priority_order_cd = #{priorityOrderCd}
+        </if>
+        where "1" in
+        <foreach collection="janCd" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+
+    </select>
+    <select id="getErrorMsgJan" resultType="java.lang.String">
+        SELECT jan_new as jan_new
+        from planocycle.work_priority_order_jan_replace
+        where priority_order_cd = #{priorityOrderCd}
+        union
+        SELECT jan_old as jan_new
+        from planocycle.work_priority_order_jan_replace
+              where   priority_order_cd = #{priorityOrderCd}
     </select>
     <delete id="deleteByAuthorCd">
         delete from planocycle.priority_order_jan_new where

@@ -4,8 +4,10 @@ import com.trechina.planocycle.entity.po.BasicPatternRestrictRelation;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 @RestController
@@ -29,13 +31,29 @@ public class BasicPatternMstController {
         return basicPatternMstService.setAttrDisplay(basicPatternRestrictRelation);
     }
 
+    @GetMapping("/preCalculation")
+    public Map<String, Object> preCalculation(String companyCd, Long patternCd,Integer priorityOrderCd ) {
+        return basicPatternMstService.preCalculation(companyCd, patternCd,priorityOrderCd);
+    }
+
     /**
      * 自動計算
      * @return
      */
     @GetMapping("/autoCalculation")
-    public Map<String,Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition){
-        return basicPatternMstService.autoCalculation(companyCd,priorityOrderCd,partition);
+    public Map<String,Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition,
+                                              Integer heightSpace){
+        return basicPatternMstService.autoCalculation(companyCd,priorityOrderCd,partition, heightSpace);
+    }
+
+    /**
+     * 表示自動計算実行ステータス
+     * @param taskId
+     * @return
+     */
+    @GetMapping("/autoTaskId")
+    public Map<String, Object> autoTaskId(String taskId){
+        return basicPatternMstService.autoTaskId(taskId);
     }
 
 

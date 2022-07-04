@@ -114,7 +114,7 @@ public class PtsDetailDataVo {
     }
 
     public void setTaiNum(Integer taiNum) {
-        this.taiNum = taiNum;
+        this.taiNum = taiNum == null ? 0 : taiNum;
     }
 
     public Integer getTanaNum() {
@@ -122,7 +122,7 @@ public class PtsDetailDataVo {
     }
 
     public void setTanaNum(Integer tanaNum) {
-        this.tanaNum = tanaNum;
+        this.tanaNum = tanaNum == null ? 0 : tanaNum;
     }
 
     public Integer getFaceNum() {
@@ -130,7 +130,7 @@ public class PtsDetailDataVo {
     }
 
     public void setFaceNum(Integer faceNum) {
-        this.faceNum = faceNum;
+        this.faceNum = faceNum == null ? 0 : faceNum;
     }
 
     public Integer getSkuNum() {
@@ -138,7 +138,7 @@ public class PtsDetailDataVo {
     }
 
     public void setSkuNum(Integer skuNum) {
-        this.skuNum = skuNum;
+        this.skuNum = skuNum == null ? 0 : skuNum;
     }
 
     @Override

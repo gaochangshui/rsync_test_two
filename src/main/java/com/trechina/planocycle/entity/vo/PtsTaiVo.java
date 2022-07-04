@@ -6,6 +6,7 @@ public class PtsTaiVo {
     private Integer taiWidth;
     private Integer taiDepth;
     private String taiName;
+
     public Integer getTaiCd() {
         return taiCd;
     }

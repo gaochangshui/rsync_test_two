@@ -2,6 +2,11 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.LongSerializationPolicy;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
@@ -10,10 +15,7 @@ import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
-import com.trechina.planocycle.service.CommonMstService;
-import com.trechina.planocycle.service.PriorityOrderMstService;
-import com.trechina.planocycle.service.ShelfPatternService;
-import com.trechina.planocycle.service.ShelfPtsService;
+import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ShelfPtsServiceImpl implements ShelfPtsService {
@@ -43,7 +47,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Autowired
     private ShelfPatternService shelfPatternService;
     @Autowired
-    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+    private PriorityOrderJanNewService janNewService;
     @Autowired
     private PriorityOrderMstService priorityOrderMstService;
     @Autowired
@@ -321,27 +325,34 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         //modeNameはptsをダウンロードするファイル名として
         priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
         //既存のptsからデータをクエリーする
-        shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
+        if (id != null){
+            priorityOrderPtsDataDto.setId(id);
+            shelfPtsDataMapper.insertPtsData1(priorityOrderPtsDataDto);
+        }else {
+            shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
+        }
+
         Integer newId = priorityOrderPtsDataDto.getId();
         shelfPtsDataMapper.insertPtsTaimst(ptsCd, newId, authorCd);
         shelfPtsDataMapper.insertPtsTanamst(ptsCd, newId, authorCd);
         shelfPtsDataMapper.insertPtsVersion(ptsCd, newId, authorCd);
 
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
-        ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));
-        ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(patternCd));
-        ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(patternCd));
-        ptsDetailData.setSkuNum(shelfPtsDataMapper.getSkuNum(patternCd));
 
-        List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
-        List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
-        List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
         if (ptsDetailData != null){
+            ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));
+            ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(patternCd));
+            ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(patternCd));
+            ptsDetailData.setSkuNum(shelfPtsDataMapper.getSkuNum(patternCd));
+
+            List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
+            List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
+            List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
+
             ptsDetailData.setPtsTaiList(taiData);
             ptsDetailData.setPtsTanaVoList(tanaData);
             ptsDetailData.setPtsJanDataList(janData);
         }
-
 
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
@@ -356,12 +367,10 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Override
     public Map<String, Object> setDisplay(List<WorkPriorityOrderSort> workPriorityOrderSort) {
         String aud = httpSession.getAttribute("aud").toString();
-        String companyCd = null;
-        for (WorkPriorityOrderSort priorityOrderSort : workPriorityOrderSort) {
-            companyCd=  priorityOrderSort.getCompanyCd();
-        }
-        shelfPtsDataMapper.deleteDisplay(companyCd,aud);
-        if (workPriorityOrderSort.isEmpty()){
+        String companyCd = workPriorityOrderSort.get(0).getCompanyCd();
+        Integer priorityOrderCd = workPriorityOrderSort.get(0).getPriorityOrderCd();
+        shelfPtsDataMapper.deleteDisplay(companyCd,priorityOrderCd);
+        if (workPriorityOrderSort.get(0).getSortNum() == null){
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
         shelfPtsDataMapper.setDisplay(workPriorityOrderSort,aud);
@@ -534,6 +543,45 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             shelfPtsDataMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
         }
     }
+
+    @Override
+    public void basicSaveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, List<WorkPriorityOrderResultDataDto> resultData) {
+        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
+
+        List<WorkPriorityOrderResultDataDto> janNewList = resultData.stream().filter(dto -> dto.getRank()!=null && dto.getRank().equals(-1L)).collect(Collectors.toList());
+        List<WorkPriorityOrderResultDataDto> janList = resultData.stream().filter(dto -> dto.getRank()==null || !dto.getRank().equals(-1L))
+                .peek(dto->{
+                    if(dto.getRank()==null){
+                        dto.setRank(dto.getSkuRank());
+                    }
+                }).collect(Collectors.toList());
+        if(!janNewList.isEmpty()){
+            Gson gson = new GsonBuilder().setLongSerializationPolicy(LongSerializationPolicy.STRING).create();
+            List<Map<String, Object>> janNewMapList = new Gson().fromJson(gson.toJson(janNewList), new TypeToken<List<Map<String, Object>>>() {
+            }.getType());
+            List<Map<String, Object>> janMapList = new Gson().fromJson(new Gson().toJson(janList), new TypeToken<List<Map<String, Object>>>() {
+            }.getType());
+            List<Map<String, Object>> mapList = janNewService.janSort(janMapList, janNewMapList, "skuRank");
+            resultData = new Gson().fromJson(new Gson().toJson(mapList), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
+            }.getType());
+        }
+
+        //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
+        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(resultData);
+
+        //既存の新しいptsを検出し,削除してから保存する
+        //新しいptsにデータがあるptsCd
+        ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectWorkPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
+
+        if(Optional.ofNullable(shelfPtsData).isPresent()){
+            Integer oldPtsCd = shelfPtsData.getId();
+            shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
+            if (!positionResultData.isEmpty()) {
+                shelfPtsDataMapper.insertPtsDataJandata(positionResultData, oldPtsCd, companyCd, authorCd);
+            }
+        }
+    }
     /**
      * ptsデータを最終テーブルに保存
      * @param companyCd
@@ -610,14 +658,12 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Transactional(rollbackFor = Exception.class)
     public Map<String,Object> setPtsTanaSize(List<PtsTanaVo> ptsTanaVoList) {
         try {
+
             Integer priorityOrderCd = ptsTanaVoList.get(0).getPriorityOrderCd();
             String companyCd = ptsTanaVoList.get(0).getCompanyCd();
             String authorCd = httpSession.getAttribute("aud").toString();
             Integer taiCd = ptsTanaVoList.get(0).getTaiCd();
-            //List<BasicPatternRestrictRelation> list = new ArrayList<>();
-            //for (PtsTanaVo ptsTanaVo : ptsTanaVoList) {
-            //    list.addAll(ptsTanaVo.getGroup());
-            //}
+            shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
             for (PtsTanaVo ptsTanaVo : ptsTanaVoList) {
                 if (ptsTanaVo.getGroup().isEmpty()){
                     ArrayList<BasicPatternRestrictRelation> group = new ArrayList<>();
@@ -643,22 +689,77 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
+    /**
+     * 棚pattern関連ptsの詳細(新)の取得
+     * @param patternCd
+     * @param companyCd
+     * @param priorityOrderCd
+     * @return
+     */
     @Override
     public Map<String, Object> getNewPtsDetailData(Integer patternCd, String companyCd, Integer priorityOrderCd) {
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsNewDetailData(priorityOrderCd);
 
-        if (ptsDetailData!=null) {
+        if (ptsDetailData != null) {
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getNewTaiNum(priorityOrderCd));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getNewTanaNum(priorityOrderCd));
             ptsDetailData.setFaceNum(shelfPtsDataMapper.getNewFaceNum(priorityOrderCd));
             ptsDetailData.setSkuNum(shelfPtsDataMapper.getNewSkuNum(priorityOrderCd));
-
-            List<PtsTaiVo> taiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);
-            List<PtsTanaVo> tanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
-            List<PtsJanDataVo> janData = shelfPtsDataMapper.getNewJanData(priorityOrderCd);
-            ptsDetailData.setPtsTaiList(taiData);
-            ptsDetailData.setPtsTanaVoList(tanaData);
-            ptsDetailData.setPtsJanDataList(janData);
+            //新台、棚、商品データ
+            List<PtsTaiVo> newTaiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);
+            List<PtsTanaVo> newTanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
+            List<PtsJanDataVo> newJanData = shelfPtsDataMapper.getNewJanData(priorityOrderCd);
+            //既存台、棚、商品データ
+            List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
+            List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
+            //棚、商品の変更チェック
+            //棚変更：高さ変更
+            logger.info("start,{}",System.currentTimeMillis());
+            newTanaData.stream()
+                    .filter(map -> tanaData.stream().anyMatch(map1 -> map1.getTaiCd().equals(map.getTaiCd())
+                            && map1.getTanaCd().equals(map.getTanaCd())
+                            && !map1.getTanaHeight().equals(map.getTanaHeight())
+                    ))
+                    .forEach(map -> map.setRemarks(MagicString.MSG_HEIGHT_CHANGE.replace("{height}", String.valueOf(
+                            tanaData.stream().filter(map1 ->
+                                    map1.getTaiCd().equals(map.getTaiCd())
+                                            && map1.getTanaCd().equals(map.getTanaCd())).findFirst().get().getTanaHeight()))));
+            //棚変更：棚新規作成
+            newTanaData.stream()
+                    .filter(map -> tanaData.stream().noneMatch(map1 -> map1.getTaiCd().equals(map.getTaiCd())
+                            && map1.getTanaCd().equals(map.getTanaCd())
+                    ))
+                    .forEach(map -> map.setRemarks(MagicString.MSG_NEW_TANA));
+            //商品変更：新規商品
+            newJanData.stream()
+                    .filter(map -> janData.stream().noneMatch(map1 -> map1.getJan().equals(map.getJan())
+                    ))
+                    .forEach(map -> map.setRemarks(MagicString.MSG_NEW_JAN));
+            //商品変更：位置変更
+            newJanData.stream()
+                    .filter(map -> janData.stream().anyMatch(map1 -> map1.getJan().equals(map.getJan())
+                            && (!map1.getTaiCd().equals(map.getTaiCd())
+                            || !map1.getTanaCd().equals(map.getTanaCd())
+                            || !map1.getTanapositionCd().equals(map.getTanapositionCd()))
+                    ))
+                    .forEach(map -> {
+                        PtsJanDataVo oldPtsJanDataVo = janData.stream().filter(map1 -> map1.getJan().equals(map.getJan())).findFirst().get();
+                        map.setRemarks(MagicString.MSG_TANA_POSITION_CHANGE.replace("{tai}", String.valueOf(oldPtsJanDataVo.getTaiCd()))
+                                .replace("{tana}", String.valueOf(oldPtsJanDataVo.getTanaCd()))
+                                .replace("{position}", String.valueOf(oldPtsJanDataVo.getTanapositionCd())));
+                    });
+            //商品変更：フェース変更
+            newJanData.stream()
+                    .filter(map -> janData.stream().anyMatch(map1 -> map1.getJan().equals(map.getJan())
+                            && !map1.getFaceCount().equals(map.getFaceCount())
+                    ))
+                    .forEach(map -> map.setRemarks((StringUtils.hasLength(map.getRemarks()) ? map.getRemarks() + "," : "")
+                            + MagicString.MSG_FACE_CHANGE
+                            + janData.stream().filter(map1 -> map1.getJan().equals(map.getJan())).findFirst().get().getFaceCount()));
+            logger.info("end,{}", System.currentTimeMillis());
+            ptsDetailData.setPtsTaiList(newTaiData);
+            ptsDetailData.setPtsTanaVoList(newTanaData);
+            ptsDetailData.setPtsJanDataList(newJanData);
         }
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }

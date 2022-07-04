@@ -347,6 +347,11 @@
             zokusei33 =  #{zokusei33,jdbcType=VARCHAR}
         where  
     </update>
+    <insert id="setWorkForFinal">
+        insert into planocycle.work_basic_pattern_restrict_result
+        select  * from  planocycle.basic_pattern_restrict_result
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+    </insert>
     <insert id="setFinalForWork">
         insert into planocycle.basic_pattern_restrict_result
         select  * from  planocycle.work_basic_pattern_restrict_result
@@ -395,7 +400,7 @@
     </insert>
 
     <select id="selectJanZokusei" resultType="map">
-        select face_count as "faceCount",jan
+        select face_count as "faceCount",coalesce(jan_new, jan) jan
             <foreach collection="attrList" item="item1" open="," separator=",">
                 <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">"${item1.zokuseiCol}"</if>
                 <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
@@ -408,7 +413,32 @@
                 as "zokusei${item1.zokuseiId}"
             </foreach>
         from planocycle.shelf_pts_data_jandata jandata
+        left join planocycle.work_priority_order_jan_replace replace on replace.priority_order_cd=#{priorityOrderCd} and jan_old=jandata.jan
         inner join ${proInfoTable} janinfo on  janinfo."1"=jandata.jan
-        where pts_cd=${ptsCd}
+        where pts_cd=#{ptsCd}
+    </select>
+    <select id="selectNewJanZokusei" resultType="java.util.Map">
+        select face_count as "faceNum",coalesce(jan_new, jan) "janCd"
+        <foreach collection="attrList" item="item1" open="," separator=",">
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">"${item1.zokuseiCol}"</if>
+            <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
+                <foreach collection="allCdList" item="item2" separator="|| '_' ||">
+                    <if test="item2 &lt;= item1.zokuseiCol">
+                        "${item2}"
+                    </if>
+                </foreach>
+            </if>
+            as "zokusei${item1.zokuseiId}"
+        </foreach>
+        ,
+        <foreach collection="attrName" separator="," item="item" index="index">
+            "${item.zokusei_col}" as "zokuseiName${item.zokusei_id}"
+        </foreach>
+        ,tai_cd as "taiCd",tana_cd as "tanaCd","row_number"() over(order by tai_cd,tana_cd,coalesce(jan_new, jan)) as rank,
+        "2" as "janName"
+        from planocycle.work_priority_order_pts_data_jandata jandata
+        left join planocycle.work_priority_order_jan_replace replace on replace.priority_order_cd=#{priorityOrderCd} and jan_old=jandata.jan
+        inner join ${proInfoTable} janinfo on  janinfo."1"=jandata.jan
+        where pts_cd=#{ptsCd}
     </select>
 </mapper>

@@ -319,10 +319,10 @@
   </update>
 
   <insert id="setResultDataList">
-    insert into planocycle.work_priority_order_result_data(priority_order_cd,company_cd,restrict_cd,jan_cd,sku_rank,adopt_flag,author_cd,sort_rank)
+    insert into planocycle.work_priority_order_result_data(priority_order_cd,company_cd,jan_cd,sku_rank,adopt_flag,author_cd,sort_rank)
       values
     <foreach collection="list" item="item" separator="," >
-        (#{priorityOrderCd},#{companyCd},#{restrictCd},#{item.jan},#{item.rankResult},0,#{authorCd},#{item.rankResult})
+        (#{priorityOrderCd},#{companyCd},#{item.janNew},#{item.rankResult},0,#{authorCd},#{item.rankResult})
     </foreach>
   </insert>
   <select id="getResultJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
@@ -392,14 +392,14 @@
     </foreach>
   </update>
   <update id="updateFaceNum">
-    <foreach collection="list" item="item" separator=";" index="index">
-      update planocycle.work_priority_order_result_data
-      <set>
-
-        face_fact = #{item.faceNum} ::numeric
-      </set>
-      where jan_cd = #{item.janCd} ::varchar and company_cd = #{item.companyCd} and author_cd = #{authorCd} and priority_order_cd = #{item.priorityOrderCd}
+    update planocycle.work_priority_order_pts_data_jandata
+    set face_count=
+    CASE jan
+    <foreach collection="list" item="item">
+      WHEN trim(#{item.janCd}) THEN #{item.faceNum}
     </foreach>
+    ELSE face_count END
+    where pts_cd = #{ptsCd}
   </update>
   <insert id="setWorkForFinal">
     insert into planocycle.work_priority_order_result_data(company_cd, author_cd, priority_order_cd, jan_cd,
@@ -420,5 +420,17 @@
     select tai_cd, jan_cd,tana_cd,face,face_fact from planocycle.work_priority_order_result_data where company_cd = #{companyCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd} and author_cd=#{authorCd} and adopt_flag=1
     order by tai_cd,tana_type,sort_rank,sku_rank
+  </select>
+    <select id="getProductReorder" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+      select
+        resultdata.jan as janCd,row_number() over(order by rank_result) as resultRank
+      from
+        planocycle.work_basic_pattern_restrict_result_data resultdata
+          left join planocycle.product_power_mst_data mstdata
+                    on resultdata.jan = mstdata.jan and mstdata.product_power_cd =#{productPowerCd}
+      where priority_order_cd = #{priorityOrderCd}
+    </select>
+  <select id="getPtsCd" resultType="java.lang.Integer">
+    select id from planocycle.work_priority_order_pts_data where priority_order_cd = #{priorityOrderCd}
   </select>
 </mapper>

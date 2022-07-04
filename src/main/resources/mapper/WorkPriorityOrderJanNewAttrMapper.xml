@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.WorkPriorityOrderJanNewAttrMapper">
+    <insert id="insert">
+        insert into planocycle.work_priority_order_jan_new_attr(priority_order_cd,company_cd,author_cd,value)
+        values
+            <foreach collection="attrList" item="item" separator=",">
+                (#{priorityOrderCd},#{companyCd},#{authorCd},#{item})
+            </foreach>
+    </insert>
+    <delete id="deleteWork">
+        delete from planocycle.work_priority_order_jan_new_attr where priority_order_cd = #{priorityOrderCd} and company_cd = #{companyCd}
+    </delete>
+</mapper>

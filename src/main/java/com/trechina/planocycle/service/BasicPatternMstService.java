@@ -13,7 +13,11 @@ public interface BasicPatternMstService {
 
     Map<String, Object> getAttrDisplay(String companyCd, Integer priorityOrderCd);
 
-    Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd, Integer partition);
+    Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd, Integer partition, Integer heightSpace);
 
     Map<String, Object> setAttrDisplay( BasicPatternRestrictRelation basicPatternRestrictRelation);
+
+    Map<String, Object> autoTaskId(String taskId);
+
+    Map<String, Object> preCalculation(String companyCd, Long patternCd, Integer priorityOrderCd);
 }

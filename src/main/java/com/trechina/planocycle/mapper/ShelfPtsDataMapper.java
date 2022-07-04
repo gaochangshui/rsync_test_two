@@ -108,7 +108,7 @@ public interface ShelfPtsDataMapper {
     List<WorkPriorityOrderSort> getDisplay(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
     List<WorkPriorityOrderSortVo> getDisplays(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    int deleteDisplay(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+    int deleteDisplay(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
     int insertPtsData(PriorityOrderPtsDataDto ptsData);
 
@@ -135,6 +135,7 @@ public interface ShelfPtsDataMapper {
     int deleteWorkPtsData(@Param("ptsCd")Integer ptsCd);
 
     int deletePtsDataJandata(@Param("ptsCd")Integer ptsCd);
+    int deletePtsJandataByPriorityOrderCd(Integer priorityOrderCd);
 
     ShelfPtsData selectPtsCdByAuthorCd(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,
                               @Param("priorityOrderCd")Integer priorityOrderCd, @Param("patternCd") Long patternCd);
@@ -182,4 +183,6 @@ public interface ShelfPtsDataMapper {
     void deleteTana(Integer taiCd, Integer id);
 
     void updTanaSize(List<PtsTanaVo> ptsTanaVoList, Integer id, String authorCd, String companyCd);
+
+    void insertPtsData1(PriorityOrderPtsDataDto priorityOrderPtsDataDto);
 }

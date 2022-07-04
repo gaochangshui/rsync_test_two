@@ -29,6 +29,22 @@
         where  relation.company_cd = #{companyCd} and relation.author_cd = #{authorCd} and relation.priority_order_cd =#{priorityOrderCd}
         order by tai_cd,tana_cd
     </select>
+    <select id="getNewPlatformShedData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto">
+        select
+            tai_cd,
+            tana_cd,
+            count ( jan ) "skuNum",
+            sum ( face_count ) "faceNum"
+        from planocycle.work_priority_order_pts_data ptsdata
+                 left join planocycle.work_priority_order_pts_data_jandata jandata
+                           on ptsdata.id = jandata.pts_cd
+        where
+            ptsdata.priority_order_cd = #{priorityOrderCd}
+        group by
+            tai_cd,tana_cd
+        order by
+            tai_cd,tana_cd
+    </select>
     <select id="getRestrictJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto">
         select datas.jan_cd as janCd,COALESCE(jans.jan_nm,mstpl.jan_nm) as janName, datas.tai_cd as taiCd,datas.tana_cd as tanaCd, COALESCE(jans.irisu,mstpl.irisu) as zokusei7,COALESCE(jans.pkg,mstpl.pkg) as zokusei5,
                COALESCE(jans.alcohol,mstpl.alcohol)  as zokusei8,COALESCE(jans.brand,mstpl.brand) as zokusei9,COALESCE(jans.kikaku,mstpl.kikaku) as zokusei6,
