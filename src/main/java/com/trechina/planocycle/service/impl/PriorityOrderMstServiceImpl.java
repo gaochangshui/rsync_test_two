@@ -897,7 +897,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         sortSettings.put("workPriorityOrderSort",workPriorityOrderSort);
         sortSettings.put("partitionFlag",workPriorityOrderMst.getPartitionFlag());
         sortSettings.put("partitionVal",workPriorityOrderMst.getPartitionVal());
-        sortSettings.put("topPartitionVal",workPriorityOrderMst.getTopPartitionVal());
+        sortSettings.put("heightSpaceFlag",workPriorityOrderMst.getTopPartitionVal());
         sortSettings.put("productPowerCd",workPriorityOrderMst.getProductPowerCd());
         sortSettings.put("productPowerName",productPowerInfo.getProductPowerName());
         sortSettings.put("authorName",productPowerInfo.getAuthorName());

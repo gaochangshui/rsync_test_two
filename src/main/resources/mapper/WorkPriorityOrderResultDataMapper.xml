@@ -392,14 +392,14 @@
     </foreach>
   </update>
   <update id="updateFaceNum">
-    <foreach collection="list" item="item" separator=";" index="index">
-      update planocycle.work_priority_order_result_data
-      <set>
-
-        face_fact = #{item.faceNum} ::numeric
-      </set>
-      where jan_cd = #{item.janCd} ::varchar and company_cd = #{item.companyCd} and author_cd = #{authorCd} and priority_order_cd = #{item.priorityOrderCd}
+    update planocycle.work_priority_order_pts_data_jandata
+    set face_count=
+    CASE jan
+    <foreach collection="list" item="item">
+      WHEN trim(#{item.janCd}) THEN #{item.faceNum}
     </foreach>
+    ELSE face_count END
+    where pts_cd = #{ptsCd}
   </update>
   <insert id="setWorkForFinal">
     insert into planocycle.work_priority_order_result_data(company_cd, author_cd, priority_order_cd, jan_cd,
@@ -430,4 +430,7 @@
                     on resultdata.jan = mstdata.jan and mstdata.product_power_cd =#{productPowerCd}
       where priority_order_cd = #{priorityOrderCd}
     </select>
+  <select id="getPtsCd" resultType="java.lang.Integer">
+    select id from planocycle.work_priority_order_pts_data where priority_order_cd = #{priorityOrderCd}
+  </select>
 </mapper>

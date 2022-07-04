@@ -59,7 +59,9 @@ public interface WorkPriorityOrderResultDataMapper {
     int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd")String authorCd);
 
     //ユーザ編集faceNum
-    int updateFaceNum(@Param("list") List<PriorityOrderRestrictJanDto> list,@Param("authorCd")String authorCd);
+    int updateFaceNum(@Param("list") List<PriorityOrderRestrictJanDto> list,@Param("ptsCd")Integer ptsCd);
 
     List<WorkPriorityOrderResultData> getProductReorder(String companyCd, String authorCd, Integer productPowerCd, Integer priorityOrderCd);
+
+    Integer getPtsCd(Integer priorityOrderCd);
 }
