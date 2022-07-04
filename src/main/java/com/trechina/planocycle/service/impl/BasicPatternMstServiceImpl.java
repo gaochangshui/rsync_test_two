@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -321,6 +322,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         String authorCd = session.getAttribute("aud").toString();
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         String uuid = UUID.randomUUID().toString();
+        Integer finalHeightSpace = heightSpace;
         Future<?> future = executor.submit(() -> {
             try{
                 //商品力点数表cdを取得する
@@ -340,7 +342,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
                 Integer minFaceNum = 1;
                 //仕切り板の厚さと仕切り板を使用して保存するかどうか
-                priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition, heightSpace);
+                priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition, finalHeightSpace);
                 //まず社員番号に従ってワークシートのデータを削除します
                 workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
                 //制約条件の取得
@@ -426,6 +428,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     partitionVal = 0;
                 }
                 Short topPartitionVal = 0;
+                if (finalHeightSpace!=null) {
+                    topPartitionVal = finalHeightSpace.shortValue();
+                }
 
                 Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd.intValue(), companyCd, priorityOrderCd,
                         minFaceNum, zokuseiMsts, allCdList,
