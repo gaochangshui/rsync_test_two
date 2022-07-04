@@ -167,7 +167,7 @@ class PlanoCycleApiApplicationTests {
         map2.add(new HashMap(){{put("rank",2);put("jan","2");put("flag",2);}});
         map2.add(new HashMap(){{put("rank",3);put("jan","3");put("flag",2);}});
 
-        List<Map<String, Object>> list = priorityOrderJanNewService.janSort(map1, map2);
+        List<Map<String, Object>> list = priorityOrderJanNewService.janSort(map1, map2, "rank");
 
         System.out.println(list);
 

@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.LongSerializationPolicy;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
@@ -555,11 +557,12 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                     }
                 }).collect(Collectors.toList());
         if(!janNewList.isEmpty()){
-            List<Map<String, Object>> janNewMapList = new Gson().fromJson(new Gson().toJson(janNewList), new TypeToken<List<Map<String, Object>>>() {
+            Gson gson = new GsonBuilder().setLongSerializationPolicy(LongSerializationPolicy.STRING).create();
+            List<Map<String, Object>> janNewMapList = new Gson().fromJson(gson.toJson(janNewList), new TypeToken<List<Map<String, Object>>>() {
             }.getType());
             List<Map<String, Object>> janMapList = new Gson().fromJson(new Gson().toJson(janList), new TypeToken<List<Map<String, Object>>>() {
             }.getType());
-            List<Map<String, Object>> mapList = janNewService.janSort(janMapList, janNewMapList);
+            List<Map<String, Object>> mapList = janNewService.janSort(janMapList, janNewMapList, "skuRank");
             resultData = new Gson().fromJson(new Gson().toJson(mapList), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
             }.getType());
         }

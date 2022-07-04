@@ -181,7 +181,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
             }
         }
         if (!productPowerData.isEmpty()) {
-            productPowerData = this.janSort(productPowerData, data);
+            productPowerData = this.janSort(productPowerData, data, "rank");
         }
         List list1 = new ArrayList();
         list1.add(data);
@@ -217,23 +217,23 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     }
 
     @Override
-    public List<Map<String, Object>> janSort(List<Map<String, Object>> ptsJanList, List<Map<String, Object>> JanNewList) {
-        ptsJanList = ptsJanList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, "rank"))).collect(Collectors.toList());
-        JanNewList = JanNewList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, "rank"))).collect(Collectors.toList());
+    public List<Map<String, Object>> janSort(List<Map<String, Object>> ptsJanList, List<Map<String, Object>> JanNewList, String rankName) {
+        ptsJanList = ptsJanList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
+        JanNewList = JanNewList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
         int i = 1;
         for (Map<String, Object> objectMap : ptsJanList) {
-            objectMap.put("rank",i++);
+            objectMap.put(rankName,i++);
         }
         for (Map<String, Object> objectMap : JanNewList) {
-            if (Integer.valueOf(objectMap.get("rank").toString())>ptsJanList.size()){
+            if (Integer.valueOf(objectMap.get(rankName).toString())>ptsJanList.size()){
                 ptsJanList.add(objectMap);
             }else {
-            ptsJanList.add(Integer.valueOf(objectMap.get("rank").toString())-1,objectMap);
+            ptsJanList.add(Integer.valueOf(objectMap.get(rankName).toString())-1,objectMap);
             }
         }
         i = 1;
         for (Map<String, Object> objectMap : ptsJanList) {
-            objectMap.put("rank",i++);
+            objectMap.put(rankName,i++);
         }
         return ptsJanList;
     }

@@ -367,6 +367,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 newJanDto.setTanaCd(MapUtils.getInteger(newJan, "tanaCd"));
                 newJanDto.setFaceFact(jan.getFace());
                 newJanDto.setRank(-1L);
+                newJanDto.setSkuRank(MapUtils.getLong(newJan, "sku_rank"));
                 newJanDto.setRestrictCd(MapUtils.getLong(newJan, MagicString.RESTRICT_CD));
                 newJanDto.setWidth(MapUtils.getLong(newJan, "width"));
                 newJanDto.setHeight(MapUtils.getLong(newJan, "height"));
