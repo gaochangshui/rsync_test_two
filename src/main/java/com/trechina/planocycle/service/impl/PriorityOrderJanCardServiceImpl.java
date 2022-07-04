@@ -5,12 +5,11 @@ import com.trechina.planocycle.entity.po.PriorityOrderJanCard;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
 import com.trechina.planocycle.entity.vo.PriorityOrderJanCardVO;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.PriorityOrderDataMapper;
 import com.trechina.planocycle.mapper.PriorityOrderJanCardMapper;
+import com.trechina.planocycle.mapper.ShelfPtsDataMapper;
 import com.trechina.planocycle.mapper.WorkPriorityOrderMstMapper;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.PriorityOrderJanCardService;
-import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,14 +29,12 @@ public class PriorityOrderJanCardServiceImpl implements PriorityOrderJanCardServ
     @Autowired
     private PriorityOrderJanCardMapper priorityOrderJanCardMapper;
     @Autowired
-    private PriorityOrderJanReplaceService priorityOrderJanReplaceService;
-
-    @Autowired
-    private PriorityOrderDataMapper priorityOrderDataMapper;
-    @Autowired
     private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
     @Autowired
     private BasicPatternMstService basicPatternMstService;
+    @Autowired
+    private ShelfPtsDataMapper shelfPtsDataMapper;
+
     /**
      * card商品リストを取得
      *
@@ -70,7 +67,7 @@ public class PriorityOrderJanCardServiceImpl implements PriorityOrderJanCardServ
         String authorCd = session.getAttribute("aud").toString();
         String companyCd=null;
         Integer priorityOrderCd=null;
-
+        shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
         for (PriorityOrderJanCard orderJanCard : priorityOrderJanCard) {
            companyCd= orderJanCard.getCompanyCd();
            priorityOrderCd = orderJanCard.getPriorityOrderCd();

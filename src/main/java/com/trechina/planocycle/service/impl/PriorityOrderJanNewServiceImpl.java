@@ -12,8 +12,6 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
-import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
-import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.apache.commons.collections4.MapUtils;
@@ -35,19 +33,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Autowired
     private PriorityOrderJanNewMapper priorityOrderJanNewMapper;
     @Autowired
-    private PriorityOrderJanAttributeMapper priorityOrderJanAttributeMapper;
-    @Autowired
-    private PriorityOrderDataMapper priorityOrderDataMapper;
-    @Autowired
-    private PriorityOrderJanReplaceService priorityOrderJanReplaceService;
-    @Autowired
-    private PriorityOrderRestrictSetMapper priorityOrderRestrictSetMapper;
-    @Autowired
-    private ProductPowerMstMapper productPowerMstMapper;
-    @Autowired
     private BasicPatternMstService basicPatternMstService;
-    @Autowired
-    private PriorityOrderMstAttrSortService priorityOrderMstAttrSortService;
     @Autowired
     private PriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
@@ -58,6 +44,9 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     private PriorityOrderMstAttrSortMapper attrSortMapper;
     @Autowired
     private ZokuseiMapper zokuseiMapper;
+    @Autowired
+    private ShelfPtsDataMapper shelfPtsDataMapper;
+
     /**
      * 新規janListの取得
      *
@@ -132,6 +121,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = null;
         Integer priorityOrderCd = null;
+        shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
         for (PriorityOrderJanNew orderJanNew : priorityOrderJanNew) {
             companyCd = orderJanNew.getCompanyCd();
             priorityOrderCd = orderJanNew.getPriorityOrderCd();

@@ -754,9 +754,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             priorityOrderResultDataMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
             priorityOrderResultDataMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
-            //スペースの保存、元のデータの削除
-            //priorityOrderSpaceMapper.deleteByAuthorCd(companyCd, authorCd, priorityOrderCd);
-            //priorityOrderSpaceMapper.insertBySelect(companyCd, authorCd, priorityOrderCd);
 
             //cutを保存し、元のデータを削除
             priorityOrderJanCardMapper.deleteByAuthorCd(companyCd, priorityOrderCd, authorCd);
@@ -897,7 +894,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         sortSettings.put("workPriorityOrderSort",workPriorityOrderSort);
         sortSettings.put("partitionFlag",workPriorityOrderMst.getPartitionFlag());
         sortSettings.put("partitionVal",workPriorityOrderMst.getPartitionVal());
-        sortSettings.put("heightSpaceFlag",workPriorityOrderMst.getTopPartitionVal());
+        sortSettings.put("heightSpaceFlag",workPriorityOrderMst.getTopPartitionFlag());
+        sortSettings.put("heightSpace",workPriorityOrderMst.getTopPartitionVal());
         sortSettings.put("productPowerCd",workPriorityOrderMst.getProductPowerCd());
         sortSettings.put("productPowerName",productPowerInfo.getProductPowerName());
         sortSettings.put("authorName",productPowerInfo.getAuthorName());

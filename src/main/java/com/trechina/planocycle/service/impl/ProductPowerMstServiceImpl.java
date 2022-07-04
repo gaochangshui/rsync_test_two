@@ -57,6 +57,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     @Autowired
     HttpSession session;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private ShelfPtsDataMapper shelfPtsDataMapper;
     /**
      * 企業cdによる商品力点数表一覧の取得
      * @param companyCd
@@ -102,6 +104,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     public Map<String, Object> getProductPowerInfo(String companyCd, Integer productPowerCd,Integer priorityOrderCd) {
         String authorCd = session.getAttribute("aud").toString();
         //productPowerCdをorder_に保存mstテーブル
+        shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
         productPowerMstMapper.setProductPowerCdForMst(productPowerCd,companyCd,authorCd,priorityOrderCd);
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, productPowerCd);
         Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, productPowerCd);
