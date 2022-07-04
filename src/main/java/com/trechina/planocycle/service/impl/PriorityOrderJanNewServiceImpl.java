@@ -70,7 +70,19 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
 
         List<Map<String,Object>> priorityOrderJanNewVOS = priorityOrderJanNewMapper.selectJanNew(companyCd,priorityOrderCd,
                 zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol);
-            logger.info("つかむ取新規商品list返回結果集b：{}",priorityOrderJanNewVOS);
+        Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
+        Integer productPowerCd = workPriorityOrderMst.getProductPowerCd();
+
+        List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerDataList(priorityOrderCd,
+                zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,shelfPatternCd,productPowerCd);
+        for (Map<String, Object> productPowerDatum : productPowerData) {
+            for (Map<String, Object> priorityOrderJanNewVO : priorityOrderJanNewVOS) {
+                if (productPowerDatum.get("janCd").toString().equals(priorityOrderJanNewVO.get("janCd"))){
+                    priorityOrderJanNewVO.put("errMsg","現状棚に並んでいる可能性がありますので削除してください。");
+                }
+            }
+        }
+        logger.info("つかむ取新規商品list返回結果集b：{}",priorityOrderJanNewVOS);
            return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanNewVOS);
     }
     /**
@@ -102,6 +114,19 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         List<String> listDisparitStr = ListDisparityUtils.getListDisparitStr(list, listNew);
         String [] array = new String[listDisparitStr.size()];
         listDisparitStr.toArray(array);
+        if (model == 0){
+            Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
+            Integer productPowerCd = workPriorityOrderMst.getProductPowerCd();
+            List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerDataList(priorityOrderCd,
+                    zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,shelfPatternCd,productPowerCd);
+            for (Map<String, Object> productPowerDatum : productPowerData) {
+                for (Map<String, Object> priorityOrderJanNewVO : priorityOrderJanNewVOList) {
+                    if (productPowerDatum.get("janCd").toString().equals(priorityOrderJanNewVO.get("janCd"))){
+                        priorityOrderJanNewVO.put("errMsg","現状棚に並んでいる可能性がありますので削除してください。");
+                    }
+                }
+            }
+        }
 
         Map<String,Object> map = new HashMap<>();
             map.put("array",array);
@@ -128,7 +153,49 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         }
         priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
         if(priorityOrderJanNew.get(0).getJanNew() != null) {
+            List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
+            List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
+
+            List<String> janList = priorityOrderJanNew.stream().map(map -> map.getJanNew()).collect(Collectors.toList());
+            String [] janCd = new String[janList.size()];
+            janList.toArray(janCd);
+            Map<String, Object> priorityOrderJanNewInfo = this.getPriorityOrderJanNewInfo(janCd, companyCd, priorityOrderCd, 0);
+
+            Map data = (Map)priorityOrderJanNewInfo.get("data");
+            List<Map<String,Object>> datas = (List<Map<String,Object>>) data.get("priorityOrderJanNewVOList");
+            for (Map<String, Object> objectMap : datas) {
+                for (PriorityOrderJanNew orderJanNew : priorityOrderJanNew) {
+                    if (objectMap.get("janCd").equals(orderJanNew.getJanNew())){
+                        objectMap.put("rank",orderJanNew.getRank());
+                    }
+                }
+            }
+            Map<String, List<Map<String, Object>>> janGroup = datas.stream().collect(Collectors.groupingBy(map -> {
+                String attrKey = "";
+                for (Integer col : attrList) {
+                    attrKey += map.get("zokusei" + col);
+                }
+
+                return attrKey;
+            }));
+            for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
+                Map<String,Object> map = new HashMap<>();
+                map.put("companyCd",companyCd);
+                map.put("priorityOrderCd",priorityOrderCd);
+                map.put("data",stringListEntry.getValue());
+                Map<String, Object> similarity = this.getSimilarity(map);
+                List list = (List) similarity.get("data");
+               List<Map<String,Object>>maps = (List<Map<String,Object>>)list.get(1);
+                for (Map<String, Object> objectMap : maps) {
+                    for (PriorityOrderJanNew orderJanNew : priorityOrderJanNew) {
+                        if (objectMap.get("janCd").equals(orderJanNew.getJanNew())){
+                            orderJanNew.setRank(Integer.valueOf(objectMap.get("rank").toString()));
+                        }
+                    }
+                }
+            }
             priorityOrderJanNewMapper.insert(priorityOrderJanNew, authorCd);
+
         }
             return ResultMaps.result(ResultEnum.SUCCESS);
     }

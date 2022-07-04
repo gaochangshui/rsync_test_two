@@ -106,7 +106,9 @@ public interface ShelfPtsDataMapper {
     int setDisplay(@Param("list")List< WorkPriorityOrderSort> workPriorityOrderSort,@Param("authorCd")String authorCd);
 
     List<WorkPriorityOrderSort> getDisplay(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
-    List<WorkPriorityOrderSortVo> getDisplays(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    List<WorkPriorityOrderSortVo> getDisplays(@Param("companyCd")String companyCd
+            ,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd
+            ,@Param("company") String company,@Param("classCd")String classCd);
 
     int deleteDisplay(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
