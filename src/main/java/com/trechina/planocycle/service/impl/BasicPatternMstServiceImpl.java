@@ -517,6 +517,12 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         return ResultMaps.result(ResultEnum.SUCCESS,"9");
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Map<String, Object> preCalculation(String companyCd, Long patternCd, Integer priorityOrderCd) {
+        Integer unused = restrictRelationMapper.selectUnusedTaiTana(priorityOrderCd);
+        return ResultMaps.result(ResultEnum.SUCCESS, unused);
+    }
     private void setPtsJandataByRestrictCd(Integer priorityOrderCd, Integer patternCd, String companyCd, String authorCd, List<Integer> attrList,
                                            List<ZokuseiMst> zokuseiMsts, GetCommonPartsDataDto commonTableName, List<Integer> allCdList,
                                            List<Map<String, Object>> restrictResult){

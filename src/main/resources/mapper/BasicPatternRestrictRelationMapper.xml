@@ -214,4 +214,12 @@
                 ,#{item.restrictCd,jdbcType=BIGINT},#{item.area,jdbcType=BIGINT})
             </foreach>
     </insert>
+    <select id="selectUnusedTaiTana" resultType="integer">
+        select sum(case when relation.restrict_cd is null or relation.restrict_cd=9999 then 1 else 0 end)
+        from planocycle.work_priority_order_pts_data_tanamst tanamst
+       inner join planocycle.work_priority_order_pts_data ptsdata on ptsdata."id"=tanamst.pts_cd
+       left join planocycle.work_basic_pattern_restrict_relation relation
+         on tanamst.tai_cd=relation.tai_cd and tanamst.tana_cd=relation.tana_cd and ptsdata.priority_order_cd=relation.priority_order_cd
+        where ptsdata.priority_order_cd=#{priorityOrderCd}
+    </select>
 </mapper>

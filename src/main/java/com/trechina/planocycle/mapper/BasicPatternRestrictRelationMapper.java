@@ -52,4 +52,6 @@ public interface BasicPatternRestrictRelationMapper {
     void updateTanaPosition(@Param("list") List<BasicPatternRestrictRelation> tanaAttrList,@Param("authorCd")String authorCd);
 
     void setWorkForFinal(String companyCd, Integer priorityOrderCd);
+
+    Integer selectUnusedTaiTana(Integer priorityOrderCd);
 }

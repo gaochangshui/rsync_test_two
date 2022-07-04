@@ -4,8 +4,10 @@ import com.trechina.planocycle.entity.po.BasicPatternRestrictRelation;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 @RestController
@@ -27,6 +29,11 @@ public class BasicPatternMstController {
     @PostMapping("/setAttrDisplay")
     public Map<String,Object> setAttrDisplay(@RequestBody BasicPatternRestrictRelation basicPatternRestrictRelation) {
         return basicPatternMstService.setAttrDisplay(basicPatternRestrictRelation);
+    }
+
+    @GetMapping("/preCalculation")
+    public Map<String, Object> preCalculation(String companyCd, Long patternCd,Integer priorityOrderCd ) {
+        return basicPatternMstService.preCalculation(companyCd, patternCd,priorityOrderCd);
     }
 
     /**
