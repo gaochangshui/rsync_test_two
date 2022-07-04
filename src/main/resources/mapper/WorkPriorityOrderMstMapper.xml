@@ -19,6 +19,9 @@
     values (#{companyCd,jdbcType=VARCHAR}, #{authorCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{productPowerCd,jdbcType=INTEGER},
       #{shelfPatternCd,jdbcType=BIGINT}, #{commonPartsData}::json,
       #{partitionFlag,jdbcType=SMALLINT}, #{partitionVal,jdbcType=SMALLINT})
+      on conflict(company_cd,priority_order_cd)
+        do update set
+      shelf_pattern_cd = #{shelfPatternCd,jdbcType=BIGINT} ,common_parts_data = #{commonPartsData}::json
   </insert>
   <insert id="insertSelective" parameterType="com.trechina.planocycle.entity.po.WorkPriorityOrderMst">
     insert into planocycle.work_priority_order_mst

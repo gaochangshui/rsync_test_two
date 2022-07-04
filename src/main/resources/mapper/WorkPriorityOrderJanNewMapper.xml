@@ -4,7 +4,7 @@
     <select id="selectJanNew" resultType="map">
         select jan_new as jan,face,sku_rank,jan_rank
         <foreach collection="attrList" item="item1" open="," separator=",">
-            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">"${item1.zokuseiCol}"</if>
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">janinfo."${item1.zokuseiCol}"</if>
             <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
                 <foreach collection="allCdList" item="item2" separator="|| '_' ||">
                     <if test="item2 &lt;= item1.zokuseiCol">

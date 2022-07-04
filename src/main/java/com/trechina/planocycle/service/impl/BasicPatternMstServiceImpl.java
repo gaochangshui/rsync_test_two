@@ -113,7 +113,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         priorityOrderMst.setShelfPatternCd((long)shelfPatternCd);
 
         shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
-        workPriorityOrderMstMapper.deleteByAuthorCd(autoDetectVO.getCompanyCd(), aud, autoDetectVO.getPriorityOrderCd());
         workPriorityOrderMstMapper.insert(priorityOrderMst);
         List<Integer> list = Arrays.asList(zokuseiIds.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
 

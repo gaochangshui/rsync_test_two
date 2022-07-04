@@ -299,6 +299,33 @@
         from planocycle.work_priority_order_jan_replace
               where   priority_order_cd = #{priorityOrderCd}
     </select>
+    <select id="getProductPowerDataList" resultType="java.util.Map">
+        select jandata.jan as "janCd","2" as "janName"
+        <foreach collection="attrList" item="item1" open="," separator=",">
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">"${item1.zokuseiCol}"</if>
+            <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
+                <foreach collection="allCdList" item="item2" separator="|| '_' ||">
+                    <if test="item2 &lt;= item1.zokuseiCol">
+                        "${item2}"
+                    </if>
+                </foreach>
+            </if>
+            as "zokusei${item1.zokuseiId}"
+        </foreach>
+        ,
+        <foreach collection="attrName" separator="," item="item" index="index">
+            "${item.zokusei_col}" as "zokuseiName${item.zokusei_id}"
+        </foreach>
+        ,coalesce (prodata.rank_result,9999) as rank
+        from planocycle.shelf_pts_data ptsdata
+        left join planocycle.shelf_pts_data_jandata jandata
+        on ptsdata.id = jandata.pts_cd
+        left join planocycle.product_power_mst_data prodata
+        on prodata.jan = jandata.jan and prodata.product_power_cd = #{productPowerCd}
+        left join ${proInfoTable} janinfo
+        on janinfo."1" = jandata.jan
+        where ptsdata.shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
+    </select>
     <delete id="deleteByAuthorCd">
         delete from planocycle.priority_order_jan_new where
         company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
