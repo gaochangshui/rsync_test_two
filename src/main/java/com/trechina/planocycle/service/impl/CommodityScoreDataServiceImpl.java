@@ -62,6 +62,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String companyCd = taskIdMap.get("companyCd").toString();
 
         String authorCd = session.getAttribute("aud").toString();
+        if (taskID.equals("")){
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
         if (vehicleNumCache.get(taskIdMap.get("taskID").toString()+"Exception")!=null){
             return ResultMaps.result(ResultEnum.CGIERROR);
         }
