@@ -509,10 +509,11 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         }
 
         if (vehicleNumCache.get(taskId) != null){
-            vehicleNumCache.remove(taskId);
             if(Objects.equals(vehicleNumCache.get(taskId), 2)){
+                vehicleNumCache.remove(taskId);
                 return ResultMaps.result(ResultEnum.FAILURE);
             }
+            vehicleNumCache.remove(taskId);
             return ResultMaps.result(ResultEnum.SUCCESS,"success");
         }
         return ResultMaps.result(ResultEnum.SUCCESS,"9");
