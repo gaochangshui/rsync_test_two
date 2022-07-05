@@ -5,6 +5,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.FaceNumDataDto;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
@@ -153,6 +154,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
         restrictRelationMapper.deleteByPrimaryKey(priorityOrderCd, companyCd);
         for (ShelfPtsDataTanamst tanamst : tanamsts) {
+            final int[] index = {1};
             Integer taiCd = tanamst.getTaiCd();
             Integer tanaCd = tanamst.getTanaCd();
             Integer tanaWidth = tanamst.getTanaWidth();
@@ -160,16 +162,13 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             List<Map<String, Object>> jans = classifyList.stream().filter(map -> MapUtils.getInteger(map, MagicString.TAI_CD).equals(taiCd) &&
                     MapUtils.getInteger(map, MagicString.TANA_CD).equals(tanaCd)).collect(Collectors.toList());
 
+            double areaWidth = 0;
+            String lastKey = "";
+
+            List<Map<String, Object>> newJans = new ArrayList<>();
             for (int i = 0; i < jans.size(); i++) {
                 Map<String, Object> janMap = jans.get(i);
                 double width = MapUtils.getDouble(janMap, "width");
-                int percent = BigDecimal.valueOf(width).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
-                        .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
-                janMap.put("area", percent);
-                janMap.put("priorityOrderCd", priorityOrderCd);
-                janMap.put("companyCd", companyCd);
-                janMap.put("authorCd", aud);
-
                 StringBuilder key = new StringBuilder();
                 for (String zokusei : zokuseiList) {
                     if(key.length()>0){
@@ -178,19 +177,49 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     key.append(MapUtils.getString(janMap, zokusei));
                 }
 
-                BasicPatternRestrictResult basicPatternRestrictResult = classify.get(key.toString());
-                janMap.put("restrictCd", basicPatternRestrictResult.getRestrictCd());
+                if(lastKey.equals(key.toString()) && (i+1)==jans.size()){
+                    areaWidth += width;
+                }
 
-                jans.set(i, janMap);
+                if(!"".equals(lastKey) && (!lastKey.equals(key.toString()) || (i+1)==jans.size())){
+                    int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
+                            .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
+                    Map<String, Object> map = new GsonBuilder().create().fromJson(JSONObject.toJSONString(janMap),
+                            new TypeToken<Map<String, Object>>(){}.getType());
+                    map.put(MagicString.RESTRICT_CD, classify.get(lastKey).getRestrictCd());
+                    map.put("area", percent);
+                    map.put("priorityOrderCd", priorityOrderCd);
+                    map.put("companyCd", companyCd);
+                    map.put("authorCd", aud);
+                    newJans.add(map);
+                    areaWidth=width;
+                }else{
+                    areaWidth += width;
+                }
+
+                if(!lastKey.equals(key.toString()) && (i+1)==jans.size()){
+                    areaWidth = width;
+                    int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
+                            .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
+                    Map<String, Object> map = new GsonBuilder().create().fromJson(JSONObject.toJSONString(janMap),
+                            new TypeToken<Map<String, Object>>(){}.getType());
+                    map.put(MagicString.RESTRICT_CD, classify.get(key.toString()).getRestrictCd());
+                    map.put("area", percent);
+                    map.put("priorityOrderCd", priorityOrderCd);
+                    map.put("companyCd", companyCd);
+                    map.put("authorCd", aud);
+                    newJans.add(map);
+                }
+                
+                lastKey = key.toString();
             }
 
-            final int[] index = {1};
-            Comparator<Map<String, Object>> area = Comparator.comparing(map->MapUtils.getInteger(map, "area"));
-            jans.stream().sorted(area.reversed()).forEach(map->{
+//            Comparator<Map<String, Object>> area = Comparator.comparing(map->MapUtils.getInteger(map, "area")).sorted(area.reversed());
+            newJans.stream().forEach(map->{
                 map.put("tanaPosition", index[0]);
                 index[0]++;
             });
-            restrictRelationMapper.insertBatch(jans);
+            restrictRelationMapper.insertBatch(newJans);
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS);
