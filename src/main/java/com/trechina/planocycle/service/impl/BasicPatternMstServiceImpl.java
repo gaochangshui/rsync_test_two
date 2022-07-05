@@ -339,12 +339,14 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 if (itemMap.containsKey(zokuseiList.get(0))) {
                     groups.add(itemMap);
                 }
+                itemMap.put("tanaPosition", MapUtils.getString(itemMap, "areaPosition"));
                 resultMap.put("groups", groups);
             }
 
             resultList.add(resultMap);
         }
 
+        restrictRelationMapper.updateAreaPosition(resultList, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS, resultList);
     }
 
