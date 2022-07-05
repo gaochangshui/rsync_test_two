@@ -42,6 +42,10 @@ public interface PriorityOrderJanNewMapper {
             , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName,Long shelfPatternCd
             ,Integer productPowerCd,Map<String,Object> mapAttr);
 
+    List<Map<String,Object>> getProductPowerDataList(Integer priorityOrderCd, List<ZokuseiMst> attrList
+            , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName,Long shelfPatternCd
+            ,Integer productPowerCd );
+
     PriorityOrderJanNewDto getProductForWork( @Param("item") PriorityOrderJanNewDto priorityOrderJanNewVO,@Param("companyCd")String companyCd);
 
     List<PriorityOrderJanNewDto> getJanNew(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);

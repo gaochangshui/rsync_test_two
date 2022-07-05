@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderJanCgiDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -857,11 +856,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //sort情报
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
         //陳列順情報の取得
-        List<WorkPriorityOrderSortVo> workPriorityOrderSort = shelfPtsDataMapper.getDisplays(companyCd, aud, priorityOrderCd);
-        //基本スタンド別情報の取得
-        List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getPlatformShedData(companyCd, aud, priorityOrderCd);
-        //基本制約別情報の取得
-        Map<String, Object> restrictData = priorityOrderShelfDataService.getRestrictData(companyCd, priorityOrderCd);
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(workPriorityOrderMst.getCommonPartsData(), companyCd);
+        List<WorkPriorityOrderSortVo> workPriorityOrderSort = shelfPtsDataMapper.getDisplays(companyCd, aud, priorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+
         //pts詳細の取得
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue());
 
