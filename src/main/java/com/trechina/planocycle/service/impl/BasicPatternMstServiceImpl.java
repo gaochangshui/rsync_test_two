@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -34,6 +35,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.*;
@@ -165,6 +167,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             double areaWidth = 0;
             String lastKey = "";
 
+            //Traverse all groups. If it is different from the previous group, record it. If it is the same, the area will be accumulated
             List<Map<String, Object>> newJans = new ArrayList<>();
             for (int i = 0; i < jans.size(); i++) {
                 Map<String, Object> janMap = jans.get(i);
@@ -182,9 +185,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 }
 
                 if(!"".equals(lastKey) && (!lastKey.equals(key.toString()) || (i+1)==jans.size())){
-                    int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
-                            .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
-                    Map<String, Object> map = new GsonBuilder().create().fromJson(JSONObject.toJSONString(janMap),
+                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 5, RoundingMode.CEILING)
+                            .multiply(BigDecimal.valueOf(100)).doubleValue();
+                    Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
                             new TypeToken<Map<String, Object>>(){}.getType());
                     map.put(MagicString.RESTRICT_CD, classify.get(lastKey).getRestrictCd());
                     map.put("area", percent);
@@ -197,6 +200,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     areaWidth += width;
                 }
 
+                //If the last grouping is independent, it should be handled separately
                 if(!lastKey.equals(key.toString()) && (i+1)==jans.size()){
                     areaWidth = width;
                     int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
@@ -214,7 +218,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 lastKey = key.toString();
             }
 
-//            Comparator<Map<String, Object>> area = Comparator.comparing(map->MapUtils.getInteger(map, "area")).sorted(area.reversed());
             newJans.stream().forEach(map->{
                 map.put("tanaPosition", index[0]);
                 index[0]++;

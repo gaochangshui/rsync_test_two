@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -350,8 +351,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                           Integer minFace, List<PriorityOrderResultDataDto> adoptJan, List<PriorityOrderResultDataDto> jans,
                           Map<String, Object> relation, Integer tanaWidth, Integer tanaHeight, String taiCd, String tanaCd){
         String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
-        Integer area = MapUtils.getInteger(relation, "area");
-        Integer groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).intValue();
+        double area = MapUtils.getDouble(relation, "area");
+        double groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).setScale(3, RoundingMode.CEILING).doubleValue();
         Long usedArea = 0L;
 
         for (PriorityOrderResultDataDto jan : jans) {
