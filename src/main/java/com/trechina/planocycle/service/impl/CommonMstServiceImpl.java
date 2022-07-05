@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,6 +61,8 @@ public class CommonMstServiceImpl implements CommonMstService {
     private HttpSession session;
     @Autowired
     private PriorityOrderJanNewService priorityOrderJanNewService;
+    @Autowired
+    private PriorityOrderSortMapper priorityOrderSortMapper;
     @Autowired
     private JanClassifyMapper janClassifyMapper;
 
@@ -210,10 +213,11 @@ public class CommonMstServiceImpl implements CommonMstService {
     public Map<String, Object> commSetJanForShelf(Integer patternCd, String companyCd, Integer priorityOrderCd,
                                                   Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
                                                   List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
-                                                  GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal) {
+                                                  GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
+                                                  Integer tanaWidthCheck) {
         List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu();
-
-        List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd, sizeAndIrisu);
+        int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
+        List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd, sizeAndIrisu, isReOrder);
         List<Map<String, Object>> relationMap = restrictRelationMapper.selectByPriorityOrderCd(priorityOrderCd);
         List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
         List<Map<String, Object>> cutList = janCutMapper.selectJanCut(priorityOrderCd);
@@ -267,7 +271,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             newList.set(i, zokusei);
         }
 
-        Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd = janResult.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd));
+        Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd = janResult.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd, LinkedHashMap::new, Collectors.toList()));
         Map<String, List<Map<String, Object>>> relationGroupTaiTana = relationMap.stream()
                 .filter(map->!MapUtils.getString(map, MagicString.RESTRICT_CD).equals(MagicString.NO_RESTRICT_CD+""))
                 .collect(Collectors.groupingBy(map -> MapUtils.getInteger(map, MagicString.TAI_CD)+ "_" + MapUtils.getInteger(map, MagicString.TANA_CD),
@@ -294,7 +298,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             for (Map<String, Object> relation : relationList) {
                 String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
                 List<PriorityOrderResultDataDto> jans = janResultByRestrictCd.get(Long.valueOf(restrictCd));
-                Map<String, Object> resultMap = this.doSetJan(cutList, newList, partitionVal, topPartitionVal, minFace, adoptJan, jans, relation, tanaWidth, tanaHeight, taiCd, tanaCd);
+                Map<String, Object> resultMap = this.doSetJan(cutList, newList, partitionVal, topPartitionVal, tanaWidthCheck, minFace, adoptJan, jans, relation, tanaWidth, tanaHeight, taiCd, tanaCd);
                 if(resultMap!=null){
                     return resultMap;
                 }
@@ -329,7 +333,8 @@ public class CommonMstServiceImpl implements CommonMstService {
 
                     notAdoptJan = notAdoptJan.stream().sorted(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
                     for (Map<String, Object> relation : entry.getValue()) {
-                        Map<String, Object> resultMap = this.doSetJan(cutList, newList, partitionVal, topPartitionVal, minFace, adoptJan, notAdoptJan, relation,tanaWidth, tanaHeight, taiCd, tanaCd);
+                        Map<String, Object> resultMap = this.doSetJan(cutList, newList, partitionVal, topPartitionVal, tanaWidthCheck,
+                                minFace, adoptJan, notAdoptJan, relation,tanaWidth, tanaHeight, taiCd, tanaCd);
                         if(resultMap!=null){
                             return resultMap;
                         }
@@ -341,12 +346,13 @@ public class CommonMstServiceImpl implements CommonMstService {
         return ResultMaps.result(ResultEnum.SUCCESS, adoptJan);
     }
 
-    private Map<String, Object> doSetJan(List<Map<String, Object>> cutList, List<Map<String, Object>> newList, Short partitionVal, Short topPartitionVal,
+    private Map<String, Object> doSetJan(List<Map<String, Object>> cutList, List<Map<String, Object>> newList, Short partitionVal,
+                                         Short topPartitionVal, Integer tanaWidthCheck,
                           Integer minFace, List<PriorityOrderResultDataDto> adoptJan, List<PriorityOrderResultDataDto> jans,
                           Map<String, Object> relation, Integer tanaWidth, Integer tanaHeight, String taiCd, String tanaCd){
         String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
-        Integer area = MapUtils.getInteger(relation, "area");
-        Integer groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).intValue();
+        double area = MapUtils.getDouble(relation, "area");
+        double groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).setScale(3, RoundingMode.CEILING).doubleValue();
         Long usedArea = 0L;
 
         for (PriorityOrderResultDataDto jan : jans) {
@@ -402,13 +408,15 @@ public class CommonMstServiceImpl implements CommonMstService {
                 adoptJan.add(newJanDto);
                 jan.setAdoptFlag(1);
             }else{
-                boolean setJanByCutFace = isSetJanByCutFace(adoptJan, groupArea, usedArea, partitionVal, minFace, newJanDto);
-                if(setJanByCutFace){
-                    newJanDto.setTaiCd(Integer.parseInt(taiCd));
-                    newJanDto.setTanaCd(Integer.parseInt(tanaCd));
-                    adoptJan.add(newJanDto);
-                    jan.setAdoptFlag(1);
-                    usedArea+=newJanDto.getWidth()*newJanDto.getFaceFact()+partitionVal;
+                if(tanaWidthCheck!=null && Objects.equals(tanaWidthCheck, 1)){
+                    boolean setJanByCutFace = isSetJanByCutFace(adoptJan, groupArea, usedArea, partitionVal, minFace, newJanDto);
+                    if(setJanByCutFace){
+                        newJanDto.setTaiCd(Integer.parseInt(taiCd));
+                        newJanDto.setTanaCd(Integer.parseInt(tanaCd));
+                        adoptJan.add(newJanDto);
+                        jan.setAdoptFlag(1);
+                        usedArea+=newJanDto.getWidth()*newJanDto.getFaceFact()+partitionVal;
+                    }
                 }
             }
         }

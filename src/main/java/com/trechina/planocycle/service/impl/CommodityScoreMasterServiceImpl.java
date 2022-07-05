@@ -3,7 +3,6 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.trechina.planocycle.entity.dto.CompanyListDto;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.po.ProductPowerMst;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
@@ -68,12 +67,13 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
      */
     @Override
     public Map<String,Object> getEnterpriseInfo() {
+        String authorCd = session.getAttribute("aud").toString();
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("CompanyList");
 
         String companys = session.getAttribute("inCharge").toString();
         List<String> companyList = Arrays.asList(companys.split(","));
-        List<CompanyListDto> resultInfo = planocycleKigyoListMapper.getCompanyList(companyList);
+        List<Map<String,Object>> resultInfo = planocycleKigyoListMapper.getCompanyList(companyList,authorCd);
 
         logger.info("つかむ取企業信息：{}",resultInfo);
 

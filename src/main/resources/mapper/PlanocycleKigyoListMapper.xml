@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.PlanocycleKigyoListMapper">
-    <select id="getCompanyList" resultType="com.trechina.planocycle.entity.dto.CompanyListDto">
-        select mst.group_cd as F1,mst.group_name AS F2,mst.company_cd AS F3,mst.company_name AS F4 from  (select
+    <select id="getCompanyList" resultType="map">
+        select mst.group_cd as "F1",mst.group_name AS "F2",mst.company_cd AS "F3",mst.company_name AS "F4"
+        ,case when config.company_cd is null then 0 else 1 end "F5"
+        from  (select
                     COALESCE(group_cd,name."1") group_cd,name."1" company_cd,COALESCE(group_name,name."2") group_name,name."2"  company_name  from
 
                     masterdb.kigyou_name name
@@ -22,6 +24,8 @@
                    INNER JOIN
                masterdb.planocycle_kigyo_list list
                on list.company_cd = mst.group_cd
+                left join planocycle.priority_order_company_config config
+                on mst.group_cd = config.company_cd and author_cd = #{authorCd}
     </select>
     <select id="getGroupInfo" resultType="java.lang.String">
         SELECT array_to_string(array_agg(  concat(group_cd,'_',company_cd)),',')  from masterdb.group_company where group_cd = #{companyCd}

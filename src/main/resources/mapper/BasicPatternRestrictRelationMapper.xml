@@ -23,14 +23,15 @@
 
     <select id="selectByPrimaryKey" resultType="map">
         select 	tanamst.tai_cd as "taiCd",tanamst.tana_cd as "tanaCd",json,
-               tana_position as "tanaPosition", result.restrict_cd as "restrictCd", area,value color
+        row_number() over (partition by tanamst.tai_Cd, tanamst.tana_cd  order by area desc) as "areaPosition",
+        result.restrict_cd as "restrictCd", round(area,0) area,value color
         <foreach collection="zokuseiList" open="," item="item" separator=",">${item}</foreach>
         from planocycle.work_priority_order_pts_data ptsdata
         left join
         planocycle.work_priority_order_pts_data_tanamst tanamst
         on tanamst.pts_cd = ptsdata.id
-        left join planocycle.work_basic_pattern_restrict_relation relation on  relation.priority_order_cd=#{priorityOrderCd}
-            and  tanamst.tai_cd = relation.tai_cd and tanamst.tana_cd = relation.tana_cd
+        left join (select tai_cd, tana_cd,restrict_cd, sum(area) area from planocycle.work_basic_pattern_restrict_relation where priority_order_cd=#{priorityOrderCd}
+        group by tai_cd, tana_cd, restrict_cd) relation on tanamst.tai_cd = relation.tai_cd and tanamst.tana_cd = relation.tana_cd
         left join
              (select restrict_cd<foreach collection="zokuseiList" open="," close="," item="item" separator=",">${item}</foreach>
                json_object_agg ( val, nm ) json from planocycle.work_basic_pattern_restrict_result result
@@ -46,7 +47,7 @@
         order by
         tanamst.tai_Cd,
         tanamst.tana_cd,
-        tana_position
+        "areaPosition"
     </select>
     <select id="getTanaAttrList" resultType="com.trechina.planocycle.entity.po.BasicPatternRestrictRelation">
         select tai_cd,tana_cd,tana_position,restrict_cd,area,priority_order_cd,company_cd
@@ -57,7 +58,7 @@
     <select id="selectByPriorityOrderCd" resultType="map">
         select tai_cd "taiCd",tana_cd "tanaCd",tana_position "tanaPosition",restrict_cd "restrictCd",area "area"
         from planocycle.work_basic_pattern_restrict_relation relation where priority_order_cd=#{priorityOrderCd}
-        order by tai_cd, tana_cd
+        order by tai_cd, tana_cd,tana_position
     </select>
     <delete id="deleteByPrimaryKey">
         delete from planocycle.work_basic_pattern_restrict_relation
@@ -74,7 +75,7 @@
     <delete id="deleteForTanaPosition">
         delete from planocycle.work_basic_pattern_restrict_relation
         where priority_order_cd=#{item.priorityOrderCd} and company_cd=#{item.companyCd} and tai_cd = #{item.taiCd}
-        and tana_cd = #{item.tanaCd} and  tana_position = #{item.tanaPosition}
+        and tana_cd = #{item.tanaCd} and  area_position = #{item.tanaPosition}
     </delete>
     <delete id="deleteTanas">
         delete from planocycle.work_basic_pattern_restrict_relation
@@ -222,4 +223,23 @@
          on tanamst.tai_cd=relation.tai_cd and tanamst.tana_cd=relation.tana_cd and ptsdata.priority_order_cd=relation.priority_order_cd
         where ptsdata.priority_order_cd=#{priorityOrderCd}
     </select>
+    <select id="getTanaGroup" resultType="java.lang.Integer">
+        select  restrict_cd from planocycle.work_basic_pattern_restrict_relation where
+            priority_order_cd=#{item.priorityOrderCd} and company_cd=#{item.companyCd} and tai_cd = #{item.taiCd}
+                 and tana_cd = #{item.tanaCd} and area_postion = #{item.tanaPosition}
+    </select>
+    <update id="updateAreaPosition">
+        update planocycle.work_basic_pattern_restrict_relation
+        SET
+        area_position =
+        CASE concat(tai_cd,tana_cd, restrict_cd)
+        <foreach collection="list" item="obj">
+            <foreach collection="obj.groups" item="obj1">
+                WHEN concat(#{obj1.taiCd},#{obj1.tanaCd},#{obj1.restrictCd}) THEN #{obj1.tanaPosition}::integer
+            </foreach>
+        </foreach>
+        ELSE area_position
+        END
+        where priority_order_cd=#{priorityOrderCd}
+    </update>
 </mapper>

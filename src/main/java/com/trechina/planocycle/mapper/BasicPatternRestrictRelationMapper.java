@@ -54,4 +54,8 @@ public interface BasicPatternRestrictRelationMapper {
     void setWorkForFinal(String companyCd, Integer priorityOrderCd);
 
     Integer selectUnusedTaiTana(Integer priorityOrderCd);
+
+    Integer getTanaGroup(@Param("item") BasicPatternRestrictRelation basicPatternRestrictRelation);
+
+    void updateAreaPosition(List<Map<String, Object>> list, Integer priorityOrderCd);
 }

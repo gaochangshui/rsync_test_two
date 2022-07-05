@@ -270,7 +270,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
 
             }
         }
-
+        
         if (!productPowerData.isEmpty()) {
             productPowerData = this.janSort(productPowerData, data, "rank");
         }

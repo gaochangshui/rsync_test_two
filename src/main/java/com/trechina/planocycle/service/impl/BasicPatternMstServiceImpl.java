@@ -1,10 +1,12 @@
 package com.trechina.planocycle.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.FaceNumDataDto;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
@@ -33,6 +35,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.*;
@@ -153,6 +156,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
         restrictRelationMapper.deleteByPrimaryKey(priorityOrderCd, companyCd);
         for (ShelfPtsDataTanamst tanamst : tanamsts) {
+            final int[] index = {1};
             Integer taiCd = tanamst.getTaiCd();
             Integer tanaCd = tanamst.getTanaCd();
             Integer tanaWidth = tanamst.getTanaWidth();
@@ -160,16 +164,14 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             List<Map<String, Object>> jans = classifyList.stream().filter(map -> MapUtils.getInteger(map, MagicString.TAI_CD).equals(taiCd) &&
                     MapUtils.getInteger(map, MagicString.TANA_CD).equals(tanaCd)).collect(Collectors.toList());
 
+            double areaWidth = 0;
+            String lastKey = "";
+
+            //Traverse all groups. If it is different from the previous group, record it. If it is the same, the area will be accumulated
+            List<Map<String, Object>> newJans = new ArrayList<>();
             for (int i = 0; i < jans.size(); i++) {
                 Map<String, Object> janMap = jans.get(i);
                 double width = MapUtils.getDouble(janMap, "width");
-                int percent = BigDecimal.valueOf(width).divide(BigDecimal.valueOf(tanaWidth), BigDecimal.ROUND_UP)
-                        .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
-                janMap.put("area", percent);
-                janMap.put("priorityOrderCd", priorityOrderCd);
-                janMap.put("companyCd", companyCd);
-                janMap.put("authorCd", aud);
-
                 StringBuilder key = new StringBuilder();
                 for (String zokusei : zokuseiList) {
                     if(key.length()>0){
@@ -178,19 +180,49 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     key.append(MapUtils.getString(janMap, zokusei));
                 }
 
-                BasicPatternRestrictResult basicPatternRestrictResult = classify.get(key.toString());
-                janMap.put("restrictCd", basicPatternRestrictResult.getRestrictCd());
+                if(lastKey.equals(key.toString()) && (i+1)==jans.size()){
+                    areaWidth += width;
+                }
 
-                jans.set(i, janMap);
+                if(!"".equals(lastKey) && (!lastKey.equals(key.toString()) || (i+1)==jans.size())){
+                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 5, RoundingMode.CEILING)
+                            .multiply(BigDecimal.valueOf(100)).doubleValue();
+                    Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
+                            new TypeToken<Map<String, Object>>(){}.getType());
+                    map.put(MagicString.RESTRICT_CD, classify.get(lastKey).getRestrictCd());
+                    map.put("area", percent);
+                    map.put("priorityOrderCd", priorityOrderCd);
+                    map.put("companyCd", companyCd);
+                    map.put("authorCd", aud);
+                    newJans.add(map);
+                    areaWidth=width;
+                }else{
+                    areaWidth += width;
+                }
+
+                //If the last grouping is independent, it should be handled separately
+                if(!lastKey.equals(key.toString()) && (i+1)==jans.size()){
+                    areaWidth = width;
+                    int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
+                            .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
+                    Map<String, Object> map = new GsonBuilder().create().fromJson(JSONObject.toJSONString(janMap),
+                            new TypeToken<Map<String, Object>>(){}.getType());
+                    map.put(MagicString.RESTRICT_CD, classify.get(key.toString()).getRestrictCd());
+                    map.put("area", percent);
+                    map.put("priorityOrderCd", priorityOrderCd);
+                    map.put("companyCd", companyCd);
+                    map.put("authorCd", aud);
+                    newJans.add(map);
+                }
+                
+                lastKey = key.toString();
             }
 
-            final int[] index = {1};
-            Comparator<Map<String, Object>> area = Comparator.comparing(map->MapUtils.getInteger(map, "area"));
-            jans.stream().sorted(area.reversed()).forEach(map->{
+            newJans.stream().forEach(map->{
                 map.put("tanaPosition", index[0]);
                 index[0]++;
             });
-            restrictRelationMapper.insertBatch(jans);
+            restrictRelationMapper.insertBatch(newJans);
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS);
@@ -307,17 +339,20 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 if (itemMap.containsKey(zokuseiList.get(0))) {
                     groups.add(itemMap);
                 }
+                itemMap.put("tanaPosition", MapUtils.getString(itemMap, "areaPosition"));
                 resultMap.put("groups", groups);
             }
 
             resultList.add(resultMap);
         }
 
+        restrictRelationMapper.updateAreaPosition(resultList, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS, resultList);
     }
 
     @Override
-    public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd, Integer partition, Integer heightSpace) {
+    public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd, Integer partition, Integer heightSpace,
+                                               Integer tanaWidthCheck) {
         String authorCd = session.getAttribute("aud").toString();
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         String uuid = UUID.randomUUID().toString();
@@ -341,7 +376,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
                 Integer minFaceNum = 1;
                 //仕切り板の厚さと仕切り板を使用して保存するかどうか
-                priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition, finalHeightSpace);
+                priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition, finalHeightSpace, tanaWidthCheck);
                 //まず社員番号に従ってワークシートのデータを削除します
                 workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
                 //制約条件の取得
@@ -433,7 +468,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
                 Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd.intValue(), companyCd, priorityOrderCd,
                         minFaceNum, zokuseiMsts, allCdList,
-                        restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal);
+                        restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck);
 
                 if (resultMap!=null && MapUtils.getInteger(resultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
                     vehicleNumCache.put("setJanHeightError"+uuid,resultMap.get("data"));
@@ -471,21 +506,22 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         if (basicPatternRestrictRelation.getRestrictCd()== null){
             basicPatternRestrictRelation.setRestrictCd(9999L);
         }
+        //Integer tanaGroup = restrictRelationMapper.getTanaGroup(basicPatternRestrictRelation);
         restrictRelationMapper.deleteForTanaPosition(basicPatternRestrictRelation);
         restrictRelationMapper.update(basicPatternRestrictRelation,authorCd);
-        if (basicPatternRestrictRelation.getRestrictCd()== 9999){
-
-            List<BasicPatternRestrictRelation> tanaAttrList = restrictRelationMapper.getTanaAttrList(basicPatternRestrictRelation);
-                int i = 1;
-                for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
-                    patternRestrictRelation.setTanaPosition(i++);
-                }
-
-            Integer taiCd = Integer.valueOf(basicPatternRestrictRelation.getTaiCd().toString());
-            Integer tanaCd = Integer.valueOf(basicPatternRestrictRelation.getTanaCd().toString());
-            restrictRelationMapper.deleteTanas(taiCd,tanaCd,companyCd,priorityOrderCd.intValue());
-            restrictRelationMapper.updateTanaPosition(tanaAttrList,authorCd);
-        }
+        //if (basicPatternRestrictRelation.getRestrictCd()== 9999){
+        //
+        //    List<BasicPatternRestrictRelation> tanaAttrList = restrictRelationMapper.getTanaAttrList(basicPatternRestrictRelation);
+        //        int i = 1;
+        //        for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
+        //            patternRestrictRelation.setTanaPosition(i++);
+        //        }
+        //
+        //    Integer taiCd = Integer.valueOf(basicPatternRestrictRelation.getTaiCd().toString());
+        //    Integer tanaCd = Integer.valueOf(basicPatternRestrictRelation.getTanaCd().toString());
+        //    restrictRelationMapper.deleteTanas(taiCd,tanaCd,companyCd,priorityOrderCd.intValue());
+        //    restrictRelationMapper.updateTanaPosition(tanaAttrList,authorCd);
+        //}
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
