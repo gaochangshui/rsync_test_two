@@ -290,15 +290,16 @@
     <foreach collection="attrHeaderList" open="," item="item" separator=",">
       coalesce(janmst."${item.attrVal}", '0') as "${item.attr}"
     </foreach>
-    from
-    (select coalesce(jan_new, jandata.jan) jan, sku_rank, restrict_cd "restrictCd", face,tai_cd,tana_cd from
+    from (select coalesce(jan_new, jandata.jan) jan, sku_rank, restrict_cd "restrictCd", face,tai_cd,tana_cd,tanaposition_cd from
     planocycle.shelf_pts_data_jandata jandata inner join planocycle.shelf_pts_data ptsdata on ptsdata.id=jandata.pts_cd
     inner join planocycle.work_basic_pattern_restrict_result_data resultdata on resultdata.jan=jandata.jan
     and resultdata.priority_order_cd=#{priorityOrderCd} and resultdata.company_cd=#{companyCd} and resultdata.author_cd=#{authorCd}
-    left join planocycle.work_priority_order_jan_replace janreplace on janreplace.jan_old=janreplace.jan_new
+    left join planocycle.work_priority_order_jan_replace janreplace on janreplace.jan_old=resultdata.jan
     and janreplace.company_cd=resultdata.company_cd and resultdata.author_cd=janreplace.author_cd
     and resultdata.priority_order_cd=janreplace.priority_order_cd
      where shelf_pattern_cd=#{patternCd}
-    order by sku_rank) tmp left join "9999".prod_0000_jan_info janmst on janmst."1"=tmp.jan
+    ) tmp left join "9999".prod_0000_jan_info janmst on janmst."1"=tmp.jan
+    <if test="isReOrder>0">order by sku_rank</if>
+    <if test="isReOrder&lt;1">order by tai_cd, tana_cd, tanaposition_cd</if>
   </select>
 </mapper>

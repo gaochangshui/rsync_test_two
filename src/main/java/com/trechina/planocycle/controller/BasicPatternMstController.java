@@ -42,8 +42,8 @@ public class BasicPatternMstController {
      */
     @GetMapping("/autoCalculation")
     public Map<String,Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition,
-                                              Integer heightSpace){
-        return basicPatternMstService.autoCalculation(companyCd,priorityOrderCd,partition, heightSpace);
+                                              Integer heightSpace, Integer tanaWidthCheck){
+        return basicPatternMstService.autoCalculation(companyCd,priorityOrderCd,partition, heightSpace, tanaWidthCheck);
     }
 
     /**
