@@ -1,15 +1,15 @@
 package com.trechina.planocycle.mapper;
 
 
-import com.trechina.planocycle.entity.dto.CompanyListDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface PlanocycleKigyoListMapper {
 
-    List<CompanyListDto> getCompanyList(List<String> companyCd);
+    List<Map<String,Object>> getCompanyList(List<String> companyCd,String authorCd);
 
     String getGroupInfo(String companyCd);
 }
