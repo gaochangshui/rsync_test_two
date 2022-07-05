@@ -75,7 +75,7 @@
     <delete id="deleteForTanaPosition">
         delete from planocycle.work_basic_pattern_restrict_relation
         where priority_order_cd=#{item.priorityOrderCd} and company_cd=#{item.companyCd} and tai_cd = #{item.taiCd}
-        and tana_cd = #{item.tanaCd} and  area_postion = #{item.tanaPosition}
+        and tana_cd = #{item.tanaCd} and  area_position = #{item.tanaPosition}
     </delete>
     <delete id="deleteTanas">
         delete from planocycle.work_basic_pattern_restrict_relation
