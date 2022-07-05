@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderCompanyConfigMapper">
+    <insert id="saveUserCompany">
+        insert into planocycle.priority_order_company_config (author_cd,company_cd)
+        values (#{authorCd},#{companyCd})
+    </insert>
+    <delete id="deleteUserCompany">
+        delete  from planocycle.priority_order_company_config where author_cd = #{authorCd}
+    </delete>
+    <select id="getUserCompany" resultType="java.lang.String">
+        select company_cd from planocycle.priority_order_company_config where author_cd = #{authorCd}
+    </select>
+</mapper>
