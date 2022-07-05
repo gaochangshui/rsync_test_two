@@ -163,7 +163,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             for (int i = 0; i < jans.size(); i++) {
                 Map<String, Object> janMap = jans.get(i);
                 double width = MapUtils.getDouble(janMap, "width");
-                int percent = BigDecimal.valueOf(width).divide(BigDecimal.valueOf(tanaWidth), BigDecimal.ROUND_UP)
+                int percent = BigDecimal.valueOf(width).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
                         .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
                 janMap.put("area", percent);
                 janMap.put("priorityOrderCd", priorityOrderCd);
@@ -317,7 +317,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     @Override
-    public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd, Integer partition, Integer heightSpace) {
+    public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd, Integer partition, Integer heightSpace,
+                                               Integer tanaWidthCheck) {
         String authorCd = session.getAttribute("aud").toString();
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         String uuid = UUID.randomUUID().toString();
@@ -341,7 +342,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
                 Integer minFaceNum = 1;
                 //仕切り板の厚さと仕切り板を使用して保存するかどうか
-                priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition, finalHeightSpace);
+                priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition, finalHeightSpace, tanaWidthCheck);
                 //まず社員番号に従ってワークシートのデータを削除します
                 workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
                 //制約条件の取得
@@ -433,7 +434,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
                 Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd.intValue(), companyCd, priorityOrderCd,
                         minFaceNum, zokuseiMsts, allCdList,
-                        restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal);
+                        restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck);
 
                 if (resultMap!=null && MapUtils.getInteger(resultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
                     vehicleNumCache.put("setJanHeightError"+uuid,resultMap.get("data"));

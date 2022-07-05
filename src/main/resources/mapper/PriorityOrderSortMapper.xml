@@ -18,4 +18,7 @@
         where company_cd = #{companyCd} and author_cd = #{authorCd}
         and priority_order_cd = #{priorityOrderCd}
     </delete>
+    <select id="selectSort" resultType="int">
+        select count(*) from planocycle.work_priority_order_sort where priority_order_cd=#{priorityOrderCd}
+    </select>
 </mapper>

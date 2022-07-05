@@ -9,4 +9,6 @@ public interface PriorityOrderSortMapper {
     int logicDeleteByPriorityOrderCd(String companyCd, String authorCd, Integer priorityOrderCd);
 
     void insertBySelect(String companyCd, String authorCd, Integer priorityOrderCd);
+
+    int selectSort(String companyCd, Integer priorityOrderCd);
 }

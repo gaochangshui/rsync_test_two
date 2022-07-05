@@ -710,6 +710,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             List<PtsTanaVo> newTanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
             List<PtsJanDataVo> newJanData = shelfPtsDataMapper.getNewJanData(priorityOrderCd);
             //既存台、棚、商品データ
+            List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
             List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
             //棚、商品の変更チェック
@@ -718,12 +719,10 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             newTanaData.stream()
                     .filter(map -> tanaData.stream().anyMatch(map1 -> map1.getTaiCd().equals(map.getTaiCd())
                             && map1.getTanaCd().equals(map.getTanaCd())
-                            && !map1.getTanaHeight().equals(map.getTanaHeight())
                     ))
-                    .forEach(map -> map.setRemarks(MagicString.MSG_HEIGHT_CHANGE.replace("{height}", String.valueOf(
-                            tanaData.stream().filter(map1 ->
-                                    map1.getTaiCd().equals(map.getTaiCd())
-                                            && map1.getTanaCd().equals(map.getTanaCd())).findFirst().get().getTanaHeight()))));
+                    .forEach(map ->
+                            getNewPtsTanaHeightChangeRemarks(newTanaData, map, newTaiData, tanaData, taiData)
+                    );
             //棚変更：棚新規作成
             newTanaData.stream()
                     .filter(map -> tanaData.stream().noneMatch(map1 -> map1.getTaiCd().equals(map.getTaiCd())
@@ -762,5 +761,52 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             ptsDetailData.setPtsJanDataList(newJanData);
         }
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
+    }
+
+    /**
+     * 新ptsの棚高さの備考
+     * @param newTanaData    　新棚のList
+     * @param newTanaEntity　　比較する新棚
+     * @param newTaiData    新台
+     * @param tanaData      既存棚
+     * @param taiData       既存台
+     */
+    public void getNewPtsTanaHeightChangeRemarks(List<PtsTanaVo> newTanaData, PtsTanaVo newTanaEntity, List<PtsTaiVo> newTaiData,
+                                                 List<PtsTanaVo> tanaData, List<PtsTaiVo> taiData) {
+        Integer newHeight = 0;
+        Integer oldHeight = 0;
+        Integer oldTanaHeight = 0;
+        //高さの計算
+        Optional<PtsTanaVo> nextNewTana = newTanaData.stream().filter(next -> next.getTaiCd().equals(newTanaEntity.getTaiCd())
+                && next.getTanaCd().equals(newTanaEntity.getTanaCd() + 1)).findFirst();
+        if (nextNewTana.isPresent()) {
+            newHeight = nextNewTana.get().getTanaHeight() - newTanaEntity.getTanaHeight() - nextNewTana.get().getTanaThickness();
+        } else {
+            Optional<PtsTaiVo> newTaiOptional = newTaiData.stream().filter(tai -> tai.getTaiCd().equals(newTanaEntity.getTanaCd())).findFirst();
+            if (newTaiOptional.isPresent()) {
+                newHeight = newTaiOptional.get().getTaiHeight() - newTanaEntity.getTanaHeight();
+            }
+        }
+        //旧高さの計算
+        Optional<PtsTanaVo> oldTanaOptional = tanaData.stream().filter(next -> next.getTaiCd().equals(newTanaEntity.getTaiCd())
+                && next.getTanaCd().equals(newTanaEntity.getTanaCd())).findFirst();
+
+        if (oldTanaOptional.isPresent()) {
+            oldTanaHeight = oldTanaOptional.get().getTanaHeight();
+        }
+        Optional<PtsTanaVo> nextOldTana = tanaData.stream().filter(next -> next.getTaiCd().equals(newTanaEntity.getTaiCd())
+                && next.getTanaCd().equals(newTanaEntity.getTanaCd() + 1)).findFirst();
+        if (nextOldTana.isPresent()) {
+            oldHeight = nextOldTana.get().getTanaHeight() - oldTanaHeight - nextOldTana.get().getTanaThickness();
+        } else {
+            Optional<PtsTaiVo> oldTaiOptional = taiData.stream().filter(tai -> tai.getTaiCd().equals(newTanaEntity.getTanaCd())).findFirst();
+            if (oldTaiOptional.isPresent()) {
+                oldHeight = oldTaiOptional.get().getTaiHeight() - oldTanaHeight;
+            }
+        }
+        //変更あるの場合
+        if (!newHeight.equals(oldHeight)) {
+            newTanaEntity.setRemarks(MagicString.MSG_HEIGHT_CHANGE.replace("{height}", String.valueOf(oldHeight)));
+        }
     }
 }
