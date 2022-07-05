@@ -23,7 +23,7 @@
 
     <select id="selectByPrimaryKey" resultType="map">
         select 	tanamst.tai_cd as "taiCd",tanamst.tana_cd as "tanaCd",json,
-        row_number() over (partition by tanamst.tai_Cd, tanamst.tana_cd  order by area desc) as "tanaPosition",
+        row_number() over (partition by tanamst.tai_Cd, tanamst.tana_cd  order by area desc) as "areaPosition",
         result.restrict_cd as "restrictCd", round(area,0) area,value color
         <foreach collection="zokuseiList" open="," item="item" separator=",">${item}</foreach>
         from planocycle.work_priority_order_pts_data ptsdata
@@ -223,4 +223,16 @@
          on tanamst.tai_cd=relation.tai_cd and tanamst.tana_cd=relation.tana_cd and ptsdata.priority_order_cd=relation.priority_order_cd
         where ptsdata.priority_order_cd=#{priorityOrderCd}
     </select>
+    <update id="updateAreaPosition">
+        update planocycle.work_basic_pattern_restrict_relation
+        SET
+        area_postion =
+        CASE concat(tai_cd,tana_cd, restrict_cd)
+        <foreach collection="list" item="obj">
+            WHEN concat(#{obj.taiCd},#{obj.tanaCd},#{obj.restrictCd}) THEN #{obj.tanaPosition}
+        </foreach>
+        ELSE area_postion
+        END
+        where priority_order_cd=#{priorityOrderCd}
+    </update>
 </mapper>

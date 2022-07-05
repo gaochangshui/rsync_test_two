@@ -54,4 +54,6 @@ public interface BasicPatternRestrictRelationMapper {
     void setWorkForFinal(String companyCd, Integer priorityOrderCd);
 
     Integer selectUnusedTaiTana(Integer priorityOrderCd);
+
+    void updateAreaPosition(List<Map<String, Object>> resultList, Integer priorityOrderCd);
 }
