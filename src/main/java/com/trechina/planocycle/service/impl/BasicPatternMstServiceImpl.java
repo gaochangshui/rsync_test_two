@@ -163,7 +163,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             for (int i = 0; i < jans.size(); i++) {
                 Map<String, Object> janMap = jans.get(i);
                 double width = MapUtils.getDouble(janMap, "width");
-                int percent = BigDecimal.valueOf(width).divide(BigDecimal.valueOf(tanaWidth), BigDecimal.ROUND_UP)
+                int percent = BigDecimal.valueOf(width).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
                         .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
                 janMap.put("area", percent);
                 janMap.put("priorityOrderCd", priorityOrderCd);
