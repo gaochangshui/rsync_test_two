@@ -13,4 +13,8 @@ public interface WorkPriorityAllRestrictMapper {
     Integer insertWKTableRestrict(@Param("allRestrictDtoList") List<PriorityAllRestrictDto> allRestrictDtoList);
 
     Integer deleteWKTableRestrict(@Param("companyCd")String companyCd, @Param("priorityAllCd")Integer priorityAllCd);
+
+    Integer setBasicPatternResult(String companyCd, Integer priorityOrderCd, Integer shelfPatternCd, Integer priorityAllCd, String authorCd);
+
+    Integer deleteBasicPatternResult(String companyCd,Integer priorityAllCd,String authorCd);
 }

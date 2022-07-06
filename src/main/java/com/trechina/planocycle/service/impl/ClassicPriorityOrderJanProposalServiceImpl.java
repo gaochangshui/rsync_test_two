@@ -60,11 +60,11 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      */
     @Override
     public Map<String, Object> getPriorityOrderJanProposal(String companyCd, Integer priorityOrderCd,Integer productPowerNo,String shelfPatternNo) {
-        logger.info("jan変提案listのパラメータを取得する:"+companyCd+","+priorityOrderCd);
+        logger.info("jan変提案listのパラメータを取得する:{},{}",companyCd,priorityOrderCd);
         List<PriorityOrderJanProposalVO> priorityOrderJanProposals = priorityOrderJanProposalMapper.selectByPrimaryKey(companyCd,
                 priorityOrderCd);
-        logger.info("jan変提案listの戻り値を取得する："+priorityOrderJanProposals);
-        if(priorityOrderJanProposals.size()==0){
+        logger.info("jan変提案listの戻り値を取得する：{}",priorityOrderJanProposals);
+        if(priorityOrderJanProposals.isEmpty()){
 
 //            try {
 //                janProposalData(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd);
@@ -79,7 +79,7 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
 //                logger.info("報錯:"+e);
 //            }
         }
-        logger.info("jan変提案listの戻り値を取得する："+priorityOrderJanProposals);
+        logger.info("jan変提案listの戻り値を取得する：{}",priorityOrderJanProposals);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanProposals);
     }
 
@@ -87,7 +87,7 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      * jan変情報の保存エラーcgiからjan変提案listデータをpostgreに書く
      * @throws IOException
      */
-    public void janProposalData(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd) throws IOException {
+    public void janProposalData(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd)  {
             PriorityOrderDataForCgiDto priorityOrderDataForCgiDto = new PriorityOrderDataForCgiDto();
             // 調用cgi拿jan變提案list的数据
             String uuids = UUID.randomUUID().toString();
@@ -105,10 +105,10 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
             String resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
             logger.info("taskId返回：" + resultJan);
 
-            Map<String, Object> DataJan = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
-            logger.info("jan變提案list cgi返回数据：" + DataJan);
-            if (!DataJan.get("data").equals("[ ]")) {
-                JSONArray datasJan = (JSONArray) JSON.parse(DataJan.get("data").toString());
+            Map<String, Object> dataJan = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
+            logger.info("jan變提案list cgi返回数据：" + dataJan);
+            if (!dataJan.get("data").equals("[ ]")) {
+                JSONArray datasJan = (JSONArray) JSON.parse(dataJan.get("data").toString());
 
                 priorityOrderJanProposalService.savePriorityOrderJanProposal(datasJan,companyCd,priorityOrderCd);
             }

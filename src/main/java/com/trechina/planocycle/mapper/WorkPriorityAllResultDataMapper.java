@@ -6,12 +6,12 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface WorkPriorityAllResultDataMapper {
     int insertWKTableResultData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd,
-                                @Param("priorityOrderCd") Integer priorityOrderCd,
-                                @Param("authorCd") String authorCd, @Param("patternCd") Integer patternCd);
+                                @Param("authorCd") String authorCd, @Param("patternCd") Integer patternCd,@Param("janList")List<Map<String,Object>> janList);
 
     int deleteWKTableResultData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd,
                                 @Param("authorCd") String authorCd);

@@ -26,6 +26,12 @@
           and company_cd = #{companyCd,jdbcType=VARCHAR}
           and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
+    <delete id="deleteBasicPatternRelation">
+        delete from planocycle.work_all_pattern_restrict_relation
+        where priority_all_cd = #{priorityAllCd}
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
     <select id="selectByAuthorCd" resultType="com.trechina.planocycle.entity.dto.WorkPriorityAllRestrictRelationDto">
         select tai_cd,tana_cd,tana_type,restrict_cd from planocycle.work_priority_all_restrict_relation
         where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
@@ -33,4 +39,20 @@
         and shelf_pattern_cd=#{shelfPatternCd}
         order by tai_cd,tana_cd,tana_type
     </select>
+    <insert id="setBasicPatternRelation">
+        insert into planocycle.work_all_pattern_restrict_relation(shelf_pattern_cd,company_cd,author_cd,tai_cd,tana_cd
+            ,tana_position,restrict_cd,area,area_position,priority_all_cd)
+        select #{shelfPatternCd},#{companyCd},#{authorCd},relation.tai_cd,relation.tana_cd,relation.tana_position,restrict_cd,area,area_position
+             ,#{priorityAllCd}
+        from  planocycle.basic_pattern_restrict_relation  relation
+                inner join
+                 (select tai_cd,tana_cd from planocycle.shelf_pts_data ptsdata
+                      left join planocycle.shelf_pts_data_tanamst tanamst
+                                on tanamst.pts_cd = ptsdata.id
+                        where ptsdata.shelf_pattern_cd = #{shelfPatternCd}
+                       ) ptsmst
+                       on ptsmst.tai_cd = relation.tai_cd
+                           and ptsmst.tana_cd = relation.tana_cd
+        where priority_order_cd = #{priorityOrderCd} and ptsmst.tai_cd != null
+    </insert>
 </mapper>
