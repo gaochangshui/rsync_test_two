@@ -488,9 +488,14 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
         try {
             future.get(10, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (ExecutionException e) {
             throw new RuntimeException(e);
-        }catch (TimeoutException e) {
+        } catch (InterruptedException e){
+            if (Thread.interrupted()) {
+                // Clears interrupted status!
+                logger.error("{}", e);
+            }
+        } catch (TimeoutException e) {
             return ResultMaps.result(ResultEnum.SUCCESS, uuid);
         }
         return ResultMaps.result(ResultEnum.SUCCESS,uuid);
