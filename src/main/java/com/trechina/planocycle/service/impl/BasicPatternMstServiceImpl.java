@@ -506,22 +506,36 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         if (basicPatternRestrictRelation.getRestrictCd()== null){
             basicPatternRestrictRelation.setRestrictCd(9999L);
         }
-        //Integer tanaGroup = restrictRelationMapper.getTanaGroup(basicPatternRestrictRelation);
         restrictRelationMapper.deleteForTanaPosition(basicPatternRestrictRelation);
         restrictRelationMapper.update(basicPatternRestrictRelation,authorCd);
-        //if (basicPatternRestrictRelation.getRestrictCd()== 9999){
-        //
-        //    List<BasicPatternRestrictRelation> tanaAttrList = restrictRelationMapper.getTanaAttrList(basicPatternRestrictRelation);
-        //        int i = 1;
-        //        for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
-        //            patternRestrictRelation.setTanaPosition(i++);
-        //        }
-        //
-        //    Integer taiCd = Integer.valueOf(basicPatternRestrictRelation.getTaiCd().toString());
-        //    Integer tanaCd = Integer.valueOf(basicPatternRestrictRelation.getTanaCd().toString());
-        //    restrictRelationMapper.deleteTanas(taiCd,tanaCd,companyCd,priorityOrderCd.intValue());
-        //    restrictRelationMapper.updateTanaPosition(tanaAttrList,authorCd);
-        //}
+
+            List<BasicPatternRestrictRelation> tanaAttrList = restrictRelationMapper.getTanaAttrList(basicPatternRestrictRelation);
+            tanaAttrList = tanaAttrList.stream().filter(item ->item.getRestrictCd()!=9999).collect(Collectors.toList());
+            LongSummaryStatistics collect = tanaAttrList.stream().collect(Collectors.summarizingLong(BasicPatternRestrictRelation::getArea));
+            Integer taiCd = Integer.valueOf(basicPatternRestrictRelation.getTaiCd().toString());
+            Integer tanaCd = Integer.valueOf(basicPatternRestrictRelation.getTanaCd().toString());
+            int i = 1;
+                for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
+                    patternRestrictRelation.setAreaPosition(i++);
+                    if (patternRestrictRelation.getRestrictCd() != 9999){
+                    }
+                }
+                if (collect.getSum() < 100L){
+                    BasicPatternRestrictRelation basicPatternRestrictRelation1 = new BasicPatternRestrictRelation();
+                    basicPatternRestrictRelation1.setArea(100-collect.getSum());
+                    basicPatternRestrictRelation1.setTaiCd(taiCd);
+                    basicPatternRestrictRelation1.setTanaCd(tanaCd);
+                    basicPatternRestrictRelation1.setRestrictCd(9999L);
+                    basicPatternRestrictRelation1.setAuthorCd(authorCd);
+                    basicPatternRestrictRelation1.setAreaPosition(i);
+                    basicPatternRestrictRelation1.setTanaPosition(9999);
+                    basicPatternRestrictRelation1.setCompanyCd(companyCd);
+                    basicPatternRestrictRelation1.setPriorityOrderCd(priorityOrderCd);
+                   tanaAttrList.add(basicPatternRestrictRelation1);
+                }
+
+            restrictRelationMapper.deleteTanas(taiCd,tanaCd,companyCd,priorityOrderCd.intValue());
+            restrictRelationMapper.updateTanaPosition(tanaAttrList,authorCd);
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
