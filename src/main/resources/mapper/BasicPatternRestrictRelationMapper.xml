@@ -51,7 +51,7 @@
         "areaPosition"
     </select>
     <select id="getTanaAttrList" resultType="com.trechina.planocycle.entity.po.BasicPatternRestrictRelation">
-        select tai_cd,tana_cd,tana_position,restrict_cd,area,priority_order_cd,company_cd
+        select tai_cd,tana_cd,area_position,restrict_cd,area,priority_order_cd,company_cd,tana_position
         from planocycle.work_basic_pattern_restrict_relation
         where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd}  and priority_order_cd = #{item.priorityOrderCd}
         order by restrict_cd,tana_position
@@ -169,12 +169,12 @@
     </insert>
     <insert id="updateTanaPosition">
         insert into planocycle.work_basic_pattern_restrict_relation(priority_order_cd,company_cd,
-        author_cd,tai_cd,tana_cd,tana_position,restrict_cd,area)
+        author_cd,tai_cd,tana_cd,area_position,restrict_cd,area,tana_position)
         values
         <foreach collection="list" item="item" separator=",">
                (#{item.priorityOrderCd,jdbcType=BIGINT},#{item.companyCd,jdbcType=VARCHAR},#{authorCd,jdbcType=VARCHAR}
-        ,#{item.taiCd,jdbcType=OTHER},#{item.tanaCd,jdbcType=OTHER},#{item.tanaPosition,jdbcType=SMALLINT}
-        ,#{item.restrictCd,jdbcType=BIGINT},#{item.area,jdbcType=BIGINT})
+        ,#{item.taiCd,jdbcType=OTHER},#{item.tanaCd,jdbcType=OTHER},#{item.areaPosition,jdbcType=SMALLINT}
+        ,#{item.restrictCd,jdbcType=BIGINT},#{item.area,jdbcType=BIGINT},#{item.tanaPosition})
         </foreach>
 
 
