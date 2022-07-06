@@ -1,5 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
@@ -10,6 +12,7 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +76,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
     @Autowired
     private WorkPriorityAllRestrictMapper priorityAllRestrictMapper;
+    @Autowired
+    private ShelfPtsService shelfPtsService;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -241,26 +246,19 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     /**
                      * 商品を置く
                      */
-                    PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
+                    Map<String, Object> setJanResultMap = this.allPatternCommSetJan(pattern.getShelfPatternCd(),
+                            companyCd, priorityOrderCd, priorityAllCd, authorCd, minFaceNum);
 
-                    List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations = workPriorityAllRestrictRelationMapper.selectByAuthorCd(companyCd, priorityAllCd, authorCd, pattern.getShelfPatternCd());
-                    List<PriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityAllResultDataMapper.getResultJans(companyCd, priorityAllCd,authorCd,pattern.getShelfPatternCd(), priorityOrderCd);
-                    List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(pattern.getShelfPatternCd());
-
-                    Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
-                    Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
-
-                    Map<String, List<PriorityOrderResultDataDto>> finalSetJanResultData =
-                            commonMstService.commSetJan(partitionFlag, partitionVal, taiData,
-                                    workPriorityOrderResultData, workPriorityOrderRestrictRelations, minFaceNum);
-
-                    for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : finalSetJanResultData.entrySet()) {
-                        List<PriorityOrderResultDataDto> resultDataDtos = entry.getValue();
-                        workPriorityAllResultDataMapper.updateTaiTanaBatch(companyCd, priorityAllCd, pattern.getShelfPatternCd(), authorCd, resultDataDtos);
+                    if (setJanResultMap!=null && MapUtils.getInteger(setJanResultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
+                        vehicleNumCache.put("setJanHeightError"+uuid,setJanResultMap.get("data"));
+                    }else{
+                        //ptsを一時テーブルに保存
+                        Object tmpData = MapUtils.getObject(setJanResultMap, "data");
+                        List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
+                        }.getType());
+                        priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData);
+                        vehicleNumCache.put(uuid,1);
                     }
-
-                    //ptsを一時テーブルに保存
-                    priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
 
 
                 }

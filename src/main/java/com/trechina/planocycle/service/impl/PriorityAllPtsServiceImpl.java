@@ -56,10 +56,10 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
     private final Logger logger = LoggerFactory.getLogger(PriorityAllPtsServiceImpl.class);
 
     @Override
-    public void saveWorkPtsData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd) {
+    public void saveWorkPtsData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd,
+                                List<WorkPriorityOrderResultDataDto> priorityOrderResultData) {
         //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
-        List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData = priorityAllMstMapper.selectByAuthorCd(companyCd, authorCd, priorityAllCd, patternCd);
-        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(workPriorityOrderResultData);
+        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(priorityOrderResultData);
 
         //既存の新しいptsを検出し,削除してから保存する
         //新しいptsにデータがあるptsCd
