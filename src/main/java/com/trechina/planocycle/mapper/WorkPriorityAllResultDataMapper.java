@@ -1,7 +1,9 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityAllResultDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -32,5 +34,11 @@ public interface WorkPriorityAllResultDataMapper {
                             @Param("patternCd")Integer patternCd);
 
     int updateFace(@Param("list") List<PriorityAllResultDataDto> list);
+
+    List<WorkPriorityOrderResultData> getReorder(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd, @Param("productPowerCd")Integer productPowerCd,
+                                                 @Param("priorityAllCd")Integer priorityAllCd, @Param("commonTableName")GetCommonPartsDataDto getCommonPartsDataDto
+            , @Param("sortName1")String sortName1,@Param("patternCd")Integer patternCd, @Param("sortName2")String sortName2);
+
+    void setSortRank(List<WorkPriorityOrderResultData> reorder, String companyCd, String authorCd, Integer priorityOrderCd);
 
 }

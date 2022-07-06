@@ -47,6 +47,40 @@
           and priority_all_cd = #{priorityAllCd}
           and shelf_patten_cd = #{patternCd}
     </select>
+    <select id="getReorder" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+        select  resultdata.jan as janCd,avgattr1,row_number() over(order by avgattr1
+        <if test="sortName2 != null">
+            ,avgattr2
+        </if>
+        ,rank_result,resultdata.jan) as resultRank
+        from  planocycle.work_all_pattern_restrict_result_data resultdata
+        left join planocycle.product_power_mst_data promst
+        on promst.jan = resultdata.jan and promst.product_power_cd = #{productPowerCd}
+        left join "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info attrmst
+        on attrmst."1" = promst.jan
+        left join (
+        select attrmst."${sortName1}",avg(promst.rank_result) as avgattr1
+        from planocycle.product_power_mst_data promst
+        left join "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info attrmst
+        on attrmst."1" = promst.jan
+        where promst.product_power_cd = #{productPowerCd}
+        GROUP BY attrmst."${sortName1}"
+        ) attr1
+        on attr1."${sortName1}" = attrmst."${sortName1}"
+        <if test="sortName2 != null">
+            left join (
+            select attrmst."${sortName2}",avg(promst.rank_result) as avgattr2
+            from planocycle.product_power_mst_data promst
+            left join "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info attrmst
+            on attrmst."1" = promst.jan
+            where promst.product_power_cd = #{productPowerCd}
+            GROUP BY attrmst."${sortName2}"
+            )attr2
+            on attr2."${sortName2}" = attrmst."${sortName2}"
+        </if>
+
+        where resultdata.priority_all_cd  = #{priorityAllCd} and resultdata.shelf_pattern_cd = #{patternCd} and resultdata.author_cd = #{authorCd}
+    </select>
 
     <update id="updateTaiTanaBatch">
         UPDATE planocycle.work_priority_all_result_data SET
@@ -110,5 +144,15 @@
             where jan_cd = #{item.janCd} ::varchar and company_cd = #{item.companyCd} and author_cd = #{item.authorCd} and priority_all_cd = #{item.priorityAllCd}
             and shelf_patten_cd=#{item.shelfPatternCd}
         </foreach>
+    </update>
+    <update id="setSortRank">
+        update planocycle.work_priority_all_result_data
+        set sku_rank =
+        CASE jan,
+        <foreach collection="reorder" item="item">
+            WHEN #{item.janCd} THEN #{item.ranlResult}
+        </foreach>
+        ELSE sku_rank end
+
     </update>
 </mapper>
