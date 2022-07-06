@@ -54,8 +54,6 @@ public class CommonMstServiceImpl implements CommonMstService {
     @Autowired
     private WorkPriorityOrderJanNewMapper janNewMapper;
     @Autowired
-    private PriorityOrderPtsDataMapper priorityOrderPtsDataMapper;
-    @Autowired
     private BasicPatternRestrictResultMapper basicRestrictResultMapper;
     @Autowired
     private HttpSession session;
@@ -214,12 +212,10 @@ public class CommonMstServiceImpl implements CommonMstService {
                                                   Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
                                                   List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
                                                   GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
-                                                  Integer tanaWidthCheck) {
+                                                  Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap) {
         List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu();
         int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
         List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd, sizeAndIrisu, isReOrder);
-        List<Map<String, Object>> relationMap = restrictRelationMapper.selectByPriorityOrderCd(priorityOrderCd);
-        List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
         List<Map<String, Object>> cutList = janCutMapper.selectJanCut(priorityOrderCd);
 
         Integer currentTaiCd=1;

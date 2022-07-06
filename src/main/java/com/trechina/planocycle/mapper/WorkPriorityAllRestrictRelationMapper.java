@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface WorkPriorityAllRestrictRelationMapper {
@@ -22,4 +23,5 @@ public interface WorkPriorityAllRestrictRelationMapper {
     int setBasicPatternRelation(String companyCd, Integer priorityOrderCd, Integer shelfPatternCd,Integer priorityAllCd,String authorCd);
 
  int  deleteBasicPatternRelation(String companyCd, Integer priorityAllCd, String authorCd);
+    List<Map<String, Object>> selectRelation(Integer priorityAllCd, Integer patternCd);
 }

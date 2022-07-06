@@ -95,6 +95,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     private CommonMstService commonMstService;
     @Autowired
     private JanClassifyMapper janClassifyMapper;
+    @Autowired
+    private PriorityOrderPtsDataMapper priorityOrderPtsDataMapper;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -265,7 +267,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     public GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd ) {
-        //{"dateIsCore":"1","storeLevel":"3","storeIsCore":"1","storeMstClass":"0000","prodIsCore":"1","prodMstClass":"0000"}
 
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
         String prodMstClass = jsonObject.get("prodMstClass").toString();
@@ -282,18 +283,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             isCompanyCd = companyCd;
         }
         getCommonPartsDataDto.setProdIsCore(isCompanyCd);
-        //if (jsonObject.get("storeIsCore").toString() !=null) {
-        //    String storeIsCore = jsonObject.get("storeIsCore").toString();
-        //    String storeMstClass = jsonObject.get("storeMstClass").toString();
-        //    String storeIsCompanyCd = null;
-        //    if ("1".equals(storeIsCore)) {
-        //        storeIsCompanyCd = coreCompany;
-        //    } else {
-        //        storeIsCompanyCd = companyCd;
-        //    }
-        //    getCommonPartsDataDto.setStoreInfoTable(MessageFormat.format("\"{0}\".ten_{1}_ten_info", storeIsCompanyCd, storeMstClass));
-        //    getCommonPartsDataDto.setStoreKaisouTable(MessageFormat.format("\"{0}\".ten_{1}_ten_kaisou_header_sys", storeIsCompanyCd, storeMstClass));
-        //}
 
         getCommonPartsDataDto.setProKaisouTable(MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass));
         getCommonPartsDataDto.setProAttrTable(MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass));
@@ -451,8 +440,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
 
                 if (shelfPatternCd == null) {
-                    //logger.info("shelfPatternCd:{}不存在", shelfPatternCd);
-                    //return ResultMaps.result(ResultEnum.FAILURE);
                     vehicleNumCache.put("PatternCdNotExist"+uuid,1);
                 }
 
@@ -466,9 +453,13 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     topPartitionVal = finalHeightSpace.shortValue();
                 }
 
-                Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd.intValue(), companyCd, priorityOrderCd,
+                List<Map<String, Object>> relationMap = restrictRelationMapper.selectByPriorityOrderCd(priorityOrderCd);
+                List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
+
+                Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd,
                         minFaceNum, zokuseiMsts, allCdList,
-                        restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck);
+                        restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck,
+                        tanaList, relationMap);
 
                 if (resultMap!=null && MapUtils.getInteger(resultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
                     vehicleNumCache.put("setJanHeightError"+uuid,resultMap.get("data"));
@@ -481,16 +472,19 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     vehicleNumCache.put(uuid,1);
                 }
             }catch (Exception e){
-                logger.error("{}", e);
+                logger.error("auto calculation is error", e);
                 vehicleNumCache.put(uuid,2);
             }
         });
 
         try {
             future.get(10, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (ExecutionException e) {
             throw new RuntimeException(e);
-        }catch (TimeoutException e) {
+        } catch (InterruptedException e){
+            logger.error("thread is interrupted", e);
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException e) {
             return ResultMaps.result(ResultEnum.SUCCESS, uuid);
         }
         return ResultMaps.result(ResultEnum.SUCCESS,uuid);

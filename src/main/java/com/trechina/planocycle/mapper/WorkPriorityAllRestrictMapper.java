@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface WorkPriorityAllRestrictMapper {
@@ -17,4 +18,6 @@ public interface WorkPriorityAllRestrictMapper {
     Integer setBasicPatternResult(String companyCd, Integer priorityOrderCd, Integer shelfPatternCd, Integer priorityAllCd, String authorCd);
 
     Integer deleteBasicPatternResult(String companyCd,Integer priorityAllCd,String authorCd);
+
+    List<Map<String, Object>> selectByPriorityAllCd(Integer priorityAllCd, Integer patternCd);
 }

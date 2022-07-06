@@ -400,7 +400,7 @@
     </insert>
 
     <select id="selectJanZokusei" resultType="map">
-        select face_count as "faceCount",coalesce(jan_new, jan) jan
+        select face_count as "faceCount",jan
             <foreach collection="attrList" item="item1" open="," separator=",">
                 <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">"${item1.zokuseiCol}"</if>
                 <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
@@ -413,7 +413,6 @@
                 as "zokusei${item1.zokuseiId}"
             </foreach>
         from planocycle.shelf_pts_data_jandata jandata
-        left join planocycle.work_priority_order_jan_replace replace on replace.priority_order_cd=#{priorityOrderCd} and jan_old=jandata.jan
         inner join ${proInfoTable} janinfo on  janinfo."1"=jandata.jan
         where pts_cd=#{ptsCd}
     </select>
