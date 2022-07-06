@@ -265,7 +265,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     public GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd ) {
-        //{"dateIsCore":"1","storeLevel":"3","storeIsCore":"1","storeMstClass":"0000","prodIsCore":"1","prodMstClass":"0000"}
 
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
         String prodMstClass = jsonObject.get("prodMstClass").toString();
@@ -282,18 +281,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             isCompanyCd = companyCd;
         }
         getCommonPartsDataDto.setProdIsCore(isCompanyCd);
-        //if (jsonObject.get("storeIsCore").toString() !=null) {
-        //    String storeIsCore = jsonObject.get("storeIsCore").toString();
-        //    String storeMstClass = jsonObject.get("storeMstClass").toString();
-        //    String storeIsCompanyCd = null;
-        //    if ("1".equals(storeIsCore)) {
-        //        storeIsCompanyCd = coreCompany;
-        //    } else {
-        //        storeIsCompanyCd = companyCd;
-        //    }
-        //    getCommonPartsDataDto.setStoreInfoTable(MessageFormat.format("\"{0}\".ten_{1}_ten_info", storeIsCompanyCd, storeMstClass));
-        //    getCommonPartsDataDto.setStoreKaisouTable(MessageFormat.format("\"{0}\".ten_{1}_ten_kaisou_header_sys", storeIsCompanyCd, storeMstClass));
-        //}
 
         getCommonPartsDataDto.setProKaisouTable(MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass));
         getCommonPartsDataDto.setProAttrTable(MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass));
@@ -451,8 +438,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
 
                 if (shelfPatternCd == null) {
-                    //logger.info("shelfPatternCd:{}不存在", shelfPatternCd);
-                    //return ResultMaps.result(ResultEnum.FAILURE);
                     vehicleNumCache.put("PatternCdNotExist"+uuid,1);
                 }
 
@@ -466,7 +451,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     topPartitionVal = finalHeightSpace.shortValue();
                 }
 
-                Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd.intValue(), companyCd, priorityOrderCd,
+                Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd,
                         minFaceNum, zokuseiMsts, allCdList,
                         restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck);
 
