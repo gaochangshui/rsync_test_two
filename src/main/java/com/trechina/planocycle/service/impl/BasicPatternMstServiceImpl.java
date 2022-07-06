@@ -466,7 +466,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     vehicleNumCache.put(uuid,1);
                 }
             }catch (Exception e){
-                logger.error("{}", e);
+                logger.error("auto calculation is error", e);
                 vehicleNumCache.put(uuid,2);
             }
         });
@@ -477,8 +477,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             throw new RuntimeException(e);
         } catch (InterruptedException e){
             if (Thread.interrupted()) {
-                // Clears interrupted status!
-                logger.error("{}", e);
+                logger.error("thread is interrupted", e);
             }
         } catch (TimeoutException e) {
             return ResultMaps.result(ResultEnum.SUCCESS, uuid);
