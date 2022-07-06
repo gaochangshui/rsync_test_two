@@ -30,7 +30,8 @@
         left join
         planocycle.work_priority_order_pts_data_tanamst tanamst
         on tanamst.pts_cd = ptsdata.id
-        left join (select tai_cd, tana_cd,restrict_cd, sum(area) area from planocycle.work_basic_pattern_restrict_relation where priority_order_cd=#{priorityOrderCd}
+        left join (select tai_cd, tana_cd,restrict_cd, sum(area) area from planocycle.work_basic_pattern_restrict_relation
+        where priority_order_cd=#{priorityOrderCd} and restrict_cd!=9999
         group by tai_cd, tana_cd, restrict_cd) relation on tanamst.tai_cd = relation.tai_cd and tanamst.tana_cd = relation.tana_cd
         left join
              (select restrict_cd<foreach collection="zokuseiList" open="," close="," item="item" separator=",">${item}</foreach>
