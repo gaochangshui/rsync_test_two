@@ -123,13 +123,12 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, priorityOrderDataDto.getShelfPatternCd());
         //只是用品名2
         String tableName = "\"1000\".prod_0000_jan_info";
-        List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
-        //Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals("jan_cd")).findFirst();
+
         //String janCdCol = janCdOpt.get().get("attr").toString();
         //Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals("jan_name")).findFirst();
         //String janNameCol = janNameOpt.get().get("attr").toString();
         Set<Map.Entry<String, Object>> entrySet = priorityOrderDataDto.getAttrList().entrySet();
-        List<String> list = new ArrayList();
+        List<String> list = new ArrayList<>();
         List<LinkedHashMap<String,Object>> listAll = new ArrayList<>();
         int y = 1;
         for (Map.Entry<String, Object> stringObjectEntry : entrySet) {
@@ -142,7 +141,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         }
         classicPriorityOrderMstAttrSortMapper.deleteAttrWk(companyCd,priorityPowerCd);
         classicPriorityOrderMstAttrSortMapper.insertAttrWk(companyCd,priorityPowerCd,listAll);
-        List<Map<String,Object>> listAttr = new ArrayList();
+        List<Map<String,Object>> listAttr = new ArrayList<>();
         Map<String,Object> listTableName = new HashMap<>();
         LinkedHashMap<String,Object> mapColHeader = new LinkedHashMap<>();
         mapColHeader.put("jan_old","旧JAN");
@@ -227,7 +226,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     public Map<String, Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto) {
         String companyCd = enterpriseAxisDto.getCompanyCd();
         String commonPartsData = enterpriseAxisDto.getCommonPartsData();
-        JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
+        JSONObject jsonObject = JSON.parseObject(commonPartsData);
         String prodMstClass = jsonObject.get("prodMstClass").toString();
         String prodIsCore = jsonObject.get("prodIsCore").toString();
         String coreCompany = sysConfigMapper.selectSycConfig("core_company");
@@ -316,15 +315,15 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 companyCd, productPowerCd);
         priorityOrderJanCgiDto.setAttributeCd(productOrderAttrAndItemVO.getAttrStr());
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        Map<String,Object> Data = null;
+        Map<String,Object> data = null;
         logger.info("つかむ取新jan信息，傳給smt的参数為：{}",priorityOrderJanCgiDto);
         String result = cgiUtil.postCgi(path, priorityOrderJanCgiDto, tokenInfo);
-        logger.info("taskId返回：" + result);
+        logger.info("taskId返回：{}",result);
         String queryPath = resourceBundle.getString("TaskQuery");
         //帶着taskId，再次請求cgiつかむ取運行ステータス/数据
-        Data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
+        data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
 
-        return Data;
+        return data;
     }
 
     public Map<String, Object> getPriorityOrderDataForDb(String [] jans, Map<String, String> attrSortMap) {
@@ -433,7 +432,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd,priorityOrderCd);
         classicPriorityOrderMstAttrSortMapper.insertAttrForFinal(companyCd,priorityOrderCd);
         classicPriorityOrderMstAttrSortMapper.insertAttrSortForFinal(companyCd,priorityOrderCd);
-        List list = new ArrayList();
+        List list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
         map.put("jan_old","旧JAN");
         map.put("jan_new","新JAN");
@@ -561,7 +560,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> uploadPriorityOrderData(String taiCd, String tanaCd, MultipartFile file, String company, Integer priorityOrderCd,
-                                                       String attrList) {
+                                                       String attrStr) {
         Map<String, Object> resultMap = Maps.newHashMap();
 
         try {
@@ -575,7 +574,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             }
 
             List<PriorityOrderMstAttrSortDto> checkedAttrList = priorityOrderMstAttrSortMapper.selectWKRankSort(company, priorityOrderCd);
-            attrList = checkedAttrList.stream().map(PriorityOrderMstAttrSortDto::getValue).collect(Collectors.joining(","));
+            String attrList = checkedAttrList.stream().map(PriorityOrderMstAttrSortDto::getValue).collect(Collectors.joining(","));
             List<DownloadDto> uploadJanList = (List<DownloadDto>) checkResult.get("data");
             List<PriorityOrderAttributeClassify> classifyList = priorityOrderClassifyMapper.getClassifyList(company, priorityOrderCd);
 
@@ -739,7 +738,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             logger.error("db error, {}", dbData);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
-        JSONArray datas = (JSONArray) JSONArray.parse(dbData.get("data").toString());
+        JSONArray datas = (JSONArray) JSON.parse(dbData.get("data").toString());
         Map<String, Object> resultMap = Maps.newHashMap();
 
         //新規jan
@@ -877,7 +876,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<DownloadDto> uploadJanList = new ArrayList<>();
 
         for (CsvRow csvRow : csvReader) {
-            if(csvRow.isEmpty() || csvRow.getFields().stream().allMatch(field->"".equals(field))){
+            if(csvRow.isEmpty() || csvRow.getFields().stream().allMatch(""::equals)){
                 rowIndex++;
                 continue;
             }
@@ -958,19 +957,15 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
     private JSONArray priorityOrderData(JSONArray datas) {
         // 一時テーブルとしてのデータの保存
-//        JSONArray datas = new JSONArray(Data);
         List<Map<String, String>> keyNameList = new ArrayList<>();
         //表に出す
         colNameList(datas, keyNameList);
-        logger.info("打印創建臨時表前的表頭" + keyNameList.toString());
-        logger.info(keyNameList.toString());
-        String name = "";
-        Integer nameId = 0;
-        List<Map<String, String>> finalKeyName = new ArrayList<>();
+        logger.info("打印創建臨時表前的表頭{}", keyNameList);
+
 
         //一時保存データのエンティティテーブルpriorityorder+社員番号
         String tablename = "public.priorityorder" + session.getAttribute("aud").toString();
-        logger.info("創建的表名" + tablename);
+        logger.info("創建的表名{}",tablename);
 
         priorityOrderDataMapper.dropTempData(tablename);
         priorityOrderDataMapper.updateTempData(keyNameList, tablename);
@@ -1063,7 +1058,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             } else {
 
                 ClassicPriorityOrderJanNewVO colResult = priorityOrderJanNewMapper.selectColName(companyCd, priorityOrderCd);
-                logger.info("つかむ取新規商品list返回結果集e：" + colResult);
+                logger.info("つかむ取新規商品list返回結果集e：{}",colResult);
                 String[] attrList = colResult.getAttr().split(",");
                 String[] valList;
                 List<String> results = new ArrayList<>();
