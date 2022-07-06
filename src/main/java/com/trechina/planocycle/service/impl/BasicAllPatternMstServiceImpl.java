@@ -1,7 +1,9 @@
 package com.trechina.planocycle.service.impl;
 
+import com.google.common.base.Joiner;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
