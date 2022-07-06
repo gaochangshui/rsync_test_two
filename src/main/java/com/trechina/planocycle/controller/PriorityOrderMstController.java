@@ -66,14 +66,6 @@ public class PriorityOrderMstController {
     }
 
     /**
-     * 自動計算
-     * @return
-     */
-    @GetMapping("/autoCalculation")
-    public Map<String,Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition){
-        return priorityOrderMstService.autoCalculation(companyCd,priorityOrderCd,partition);
-    }
-    /**
      * 表示自動計算実行ステータス
      * @param taskId
      * @return

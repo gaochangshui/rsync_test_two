@@ -46,7 +46,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     @Autowired
     private WorkPriorityOrderRestrictSetMapper workPriorityOrderRestrictSetMapper;
     @Autowired
-    private BasicPatternMstServiceImpl BasicPatternMstService;
+    private BasicPatternMstServiceImpl basicPatternMstService;
     @Autowired
     private BasicPatternResultMapper basicPatternResultMapper;
     @Autowired
@@ -88,7 +88,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
      */
     @Override
     public Map<String, Object> getAttribute(PriorityOrderAttrDto priorityOrderAttrDto) {
-        GetCommonPartsDataDto commonTableName = BasicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(),priorityOrderAttrDto.getCompanyCd());
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(),priorityOrderAttrDto.getCompanyCd());
         List<PriorityOrderAttrListVo> attributeList = priorityOrderMstAttrSortMapper.getAttribute(commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         return ResultMaps.result(ResultEnum.SUCCESS, attributeList);
     }
@@ -108,8 +108,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     @Override
     public Map<String, Object> getAttributeList(PriorityOrderAttrDto priorityOrderAttrDto) {
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
-        GetCommonPartsDataDto commonTableName = BasicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
-        List<Integer> attrs = attrList.stream().map(Integer::parseInt).collect(Collectors.toList());
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
         List<String> mainColor = priorityOrderColorMapper.getMainColor();
         Map<String, Object> newTanaWidth = shelfPtsDataMapper.getNewTanaWidth(priorityOrderAttrDto.getPriorityOrderCd());
         Integer id = Integer.parseInt(newTanaWidth.get("id").toString());
@@ -127,122 +126,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     }
 
 
-    /**
-     * 属性1属性2の組合せに対応する面積を取得
-     */
-    @Override
-    public Map<String, Object> getAttributeArea(Integer patternCd, Integer attr1, Integer attr2) {
-        //Integer faceNum = shelfPtsDataMapper.getFaceNum(patternCd);
-        //Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
-        //int attrType1 = priorityOrderMstAttrSortMapper.getAttrType(attr1);
-        //int attrType2 = priorityOrderMstAttrSortMapper.getAttrType(attr2);
-        //List<PriorityOrderAttrVO> attrList = new ArrayList<>();
-        //if (attrType1 == 1 && attrType2 == 1) {
-        //
-        //    int attrSort = priorityOrderMstAttrSortMapper.getAttrSort(attr1);
-        //    int attrSort1 = priorityOrderMstAttrSortMapper.getAttrSort(attr2);
-        //    List<PriorityOrderAttrVO> attrList1 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort, ptsCd);
-        //    List<PriorityOrderAttrVO> attrList2 = priorityOrderMstAttrSortMapper.getAttrValue5(attrSort1, ptsCd);
-        //    PriorityOrderAttrVO priorityOrderAttr = null;
-        //    if (attrSort > attrSort1) {
-        //
-        //
-        //        for (PriorityOrderAttrVO priorityOrderAttrVO : attrList2) {
-        //            for (PriorityOrderAttrVO orderAttrVO : attrList1) {
-        //                if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd() + "_")) {
-        //                    priorityOrderAttr = new PriorityOrderAttrVO();
-        //                    priorityOrderAttr.setAttrBCd(priorityOrderAttrVO.getAttrACd());
-        //                    priorityOrderAttr.setAttrBName(priorityOrderAttrVO.getAttrAName());
-        //                    priorityOrderAttr.setJansBColnm(priorityOrderAttrVO.getJansAColnm());
-        //                    priorityOrderAttr.setAttrACd(orderAttrVO.getAttrACd());
-        //                    priorityOrderAttr.setAttrAName(orderAttrVO.getAttrAName());
-        //                    priorityOrderAttr.setJansAColnm(orderAttrVO.getJansAColnm());
-        //
-        //                    Integer facenum = priorityOrderMstAttrSortMapper.getfeceNum(priorityOrderAttrVO.getJansAColnm(), orderAttrVO.getJansAColnm(), priorityOrderAttrVO.getAttrACd(), orderAttrVO.getAttrACd(), patternCd);
-        //                    if (facenum != null) {
-        //                        Integer result = facenum * 100 / faceNum;
-        //                        priorityOrderAttr.setNewZoning(result);
-        //                        priorityOrderAttr.setExistingZoning(result);
-        //                    } else {
-        //                        priorityOrderAttr.setNewZoning(0);
-        //                        priorityOrderAttr.setExistingZoning(0);
-        //                    }
-        //                    attrList.add(priorityOrderAttr);
-        //                }
-        //            }
-        //        }
-        //
-        //    }
-        //    if (attrSort < attrSort1) {
-        //
-        //
-        //        for (PriorityOrderAttrVO priorityOrderAttrVO : attrList1) {
-        //            for (PriorityOrderAttrVO orderAttrVO : attrList2) {
-        //                if (orderAttrVO.getAttrACd().startsWith(priorityOrderAttrVO.getAttrACd() + "_")) {
-        //                    priorityOrderAttr = new PriorityOrderAttrVO();
-        //                    priorityOrderAttr.setAttrACd(priorityOrderAttrVO.getAttrACd());
-        //                    priorityOrderAttr.setAttrAName(priorityOrderAttrVO.getAttrAName());
-        //                    priorityOrderAttr.setJansAColnm(priorityOrderAttrVO.getJansAColnm());
-        //                    priorityOrderAttr.setAttrBCd(orderAttrVO.getAttrACd());
-        //                    priorityOrderAttr.setAttrBName(orderAttrVO.getAttrAName());
-        //                    priorityOrderAttr.setJansBColnm(orderAttrVO.getJansAColnm());
-        //
-        //                    Integer facenum = priorityOrderMstAttrSortMapper.getfeceNum(priorityOrderAttrVO.getJansAColnm(), orderAttrVO.getJansAColnm(), priorityOrderAttrVO.getAttrACd(), orderAttrVO.getAttrACd(), patternCd);
-        //                    if (facenum != null) {
-        //                        Integer result = facenum * 100 / faceNum;
-        //                        priorityOrderAttr.setNewZoning(result);
-        //                        priorityOrderAttr.setExistingZoning(result);
-        //                    } else {
-        //                        priorityOrderAttr.setNewZoning(0);
-        //                        priorityOrderAttr.setExistingZoning(0);
-        //                    }
-        //                    attrList.add(priorityOrderAttr);
-        //                }
-        //            }
-        //        }
-        //
-        //    }
-        //
-        //} else {
-        //
-        //    List<PriorityOrderAttrListVo> attrValue = priorityOrderMstAttrSortMapper.getAttrValue(attr2, ptsCd);
-        //    List<PriorityOrderAttrListVo> attrValue1 = priorityOrderMstAttrSortMapper.getAttrValue(attr1, ptsCd);
-        //
-        //
-        //    PriorityOrderAttrVO priorityOrderAttrVO = null;
-        //    for (PriorityOrderAttrListVo priorityOrderAttrListVo : attrValue1) {
-        //        for (PriorityOrderAttrListVo orderAttrListVo : attrValue) {
-        //            priorityOrderAttrVO = new PriorityOrderAttrVO();
-        //            priorityOrderAttrVO.setAttrACd(priorityOrderAttrListVo.getAttrCd());
-        //            priorityOrderAttrVO.setAttrAName(priorityOrderAttrListVo.getAttrName());
-        //            priorityOrderAttrVO.setJansAColnm(priorityOrderAttrListVo.getJansColNm());
-        //            priorityOrderAttrVO.setAttrBCd(orderAttrListVo.getAttrCd());
-        //            priorityOrderAttrVO.setJansBColnm(orderAttrListVo.getJansColNm());
-        //            priorityOrderAttrVO.setAttrBName(orderAttrListVo.getAttrName());
-        //            Integer facenum = priorityOrderMstAttrSortMapper.getfeceNum(priorityOrderAttrListVo.getJansColNm(), orderAttrListVo.getJansColNm(), priorityOrderAttrListVo.getAttrCd(), orderAttrListVo.getAttrCd(), patternCd);
-        //            if (facenum != null) {
-        //                Integer result = facenum * 100 / faceNum;
-        //                priorityOrderAttrVO.setNewZoning(result);
-        //                priorityOrderAttrVO.setExistingZoning(result);
-        //            } else {
-        //                priorityOrderAttrVO.setNewZoning(0);
-        //                priorityOrderAttrVO.setExistingZoning(0);
-        //            }
-        //
-        //            attrList.add(priorityOrderAttrVO);
-        //        }
-        //    }
-        //
-        //}
-        //logger.info("attrList:{}", attrList);
-        //attrList.sort((o1, o2) -> o2.getExistingZoning().compareTo(o1.getExistingZoning()));
-        //int i = 1;
-        //for (PriorityOrderAttrVO priorityOrderAttrVO : attrList) {
-        //    priorityOrderAttrVO.setRank(i++);
-        //}
-        //logger.info("属性所有組合はい：{}", attrList);
-        return ResultMaps.result(ResultEnum.SUCCESS);
-    }
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -260,7 +144,6 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         orderMst.setShelfPatternCd(shelfPatternCd);
         orderMst.setAttribute1(dto.getAttr1());
         orderMst.setAttribute2(dto.getAttr2());
-//        orderMst.setAreaNameCd(dto.getAreaNameCd());
         orderMst.setPriorityOrderCd(dto.getPriorityOrderCd());
         orderMst.setProductPowerCd(productPowerCd);
         workPriorityOrderMstMapper.insert(orderMst);
@@ -323,7 +206,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     public Map<String, Object> getAttrGroup(PriorityOrderAttrDto priorityOrderAttrDto) {
 
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
-        GetCommonPartsDataDto commonTableName = BasicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
         List<Integer> attrs = attrList.stream().map(Integer::parseInt).collect(Collectors.toList());
         List<Map<String, Object>> attrName = priorityOrderMstAttrSortMapper.getAttrName(commonTableName.getProdMstClass(), commonTableName.getProdIsCore(), attrs);
         List<Map<String, Object>> restrictList = basicPatternResultMapper.getAttrComposeList(priorityOrderAttrDto.getCompanyCd()

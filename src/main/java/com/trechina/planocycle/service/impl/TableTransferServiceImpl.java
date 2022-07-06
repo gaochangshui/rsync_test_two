@@ -78,7 +78,6 @@ public class TableTransferServiceImpl implements TableTransferService {
             try {
                 String[] wks = table.split("_wk");
 
-            System.out.println(wks[0]);
                 janInfoMapper.dropFinal(wks[0]+"\"");
                 janInfoMapper.setFinalForWork(table,wks[0]+"\"");
             } catch (Exception e) {

@@ -4,7 +4,6 @@ import com.trechina.planocycle.entity.dto.PriorityOrderAttrValueDto;
 import com.trechina.planocycle.entity.po.PriorityOderAttrSet;
 import com.trechina.planocycle.entity.po.PriorityOrderRestrictSet;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.PriorityOrderMstAttrSortMapper;
 import com.trechina.planocycle.mapper.PriorityOrderRestrictSetMapper;
 import com.trechina.planocycle.service.PriorityOrderRestrictSetService;
 import com.trechina.planocycle.utils.ResultMaps;

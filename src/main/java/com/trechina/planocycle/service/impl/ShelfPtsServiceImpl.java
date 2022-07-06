@@ -116,7 +116,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             }
             logger.info("手動で組み合わせたptskey：{}", ptsKey);
             List<Integer> patternIdList = shelfPatternService.getpatternIdOfPtsKey(ptsKey.substring(0, ptsKey.length() - 1));
-            logger.info("組み合わせのptskeyによってpatternidを探します：{}", patternIdList.toString());
+            logger.info("組み合わせのptskeyによってpatternidを探します：{}", patternIdList);
             if (!patternIdList.isEmpty()) {
                 Integer patternId = patternIdList.get(0);
                 logger.info("使用されるpatternid：{}", patternId);
@@ -150,12 +150,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Override
     public Map<String, Object> saveShelfPts(List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto) {
         logger.info("ptd関連patternのパラメータ:{}", shelfPtsJoinPatternDto);
-        // 修改有效无效flg 有效1 无效0 変更為0
-        // 修改表数据
-        // shujucheck
-//        if (shelfPtsDataMapper.checkPtsData(shelfPtsJoinPatternDto) == 0) {
-//            return ResultMaps.result(ResultEnum.FAILURE);
-//        }
 
         String authorCd = httpSession.getAttribute("aud").toString();
         shelfPtsDataMapper.updateByPrimaryKey(shelfPtsJoinPatternDto);
@@ -642,14 +636,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Override
     public Map<String, Object> getPtsInfoOfPattern(String companyCd) {
         logger.info("つかむ取棚pattern別的pts信息参数：{}", companyCd);
-//        String[] strArr = areaList.split(",");
-//        List<Integer> list = new ArrayList<>();
-//        if (strArr.length > 0 && !areaList.equals("")) {
-//            for (int i = 0; i < strArr.length; i++) {
-//                list.add(Integer.valueOf(strArr[i]));
-//            }
-//        }
-//        logger.info("処理area信息：{}", list);
         List<ShelfPtsData> shelfPtsNameVOList = shelfPtsDataMapper.selectPtsInfoOfPattern(companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS, shelfPtsNameVOList);
     }

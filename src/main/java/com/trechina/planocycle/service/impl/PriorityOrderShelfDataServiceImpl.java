@@ -99,7 +99,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                 if (attrKey.equals("")){
                     attrKey += zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+stringListEntry.getValue().get(0).get("zokuseiName"+col);
                 }else {
-                    attrKey +="->"+zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+ stringListEntry.getValue().get(0).get("zokuseiName"+col);;
+                    attrKey +="->"+zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+ stringListEntry.getValue().get(0).get("zokuseiName"+col);
                 }
             }
             Map<String,Object> map = new HashMap<>();

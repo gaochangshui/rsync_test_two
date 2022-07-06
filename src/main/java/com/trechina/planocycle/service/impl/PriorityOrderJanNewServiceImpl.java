@@ -156,7 +156,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
             List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
             List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
 
-            List<String> janList = priorityOrderJanNew.stream().map(map -> map.getJanNew()).collect(Collectors.toList());
+            List<String> janList = priorityOrderJanNew.stream().map(PriorityOrderJanNew::getJanNew).collect(Collectors.toList());
             String [] janCd = new String[janList.size()];
             janList.toArray(janCd);
             Map<String, Object> priorityOrderJanNewInfo = this.getPriorityOrderJanNewInfo(janCd, companyCd, priorityOrderCd, 0);

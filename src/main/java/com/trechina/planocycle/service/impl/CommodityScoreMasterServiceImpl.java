@@ -217,7 +217,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         String authorCd = session.getAttribute("aud").toString();
         String authorName = (String) session.getAttribute("aud");
         logger.info("参数はい:{}",productPowerParamMst);
-        String uuid = UUID.randomUUID().toString();
 
         try {
             //商品力点数mst表削除
@@ -263,7 +262,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         List<String> yobi = productPowerDataMapper.getYobi(companyCd, productPowerNo, aud);
         cdList.addAll(yobi);
         String coreCompany = sysConfigMapper.selectSycConfig("core_company");
-        JSONObject jsonObject = JSONObject.parseObject(param.getCommonPartsData());
+        JSONObject jsonObject = JSON.parseObject(param.getCommonPartsData());
         String prodMstClass = jsonObject.get("prodMstClass").toString();
         String prodIsCore = jsonObject.get("prodIsCore").toString();
         String isCompanyCd = null;
