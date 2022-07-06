@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -25,7 +26,7 @@ public class SysConfigServiceImpl implements SysConfigService {
         //
         String companyCd = enterpriseAxisDto.getCompanyCd();
         String commonPartsData = enterpriseAxisDto.getCommonPartsData();
-        JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
+        JSONObject jsonObject = JSON.parseObject(commonPartsData);
         String prodMstClass = jsonObject.get("prodMstClass").toString();
         String prodIsCore = jsonObject.get("prodIsCore").toString();
         String coreCompany = sysConfigMapper.selectSycConfig("core_company");

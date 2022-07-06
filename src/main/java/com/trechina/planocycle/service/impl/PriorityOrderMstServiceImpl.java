@@ -140,11 +140,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         return ResultMaps.result(ResultEnum.SUCCESS, priorityOrderMstList);
     }
 
-    @Override
-    public Map<String, Object> getPriorityOrderListInfo(String companyCd,Integer priorityOrderCd) {
-        priorityOrderJanCardMapper.getExistOtherMst(companyCd,priorityOrderCd);
-        return null;
-    }
+
 
     /**
      * この企業に優先順位表があるかどうかを取得します。
@@ -849,8 +845,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         priorityOrderAttrDto.setCompanyCd(companyCd);
         priorityOrderAttrDto.setPriorityOrderCd(priorityOrderCd);
         priorityOrderAttrDto.setCommonPartsData(workPriorityOrderMst.getCommonPartsData());
-        Map<String, Object> attributeList = priorityOrderMstAttrSortService.getAttributeList(priorityOrderAttrDto);
-        Map<String, Object> attrGroup = priorityOrderMstAttrSortService.getAttrGroup(priorityOrderAttrDto);
 
         //商品力点数表情報
         //sort情报
@@ -913,13 +907,16 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         tanapattanNum.put("taiNum",shelfPtsDataMapper.getTaiNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
         tanapattanNum.put("tanaNum",shelfPtsDataMapper.getTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
-        tanapattanNum.put("faceNum",ptsDetailData.getFaceNum());
-        tanapattanNum.put("skuNum",ptsDetailData.getSkuNum());
+        if (ptsDetailData != null) {
+            tanapattanNum.put("faceNum", ptsDetailData.getFaceNum());
+            tanapattanNum.put("skuNum", ptsDetailData.getSkuNum());
+            tanapattanNum.put("newFaceNum", ptsDetailData.getFaceNum());
+        }
 
         tanapattanNum.put("newTaiNum",ptsDetailDataVo.getTaiNum());
         tanapattanNum.put("newTanaNum",ptsDetailDataVo.getTanaNum());
         tanapattanNum.put("newSkuNum",ptsDetailDataVo.getSkuNum());
-        tanapattanNum.put("newFaceNum",ptsDetailData.getFaceNum());
+
         shelfPatternSettings.put("tanapattanNum",tanapattanNum);
         //商品の詳細
         map.put("shelfPatternSettings",shelfPatternSettings);
@@ -949,7 +946,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         if (isEdit > 0) {
             //編集→名前の更新
             priorityOrderMstMapper.updateOrderName(priorityOrderCd, priorityOrderName);
-            Map<String, Object> objectMap = priorityOrderMstService.saveAllWorkPriorityOrder(priorityOrderMstVO);
+             priorityOrderMstService.saveAllWorkPriorityOrder(priorityOrderMstVO);
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
 
