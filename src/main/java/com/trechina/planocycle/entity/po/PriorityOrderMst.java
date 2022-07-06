@@ -13,7 +13,46 @@ public class PriorityOrderMst {
 
     private Short partitionVal;
 
+    private Short topPartitionFlag;
+
+    private Short topPartitionVal;
     private String attrOption;
+
+    private String commonPartsData;
+
+    private Integer tanaWidCheck;
+
+    public String getCommonPartsData() {
+        return commonPartsData;
+    }
+
+    public void setCommonPartsData(String commonPartsData) {
+        this.commonPartsData = commonPartsData;
+    }
+
+    public Integer getTanaWidCheck() {
+        return tanaWidCheck;
+    }
+
+    public void setTanaWidCheck(Integer tanaWidCheck) {
+        this.tanaWidCheck = tanaWidCheck;
+    }
+
+    public Short getTopPartitionFlag() {
+        return topPartitionFlag;
+    }
+
+    public void setTopPartitionFlag(Short topPartitionFlag) {
+        this.topPartitionFlag = topPartitionFlag;
+    }
+
+    public Short getTopPartitionVal() {
+        return topPartitionVal;
+    }
+
+    public void setTopPartitionVal(Short topPartitionVal) {
+        this.topPartitionVal = topPartitionVal;
+    }
 
     public String getAttrOption() {
         return attrOption;

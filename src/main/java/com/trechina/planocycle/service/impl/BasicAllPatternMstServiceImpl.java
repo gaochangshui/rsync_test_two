@@ -7,10 +7,7 @@ import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
-import com.trechina.planocycle.service.BasicAllPatternMstService;
-import com.trechina.planocycle.service.CommonMstService;
-import com.trechina.planocycle.service.PriorityAllPtsService;
-import com.trechina.planocycle.service.PriorityOrderMstService;
+import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
 import org.slf4j.Logger;
@@ -62,6 +59,20 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     private CommonMstService commonMstService;
     @Autowired
     private VehicleNumCache vehicleNumCache;
+    @Autowired
+    private ZokuseiMapper zokuseiMapper;
+    @Autowired
+    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+    @Autowired
+    private PriorityAllPtsMapper priorityAllPtsMapper;
+    @Autowired
+    private BasicPatternMstService basicPatternMstService;
+
+    @Autowired
+    private WorkPriorityAllRestrictRelationMapper restrictRelationMapper;
+
+    @Autowired
+    private WorkPriorityAllRestrictMapper priorityAllRestrictMapper;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -263,6 +274,36 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             }
         });
         return ResultMaps.result(ResultEnum.SUCCESS, uuid);
+    }
+
+    private Map<String, Object> allPatternCommSetJan(Integer patternCd, String companyCd, Integer priorityOrderCd,Integer priorityAllCd,
+                                              String authorCd, Integer minFaceNum){
+        PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
+        Integer tanaWidCheck = priorityOrderMst.getTanaWidCheck();
+        Short topPartitionVal = priorityOrderMst.getTopPartitionVal();
+
+        Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
+        Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
+        if(partitionFlag.equals((short)0)){
+            partitionVal = 0;
+        }
+
+        List<PriorityOrderMstAttrSort> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
+        String zokuseiIds = priorityOrderMstAttrSorts.stream().map(PriorityOrderMstAttrSort::getValue).collect(Collectors.joining(","));
+        String commonPartsData = priorityOrderMst.getCommonPartsData();
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(),
+                commonTableName.getProdMstClass(), zokuseiIds);
+        List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
+
+        List<Map<String, Object>> relationMap = priorityAllRestrictMapper.selectByPriorityAllCd(priorityAllCd, patternCd);
+        List<Map<String, Object>> tanaList = priorityAllPtsMapper.selectTanaMstByPatternCd(priorityAllCd, patternCd);
+        List<Map<String, Object>> restrictResult = restrictRelationMapper.selectRelation(priorityAllCd, patternCd);
+
+        List<Integer> attrList = priorityOrderMstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
+        return commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd, minFaceNum, zokuseiMsts, allCdList,
+                restrictResult, attrList, authorCd, commonTableName,
+                partitionVal, topPartitionVal, tanaWidCheck, tanaList, relationMap);
     }
 
     @Transactional(rollbackFor = Exception.class)

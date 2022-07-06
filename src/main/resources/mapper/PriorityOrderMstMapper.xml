@@ -8,6 +8,10 @@
     <result column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
     <result column="partition_flag" jdbcType="INTEGER" property="partitionFlag" />
     <result column="partition_val" jdbcType="INTEGER" property="partitionVal" />
+    <result column="top_partition_flag" jdbcType="INTEGER" property="topPartitionFlag" />
+    <result column="top_partition_val" jdbcType="INTEGER" property="topPartitionVal" />
+    <result column="tana_wid_check" jdbcType="INTEGER" property="tanaWidCheck" />
+    <result column="common_parts_data" jdbcType="VARCHAR" property="commonPartsData" />
   </resultMap>
   <!-- Home画面の基本パータンList -->
   <resultMap id="tableNameList" type="com.trechina.planocycle.entity.dto.TableNameDto">
@@ -18,7 +22,8 @@
   </resultMap>
 
   <sql id="Base_Column_List">
-    company_cd, priority_order_cd, priority_order_name, product_power_cd
+    company_cd, priority_order_cd, priority_order_name, product_power_cd,top_partition_val,top_partition_flag,tana_wid_check,
+        common_parts_data
   </sql>
   <select id="getTableNameByCompanyCd" resultMap="tableNameList">
     select

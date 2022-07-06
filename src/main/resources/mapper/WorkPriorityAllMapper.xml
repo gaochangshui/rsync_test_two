@@ -24,4 +24,9 @@
         where company_cd = #{companyCd,jdbcType=VARCHAR}
         and priority_all_cd = #{priorityAllCd}
     </delete>
+    <select id="selectByPriorityAllCd" resultType="map">
+        select tai_cd "taiCd",tana_cd "tanaCd",tana_position "tanaPosition",restrict_cd "restrictCd",area "area"
+        from planocycle.work_all_pattern_restrict_relation relation where priority_all_cd=#{priorityAllCd}
+        order by tai_cd, tana_cd,tana_position
+    </select>
 </mapper>

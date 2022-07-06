@@ -95,6 +95,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     private CommonMstService commonMstService;
     @Autowired
     private JanClassifyMapper janClassifyMapper;
+    @Autowired
+    private PriorityOrderPtsDataMapper priorityOrderPtsDataMapper;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -451,9 +453,13 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     topPartitionVal = finalHeightSpace.shortValue();
                 }
 
+                List<Map<String, Object>> relationMap = restrictRelationMapper.selectByPriorityOrderCd(priorityOrderCd);
+                List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
+
                 Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd,
                         minFaceNum, zokuseiMsts, allCdList,
-                        restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck);
+                        restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck,
+                        tanaList, relationMap);
 
                 if (resultMap!=null && MapUtils.getInteger(resultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
                     vehicleNumCache.put("setJanHeightError"+uuid,resultMap.get("data"));
