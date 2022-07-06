@@ -506,22 +506,21 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         if (basicPatternRestrictRelation.getRestrictCd()== null){
             basicPatternRestrictRelation.setRestrictCd(9999L);
         }
-        //Integer tanaGroup = restrictRelationMapper.getTanaGroup(basicPatternRestrictRelation);
         restrictRelationMapper.deleteForTanaPosition(basicPatternRestrictRelation);
         restrictRelationMapper.update(basicPatternRestrictRelation,authorCd);
-        //if (basicPatternRestrictRelation.getRestrictCd()== 9999){
-        //
-        //    List<BasicPatternRestrictRelation> tanaAttrList = restrictRelationMapper.getTanaAttrList(basicPatternRestrictRelation);
-        //        int i = 1;
-        //        for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
-        //            patternRestrictRelation.setTanaPosition(i++);
-        //        }
-        //
-        //    Integer taiCd = Integer.valueOf(basicPatternRestrictRelation.getTaiCd().toString());
-        //    Integer tanaCd = Integer.valueOf(basicPatternRestrictRelation.getTanaCd().toString());
-        //    restrictRelationMapper.deleteTanas(taiCd,tanaCd,companyCd,priorityOrderCd.intValue());
-        //    restrictRelationMapper.updateTanaPosition(tanaAttrList,authorCd);
-        //}
+        if (basicPatternRestrictRelation.getRestrictCd()== 9999){
+
+            List<BasicPatternRestrictRelation> tanaAttrList = restrictRelationMapper.getTanaAttrList(basicPatternRestrictRelation);
+                int i = 1;
+                for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
+                    patternRestrictRelation.setAreaPosition(i++);
+                }
+
+            Integer taiCd = Integer.valueOf(basicPatternRestrictRelation.getTaiCd().toString());
+            Integer tanaCd = Integer.valueOf(basicPatternRestrictRelation.getTanaCd().toString());
+            restrictRelationMapper.deleteTanas(taiCd,tanaCd,companyCd,priorityOrderCd.intValue());
+            restrictRelationMapper.updateTanaPosition(tanaAttrList,authorCd);
+        }
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

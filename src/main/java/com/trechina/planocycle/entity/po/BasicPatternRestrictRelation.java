@@ -36,6 +36,7 @@ public class BasicPatternRestrictRelation implements Serializable {
      * 
      */
     private Integer tanaPosition;
+    private Integer areaPosition;
 
     /**
      * 
@@ -159,6 +160,18 @@ public class BasicPatternRestrictRelation implements Serializable {
      */
     public void setArea(Long area) {
         this.area = area;
+    }
+
+    public Integer getAreaPosition() {
+        return areaPosition;
+    }
+
+    public void setAreaPosition(Integer areaPosition) {
+        this.areaPosition = areaPosition;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
     }
 
     @Override
