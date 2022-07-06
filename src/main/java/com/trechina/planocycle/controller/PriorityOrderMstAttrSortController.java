@@ -28,13 +28,7 @@ public class PriorityOrderMstAttrSortController {
     public Map<String,Object> getAttributeSort(){
         return priorityOrderMstAttrSortService.getAttributeSort();
     }
-    /**
-     *新規計算属性1属性2の組合せに対応する面積
-     */
-    @GetMapping("/getAttributeArea")
-    public Map<String,Object> getAttributeArea(Integer patternCd,Integer attr1,Integer attr2){
-        return priorityOrderMstAttrSortService.getAttributeArea(patternCd,attr1,attr2);
-    }
+
 
     /**
      *編集時につくむ取属性1属性2の組み合わせに対応する面積

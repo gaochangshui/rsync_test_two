@@ -48,12 +48,6 @@ public interface PriorityOrderMstService {
      * @return
      */
     Map<String, Object> preCalculation(String companyCd, Long patternCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
-    /**
-     * 自動計算
-     * @return
-     */
-    Map<String, Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition);
-
 
 
     /**
@@ -62,12 +56,7 @@ public interface PriorityOrderMstService {
      * @return
      */
     Map<String, Object> autoTaskId(String taskId);
-    /**
-     * 重新計算rank排序
-     * @param companyCd
-     * @return
-     */
-    Map<String, Object>getReorder(String companyCd,Integer priorityOrderCd,Integer productPowerCd,String authorCd);
+
 
     /**
      * xin重新計算rank排序

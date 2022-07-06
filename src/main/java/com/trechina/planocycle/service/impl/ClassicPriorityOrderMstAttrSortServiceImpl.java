@@ -56,7 +56,7 @@ public class ClassicPriorityOrderMstAttrSortServiceImpl implements ClassicPriori
     @Override
     public Map<String, Object> setPriorityAttrSort(List<PriorityOrderMstAttrSort> priorityOrderMstAttrSort) {
         logger.info("優先順位テーブルソートのパラメータを保存する"+priorityOrderMstAttrSort);
-        if (priorityOrderMstAttrSort.size()>0) {
+        if (!priorityOrderMstAttrSort.isEmpty()) {
             priorityOrderMstAttrSortMapper.deleteByPrimaryKey(priorityOrderMstAttrSort.get(0).getCompanyCd(), priorityOrderMstAttrSort.get(0).getPriorityOrderCd());
             priorityOrderMstAttrSortMapper.insert(priorityOrderMstAttrSort);
         }
