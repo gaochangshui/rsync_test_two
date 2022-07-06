@@ -899,6 +899,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         sortSettings.put("registered",format);
         sortSettings.put("sku",productPowerInfo.getSku());
         sortSettings.put("noRestrictionNum",productPowerInfo.getNoRestrictionNum());
+        sortSettings.put("tanaWidthCheck",workPriorityOrderMst.getTanaWidCheck());
 
         Map<String,Object> shelfPatternSettings = new HashMap<>();
         Map<String,Object> tanapattanNum = new HashMap<>();

@@ -17,6 +17,7 @@ public class WorkPriorityOrderMstEditVo {
 
     private Integer topPartitionVal;
     private Integer topPartitionFlag;
+    private Integer tanaWidCheck;
 
     public Integer getProductPowerCd() {
         return productPowerCd;
@@ -82,6 +83,14 @@ public class WorkPriorityOrderMstEditVo {
         this.topPartitionFlag = topPartitionFlag;
     }
 
+    public Integer getTanaWidCheck() {
+        return tanaWidCheck;
+    }
+
+    public void setTanaWidCheck(Integer tanaWidCheck) {
+        this.tanaWidCheck = tanaWidCheck;
+    }
+
     @Override
     public String toString() {
         return "WorkPriorityOrderMstEditVo{" +
@@ -93,6 +102,7 @@ public class WorkPriorityOrderMstEditVo {
                 ", commonPartsData='" + commonPartsData + '\'' +
                 ", topPartitionVal=" + topPartitionVal +
                 ", topPartitionFlag=" + topPartitionFlag +
+                ", tanaWidCheck=" + tanaWidCheck +
                 '}';
     }
 }
