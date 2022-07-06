@@ -127,9 +127,15 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
         String tableName = String.format("\"%s\".prod_%s_jan_attr_header_sys", coreCompany, MagicString.FIRST_CLASS_CD);
         List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
         Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals(MagicString.JAN_HEADER_JAN_CD_COL)).findFirst();
-        String janCdCol = janCdOpt.get().get("sort").toString();
+        String janCdCol = MagicString.JAN_HEADER_JAN_CD_DEFAULT;
+        if(janCdOpt.isPresent()){
+            janCdCol = janCdOpt.get().get("sort").toString();
+        }
         Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals(MagicString.JAN_HEADER_JAN_NAME_COL)).findFirst();
-        String janNameCol = janNameOpt.get().get("sort").toString();
+        String janNameCol = MagicString.JAN_HEADER_JAN_NAME_DEFAULT;
+        if(janNameOpt.isPresent()){
+            janNameCol = janNameOpt.get().get("sort").toString();
+        }
         tableName = String.format("\"%s\".prod_%s_jan_info", coreCompany, MagicString.FIRST_CLASS_CD);
         List<PriorityOrderJanProposal> list = productPowerDataMapper.selectSameNameJan(productPowerNo,
                 shelfPtsData.stream().map(pts->pts.getId()+"").collect(Collectors.joining(",")), tableName, janCdCol, janNameCol);
