@@ -476,9 +476,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e){
-            if (Thread.interrupted()) {
-                logger.error("thread is interrupted", e);
-            }
+            logger.error("thread is interrupted", e);
+            Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
             return ResultMaps.result(ResultEnum.SUCCESS, uuid);
         }
