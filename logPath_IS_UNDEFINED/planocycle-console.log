@@ -14,3 +14,22 @@
 20220706 08:30:06.832  [http-nio-8383-exec-6] INFO  com.trechina.planocycle.service.impl.ShelfPtsServiceImpl.getNewPtsDetailData():758 - end,1657067406832
 20220706 08:31:02.522  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
 20220706 08:31:02.528  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.
+20220706 09:21:25.921  [http-nio-8383-exec-3] ERROR org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/].[dispatcherServlet].log():175 - Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; nested exception is java.lang.RuntimeException: java.util.concurrent.ExecutionException: java.lang.NoClassDefFoundError: com/trechina/planocycle/entity/dto/PriorityOrderJanCgiDto] with root cause
+java.lang.ClassNotFoundException: com.trechina.planocycle.entity.dto.PriorityOrderJanCgiDto
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:581)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at com.trechina.planocycle.service.impl.PriorityOrderMstServiceImpl.getFaceKeisanForCgi(PriorityOrderMstServiceImpl.java:700)
+	at com.trechina.planocycle.service.impl.PriorityOrderMstServiceImpl$$FastClassBySpringCGLIB$$6dde4839.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:688)
+	at com.trechina.planocycle.service.impl.PriorityOrderMstServiceImpl$$EnhancerBySpringCGLIB$$bca773db.getFaceKeisanForCgi(<generated>)
+	at com.trechina.planocycle.service.impl.BasicPatternMstServiceImpl.lambda$autoCalculation$8(BasicPatternMstServiceImpl.java:397)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)
+	at java.base/java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:264)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+20220706 09:22:39.812  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
+20220706 09:22:39.820  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.
