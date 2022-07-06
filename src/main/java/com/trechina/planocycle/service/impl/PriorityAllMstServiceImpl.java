@@ -79,7 +79,8 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     private BasicPatternRestrictResultMapper basicPatternRestrictResultMapper;
     @Autowired
     private BasicPatternRestrictResultMapper restrictResultMapper;
-
+    @Autowired
+    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     @Value("${skuPerPattan}")
     private Long skuCountPerPattan;
 
@@ -417,6 +418,33 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         }
         });
         return ResultMaps.result(ResultEnum.SUCCESS, uuid);
+    }
+
+    /**
+     * sort順
+     * @param companyCd
+     * @param priorityOrderCd
+     * @param authorCd
+     * @return
+     */
+    public Map<String, Object> getNewReorder(String companyCd, Integer priorityOrderCd, String authorCd,Integer priorityAllCd,Integer patternCd) {
+        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+
+        String commonPartsData = workPriorityOrderMst.getCommonPartsData();
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+
+        List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
+
+
+        List<WorkPriorityOrderResultData> reorder = null;
+         if (colNmforMst.size() == 1) {
+            reorder = workPriorityAllResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityAllCd,commonTableName, colNmforMst.get(0), patternCd,null);
+        } else if (colNmforMst.size() == 2){
+            reorder = workPriorityAllResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityAllCd,commonTableName, colNmforMst.get(0),patternCd, colNmforMst.get(1));
+        }
+
+        workPriorityAllResultDataMapper.setSortRank(reorder, companyCd, authorCd, priorityOrderCd);
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     private int makeWKResultDataList(PriorityAllPatternListVO pattern, Integer priorityAllCd, String companyCd, String authorCd, Integer priorityOrderCd) {
