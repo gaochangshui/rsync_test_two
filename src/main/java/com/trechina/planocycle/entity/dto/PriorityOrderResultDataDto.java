@@ -19,6 +19,8 @@ public class PriorityOrderResultDataDto {
 
     private Integer adoptFlag;
 
+    private Integer cutFlag;
+
     private Long face;
 
     private Long faceFact;
@@ -40,6 +42,14 @@ public class PriorityOrderResultDataDto {
 
     private Long width;
     private Long height;
+
+    public Integer getCutFlag() {
+        return cutFlag;
+    }
+
+    public void setCutFlag(Integer cutFlag) {
+        this.cutFlag = cutFlag;
+    }
 
     public Long getHeight() {
         return height;

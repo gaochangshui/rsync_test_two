@@ -310,7 +310,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     public List<Map<String, Object>> janSort(List<Map<String, Object>> ptsJanList, List<Map<String, Object>> JanNewList, String rankName) {
         ptsJanList = ptsJanList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
         JanNewList = JanNewList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
-        JanNewList = JanNewList.stream().filter(map->!map.get("errMsg").toString().equals("pts棚に並んでいる可能性がありますので削除してください。")).collect(Collectors.toList());
+        JanNewList = JanNewList.stream().filter(map->map.get("errMsg")==null || !map.get("errMsg").toString().equals("pts棚に並んでいる可能性がありますので削除してください。")).collect(Collectors.toList());
         int i = 1;
         for (Map<String, Object> objectMap : ptsJanList) {
             objectMap.put(rankName,i++);

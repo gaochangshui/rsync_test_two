@@ -97,6 +97,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     private JanClassifyMapper janClassifyMapper;
     @Autowired
     private PriorityOrderPtsDataMapper priorityOrderPtsDataMapper;
+    @Autowired
+    private PriorityOrderSortMapper priorityOrderSortMapper;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -455,11 +457,12 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
                 List<Map<String, Object>> relationMap = restrictRelationMapper.selectByPriorityOrderCd(priorityOrderCd);
                 List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
+                int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
 
                 Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd,
                         minFaceNum, zokuseiMsts, allCdList,
                         restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck,
-                        tanaList, relationMap);
+                        tanaList, relationMap, isReOrder);
 
                 if (resultMap!=null && MapUtils.getInteger(resultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
                     vehicleNumCache.put("setJanHeightError"+uuid,resultMap.get("data"));
@@ -468,7 +471,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     Object tmpData = MapUtils.getObject(resultMap, "data");
                     List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
                     }.getType());
-                    shelfPtsService.basicSaveWorkPtsData(companyCd, authorCd, priorityOrderCd, workData);
+                    shelfPtsService.basicSaveWorkPtsData(companyCd, authorCd, priorityOrderCd, workData, isReOrder);
                     vehicleNumCache.put(uuid,1);
                 }
             }catch (Exception e){

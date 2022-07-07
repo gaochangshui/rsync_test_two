@@ -44,7 +44,8 @@ public interface ShelfPtsService {
     void saveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd);
 
 
-    void basicSaveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, List<WorkPriorityOrderResultDataDto> resultData);
+    void basicSaveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, List<WorkPriorityOrderResultDataDto> resultData,
+                              int isReOrder);
 
     /**
      * 保存pts数据到最終表里

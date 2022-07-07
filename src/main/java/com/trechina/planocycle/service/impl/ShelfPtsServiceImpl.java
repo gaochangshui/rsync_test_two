@@ -541,7 +541,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     @Override
-    public void basicSaveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, List<WorkPriorityOrderResultDataDto> resultData) {
+    public void basicSaveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, List<WorkPriorityOrderResultDataDto> resultData,
+                                     int isReOrder) {
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
 
@@ -552,7 +553,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                         dto.setRank(dto.getSkuRank());
                     }
                 }).collect(Collectors.toList());
-        if(!janNewList.isEmpty()){
+        if(!janNewList.isEmpty() && isReOrder>0){
             Gson gson = new GsonBuilder().setLongSerializationPolicy(LongSerializationPolicy.STRING).create();
             List<Map<String, Object>> janNewMapList = new Gson().fromJson(gson.toJson(janNewList), new TypeToken<List<Map<String, Object>>>() {
             }.getType());

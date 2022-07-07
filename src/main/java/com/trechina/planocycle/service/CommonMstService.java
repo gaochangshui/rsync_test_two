@@ -45,7 +45,8 @@ public interface CommonMstService {
                                            Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
                                            List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
                                            GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
-                                           Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap);
+                                           Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
+                                           int isReOrder);
 
     List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData);
 

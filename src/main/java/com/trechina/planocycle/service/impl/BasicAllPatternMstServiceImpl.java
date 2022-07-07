@@ -87,7 +87,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     private PriorityOrderMstAttrSortMapper attrSortMapper;
 
     @Autowired
-    private ShelfPtsService shelfPtsService;
+    private PriorityOrderSortMapper priorityOrderSortMapper;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -311,11 +311,11 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         List<Map<String, Object>> relationMap = priorityAllRestrictMapper.selectByPriorityAllCd(priorityAllCd, patternCd);
         List<Map<String, Object>> tanaList = priorityAllPtsMapper.selectTanaMstByPatternCd(priorityAllCd, patternCd);
         List<Map<String, Object>> restrictResult = restrictRelationMapper.selectRelation(priorityAllCd, patternCd);
-
+        int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
         List<Integer> attrList = priorityOrderMstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
         return commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd, minFaceNum, zokuseiMsts, allCdList,
                 restrictResult, attrList, authorCd, commonTableName,
-                partitionVal, topPartitionVal, tanaWidCheck, tanaList, relationMap);
+                partitionVal, topPartitionVal, tanaWidCheck, tanaList, relationMap, isReOrder);
     }
 
     @Transactional(rollbackFor = Exception.class)
