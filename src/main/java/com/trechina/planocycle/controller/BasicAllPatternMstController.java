@@ -6,10 +6,7 @@ import com.trechina.planocycle.service.BasicAllPatternMstService;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -23,7 +20,7 @@ public class BasicAllPatternMstController {
      * 自動計算
      * @return
      */
-    @GetMapping("/autoCalculation")
+    @PostMapping("/autoCalculation")
     public Map<String,Object> autoCalculation(@RequestBody PriorityAllSaveDto priorityAllSaveDto){
         // 自動計算する前に選択された基本パターン、全パターンを一時テーブルに保存
         if (basicAllPatternMstService.saveWKAllPatternData(priorityAllSaveDto) == 0) {
