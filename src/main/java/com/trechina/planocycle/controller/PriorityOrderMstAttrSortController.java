@@ -1,10 +1,12 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderSpaceDto;
 import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -40,13 +42,13 @@ public class PriorityOrderMstAttrSortController {
     public Map<String,Object> getAttrGroup(@RequestBody PriorityOrderAttrDto priorityOrderAttrDto){
         return priorityOrderMstAttrSortService.getAttrGroup(priorityOrderAttrDto);
     }
-    /**
-     * ゾーニング設定
-     * @param dto
-     * @return
-     */
-    @PostMapping("/setAttribute")
-    public Map<String,Object> setAttribute(@RequestBody PriorityOrderSpaceDto dto){
-        return priorityOrderMstAttrSortService.setAttribute(dto);
-    }
+    ///**
+    // * ゾーニング設定
+    // * @param dto
+    // * @return
+    // */
+    //@PostMapping("/setAttribute")
+    //public Map<String,Object> setAttribute(@RequestBody PriorityOrderSpaceDto dto){
+    //    return priorityOrderMstAttrSortService.setAttribute(dto);
+    //}
 }

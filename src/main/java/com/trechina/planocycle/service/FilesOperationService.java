@@ -4,7 +4,6 @@ import com.trechina.planocycle.entity.po.ShelfPtsDataVersion;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -34,7 +33,7 @@ public interface FilesOperationService {
      * @param multipartFile
      * @return
      */
-    Map<String, Object> csvConvertExcelDowlLoad(MultipartFile multipartFile, String productDownPath, HttpServletResponse response);
+    //Map<String, Object> csvConvertExcelDowlLoad(MultipartFile multipartFile, String productDownPath, HttpServletResponse response);
 
     List<String[]> uploadCsvToList(MultipartFile multipartFile);
 }

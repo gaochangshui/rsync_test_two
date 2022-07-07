@@ -23,16 +23,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.UriUtils;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -355,20 +352,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         return ResultMaps.result(ResultEnum.SUCCESS,shelfPatternForArea);
     }
 
-    @Override
-    public void patternDownloadForExcel(List<ShelfPatternMst> patternDataList,String companyCd,HttpServletResponse response) {
 
-        List<ShelfPatternMst> resultInfo = shelfPatternMstMapper.selectByPrimaryKey(companyCd);
-        List<Integer> patternList = resultInfo.stream().map(ShelfPatternMst::getShelfPatternCd).collect(Collectors.toList());
-        List<ShelfPatternBranch> patternBranch = shelfPatternBranchMapper.getPatternBranch(patternList);
-        List<ShelfNameDataVO> shelfNameList = shelfNameMstMapper.selectShelfNameInfo(companyCd);
-        List<ShelfPatternBranchDto> branchList = shelfPatternBranchMapper.getBranch(companyCd);
-        String fileName = MessageFormat.format("{0}.xlsx","棚パターン_"+System.currentTimeMillis());
-        String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
-        response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-        response.setHeader("Content-Disposition", format);
-        excelUtil(resultInfo,patternBranch,shelfNameList,branchList,response);
-    }
     /**
      * 批量保存棚pattern
      * @param shelfPatternDto
