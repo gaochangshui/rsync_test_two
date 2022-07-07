@@ -92,11 +92,13 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
 
     @Override
     public void saveWorkPtsJanData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd,
-                                List<WorkPriorityOrderResultDataDto> priorityOrderResultData) {
+                                   List<WorkPriorityOrderResultDataDto> priorityOrderResultData) {
         //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
         List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(priorityOrderResultData);
+        ShelfPtsData shelfPtsData = priorityAllPtsMapper.selectWorkPtsCdByAuthorCd(companyCd, authorCd, priorityAllCd, patternCd);
+
         //テンポラリ・テーブルのptscd
-        Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
+        Integer ptsCd = shelfPtsData.getId();
 
         if (!positionResultData.isEmpty()) {
             priorityAllPtsMapper.insertPtsDataJandata(positionResultData, ptsCd, companyCd, authorCd, priorityAllCd, patternCd);
