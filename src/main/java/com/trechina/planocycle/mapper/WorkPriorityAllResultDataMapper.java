@@ -39,6 +39,7 @@ public interface WorkPriorityAllResultDataMapper {
                                                  @Param("priorityAllCd")Integer priorityAllCd, @Param("commonTableName")GetCommonPartsDataDto getCommonPartsDataDto
             , @Param("sortName1")String sortName1,@Param("patternCd")Integer patternCd, @Param("sortName2")String sortName2);
 
-    void setSortRank(List<WorkPriorityOrderResultData> reorder, String companyCd, String authorCd, Integer priorityOrderCd);
+    void setSortRank(@Param("list") List<WorkPriorityOrderResultData> reorder, @Param("companyCd") String companyCd,@Param("authorCd") String authorCd
+            ,@Param("priorityOrderCd") Integer priorityOrderCd,@Param("priorityAllCd")Integer priorityAllCd,@Param("patternCd")Integer patternCd);
 
 }

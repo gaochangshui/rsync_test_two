@@ -173,6 +173,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     makeWKRelationList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
 
                     makeWKResultDataList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
+
+                    this.getNewReorder(companyCd,priorityOrderCd,authorCd,priorityAllCd,pattern.getShelfPatternCd());
                     //// 全パターンRelationテーブル更新
                     //workPriorityAllRestrictRelationMapper.insertWKTableRelation(allRelationsList);
                     //// 全パターン制約テーブルに保存
@@ -559,7 +561,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             reorder = workPriorityAllResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityAllCd,commonTableName, colNmforMst.get(0),patternCd, colNmforMst.get(1));
         }
 
-        workPriorityAllResultDataMapper.setSortRank(reorder, companyCd, authorCd, priorityOrderCd);
+        workPriorityAllResultDataMapper.setSortRank(reorder, companyCd, authorCd, priorityOrderCd,priorityAllCd,patternCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

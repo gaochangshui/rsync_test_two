@@ -53,7 +53,7 @@
                        ) ptsmst
                        on ptsmst.tai_cd = relation.tai_cd
                            and ptsmst.tana_cd = relation.tana_cd
-        where priority_order_cd = #{priorityOrderCd} and ptsmst.tai_cd != null
+        where priority_order_cd = #{priorityOrderCd} 
     </insert>
     <select id="selectRelation" resultType="map">
         select
