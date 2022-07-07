@@ -91,6 +91,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto) {
         // 基本パータンの制約により各棚パターンの制約を作成する
         // １．基本台数、基本棚数により新棚の制約を割合で保存　「work_priority_all_restrict」
