@@ -257,6 +257,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     //
                     //workPriorityAllResultDataMapper.updateFace(resultDatas);
 
+                    priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
+
                     /**
                      * 商品を置く
                      */
@@ -270,7 +272,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                         Object tmpData = MapUtils.getObject(setJanResultMap, "data");
                         List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
                         }.getType());
-                        priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData);
+                        priorityAllPtsService.saveWorkPtsJanData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData);
                         vehicleNumCache.put(uuid,1);
                     }
                 }

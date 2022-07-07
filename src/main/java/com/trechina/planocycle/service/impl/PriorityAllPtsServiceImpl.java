@@ -56,12 +56,8 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
     private final Logger logger = LoggerFactory.getLogger(PriorityAllPtsServiceImpl.class);
 
     @Override
-    public void saveWorkPtsData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd,
-                                List<WorkPriorityOrderResultDataDto> priorityOrderResultData) {
+    public void saveWorkPtsData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd) {
         //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
-        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(priorityOrderResultData);
-
-        //既存の新しいptsを検出し,削除してから保存する
         //新しいptsにデータがあるptsCd
         ShelfPtsData shelfPtsData = priorityAllPtsMapper.selectWorkPtsCdByAuthorCd(companyCd, authorCd, priorityAllCd, patternCd);
         //テンポラリ・テーブルのptscd
@@ -92,9 +88,18 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         priorityAllPtsMapper.insertPtsTaimst(ptsCd, id, authorCd, priorityAllCd, patternCd);
         priorityAllPtsMapper.insertPtsTanamst(ptsCd, id, authorCd, priorityAllCd, patternCd);
         priorityAllPtsMapper.insertPtsVersion(ptsCd, id, authorCd, priorityAllCd, patternCd);
+    }
+
+    @Override
+    public void saveWorkPtsJanData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd,
+                                List<WorkPriorityOrderResultDataDto> priorityOrderResultData) {
+        //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
+        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(priorityOrderResultData);
+        //テンポラリ・テーブルのptscd
+        Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
 
         if (!positionResultData.isEmpty()) {
-            priorityAllPtsMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd, priorityAllCd, patternCd);
+            priorityAllPtsMapper.insertPtsDataJandata(positionResultData, ptsCd, companyCd, authorCd, priorityAllCd, patternCd);
         }
     }
 
