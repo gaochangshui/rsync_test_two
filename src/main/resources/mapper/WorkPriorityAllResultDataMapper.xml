@@ -146,13 +146,14 @@
         </foreach>
     </update>
     <update id="setSortRank">
-        update planocycle.work_priority_all_result_data
+        update planocycle.work_all_pattern_restrict_result_data
         set sku_rank =
-        CASE jan,
-        <foreach collection="reorder" item="item">
-            WHEN #{item.janCd} THEN #{item.ranlResult}
+        CASE jan
+        <foreach collection="list" item="item">
+            WHEN #{item.janCd} THEN #{item.resultRank}
         </foreach>
         ELSE sku_rank end
-
+        where  company_cd = #{companyCd} and author_cd = #{authorCd} and priority_all_cd = #{priorityAllCd}
+        and shelf_pattern_cd=#{patternCd}
     </update>
 </mapper>
