@@ -23,12 +23,8 @@ public interface PriorityOrderShelfDataService {
      * @return
      */
     Map<String,Object> getRestrictJans( PriorityOrderRestDto priorityOrderRestDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
-    /**
-     * 新規では基本的なパター棚別の情報を取得
-     * @param companyCd
-     * @return
-     */
-    Map<String,Object> getPlatformShedData(String companyCd,Integer priorityOrderCd);
+
+
     /**
      * 新規では基本的なパタ台棚別jansの詳細情報を入手
      * @param priorityOrderPlatformShedDto
@@ -46,6 +42,10 @@ public interface PriorityOrderShelfDataService {
      *
      */
     List<Map<String ,Object>> getPtsGroup(String companyCd, Integer priorityOrderCd);
-
+    /**
+     * 新規では基本的なパター棚別の情報を取得
+     * @param companyCd
+     * @return
+     */
     Map<String, Object> getNewPlatformShedData(String companyCd, Integer priorityOrderCd);
 }

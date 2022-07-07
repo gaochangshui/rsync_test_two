@@ -16,22 +16,4 @@
   <delete id="delete">
     delete from masterdb.areas
   </delete>
-  <select id="select"  resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from masterdb.areas area
-    where company_cd = #{companyCd,jdbcType=VARCHAR}
-  </select>
-  <select id="selectForShelfName" resultType="com.trechina.planocycle.entity.po.Areas">
-    select
-    distinct <include refid="Base_Column_List" />
-    from masterdb.areas area
-    inner join planocycle.shelf_name_area namearea
-    on area.areacd= namearea.areacd
-    and area.company_cd =namearea.company_cd
-    inner join planocycle.shelf_name_mst shelf
-    on namearea.shelf_name_cd = shelf.id
-    where shelf.id = #{ShelfNameCd,jdbcType=INTEGER} and namearea.deleteflg=0
-
-  </select>
 </mapper>

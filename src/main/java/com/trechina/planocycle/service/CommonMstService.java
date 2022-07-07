@@ -14,18 +14,18 @@ import java.util.Map;
 
 public interface CommonMstService {
 
-    /**
-     * Area Master情報の取得
-     * @return
-     */
-    Map<String,Object> getAreaInfo(String companyCd);
+    ///**
+    // * Area Master情報の取得
+    // * @return
+    // */
+    //Map<String,Object> getAreaInfo(String companyCd);
 
-    /**
-     * 棚名cdよりareaを取る
-     * @param ShelfNameCd
-     * @return
-     */
-    Map<String,Object> getAreaForShelfName(Integer ShelfNameCd);
+    ///**
+    // * 棚名cdよりareaを取る
+    // * @param ShelfNameCd
+    // * @return
+    // */
+    //Map<String,Object> getAreaForShelfName(Integer ShelfNameCd);
 
     /**
      * 商品を置く一般的なロジックは、基本的には全パタンと同じです

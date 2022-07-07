@@ -13,20 +13,20 @@ public interface CommodityScoreMasterService {
      */
     Map<String,Object> getEnterpriseInfo();
 
-    /**
-     * つかむ取企業cd関連付け的商品力点数List接口
-     * @param conpanyCd
-     * @return
-     */
-    Map<String,Object> getCommodityListInfo(String conpanyCd);
+    ///**
+    // * つかむ取企業cd関連付け的商品力点数List接口
+    // * @param conpanyCd
+    // * @return
+    // */
+    //Map<String,Object> getCommodityListInfo(String conpanyCd);
 
-    /**
-     * つかむ取商品力点数的参数接口
-     * @param conpanyCd
-     * @param productPowerCd
-     * @return
-     */
-    Map<String,Object> getCommodityParam(String conpanyCd,Integer productPowerCd);
+    ///**
+    // * つかむ取商品力点数的参数接口
+    // * @param conpanyCd
+    // * @param productPowerCd
+    // * @return
+    // */
+    //Map<String,Object> getCommodityParam(String conpanyCd,Integer productPowerCd);
 
     /**
      * 保存商品力点数的模板名接口

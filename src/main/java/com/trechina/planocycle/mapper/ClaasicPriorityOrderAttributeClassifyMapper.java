@@ -28,5 +28,4 @@ public interface ClaasicPriorityOrderAttributeClassifyMapper {
 
     int insertWork (@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    void checkIsJanNew(String tableName, String[] jans);
 }

@@ -93,7 +93,7 @@ public class ShelfPtsController {
      * 棚pattern別pts情報の取得
      *
      * @param companyCd
-     * @param List
+     * @param
      * @return
      */
     @GetMapping("/getPtsInfoOfPattern")
@@ -127,7 +127,7 @@ public class ShelfPtsController {
      * @return
      */
     @GetMapping("getPtsDetailData")
-    public  Map<String,Object> getPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd){
+    public  Map<String,Object> getPtsDetailData(Integer patternCd,String companyCd,@RequestParam(required = false) Integer priorityOrderCd){
         return shelfPtsService.getPtsDetailData(patternCd,companyCd,priorityOrderCd);
 
     }

@@ -93,14 +93,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         return ResultMaps.result(ResultEnum.SUCCESS, attributeList);
     }
 
-    /**
-     * 陳列設定取得属性1と属性2
-     */
-    @Override
-    public Map<String, Object> getAttributeSort() {
-        List<PriorityOrderAttrListVo> attributeList = priorityOrderMstAttrSortMapper.getAttributeSort();
-        return ResultMaps.result(ResultEnum.SUCCESS, attributeList);
-    }
+
 
     /**
      * 属性の分類および商品分類リストの取得
@@ -225,12 +218,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     }
 
 
-    @Override
-    public Map<String, Object> getEditAttributeArea(String companyCd) {
-        String authorCd = httpSession.getAttribute("aud").toString();
-        List<PriorityOrderAttrVO> editAttributeArea = priorityOrderMstAttrSortMapper.getEditAttributeArea(companyCd, authorCd);
-        return ResultMaps.result(ResultEnum.SUCCESS, editAttributeArea);
-    }
+
 
     private List<WorkPriorityOrderRestrictSet> packageRestrict(int begin, int end, Integer[] tanaCdArray, Integer taiCd, WorkPriorityOrderRestrictSet tmpRestrictSet) {
         List<WorkPriorityOrderRestrictSet> restrictSetList = new ArrayList<>();

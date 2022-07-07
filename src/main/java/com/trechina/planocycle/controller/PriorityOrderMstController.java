@@ -42,15 +42,15 @@ public class PriorityOrderMstController {
 
 
 
-    /**
-     * 優先順位表cdに基づいて商品力点数表cdを取得する
-     * @param priorityOrderCd
-     * @return
-     */
-    @GetMapping("/getProductPowerCdForPriority")
-    public Map<String,Object> getProductPowerCdForPriority(Integer priorityOrderCd){
-        return priorityOrderMstService.getProductPowerCdForPriority(priorityOrderCd);
-    }
+    ///**
+    // * 優先順位表cdに基づいて商品力点数表cdを取得する
+    // * @param priorityOrderCd
+    // * @return
+    // */
+    //@GetMapping("/getProductPowerCdForPriority")
+    //public Map<String,Object> getProductPowerCdForPriority(Integer priorityOrderCd){
+    //    return priorityOrderMstService.getProductPowerCdForPriority(priorityOrderCd);
+    //}
 
 
     /**
@@ -85,15 +85,6 @@ public class PriorityOrderMstController {
        return priorityOrderMstService.getPriorityOrderAll(companyCd,priorityOrderCd);
     }
 
-    /**
-     * 最終保存
-     * @param primaryKeyVO
-     * @return
-     */
-    @PostMapping("/saveAllWorkPriorityOrder")
-    public Map<String,Object> saveAllWorkPriorityOrder(@RequestBody PriorityOrderMstVO primaryKeyVO){
-        return priorityOrderMstService.saveAllWorkPriorityOrder(primaryKeyVO);
-    }
 
     /**
      * 編集時にptsの名前が存在するかどうかを確認

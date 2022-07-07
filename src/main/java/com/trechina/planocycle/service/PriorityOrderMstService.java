@@ -24,12 +24,12 @@ public interface PriorityOrderMstService {
 
 
 
-    /**
-     * 優先順位表cdに基づいて商品力点数表cdを取得する
-     * @param priorityOrderCd
-     * @return
-     */
-    Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd);
+    ///**
+    // * 優先順位表cdに基づいて商品力点数表cdを取得する
+    // * @param priorityOrderCd
+    // * @return
+    // */
+    //Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd);
 
 
     /**

@@ -136,17 +136,6 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     }
 
     /**
-     * 新規では基本的なパター棚別の情報を取得
-     * @param companyCd
-     * @return
-     */
-    @Override
-    public Map<String, Object> getPlatformShedData(String companyCd,Integer priorityOrderCd) {
-        String authorCd = session.getAttribute("aud").toString();
-        List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getPlatformShedData(companyCd, authorCd,priorityOrderCd);
-        return ResultMaps.result(ResultEnum.SUCCESS,platformShedData);
-    }
-    /**
      * 新規では基本的なパタ台棚別jansの詳細情報を入手
      * @param priorityOrderPlatformShedDto
      * @return

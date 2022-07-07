@@ -20,23 +20,23 @@ public class CommodityScoreMasterController {
     public Map<String,Object> getEnterpriseInfo(){
         return commodityScoreMasterService.getEnterpriseInfo();
     }
-    /**
-     * 企業cd関連商品力点数リスト取得
-     * @param conpanyCd
-     * @return
-     */
-    @GetMapping("/getCommodityListInfo")
-    public Map<String,Object> getCommodityListInfo(String conpanyCd) { return commodityScoreMasterService.getCommodityListInfo(conpanyCd);}
-    /**
-     * 商品力点数のパラメータを取得する
-     * @param conpanyCd
-     * @param productPowerCd
-     * @return
-     */
-    @GetMapping("/getCommodityParam")
-    public Map<String,Object> getCommodityParam(String conpanyCd, Integer productPowerCd){
-        return commodityScoreMasterService.getCommodityParam(conpanyCd,productPowerCd);
-    }
+    ///**
+    // * 企業cd関連商品力点数リスト取得
+    // * @param conpanyCd
+    // * @return
+    // */
+    //@GetMapping("/getCommodityListInfo")
+    //public Map<String,Object> getCommodityListInfo(String conpanyCd) { return commodityScoreMasterService.getCommodityListInfo(conpanyCd);}
+    ///**
+    // * 商品力点数のパラメータを取得する
+    // * @param conpanyCd
+    // * @param productPowerCd
+    // * @return
+    // */
+    //@GetMapping("/getCommodityParam")
+    //public Map<String,Object> getCommodityParam(String conpanyCd, Integer productPowerCd){
+    //    return commodityScoreMasterService.getCommodityParam(conpanyCd,productPowerCd);
+    //}
 
     /**
      * 商品力点数表のテンプレート名を保存する

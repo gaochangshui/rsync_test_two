@@ -17,8 +17,6 @@ public interface PriorityOrderCatepakMapper {
 
     List<PriorityOrderCatePakVO> selectByPrimaryKey(String companyCd, Integer priorityOrderCd);
 
-    Integer selectColName(String companyCd, Integer productPowerNo);
-
     void updateBranchNum(Integer id, Integer branchNum);
 
     int insertFinalData(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);

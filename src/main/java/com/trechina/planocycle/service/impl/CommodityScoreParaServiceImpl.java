@@ -1,10 +1,11 @@
 package com.trechina.planocycle.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
-import com.trechina.planocycle.entity.po.*;
-import com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO;
+import com.trechina.planocycle.entity.po.ProductPowerParam;
+import com.trechina.planocycle.entity.po.ProductPowerParamMst;
+import com.trechina.planocycle.entity.po.ProductPowerReserveMst;
+import com.trechina.planocycle.entity.po.WorkProductPowerReserveData;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -46,53 +47,53 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     private ProductPowerDataMapper productPowerDataMapper;
     @Autowired
     private cgiUtils cgiUtil;
-    /**
-     * 表示項目のすべてのパラメータを取得
-     * @param conpanyCd
-     * @param productPowerCd
-     * @return
-     */
-    @Override
-    public Map<String, Object> getCommodityScorePara(String conpanyCd, Integer productPowerCd) {
-        List<ProductPowerShowMst> productPowerShowMstList = productPowerShowMstMapper.selectByPrimaryKey(productPowerCd,conpanyCd);
-        logger.info("つかむ取表示プロジェクト参数：{}",productPowerShowMstList);
-        ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd,productPowerCd);
-        logger.info("つかむ取動態列参数：{}",productOrderParamAttrVO);
-        //フロントエンドを作成するためのデータフォーマット
-        List<String> marketList = new ArrayList<>();
-        List<String> posList = new ArrayList<>();
-        //データベースの戻り値のすべてのローを巡り、市場のlistとposのlistに組み合わせる
-        productPowerShowMstList.forEach(item -> {
-            if (item.getMarketPosFlag() == 1) {
-                marketList.add(item.getDataCd());
-            } else {
-                posList.add(item.getDataCd());
-            }
-        });
-       try {
-           //動的列の遍歴
-           String[] attrList= productOrderParamAttrVO.getAttr().split(",");
-           String[] attrKey;
-           Map<String,Object> result = new HashMap<>();
-           Map<String,Object> attrMap = new HashMap<>();
-           result.put("conpanyCd",productPowerShowMstList.get(0).getConpanyCd());
-           result.put("productPowerCd",productPowerShowMstList.get(0).getProductPowerCd());
-           result.put("MarketData",marketList);
-           result.put("PosData",posList);
-           JSONArray jsonArray = new JSONArray();
-           for (String s : attrList) {
-               attrKey=s.split(":");
-               attrMap.put("attr"+attrKey[0],attrKey[1]);
-           }
-           jsonArray.add(result);
-           jsonArray.add(attrMap);
-           logger.info("動態列返回：{}", jsonArray);
-           return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
-       }catch (Exception e) {
-           logger.info(e.toString());
-           return ResultMaps.result(ResultEnum.FAILURE);
-       }
-    }
+    ///**
+    // * 表示項目のすべてのパラメータを取得
+    // * @param conpanyCd
+    // * @param productPowerCd
+    // * @return
+    // */
+    //@Override
+    //public Map<String, Object> getCommodityScorePara(String conpanyCd, Integer productPowerCd) {
+    //    List<ProductPowerShowMst> productPowerShowMstList = productPowerShowMstMapper.selectByPrimaryKey(productPowerCd,conpanyCd);
+    //    logger.info("つかむ取表示プロジェクト参数：{}",productPowerShowMstList);
+    //    ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd,productPowerCd);
+    //    logger.info("つかむ取動態列参数：{}",productOrderParamAttrVO);
+    //    //フロントエンドを作成するためのデータフォーマット
+    //    List<String> marketList = new ArrayList<>();
+    //    List<String> posList = new ArrayList<>();
+    //    //データベースの戻り値のすべてのローを巡り、市場のlistとposのlistに組み合わせる
+    //    productPowerShowMstList.forEach(item -> {
+    //        if (item.getMarketPosFlag() == 1) {
+    //            marketList.add(item.getDataCd());
+    //        } else {
+    //            posList.add(item.getDataCd());
+    //        }
+    //    });
+    //   try {
+    //       //動的列の遍歴
+    //       String[] attrList= productOrderParamAttrVO.getAttr().split(",");
+    //       String[] attrKey;
+    //       Map<String,Object> result = new HashMap<>();
+    //       Map<String,Object> attrMap = new HashMap<>();
+    //       result.put("conpanyCd",productPowerShowMstList.get(0).getConpanyCd());
+    //       result.put("productPowerCd",productPowerShowMstList.get(0).getProductPowerCd());
+    //       result.put("MarketData",marketList);
+    //       result.put("PosData",posList);
+    //       JSONArray jsonArray = new JSONArray();
+    //       for (String s : attrList) {
+    //           attrKey=s.split(":");
+    //           attrMap.put("attr"+attrKey[0],attrKey[1]);
+    //       }
+    //       jsonArray.add(result);
+    //       jsonArray.add(attrMap);
+    //       logger.info("動態列返回：{}", jsonArray);
+    //       return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
+    //   }catch (Exception e) {
+    //       logger.info(e.toString());
+    //       return ResultMaps.result(ResultEnum.FAILURE);
+    //   }
+    //}
 
     /**
      * 保存期間、表示項目、weightのすべてのパラメータ
@@ -183,36 +184,36 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    /**
-     * 調用cgi削除準備プロジェクト
-     *
-     * @param productPowerReserveMst
-     * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public Map<String, Object> delYoBi(ProductPowerReserveMst productPowerReserveMst) {
-        //ProductPowerReservの処理
-            ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
-            productPowerDataForCgiDto.setMode("yobi_delete");
-            productPowerDataForCgiDto.setCompany(productPowerReserveMst.getConpanyCd());
-
-
-
-            String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-            //cgiを呼び出して予備表示項目を削除
-            //再帰的にcgiを呼び出し、まずtaskidを取得する
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("ProductPowerData");
-        cgiUtils cgiUtil = new cgiUtils();
-        String result = null;
-        result = cgiUtil.postCgi(path, productPowerDataForCgiDto, tokenInfo);
-        logger.info("taskid返回削除 yobi：{}", result);
-        String queryPath = resourceBundle.getString("TaskQuery");
-        // taskidを持って、再度cgiに運転状態/データの取得を要求する
-        Map<String, Object> data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-        return ResultMaps.result(ResultEnum.SUCCESS);
-    }
+    ///**
+    // * 調用cgi削除準備プロジェクト
+    // *
+    // * @param productPowerReserveMst
+    // * @return
+    // */
+    //@Transactional(rollbackFor = Exception.class)
+    //@Override
+    //public Map<String, Object> delYoBi(ProductPowerReserveMst productPowerReserveMst) {
+    //    //ProductPowerReservの処理
+    //        ProductPowerDataForCgiDto productPowerDataForCgiDto = new ProductPowerDataForCgiDto();
+    //        productPowerDataForCgiDto.setMode("yobi_delete");
+    //        productPowerDataForCgiDto.setCompany(productPowerReserveMst.getConpanyCd());
+    //
+    //
+    //
+    //        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
+    //        //cgiを呼び出して予備表示項目を削除
+    //        //再帰的にcgiを呼び出し、まずtaskidを取得する
+    //    ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+    //    String path = resourceBundle.getString("ProductPowerData");
+    //    cgiUtils cgiUtil = new cgiUtils();
+    //    String result = null;
+    //    result = cgiUtil.postCgi(path, productPowerDataForCgiDto, tokenInfo);
+    //    logger.info("taskid返回削除 yobi：{}", result);
+    //    String queryPath = resourceBundle.getString("TaskQuery");
+    //    // taskidを持って、再度cgiに運転状態/データの取得を要求する
+    //    Map<String, Object> data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
+    //    return ResultMaps.result(ResultEnum.SUCCESS);
+    //}
 
     private List<WorkProductPowerReserveData> dataFormat(List<String[]> datas, String companyCd, Integer dataCd,Integer productPowerCd) {
         String authorCd = session.getAttribute("aud").toString();

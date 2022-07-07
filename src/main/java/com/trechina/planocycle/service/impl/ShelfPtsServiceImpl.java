@@ -296,40 +296,42 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Override
     public Map<String, Object> getPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd) {
         String authorCd = httpSession.getAttribute("aud").toString();
-        //ptsCdの取得
-        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
-        if (id !=null) {
-            //クリアワーク_priority_order_pts_data
-            shelfPtsDataMapper.deletePtsData(id);
-            //クリアワーク_priority_order_pts_data_taimst
-            shelfPtsDataMapper.deletePtsTaimst(id);
-            //クリアワーク_priority_order_pts_data_tanamst
-            shelfPtsDataMapper.deletePtsTanamst(id);
-            //クリアワーク_priority_order_pts_data_version
-            shelfPtsDataMapper.deletePtsVersion(id);
-        }
-        Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
-        PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
-                .withPriorityOrderCd(priorityOrderCd)
-                .withOldPtsCd(ptsCd)
-                .withCompanyCd(companyCd)
-                .withAuthorCd(authorCd).build();
-        ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
-        String modeName = shelfPtsDataVersion.getModename();
-        //modeNameはptsをダウンロードするファイル名として
-        priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
-        //既存のptsからデータをクエリーする
-        if (id != null){
-            priorityOrderPtsDataDto.setId(id);
-            shelfPtsDataMapper.insertPtsData1(priorityOrderPtsDataDto);
-        }else {
-            shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
-        }
+        if (priorityOrderCd != null) {
+            //ptsCdの取得
+            Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+            if (id != null) {
+                //クリアワーク_priority_order_pts_data
+                shelfPtsDataMapper.deletePtsData(id);
+                //クリアワーク_priority_order_pts_data_taimst
+                shelfPtsDataMapper.deletePtsTaimst(id);
+                //クリアワーク_priority_order_pts_data_tanamst
+                shelfPtsDataMapper.deletePtsTanamst(id);
+                //クリアワーク_priority_order_pts_data_version
+                shelfPtsDataMapper.deletePtsVersion(id);
+            }
+            Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
+            PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
+                    .withPriorityOrderCd(priorityOrderCd)
+                    .withOldPtsCd(ptsCd)
+                    .withCompanyCd(companyCd)
+                    .withAuthorCd(authorCd).build();
+            ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
+            String modeName = shelfPtsDataVersion.getModename();
+            //modeNameはptsをダウンロードするファイル名として
+            priorityOrderPtsDataDto.setFileName(modeName + "_new.csv");
+            //既存のptsからデータをクエリーする
+            if (id != null) {
+                priorityOrderPtsDataDto.setId(id);
+                shelfPtsDataMapper.insertPtsData1(priorityOrderPtsDataDto);
+            } else {
+                shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
+            }
 
-        Integer newId = priorityOrderPtsDataDto.getId();
-        shelfPtsDataMapper.insertPtsTaimst(ptsCd, newId, authorCd);
-        shelfPtsDataMapper.insertPtsTanamst(ptsCd, newId, authorCd);
-        shelfPtsDataMapper.insertPtsVersion(ptsCd, newId, authorCd);
+            Integer newId = priorityOrderPtsDataDto.getId();
+            shelfPtsDataMapper.insertPtsTaimst(ptsCd, newId, authorCd);
+            shelfPtsDataMapper.insertPtsTanamst(ptsCd, newId, authorCd);
+            shelfPtsDataMapper.insertPtsVersion(ptsCd, newId, authorCd);
+        }
 
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
 

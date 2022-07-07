@@ -2,7 +2,6 @@ package com.trechina.planocycle.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
-import com.trechina.planocycle.entity.po.ProductPowerReserveMst;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
 import com.trechina.planocycle.service.CommodityScoreParaService;
 import com.trechina.planocycle.service.FilesOperationService;
@@ -21,17 +20,17 @@ public class CommodityScoreParaController {
     @Autowired
     private FilesOperationService filesOperationService;
 
-    /**
-     * アイテムを表すパラメータの取得
-     *
-     * @param conpanyCd
-     * @param productPowerCd
-     * @return
-     */
-    @GetMapping("/getCommodityScorePara")
-    public Map<String, Object> getCommodityScorePara(String conpanyCd, Integer productPowerCd) {
-        return commodityScoreParaService.getCommodityScorePara(conpanyCd, productPowerCd);
-    }
+    ///**
+    // * アイテムを表すパラメータの取得
+    // *
+    // * @param conpanyCd
+    // * @param productPowerCd
+    // * @return
+    // */
+    //@GetMapping("/getCommodityScorePara")
+    //public Map<String, Object> getCommodityScorePara(String conpanyCd, Integer productPowerCd) {
+    //    return commodityScoreParaService.getCommodityScorePara(conpanyCd, productPowerCd);
+    //}
 
     /**
      * s 1期間、表示項目、予備項目、weightのすべてのパラメータを保存し、予備項目、基本posデータを削除する
@@ -72,16 +71,16 @@ public class CommodityScoreParaController {
         return commodityScoreParaService.saveYoBi(csvData, companyCd, productPowerCd,dataName,valueCd);
     }
 
-    /**
-     * cgiを呼び出して予備項目を削除
-     *
-     * @param productPowerReserveMst
-     * @return
-     */
-    @PostMapping("/delYoBi")
-    public Map<String, Object> delYoBi(@RequestBody ProductPowerReserveMst productPowerReserveMst) {
-        return commodityScoreParaService.delYoBi(productPowerReserveMst);
-    }
+    ///**
+    // * cgiを呼び出して予備項目を削除
+    // *
+    // * @param productPowerReserveMst
+    // * @return
+    // */
+    //@PostMapping("/delYoBi")
+    //public Map<String, Object> delYoBi(@RequestBody ProductPowerReserveMst productPowerReserveMst) {
+    //    return commodityScoreParaService.delYoBi(productPowerReserveMst);
+    //}
 
     /**
      * 計算rank
@@ -102,8 +101,6 @@ public class CommodityScoreParaController {
 
         return commodityScoreParaService.deleteReserve(jsonObject);
     }
-
-
 
 
 }

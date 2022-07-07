@@ -1,14 +1,16 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.po.ProductPowerMst;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerParamMst;
 import com.trechina.planocycle.entity.po.ProductPowerParamVo;
-import com.trechina.planocycle.entity.vo.*;
+import com.trechina.planocycle.entity.vo.ParamConfigVO;
+import com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO;
+import com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO;
+import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreMasterService;
@@ -80,36 +82,36 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
 
-    /**
-     * 企業cd関連商品力点数リスト取得
-     * @param conpanyCd
-     * @return
-     */
-    @Override
-    public Map<String, Object> getCommodityListInfo(String conpanyCd) {
-        List<CommodityListInfoVO> resultInfo = productPowerMstMapper.selectCommodityList(conpanyCd);
-        logger.info("つかむ取企業cd関連付け的商品力点数List：{}",resultInfo);
-        return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
-    }
+    ///**
+    // * 企業cd関連商品力点数リスト取得
+    // * @param conpanyCd
+    // * @return
+    // */
+    //@Override
+    //public Map<String, Object> getCommodityListInfo(String conpanyCd) {
+    //    List<CommodityListInfoVO> resultInfo = productPowerMstMapper.selectCommodityList(conpanyCd);
+    //    logger.info("つかむ取企業cd関連付け的商品力点数List：{}",resultInfo);
+    //    return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
+    //}
 
-    /**
-     * 商品力点数のパラメータを取得する
-     * @param conpanyCd
-     * @param productPowerCd
-     * @return
-     */
-    @Override
-    public Map<String, Object> getCommodityParam(String conpanyCd, Integer productPowerCd) {
-        JSONArray jsonArray = new JSONArray();
-        Map<String, Object> result = new HashMap<>();
-        ProductPowerParamMst resultInfo = productPowerParamMstMapper.selectCommodityParam(conpanyCd,productPowerCd);
-        logger.info("つかむ取商品力点数参数返回値：{}",resultInfo);
-        productPowerParamAttr(conpanyCd, productPowerCd, result);
-
-        jsonArray.add(resultInfo);
-        jsonArray.add(result);
-        return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
-    }
+    ///**
+    // * 商品力点数のパラメータを取得する
+    // * @param conpanyCd
+    // * @param productPowerCd
+    // * @return
+    // */
+    //@Override
+    //public Map<String, Object> getCommodityParam(String conpanyCd, Integer productPowerCd) {
+    //    JSONArray jsonArray = new JSONArray();
+    //    Map<String, Object> result = new HashMap<>();
+    //    ProductPowerParamMst resultInfo = productPowerParamMstMapper.selectCommodityParam(conpanyCd,productPowerCd);
+    //    logger.info("つかむ取商品力点数参数返回値：{}",resultInfo);
+    //    productPowerParamAttr(conpanyCd, productPowerCd, result);
+    //
+    //    jsonArray.add(resultInfo);
+    //    jsonArray.add(result);
+    //    return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
+    //}
 
     @Override
     public void productPowerParamAttr(String conpanyCd, Integer productPowerCd, Map<String, Object> result) {

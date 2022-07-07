@@ -15,8 +15,8 @@ import java.util.Map;
 
 @Mapper
 public interface PriorityAllPtsMapper {
-    ShelfPtsData selectWorkPtsCdByAuthorCd(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd,
-                                           @Param("priorityAllCd")Integer priorityAllCd, @Param("patternCd") Integer patternCd);
+    ShelfPtsData selectWorkPtsCdByAuthorCd(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,
+                                           @Param("priorityAllCd") Integer priorityAllCd, @Param("patternCd") Integer patternCd);
 
     void deletePtsData(Integer oldPtsCd);
 

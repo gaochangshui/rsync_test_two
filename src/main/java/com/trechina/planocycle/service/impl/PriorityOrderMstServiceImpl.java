@@ -1,7 +1,9 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.trechina.planocycle.entity.dto.*;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderJanCgiDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -22,7 +24,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -41,8 +42,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Autowired
     private PriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
-    private PriorityOrderPatternMapper priorityOrderPatternMapper;
-    @Autowired
     private CommodityScoreMasterService commodityScoreMasterService;
     @Autowired
     private CommonMstService commonMstService;
@@ -56,8 +55,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private PriorityOrderJanNewService priorityOrderJanNewService;
     @Autowired
     private PriorityOrderJanCardService priorityOrderJanCardService;
-    @Autowired
-    private PriorityOrderJanAttributeMapper priorityOrderJanAttributeMapper;
     @Autowired
     private ShelfPtsDataTanamstMapper shelfPtsDataTanamstMapper;
     @Autowired
@@ -154,19 +151,19 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
 
 
-    /**
-     * 優先順位表cdに基づいて商品力点数表cdを取得する
-     *
-     * @param priorityOrderCd
-     * @return
-     */
-    @Override
-    public Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd) {
-        logger.info("根据優先順位表cdつかむ取商品力点数表cd的参数{}", priorityOrderCd);
-        Map<String, Object> productPowerCd = priorityOrderMstMapper.selectProductPowerCd(priorityOrderCd);
-        logger.info("根据優先順位表cdつかむ取商品力点数表cd的返回値{}", priorityOrderCd);
-        return ResultMaps.result(ResultEnum.SUCCESS, productPowerCd);
-    }
+    ///**
+    // * 優先順位表cdに基づいて商品力点数表cdを取得する
+    // *
+    // * @param priorityOrderCd
+    // * @return
+    // */
+    //@Override
+    //public Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd) {
+    //    logger.info("根据優先順位表cdつかむ取商品力点数表cd的参数{}", priorityOrderCd);
+    //    Map<String, Object> productPowerCd = priorityOrderMstMapper.selectProductPowerCd(priorityOrderCd);
+    //    logger.info("根据優先順位表cdつかむ取商品力点数表cd的返回値{}", priorityOrderCd);
+    //    return ResultMaps.result(ResultEnum.SUCCESS, productPowerCd);
+    //}
 
 
     /**

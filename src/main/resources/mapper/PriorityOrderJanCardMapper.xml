@@ -14,11 +14,6 @@
             and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
 
     </insert>
-    <delete id="deleteByPrimaryKey" parameterType="map">
-    delete from planocycle.priority_order_jan_card
-    where company_cd = #{companyCd,jdbcType=VARCHAR}
-      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-  </delete>
     <delete id="workDelete">
         delete from planocycle.work_priority_order_cut
         where company_cd = #{companyCd,jdbcType=VARCHAR}

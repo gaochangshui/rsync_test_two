@@ -64,16 +64,16 @@ public class CommonMstServiceImpl implements CommonMstService {
     @Autowired
     private JanClassifyMapper janClassifyMapper;
 
-    @Override
-    public Map<String, Object> getAreaInfo(String companyCd) {
-        List<Areas> areasList = areasMapper.select(companyCd);
-        return ResultMaps.result(ResultEnum.SUCCESS,areasList);
-    }
-    @Override
-    public Map<String, Object> getAreaForShelfName(Integer shelfNameCd) {
-        List<Areas> areasList = areasMapper.selectForShelfName(shelfNameCd);
-        return ResultMaps.result(ResultEnum.SUCCESS,areasList);
-    }
+    //@Override
+    //public Map<String, Object> getAreaInfo(String companyCd) {
+    //    List<Areas> areasList = areasMapper.select(companyCd);
+    //    return ResultMaps.result(ResultEnum.SUCCESS,areasList);
+    //}
+    //@Override
+    //public Map<String, Object> getAreaForShelfName(Integer shelfNameCd) {
+    //    List<Areas> areasList = areasMapper.selectForShelfName(shelfNameCd);
+    //    return ResultMaps.result(ResultEnum.SUCCESS,areasList);
+    //}
 
     @Override
     public Map<String, List<PriorityOrderResultDataDto>> commSetJan(Short partitionFlag, Short partitionVal,

@@ -37,10 +37,6 @@ public interface PriorityOrderMstAttrSortService {
      * つかむ取属性1和属性2
      */
     Map<String, Object> getAttribute(PriorityOrderAttrDto priorityOrderAttrDto);
-    /**
-     * 陳列設定つかむ取属性1和属性2
-     */
-    Map<String, Object> getAttributeSort();
 
     /**
      * つかむ取属性的分クラス及商品分クラス列表
@@ -49,12 +45,6 @@ public interface PriorityOrderMstAttrSortService {
 
 
 
-
-
-    /**
-     *編集つかむ取属性1属性2組合対応的面積
-     */
-    Map<String,Object> getEditAttributeArea(String companyCd);
 
     List<WorkPriorityOrderRestrictSet> setRestrict(List<PriorityOrderAttrVO> dataList, List<ShelfPtsDataTanamst> ptsDataTanamstList, List<ShelfPtsDataTanaCount> tanaCountList, Short attr1, Short attr2, String companyCd, String authorCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
