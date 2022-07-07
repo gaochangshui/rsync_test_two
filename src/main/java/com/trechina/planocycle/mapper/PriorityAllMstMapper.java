@@ -116,4 +116,16 @@ public interface PriorityAllMstMapper {
 
     //チェック名
     Integer selectPriorityAllName(@Param("priorityAllName")String priorityAllName,@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+
+    int deleteFinalTableRestrictResult(String companyCd, Integer priorityAllCd, String authorCd);
+
+    int deleteFinalTableRestrictRelation(String companyCd, Integer priorityAllCd, String authorCd);
+
+    int deleteFinalTableRestrictResultData(String companyCd, Integer priorityAllCd, String authorCd);
+
+    void setFinalTableRestrictResult(String companyCd, Integer priorityAllCd, String authorCd);
+
+    void setFinalTableRestrictRelation(String companyCd, Integer priorityAllCd, String authorCd);
+
+    void setFinalTableRestrictResultData(String companyCd, Integer priorityAllCd, String authorCd);
 }

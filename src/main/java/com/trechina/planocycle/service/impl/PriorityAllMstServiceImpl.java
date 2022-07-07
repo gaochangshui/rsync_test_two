@@ -468,25 +468,31 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
                 priorityAllMstMapper.deleteFinalTableMst(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.deleteFinalTableShelfs(companyCd,priorityAllCd,aud);
-                priorityAllMstMapper.deleteFinalTableRestrict(companyCd,priorityAllCd,aud);
-                priorityAllMstMapper.deleteFinalTableResult(companyCd,priorityAllCd,aud);
+//                priorityAllMstMapper.deleteFinalTableRestrict(companyCd,priorityAllCd,aud);
+//                priorityAllMstMapper.deleteFinalTableResult(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.deleteFinalTablePtsTai(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.deleteFinalTablePtsTana(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.deleteFinalTablePtsJans(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.deleteFinalTablePtsData(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.deleteFinalTablePtsRelation(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.deleteFinalTablePtsVersion(companyCd,priorityAllCd,aud);
+                priorityAllMstMapper.deleteFinalTableRestrictResult(companyCd,priorityAllCd,aud);
+                priorityAllMstMapper.deleteFinalTableRestrictRelation(companyCd,priorityAllCd,aud);
+//                priorityAllMstMapper.deleteFinalTableRestrictResultData(companyCd,priorityAllCd,aud);
 
                 priorityAllMstMapper.setFinalTableMst(companyCd,priorityAllCd,aud,priorityAllName);
                 priorityAllMstMapper.setFinalTableShelfs(companyCd,priorityAllCd,aud);
-                priorityAllMstMapper.setFinalTableRestrict(companyCd,priorityAllCd,aud);
-                priorityAllMstMapper.setFinalTableRelation(companyCd,priorityAllCd,aud);
-                priorityAllMstMapper.setFinalTableResult(companyCd,priorityAllCd,aud);
+//                priorityAllMstMapper.setFinalTableRestrict(companyCd,priorityAllCd,aud);
+//                priorityAllMstMapper.setFinalTableRelation(companyCd,priorityAllCd,aud);
+//                priorityAllMstMapper.setFinalTableResult(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.setFinalTablePtsTai(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.setFinalTablePtsTana(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.setFinalTablePtsJans(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.setFinalTablePtsData(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.setFinalTablePtsVersion(companyCd,priorityAllCd,aud);
+                priorityAllMstMapper.setFinalTableRestrictResult(companyCd,priorityAllCd,aud);
+                priorityAllMstMapper.setFinalTableRestrictRelation(companyCd,priorityAllCd,aud);
+                priorityAllMstMapper.setFinalTableRestrictResultData(companyCd,priorityAllCd,aud);
                 return ResultMaps.result(ResultEnum.SUCCESS,priorityAllCd);
 
             }else {
@@ -497,14 +503,17 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 logger.info("全pattern表自動取号:{}",p.getId());
                 priorityAllMstMapper.setNewFinalTableMst(companyCd,p.getId(),aud,priorityAllName);
                 priorityAllMstMapper.setNewFinalTableShelfs(companyCd,p.getId(),aud);
-                priorityAllMstMapper.setNewFinalTableRestrict(companyCd,p.getId(),aud);
-                priorityAllMstMapper.setNewFinalTableRelation(companyCd,p.getId(),aud);
-                priorityAllMstMapper.setNewFinalTableResult(companyCd,p.getId(),aud);
+//                priorityAllMstMapper.setNewFinalTableRestrict(companyCd,p.getId(),aud);
+//                priorityAllMstMapper.setNewFinalTableRelation(companyCd,p.getId(),aud);
+//                priorityAllMstMapper.setNewFinalTableResult(companyCd,p.getId(),aud);
                 priorityAllMstMapper.setNewFinalTablePtsTai(companyCd,p.getId(),aud);
                 priorityAllMstMapper.setNewFinalTablePtsTana(companyCd,p.getId(),aud);
                 priorityAllMstMapper.setNewFinalTablePtsJans(companyCd,p.getId(),aud);
                 priorityAllMstMapper.setNewFinalTablePtsData(companyCd,p.getId(),aud);
                 priorityAllMstMapper.setNewFinalTablePtsVersion(companyCd,p.getId(),aud);
+                priorityAllMstMapper.setFinalTableRestrictResult(companyCd,p.getId(),aud);
+                priorityAllMstMapper.setFinalTableRestrictRelation(companyCd,p.getId(),aud);
+                priorityAllMstMapper.setFinalTableRestrictResultData(companyCd,p.getId(),aud);
 
                 priorityAllMstMapper.delWKTablePtsTai(companyCd, priorityAllCd, aud);
                 priorityAllMstMapper.delWKTablePtsTana(companyCd, priorityAllCd, aud);
