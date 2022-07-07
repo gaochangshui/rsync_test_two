@@ -15,7 +15,7 @@
         where priority_all_cd = #{priorityAllCd}
         and company_cd = #{companyCd,jdbcType=VARCHAR}
         and author_cd = #{authorCd,jdbcType=VARCHAR}
-        and shelf_patten_cd=#{patternCd}
+        and shelf_pattern_cd=#{patternCd}
     </delete>
     <select id="getResultJans" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
         select restrict_cd restrictCd,tai_cd taiCd,tana_cd tanaCd,tana_type tanaType,sku_rank skuRank,COALESCE(jan.irisu, jan2.irisu) irisu,data.jan_cd janCd,
