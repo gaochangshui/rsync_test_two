@@ -43,7 +43,7 @@
     </delete>
     <delete id="deleteBasicPatternResult">
         delete from  planocycle.work_all_pattern_restrict_result
-        where  priority_all_cd = #{priorityAllCd} and author_cd = #{authorCd}
+        where  priority_all_cd = #{priorityAllCd} and author_cd = #{authorCd} and shelf_pattern_cd = #{patternCd}
     </delete>
     <select id="selectByPriorityAllCd" resultType="map">
         select tai_cd "taiCd",tana_cd "tanaCd",tana_position "tanaPosition",restrict_cd "restrictCd",area "area"

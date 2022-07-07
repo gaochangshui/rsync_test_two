@@ -1,13 +1,13 @@
 package com.trechina.planocycle.service.impl;
 
 import com.google.common.base.Joiner;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.*;
+import com.trechina.planocycle.entity.dto.FaceNumDataDto;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityAllRestrictDto;
+import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
-import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -158,7 +157,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             // 全パターンのRelationList
             List<WorkPriorityAllRestrictRelation> allRelationsList;
 
-            workPriorityAllResultDataMapper.deleteWKTableResultData(companyCd, priorityAllCd, authorCd);
+
 
             try {
                 basicPatternCd = priorityAllMstMapper.getPatternCdBYPriorityCd(companyCd, priorityOrderCd);
@@ -258,22 +257,22 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     //
                     //workPriorityAllResultDataMapper.updateFace(resultDatas);
 
-                    /**
-                     * 商品を置く
-                     */
-                    Map<String, Object> setJanResultMap = this.allPatternCommSetJan(pattern.getShelfPatternCd(),
-                            companyCd, priorityOrderCd, priorityAllCd, authorCd, minFaceNum);
-
-                    if (setJanResultMap!=null && MapUtils.getInteger(setJanResultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
-                        vehicleNumCache.put("setJanHeightError"+uuid,setJanResultMap.get("data"));
-                    }else{
-                        //ptsを一時テーブルに保存
-                        Object tmpData = MapUtils.getObject(setJanResultMap, "data");
-                        List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
-                        }.getType());
-                        priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData);
-                        vehicleNumCache.put(uuid,1);
-                    }
+                    ///**
+                    // * 商品を置く
+                    // */
+                    //Map<String, Object> setJanResultMap = this.allPatternCommSetJan(pattern.getShelfPatternCd(),
+                    //        companyCd, priorityOrderCd, priorityAllCd, authorCd, minFaceNum);
+                    //
+                    //if (setJanResultMap!=null && MapUtils.getInteger(setJanResultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
+                    //    vehicleNumCache.put("setJanHeightError"+uuid,setJanResultMap.get("data"));
+                    //}else{
+                    //    //ptsを一時テーブルに保存
+                    //    Object tmpData = MapUtils.getObject(setJanResultMap, "data");
+                    //    List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
+                    //    }.getType());
+                    //    priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData);
+                    //    vehicleNumCache.put(uuid,1);
+                    //}
 
 
                 }
@@ -504,7 +503,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     private int makeWKRestrictList(PriorityAllPatternListVO pattern
             , Integer priorityAllCd
             , String companyCd, String  authorCd,Integer priorityOrderCd) {
-        workPriorityAllRestrictMapper.deleteBasicPatternResult(companyCd,priorityAllCd,authorCd);
+        workPriorityAllRestrictMapper.deleteBasicPatternResult(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
         // 全パターンRelationテーブル更新
         return workPriorityAllRestrictMapper.setBasicPatternResult(companyCd, priorityOrderCd
                 , pattern.getShelfPatternCd(),priorityAllCd,authorCd);
@@ -522,7 +521,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     private int makeWKRelationList(PriorityAllPatternListVO pattern
             , Integer priorityAllCd
             , String companyCd, String  authorCd,Integer priorityOrderCd){
-        workPriorityAllRestrictRelationMapper.deleteBasicPatternRelation(companyCd,priorityAllCd,authorCd);
+        workPriorityAllRestrictRelationMapper.deleteBasicPatternRelation(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
         return workPriorityAllRestrictRelationMapper.setBasicPatternRelation(companyCd, priorityOrderCd
                 , pattern.getShelfPatternCd(),priorityAllCd,authorCd);
 
@@ -531,7 +530,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     private int makeWKResultDataList(PriorityAllPatternListVO pattern, Integer priorityAllCd, String companyCd, String authorCd, Integer priorityOrderCd) {
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(pattern.getShelfPatternCd());
         List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd, ptsCd,authorCd);
-        workPriorityAllResultDataMapper.deleteWKTableResultData(companyCd,priorityAllCd,authorCd);
+        workPriorityAllResultDataMapper.deleteWKTableResultData(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
         return  workPriorityAllResultDataMapper.insertWKTableResultData(companyCd, priorityAllCd, authorCd,pattern.getShelfPatternCd(),ptsGroup);
 
 

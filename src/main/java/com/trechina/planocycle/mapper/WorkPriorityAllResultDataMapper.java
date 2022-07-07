@@ -16,7 +16,7 @@ public interface WorkPriorityAllResultDataMapper {
                                 @Param("authorCd") String authorCd, @Param("patternCd") Integer patternCd,@Param("janList")List<Map<String,Object>> janList);
 
     int deleteWKTableResultData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd,
-                                @Param("authorCd") String authorCd);
+                                @Param("authorCd") String authorCd,@Param("patternCd") Integer patternCd);
 
     List<PriorityOrderResultDataDto> getResultJans(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd,
                                                  @Param("authorCd") String authorCd, @Param("patternCd") Integer patternCd,  @Param("priorityOrderCd")Integer priorityOrderCd);

@@ -31,6 +31,7 @@
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
           and author_cd = #{authorCd,jdbcType=VARCHAR}
+          and shelf_pattern_cd=#{patternCd}
     </delete>
     <select id="selectByAuthorCd" resultType="com.trechina.planocycle.entity.dto.WorkPriorityAllRestrictRelationDto">
         select tai_cd,tana_cd,tana_type,restrict_cd from planocycle.work_priority_all_restrict_relation
@@ -53,7 +54,7 @@
                        ) ptsmst
                        on ptsmst.tai_cd = relation.tai_cd
                            and ptsmst.tana_cd = relation.tana_cd
-        where priority_order_cd = #{priorityOrderCd} 
+        where priority_order_cd = #{priorityOrderCd}
     </insert>
     <select id="selectRelation" resultType="map">
         select

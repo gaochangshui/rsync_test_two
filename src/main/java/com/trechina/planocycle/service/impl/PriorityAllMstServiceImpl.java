@@ -291,7 +291,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             // 全パターンのRelationList
             List<WorkPriorityAllRestrictRelation> allRelationsList;
 
-        workPriorityAllResultDataMapper.deleteWKTableResultData(companyCd, priorityAllCd, authorCd);
+
 
         try {
             basicPatternCd = priorityAllMstMapper.getPatternCdBYPriorityCd(companyCd, priorityOrderCd);
@@ -424,7 +424,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     private int makeWKResultDataList(PriorityAllPatternListVO pattern, Integer priorityAllCd, String companyCd, String authorCd, Integer priorityOrderCd) {
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(pattern.getShelfPatternCd());
         List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd, ptsCd,authorCd);
-        workPriorityAllResultDataMapper.deleteWKTableResultData(companyCd,priorityAllCd,authorCd);
+        workPriorityAllResultDataMapper.deleteWKTableResultData(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
         return  workPriorityAllResultDataMapper.insertWKTableResultData(companyCd, priorityAllCd, authorCd,pattern.getShelfPatternCd(),ptsGroup);
 
 
@@ -585,7 +585,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     private int makeWKRestrictList(PriorityAllPatternListVO pattern
             , Integer priorityAllCd
             , String companyCd, String  authorCd,Integer priorityOrderCd) {
-        workPriorityAllRestrictMapper.deleteBasicPatternResult(companyCd,priorityAllCd,authorCd);
+        workPriorityAllRestrictMapper.deleteBasicPatternResult(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
         // 全パターンRelationテーブル更新
         return workPriorityAllRestrictMapper.setBasicPatternResult(companyCd, priorityOrderCd
                 , pattern.getShelfPatternCd(),priorityAllCd,authorCd);
@@ -603,7 +603,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     private int makeWKRelationList(PriorityAllPatternListVO pattern
             , Integer priorityAllCd
             , String companyCd, String  authorCd,Integer priorityOrderCd){
-        workPriorityAllRestrictRelationMapper.deleteBasicPatternRelation(companyCd,priorityAllCd,authorCd);
+        workPriorityAllRestrictRelationMapper.deleteBasicPatternRelation(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
         return workPriorityAllRestrictRelationMapper.setBasicPatternRelation(companyCd, priorityOrderCd
                 , pattern.getShelfPatternCd(),priorityAllCd,authorCd);
 

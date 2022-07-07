@@ -22,6 +22,6 @@ public interface WorkPriorityAllRestrictRelationMapper {
 
     int setBasicPatternRelation(String companyCd, Integer priorityOrderCd, Integer shelfPatternCd,Integer priorityAllCd,String authorCd);
 
- int  deleteBasicPatternRelation(String companyCd, Integer priorityAllCd, String authorCd);
+ int  deleteBasicPatternRelation(String companyCd, Integer priorityAllCd, String authorCd,Integer patternCd);
     List<Map<String, Object>> selectRelation(Integer priorityAllCd, Integer patternCd);
 }
