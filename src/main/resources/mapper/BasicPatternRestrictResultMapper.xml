@@ -437,7 +437,7 @@
         "2" as "janName"
         from planocycle.work_priority_order_pts_data_jandata jandata
         left join planocycle.work_priority_order_jan_replace replace on replace.priority_order_cd=#{priorityOrderCd} and jan_new=jandata.jan
-        inner join ${proInfoTable} janinfo on  janinfo."1"=coalesce(jan_new, jan)
+        inner join ${proInfoTable} janinfo on  janinfo."1"=coalesce(jan_old, jan)
         where pts_cd=#{ptsCd}
     </select>
     <select id="selectAllPatternResultData" resultType="java.util.Map">
