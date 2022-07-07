@@ -10,8 +10,10 @@ import java.util.Map;
 
 public interface PriorityAllPtsService {
 
-    void saveWorkPtsData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd,
-                         List<WorkPriorityOrderResultDataDto> priorityOrderResultData);
+    void saveWorkPtsData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd);
+
+    void saveWorkPtsJanData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd,
+                            List<WorkPriorityOrderResultDataDto> priorityOrderResultData);
 
     Map<String, Object> getPtsDetailData(Integer patternCd, String companyCd, Integer priorityAllCd);
 

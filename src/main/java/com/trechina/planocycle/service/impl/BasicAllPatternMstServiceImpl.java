@@ -1,11 +1,10 @@
 package com.trechina.planocycle.service.impl;
 
 import com.google.common.base.Joiner;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.FaceNumDataDto;
-import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
-import com.trechina.planocycle.entity.dto.PriorityAllRestrictDto;
-import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -258,24 +257,24 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     //
                     //workPriorityAllResultDataMapper.updateFace(resultDatas);
 
-                    ///**
-                    // * 商品を置く
-                    // */
-                    //Map<String, Object> setJanResultMap = this.allPatternCommSetJan(pattern.getShelfPatternCd(),
-                    //        companyCd, priorityOrderCd, priorityAllCd, authorCd, minFaceNum);
-                    //
-                    //if (setJanResultMap!=null && MapUtils.getInteger(setJanResultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
-                    //    vehicleNumCache.put("setJanHeightError"+uuid,setJanResultMap.get("data"));
-                    //}else{
-                    //    //ptsを一時テーブルに保存
-                    //    Object tmpData = MapUtils.getObject(setJanResultMap, "data");
-                    //    List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
-                    //    }.getType());
-                    //    priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData);
-                    //    vehicleNumCache.put(uuid,1);
-                    //}
+                    priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
 
+                    /**
+                     * 商品を置く
+                     */
+                    Map<String, Object> setJanResultMap = this.allPatternCommSetJan(pattern.getShelfPatternCd(),
+                            companyCd, priorityOrderCd, priorityAllCd, authorCd, minFaceNum);
 
+                    if (setJanResultMap!=null && MapUtils.getInteger(setJanResultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
+                        vehicleNumCache.put("setJanHeightError"+uuid,setJanResultMap.get("data"));
+                    }else{
+                        //ptsを一時テーブルに保存
+                        Object tmpData = MapUtils.getObject(setJanResultMap, "data");
+                        List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
+                        }.getType());
+                        priorityAllPtsService.saveWorkPtsJanData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData);
+                        vehicleNumCache.put(uuid,1);
+                    }
                 }
 
             } catch(Exception ex) {
