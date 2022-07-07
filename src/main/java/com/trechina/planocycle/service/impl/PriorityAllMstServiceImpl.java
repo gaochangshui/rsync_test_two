@@ -404,7 +404,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 }
 
                 //ptsを一時テーブルに保存
-                priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
+                priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), null);
 
 
             }
