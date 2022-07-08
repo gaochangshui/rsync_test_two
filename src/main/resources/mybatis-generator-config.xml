@@ -10,22 +10,22 @@
             <property name="suppressAllComments" value="true"/>
         </commentGenerator>
         <!--databaseチェーン接地址アカウントパスワード-->
-        <jdbcConnection driverClass="org.postgresql.Driver" connectionURL="jdbc:postgresql://10.100.1.161:54332/PLANOCYCLE?characterEncoding=UTF-8&amp;useSSL=false" userId="admin" password="admin1234">
+        <jdbcConnection driverClass="org.postgresql.Driver" connectionURL="jdbc:postgresql://10.100.1.161:54333/PLANOCYCLE?characterEncoding=UTF-8&amp;useSSL=false" userId="admin" password="admin1234">
         </jdbcConnection>
         <javaTypeResolver>
             <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
         <!--生成Modelクラス存放位置--><!--targetProject 填入プロジェクト存在計算机的位置 -->
-        <javaModelGenerator targetPackage="com.trechina.planocycle.entity.po" targetProject="plano-cycle-api/src/main/java">
+        <javaModelGenerator targetPackage="com.trechina.planocycle.entity.po" targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
         <!--生成映射文件存放位置-->
-        <sqlMapGenerator targetPackage="mapper" targetProject="plano-cycle-api/src/main/resources">
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
         <!--生成Daoクラス存放位置-->
-        <javaClientGenerator type="XMLMAPPER" targetPackage="com.trechina.planocycle.mapper" targetProject="plano-cycle-api/src/main/java">
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.trechina.planocycle.mapper" targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
         <!--生成対応表及クラス名-->
@@ -37,14 +37,21 @@
 <!--               enableSelectByExample="false"-->
 <!--               selectByExampleQueryId="false">-->
 <!--        </table>-->
-        <table tableName="work_priority_order_space" domainObjectName="WorkPriorityOrderSpace"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false">
-        </table>
-        <table tableName="work_priority_order_mst" domainObjectName="WorkPriorityOrderMst"
+<!--        <table tableName="work_priority_order_space" domainObjectName="WorkPriorityOrderSpace"-->
+<!--               enableCountByExample="false"-->
+<!--               enableUpdateByExample="false"-->
+<!--               enableDeleteByExample="false"-->
+<!--               enableSelectByExample="false"-->
+<!--               selectByExampleQueryId="false">-->
+<!--        </table>-->
+<!--        <table tableName="work_priority_order_mst" domainObjectName="WorkPriorityOrderMst"-->
+<!--               enableCountByExample="false"-->
+<!--               enableUpdateByExample="false"-->
+<!--               enableDeleteByExample="false"-->
+<!--               enableSelectByExample="false"-->
+<!--               selectByExampleQueryId="false">-->
+<!--        </table>-->
+        <table schema="public" tableName="wk_prod_0000_jan_info" domainObjectName="MasterSyohin"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
