@@ -132,6 +132,10 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                 .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanaCd")))
                 .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd")))
                 .collect(Collectors.toList());
+        int i = 1;
+        for (Map<String, Object> map : ptsGroup) {
+            map.put("rank",i++);
+        }
         return ResultMaps.result(ResultEnum.SUCCESS,ptsGroup);
     }
 

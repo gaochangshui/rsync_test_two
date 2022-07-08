@@ -550,7 +550,9 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
         List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
 
-
+        if (colNmforMst.isEmpty()){
+            return ResultMaps.result(ResultEnum.SUCCESS);
+        }
         List<WorkPriorityOrderResultData> reorder = null;
         if (colNmforMst.size() == 1) {
             reorder = workPriorityAllResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityAllCd,commonTableName, colNmforMst.get(0), patternCd,null);

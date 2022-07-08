@@ -42,29 +42,6 @@ public class PriorityOrderMstController {
 
 
 
-    ///**
-    // * 優先順位表cdに基づいて商品力点数表cdを取得する
-    // * @param priorityOrderCd
-    // * @return
-    // */
-    //@GetMapping("/getProductPowerCdForPriority")
-    //public Map<String,Object> getProductPowerCdForPriority(Integer priorityOrderCd){
-    //    return priorityOrderMstService.getProductPowerCdForPriority(priorityOrderCd);
-    //}
-
-
-    /**
-     * S自動計算-STEP 1
-     * @param companyCd
-     * @param patternCd
-     * @param priorityOrderCd
-     * @return
-     */
-    @GetMapping("/preCalculation")
-    public Map<String, Object> preCalculation(String companyCd, Long patternCd,Integer priorityOrderCd ) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        return priorityOrderMstService.preCalculation(companyCd, patternCd,priorityOrderCd);
-    }
-
     /**
      * 表示自動計算実行ステータス
      * @param taskId

@@ -24,13 +24,6 @@ public interface PriorityOrderMstService {
 
 
 
-    ///**
-    // * 優先順位表cdに基づいて商品力点数表cdを取得する
-    // * @param priorityOrderCd
-    // * @return
-    // */
-    //Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd);
-
 
     /**
      * 根据productpowercd検索関連付け的優先順位表cd
@@ -40,14 +33,6 @@ public interface PriorityOrderMstService {
      */
     String selPriorityOrderCdForProdCd(String companyCd,Integer productPowerCd);
 
-    /**
-     * S自動計算-STEP 1
-     * @param companyCd
-     * @param patternCd
-     * @param priorityOrderCd
-     * @return
-     */
-    Map<String, Object> preCalculation(String companyCd, Long patternCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
 
     /**

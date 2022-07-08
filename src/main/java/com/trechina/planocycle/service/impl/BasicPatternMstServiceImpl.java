@@ -138,6 +138,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
         Map<String, BasicPatternRestrictResult> classify = getJanInfoClassify(classifyList, companyCd,
                 zokuseiIds, aud, (long) autoDetectVO.getPriorityOrderCd());
+
         restrictResultMapper.deleteByPriorityCd(autoDetectVO.getPriorityOrderCd(), companyCd);
         long restrictCd = 1;
         for (Map.Entry<String, BasicPatternRestrictResult> entry : classify.entrySet()) {
