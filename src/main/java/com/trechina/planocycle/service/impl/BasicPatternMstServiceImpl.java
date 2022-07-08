@@ -153,8 +153,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         result.setCompanyCd(companyCd);
         result.setPriorityOrderCd((long)priorityOrderCd);
         basicPatternRestrictResults.add(result);
-        restrictResultMapper.insertBatch(basicPatternRestrictResults);
-        basicMapperMapper.insertBatch(basicPatternRestrictResults);
+        if(!basicPatternRestrictResults.isEmpty()){
+            restrictResultMapper.insertBatch(basicPatternRestrictResults);
+            basicMapperMapper.insertBatch(basicPatternRestrictResults);
+        }
 
         ArrayList<String> zokuseiList = Lists.newArrayList(zokuseiIds.split(","));
 
@@ -226,7 +228,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 map.put("tanaPosition", index[0]);
                 index[0]++;
             });
-            restrictRelationMapper.insertBatch(newJans);
+            if(newJans.isEmpty()){
+                restrictRelationMapper.insertBatch(newJans);
+            }
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS);
