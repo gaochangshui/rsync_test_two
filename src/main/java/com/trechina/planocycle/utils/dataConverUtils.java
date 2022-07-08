@@ -1,8 +1,12 @@
 package com.trechina.planocycle.utils;
 
+import org.springframework.util.StringUtils;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class dataConverUtils {
     /**
@@ -36,4 +40,23 @@ public class dataConverUtils {
         });
         return uList;
     }
+
+    /**
+     *　スネークケース-->キャメルケースに変更
+     * @param str　スネークケースの文字
+     * @return キャメルケースの文字
+     */
+    public static String camelize(String str){
+        if(!StringUtils.hasLength(str)){
+            return str;
+        }
+        Pattern pattern = Pattern.compile("(.*)_(\\w)(.*)");
+        Matcher matcher = pattern.matcher(str);
+        if(matcher.find()){
+            return camelize(matcher.group(1) + matcher.group(2).toUpperCase() + matcher.group(3));
+        }else{
+            return str;
+        }
+    }
+
 }

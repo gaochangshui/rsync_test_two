@@ -5,7 +5,9 @@ import com.trechina.planocycle.entity.po.JanHeaderAttr;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
 import com.trechina.planocycle.mapper.MstJanMapper;
+import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.MstJanService;
+import com.trechina.planocycle.utils.dataConverUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -19,6 +21,8 @@ public class MstJanServiceImpl implements MstJanService {
 
     @Autowired
     MstJanMapper mstJanMapper;
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
 
     /**
      * janデータの取得
@@ -35,21 +39,24 @@ public class MstJanServiceImpl implements MstJanService {
     @Override
     public JanInfoVO getJanList(JanParamVO janParamVO) {
         JanInfoVO janInfoVO = new JanInfoVO();
-        String companyCd = MagicString.DEFAULT_COMPANY_CD;
+        //３類のパラメーター
         if (StringUtils.hasLength(janParamVO.getCommonPartsData().getShelfMstClass())) {
-            companyCd = janParamVO.getCommonPartsData().getShelfMstClass();
+            janParamVO.setCompanyCd(MagicString.DEFAULT_COMPANY_CD);
+            janParamVO.getCommonPartsData().setProdMstClass(janParamVO.getCommonPartsData().getShelfMstClass());
+        }else if("1".equals(janParamVO.getCommonPartsData().getProdIsCore())){
+            janParamVO.setCompanyCd(sysConfigMapper.selectSycConfig("core_company"));
         }
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd,
+        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
-        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,
+        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
         List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr);
         //SQL文の列： "\"1\" \"jan_cd\",\"2\" \"jan_name\",\"21\" \"kikaku\",\"22\" \"maker\",\"23\"
-        String column = janHeader.stream().map(map -> "COALESCE(\"" + map.getSort() + "\",'') AS \"" + map.getAttr() + "\"")
+        String column = janHeader.stream().map(map -> "COALESCE(\"" + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
                 .collect(Collectors.joining(","));
         janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
                 .collect(Collectors.joining(",")));
-        janInfoVO.setJanColumn(janHeader.stream().map(map -> String.valueOf(map.getAttr()))
+        janInfoVO.setJanColumn(janHeader.stream().map(map -> String.valueOf(dataConverUtils.camelize(map.getAttr())))
                 .collect(Collectors.joining(",")));
         janInfoVO.setTotal(mstJanMapper.getJanCount(janParamVO, janInfoTableName, "count(\"1\")"));
         Integer pageCount = (janParamVO.getPage() - 1) * janParamVO.getPageSize();
