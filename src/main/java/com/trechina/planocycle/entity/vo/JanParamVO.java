@@ -5,6 +5,7 @@ public class JanParamVO {
     private String janContain;
     private String janKato;
     private String fuzzyQuery;
+    private String companyCd;
     private Integer page;
     private Integer pageSize;
 
@@ -38,6 +39,14 @@ public class JanParamVO {
 
     public void setCommonPartsData(CommonPartsDataVO commonPartsData) {
         this.commonPartsData = commonPartsData;
+    }
+
+    public String getCompanyCd() {
+        return companyCd;
+    }
+
+    public void setCompanyCd(String companyCd) {
+        this.companyCd = companyCd;
     }
 
     public Integer getPage() {
