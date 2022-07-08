@@ -36,4 +36,9 @@ public interface MstJanMapper {
                                                    @Param("pageSize") Integer pageSize,
                                                    @Param("pageCount") Integer pageCount);
 
+    LinkedHashMap<String,Object> getJanInfoList(@Param("tableName")String janInfoTableName, @Param("jan") String jan);
+
+    List<LinkedHashMap<String,Object>> getJanAttrList(@Param("tableName")String tableNameAttr);
+
+    List<LinkedHashMap<String,Object>> getJanKaisouList(@Param("tableName")String tableNameAttr);
 }

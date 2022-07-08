@@ -17,6 +17,15 @@
         order by "1"
         limit #{pageSize} offset #{pageCount}
     </select>
+    <select id="getJanInfoList" resultType="java.util.LinkedHashMap">
+        select * from ${tableName} where "1" = #{jan}
+    </select>
+    <select id="getJanAttrList" resultType="java.util.LinkedHashMap">
+    select "1","2","3","4" from ${tableName} where "4" is not null
+    </select>
+    <select id="getJanKaisouList" resultType="java.util.LinkedHashMap">
+        select "1","2","3","4" from ${tableName} where "4" is not null
+    </select>
 
     <!--"{0}".prod_{1}_jan_info  -->
     <sql id="Base_Jan_List">

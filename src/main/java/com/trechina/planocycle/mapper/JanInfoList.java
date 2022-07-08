@@ -1,10 +1,12 @@
 package com.trechina.planocycle.mapper;
 
 
+import com.trechina.planocycle.entity.vo.CommonPartsDataVO;
+
 public class JanInfoList {
     private String jan;
     private String companyCd;
-    private String commonPartsData;
+    private CommonPartsDataVO commonPartsData;
 
     public String getJan() {
         return jan;
@@ -22,11 +24,11 @@ public class JanInfoList {
         this.companyCd = companyCd;
     }
 
-    public String getCommonPartsData() {
+    public CommonPartsDataVO getCommonPartsData() {
         return commonPartsData;
     }
 
-    public void setCommonPartsData(String commonPartsData) {
+    public void setCommonPartsData(CommonPartsDataVO commonPartsData) {
         this.commonPartsData = commonPartsData;
     }
 

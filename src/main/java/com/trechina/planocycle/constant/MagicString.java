@@ -64,4 +64,14 @@ public class MagicString {
      */
     public static final String DEFAULT_COMPANY_CD = "9999";
 
+    /**
+     * 棚割専用
+     */
+    public static final String JAN = "jan";
+    public static final String JAN_NAME = "JanName";
+    public static final String NAME = "name";
+    public static final String VALUE = "value";
+    public static final String INPUT_SHOW = "inputShow";
+    public static final String TITLE = "title";
+
 }
