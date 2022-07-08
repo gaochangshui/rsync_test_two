@@ -4,6 +4,7 @@ import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
+import com.trechina.planocycle.mapper.JanInfoList;
 import com.trechina.planocycle.mapper.MstJanMapper;
 import com.trechina.planocycle.service.MstJanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,5 +58,10 @@ public class MstJanServiceImpl implements MstJanService {
         janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTableName,
                 column, janParamVO.getPageSize(),pageCount));
         return janInfoVO;
+    }
+
+    @Override
+    public Map<String, Object> getJanListInfo(JanInfoList janInfoList) {
+        return null;
     }
 }

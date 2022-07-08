@@ -39,7 +39,7 @@
   </update>
   <update id="delShelfPtsInfo">
     update  planocycle.shelf_pts_data
-    set deleteflg=1 , edit_time=now(),editer_cd=#{authorCd}
+    set deleteflg=1 ,shelf_pattern_cd = null, edit_time=now(),editer_cd=#{authorCd}
     where id = #{id}
   </update>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPtsData">
