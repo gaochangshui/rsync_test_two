@@ -94,7 +94,7 @@ public class MstJanServiceImpl implements MstJanService {
         LinkedHashMap<String, Object> janInfoList1 = mstJanMapper.getJanInfoList(janInfoTableName, janInfoList.getJan());
         List<LinkedHashMap<String,Object>> janAttrList = mstJanMapper.getJanAttrList(tableNameAttr);
         List<LinkedHashMap<String,Object>> janKaisouList = mstJanMapper.getJanKaisouList(tableNameKaisou);
-
+        List list = new ArrayList();
         List janInfo = new ArrayList();
         Map<String,Object> janInfoMap = new HashMap<>();
 
@@ -140,7 +140,7 @@ public class MstJanServiceImpl implements MstJanService {
         }
         janKaisouMap.put("data",janAttrData);
         janInfo.add(janKaisouMap);
-
-        return ResultMaps.result(ResultEnum.SUCCESS,janInfo);
+        list.add(janInfo);
+        return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 }
