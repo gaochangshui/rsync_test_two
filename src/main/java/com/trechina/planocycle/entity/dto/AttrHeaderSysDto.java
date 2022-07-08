@@ -1,6 +1,5 @@
 package com.trechina.planocycle.entity.dto;
 
-import java.util.List;
 import java.util.Map;
 
 public class AttrHeaderSysDto {

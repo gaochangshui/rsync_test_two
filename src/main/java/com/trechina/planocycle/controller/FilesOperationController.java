@@ -56,16 +56,5 @@ public class FilesOperationController {
         return filesOperationService.csvUploadMulti(multipartFileList,path,companyCd,projectIds,bucketNames);
     }
 
-    ///**
-    // *
-    // * @param multipartFile
-    // * @param response
-    // * @return
-    // */
-    //@PostMapping("/csvConvertExcelDowlLoad")
-    //public Map<String,Object> csvConvertExcelDowlLoad(@RequestParam("file")MultipartFile multipartFile, HttpServletResponse response){
-    //    return filesOperationService.csvConvertExcelDowlLoad(multipartFile,productDownPath+session
-    //            .getAttribute("aud").toString()+ File.separator,response);
-    //}
 
 }

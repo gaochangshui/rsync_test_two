@@ -227,7 +227,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 map.put("tanaPosition", index[0]);
                 index[0]++;
             });
-            restrictRelationMapper.insertBatch(newJans);
+            if(!newJans.isEmpty()){
+                restrictRelationMapper.insertBatch(newJans);
+            }
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS);

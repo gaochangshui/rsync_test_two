@@ -4,7 +4,7 @@ public class Areas {
     private Integer areacd;
 
     private String areaname;
-    private String companyCd;
+
 
     public Integer getAreacd() {
         return areacd;
