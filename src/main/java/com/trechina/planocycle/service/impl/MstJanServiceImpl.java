@@ -49,6 +49,8 @@ public class MstJanServiceImpl implements MstJanService {
                 .collect(Collectors.joining(","));
         janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
                 .collect(Collectors.joining(",")));
+        janInfoVO.setJanColumn(janHeader.stream().map(map -> String.valueOf(map.getAttr()))
+                .collect(Collectors.joining(",")));
         janInfoVO.setTotal(mstJanMapper.getJanCount(janParamVO, janInfoTableName, "count(\"1\")"));
         Integer pageCount = (janParamVO.getPage() - 1) * janParamVO.getPageSize();
         janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTableName,
