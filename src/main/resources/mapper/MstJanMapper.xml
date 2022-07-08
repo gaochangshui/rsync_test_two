@@ -4,6 +4,7 @@
     <!--"{0}".prod_{1}_jan_attr_header_sys  -->
     <select id="getJanHeader" resultType="com.trechina.planocycle.entity.po.JanHeaderAttr">
         select "1" "attr","2" "attrVal","3" "sort", "4" "colSort" from ${tableName}
+        where "7" = '1'
         order by "4" nulls first,"3"
     </select>
 
@@ -13,6 +14,7 @@
 
     <select id="getJanList" resultType="java.util.LinkedHashMap">
         <include refid="Base_Jan_List" />
+        order by "1"
         limit #{pageSize} offset #{pageCount}
     </select>
 
@@ -33,7 +35,6 @@
                 #{items}
             </foreach>)
         </if>
-        -- "9999".prod_0000_jan_info
     </sql>
 
 </mapper>
