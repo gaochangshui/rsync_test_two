@@ -58,4 +58,10 @@ public class MagicString {
      * 商品変更：フェース変更
      */
     public static final String MSG_FACE_CHANGE = "フェース変更 元：";
+
+    /**
+     * 棚割専用cd
+     */
+    public static final String DEFAULT_COMPANY_CD = "9999";
+
 }
