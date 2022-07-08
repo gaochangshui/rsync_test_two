@@ -33,7 +33,6 @@ public interface FilesOperationService {
      * @param multipartFile
      * @return
      */
-    //Map<String, Object> csvConvertExcelDowlLoad(MultipartFile multipartFile, String productDownPath, HttpServletResponse response);
 
     List<String[]> uploadCsvToList(MultipartFile multipartFile);
 }

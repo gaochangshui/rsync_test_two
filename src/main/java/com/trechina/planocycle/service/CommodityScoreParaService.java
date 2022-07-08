@@ -8,13 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface CommodityScoreParaService {
-    ///**
-    // * 表示項目パラメータの取得
-    // * @param conpanyCd
-    // * @param productPowerCd
-    // * @return
-    // */
-    //Map<String,Object> getCommodityScorePara(String conpanyCd, Integer productPowerCd );
 
     /**
      * 表示項目パラメータの保存,Weightパラメータ，Step 1期間パラメータ
@@ -33,12 +26,6 @@ public interface CommodityScoreParaService {
      */
     Map<String, Object> delCommodityScoreAllInfo(ProductPowerPrimaryKeyVO primaryKeyVO);
 
-    ///**
-    // *
-    // * @param productPowerReserveMst
-    // * @return
-    // */
-    ////Map<String, Object> delYoBi(ProductPowerReserveMst productPowerReserveMst);
 
     /**
      * プロジェクトのアップロードをデータベースに保存する

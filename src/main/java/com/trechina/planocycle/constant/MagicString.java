@@ -64,6 +64,10 @@ public class MagicString {
      */
     public static final String DEFAULT_COMPANY_CD = "9999";
 
+    public static final String ATTR_SMALL = "attrSmall";
+
+    public static final String ATTR_BIG = "attrBig";
+
     /**
      * 棚割専用
      */

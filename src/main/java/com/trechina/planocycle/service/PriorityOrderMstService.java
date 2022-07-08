@@ -25,6 +25,7 @@ public interface PriorityOrderMstService {
 
 
 
+
     /**
      * 根据productpowercd検索関連付け的優先順位表cd
      * @param companyCd

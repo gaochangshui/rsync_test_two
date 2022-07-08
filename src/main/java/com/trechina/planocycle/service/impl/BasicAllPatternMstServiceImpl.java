@@ -143,7 +143,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
         executor.execute(()->{
             Integer basicPatternCd;
-            BigDecimal basicTannaNum;
 
             String companyCd = priorityAllSaveDto.getCompanyCd();
             Integer priorityAllCd = priorityAllSaveDto.getPriorityAllCd();
@@ -151,25 +150,18 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             // 同一棚名称の棚パータンListを取得
             List<PriorityAllPatternListVO> info;
             // 基本パターンの制約List
-            List<WorkPriorityAllRestrictResult> basicRestrictList;
             // 全パターンの制約List
-            List<PriorityAllRestrictDto> allRestrictDtoList;
-            // 全パターンのRelationList
-            List<WorkPriorityAllRestrictRelation> allRelationsList;
 
+            // 全パターンのRelationList
 
 
             try {
                 basicPatternCd = priorityAllMstMapper.getPatternCdBYPriorityCd(companyCd, priorityOrderCd);
-                basicTannaNum = new BigDecimal(shelfPtsDataMapper.getTanaNum(basicPatternCd));
                 info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, basicPatternCd,authorCd);
-                basicRestrictList = priorityOrderRestrictResultMapper.getPriorityOrderRestrictAll(companyCd, priorityOrderCd);
                 // 全パターンのList
                 List<PriorityAllPatternListVO> checkedInfo = info.stream().filter(vo->vo.getCheckFlag()==1).collect(Collectors.toList());
                 for(PriorityAllPatternListVO pattern : checkedInfo) {
 
-                    // パターンのPTS台/棚List
-                    List<ShelfPtsDataTanamst> tanaList = shelfPtsDataTanamstMapper.selectByPatternCd(pattern.getShelfPatternCd().longValue());
 
                     // 全パターン制約一覧作成 workPriorityAllRestrict
                     makeWKRestrictList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
@@ -179,83 +171,9 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     makeWKResultDataList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
 
                     this.getNewReorder(companyCd,priorityOrderCd,authorCd,priorityAllCd,pattern.getShelfPatternCd());
-                    //// 全パターンRelationテーブル更新
-                    //workPriorityAllRestrictRelationMapper.insertWKTableRelation(allRelationsList);
-                    //// 全パターン制約テーブルに保存
-                    //workPriorityAllRestrictMapper.insertWKTableRestrict(allRestrictDtoList);
-                    //
-                    //
-                    ////从基本パターンresult_data中ワークに保存するクエリーall_priority_result_data中（face、架台放置データ不保存）
-                    //workPriorityAllResultDataMapper.insertWKTableResultData(companyCd, priorityAllCd, priorityOrderCd, authorCd, pattern.getShelfPatternCd());
-                    ////pattern対応janの取得
-                    //String resultDataList = workPriorityAllResultDataMapper.getJans(pattern.getShelfPatternCd(), companyCd, priorityAllCd,authorCd);
-                    //if (resultDataList == null) {
-                    //    vehicleNumCache.put("janIsNull"+uuid,1);
-                    //}
-                    //String[] array = resultDataList.split(",");
-                    ////smtを呼び出して推奨face数を計算する
-                    //Map<String, Object> data = priorityOrderMstService.getFaceKeisanForCgi(array, companyCd,  pattern.getShelfPatternCd(), authorCd,tokenInfo);
-                    //if (data.get("data") != null && data.get("data") != "") {
-                    //    String[] strResult = data.get("data").toString().split("@");
-                    //    String[] strSplit = null;
-                    //    List<PriorityAllResultDataDto> list = new ArrayList<>();
-                    //    PriorityAllResultDataDto orderResultData;
-                    //    for (int i = 0; i < strResult.length; i++) {
-                    //        orderResultData = new PriorityAllResultDataDto();
-                    //        strSplit = strResult[i].split(" ");
-                    //        orderResultData.setSalesCnt(Double.valueOf(strSplit[1]));
-                    //        orderResultData.setJanCd(strSplit[0]);
-                    //
-                    //
-                    //        list.add(orderResultData);
-                    //    }
-                    //    workPriorityAllResultDataMapper.update(list,companyCd,authorCd,priorityAllCd,pattern.getShelfPatternCd());
-                    //}
-                    //List<PriorityAllResultDataDto> resultDatas = workPriorityAllResultDataMapper.getResultDatas(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
                     ////古いptsの平均値、最大値最小値を取得
                     FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(pattern.getShelfPatternCd());
                     Integer minFaceNum = faceNum.getFaceMinNum();
-                    //if (data.get("data") != null && data.get("data") != "") {
-                    //
-                    //    DecimalFormat df = new DecimalFormat("#.00");
-                    //    //salescntAvgを取得し、小数点を2桁保持
-                    //    Double avgSalesCunt = workPriorityAllResultDataMapper.getAvgSalesCunt(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
-                    //    String format = df.format(avgSalesCunt);
-                    //    avgSalesCunt = Double.valueOf(format);
-                    //    Double d = null;
-                    //    for (PriorityAllResultDataDto resultData : resultDatas) {
-                    //        resultData.setPriorityAllCd(priorityAllCd);
-                    //        resultData.setAuthorCd(authorCd);
-                    //        resultData.setCompanyCd(companyCd);
-                    //        resultData.setShelfPatternCd(pattern.getShelfPatternCd());
-                    //        if (resultData.getSalesCnt() != null) {
-                    //            d = resultData.getSalesCnt() * faceNum.getFaceAvgNum() / avgSalesCunt;
-                    //
-                    //            if (d > faceNum.getFaceMaxNum()) {
-                    //                resultData.setFaceNum(faceNum.getFaceMaxNum());
-                    //            } else if (d < faceNum.getFaceMinNum()) {
-                    //                resultData.setFaceNum(faceNum.getFaceMinNum());
-                    //            } else {
-                    //                resultData.setFaceNum(d.intValue());
-                    //            }
-                    //
-                    //        } else {
-                    //            resultData.setFaceNum(faceNum.getFaceMinNum());
-                    //
-                    //        }
-                    //
-                    //    }
-                    //}else {
-                    //    for (PriorityAllResultDataDto resultData : resultDatas) {
-                    //        resultData.setPriorityAllCd(priorityAllCd);
-                    //        resultData.setCompanyCd(companyCd);
-                    //        resultData.setShelfPatternCd(pattern.getShelfPatternCd());
-                    //        resultData.setFaceNum(minFaceNum);
-                    //        resultData.setAuthorCd(authorCd);
-                    //    }
-                    //}
-                    //
-                    //workPriorityAllResultDataMapper.updateFace(resultDatas);
 
                     priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
 
@@ -576,7 +494,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
         List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
         List<Map<String, Object>> restrictResult = restrictResultMapper.selectByPrimaryKey(priorityOrderCd);
-        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
         List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectAllPatternResultData(priorityOrderCd, ptsCd, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol);
         for (int i = 0; i < zokuseiList.size(); i++) {

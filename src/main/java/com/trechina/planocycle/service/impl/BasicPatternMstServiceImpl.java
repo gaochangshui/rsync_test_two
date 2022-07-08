@@ -169,6 +169,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             List<Map<String, Object>> jans = classifyList.stream().filter(map -> MapUtils.getInteger(map, MagicString.TAI_CD).equals(taiCd) &&
                     MapUtils.getInteger(map, MagicString.TANA_CD).equals(tanaCd)).collect(Collectors.toList());
 
+            logger.info("taiCd:{},tanaCd:{}, jans:{}", taiCd, tanaCd,jans);
             double areaWidth = 0;
             String lastKey = "";
 
@@ -517,8 +518,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             int i = 1;
                 for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
                     patternRestrictRelation.setAreaPosition(i++);
-                    if (patternRestrictRelation.getRestrictCd() != 9999){
-                    }
                 }
                 if (collect.getSum() < 100L){
                     BasicPatternRestrictRelation basicPatternRestrictRelation1 = new BasicPatternRestrictRelation();

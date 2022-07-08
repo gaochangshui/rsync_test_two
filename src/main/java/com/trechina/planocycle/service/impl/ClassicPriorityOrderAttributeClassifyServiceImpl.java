@@ -53,7 +53,7 @@ public class ClassicPriorityOrderAttributeClassifyServiceImpl implements Classic
      */
     @Override
     public Map<String, Object> setClassifyList(List<PriorityOrderAttributeClassify> classifyList) {
-        String companyCd = classifyList.get(0).getCompanyCd();
+
         Integer priorityOrderCd = classifyList.get(0).getPriorityOrderCd();
         priorityOrderAttributeClassifyMapper.delete(priorityOrderCd);
         priorityOrderAttributeClassifyMapper.insert(classifyList);
