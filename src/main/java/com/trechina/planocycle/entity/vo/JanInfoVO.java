@@ -5,6 +5,7 @@ import java.util.List;
 
 public class JanInfoVO {
     private String janHeader;
+    private String janColumn;
     private List<LinkedHashMap<String, Object>> janDataList;
     private Long total;
 
@@ -14,6 +15,14 @@ public class JanInfoVO {
 
     public void setJanHeader(String janHeader) {
         this.janHeader = janHeader;
+    }
+
+    public String getJanColumn() {
+        return janColumn;
+    }
+
+    public void setJanColumn(String janColumn) {
+        this.janColumn = janColumn;
     }
 
     public List<LinkedHashMap<String, Object>> getJanDataList() {
