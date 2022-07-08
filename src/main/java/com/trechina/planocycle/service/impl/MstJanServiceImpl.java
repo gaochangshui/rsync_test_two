@@ -7,6 +7,7 @@ import com.trechina.planocycle.entity.vo.JanParamVO;
 import com.trechina.planocycle.mapper.JanInfoList;
 import com.trechina.planocycle.mapper.MstJanMapper;
 import com.trechina.planocycle.service.MstJanService;
+import com.trechina.planocycle.utils.dataConverUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -47,11 +48,11 @@ public class MstJanServiceImpl implements MstJanService {
                 janParamVO.getCommonPartsData().getProdMstClass());
         List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr);
         //SQL文の列： "\"1\" \"jan_cd\",\"2\" \"jan_name\",\"21\" \"kikaku\",\"22\" \"maker\",\"23\"
-        String column = janHeader.stream().map(map -> "COALESCE(\"" + map.getSort() + "\",'') AS \"" + map.getAttr() + "\"")
+        String column = janHeader.stream().map(map -> "COALESCE(\"" + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
                 .collect(Collectors.joining(","));
         janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
                 .collect(Collectors.joining(",")));
-        janInfoVO.setJanColumn(janHeader.stream().map(map -> String.valueOf(map.getAttr()))
+        janInfoVO.setJanColumn(janHeader.stream().map(map -> String.valueOf(dataConverUtils.camelize(map.getAttr())))
                 .collect(Collectors.joining(",")));
         janInfoVO.setTotal(mstJanMapper.getJanCount(janParamVO, janInfoTableName, "count(\"1\")"));
         Integer pageCount = (janParamVO.getPage() - 1) * janParamVO.getPageSize();
