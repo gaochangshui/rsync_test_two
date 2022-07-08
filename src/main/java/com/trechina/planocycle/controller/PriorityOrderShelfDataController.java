@@ -41,15 +41,6 @@ public class PriorityOrderShelfDataController {
 
     }
 
-    ///**
-    // * 新規では基本的なパター棚別の情報を取得
-    // * @param companyCd
-    // * @return
-    // */
-    //@GetMapping("getPlatformShedData")
-    //public Map<String,Object> getPlatformShedData(String companyCd,Integer priorityOrderCd){
-    //    return  priorityOrderShelfDataService.getPlatformShedData(companyCd,priorityOrderCd);
-    //}
     /**
      * 新規では基本的なパター棚別の情報を取得
      * @param companyCd

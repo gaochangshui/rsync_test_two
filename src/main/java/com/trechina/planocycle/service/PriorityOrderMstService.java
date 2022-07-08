@@ -15,7 +15,7 @@ public interface PriorityOrderMstService {
      */
     Map<String,Object> getPriorityOrderList(String companyCd);
 
-    Map<String,Object> getPriorityOrderListInfo(String companyCd,Integer priorityOrderCd);
+
     /**
      * 登録者がいる企業に優先順位表があるかどうかを調べる
      * @return
@@ -24,12 +24,6 @@ public interface PriorityOrderMstService {
 
 
 
-    /**
-     * 優先順位表cdに基づいて商品力点数表cdを取得する
-     * @param priorityOrderCd
-     * @return
-     */
-    Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd);
 
 
     /**
@@ -40,20 +34,6 @@ public interface PriorityOrderMstService {
      */
     String selPriorityOrderCdForProdCd(String companyCd,Integer productPowerCd);
 
-    /**
-     * S自動計算-STEP 1
-     * @param companyCd
-     * @param patternCd
-     * @param priorityOrderCd
-     * @return
-     */
-    Map<String, Object> preCalculation(String companyCd, Long patternCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
-    /**
-     * 自動計算
-     * @return
-     */
-    Map<String, Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition);
-
 
 
     /**
@@ -62,12 +42,7 @@ public interface PriorityOrderMstService {
      * @return
      */
     Map<String, Object> autoTaskId(String taskId);
-    /**
-     * 重新計算rank排序
-     * @param companyCd
-     * @return
-     */
-    Map<String, Object>getReorder(String companyCd,Integer priorityOrderCd,Integer productPowerCd,String authorCd);
+
 
     /**
      * xin重新計算rank排序

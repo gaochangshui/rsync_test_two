@@ -8,7 +8,6 @@ import com.trechina.planocycle.entity.dto.CommonPartsDto;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
-import com.trechina.planocycle.entity.po.Areas;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictRelation;
 import com.trechina.planocycle.entity.po.ZokuseiMst;
@@ -54,28 +53,24 @@ public class CommonMstServiceImpl implements CommonMstService {
     @Autowired
     private WorkPriorityOrderJanNewMapper janNewMapper;
     @Autowired
-    private PriorityOrderPtsDataMapper priorityOrderPtsDataMapper;
-    @Autowired
     private BasicPatternRestrictResultMapper basicRestrictResultMapper;
     @Autowired
     private HttpSession session;
     @Autowired
     private PriorityOrderJanNewService priorityOrderJanNewService;
     @Autowired
-    private PriorityOrderSortMapper priorityOrderSortMapper;
-    @Autowired
     private JanClassifyMapper janClassifyMapper;
 
-    @Override
-    public Map<String, Object> getAreaInfo(String companyCd) {
-        List<Areas> areasList = areasMapper.select(companyCd);
-        return ResultMaps.result(ResultEnum.SUCCESS,areasList);
-    }
-    @Override
-    public Map<String, Object> getAreaForShelfName(Integer shelfNameCd) {
-        List<Areas> areasList = areasMapper.selectForShelfName(shelfNameCd);
-        return ResultMaps.result(ResultEnum.SUCCESS,areasList);
-    }
+    //@Override
+    //public Map<String, Object> getAreaInfo(String companyCd) {
+    //    List<Areas> areasList = areasMapper.select(companyCd);
+    //    return ResultMaps.result(ResultEnum.SUCCESS,areasList);
+    //}
+    //@Override
+    //public Map<String, Object> getAreaForShelfName(Integer shelfNameCd) {
+    //    List<Areas> areasList = areasMapper.selectForShelfName(shelfNameCd);
+    //    return ResultMaps.result(ResultEnum.SUCCESS,areasList);
+    //}
 
     @Override
     public Map<String, List<PriorityOrderResultDataDto>> commSetJan(Short partitionFlag, Short partitionVal,
@@ -214,12 +209,10 @@ public class CommonMstServiceImpl implements CommonMstService {
                                                   Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
                                                   List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
                                                   GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
-                                                  Integer tanaWidthCheck) {
+                                                  Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
+                                                  int isReOrder) {
         List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu();
-        int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
         List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd, sizeAndIrisu, isReOrder);
-        List<Map<String, Object>> relationMap = restrictRelationMapper.selectByPriorityOrderCd(priorityOrderCd);
-        List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
         List<Map<String, Object>> cutList = janCutMapper.selectJanCut(priorityOrderCd);
 
         Integer currentTaiCd=1;
@@ -356,13 +349,19 @@ public class CommonMstServiceImpl implements CommonMstService {
         Long usedArea = 0L;
 
         for (PriorityOrderResultDataDto jan : jans) {
-            if(Objects.equals(jan.getAdoptFlag(), 1)){
+            if(Objects.equals(jan.getAdoptFlag(), 1) || Objects.equals(jan.getCutFlag(), 1)){
                 continue;
             }
             PriorityOrderResultDataDto newJanDto = new PriorityOrderResultDataDto();
             List<Map<String, Object>> cutJan = cutList.stream().filter(map -> MapUtils.getString(map, "jan").equals(jan.getJanCd())).collect(Collectors.toList());
+
+            Long width = jan.getWidth();
+            Long face = jan.getFace();
+            Long janWidth = width + partitionVal;
+
             if(!cutJan.isEmpty()){
-                List<Map<String, Object>> newJanList = newList.stream().filter(map -> MapUtils.getString(map, MagicString.RESTRICT_CD).equals(restrictCd)).collect(Collectors.toList());
+                List<Map<String, Object>> newJanList = newList.stream().filter(map -> MapUtils.getString(map, MagicString.RESTRICT_CD).equals(restrictCd)
+                    && !"1".equals(MapUtils.getString(map, "adoptFlag"))).collect(Collectors.toList());
                 if(newJanList.isEmpty()){
                     continue;
                 }
@@ -379,14 +378,21 @@ public class CommonMstServiceImpl implements CommonMstService {
                 newJanDto.setWidth(MapUtils.getLong(newJan, "width"));
                 newJanDto.setHeight(MapUtils.getLong(newJan, "height"));
                 newJanDto.setIrisu(MapUtils.getLong(newJan, "irisu"));
+
+                if(janWidth*face + usedArea + partitionVal <= groupArea) {
+                    //pre calculation used area
+                    jan.setCutFlag(1);
+                    newList.stream().forEach(map -> {
+                        if(MapUtils.getString(map,"jan").equals(MapUtils.getString(newJan,"jan"))
+                                && MapUtils.getString(map,MagicString.RESTRICT_CD).equals(MapUtils.getString(newJan,MagicString.RESTRICT_CD))){
+                            newJan.put("adoptFlag", "1");
+                        }
+                    });
+                }
             }else{
                 BeanUtils.copyProperties(jan, newJanDto);
                 newJanDto.setFaceFact(jan.getFace());
             }
-
-            Long width = jan.getWidth();
-            Long face = jan.getFace();
-            Long janWidth = width + partitionVal;
 
             if(topPartitionVal!=null){
                 Long janHeight = jan.getHeight() + topPartitionVal;

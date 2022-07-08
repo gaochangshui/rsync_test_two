@@ -1,7 +1,6 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.TableNameDto;
-import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -64,8 +63,6 @@ public interface PriorityAllMstMapper {
     void insertWKTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd, @Param("patterns") List<Integer> patterns);
 
 
-    List<WorkPriorityOrderResultDataDto> selectByAuthorCd(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd);
-
     void deleteFinalTableMst(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
     void deleteFinalTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
     void deleteFinalTableRestrict(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
@@ -119,4 +116,16 @@ public interface PriorityAllMstMapper {
 
     //チェック名
     Integer selectPriorityAllName(@Param("priorityAllName")String priorityAllName,@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+
+    int deleteFinalTableRestrictResult(String companyCd, Integer priorityAllCd, String authorCd);
+
+    int deleteFinalTableRestrictRelation(String companyCd, Integer priorityAllCd, String authorCd);
+
+    int deleteFinalTableRestrictResultData(String companyCd, Integer priorityAllCd, String authorCd);
+
+    void setFinalTableRestrictResult(String companyCd, Integer priorityAllCd, String authorCd);
+
+    void setFinalTableRestrictRelation(String companyCd, Integer priorityAllCd, String authorCd);
+
+    void setFinalTableRestrictResultData(String companyCd, Integer priorityAllCd, String authorCd);
 }

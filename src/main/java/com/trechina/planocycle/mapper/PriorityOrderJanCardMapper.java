@@ -10,7 +10,6 @@ import java.util.List;
 
 @Mapper
 public interface PriorityOrderJanCardMapper {
-    int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     int workDelete(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
 
@@ -24,5 +23,4 @@ public interface PriorityOrderJanCardMapper {
 
     int insertBySelect(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
 
-    List<String> getExistOtherMst(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 }

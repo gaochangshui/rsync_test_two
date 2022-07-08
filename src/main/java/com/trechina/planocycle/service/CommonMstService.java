@@ -15,19 +15,6 @@ import java.util.Map;
 public interface CommonMstService {
 
     /**
-     * Area Master情報の取得
-     * @return
-     */
-    Map<String,Object> getAreaInfo(String companyCd);
-
-    /**
-     * 棚名cdよりareaを取る
-     * @param ShelfNameCd
-     * @return
-     */
-    Map<String,Object> getAreaForShelfName(Integer ShelfNameCd);
-
-    /**
      * 商品を置く一般的なロジックは、基本的には全パタンと同じです
      * @return
      */
@@ -36,16 +23,14 @@ public interface CommonMstService {
                                                              List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations,
                                                              Integer minFace);
 
-//    Map<String, List<PriorityOrderResultDataDto>> commSetJanForShelf(Short partitionFlag, Short partitionVal,
-//                                                                     List<PtsTaiVo> taiData, List<PriorityOrderResultDataDto> workPriorityOrderResultData,
-//                                                                     List<WorkPriorityOrderRestrictRelation> workPriorityOrderRestrictRelations, Integer minFace);
 
     @Transactional(rollbackFor = Exception.class)
     Map<String, Object> commSetJanForShelf(Integer patternCd, String companyCd, Integer priorityOrderCd,
                                            Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
                                            List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
                                            GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
-                                           Integer tanaWidthCheck);
+                                           Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
+                                           int isReOrder);
 
     List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData);
 

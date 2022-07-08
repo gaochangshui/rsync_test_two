@@ -73,11 +73,4 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderNumGenerator.getId());
     }
 
-    @Override
-    public Map<String, Object> basicPatternIDGenerator() {
-        PriorityOrderNumGenerator priorityOrderNumGenerator = new PriorityOrderNumGenerator();
-        priorityOrderNumGenerator.setUsercd(session.getAttribute("aud").toString());
-        Integer id = basicPatternNumGeneratorMapper.insertBasicPattern(priorityOrderNumGenerator);
-        return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderNumGenerator.getId());
-    }
 }

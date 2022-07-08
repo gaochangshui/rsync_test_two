@@ -4,10 +4,8 @@ import com.trechina.planocycle.entity.po.BasicPatternRestrictRelation;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 @RestController
@@ -16,21 +14,44 @@ public class BasicPatternMstController {
     @Autowired
     private BasicPatternMstService basicPatternMstService;
 
+    /**
+     * じどうけんさ
+     * @param basePatternAutoDetectVO
+     * @return
+     */
     @PostMapping("/autoDetect")
     public Map<String, Object> autoDetect(@RequestBody BasicPatternAutoDetectVO basePatternAutoDetectVO){
         return basicPatternMstService.autoDetect(basePatternAutoDetectVO);
     }
 
+    /**
+     * group展示
+     * @param companyCd
+     * @param priorityOrderCd
+     * @return
+     */
     @GetMapping("/getAttrDisplay")
     public Map<String,Object> getAttrDisplay(String companyCd,Integer priorityOrderCd) {
         return basicPatternMstService.getAttrDisplay(companyCd,priorityOrderCd);
     }
 
+    /**
+     * group保存
+     * @param basicPatternRestrictRelation
+     * @return
+     */
     @PostMapping("/setAttrDisplay")
     public Map<String,Object> setAttrDisplay(@RequestBody BasicPatternRestrictRelation basicPatternRestrictRelation) {
         return basicPatternMstService.setAttrDisplay(basicPatternRestrictRelation);
     }
 
+    /**
+     * グループ化されていない端末があるかどうかを確認する
+     * @param companyCd
+     * @param patternCd
+     * @param priorityOrderCd
+     * @return
+     */
     @GetMapping("/preCalculation")
     public Map<String, Object> preCalculation(String companyCd, Long patternCd,Integer priorityOrderCd ) {
         return basicPatternMstService.preCalculation(companyCd, patternCd,priorityOrderCd);

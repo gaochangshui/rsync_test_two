@@ -1,9 +1,9 @@
 package com.trechina.planocycle.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ShelfPatternBranchDto;
 import com.trechina.planocycle.entity.dto.ShelfPatternDto;
-import com.trechina.planocycle.entity.po.ShelfPatternArea;
 import com.trechina.planocycle.entity.po.ShelfPatternBranch;
 import com.trechina.planocycle.entity.po.ShelfPatternMst;
 import com.trechina.planocycle.entity.vo.*;
@@ -23,16 +23,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.UriUtils;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -90,7 +87,6 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         if (result!=null){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
-        List<ShelfPatternArea> list = new ArrayList<>();
         ShelfPatternMst shelfPatternMst = new ShelfPatternMst();
         shelfPatternMst.setConpanyCd(shelfPatternDto.getCompanyCd());
         shelfPatternMst.setShelfNameCd(shelfPatternDto.getShelfNameCD());
@@ -119,16 +115,6 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             if(!branchList.isEmpty()){
                 shelfPatternBranchMapper.insert(branchList, authorCd);
             }
-/*            shelfPatternDto.getArea().forEach(item -> {
-                ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
-                shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());
-                shelfPatternArea.setShelfPatternCd(shelfPatternMst.getShelfPatternCd());
-
-                shelfPatternArea.setAreacd(item);
-                list.add(shelfPatternArea);
-            });
-            logger.info("pattern情報変換後のareaパラメータを保存：{}",list);
-            shelfPatternAreaService.setShelfPatternArea(list,authorCd);*/
         } catch (Exception e) {
             logger.error(e.toString());
             throw new BusinessException(e.toString());
@@ -150,9 +136,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
         //削除するコレクション
-        List<ShelfPatternArea> delList = new ArrayList<>();
+
         //追加するコレクション
-        List<ShelfPatternArea> setList = new ArrayList<>();
         ShelfPatternMst shelfPatternMst = new ShelfPatternMst();
         shelfPatternMst.setShelfPatternCd(shelfPatternDto.getShelfPatternCd());
         shelfPatternMst.setConpanyCd(shelfPatternDto.getCompanyCd());
@@ -168,8 +153,6 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             int resultInfo = shelfPatternMstMapper.update(shelfPatternMst);
             logger.info("保存棚名称信息保存后返回的信息：{}" , resultInfo);
             //つかむ取棚pattern関連的Area
-//            List<Integer> getShelfPatternArea = shelfPatternAreaService.getShelfPatternArea(shelfPatternMst.getShelfPatternCd(),shelfPatternMst.getConpanyCd());
-//            logger.info("棚pattern関連的所有Area：{}" , getShelfPatternArea);
             String[] storeCd = shelfPatternDto.getStoreCd();
             List<ShelfPatternBranch> branchList = new ArrayList<>();
             ShelfPatternBranch shelfPatternBranch = null;
@@ -185,47 +168,6 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             if(!branchList.isEmpty()){
                 shelfPatternBranchMapper.insert(branchList, authorCd);
             }
-            //database中修改重複数据
-            //shelfPatternDto.getArea().forEach(item->{
-            //    for (Integer area : getShelfPatternArea) {
-            //        if (item.equals(area)){
-            //            shelfPatternAreaService.setDelFlg(item,shelfPatternDto.getShelfPatternCd(),authorCd);
-            //        }
-            //    }
-            //});
-            //削除するareaコレクション
-         /*   List<Integer> deleteAreaList = ListDisparityUtils.getListDisparit(getShelfPatternArea, shelfPatternDto.getArea());
-            //areaの集合を追加するには
-            List<Integer> setAreaList = ListDisparityUtils.getListDisparit( shelfPatternDto.getArea(),getShelfPatternArea);
-            if (!deleteAreaList.isEmpty()){
-                deleteAreaList.forEach(item -> {
-                    ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
-                    shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());
-                    shelfPatternArea.setShelfPatternCd(shelfPatternMst.getShelfPatternCd());
-                    shelfPatternArea.setAreacd(item);
-
-                    delList.add(shelfPatternArea);
-                });
-                logger.info("削除棚pattern信息変換后的area参数：{}",delList);
-
-                // 削除棚pattern関連的area
-                logger.info("削除棚pattern信息的area参数：{}" , deleteAreaList);
-                int deleteAreaCdInfo = shelfPatternAreaService.deleteAreaCd(deleteAreaList, shelfPatternDto.getShelfPatternCd(), authorCd);
-                logger.info("削除棚名称信息保存后返回的信息：{}",deleteAreaCdInfo);
-
-            }
-            if (!setAreaList.isEmpty()) {
-                setAreaList.forEach(item -> {
-                    ShelfPatternArea shelfPatternArea = new ShelfPatternArea();
-                    shelfPatternArea.setCompanyCd(shelfPatternDto.getCompanyCd());
-                    shelfPatternArea.setShelfPatternCd(shelfPatternMst.getShelfPatternCd());
-                    shelfPatternArea.setAreacd(item);
-                    setList.add(shelfPatternArea);
-                });
-                logger.info("添加棚pattern信息変換后的area参数：{}" , setList);
-                Map<String, Object> setAreaInfo = shelfPatternAreaService.setShelfPatternArea(setList, authorCd);
-                logger.info("修改棚名称信息保存后返回的信息：{}",setAreaInfo);
-            }*/
 
         }catch (Exception e) {
             logger.error(e.toString());
@@ -410,25 +352,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         return ResultMaps.result(ResultEnum.SUCCESS,shelfPatternForArea);
     }
 
-    @Override
-    public void patternDownloadForExcel(List<ShelfPatternMst> patternDataList,String companyCd,HttpServletResponse response) {
 
-        List<ShelfPatternMst> resultInfo = shelfPatternMstMapper.selectByPrimaryKey(companyCd);
-        List<Integer> patternList = resultInfo.stream().map(ShelfPatternMst::getShelfPatternCd).collect(Collectors.toList());
-        List<ShelfPatternBranch> patternBranch = shelfPatternBranchMapper.getPatternBranch(patternList);
-        List<ShelfNameDataVO> shelfNameList = shelfNameMstMapper.selectShelfNameInfo(companyCd);
-        List<ShelfPatternBranchDto> BranchList = shelfPatternBranchMapper.getBranch(companyCd);
-        String fileName = MessageFormat.format("{0}.xlsx","棚パターン_"+System.currentTimeMillis());
-        String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
-        response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-        response.setHeader("Content-Disposition", format);
-        excelUtil(resultInfo,patternBranch,shelfNameList,BranchList,response);
-        //try {
-        //    response.getOutputStream().flush();
-        //} catch (IOException e) {
-        //    logger.error("io閉じる異常", e);
-        //}
-    }
     /**
      * 批量保存棚pattern
      * @param shelfPatternDto
@@ -472,7 +396,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         List<ShelfPatternNameVO> patternForStorel = shelfPatternMstMapper.getPatternForStorel(storeIsCore, companyCd);
         for (ShelfPatternNameVO shelfPatternNameVO : patternForStorel) {
             String prodIsCore = shelfPatternNameVO.getStoreIsCore();
-            JSONObject jsonObject = JSONObject.parseObject(prodIsCore);
+            JSONObject jsonObject = JSON.parseObject(prodIsCore);
             shelfPatternNameVO.setStoreIsCore(jsonObject.get("storeIsCore").toString());
         }
         return ResultMaps.result(ResultEnum.SUCCESS,patternForStorel);

@@ -11,7 +11,9 @@ import java.util.Map;
 @Mapper
 public interface JanInfoMapper {
     List<String> getSchemaOrTableName();
-    int setFinalForWork(@Param("finalTable")String finalTable,@Param("wkTable")String wkTable);
+
+    int setFinalForWork(@Param("finalTable") String finalTable, @Param("wkTable") String wkTable);
+
     void dropFinal(@Param("tableName") String tableName);
 
     List<Map<String, Object>> selectJanClassify(String janInfoTb, Integer shelfPatternCd, List<ZokuseiMst> zokuseiList, List<Integer> cdList,

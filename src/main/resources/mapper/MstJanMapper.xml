@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.MstJanMapper">
+    <!--"{0}".prod_{1}_jan_attr_header_sys  -->
+    <select id="getJanHeader" resultType="com.trechina.planocycle.entity.po.JanHeaderAttr">
+        select "1" "attr","2" "attrVal","3" "sort", "4" "colSort" from ${tableName}
+        where "7" = '1'
+        order by "4" nulls first,"3"
+    </select>
+
+    <select id="getJanCount" resultType="long">
+        <include refid="Base_Jan_List" />
+    </select>
+
+    <select id="getJanList" resultType="java.util.LinkedHashMap">
+        <include refid="Base_Jan_List" />
+        order by "1"
+        limit #{pageSize} offset #{pageCount}
+    </select>
+    <select id="getJanInfoList" resultType="java.util.LinkedHashMap">
+        select * from ${tableName} where "1" = #{jan}
+    </select>
+    <select id="getJanAttrList" resultType="java.util.LinkedHashMap">
+    select "1","2","3","4" from ${tableName} where "4" is not null
+    </select>
+    <select id="getJanKaisouList" resultType="java.util.LinkedHashMap">
+        select "1","2","3","4" from ${tableName} where "4" is not null
+    </select>
+
+    <!--"{0}".prod_{1}_jan_info  -->
+    <sql id="Base_Jan_List">
+        select ${column} from ${tableName}
+        where "2" like concat(concat('%', #{janParamVO.fuzzyQuery}), '%')
+        <if test="janParamVO.janContain != null and janParamVO.janContain != ''">
+            and "1" in(
+            <foreach collection="janParamVO.janContain.split(',')" item="items" separator=",">
+                #{items}
+            </foreach>
+            )
+        </if>
+        <if test="janParamVO.janKato != null and janParamVO.janKato != ''">
+            and "1" not in(
+            <foreach collection="janParamVO.janKato.split(',')" item="items" separator=",">
+                #{items}
+            </foreach>)
+        </if>
+    </sql>
+
+</mapper>

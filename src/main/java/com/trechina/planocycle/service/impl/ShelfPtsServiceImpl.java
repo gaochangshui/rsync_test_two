@@ -116,7 +116,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             }
             logger.info("手動で組み合わせたptskey：{}", ptsKey);
             List<Integer> patternIdList = shelfPatternService.getpatternIdOfPtsKey(ptsKey.substring(0, ptsKey.length() - 1));
-            logger.info("組み合わせのptskeyによってpatternidを探します：{}", patternIdList.toString());
+            logger.info("組み合わせのptskeyによってpatternidを探します：{}", patternIdList);
             if (!patternIdList.isEmpty()) {
                 Integer patternId = patternIdList.get(0);
                 logger.info("使用されるpatternid：{}", patternId);
@@ -150,12 +150,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Override
     public Map<String, Object> saveShelfPts(List<ShelfPtsJoinPatternDto> shelfPtsJoinPatternDto) {
         logger.info("ptd関連patternのパラメータ:{}", shelfPtsJoinPatternDto);
-        // 修改有效无效flg 有效1 无效0 変更為0
-        // 修改表数据
-        // shujucheck
-//        if (shelfPtsDataMapper.checkPtsData(shelfPtsJoinPatternDto) == 0) {
-//            return ResultMaps.result(ResultEnum.FAILURE);
-//        }
 
         String authorCd = httpSession.getAttribute("aud").toString();
         shelfPtsDataMapper.updateByPrimaryKey(shelfPtsJoinPatternDto);
@@ -302,40 +296,42 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Override
     public Map<String, Object> getPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd) {
         String authorCd = httpSession.getAttribute("aud").toString();
-        //ptsCdの取得
-        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
-        if (id !=null) {
-            //クリアワーク_priority_order_pts_data
-            shelfPtsDataMapper.deletePtsData(id);
-            //クリアワーク_priority_order_pts_data_taimst
-            shelfPtsDataMapper.deletePtsTaimst(id);
-            //クリアワーク_priority_order_pts_data_tanamst
-            shelfPtsDataMapper.deletePtsTanamst(id);
-            //クリアワーク_priority_order_pts_data_version
-            shelfPtsDataMapper.deletePtsVersion(id);
-        }
-        Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
-        PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
-                .withPriorityOrderCd(priorityOrderCd)
-                .withOldPtsCd(ptsCd)
-                .withCompanyCd(companyCd)
-                .withAuthorCd(authorCd).build();
-        ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
-        String modeName = shelfPtsDataVersion.getModename();
-        //modeNameはptsをダウンロードするファイル名として
-        priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
-        //既存のptsからデータをクエリーする
-        if (id != null){
-            priorityOrderPtsDataDto.setId(id);
-            shelfPtsDataMapper.insertPtsData1(priorityOrderPtsDataDto);
-        }else {
-            shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
-        }
+        if (priorityOrderCd != null) {
+            //ptsCdの取得
+            Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+            if (id != null) {
+                //クリアワーク_priority_order_pts_data
+                shelfPtsDataMapper.deletePtsData(id);
+                //クリアワーク_priority_order_pts_data_taimst
+                shelfPtsDataMapper.deletePtsTaimst(id);
+                //クリアワーク_priority_order_pts_data_tanamst
+                shelfPtsDataMapper.deletePtsTanamst(id);
+                //クリアワーク_priority_order_pts_data_version
+                shelfPtsDataMapper.deletePtsVersion(id);
+            }
+            Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
+            PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
+                    .withPriorityOrderCd(priorityOrderCd)
+                    .withOldPtsCd(ptsCd)
+                    .withCompanyCd(companyCd)
+                    .withAuthorCd(authorCd).build();
+            ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
+            String modeName = shelfPtsDataVersion.getModename();
+            //modeNameはptsをダウンロードするファイル名として
+            priorityOrderPtsDataDto.setFileName(modeName + "_new.csv");
+            //既存のptsからデータをクエリーする
+            if (id != null) {
+                priorityOrderPtsDataDto.setId(id);
+                shelfPtsDataMapper.insertPtsData1(priorityOrderPtsDataDto);
+            } else {
+                shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
+            }
 
-        Integer newId = priorityOrderPtsDataDto.getId();
-        shelfPtsDataMapper.insertPtsTaimst(ptsCd, newId, authorCd);
-        shelfPtsDataMapper.insertPtsTanamst(ptsCd, newId, authorCd);
-        shelfPtsDataMapper.insertPtsVersion(ptsCd, newId, authorCd);
+            Integer newId = priorityOrderPtsDataDto.getId();
+            shelfPtsDataMapper.insertPtsTaimst(ptsCd, newId, authorCd);
+            shelfPtsDataMapper.insertPtsTanamst(ptsCd, newId, authorCd);
+            shelfPtsDataMapper.insertPtsVersion(ptsCd, newId, authorCd);
+        }
 
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
 
@@ -545,7 +541,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     @Override
-    public void basicSaveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, List<WorkPriorityOrderResultDataDto> resultData) {
+    public void basicSaveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, List<WorkPriorityOrderResultDataDto> resultData,
+                                     int isReOrder) {
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
 
@@ -556,7 +553,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                         dto.setRank(dto.getSkuRank());
                     }
                 }).collect(Collectors.toList());
-        if(!janNewList.isEmpty()){
+        if(!janNewList.isEmpty() && isReOrder>0){
             Gson gson = new GsonBuilder().setLongSerializationPolicy(LongSerializationPolicy.STRING).create();
             List<Map<String, Object>> janNewMapList = new Gson().fromJson(gson.toJson(janNewList), new TypeToken<List<Map<String, Object>>>() {
             }.getType());
@@ -642,14 +639,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     @Override
     public Map<String, Object> getPtsInfoOfPattern(String companyCd) {
         logger.info("つかむ取棚pattern別的pts信息参数：{}", companyCd);
-//        String[] strArr = areaList.split(",");
-//        List<Integer> list = new ArrayList<>();
-//        if (strArr.length > 0 && !areaList.equals("")) {
-//            for (int i = 0; i < strArr.length; i++) {
-//                list.add(Integer.valueOf(strArr[i]));
-//            }
-//        }
-//        logger.info("処理area信息：{}", list);
         List<ShelfPtsData> shelfPtsNameVOList = shelfPtsDataMapper.selectPtsInfoOfPattern(companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS, shelfPtsNameVOList);
     }

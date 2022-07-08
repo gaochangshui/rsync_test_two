@@ -26,11 +26,52 @@
           and company_cd = #{companyCd,jdbcType=VARCHAR}
           and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
+    <delete id="deleteBasicPatternRelation">
+        delete from planocycle.work_all_pattern_restrict_relation
+        where priority_all_cd = #{priorityAllCd}
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+          and shelf_pattern_cd=#{patternCd}
+    </delete>
     <select id="selectByAuthorCd" resultType="com.trechina.planocycle.entity.dto.WorkPriorityAllRestrictRelationDto">
         select tai_cd,tana_cd,tana_type,restrict_cd from planocycle.work_priority_all_restrict_relation
         where company_cd = #{companyCd,jdbcType=VARCHAR} and author_cd = #{authorCd,jdbcType=VARCHAR}
         and priority_all_cd = #{priorityAllCd,jdbcType=INTEGER} and restrict_cd is not null
         and shelf_pattern_cd=#{shelfPatternCd}
         order by tai_cd,tana_cd,tana_type
+    </select>
+    <insert id="setBasicPatternRelation">
+        insert into planocycle.work_all_pattern_restrict_relation(shelf_pattern_cd,company_cd,author_cd,tai_cd,tana_cd
+            ,tana_position,restrict_cd,area,area_position,priority_all_cd)
+        select #{shelfPatternCd},#{companyCd},#{authorCd},relation.tai_cd,relation.tana_cd,relation.tana_position,restrict_cd,area,area_position
+             ,#{priorityAllCd}
+        from  planocycle.basic_pattern_restrict_relation  relation
+                inner join
+                 (select tai_cd,tana_cd from planocycle.shelf_pts_data ptsdata
+                      left join planocycle.shelf_pts_data_tanamst tanamst
+                                on tanamst.pts_cd = ptsdata.id
+                        where ptsdata.shelf_pattern_cd = #{shelfPatternCd}
+                       ) ptsmst
+                       on ptsmst.tai_cd = relation.tai_cd
+                           and ptsmst.tana_cd = relation.tana_cd
+        where priority_order_cd = #{priorityOrderCd}
+    </insert>
+    <select id="selectRelation" resultType="map">
+        select
+            priority_all_cd, shelf_pattern_cd,company_cd,author_cd,
+            restrict_cd,sku_cnt,zokusei1,
+            zokusei2,zokusei3,zokusei4,
+            zokusei5,zokusei6,zokusei7,
+            zokusei8,zokusei9,zokusei10,
+            zokusei11,zokusei12,zokusei13,
+            zokusei14,zokusei15,zokusei16,
+            zokusei17,zokusei18,zokusei19,
+            zokusei20,zokusei21,zokusei22,
+            zokusei23,zokusei24,zokusei25,
+            zokusei26,zokusei27,zokusei28,
+            zokusei29,zokusei30,zokusei31,
+            zokusei32,zokusei33
+        from planocycle.work_all_pattern_restrict_result
+        where priority_all_cd=#{priorityAllCd} and shelf_pattern_cd=#{patternCd}
     </select>
 </mapper>

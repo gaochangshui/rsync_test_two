@@ -7,7 +7,6 @@ import com.trechina.planocycle.service.ShelfPatternService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -115,11 +114,6 @@ public class ShelfPatternController {
         return shelfPatternService.getShelfPatternForArea(companyCd);
     }
 
-    @GetMapping("patternDownloadForExcel")
-    public void patternDownloadForExcel(String companyCd, HttpServletResponse response)  {
-       List patternDataList = null;
-         shelfPatternService.patternDownloadForExcel(patternDataList,companyCd,response);
-    }
 
     /**
      * 批量保存棚pattern

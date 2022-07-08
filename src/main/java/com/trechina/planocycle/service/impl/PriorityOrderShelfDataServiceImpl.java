@@ -99,7 +99,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                 if (attrKey.equals("")){
                     attrKey += zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+stringListEntry.getValue().get(0).get("zokuseiName"+col);
                 }else {
-                    attrKey +="->"+zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+ stringListEntry.getValue().get(0).get("zokuseiName"+col);;
+                    attrKey +="->"+zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+ stringListEntry.getValue().get(0).get("zokuseiName"+col);
                 }
             }
             Map<String,Object> map = new HashMap<>();
@@ -132,20 +132,13 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                 .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanaCd")))
                 .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd")))
                 .collect(Collectors.toList());
+        int i = 1;
+        for (Map<String, Object> map : ptsGroup) {
+            map.put("rank",i++);
+        }
         return ResultMaps.result(ResultEnum.SUCCESS,ptsGroup);
     }
 
-    /**
-     * 新規では基本的なパター棚別の情報を取得
-     * @param companyCd
-     * @return
-     */
-    @Override
-    public Map<String, Object> getPlatformShedData(String companyCd,Integer priorityOrderCd) {
-        String authorCd = session.getAttribute("aud").toString();
-        List<PriorityOrderPlatformShedDto> platformShedData = priorityOrderShelfDataMapper.getPlatformShedData(companyCd, authorCd,priorityOrderCd);
-        return ResultMaps.result(ResultEnum.SUCCESS,platformShedData);
-    }
     /**
      * 新規では基本的なパタ台棚別jansの詳細情報を入手
      * @param priorityOrderPlatformShedDto

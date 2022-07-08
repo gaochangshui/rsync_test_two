@@ -42,9 +42,6 @@
       where sm.company_cd = #{companyCd,jdbcType=VARCHAR}
     and sm.priority_order_cd =#{priorityOrderCd,jdbcType=INTEGER}
   </select>
-  <select id="selectColName" resultType="integer">
-      select count(1) from planocycle.product_power_param_attribute where product_power_cd =#{productPowerNo,jdbcType=INTEGER}
-  </select>
   <delete id="deleteByPrimaryKey">
     delete from priority.work_priority_order_catepak
     where company_cd = #{companyCd,jdbcType=VARCHAR}

@@ -43,37 +43,6 @@ public class PriorityOrderMstController {
 
 
     /**
-     * 優先順位表cdに基づいて商品力点数表cdを取得する
-     * @param priorityOrderCd
-     * @return
-     */
-    @GetMapping("/getProductPowerCdForPriority")
-    public Map<String,Object> getProductPowerCdForPriority(Integer priorityOrderCd){
-        return priorityOrderMstService.getProductPowerCdForPriority(priorityOrderCd);
-    }
-
-
-    /**
-     * S自動計算-STEP 1
-     * @param companyCd
-     * @param patternCd
-     * @param priorityOrderCd
-     * @return
-     */
-    @GetMapping("/preCalculation")
-    public Map<String, Object> preCalculation(String companyCd, Long patternCd,Integer priorityOrderCd ) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        return priorityOrderMstService.preCalculation(companyCd, patternCd,priorityOrderCd);
-    }
-
-    /**
-     * 自動計算
-     * @return
-     */
-    @GetMapping("/autoCalculation")
-    public Map<String,Object> autoCalculation(String companyCd,Integer priorityOrderCd,Integer partition){
-        return priorityOrderMstService.autoCalculation(companyCd,priorityOrderCd,partition);
-    }
-    /**
      * 表示自動計算実行ステータス
      * @param taskId
      * @return
@@ -93,15 +62,6 @@ public class PriorityOrderMstController {
        return priorityOrderMstService.getPriorityOrderAll(companyCd,priorityOrderCd);
     }
 
-    /**
-     * 最終保存
-     * @param primaryKeyVO
-     * @return
-     */
-    @PostMapping("/saveAllWorkPriorityOrder")
-    public Map<String,Object> saveAllWorkPriorityOrder(@RequestBody PriorityOrderMstVO primaryKeyVO){
-        return priorityOrderMstService.saveAllWorkPriorityOrder(primaryKeyVO);
-    }
 
     /**
      * 編集時にptsの名前が存在するかどうかを確認

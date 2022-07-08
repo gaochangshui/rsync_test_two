@@ -1,6 +1,7 @@
 package com.trechina.planocycle.constant;
 
 public class MagicString {
+    private MagicString(){}
     public static final String CORE_COMPANY = "core_company";
 
     public static final String FIRST_CLASS_CD = "0000";
@@ -57,4 +58,24 @@ public class MagicString {
      * 商品変更：フェース変更
      */
     public static final String MSG_FACE_CHANGE = "フェース変更 元：";
+
+    /**
+     * 棚割専用cd
+     */
+    public static final String DEFAULT_COMPANY_CD = "9999";
+
+    public static final String ATTR_SMALL = "attrSmall";
+
+    public static final String ATTR_BIG = "attrBig";
+
+    /**
+     * 棚割専用
+     */
+    public static final String JAN = "jan";
+    public static final String JAN_NAME = "JanName";
+    public static final String NAME = "name";
+    public static final String VALUE = "value";
+    public static final String INPUT_SHOW = "inputShow";
+    public static final String TITLE = "title";
+
 }

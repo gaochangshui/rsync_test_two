@@ -30,13 +30,13 @@
         </javaClientGenerator>
         <!--生成対応表及クラス名-->
 
-<!--        <table tableName="mst_kigyocore" domainObjectName="MstKiGyoCore"-->
-<!--               enableCountByExample="false"-->
-<!--               enableUpdateByExample="false"-->
-<!--               enableDeleteByExample="false"-->
-<!--               enableSelectByExample="false"-->
-<!--               selectByExampleQueryId="false">-->
-<!--        </table>-->
+        <!--        <table tableName="mst_kigyocore" domainObjectName="MstKiGyoCore"-->
+        <!--               enableCountByExample="false"-->
+        <!--               enableUpdateByExample="false"-->
+        <!--               enableDeleteByExample="false"-->
+        <!--               enableSelectByExample="false"-->
+        <!--               selectByExampleQueryId="false">-->
+        <!--        </table>-->
         <table tableName="work_priority_order_space" domainObjectName="WorkPriorityOrderSpace"
                enableCountByExample="false"
                enableUpdateByExample="false"

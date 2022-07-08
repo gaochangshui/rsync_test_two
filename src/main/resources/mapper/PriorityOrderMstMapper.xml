@@ -8,6 +8,10 @@
     <result column="product_power_cd" jdbcType="INTEGER" property="productPowerCd" />
     <result column="partition_flag" jdbcType="INTEGER" property="partitionFlag" />
     <result column="partition_val" jdbcType="INTEGER" property="partitionVal" />
+    <result column="top_partition_flag" jdbcType="INTEGER" property="topPartitionFlag" />
+    <result column="top_partition_val" jdbcType="INTEGER" property="topPartitionVal" />
+    <result column="tana_wid_check" jdbcType="INTEGER" property="tanaWidCheck" />
+    <result column="common_parts_data" jdbcType="VARCHAR" property="commonPartsData" />
   </resultMap>
   <!-- Home画面の基本パータンList -->
   <resultMap id="tableNameList" type="com.trechina.planocycle.entity.dto.TableNameDto">
@@ -18,7 +22,8 @@
   </resultMap>
 
   <sql id="Base_Column_List">
-    company_cd, priority_order_cd, priority_order_name, product_power_cd
+    company_cd, priority_order_cd, priority_order_name, product_power_cd,top_partition_val,top_partition_flag,tana_wid_check,
+        common_parts_data
   </sql>
   <select id="getTableNameByCompanyCd" resultMap="tableNameList">
     select
@@ -46,14 +51,6 @@
     where pts.company_cd = #{companyCd}
       and pts.shelf_pattern_cd is not null
   </select>
-  <select id="selectProductPowerCd" resultType="map">
-    SELECT product_power_cd,array_to_string(array_agg(shelf_pattern_cd),',')  as shelf_pattern_cd
-    FROM planocycle.priority_order_mst mst
-    inner join planocycle.priority_order_pattern pat
-    on mst.priority_order_cd=pat.priority_order_cd
-    where mst.priority_order_cd =#{priorityOrderCd,jdbcType=INTEGER}
-    group by product_power_cd
-  </select>
   <select id="selectPriorityOrderCdForProdCd" resultType="java.lang.String">
     SELECT array_to_string(array_agg(priority_order_cd),',')
     FROM planocycle.priority_order_mst
@@ -61,25 +58,11 @@
       and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     group by product_power_cd
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="map">
-    delete from planocycle.priority_order_mst
-    where company_cd = #{companyCd,jdbcType=VARCHAR}
-      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-  </delete>
   <delete id="deleteByAuthorCd" parameterType="map">
     delete from planocycle.priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteforid">
-    delete from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMst">
-    insert into planocycle.priority_order_mst (company_cd, priority_order_cd, priority_order_name,
-      product_power_cd)
-    values (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{priorityOrderName,jdbcType=VARCHAR},
-      #{productPowerCd,jdbcType=INTEGER})
-  </insert>
 
   <update id="logicDeleteByPriorityOrderCd" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMst">
     update planocycle.priority_order_mst set deleteflg=1 , editer_cd= #{authorCd} , edit_time=now()

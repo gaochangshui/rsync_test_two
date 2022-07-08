@@ -39,7 +39,7 @@
   </update>
   <update id="delShelfPtsInfo">
     update  planocycle.shelf_pts_data
-    set deleteflg=1 , edit_time=now(),editer_cd=#{authorCd}
+    set deleteflg=1 ,shelf_pattern_cd = null, edit_time=now(),editer_cd=#{authorCd}
     where id = #{id}
   </update>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPtsData">
@@ -325,7 +325,7 @@
   </select>
 
   <select id="getPtsCd" resultType="int">
-    select id from planocycle.shelf_pts_data where shelf_pattern_cd=#{patternCd}
+    select id from planocycle.shelf_pts_data where shelf_pattern_cd=#{patternCd} and deleteflg=0
   </select>
 
   <insert id="insertPtsData" parameterType="com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto">
@@ -594,7 +594,7 @@
     select id from planocycle.work_priority_order_pts_data where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
   </select>
   <select id="selectPtsCdByPatternCd" resultMap="BaseResultMap">
-    select id,file_name from planocycle.shelf_pts_data where company_cd=#{companyCd} and shelf_pattern_cd::varchar=any(string_to_array(#{patternCd},','))
+    select id,file_name from planocycle.shelf_pts_data where company_cd=#{companyCd} and shelf_pattern_cd = #{patternCd}
   </select>
   <select id="selectWorkPtsCdByAuthorCd" resultType="com.trechina.planocycle.entity.po.ShelfPtsData">
     select id,file_name from planocycle.work_priority_order_pts_data where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}

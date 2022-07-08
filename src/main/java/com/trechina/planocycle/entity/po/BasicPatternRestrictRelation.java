@@ -25,12 +25,12 @@ public class BasicPatternRestrictRelation implements Serializable {
     /**
      * 
      */
-    private Object taiCd;
+    private Integer taiCd;
 
     /**
      * 
      */
-    private Object tanaCd;
+    private Integer tanaCd;
 
     /**
      * 
@@ -102,7 +102,7 @@ public class BasicPatternRestrictRelation implements Serializable {
     /**
      * 
      */
-    public void setTaiCd(Object taiCd) {
+    public void setTaiCd(Integer taiCd) {
         this.taiCd = taiCd;
     }
 
@@ -116,7 +116,7 @@ public class BasicPatternRestrictRelation implements Serializable {
     /**
      * 
      */
-    public void setTanaCd(Object tanaCd) {
+    public void setTanaCd(Integer tanaCd) {
         this.tanaCd = tanaCd;
     }
 
@@ -174,42 +174,6 @@ public class BasicPatternRestrictRelation implements Serializable {
         return serialVersionUID;
     }
 
-    @Override
-    public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        }
-        if (that == null) {
-            return false;
-        }
-        if (getClass() != that.getClass()) {
-            return false;
-        }
-        BasicPatternRestrictRelation other = (BasicPatternRestrictRelation) that;
-        return (this.getPriorityOrderCd() == null ? other.getPriorityOrderCd() == null : this.getPriorityOrderCd().equals(other.getPriorityOrderCd()))
-            && (this.getCompanyCd() == null ? other.getCompanyCd() == null : this.getCompanyCd().equals(other.getCompanyCd()))
-            && (this.getAuthorCd() == null ? other.getAuthorCd() == null : this.getAuthorCd().equals(other.getAuthorCd()))
-            && (this.getTaiCd() == null ? other.getTaiCd() == null : this.getTaiCd().equals(other.getTaiCd()))
-            && (this.getTanaCd() == null ? other.getTanaCd() == null : this.getTanaCd().equals(other.getTanaCd()))
-            && (this.getTanaPosition() == null ? other.getTanaPosition() == null : this.getTanaPosition().equals(other.getTanaPosition()))
-            && (this.getRestrictCd() == null ? other.getRestrictCd() == null : this.getRestrictCd().equals(other.getRestrictCd()))
-            && (this.getArea() == null ? other.getArea() == null : this.getArea().equals(other.getArea()));
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((getPriorityOrderCd() == null) ? 0 : getPriorityOrderCd().hashCode());
-        result = prime * result + ((getCompanyCd() == null) ? 0 : getCompanyCd().hashCode());
-        result = prime * result + ((getAuthorCd() == null) ? 0 : getAuthorCd().hashCode());
-        result = prime * result + ((getTaiCd() == null) ? 0 : getTaiCd().hashCode());
-        result = prime * result + ((getTanaCd() == null) ? 0 : getTanaCd().hashCode());
-        result = prime * result + ((getTanaPosition() == null) ? 0 : getTanaPosition().hashCode());
-        result = prime * result + ((getRestrictCd() == null) ? 0 : getRestrictCd().hashCode());
-        result = prime * result + ((getArea() == null) ? 0 : getArea().hashCode());
-        return result;
-    }
 
     @Override
     public String toString() {

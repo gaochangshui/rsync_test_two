@@ -40,7 +40,6 @@ public class LoginInterceptor implements HandlerInterceptor {
         // 解析token
         jwtUtils util= new jwtUtils();
         JSONObject jwtInfo=util.getJwtInfo(token);
-//        httpSession.setAttribute("exp",jwtInfo.get("exp"));
         // tokenの有効期限の判断
         int time = (int) (System.currentTimeMillis() / 1000);
         int tokenTime = (int) jwtInfo.get("exp");
@@ -65,7 +64,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         try (PrintWriter writer = response.getWriter()) {
             writer.print(new JSONObject(result));
         } catch (IOException e) {
-            logger.info("error:"+e);
+            logger.info("error:",e);
         }
 
     }

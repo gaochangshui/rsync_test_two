@@ -32,6 +32,13 @@ public class ProductPowerMstController {
     public Map<String,Object> getProductPowerTable(String companyCd){
         return powerMstService.getProductPowerTable(companyCd);
     }
+
+    /**
+     *
+     * @param companyCd
+     * @param productPowerCd
+     * @return
+     */
     @GetMapping("/getPatternForBranch")
     public Map<String,Object> getPatternForBranch(String companyCd,Integer productPowerCd){
         return powerMstService.getPatternForBranch(companyCd,productPowerCd);

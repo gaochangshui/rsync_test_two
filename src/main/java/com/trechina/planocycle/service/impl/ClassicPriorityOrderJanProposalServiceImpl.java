@@ -60,11 +60,11 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      */
     @Override
     public Map<String, Object> getPriorityOrderJanProposal(String companyCd, Integer priorityOrderCd,Integer productPowerNo,String shelfPatternNo) {
-        logger.info("jan変提案listのパラメータを取得する:"+companyCd+","+priorityOrderCd);
+        logger.info("jan変提案listのパラメータを取得する:{},{}",companyCd,priorityOrderCd);
         List<PriorityOrderJanProposalVO> priorityOrderJanProposals = priorityOrderJanProposalMapper.selectByPrimaryKey(companyCd,
                 priorityOrderCd);
-        logger.info("jan変提案listの戻り値を取得する："+priorityOrderJanProposals);
-        if(priorityOrderJanProposals.size()==0){
+        logger.info("jan変提案listの戻り値を取得する：{}",priorityOrderJanProposals);
+        if(priorityOrderJanProposals.isEmpty()){
 
 //            try {
 //                janProposalData(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd);
@@ -79,7 +79,7 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
 //                logger.info("報錯:"+e);
 //            }
         }
-        logger.info("jan変提案listの戻り値を取得する："+priorityOrderJanProposals);
+        logger.info("jan変提案listの戻り値を取得する：{}",priorityOrderJanProposals);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanProposals);
     }
 
@@ -87,7 +87,7 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      * jan変情報の保存エラーcgiからjan変提案listデータをpostgreに書く
      * @throws IOException
      */
-    public void janProposalData(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd) throws IOException {
+    public void janProposalData(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd)  {
             PriorityOrderDataForCgiDto priorityOrderDataForCgiDto = new PriorityOrderDataForCgiDto();
             // 調用cgi拿jan變提案list的数据
             String uuids = UUID.randomUUID().toString();
@@ -105,10 +105,10 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
             String resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
             logger.info("taskId返回：" + resultJan);
 
-            Map<String, Object> DataJan = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
-            logger.info("jan變提案list cgi返回数据：" + DataJan);
-            if (!DataJan.get("data").equals("[ ]")) {
-                JSONArray datasJan = (JSONArray) JSON.parse(DataJan.get("data").toString());
+            Map<String, Object> dataJan = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
+            logger.info("jan變提案list cgi返回数据：" + dataJan);
+            if (!dataJan.get("data").equals("[ ]")) {
+                JSONArray datasJan = (JSONArray) JSON.parse(dataJan.get("data").toString());
 
                 priorityOrderJanProposalService.savePriorityOrderJanProposal(datasJan,companyCd,priorityOrderCd);
             }
@@ -127,9 +127,15 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
         String tableName = String.format("\"%s\".prod_%s_jan_attr_header_sys", coreCompany, MagicString.FIRST_CLASS_CD);
         List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(tableName);
         Optional<Map<String, Object>> janCdOpt = classify.stream().filter(c -> c.get("attr").equals(MagicString.JAN_HEADER_JAN_CD_COL)).findFirst();
-        String janCdCol = janCdOpt.get().get("sort").toString();
+        String janCdCol = MagicString.JAN_HEADER_JAN_CD_DEFAULT;
+        if(janCdOpt.isPresent()){
+            janCdCol = janCdOpt.get().get("sort").toString();
+        }
         Optional<Map<String, Object>> janNameOpt = classify.stream().filter(c -> c.get("attr").equals(MagicString.JAN_HEADER_JAN_NAME_COL)).findFirst();
-        String janNameCol = janNameOpt.get().get("sort").toString();
+        String janNameCol = MagicString.JAN_HEADER_JAN_NAME_DEFAULT;
+        if(janNameOpt.isPresent()){
+            janNameCol = janNameOpt.get().get("sort").toString();
+        }
         tableName = String.format("\"%s\".prod_%s_jan_info", coreCompany, MagicString.FIRST_CLASS_CD);
         List<PriorityOrderJanProposal> list = productPowerDataMapper.selectSameNameJan(productPowerNo,
                 shelfPtsData.stream().map(pts->pts.getId()+"").collect(Collectors.joining(",")), tableName, janCdCol, janNameCol);

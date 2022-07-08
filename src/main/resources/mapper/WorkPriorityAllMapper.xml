@@ -19,9 +19,35 @@
             #{list.skuCnt, jdbcType=INTEGER})
         </foreach>
     </insert>
+    <insert id="setBasicPatternResult">
+        insert into planocycle.work_all_pattern_restrict_result(shelf_pattern_cd,company_cd,author_cd,restrict_cd,sku_cnt,zokusei1
+            ,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10,zokusei11,zokusei12,
+                                                     zokusei13,zokusei14,zokusei15,zokusei16,zokusei17,zokusei18,zokusei19,
+                                                     zokusei20,zokusei21,zokusei22,zokusei23,zokusei24,zokusei25,zokusei26,
+                                                     zokusei27,zokusei28,zokusei29,zokusei30,zokusei31,zokusei32,zokusei33,
+                                                     priority_all_cd)
+        select #{shelfPatternCd},#{companyCd},#{authorCd},restrict_cd,sku_cnt,zokusei1
+                ,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10,zokusei11,zokusei12,
+            zokusei13,zokusei14,zokusei15,zokusei16,zokusei17,zokusei18,zokusei19,
+            zokusei20,zokusei21,zokusei22,zokusei23,zokusei24,zokusei25,zokusei26,
+            zokusei27,zokusei28,zokusei29,zokusei30,zokusei31,zokusei32,zokusei33,#{priorityAllCd}
+
+        from  planocycle.basic_pattern_restrict_result  result
+        where priority_order_cd = #{priorityOrderCd}
+
+    </insert>
     <delete id="deleteWKTableRestrict">
         delete from planocycle.work_priority_all_restrict
         where company_cd = #{companyCd,jdbcType=VARCHAR}
         and priority_all_cd = #{priorityAllCd}
     </delete>
+    <delete id="deleteBasicPatternResult">
+        delete from  planocycle.work_all_pattern_restrict_result
+        where  priority_all_cd = #{priorityAllCd} and author_cd = #{authorCd} and shelf_pattern_cd = #{patternCd}
+    </delete>
+    <select id="selectByPriorityAllCd" resultType="map">
+        select tai_cd "taiCd",tana_cd "tanaCd",tana_position "tanaPosition",restrict_cd "restrictCd",area "area"
+        from planocycle.work_all_pattern_restrict_relation relation where priority_all_cd=#{priorityAllCd} and shelf_pattern_cd=#{patternCd}
+        order by tai_cd, tana_cd,tana_position
+    </select>
 </mapper>

@@ -30,7 +30,7 @@ public interface ClassicPriorityOrderDataService {
 
     @Transactional(rollbackFor = Exception.class)
     Map<String, Object> uploadPriorityOrderData(String taiCd, String tanaCd,MultipartFile file, String company, Integer priorityOrderCd,
-                                                String attrList);
+                                                String attrStr);
 
     void doJanCut(List<DownloadDto> cutJanList, String company, Integer priorityOrderCd);
 

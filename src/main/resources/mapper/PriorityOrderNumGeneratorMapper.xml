@@ -9,12 +9,6 @@
   <sql id="Base_Column_List">
     id, usercd, creattime
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from priority_order_num_generator
-    where id = #{id,jdbcType=INTEGER}
-  </select>
 
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderNumGenerator">
     <selectKey resultType="int" keyProperty="id" order="AFTER">

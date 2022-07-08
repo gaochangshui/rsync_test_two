@@ -11,11 +11,12 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface PriorityAllPtsMapper {
-    ShelfPtsData selectWorkPtsCdByAuthorCd(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd,
-                                           @Param("priorityAllCd")Integer priorityAllCd, @Param("patternCd") Integer patternCd);
+    ShelfPtsData selectWorkPtsCdByAuthorCd(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,
+                                           @Param("priorityAllCd") Integer priorityAllCd, @Param("patternCd") Integer patternCd);
 
     void deletePtsData(Integer oldPtsCd);
 
@@ -57,4 +58,6 @@ public interface PriorityAllPtsMapper {
     ShelfPtsData selectPtsCdByAuthorCd(String companyCd, String authorCd, Integer priorityAllCd, Long shelfPatternCd);
 
     List<ShelfPtsData> selectByPriorityAllCd(String companyCd, String authorCd, Integer priorityAllCd);
+
+    List<Map<String, Object>> selectTanaMstByPatternCd(Integer priorityAllCd, Integer patternCd);
 }

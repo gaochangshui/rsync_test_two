@@ -52,8 +52,8 @@ public class ProductPowerParam {
         return rankWeight;
     }
 
-    public void setRankWeight(String RankWeight) {
-        this.rankWeight = RankWeight;
+    public void setRankWeight(String rankWeight) {
+        this.rankWeight = rankWeight;
     }
 
     public String getRecentlyEndTime() {

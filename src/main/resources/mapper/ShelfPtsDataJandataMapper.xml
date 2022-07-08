@@ -280,9 +280,14 @@
     order by tai_cd,tana_cd,tanaposition_cd
   </select>
   <select id="selectNewByPtsCd" resultMap="BaseResultMap">
-    select <include refid="Base_Column_List"/> from planocycle.work_priority_order_pts_data_jandata where
-    company_cd = #{companyCd,jdbcType=VARCHAR}
-    and pts_cd = #{ptsCd,jdbcType=INTEGER}
+
+    select  company_cd, pts_cd, tai_cd, tana_cd, "row_number"() over(partition by tai_cd,tana_cd order by tai_cd,tana_cd , tanaposition_cd) as tanaposition_cd
+    , jan, face_count, face_men,
+            face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num,
+            create_time, author_cd, edit_time, editer_cd, deleteflg
+    from planocycle.work_priority_order_pts_data_jandata
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+    and pts_cd = #{ptsCd,jdbcType=INTEGER} and face_count!=0
     order by tai_cd,tana_cd,tanaposition_cd
   </select>
   <select id="selectJanByPatternCd" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">

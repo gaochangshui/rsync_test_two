@@ -14,14 +14,14 @@ import java.util.Map;
 public class MstKiGyoCoreServiceImpl implements MstKiGyoCoreService {
     @Autowired
     private MstKiGyoCoreMapper mstKiGyoCoreMapper;
-    /**
-     * 企業共通部品パラメータ取得
-     * @param companyCd
-     * @return
-     */
-    @Override
-    public Map<String, Object> getMstKiGyo(String companyCd) {
-        MstKiGyoCore mstKiGyoCore = mstKiGyoCoreMapper.selectByPrimaryKey(companyCd);
-        return ResultMaps.result(ResultEnum.SUCCESS,mstKiGyoCore);
-    }
+    ///**
+    // * 企業共通部品パラメータ取得
+    // * @param companyCd
+    // * @return
+    // */
+    //@Override
+    //public Map<String, Object> getMstKiGyo(String companyCd) {
+    //    MstKiGyoCore mstKiGyoCore = mstKiGyoCoreMapper.selectByPrimaryKey(companyCd);
+    //    return ResultMaps.result(ResultEnum.SUCCESS,mstKiGyoCore);
+    //}
 }

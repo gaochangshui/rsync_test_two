@@ -25,10 +25,6 @@ public interface IDGeneratorService {
      */
     Map<String, Object> classPriorityOrderNumGenerator();
 
-    /**
-     * Basic pattern自動番号付け
-     * @return
-     */
-    Map<String, Object> basicPatternIDGenerator();
+
 
 }

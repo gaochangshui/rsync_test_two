@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -58,16 +56,5 @@ public class FilesOperationController {
         return filesOperationService.csvUploadMulti(multipartFileList,path,companyCd,projectIds,bucketNames);
     }
 
-    /**
-     *
-     * @param multipartFile
-     * @param response
-     * @return
-     */
-    @PostMapping("/csvConvertExcelDowlLoad")
-    public Map<String,Object> csvConvertExcelDowlLoad(@RequestParam("file")MultipartFile multipartFile, HttpServletResponse response){
-        return filesOperationService.csvConvertExcelDowlLoad(multipartFile,productDownPath+session
-                .getAttribute("aud").toString()+ File.separator,response);
-    }
 
 }

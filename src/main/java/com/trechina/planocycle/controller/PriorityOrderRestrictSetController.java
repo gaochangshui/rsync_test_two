@@ -3,9 +3,11 @@ package com.trechina.planocycle.controller;
 import com.trechina.planocycle.entity.po.PriorityOderAttrSet;
 import com.trechina.planocycle.service.PriorityOrderRestrictSetService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 @RestController
@@ -26,15 +28,5 @@ public class PriorityOrderRestrictSetController {
         return priorityOrderRestrictSetService.setPriorityOrderRestrict(priorityOderAttrSet);
     }
 
-    /**
-     *各ステージ/セグメントに対応するプロパティの取得
-     * @param companyCd
-     * @return
-     */
-    @GetMapping("/getAttrDisplay")
-    public Map<String,Object> getAttrDisplay(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-
-        return priorityOrderRestrictSetService.getAttrDisplay(companyCd,priorityOrderCd);
-    }
 
 }

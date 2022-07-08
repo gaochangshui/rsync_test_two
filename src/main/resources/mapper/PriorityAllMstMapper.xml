@@ -560,11 +560,6 @@
         group by shelfnm.shelf_name,shelf.shelf_pattern_cd,shelf.shelf_pattern_name,allshelf.shelf_patten_cd
         order by shelf.shelf_pattern_cd
     </select>
-    <select id="selectByAuthorCd" resultType="com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto">
-        select tai_cd, jan_cd,tana_cd,face,face_fact from planocycle.work_priority_all_result_data where company_cd = #{companyCd,jdbcType=VARCHAR}
-        and priority_all_cd = #{priorityAllCd} and author_cd=#{authorCd} and adopt_flag=1 and shelf_patten_cd=#{patternCd}
-        order by tai_cd,tana_type,sort_rank,sku_rank
-    </select>
     <select id="getPriorityOrderCd" resultType="java.lang.Integer">
         select priority_order_cd from  planocycle.priority_all_mst where priority_all_cd = #{priorityAllCd} and company_cd = #{companyCd} and author_cd = #{authorCd}
     </select>
@@ -576,4 +571,59 @@
         from planocycle.priority_all_pts_data
         where company_cd = #{companyCd} and priority_all_cd = #{priorityAllCd} and  author_cd = #{authorCd} and deleteflg = 0
     </select>
+    <delete id="deleteFinalTableRestrictRelation">
+        delete from planocycle.all_pattern_restrict_relation
+        where priority_all_cd = #{priorityAllCd}
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteFinalTableRestrictResult">
+        delete from planocycle.all_pattern_restrict_result
+        where priority_all_cd = #{priorityAllCd}
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteFinalTableRestrictResultData">
+        delete from planocycle.all_pattern_restrict_result_data
+        where priority_all_cd = #{priorityAllCd}
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </delete>
+    <insert id="setFinalTableRestrictResult">
+        insert into planocycle.all_pattern_restrict_result(shelf_pattern_cd,company_cd,
+       author_cd,restrict_cd,sku_cnt,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,
+           zokusei6,zokusei7,zokusei8,zokusei9,zokusei10,zokusei11,zokusei12,zokusei13,zokusei14,
+           zokusei15,zokusei16,zokusei17,zokusei18,zokusei19,zokusei20,zokusei21,zokusei22,zokusei23,
+           zokusei24,zokusei25,zokusei26,zokusei27,zokusei28,zokusei29, zokusei30,zokusei31, zokusei32,zokusei33,
+           priority_all_cd)
+        select shelf_pattern_cd,company_cd,
+            author_cd,restrict_cd,sku_cnt,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,
+            zokusei6,zokusei7,zokusei8,zokusei9,zokusei10,zokusei11,zokusei12,zokusei13,zokusei14,
+            zokusei15,zokusei16,zokusei17,zokusei18,zokusei19,zokusei20,zokusei21,zokusei22,zokusei23,
+            zokusei24,zokusei25,zokusei26,zokusei27,zokusei28,zokusei29, zokusei30,zokusei31, zokusei32,zokusei33,
+               #{priorityAllCd}
+        from planocycle.work_all_pattern_restrict_result
+        where priority_all_cd = 0
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </insert>
+    <insert id="setFinalTableRestrictRelation">
+        insert into planocycle.all_pattern_restrict_relation(shelf_pattern_cd,company_cd,author_cd,tai_cd,tana_cd,
+            tana_position,restrict_cd,area,area_position,priority_all_cd)
+        select shelf_pattern_cd,company_cd,author_cd,tai_cd,tana_cd,
+            tana_position,restrict_cd,area,area_position,#{priorityAllCd}
+        from planocycle.work_all_pattern_restrict_relation
+        where priority_all_cd = 0
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </insert>
+    <insert id="setFinalTableRestrictResultData">
+        insert into planocycle.all_pattern_restrict_result_data(shelf_pattern_cd,company_cd,author_cd, restrict_cd,face,
+            face_fact,jan,sku_rank,priority_all_cd)
+        select shelf_pattern_cd,company_cd,author_cd, restrict_cd,face,face_fact,jan,sku_rank,#{priorityAllCd}
+        from planocycle.work_all_pattern_restrict_result_data
+        where priority_all_cd = 0
+          and company_cd = #{companyCd,jdbcType=VARCHAR}
+          and author_cd = #{authorCd,jdbcType=VARCHAR}
+    </insert>
 </mapper>
