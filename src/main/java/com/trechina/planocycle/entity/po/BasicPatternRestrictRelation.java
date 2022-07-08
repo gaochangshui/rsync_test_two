@@ -25,12 +25,12 @@ public class BasicPatternRestrictRelation implements Serializable {
     /**
      * 
      */
-    private Object taiCd;
+    private Integer taiCd;
 
     /**
      * 
      */
-    private Object tanaCd;
+    private Integer tanaCd;
 
     /**
      * 
@@ -102,7 +102,7 @@ public class BasicPatternRestrictRelation implements Serializable {
     /**
      * 
      */
-    public void setTaiCd(Object taiCd) {
+    public void setTaiCd(Integer taiCd) {
         this.taiCd = taiCd;
     }
 
@@ -116,7 +116,7 @@ public class BasicPatternRestrictRelation implements Serializable {
     /**
      * 
      */
-    public void setTanaCd(Object tanaCd) {
+    public void setTanaCd(Integer tanaCd) {
         this.tanaCd = tanaCd;
     }
 

@@ -1,6 +1,7 @@
 package com.trechina.planocycle.constant;
 
 public class MagicString {
+    private MagicString(){}
     public static final String CORE_COMPANY = "core_company";
 
     public static final String FIRST_CLASS_CD = "0000";

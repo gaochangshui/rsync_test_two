@@ -28,15 +28,5 @@ public class PriorityOrderRestrictSetController {
         return priorityOrderRestrictSetService.setPriorityOrderRestrict(priorityOderAttrSet);
     }
 
-    ///**
-    // *各ステージ/セグメントに対応するプロパティの取得
-    // * @param companyCd
-    // * @return
-    // */
-    //@GetMapping("/getAttrDisplay")
-    //public Map<String,Object> getAttrDisplay(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-    //
-    //    return priorityOrderRestrictSetService.getAttrDisplay(companyCd,priorityOrderCd);
-    //}
 
 }

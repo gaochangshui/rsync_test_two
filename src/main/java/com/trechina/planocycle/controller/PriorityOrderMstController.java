@@ -42,15 +42,6 @@ public class PriorityOrderMstController {
 
 
 
-    ///**
-    // * 優先順位表cdに基づいて商品力点数表cdを取得する
-    // * @param priorityOrderCd
-    // * @return
-    // */
-    //@GetMapping("/getProductPowerCdForPriority")
-    //public Map<String,Object> getProductPowerCdForPriority(Integer priorityOrderCd){
-    //    return priorityOrderMstService.getProductPowerCdForPriority(priorityOrderCd);
-    //}
 
 
     /**
