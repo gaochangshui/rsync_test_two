@@ -1,7 +1,6 @@
 package com.trechina.planocycle.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
 import java.util.List;

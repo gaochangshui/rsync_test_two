@@ -517,8 +517,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             int i = 1;
                 for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
                     patternRestrictRelation.setAreaPosition(i++);
-                    if (patternRestrictRelation.getRestrictCd() != 9999){
-                    }
                 }
                 if (collect.getSum() < 100L){
                     BasicPatternRestrictRelation basicPatternRestrictRelation1 = new BasicPatternRestrictRelation();

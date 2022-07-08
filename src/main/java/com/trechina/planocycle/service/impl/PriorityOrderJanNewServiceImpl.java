@@ -307,15 +307,15 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     }
 
     @Override
-    public List<Map<String, Object>> janSort(List<Map<String, Object>> ptsJanList, List<Map<String, Object>> JanNewList, String rankName) {
+    public List<Map<String, Object>> janSort(List<Map<String, Object>> ptsJanList, List<Map<String, Object>> janNewList, String rankName) {
         ptsJanList = ptsJanList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
-        JanNewList = JanNewList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
-        JanNewList = JanNewList.stream().filter(map->map.get("errMsg")==null || !map.get("errMsg").toString().equals("pts棚に並んでいる可能性がありますので削除してください。")).collect(Collectors.toList());
+        janNewList = janNewList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
+        janNewList = janNewList.stream().filter(map->map.get("errMsg")==null || !map.get("errMsg").toString().equals("pts棚に並んでいる可能性がありますので削除してください。")).collect(Collectors.toList());
         int i = 1;
         for (Map<String, Object> objectMap : ptsJanList) {
             objectMap.put(rankName,i++);
         }
-        for (Map<String, Object> objectMap : JanNewList) {
+        for (Map<String, Object> objectMap : janNewList) {
             if (Integer.parseInt(objectMap.get(rankName).toString())>ptsJanList.size()){
                 ptsJanList.add(objectMap);
             }else {

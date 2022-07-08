@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
 import com.trechina.planocycle.entity.po.PriorityOrderCatepak;
 import com.trechina.planocycle.entity.po.PriorityOrderCatepakAttribute;
@@ -52,8 +53,8 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
             Map<String, String> bigMap = new LinkedHashMap<>(attrMap.size());
 
             for (Map.Entry<String, String> entry : attrMap.entrySet()) {
-                smallMap.put("attrSmall"+entry.getKey().replace("attr",""), entry.getValue());
-                bigMap.put("attrBig"+entry.getKey().replace("attr",""), entry.getValue());
+                smallMap.put(MagicString.ATTR_SMALL+entry.getKey().replace("attr",""), entry.getValue());
+                bigMap.put(MagicString.ATTR_BIG+entry.getKey().replace("attr",""), entry.getValue());
             }
 
             colMap.putAll(smallMap);
@@ -76,7 +77,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                     // 遍暦small
                     for (int i = 0; i < attrSmall.length; i++) {
                         valList = attrSmall[i].split(":");
-                        result.put("attrSmall" + valList[0], valList[1]);
+                        result.put(MagicString.ATTR_SMALL + valList[0], valList[1]);
                     }
                     result.put("rank", item.getRank());
                     result.put("branchNum", item.getBranchNum());
@@ -86,9 +87,9 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                         for (int i = 0; i < attrBig.length; i++) {
                             valList = attrBig[i].split(":");
                             if (valList.length==1){
-                                result.put("attrBig" + valList[0], "");
+                                result.put(MagicString.ATTR_BIG + valList[0], "");
                             }else{
-                                result.put("attrBig" + valList[0], valList[1]);
+                                result.put(MagicString.ATTR_BIG + valList[0], valList[1]);
                             }
                         }
                     }
@@ -99,17 +100,6 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                 jsonArray.add(0, colMap);
             } else {
                 logger.info("つかむ取カテパケ拡縮結果集2：{}",attrMap);
-//                if (!attrMap.isEmpty()) {
-//                    List<String> list = new ArrayList<>();
-//
-//                    for (int i = 0; i < attrMap.size(); i++) {
-//                        list.add("attrSmall" + i);
-//                        list.add("attrBig" + i);
-//                    }
-//                    list.add("rank");
-//                    list.add("branchNum");
-//                    jsonArray.add(list);
-//                }
 
                 jsonArray.add(colMap);
 
@@ -202,24 +192,24 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
         String colValue = "";
         int idx =1;
         for (Object key: item.keySet()) {
-            if (key.toString().contains("attrSmall") || key.toString().contains("attrBig")) {
+            if (key.toString().contains(MagicString.ATTR_SMALL) || key.toString().contains(MagicString.ATTR_BIG)) {
                 PriorityOrderCatepakAttribute catepakAttribute = new PriorityOrderCatepakAttribute();
                 // 動的属性リスト
                 catepakAttribute.setCompanyCd(companyCd);
                 catepakAttribute.setPriorityOrderCd(priorityOrderCd);
                 catepakAttribute.setCatepakCd(priorityOrderCatepak.getId());
-                if (key.toString().contains("attrSmall")) {
+                if (key.toString().contains(MagicString.ATTR_SMALL)) {
                     //縮小は0
                     catepakAttribute.setFlg(0);
-                    catepakAttribute.setAttrCd(Integer.valueOf(key.toString().replace("attrSmall", "")));
+                    catepakAttribute.setAttrCd(Integer.valueOf(key.toString().replace(MagicString.ATTR_SMALL, "")));
                     // レコード列名+値
                     colValue+="attr"+idx+"='"+item.get(key)+"',";
                     idx+=1;
                 }
-                if (key.toString().contains("attrBig")) {
+                if (key.toString().contains(MagicString.ATTR_BIG)) {
                     //拡張は1です。
                     catepakAttribute.setFlg(1);
-                    catepakAttribute.setAttrCd(Integer.valueOf(key.toString().replace("attrBig", "")));
+                    catepakAttribute.setAttrCd(Integer.valueOf(key.toString().replace(MagicString.ATTR_BIG, "")));
 
                 }
                 catepakAttribute.setAttrValue(String.valueOf(item.get(key)));

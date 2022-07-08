@@ -25,7 +25,9 @@ public interface ProductPowerDataMapper {
     int deleteWKKokyaku(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("productPowerCd") Integer productPowerCd);
 
 
-    //最終テーブルをテンポラリ・テーブルに保存
+    /**
+     * 最終テーブルをテンポラリ・テーブルに保存
+     */
     int insertWkKokyakuForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
     //テンポラリ・テーブル・データの戻りページ

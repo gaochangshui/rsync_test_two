@@ -50,9 +50,9 @@ public interface ClassicPriorityOrderDataMapper {
 
     String selectPriorityAttrValue(String company, Integer priorityNO);
 
-    String selectJanName(String jan_new);
+    String selectJanName(String janNew);
 
-    String selectJanNameFromJanNew(String jan_new, String company, Integer priorityOrderCd);
+    String selectJanNameFromJanNew(String janNew, String company, Integer priorityOrderCd);
 
     int deleteExistJanNew(List<String> janNews, String tableName);
 
