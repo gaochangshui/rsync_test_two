@@ -2,10 +2,8 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
 import com.trechina.planocycle.entity.po.PriorityOrderCatepak;
 import com.trechina.planocycle.entity.po.PriorityOrderCatepakAttribute;
-import com.trechina.planocycle.entity.vo.PriorityOrderCatePakVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ClassicPriorityOrderCatepakAttributeMapper;
 import com.trechina.planocycle.mapper.ClassicPriorityOrderMstAttrSortMapper;
@@ -20,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOrderCatePakService {
@@ -42,7 +39,8 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
      */
     @Override
     public Map<String, Object> getPriorityOrderCatePak(String companyCd, Integer priorityOrderCd) {
-        try {//つかむ取列頭
+        //刘鑫宇
+       /* try {//つかむ取列頭
             List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectWKRankSort(companyCd, priorityOrderCd);
             Map<String, String> attrMap = priorityOrderMstAttrSorts.stream()
                     .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getSort, PriorityOrderMstAttrSortDto::getName,
@@ -107,9 +105,9 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
             logger.info("カテパケ拡縮結果{}", jsonArray);
             return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
         }catch (Exception e) {
-            logger.info("つかむ取カテパケ拡縮失敗：",e);
+            logger.info("つかむ取カテパケ拡縮失敗：",e);*/
             return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        //}
     }
 
     /**

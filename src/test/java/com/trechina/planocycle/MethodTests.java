@@ -1,12 +1,8 @@
 package com.trechina.planocycle;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
-import com.trechina.planocycle.entity.po.ShelfPtsDataTanamst;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictSet;
-import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
 import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
@@ -22,7 +18,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest
@@ -73,30 +68,30 @@ public class MethodTests {
     @Test
     @Disabled
     public void setRestrict() throws JsonProcessingException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        Integer[] pattens = {12, 4, 4};
-        Integer[] tais = {5, 5, 4, 6};
-
-        List<PriorityOrderAttrVO> dataList = new ArrayList<>();
-        PriorityOrderAttrVO vo = null;
-        for (int i = 0; i < pattens.length; i++) {
-            vo = new PriorityOrderAttrVO();
-            vo.setTanaPattan(pattens[i]);
-            vo.setAttrACd(i + "a");
-            dataList.add(vo);
-        }
-        List<ShelfPtsDataTanaCount> tanaCountList = new ArrayList<>();
-        ShelfPtsDataTanaCount tanaCount = null;
-        for (int i = 0; i < tais.length; i++) {
-            tanaCount = new ShelfPtsDataTanaCount();
-            tanaCount.setTaiCd(i + 1);
-            tanaCount.setTanaCount(tais[i]);
-            tanaCount.setTanaUsedCount(0);
-            tanaCountList.add(tanaCount);
-        }
-        List<ShelfPtsDataTanamst> ptsDataTanamstList = Collections.emptyList();
-        List<WorkPriorityOrderRestrictSet> setList = priorityOrderMstAttrSortService.setRestrict(dataList, ptsDataTanamstList, tanaCountList, (short) 2, (short) 2, "0001", "10047515", 1);
-        ObjectMapper objectMapper = new ObjectMapper();
-        System.out.println(objectMapper.writeValueAsString(setList));
+        //Integer[] pattens = {12, 4, 4};
+        //Integer[] tais = {5, 5, 4, 6};
+        //
+        //List<PriorityOrderAttrVO> dataList = new ArrayList<>();
+        //PriorityOrderAttrVO vo = null;
+        //for (int i = 0; i < pattens.length; i++) {
+        //    vo = new PriorityOrderAttrVO();
+        //    vo.setTanaPattan(pattens[i]);
+        //    vo.setAttrACd(i + "a");
+        //    dataList.add(vo);
+        //}
+        //List<ShelfPtsDataTanaCount> tanaCountList = new ArrayList<>();
+        //ShelfPtsDataTanaCount tanaCount = null;
+        //for (int i = 0; i < tais.length; i++) {
+        //    tanaCount = new ShelfPtsDataTanaCount();
+        //    tanaCount.setTaiCd(i + 1);
+        //    tanaCount.setTanaCount(tais[i]);
+        //    tanaCount.setTanaUsedCount(0);
+        //    tanaCountList.add(tanaCount);
+        //}
+        //List<ShelfPtsDataTanamst> ptsDataTanamstList = Collections.emptyList();
+        ////List<WorkPriorityOrderRestrictSet> setList = priorityOrderMstAttrSortService.setRestrict(dataList, ptsDataTanamstList, tanaCountList, (short) 2, (short) 2, "0001", "10047515", 1);
+        //ObjectMapper objectMapper = new ObjectMapper();
+        //System.out.println(objectMapper.writeValueAsString(setList));
     }
 
     @Test
