@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import com.google.api.client.util.Strings;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanCardVO;
@@ -20,10 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOrderJanCardService {
@@ -142,46 +141,45 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
 
     @Override
     public Map<String, String> checkIsJanCut(List<ClassicPriorityOrderJanCard> priorityOrderJanCard) {
-        //刘鑫宇
-        //Map<String, String> errorJan = new HashMap<>();
-        //if(priorityOrderJanCard.isEmpty()){
-        //    return errorJan;
-        //}
-        //List<String> janReplaceList = priorityOrderJanCardMapper.checkJanReplace(priorityOrderJanCard);
-        //List<String> janReplaceOldList = priorityOrderJanCardMapper.checkJanReplaceOld(priorityOrderJanCard);
-        //if (!janReplaceList.isEmpty() || !janReplaceOldList.isEmpty()){
-        //    janReplaceList.addAll(janReplaceOldList);
-        //    for (String jan : janReplaceList) {
-        //        if(Strings.isNullOrEmpty(errorJan.getOrDefault(jan, ""))) {
-        //            errorJan.put(jan, "すでにJAN変商品として入力済みです。");
-        //        }
-        //    }
-        //}
-        //
-        //List<String> janProposalList = priorityOrderJanCardMapper.checkJanProposal(priorityOrderJanCard);
-        //List<String> janProposalOldList = priorityOrderJanCardMapper.checkJanProposalOld(priorityOrderJanCard);
-        //if (!janProposalList.isEmpty() || !janProposalOldList.isEmpty()){
-        //    janProposalList.addAll(janProposalOldList);
-        //    janProposalList = janProposalList.stream().distinct().collect(Collectors.toList());
-        //
-        //    for (String jan : janProposalList) {
-        //        if(Strings.isNullOrEmpty(errorJan.getOrDefault(jan, ""))){
-        //            errorJan.put(jan, "すでにJAN変商品として入力済みです。");
-        //        }
-        //    }
-        //}
-        //
-        //List<String> janNewList = priorityOrderJanCardMapper.checkJanNew(priorityOrderJanCard);
-        //if (!janNewList.isEmpty()){
-        //    for (String jan : janNewList) {
-        //        if(Strings.isNullOrEmpty(errorJan.getOrDefault(jan, ""))){
-        //            errorJan.put(jan, "すでに新規商品として入力済みです。");
-        //        }
-        //    }
-        //}
 
-        //return errorJan;
-        return null;
+        Map<String, String> errorJan = new HashMap<>();
+        if(priorityOrderJanCard.isEmpty()){
+            return errorJan;
+        }
+        List<String> janReplaceList = priorityOrderJanCardMapper.checkJanReplace(priorityOrderJanCard);
+        List<String> janReplaceOldList = priorityOrderJanCardMapper.checkJanReplaceOld(priorityOrderJanCard);
+        if (!janReplaceList.isEmpty() || !janReplaceOldList.isEmpty()){
+            janReplaceList.addAll(janReplaceOldList);
+            for (String jan : janReplaceList) {
+                if(Strings.isNullOrEmpty(errorJan.getOrDefault(jan, ""))) {
+                    errorJan.put(jan, "すでにJAN変商品として入力済みです。");
+                }
+            }
+        }
+
+        List<String> janProposalList = priorityOrderJanCardMapper.checkJanProposal(priorityOrderJanCard);
+        List<String> janProposalOldList = priorityOrderJanCardMapper.checkJanProposalOld(priorityOrderJanCard);
+        if (!janProposalList.isEmpty() || !janProposalOldList.isEmpty()){
+            janProposalList.addAll(janProposalOldList);
+            janProposalList = janProposalList.stream().distinct().collect(Collectors.toList());
+
+            for (String jan : janProposalList) {
+                if(Strings.isNullOrEmpty(errorJan.getOrDefault(jan, ""))){
+                    errorJan.put(jan, "すでにJAN変商品として入力済みです。");
+                }
+            }
+        }
+
+        List<String> janNewList = priorityOrderJanCardMapper.checkJanNew(priorityOrderJanCard);
+        if (!janNewList.isEmpty()){
+            for (String jan : janNewList) {
+                if(Strings.isNullOrEmpty(errorJan.getOrDefault(jan, ""))){
+                    errorJan.put(jan, "すでに新規商品として入力済みです。");
+                }
+            }
+        }
+
+        return errorJan;
     }
 
 

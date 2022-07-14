@@ -26,8 +26,6 @@ import java.util.stream.Collectors;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class PlanoCycleApiApplicationTests {
-/*    @Autowired
-    private ProductPowerDataMapper productPowerDataMapper;*/
     @Autowired
     ProductPowerMstMapper productPowerMstMapper;
     @Autowired

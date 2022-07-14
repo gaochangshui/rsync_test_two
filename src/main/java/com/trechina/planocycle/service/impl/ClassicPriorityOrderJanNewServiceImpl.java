@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.trechina.planocycle.entity.dto.ClassicPriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanNew;
+import com.trechina.planocycle.entity.po.Jans;
 import com.trechina.planocycle.entity.po.PriorityOrderJanAttribute;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -159,56 +160,56 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
     private void dataSave(JSONArray jsonArray, List<ClassicPriorityOrderJanNew> janNewList,
                           List<PriorityOrderJanAttribute> janAttributeList, String companyCd,
                           Integer priorityOrderCd) {
-        //刘鑫宇
-        //for (int i = 0; i < jsonArray.size(); i++) {
-        //    HashMap item = (HashMap) jsonArray.get(i);
-        //    // 構造jannew主表的参数
-        //    if (item.get("janNew") != null) {
-        //        janNew(janNewList, companyCd, priorityOrderCd, (HashMap) jsonArray.get(i));
-        //        // 構造jan動態属性列的参数
-        //        janAttr(janAttributeList, companyCd, priorityOrderCd, (HashMap) jsonArray.get(i));
-        //    }
-        //}
-        //logger.info("新しい商品リストマスターテーブルの処理後のパラメータを保存します。：{}",janNewList.toString());
-        //logger.info("新規商品リストの動的属性列の処理後のパラメータを保存します。：{}", janAttributeList.toString());
-        //List<String> janNews = janNewList.stream().map(item -> item.getJanNew()).collect(Collectors.toList());
-        //if (!janNews.isEmpty()) {
-        //    List<Jans> janNewMst = priorityOrderJanNewMapper.getJanNewMst(janNews);
-        //    if (!janNews.isEmpty()) {
-        //        for (Jans jans : janNewMst) {
-        //            for (ClassicPriorityOrderJanNew priorityOrderJanNew : janNewList) {
-        //                if (jans.getJan().equals(priorityOrderJanNew.getJanNew())) {
-        //                    priorityOrderJanNew.setNameNew(jans.getJanname());
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-        //
-        ////全挿入
-        //if (!janNewList.isEmpty()) {
-        //    priorityOrderJanNewMapper.insert(janNewList);
-        //    priorityOrderJanAttributeMapper.insert(janAttributeList);
-        //    //すべてのjannewを検索して荷重を変更する店舗数
-        //    List<Map<String, Object>> maps = priorityOrderJanNewMapper.selectJanNewOrAttr(companyCd, priorityOrderCd);
-        //    maps.forEach(item -> {
-        //        String[] attrName = item.get("attr").toString().split(",");
-        //        StringBuilder sel = new StringBuilder();
-        //        for (int i = 1; i <= attrName.length; i++) {
-        //            sel.append("attr").append(i).append("='").append(attrName[i - 1]).append("',");
-        //        }
-        //        List<String> colValueList = Arrays.asList(sel.toString().split(","));
-        //        String branchNum = priorityOrderCatepakAttributeMapper.selectForTempTable(colValueList, priorityOrderCd);
-        //        logger.info("定番店舗数の照会{}", branchNum);
-        //        if (branchNum != null) {
-        //            priorityOrderJanNewMapper.updateBranchNum(Integer.valueOf(item.get("priority_order_cd").toString()),
-        //                    item.get("jan_new").toString(), Integer.valueOf(branchNum));
-        //        } else {
-        //            priorityOrderJanNewMapper.updateBranchNum(Integer.valueOf(item.get("priority_order_cd").toString()),
-        //                    item.get("jan_new").toString(), 0);
-        //        }
-        //    });
-        //}
+
+        for (int i = 0; i < jsonArray.size(); i++) {
+            HashMap item = (HashMap) jsonArray.get(i);
+            // 構造jannew主表的参数
+            if (item.get("janNew") != null) {
+                janNew(janNewList, companyCd, priorityOrderCd, (HashMap) jsonArray.get(i));
+                // 構造jan動態属性列的参数
+                janAttr(janAttributeList, companyCd, priorityOrderCd, (HashMap) jsonArray.get(i));
+            }
+        }
+        logger.info("新しい商品リストマスターテーブルの処理後のパラメータを保存します。：{}",janNewList.toString());
+        logger.info("新規商品リストの動的属性列の処理後のパラメータを保存します。：{}", janAttributeList.toString());
+        List<String> janNews = janNewList.stream().map(item -> item.getJanNew()).collect(Collectors.toList());
+        if (!janNews.isEmpty()) {
+            List<Jans> janNewMst = priorityOrderJanNewMapper.getJanNewMst(janNews);
+            if (!janNews.isEmpty()) {
+                for (Jans jans : janNewMst) {
+                    for (ClassicPriorityOrderJanNew priorityOrderJanNew : janNewList) {
+                        if (jans.getJan().equals(priorityOrderJanNew.getJanNew())) {
+                            priorityOrderJanNew.setNameNew(jans.getJanname());
+                        }
+                    }
+                }
+            }
+        }
+
+        //全挿入
+        if (!janNewList.isEmpty()) {
+            priorityOrderJanNewMapper.insert(janNewList);
+            priorityOrderJanAttributeMapper.insert(janAttributeList);
+            //すべてのjannewを検索して荷重を変更する店舗数
+            List<Map<String, Object>> maps = priorityOrderJanNewMapper.selectJanNewOrAttr(companyCd, priorityOrderCd);
+            maps.forEach(item -> {
+                String[] attrName = item.get("attr").toString().split(",");
+                StringBuilder sel = new StringBuilder();
+                for (int i = 1; i <= attrName.length; i++) {
+                    sel.append("attr").append(i).append("='").append(attrName[i - 1]).append("',");
+                }
+                List<String> colValueList = Arrays.asList(sel.toString().split(","));
+                String branchNum = priorityOrderCatepakAttributeMapper.selectForTempTable(colValueList, priorityOrderCd);
+                logger.info("定番店舗数の照会{}", branchNum);
+                if (branchNum != null) {
+                    priorityOrderJanNewMapper.updateBranchNum(Integer.valueOf(item.get("priority_order_cd").toString()),
+                            item.get("jan_new").toString(), Integer.valueOf(branchNum));
+                } else {
+                    priorityOrderJanNewMapper.updateBranchNum(Integer.valueOf(item.get("priority_order_cd").toString()),
+                            item.get("jan_new").toString(), 0);
+                }
+            });
+        }
     }
 
     private void notExistsData(String companyCd, Integer priorityOrderCd) {

@@ -1,6 +1,7 @@
 package com.trechina.planocycle.entity.vo;
 
 public class PtsJanDataVo {
+
     private Integer taiCd;
     private Integer tanaCd;
     private Integer tanapositionCd;

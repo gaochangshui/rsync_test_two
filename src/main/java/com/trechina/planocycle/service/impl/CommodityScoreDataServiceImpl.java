@@ -8,6 +8,7 @@ import com.trechina.planocycle.service.CommodityScoreDataService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
 import com.trechina.planocycle.utils.cgiUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,14 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CommodityScoreDataServiceImpl implements CommodityScoreDataService {
     @Autowired
     private HttpSession session;
@@ -71,7 +77,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
        if (vehicleNumCache.get(taskIdMap.get("taskID").toString())==null){
            return ResultMaps.result(ResultEnum.SUCCESS,"9");
        }
-       logger.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get("taskID").toString()));
+
+       log.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get("taskID").toString()));
        vehicleNumCache.remove(taskIdMap.get("taskID").toString());
         String coreCompany = sysConfigMapper.selectSycConfig("core_company");
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
@@ -109,7 +116,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         resultData.add(colMap);
         resultData.addAll(allData);
 
-        logger.info("返回pos基本情報はい{}", resultData);
+        log.info("返回pos基本情報はい{}", resultData);
         return ResultMaps.result(ResultEnum.SUCCESS, resultData);
 
 
@@ -222,7 +229,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String productPowerData = cgiUtil.setPath("ProductPowerData");
         String posResult = cgiUtil.postCgi(productPowerData, posMap, tokenInfo,smartPath);
         String smartPath = this.smartPath;
-        executor.execute(() -> {
+        Future<?> future = executor.submit(() -> {
             String uuid = "";
                 Map<String, Object> map1 = null;
                     while (true) {
@@ -272,6 +279,17 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             vehicleNumCache.put(posResult,"ok");
                 });
         String result =  posResult;
+        try {
+            future.get(10, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e){
+            logger.error("thread is interrupted", e);
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException e) {
+            return ResultMaps.result(ResultEnum.SUCCESS, result);
+        }
+
         logger.info("taskId返回：{}", result);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }

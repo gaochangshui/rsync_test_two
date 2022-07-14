@@ -3,14 +3,16 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.api.client.util.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
-import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard;
-import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanNew;
-import com.trechina.planocycle.entity.po.PriorityOrderAttributeClassify;
-import com.trechina.planocycle.entity.po.ShelfPtsData;
+import com.trechina.planocycle.entity.po.*;
+import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanNewVO;
 import com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -21,6 +23,7 @@ import com.trechina.planocycle.utils.CacheUtil;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
 import de.siegmar.fastcsv.reader.CsvReader;
+import de.siegmar.fastcsv.reader.CsvRow;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +32,23 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -470,47 +480,46 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Override
     public Map<String, String> checkIsJanNew(List<String> janList, String company, Integer priorityOrderCd, String tableName) {
         Map<String, String> janMsg = new HashMap<>(2);
-        //刘鑫宇
-        //if(janList.isEmpty()){
-        //    return janMsg;
-        //}
-        //List<String> existJanOld = priorityOrderDataMapper.existJanOld(janList);
-        //List<String> existJanNew = priorityOrderDataMapper.existJanNew(janList);
-        //
-        //if(!existJanOld.isEmpty() || !existJanNew.isEmpty()){
-        //    existJanOld.addAll(existJanNew);
-        //    existJanOld = existJanOld.stream().distinct().collect(Collectors.toList());
-        //    for (String old : existJanOld) {
-        //        if(Strings.isNullOrEmpty(janMsg.getOrDefault(old, ""))){
-        //            janMsg.put(old, "現状棚に並んでいる可能性がありますので削除してください。");
-        //        }
-        //    }
-        //}
-        //
-        //List<String> replaceExistJanNew = priorityOrderJanReplaceMapper.existJanNew(janList, company);
-        //List<String> replaceExistJanOld = priorityOrderJanReplaceMapper.existJanOld(janList, company);
-        //
-        //if(!replaceExistJanNew.isEmpty() || !replaceExistJanOld.isEmpty()){
-        //    replaceExistJanOld.addAll(replaceExistJanNew);
-        //    replaceExistJanOld = replaceExistJanOld.stream().distinct().collect(Collectors.toList());
-        //    for (String old : replaceExistJanOld) {
-        //        if(Strings.isNullOrEmpty(janMsg.getOrDefault(old, ""))) {
-        //            janMsg.put(old, "すでにJAN変商品として入力済みです。");
-        //        }
-        //    }
-        //}
-        //
-        //List<String> proposalExistJanNew = priorityOrderJanProposalMapper.existJanNew(janList, company, priorityOrderCd);
-        //List<String> proposalExistJanOld = priorityOrderJanProposalMapper.existJanOld(janList, company, priorityOrderCd);
-        //if(!proposalExistJanNew.isEmpty() || !proposalExistJanOld.isEmpty()){
-        //    proposalExistJanOld.addAll(proposalExistJanNew);
-        //    proposalExistJanOld = proposalExistJanOld.stream().distinct().collect(Collectors.toList());
-        //    for (String old : proposalExistJanOld) {
-        //        if(Strings.isNullOrEmpty(janMsg.getOrDefault(old, ""))) {
-        //            janMsg.put(old, "すでにJAN変商品として入力済みです。");
-        //        }
-        //    }
-        //}
+        if(janList.isEmpty()){
+            return janMsg;
+        }
+        List<String> existJanOld = priorityOrderDataMapper.existJanOld(janList);
+        List<String> existJanNew = priorityOrderDataMapper.existJanNew(janList);
+
+        if(!existJanOld.isEmpty() || !existJanNew.isEmpty()){
+            existJanOld.addAll(existJanNew);
+            existJanOld = existJanOld.stream().distinct().collect(Collectors.toList());
+            for (String old : existJanOld) {
+                if(Strings.isNullOrEmpty(janMsg.getOrDefault(old, ""))){
+                    janMsg.put(old, "現状棚に並んでいる可能性がありますので削除してください。");
+                }
+            }
+        }
+
+        List<String> replaceExistJanNew = priorityOrderJanReplaceMapper.existJanNew(janList, company);
+        List<String> replaceExistJanOld = priorityOrderJanReplaceMapper.existJanOld(janList, company);
+
+        if(!replaceExistJanNew.isEmpty() || !replaceExistJanOld.isEmpty()){
+            replaceExistJanOld.addAll(replaceExistJanNew);
+            replaceExistJanOld = replaceExistJanOld.stream().distinct().collect(Collectors.toList());
+            for (String old : replaceExistJanOld) {
+                if(Strings.isNullOrEmpty(janMsg.getOrDefault(old, ""))) {
+                    janMsg.put(old, "すでにJAN変商品として入力済みです。");
+                }
+            }
+        }
+
+        List<String> proposalExistJanNew = priorityOrderJanProposalMapper.existJanNew(janList, company, priorityOrderCd);
+        List<String> proposalExistJanOld = priorityOrderJanProposalMapper.existJanOld(janList, company, priorityOrderCd);
+        if(!proposalExistJanNew.isEmpty() || !proposalExistJanOld.isEmpty()){
+            proposalExistJanOld.addAll(proposalExistJanNew);
+            proposalExistJanOld = proposalExistJanOld.stream().distinct().collect(Collectors.toList());
+            for (String old : proposalExistJanOld) {
+                if(Strings.isNullOrEmpty(janMsg.getOrDefault(old, ""))) {
+                    janMsg.put(old, "すでにJAN変商品として入力済みです。");
+                }
+            }
+        }
 
         return janMsg;
     }
@@ -555,137 +564,137 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     public Map<String, Object> uploadPriorityOrderData(String taiCd, String tanaCd, MultipartFile file, String company, Integer priorityOrderCd,
                                                        String attrStr) {
         Map<String, Object> resultMap = Maps.newHashMap();
-        //刘鑫宇
-        //try {
-        //    InputStream inputStream = file.getInputStream();
-        //    InputStreamReader reader = new InputStreamReader(inputStream, Charset.forName("Shift_JIS"));
-        //    CsvReader csvReader = CsvReader.builder().skipEmptyRows(false).build(reader);
-        //
-        //    Map<String, Object> checkResult = this.checkPTS(csvReader, priorityOrderCd, company);
-        //    if(checkResult.get("code") != ResultEnum.SUCCESS.getCode()){
-        //        return checkResult;
-        //    }
-        //
-        //    List<PriorityOrderMstAttrSortDto> checkedAttrList = priorityOrderMstAttrSortMapper.selectWKRankSort(company, priorityOrderCd);
-        //    String attrList = checkedAttrList.stream().map(PriorityOrderMstAttrSortDto::getValue).collect(Collectors.joining(","));
-        //    List<DownloadDto> uploadJanList = (List<DownloadDto>) checkResult.get("data");
-        //    List<PriorityOrderAttributeClassify> classifyList = priorityOrderClassifyMapper.getClassifyList(company, priorityOrderCd);
-        //
-        //    List<DownloadDto> cutJanList = new ArrayList<>(priorityOrderPtsJandataMapper.selectCutJan(company, priorityOrderCd, uploadJanList));
-        //    if(!cutJanList.isEmpty()){
-        //        ClassicPriorityOrderDataService dataService = applicationContext.getBean(ClassicPriorityOrderDataService.class);
-        //        dataService.doJanCut(cutJanList, company, priorityOrderCd);
-        //    }
-        //
-        //    List<DownloadDto> newJanList = new ArrayList<>(priorityOrderPtsJandataMapper.selectNewJan(company, priorityOrderCd, uploadJanList));
-        //    List<ClassicPriorityOrderJanNew> priorityOrderJanNews = null;
-        //    List<PriorityOrderMstAttrSortDto> attrSorts = priorityOrderMstAttrSortMapper.selectWKAttr(company, priorityOrderCd);
-        //    if(!newJanList.isEmpty()){
-        //        ClassicPriorityOrderDataService dataService = applicationContext.getBean(ClassicPriorityOrderDataService.class);
-        //        resultMap = dataService.doJanNew(newJanList, company, priorityOrderCd, taiCd, tanaCd, attrList, classifyList, attrSorts);
-        //        priorityOrderJanNews = (List<ClassicPriorityOrderJanNew>) resultMap.getOrDefault("data", Lists.newArrayList());
-        //    }
-        //    String authorCd = session.getAttribute("aud").toString();
-        //
-        //    List<String> newJanCdList = newJanList.stream().map(DownloadDto::getJan).collect(Collectors.toList());
-        //    List<String> cutJanCdList = cutJanList.stream().map(DownloadDto::getJan).collect(Collectors.toList());
-        //    Map<String, String> janNewError = this.checkIsJanNew(newJanCdList, company, priorityOrderCd, "");
-        //    List<ClassicPriorityOrderJanCard> priorityOrderJanCardList = cutJanCdList.stream().map(jan -> {
-        //        ClassicPriorityOrderJanCard priorityOrderJanCard = new ClassicPriorityOrderJanCard();
-        //        priorityOrderJanCard.setJanOld(jan);
-        //        priorityOrderJanCard.setCompanyCd(company);
-        //        priorityOrderJanCard.setPriorityOrderCd(priorityOrderCd);
-        //        return priorityOrderJanCard;
-        //    }).collect(Collectors.toList());
-        //    Map<String, String> janCutError = priorityOrderJanCardService.checkIsJanCut(priorityOrderJanCardList);
-        //
-        //    List<DownloadDto> needJanNewList = newJanList.stream().filter(jan -> !janNewError.containsKey(jan.getJan())).collect(Collectors.toList());
-        //    List<DownloadDto> needJanCutList = cutJanList.stream().filter(jan -> !janCutError.containsKey(jan.getJan())).collect(Collectors.toList());
-        //
-        //    if(!needJanCutList.isEmpty()){
-        //        priorityOrderPtsJandataMapper.updateCutByJan(company, priorityOrderCd, cutJanList);
-        //        priorityOrderDataMapper.updateCutJanByJanList(priorityOrderCd, needJanCutList);
-        //    }
-        //
-        //    List<String> colName = priorityOrderDataMapper.selectTempColNameBySchema("work_priority_order_result_data", "priority");
-        //    List<Map<String, String>> keyNameLists = colName.stream().map(col -> {
-        //        Map<String, String> map = new HashMap<>(1);
-        //        map.put("name", col);
-        //        return map;
-        //    }).collect(Collectors.toList());
-        //
-        //    if(!needJanNewList.isEmpty()){
-        //        //add 新規jan
-        //        List<Map<String, Object>> datas = new ArrayList<>();
-        //        List<PriorityOrderJanAttribute> attrs = priorityOrderJanAttributeMapper.selectAttributeByJan(company, priorityOrderCd, needJanNewList);
-        //        for (DownloadDto downloadDto : needJanNewList) {
-        //            Map<String, Object> dataMap = new HashMap<>(16);
-        //
-        //            if(priorityOrderJanNews!=null){
-        //                Optional<ClassicPriorityOrderJanNew> firstOpt = priorityOrderJanNews.stream().filter(janNew -> janNew.getJanNew().equals(downloadDto.getJan())).findFirst();
-        //                firstOpt.ifPresent(priorityOrderJanNew -> dataMap.put("sku", priorityOrderJanNew.getNameNew()));
-        //            }
-        //
-        //            dataMap.put("jan_old","_");
-        //            dataMap.put("jan_new",downloadDto.getJan());
-        //            dataMap.put("rank",-1);
-        //            dataMap.put("goods_rank",downloadDto.getTanapositionCd());
-        //            dataMap.put("rank_prop",downloadDto.getTanapositionCd());
-        //            dataMap.put("rank_upd",downloadDto.getTanapositionCd());
-        //            dataMap.put("branch_amount","_");
-        //            dataMap.put("branch_num","0");
-        //            dataMap.put("unit_price","_");
-        //            dataMap.put("pos_amount_upd","_");
-        //            dataMap.put("pos_before_rate","_");
-        //            dataMap.put("pos_amount","_");
-        //            dataMap.put("priority_order_cd", priorityOrderCd);
-        //            dataMap.put("author_cd", authorCd);
-        //            dataMap.put("company_cd", company);
-        //            List<PriorityOrderJanAttribute> attributes = attrs.stream().filter(attr -> attr.getJanNew().equals(downloadDto.getJan())).collect(Collectors.toList());
-        //            for (int i = 0; i < attributes.size(); i++) {
-        //                dataMap.put("attr"+attributes.get(i).getAttrCd(), attributes.get(i).getAttrValue());
-        //            }
-        //            datas.add(dataMap);
-        //        }
-        //        priorityOrderDataMapper.insertByPriorityOrderCd(JSON.parseArray(new Gson().toJson(datas)), keyNameLists, priorityOrderCd);
-        //    }
-        //
-        //    int batchNum = BigDecimal.valueOf(uploadJanList.size() / 1000.0).setScale(0, RoundingMode.CEILING).intValue();
-        //    for (int i = 0; i < batchNum; i++) {
-        //        int startIndex = i*1000;
-        //        int endIndex = startIndex+1001;
-        //        int finalEndIndex = Math.min(endIndex, uploadJanList.size());
-        //
-        //        List<DownloadDto> subUploadJanList = uploadJanList.subList(startIndex, finalEndIndex);
-        //        priorityOrderPtsJandataMapper.updatePtsJanRank(company, priorityOrderCd, subUploadJanList);
-        //    }
-        //
-        //    List<DownloadDto> newRankList = null;
-        //    String[] attrArray = attrList.split(",");
-        //
-        //    uploadJanList.stream().peek(jan->{
-        //        Optional<PriorityOrderAttributeClassify> attr1Opt = classifyList.stream()
-        //                .filter(classify -> classify.getTaiCd().equals(jan.getTaiCd())).findFirst();
-        //        attr1Opt.ifPresent(priorityOrderAttributeClassify -> jan.setAttr1(priorityOrderAttributeClassify.getAttr1()));
-        //
-        //        Optional<PriorityOrderAttributeClassify> attr2Opt = classifyList.stream()
-        //                .filter(classify -> classify.getTanaCd().equals(jan.getTanaCd()) && classify.getTaiCd().equals(jan.getTaiCd())).findFirst();
-        //        attr2Opt.ifPresent(priorityOrderAttributeClassify -> jan.setAttr2(priorityOrderAttributeClassify.getAttr2()));
-        //    }).collect(Collectors.toList());
-        //    priorityOrderPtsJandataMapper.updateAttr(uploadJanList, priorityOrderCd, taiCd, tanaCd);
-        //
-        //    newRankList = priorityOrderPtsJandataMapper.selectJanRank(company, priorityOrderCd, Arrays.stream(attrArray).collect(Collectors.toList()));
-        //    priorityOrderPtsJandataMapper.updateRankUpd(newRankList, taiCd, tanaCd, priorityOrderCd);
-        //    cacheUtil.put(authorCd, attrList);
-        //} catch (IOException e) {
-        //    logger.error("", e);
-        //    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        //    return ResultMaps.result(ResultEnum.FAILURE);
-        //}
-        //
-        //if (Objects.equals(ResultEnum.SUCCESS_BUT_NEW_JAN.getCode(), resultMap.getOrDefault("code", ""))) {
-        //    return ResultMaps.result(ResultEnum.SUCCESS_BUT_NEW_JAN);
-        //}
+
+        try {
+            InputStream inputStream = file.getInputStream();
+            InputStreamReader reader = new InputStreamReader(inputStream, Charset.forName("Shift_JIS"));
+            CsvReader csvReader = CsvReader.builder().skipEmptyRows(false).build(reader);
+
+            Map<String, Object> checkResult = this.checkPTS(csvReader, priorityOrderCd, company);
+            if(checkResult.get("code") != ResultEnum.SUCCESS.getCode()){
+                return checkResult;
+            }
+
+            List<PriorityOrderMstAttrSortDto> checkedAttrList = priorityOrderMstAttrSortMapper.selectWKRankSort(company, priorityOrderCd);
+            String attrList = checkedAttrList.stream().map(PriorityOrderMstAttrSortDto::getValue).collect(Collectors.joining(","));
+            List<DownloadDto> uploadJanList = (List<DownloadDto>) checkResult.get("data");
+            List<PriorityOrderAttributeClassify> classifyList = priorityOrderClassifyMapper.getClassifyList(company, priorityOrderCd);
+
+            List<DownloadDto> cutJanList = new ArrayList<>(priorityOrderPtsJandataMapper.selectCutJan(company, priorityOrderCd, uploadJanList));
+            if(!cutJanList.isEmpty()){
+                ClassicPriorityOrderDataService dataService = applicationContext.getBean(ClassicPriorityOrderDataService.class);
+                dataService.doJanCut(cutJanList, company, priorityOrderCd);
+            }
+
+            List<DownloadDto> newJanList = new ArrayList<>(priorityOrderPtsJandataMapper.selectNewJan(company, priorityOrderCd, uploadJanList));
+            List<ClassicPriorityOrderJanNew> priorityOrderJanNews = null;
+            List<PriorityOrderMstAttrSortDto> attrSorts = priorityOrderMstAttrSortMapper.selectWKAttr(company, priorityOrderCd);
+            if(!newJanList.isEmpty()){
+                ClassicPriorityOrderDataService dataService = applicationContext.getBean(ClassicPriorityOrderDataService.class);
+                resultMap = dataService.doJanNew(newJanList, company, priorityOrderCd, taiCd, tanaCd, attrList, classifyList, attrSorts);
+                priorityOrderJanNews = (List<ClassicPriorityOrderJanNew>) resultMap.getOrDefault("data", Lists.newArrayList());
+            }
+            String authorCd = session.getAttribute("aud").toString();
+
+            List<String> newJanCdList = newJanList.stream().map(DownloadDto::getJan).collect(Collectors.toList());
+            List<String> cutJanCdList = cutJanList.stream().map(DownloadDto::getJan).collect(Collectors.toList());
+            Map<String, String> janNewError = this.checkIsJanNew(newJanCdList, company, priorityOrderCd, "");
+            List<ClassicPriorityOrderJanCard> priorityOrderJanCardList = cutJanCdList.stream().map(jan -> {
+                ClassicPriorityOrderJanCard priorityOrderJanCard = new ClassicPriorityOrderJanCard();
+                priorityOrderJanCard.setJanOld(jan);
+                priorityOrderJanCard.setCompanyCd(company);
+                priorityOrderJanCard.setPriorityOrderCd(priorityOrderCd);
+                return priorityOrderJanCard;
+            }).collect(Collectors.toList());
+            Map<String, String> janCutError = priorityOrderJanCardService.checkIsJanCut(priorityOrderJanCardList);
+
+            List<DownloadDto> needJanNewList = newJanList.stream().filter(jan -> !janNewError.containsKey(jan.getJan())).collect(Collectors.toList());
+            List<DownloadDto> needJanCutList = cutJanList.stream().filter(jan -> !janCutError.containsKey(jan.getJan())).collect(Collectors.toList());
+
+            if(!needJanCutList.isEmpty()){
+                priorityOrderPtsJandataMapper.updateCutByJan(company, priorityOrderCd, cutJanList);
+                priorityOrderDataMapper.updateCutJanByJanList(priorityOrderCd, needJanCutList);
+            }
+
+            List<String> colName = priorityOrderDataMapper.selectTempColNameBySchema("work_priority_order_result_data", "priority");
+            List<Map<String, String>> keyNameLists = colName.stream().map(col -> {
+                Map<String, String> map = new HashMap<>(1);
+                map.put("name", col);
+                return map;
+            }).collect(Collectors.toList());
+
+            if(!needJanNewList.isEmpty()){
+                //add 新規jan
+                List<Map<String, Object>> datas = new ArrayList<>();
+                List<PriorityOrderJanAttribute> attrs = priorityOrderJanAttributeMapper.selectAttributeByJan(company, priorityOrderCd, needJanNewList);
+                for (DownloadDto downloadDto : needJanNewList) {
+                    Map<String, Object> dataMap = new HashMap<>(16);
+
+                    if(priorityOrderJanNews!=null){
+                        Optional<ClassicPriorityOrderJanNew> firstOpt = priorityOrderJanNews.stream().filter(janNew -> janNew.getJanNew().equals(downloadDto.getJan())).findFirst();
+                        firstOpt.ifPresent(priorityOrderJanNew -> dataMap.put("sku", priorityOrderJanNew.getNameNew()));
+                    }
+
+                    dataMap.put("jan_old","_");
+                    dataMap.put("jan_new",downloadDto.getJan());
+                    dataMap.put("rank",-1);
+                    dataMap.put("goods_rank",downloadDto.getTanapositionCd());
+                    dataMap.put("rank_prop",downloadDto.getTanapositionCd());
+                    dataMap.put("rank_upd",downloadDto.getTanapositionCd());
+                    dataMap.put("branch_amount","_");
+                    dataMap.put("branch_num","0");
+                    dataMap.put("unit_price","_");
+                    dataMap.put("pos_amount_upd","_");
+                    dataMap.put("pos_before_rate","_");
+                    dataMap.put("pos_amount","_");
+                    dataMap.put("priority_order_cd", priorityOrderCd);
+                    dataMap.put("author_cd", authorCd);
+                    dataMap.put("company_cd", company);
+                    List<PriorityOrderJanAttribute> attributes = attrs.stream().filter(attr -> attr.getJanNew().equals(downloadDto.getJan())).collect(Collectors.toList());
+                    for (int i = 0; i < attributes.size(); i++) {
+                        dataMap.put("attr"+attributes.get(i).getAttrCd(), attributes.get(i).getAttrValue());
+                    }
+                    datas.add(dataMap);
+                }
+                priorityOrderDataMapper.insertByPriorityOrderCd(JSON.parseArray(new Gson().toJson(datas)), keyNameLists, priorityOrderCd);
+            }
+
+            int batchNum = BigDecimal.valueOf(uploadJanList.size() / 1000.0).setScale(0, RoundingMode.CEILING).intValue();
+            for (int i = 0; i < batchNum; i++) {
+                int startIndex = i*1000;
+                int endIndex = startIndex+1001;
+                int finalEndIndex = Math.min(endIndex, uploadJanList.size());
+
+                List<DownloadDto> subUploadJanList = uploadJanList.subList(startIndex, finalEndIndex);
+                priorityOrderPtsJandataMapper.updatePtsJanRank(company, priorityOrderCd, subUploadJanList);
+            }
+
+            List<DownloadDto> newRankList = null;
+            String[] attrArray = attrList.split(",");
+
+            uploadJanList.stream().peek(jan->{
+                Optional<PriorityOrderAttributeClassify> attr1Opt = classifyList.stream()
+                        .filter(classify -> classify.getTaiCd().equals(jan.getTaiCd())).findFirst();
+                attr1Opt.ifPresent(priorityOrderAttributeClassify -> jan.setAttr1(priorityOrderAttributeClassify.getAttr1()));
+
+                Optional<PriorityOrderAttributeClassify> attr2Opt = classifyList.stream()
+                        .filter(classify -> classify.getTanaCd().equals(jan.getTanaCd()) && classify.getTaiCd().equals(jan.getTaiCd())).findFirst();
+                attr2Opt.ifPresent(priorityOrderAttributeClassify -> jan.setAttr2(priorityOrderAttributeClassify.getAttr2()));
+            }).collect(Collectors.toList());
+            priorityOrderPtsJandataMapper.updateAttr(uploadJanList, priorityOrderCd, taiCd, tanaCd);
+
+            newRankList = priorityOrderPtsJandataMapper.selectJanRank(company, priorityOrderCd, Arrays.stream(attrArray).collect(Collectors.toList()));
+            priorityOrderPtsJandataMapper.updateRankUpd(newRankList, taiCd, tanaCd, priorityOrderCd);
+            cacheUtil.put(authorCd, attrList);
+        } catch (IOException e) {
+            logger.error("", e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
+
+        if (Objects.equals(ResultEnum.SUCCESS_BUT_NEW_JAN.getCode(), resultMap.getOrDefault("code", ""))) {
+            return ResultMaps.result(ResultEnum.SUCCESS_BUT_NEW_JAN);
+        }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -709,132 +718,132 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Override
     public Map<String, Object> doJanNew(List<DownloadDto> newJanList, String company, Integer priorityOrderCd, String taiCd, String tanaCd,
                                         String attrList, List<PriorityOrderAttributeClassify> classifyList,List<PriorityOrderMstAttrSortDto> attrSorts){
-        //刘鑫宇
-        //priorityOrderJanNewMapper.deleteByJan(company, priorityOrderCd, newJanList);
-        //
-        //List<String> newJanExistCdList = newJanList.stream().map(DownloadDto::getJan).collect(Collectors.toList());
-        //
-        //if(newJanExistCdList.isEmpty()){
-        //    return Maps.newHashMap();
-        //}
-        //
-        ////eg:attr1:1000_0000_1,attr2:0001_0000_1
-        //Map<String, String> attrSortMap = attrSorts.stream()
-        //        .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getSort, PriorityOrderMstAttrSortDto::getValue));
-        //
-        //List<DownloadDto> notExistNewJan = newJanList.stream().filter(jan -> newJanExistCdList.contains(jan.getJan())).collect(Collectors.toList());
-        //priorityOrderPtsJandataMapper.insertNewJan(notExistNewJan);
-        //
-        //Map<String, Object> dbData = getPriorityOrderDataForDb(newJanExistCdList.toArray(new String[0]), attrSortMap);
-        //Object data = dbData.get("data");
-        //
-        //if(data==null){
-        //    logger.error("db error, {}", dbData);
-        //    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        //}
-        //JSONArray datas = (JSONArray) JSON.parse(dbData.get("data").toString());
-        //Map<String, Object> resultMap = Maps.newHashMap();
-        //
-        ////新規jan
-        //List<Map> maps = new Gson().fromJson(dbData.get("data").toString(), new TypeToken<List<Map>>(){}.getType());
-        //List<PriorityOrderJanAttribute> janAttrs = new ArrayList<>();
-        //
-        //List<String> allAttrSortList = new ArrayList<>(attrSortMap.keySet());
-        //allAttrSortList.removeIf(s->s.equals(taiCd)||s.equals(tanaCd));
-        //
-        //List<String> janMstList = maps.stream().map(map -> map.get("jan_new").toString()).collect(Collectors.toList());
-        ////not in jan master
-        //newJanList.stream().filter(newJan->!janMstList.contains(newJan.getJan())).forEach(newJan->{
-        //    Map<String, Object> item = new HashMap<>(16);
-        //    item.put("sku","");
-        //    item.put("jan_new",newJan.getJan());
-        //
-        //    this.fillCommonParam(newJan, item);
-        //    item.put(taiCd, newJan.getAttr1());
-        //    item.put(tanaCd, newJan.getAttr2());
-        //
-        //    for (int i = 0; i < allAttrSortList.size(); i++) {
-        //        item.put(allAttrSortList.get(i), "");
-        //    }
-        //
-        //    datas.add(JSON.parseObject(new Gson().toJson(item)));
-        //    maps.add(item);
-        //    resultMap.put("code", ResultEnum.SUCCESS_BUT_NEW_JAN.getCode());
-        //});
-        //
-        ////in jan master
-        //maps.forEach(item->{
-        //    for (int i = 0; i < newJanList.size(); i++) {
-        //        DownloadDto downloadDto = newJanList.get(i);
-        //        if (item.get("jan_new").equals(downloadDto.getJan())){
-        //            Map<String, Object> attrValMap = new HashMap<>();
-        //            for (String attr : attrList.split(",")) {
-        //                attrValMap.put(attr, item.getOrDefault(attr, ""));
-        //            }
-        //            //The order cannot be changed, select only the checked attribute rank(value in attrList)
-        //            Integer branchNum = priorityOrderResultDataMapper.selectBranchNumByAttr(priorityOrderCd, company, attrValMap);
-        //            branchNum = Optional.ofNullable(branchNum).orElse(0);
-        //            item.put("branch_num", branchNum);
-        //
-        //            for (String attr : allAttrSortList) {
-        //                attrValMap.put(attr, item.getOrDefault(attr, ""));
-        //            }
-        //            this.fillCommonParam(downloadDto, item);
-        //            downloadDto.setName(item.get("sku").toString());
-        //            downloadDto.setBranchNum(branchNum);
-        //            newJanList.set(i, downloadDto);
-        //        }
-        //    }
-        //    List<Object> attrs = (List<Object>) item.keySet().stream()
-        //            .filter(k -> k.toString().startsWith("attr")).collect(Collectors.toList());
-        //    for (Object attr : attrs) {
-        //        PriorityOrderJanAttribute janAttr = new PriorityOrderJanAttribute();
-        //
-        //        if(taiCd.equals(attr.toString()) || tanaCd.equals(attr.toString())){
-        //            Optional<DownloadDto> janOpt = newJanList.stream().filter(downloadDto -> downloadDto.getJan().equals(item.get("jan_new"))).findFirst();
-        //            if(janOpt.isPresent()){
-        //                DownloadDto jan = janOpt.get();
-        //                Optional<PriorityOrderAttributeClassify> attrOpt = classifyList.stream()
-        //                        .filter(classify -> classify.getTanaCd().equals(jan.getTanaCd()) && classify.getTaiCd().equals(jan.getTaiCd())).findFirst();
-        //
-        //                if (taiCd.equals(attr.toString())) {
-        //                    //taiTana's first element is tai attr
-        //                    attrOpt.ifPresent(priorityOrderAttributeClassify -> janAttr.setAttrValue(attrOpt.get().getAttr1()));
-        //                }else if(tanaCd.equals(attr.toString())){
-        //                    //taiTana's second element is tana attr
-        //                    attrOpt.ifPresent(priorityOrderAttributeClassify -> janAttr.setAttrValue(attrOpt.get().getAttr2()));
-        //                }
-        //            }
-        //        }else{
-        //            janAttr.setAttrValue(item.get(attr).toString());
-        //        }
-        //        String attrCd = attr.toString();
-        //        janAttr.setAttrCd(Integer.parseInt(attrCd.replace("attr", "")));
-        //        janAttr.setJanNew(item.get("jan_new").toString());
-        //        janAttr.setPriorityOrderCd(priorityOrderCd);
-        //        janAttr.setCompanyCd(company);
-        //        janAttrs.add(janAttr);
-        //    }
-        //});
-        //if (!janAttrs.isEmpty()) {
-        //    priorityOrderJanAttributeMapper.deleteByPrimaryKey(company,priorityOrderCd);
-        //    priorityOrderJanAttributeMapper.insert(janAttrs);
-        //}
-        //
-        //List<ClassicPriorityOrderJanNew> priorityOrderJanNewList = newJanList.stream().map(jan -> {
-        //    ClassicPriorityOrderJanNew janNew = new ClassicPriorityOrderJanNew();
-        //    janNew.setJanNew(jan.getJan());
-        //    janNew.setCompanyCd(company);
-        //    janNew.setRank(jan.getTanapositionCd());
-        //    janNew.setPriorityOrderCd(priorityOrderCd);
-        //    janNew.setBranchAccount(BigDecimal.ZERO);
-        //    janNew.setBranchnum(jan.getBranchNum());
-        //    janNew.setNameNew(jan.getName());
-        //    return janNew;
-        //}).collect(Collectors.toList());
-        //
-        //priorityOrderJanNewMapper.insert(priorityOrderJanNewList);
-        //resultMap.put("data", priorityOrderJanNewList);
+
+        priorityOrderJanNewMapper.deleteByJan(company, priorityOrderCd, newJanList);
+
+        List<String> newJanExistCdList = newJanList.stream().map(DownloadDto::getJan).collect(Collectors.toList());
+
+        if(newJanExistCdList.isEmpty()){
+            return Maps.newHashMap();
+        }
+
+        //eg:attr1:1000_0000_1,attr2:0001_0000_1
+        Map<String, String> attrSortMap = attrSorts.stream()
+                .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getSort, PriorityOrderMstAttrSortDto::getValue));
+
+        List<DownloadDto> notExistNewJan = newJanList.stream().filter(jan -> newJanExistCdList.contains(jan.getJan())).collect(Collectors.toList());
+        priorityOrderPtsJandataMapper.insertNewJan(notExistNewJan);
+
+        Map<String, Object> dbData = getPriorityOrderDataForDb(newJanExistCdList.toArray(new String[0]), attrSortMap);
+        Object data = dbData.get("data");
+
+        if(data==null){
+            logger.error("db error, {}", dbData);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
+        JSONArray datas = (JSONArray) JSON.parse(dbData.get("data").toString());
+        Map<String, Object> resultMap = Maps.newHashMap();
+
+        //新規jan
+        List<Map> maps = new Gson().fromJson(dbData.get("data").toString(), new TypeToken<List<Map>>(){}.getType());
+        List<PriorityOrderJanAttribute> janAttrs = new ArrayList<>();
+
+        List<String> allAttrSortList = new ArrayList<>(attrSortMap.keySet());
+        allAttrSortList.removeIf(s->s.equals(taiCd)||s.equals(tanaCd));
+
+        List<String> janMstList = maps.stream().map(map -> map.get("jan_new").toString()).collect(Collectors.toList());
+        //not in jan master
+        newJanList.stream().filter(newJan->!janMstList.contains(newJan.getJan())).forEach(newJan->{
+            Map<String, Object> item = new HashMap<>(16);
+            item.put("sku","");
+            item.put("jan_new",newJan.getJan());
+
+            this.fillCommonParam(newJan, item);
+            item.put(taiCd, newJan.getAttr1());
+            item.put(tanaCd, newJan.getAttr2());
+
+            for (int i = 0; i < allAttrSortList.size(); i++) {
+                item.put(allAttrSortList.get(i), "");
+            }
+
+            datas.add(JSON.parseObject(new Gson().toJson(item)));
+            maps.add(item);
+            resultMap.put("code", ResultEnum.SUCCESS_BUT_NEW_JAN.getCode());
+        });
+
+        //in jan master
+        maps.forEach(item->{
+            for (int i = 0; i < newJanList.size(); i++) {
+                DownloadDto downloadDto = newJanList.get(i);
+                if (item.get("jan_new").equals(downloadDto.getJan())){
+                    Map<String, Object> attrValMap = new HashMap<>();
+                    for (String attr : attrList.split(",")) {
+                        attrValMap.put(attr, item.getOrDefault(attr, ""));
+                    }
+                    //The order cannot be changed, select only the checked attribute rank(value in attrList)
+                    Integer branchNum = priorityOrderResultDataMapper.selectBranchNumByAttr(priorityOrderCd, company, attrValMap);
+                    branchNum = Optional.ofNullable(branchNum).orElse(0);
+                    item.put("branch_num", branchNum);
+
+                    for (String attr : allAttrSortList) {
+                        attrValMap.put(attr, item.getOrDefault(attr, ""));
+                    }
+                    this.fillCommonParam(downloadDto, item);
+                    downloadDto.setName(item.get("sku").toString());
+                    downloadDto.setBranchNum(branchNum);
+                    newJanList.set(i, downloadDto);
+                }
+            }
+            List<Object> attrs = (List<Object>) item.keySet().stream()
+                    .filter(k -> k.toString().startsWith("attr")).collect(Collectors.toList());
+            for (Object attr : attrs) {
+                PriorityOrderJanAttribute janAttr = new PriorityOrderJanAttribute();
+
+                if(taiCd.equals(attr.toString()) || tanaCd.equals(attr.toString())){
+                    Optional<DownloadDto> janOpt = newJanList.stream().filter(downloadDto -> downloadDto.getJan().equals(item.get("jan_new"))).findFirst();
+                    if(janOpt.isPresent()){
+                        DownloadDto jan = janOpt.get();
+                        Optional<PriorityOrderAttributeClassify> attrOpt = classifyList.stream()
+                                .filter(classify -> classify.getTanaCd().equals(jan.getTanaCd()) && classify.getTaiCd().equals(jan.getTaiCd())).findFirst();
+
+                        if (taiCd.equals(attr.toString())) {
+                            //taiTana's first element is tai attr
+                            attrOpt.ifPresent(priorityOrderAttributeClassify -> janAttr.setAttrValue(attrOpt.get().getAttr1()));
+                        }else if(tanaCd.equals(attr.toString())){
+                            //taiTana's second element is tana attr
+                            attrOpt.ifPresent(priorityOrderAttributeClassify -> janAttr.setAttrValue(attrOpt.get().getAttr2()));
+                        }
+                    }
+                }else{
+                    janAttr.setAttrValue(item.get(attr).toString());
+                }
+                String attrCd = attr.toString();
+                janAttr.setAttrCd(Integer.parseInt(attrCd.replace("attr", "")));
+                janAttr.setJanNew(item.get("jan_new").toString());
+                janAttr.setPriorityOrderCd(priorityOrderCd);
+                janAttr.setCompanyCd(company);
+                janAttrs.add(janAttr);
+            }
+        });
+        if (!janAttrs.isEmpty()) {
+            priorityOrderJanAttributeMapper.deleteByPrimaryKey(company,priorityOrderCd);
+            priorityOrderJanAttributeMapper.insert(janAttrs);
+        }
+
+        List<ClassicPriorityOrderJanNew> priorityOrderJanNewList = newJanList.stream().map(jan -> {
+            ClassicPriorityOrderJanNew janNew = new ClassicPriorityOrderJanNew();
+            janNew.setJanNew(jan.getJan());
+            janNew.setCompanyCd(company);
+            janNew.setRank(jan.getTanapositionCd());
+            janNew.setPriorityOrderCd(priorityOrderCd);
+            janNew.setBranchAccount(BigDecimal.ZERO);
+            janNew.setBranchnum(jan.getBranchNum());
+            janNew.setNameNew(jan.getName());
+            return janNew;
+        }).collect(Collectors.toList());
+
+        priorityOrderJanNewMapper.insert(priorityOrderJanNewList);
+        resultMap.put("data", priorityOrderJanNewList);
         return null;
     }
 
@@ -856,99 +865,98 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     }
 
     private  Map<String,Object> checkPTS(CsvReader csvReader, Integer priorityOrderCd, String company){
-        //刘鑫宇
-        //DownloadDto downloadDto = null;
-        //int rowIndex = 0;
-        //int tanaPositionColIndex = 2;
-        //int taiCdColIndex = 0;
-        //int tanaCdColIndex = 1;
-        //int janCdColIndex = 3;
-        //final String numberRegex = "\\d+";
-        //int startRowIndex = 3;
-        //int colCount = 9;
-        ////Check whether the column of CSV file is numeric
-        //Pattern numPattern = Pattern.compile(numberRegex);
-        //List<DownloadDto> uploadJanList = new ArrayList<>();
-        //
-        //for (CsvRow csvRow : csvReader) {
-        //    if(csvRow.isEmpty() || csvRow.getFields().stream().allMatch(""::equals)){
-        //        rowIndex++;
-        //        continue;
-        //    }
-        //
-        //    if(rowIndex<startRowIndex){
-        //        if(rowIndex==0){
-        //            String mode = csvRow.getField(1);
-        //            if(!"V1.0".equals(mode)){
-        //                return ResultMaps.result(ResultEnum.VERSION_ERROR);
-        //            }
-        //        }
-        //        rowIndex++;
-        //        continue;
-        //    }
-        //    int fieldCount = csvRow.getFieldCount();
-        //    //The PTS header is not check
-        //    if(fieldCount!=colCount){
-        //        logger.warn("列数エラー");
-        //        return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
-        //    }
-        //
-        //    //The tanaposition column contains non numbers, error
-        //    String tanaPosition = csvRow.getField(tanaPositionColIndex);
-        //    if(!numPattern.matcher(tanaPosition).matches()){
-        //        logger.warn("rankには非数値が含まれています");
-        //        return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
-        //    }
-        //
-        //    downloadDto = new DownloadDto();
-        //    downloadDto.setPriorityOrderCd(priorityOrderCd);
-        //    downloadDto.setCompanyCd(company);
-        //
-        //    String taiField = csvRow.getField(taiCdColIndex);
-        //    if(!numPattern.matcher(taiField).matches()){
-        //        logger.warn("taiには非数値が含まれています");
-        //        return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
-        //    }
-        //
-        //    String tanaField = csvRow.getField(tanaCdColIndex);
-        //    if(!numPattern.matcher(tanaField).matches()){
-        //        logger.warn("tanaには非数値が含まれています");
-        //        return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
-        //    }
-        //    String janField = csvRow.getField(janCdColIndex).trim();
-        //    if(Strings.isNullOrEmpty(janField)){
-        //        logger.warn("janには空が含まれています");
-        //        return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
-        //    }
-        //
-        //    downloadDto.setTaiCd(Integer.parseInt(taiField));
-        //    downloadDto.setTanaCd(Integer.parseInt(tanaField));
-        //    downloadDto.setTanapositionCd(Integer.parseInt(tanaPosition));
-        //    downloadDto.setJan(janField);
-        //    uploadJanList.add(downloadDto);
-        //    rowIndex++;
-        //}
-        //
-        //Map<String, List<DownloadDto>> janCount = uploadJanList.stream().collect(Collectors.groupingBy(DownloadDto::getJan));
-        //boolean isExistRepeatJan = janCount.values().removeIf(data -> data.size() > 1);
-        //
-        //if(isExistRepeatJan){
-        //    logger.warn("duplicate Jan exists");
-        //    return ResultMaps.result(40003, "jan repeat");
-        //}
-        //
-        //Set<String> allAttrList = uploadJanList.stream().map(jan -> jan.getTaiCd() + "_" + jan.getTanaCd()).collect(Collectors.toSet());
-        //Set<String> ptsAllAttrList = priorityOrderClassifyMapper.selectDiffJanTaiTana(company, priorityOrderCd);
-        ////upload csv file have tai and tana but download file have not
-        //Sets.SetView<String> difference = Sets.difference(allAttrList, ptsAllAttrList);
-        //if (!difference.isEmpty()) {
-        //    // There is an undefined tai and tana in the CSV file
-        //    logger.warn("tai_tana not exist,{}", difference);
-        //    return ResultMaps.result(ResultEnum.CLASSIFY_NOT_EXIST);
-        //}
 
-        //return ResultMaps.result(ResultEnum.SUCCESS, uploadJanList);
-        return ResultMaps.result(ResultEnum.SUCCESS, null);
+        DownloadDto downloadDto = null;
+        int rowIndex = 0;
+        int tanaPositionColIndex = 2;
+        int taiCdColIndex = 0;
+        int tanaCdColIndex = 1;
+        int janCdColIndex = 3;
+        final String numberRegex = "\\d+";
+        int startRowIndex = 3;
+        int colCount = 9;
+        //Check whether the column of CSV file is numeric
+        Pattern numPattern = Pattern.compile(numberRegex);
+        List<DownloadDto> uploadJanList = new ArrayList<>();
+
+        for (CsvRow csvRow : csvReader) {
+            if(csvRow.isEmpty() || csvRow.getFields().stream().allMatch(""::equals)){
+                rowIndex++;
+                continue;
+            }
+
+            if(rowIndex<startRowIndex){
+                if(rowIndex==0){
+                    String mode = csvRow.getField(1);
+                    if(!"V1.0".equals(mode)){
+                        return ResultMaps.result(ResultEnum.VERSION_ERROR);
+                    }
+                }
+                rowIndex++;
+                continue;
+            }
+            int fieldCount = csvRow.getFieldCount();
+            //The PTS header is not check
+            if(fieldCount!=colCount){
+                logger.warn("列数エラー");
+                return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
+            }
+
+            //The tanaposition column contains non numbers, error
+            String tanaPosition = csvRow.getField(tanaPositionColIndex);
+            if(!numPattern.matcher(tanaPosition).matches()){
+                logger.warn("rankには非数値が含まれています");
+                return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
+            }
+
+            downloadDto = new DownloadDto();
+            downloadDto.setPriorityOrderCd(priorityOrderCd);
+            downloadDto.setCompanyCd(company);
+
+            String taiField = csvRow.getField(taiCdColIndex);
+            if(!numPattern.matcher(taiField).matches()){
+                logger.warn("taiには非数値が含まれています");
+                return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
+            }
+
+            String tanaField = csvRow.getField(tanaCdColIndex);
+            if(!numPattern.matcher(tanaField).matches()){
+                logger.warn("tanaには非数値が含まれています");
+                return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
+            }
+            String janField = csvRow.getField(janCdColIndex).trim();
+            if(Strings.isNullOrEmpty(janField)){
+                logger.warn("janには空が含まれています");
+                return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
+            }
+
+            downloadDto.setTaiCd(Integer.parseInt(taiField));
+            downloadDto.setTanaCd(Integer.parseInt(tanaField));
+            downloadDto.setTanapositionCd(Integer.parseInt(tanaPosition));
+            downloadDto.setJan(janField);
+            uploadJanList.add(downloadDto);
+            rowIndex++;
+        }
+
+        Map<String, List<DownloadDto>> janCount = uploadJanList.stream().collect(Collectors.groupingBy(DownloadDto::getJan));
+        boolean isExistRepeatJan = janCount.values().removeIf(data -> data.size() > 1);
+
+        if(isExistRepeatJan){
+            logger.warn("duplicate Jan exists");
+            return ResultMaps.result(40003, "jan repeat");
+        }
+
+        Set<String> allAttrList = uploadJanList.stream().map(jan -> jan.getTaiCd() + "_" + jan.getTanaCd()).collect(Collectors.toSet());
+        Set<String> ptsAllAttrList = priorityOrderClassifyMapper.selectDiffJanTaiTana(company, priorityOrderCd);
+        //upload csv file have tai and tana but download file have not
+        Sets.SetView<String> difference = Sets.difference(allAttrList, ptsAllAttrList);
+        if (!difference.isEmpty()) {
+            // There is an undefined tai and tana in the CSV file
+            logger.warn("tai_tana not exist,{}", difference);
+            return ResultMaps.result(ResultEnum.CLASSIFY_NOT_EXIST);
+        }
+
+        return ResultMaps.result(ResultEnum.SUCCESS, uploadJanList);
     }
 
     private JSONArray priorityOrderData(JSONArray datas) {
@@ -1003,103 +1011,103 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> getPriorityOrderListInfo(String companyCd, Integer priorityOrderCd) {
-        //刘鑫宇
-        //String authorCd = session.getAttribute("aud").toString();
-        //
-        //List<String> janCutList = priorityOrderJanCardMapper.getExistOtherMst(companyCd, priorityOrderCd);
-        //priorityOrderDataMapper.updateRevivification(companyCd,priorityOrderCd);
-        //if (!janCutList.isEmpty()) {
-        //
-        //    priorityOrderDataMapper.updateUPdRank(janCutList, companyCd,priorityOrderCd);
-        //}
-        //List<ClassicPriorityOrderJanNewVO> janNewList = priorityOrderJanNewMapper.getExistOtherMst(companyCd, priorityOrderCd);
-        //priorityOrderJanNewMapper.deleteJanNew(companyCd, priorityOrderCd);
-        //if (!janNewList.isEmpty()) {
-        //    JSONArray jsonArray = new JSONArray();
-        //
-        //    // 遍暦結果集，拆分動態列
-        //    if (!janNewList.isEmpty()) {
-        //        janNewList.forEach(item -> {
-        //            Map<String, Object> result = new HashMap<>();
-        //            String[] attrList = item.getAttr().split(",");
-        //            String[] valList;
-        //            result.put("jan_new", item.getJanNew());
-        //            result.put("jan_old", "_");
-        //            result.put("sku", item.getJanName());
-        //            for (int i = 0; i < attrList.length; i++) {
-        //                valList = attrList[i].split(":");
-        //                if (valList.length < 2) {
-        //                        result.put("attr" + valList[0], "");
-        //                } else {
-        //                        result.put("attr" + valList[0], valList[1]);
-        //                }
-        //
-        //            }
-        //            result.put("company_cd", companyCd);
-        //            result.put("priority_order_cd", priorityOrderCd);
-        //            result.put("author_cd", authorCd);
-        //            result.put("pos_amount", 0);
-        //            result.put("branch_amount_upd", 0);
-        //            result.put("sale_forecast", 0);
-        //            result.put("difference", 0);
-        //            result.put("unit_price", "_");
-        //            result.put("goods_rank", 0);
-        //            result.put("rank_prop", item.getRank());
-        //            result.put("rank_upd", item.getRank());
-        //            result.put("branch_num", item.getBranchNum());
-        //            result.put("branch_num_upd", item.getBranchNum());
-        //            result.put("branch_amount", item.getBranchAccount());
-        //            jsonArray.add(result);
-        //        });
-        //
-        //    } else {
-        //
-        //        ClassicPriorityOrderJanNewVO colResult = priorityOrderJanNewMapper.selectColName(companyCd, priorityOrderCd);
-        //        logger.info("つかむ取新規商品list返回結果集e：{}",colResult);
-        //        String[] attrList = colResult.getAttr().split(",");
-        //        String[] valList;
-        //        List<String> results = new ArrayList<>();
-        //        for (int i = 0; i < attrList.length; i++) {
-        //            valList = attrList[i].split(":");
-        //
-        //            if (i == attrList.length - 1) {
-        //                results.add("mulit_attr");
-        //            } else {
-        //                results.add("attr" + valList[0]);
-        //            }
-        //        }
-        //        results.add("company_cd");
-        //        results.add("priority_order_cd");
-        //        results.add("author_cd");
-        //        results.add("pos_amount");
-        //        results.add("branch_amount_upd");
-        //        results.add("difference");
-        //        results.add("sale_forecast");
-        //        results.add("unit_price");
-        //        results.add("goods_rank");
-        //        results.add("jan_new");
-        //        results.add("jan_old");
-        //        results.add("sku");
-        //        results.add("rank_prop");
-        //        results.add("rank_upd");
-        //        results.add("branch_num");
-        //        results.add("branch_num_upd");
-        //        results.add("branch_amount");
-        //
-        //        jsonArray.add(results);
-        //    }
-        //
-        //    priorityOrderDataMapper.insertJanNew(jsonArray);
-        //}
-        //List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
-        //List<Map<String, Object>> dataList = priorityOrderDataMapper.getTmpTable( attrList, priorityOrderCd, companyCd);
-        //for (Map<String, Object> datas : dataList) {
-        //    if (!datas.get("jan_new").equals(datas.get("jan_old")) && !"_".equals(datas.get("jan_old"))){
-        //        datas.put("rank_upd",datas.get("rank_prop"));
-        //    }
-        //}
-        //priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
-        //priorityOrderDataMapper.insertTmpTable(dataList);
+
+        String authorCd = session.getAttribute("aud").toString();
+
+        List<String> janCutList = priorityOrderJanCardMapper.getExistOtherMst(companyCd, priorityOrderCd);
+        priorityOrderDataMapper.updateRevivification(companyCd,priorityOrderCd);
+        if (!janCutList.isEmpty()) {
+
+            priorityOrderDataMapper.updateUPdRank(janCutList, companyCd,priorityOrderCd);
+        }
+        List<ClassicPriorityOrderJanNewVO> janNewList = priorityOrderJanNewMapper.getExistOtherMst(companyCd, priorityOrderCd);
+        priorityOrderJanNewMapper.deleteJanNew(companyCd, priorityOrderCd);
+        if (!janNewList.isEmpty()) {
+            JSONArray jsonArray = new JSONArray();
+
+            // 遍暦結果集，拆分動態列
+            if (!janNewList.isEmpty()) {
+                janNewList.forEach(item -> {
+                    Map<String, Object> result = new HashMap<>();
+                    String[] attrList = item.getAttr().split(",");
+                    String[] valList;
+                    result.put("jan_new", item.getJanNew());
+                    result.put("jan_old", "_");
+                    result.put("sku", item.getJanName());
+                    for (int i = 0; i < attrList.length; i++) {
+                        valList = attrList[i].split(":");
+                        if (valList.length < 2) {
+                                result.put("attr" + valList[0], "");
+                        } else {
+                                result.put("attr" + valList[0], valList[1]);
+                        }
+
+                    }
+                    result.put("company_cd", companyCd);
+                    result.put("priority_order_cd", priorityOrderCd);
+                    result.put("author_cd", authorCd);
+                    result.put("pos_amount", 0);
+                    result.put("branch_amount_upd", 0);
+                    result.put("sale_forecast", 0);
+                    result.put("difference", 0);
+                    result.put("unit_price", "_");
+                    result.put("goods_rank", 0);
+                    result.put("rank_prop", item.getRank());
+                    result.put("rank_upd", item.getRank());
+                    result.put("branch_num", item.getBranchNum());
+                    result.put("branch_num_upd", item.getBranchNum());
+                    result.put("branch_amount", item.getBranchAccount());
+                    jsonArray.add(result);
+                });
+
+            } else {
+
+                ClassicPriorityOrderJanNewVO colResult = priorityOrderJanNewMapper.selectColName(companyCd, priorityOrderCd);
+                logger.info("つかむ取新規商品list返回結果集e：{}",colResult);
+                String[] attrList = colResult.getAttr().split(",");
+                String[] valList;
+                List<String> results = new ArrayList<>();
+                for (int i = 0; i < attrList.length; i++) {
+                    valList = attrList[i].split(":");
+
+                    if (i == attrList.length - 1) {
+                        results.add("mulit_attr");
+                    } else {
+                        results.add("attr" + valList[0]);
+                    }
+                }
+                results.add("company_cd");
+                results.add("priority_order_cd");
+                results.add("author_cd");
+                results.add("pos_amount");
+                results.add("branch_amount_upd");
+                results.add("difference");
+                results.add("sale_forecast");
+                results.add("unit_price");
+                results.add("goods_rank");
+                results.add("jan_new");
+                results.add("jan_old");
+                results.add("sku");
+                results.add("rank_prop");
+                results.add("rank_upd");
+                results.add("branch_num");
+                results.add("branch_num_upd");
+                results.add("branch_amount");
+
+                jsonArray.add(results);
+            }
+
+            priorityOrderDataMapper.insertJanNew(jsonArray);
+        }
+        List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
+        List<Map<String, Object>> dataList = priorityOrderDataMapper.getTmpTable( attrList, priorityOrderCd, companyCd);
+        for (Map<String, Object> datas : dataList) {
+            if (!datas.get("jan_new").equals(datas.get("jan_old")) && !"_".equals(datas.get("jan_old"))){
+                datas.put("rank_upd",datas.get("rank_prop"));
+            }
+        }
+        priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
+        priorityOrderDataMapper.insertTmpTable(dataList);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
