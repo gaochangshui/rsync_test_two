@@ -1,6 +1,8 @@
 package com.trechina.planocycle.entity.dto;
 
+import lombok.Data;
 
+@Data
 public class PriorityOrderPtsDataDto {
     private Integer id;
     private Integer oldPtsCd;
@@ -8,54 +10,6 @@ public class PriorityOrderPtsDataDto {
     private String authorCd;
     private String companyCd;
     private String fileName;
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public String getCompanyCd() {
-        return companyCd;
-    }
-
-    public void setCompanyCd(String companyCd) {
-        this.companyCd = companyCd;
-    }
-
-    public String getAuthorCd() {
-        return authorCd;
-    }
-
-    public void setAuthorCd(String authorCd) {
-        this.authorCd = authorCd;
-    }
-
-    public Integer getPriorityOrderCd() {
-        return priorityOrderCd;
-    }
-
-    public void setPriorityOrderCd(Integer priorityOrderCd) {
-        this.priorityOrderCd = priorityOrderCd;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getOldPtsCd() {
-        return oldPtsCd;
-    }
-
-    public void setOldPtsCd(Integer oldPtsCd) {
-        this.oldPtsCd = oldPtsCd;
-    }
 
     public static final class PriorityOrderPtsDataDtoBuilder {
         private Integer id;

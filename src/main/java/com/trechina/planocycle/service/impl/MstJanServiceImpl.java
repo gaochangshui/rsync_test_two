@@ -30,13 +30,13 @@ public class MstJanServiceImpl implements MstJanService {
     /**
      * janデータの取得
      * @param janParamVO 検索条件
-     * commonPartsData 商品轴信息
-     *     prodIsCore    0企业1自社
-     *     prodMstClass  商品轴ID
-     *     shelfMstClass 棚割専用轴ID，有值代表使用 棚割専用 9999 数据，无值使用 大本マスタ各个企业自己 数据
-     *     janContain    包含的商品
-     *     janKato       排除的商品
-     *     fuzzyQuery    模糊查询，查询商品名
+     * commonPartsData 商品軸情報
+     *     prodIsCore    0企業1自社
+     *     prodMstClass  商品軸ID
+     *     shelfMstClass 棚割専用軸ID、値あり代表使用棚割専用9999データ、値なし使用大本マイスター各企業独自データ
+     *     janContain    含まれる商品
+     *     janKato       除外された商品
+     *     fuzzyQuery    ファジィ照会、商品名の照会
      * @return
      */
     @Override
@@ -113,6 +113,7 @@ public class MstJanServiceImpl implements MstJanService {
             janKaisouInfo.put("id",janInfoList1.get((Integer.valueOf(stringObjectLinkedHashMap.get("3").toString())-1)+""));
             janKaisouInfo.put("title",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
             janKaisouInfo.put("pid","zokusei"+stringObjectLinkedHashMap.get("3"));
+            janKaisouInfo.put("isRequired",stringObjectLinkedHashMap.get("7"));
 
             janClass.add(janKaisouInfo);
 
@@ -127,6 +128,7 @@ public class MstJanServiceImpl implements MstJanService {
             janAttrInfo.put("title",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
             janAttrInfo.put("id",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
             janAttrInfo.put("pid","zokusei"+stringObjectLinkedHashMap.get("3"));
+            janAttrInfo.put("isRequired",stringObjectLinkedHashMap.get("7"));
             janAttrInfo.put("type",stringObjectLinkedHashMap.get("8"));
             attrGroup1.add(janAttrInfo);
 
@@ -139,6 +141,7 @@ public class MstJanServiceImpl implements MstJanService {
             janAttrInfo.put("title",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
             janAttrInfo.put("id",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
             janAttrInfo.put("pid","zokusei"+stringObjectLinkedHashMap.get("3"));
+            janAttrInfo.put("isRequired",stringObjectLinkedHashMap.get("7"));
             janAttrInfo.put("type",stringObjectLinkedHashMap.get("8"));
             janAttr.add(janAttrInfo);
 

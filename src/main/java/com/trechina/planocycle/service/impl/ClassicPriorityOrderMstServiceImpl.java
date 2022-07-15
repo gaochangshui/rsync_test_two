@@ -155,16 +155,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
          //パラメータを2つのテーブルのデータに処理するinsert
         priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
         try {
-            logger.info("優先順位テーブルパラメータの保存："+priorityOrderMstDto);
-            PriorityOrderMst priorityOrderMst = new PriorityOrderMst();
-            priorityOrderMst.setCompanyCd(priorityOrderMstDto.getCompanyCd());
-            priorityOrderMst.setPriorityOrderCd(priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderMst.setPriorityOrderName(priorityOrderMstDto.getPriorityOrderName());
-            priorityOrderMst.setProductPowerCd(priorityOrderMstDto.getProductPowerCd());
-            priorityOrderMst.setAttrOption(priorityOrderMstDto.getAttrOption());
-            logger.info("優先順位テーブルmstテーブルが保存するデータを保存する："+priorityOrderMst);
+            logger.info("優先順位テーブルパラメータの保存：{}",priorityOrderMstDto);
             priorityOrderMstMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderMstMapper.insert(priorityOrderMst,authorCd);
+            priorityOrderMstMapper.insert(priorityOrderMstDto,authorCd);
             //jannew最終テーブルデータの保存
             priorityOrderJanNewMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderJanNewMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
@@ -217,37 +210,12 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderPatternMapper.insert(priorityOrderPatternList);
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
-            logger.info("エラーを報告:"+e);
-            logger.error("保存優先順位テーブルエラー："+e);
+            logger.info("エラーを報告:{}",e);
+            logger.error("保存優先順位テーブルエラー：{}",e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
 
-    // 処理属性の保存
-    private void attrSave(PriorityOrderMstDto priorityOrderMstDto,List<Map<String, Object>> array) {
-
-//        logger.info("つかむ取rankAttributeCdList"+array);
-//        List<PriorityOrderMstAttrSort> priorityOrderMstAttrSortList = new ArrayList<>();
-//        for (int i = 0; i < array.size(); i++) {
-//            PriorityOrderMstAttrSort priorityOrderMstAttrSort = new PriorityOrderMstAttrSort();
-//          priorityOrderMstAttrSort.setCompanyCd(priorityOrderMstDto.getCompanyCd());
-//          priorityOrderMstAttrSort.setPriorityOrderCd(priorityOrderMstDto.getPriorityOrderCd());
-//          if (array.get(i).get("value").toString().equals("mulit_attr")){
-//              priorityOrderMstAttrSort.setValue(array.size());
-//              priorityOrderMstAttrSort.setCd(13);
-//          } else {
-//              priorityOrderMstAttrSort.setValue(Integer.valueOf(array.get(i).get("value").toString()));
-//              priorityOrderMstAttrSort.setCd(Integer.valueOf(array.get(i).get("cd").toString()));
-//          }
-//          if (array.get(i).get("sort").toString().equals("")){
-//              priorityOrderMstAttrSort.setSort(0);
-//          } else {
-//            priorityOrderMstAttrSort.setSort(Integer.valueOf(array.get(i).get("sort").toString()));
-//          }
-//          priorityOrderMstAttrSortList.add(priorityOrderMstAttrSort);
-//        }
-//        priorityOrderMstAttrSortService.setPriorityAttrSort(priorityOrderMstAttrSortList);
-    }
 
     /**
      * リードライトpriorityorderData

@@ -130,7 +130,7 @@ public class cgiUtils {
         return "";
     }
     /**
-     * 异步post調用cgi
+     * 非同期post呼び出しcgi
      * @param path
      * @param cla
      * @param tokenInfo
@@ -281,7 +281,7 @@ public class cgiUtils {
         }
     }
     /**
-     * 再帰調用cgi（异步调用web版）
+     *呼び戻しcgi（非同期呼び出しweb版）
      * @param path
      * @param taskid
      * @param tokenInfo
