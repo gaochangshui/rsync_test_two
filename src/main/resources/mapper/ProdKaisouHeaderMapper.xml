@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.ProdKaisouHeaderMapper">
+    <insert id="insert">
+        insert into "9999".prod_0000_jan_attr_header_sys("1", "2", "3","4","7","8")
+        SELECT #{itemVO.itemCd},#{itemVO.itemName},#{maxCol},#{kaisouMaxCol},#{itemVO.requiredType},#{itemVO.itemType}
+        FROM (select 1) tmp WHERE NOT EXISTS(select * FROM "9999".prod_0000_jan_attr_header_sys where "3"=#{maxCol})
+    </insert>
+    <select id="selectMaxByCol" resultType="integer">
+        select max("${targetColumn}"::integer)+1 from "9999".prod_0000_jan_attr_header_sys
+    </select>
+    <select id="selectItemName" resultType="integer">
+        select count("2")from "9999".prod_0000_jan_attr_header_sys
+        where "2"=#{itemName}
+    </select>
+</mapper>

@@ -1,5 +1,7 @@
 package com.trechina.planocycle.enums;
 
+import com.trechina.planocycle.utils.ResultMaps;
+
 public enum ResultEnum {
     SUCCESS(101,"成功"),
     SUCCESS_BUT_NEW_JAN(102,"成功"),
@@ -20,6 +22,9 @@ public enum ResultEnum {
     VERSION_ERROR(40005,"version error"),
     JANCDINEXISTENCE(50004,"JAN不存在"),
 
+    KAISOU_COUNT_LIMIT(70001,"kaisou count not enough"),
+
+    KAISOU_name_LIMIT(70002, "kaisou name exists"),
     HEIGHT_NOT_ENOUGH(60001,"height not enough");
 
     private Integer code;

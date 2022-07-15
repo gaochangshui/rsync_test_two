@@ -78,4 +78,16 @@ public class MagicString {
     public static final String INPUT_SHOW = "inputShow";
     public static final String TITLE = "title";
 
+    public static final String COLUMN_INDEX_JANINFO_COLUMN = "3";
+    public static final String COLUMN_INDEX_KAISOU_COLUMN = "4";
+    /**
+     * 必須区分
+     */
+    public static final String COLUMN_INDEX_REQUIRED = "7";
+
+    /**
+     * 項目区分
+     */
+    public static final String COLUMN_INDEX_ITEM_TYPE = "8";
+
 }

@@ -1,4 +1,4 @@
-package com.trechina.planocycle.mapper;
+package com.trechina.planocycle.entity.po;
 
 
 import com.trechina.planocycle.entity.vo.CommonPartsDataVO;

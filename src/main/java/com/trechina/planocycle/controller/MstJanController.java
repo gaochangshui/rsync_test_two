@@ -2,7 +2,9 @@ package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
-import com.trechina.planocycle.mapper.JanInfoList;
+import com.trechina.planocycle.entity.po.JanInfoList;
+import com.trechina.planocycle.entity.vo.ProductItemVO;
+import com.trechina.planocycle.service.JanKaisouService;
 import com.trechina.planocycle.service.MstJanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +19,9 @@ public class MstJanController {
 
     @Autowired
     private MstJanService mstJanService;
+
+    @Autowired
+    private JanKaisouService janKaisouService;
 
     /**
      * janデータの取得
@@ -36,6 +41,11 @@ public class MstJanController {
     @PostMapping("/getJanListInfo")
     public Map<String,Object> getJanListInfo(@RequestBody JanInfoList janInfoList){
         return mstJanService.getJanListInfo(janInfoList);
+    }
+
+    @PostMapping("/saveKaisouInfo")
+    public Map<String,Object> saveKaisouInfo(@RequestBody ProductItemVO productItemVO){
+        return janKaisouService.saveProductItem(productItemVO);
     }
 
 }

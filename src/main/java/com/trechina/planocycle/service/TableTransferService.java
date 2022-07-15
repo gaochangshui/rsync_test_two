@@ -16,6 +16,4 @@ public interface TableTransferService {
 
     void syncZokuseiMst();
 
-    void setZokuseiData(String company,String classCd,Integer zokuseiId,Integer col, List<Map<String, Object>> cdList);
-
 }
