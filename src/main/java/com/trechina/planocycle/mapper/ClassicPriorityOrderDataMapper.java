@@ -114,4 +114,6 @@ public interface ClassicPriorityOrderDataMapper {
     int insertWorkDataForFinal(String companyCd, Integer priorityOrderCd);
 
     List<Map<String,Object>> getWorkData(String companyCd,Integer priorityOrderCd,List<String> attrSortList);
+
+    List<Map<String, Object>> getJanBranchNumList(String aud, Integer priorityOrderCd, List<String> colNameList);
 }

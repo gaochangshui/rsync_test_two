@@ -87,6 +87,7 @@
     select common_parts_data from priority.priority_order_mst
   </select>
   <select id="getPriorityOrderMst" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstDto">
-    select product_power_cd,shelf_pattern_cd from priority.work_priority_order_mst where
+    select product_power_cd,shelf_pattern_cd from priority.work_priority_order_mst where company_cd = #{companyCd,jdbcType=VARCHAR}
+                                                                                     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
 </mapper>

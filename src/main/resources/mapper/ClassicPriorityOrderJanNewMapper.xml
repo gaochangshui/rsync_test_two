@@ -165,6 +165,41 @@
             #{item}
         </foreach>
     </select>
+    <select id="getJanNews" resultType="java.util.Map">
+        select
+        jan_new ,name_new as sku,rank as rank_upd,branch_account as pos_amount_upd,branch_num as branch_num_upd, rank as goods_rank,
+        rank as rank_prop,
+        <foreach collection="colName" item="item" separator=",">
+            ${item}
+        </foreach>
+        from (
+        select jannew.jan_new,name_new,rank,branch_account,branch_num,
+        max( case when attr.attr_cd = 1 then attr.attr_value else null end ) as attr1,
+        max( case when attr.attr_cd = 2 then attr.attr_value else null end ) as attr2,
+        max(  case when attr.attr_cd = 3 then attr.attr_value else null end)  as attr3,
+        max( case when attr.attr_cd = 4 then attr.attr_value else null end ) as attr4,
+        max( case when attr.attr_cd = 5 then attr.attr_value else null end)  as attr5,
+        max( case when attr.attr_cd = 6 then attr.attr_value else null end)  as attr6,
+        max(  case when attr.attr_cd = 7 then attr.attr_value else null end ) as attr7,
+        max(   case when attr.attr_cd = 8 then attr.attr_value else null end ) as attr8,
+        max(   case when attr.attr_cd = 9 then attr.attr_value else null end)  as attr9,
+        max(   case when attr.attr_cd = 10 then attr.attr_value else null end)  as attr10
+
+        from priority.work_priority_order_jan_new  jannew
+
+        left join priority.work_priority_order_jan_attribute attr
+        on jannew.priority_order_cd =attr.priority_order_cd and jannew.jan_new = attr.jan_new
+
+        where jannew.priority_order_cd = #{priorityOrderCd}
+
+        GROUP BY  jannew.jan_new,name_new,rank,branch_account,branch_num)as jannews
+        where
+        not exists(select jan_old from priority.work_priority_order_jan_proposal pro1 where jannews.jan_new = pro1.jan_old and pro1.priority_order_cd = #{priorityOrderCd} and pro1.flag=1)
+        and not exists(select jan_old from priority.work_priority_order_jan_proposal pro2 where jannews.jan_new = pro2.jan_new and pro2.priority_order_cd = #{priorityOrderCd} and pro2.flag=1)
+        and not exists(select jan_old from priority.priority_order_jan_replace rep1 where jannews.jan_new = rep1.jan_new and rep1.company_cd = #{companyCd})
+        and not exists(select jan_old from priority.priority_order_jan_replace rep2 where jannews.jan_new = rep2.jan_old and rep2.company_cd = #{companyCd})
+        and not exists(select jan_old from priority.work_priority_order_result_data datas where jannews.jan_new = datas.jan_old and datas.priority_order_cd= #{priorityOrderCd})
+    </select>
 
 
 </mapper>

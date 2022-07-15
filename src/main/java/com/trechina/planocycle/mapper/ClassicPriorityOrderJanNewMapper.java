@@ -45,4 +45,7 @@ public interface ClassicPriorityOrderJanNewMapper {
     void deleteJanNew(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     List<Jans> getJanNewMst(@Param("list")List<String> janNews);
+
+    List<Map<String,Object>> getJanNews(Integer priorityOrderCd, List<String> colName,String companyCd);
+
 }

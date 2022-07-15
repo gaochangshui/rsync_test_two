@@ -623,4 +623,22 @@
             from priority.work_priority_order_result_data
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </select>
+    <select id="getJanBranchNumList" resultType="java.util.Map">
+        select distinct prd.jan_new,prd.jan_old,prd.attr1,prd.attr2,prd.rank_upd,count(distinct ptsB.branch) as  branch_num
+        from priority.work_priority_order_result_data prd
+        left join priority.work_priority_order_pts_classify wkC
+        on wkC.priority_order_cd = #{priorityOrderCd}
+        and
+        <foreach collection="colNameList" item="item" separator="and" >
+            wkC.${item} = prd.${item}
+        </foreach>
+
+        left join planocycle.shelf_pts_data ptsP
+        on wkC.pts_cd = ptsP.id
+        left join planocycle.shelf_pattern_branch ptsB
+        on ptsP.shelf_pattern_cd = ptsB.shelf_pattern_cd
+        and wkC.sku_num_init >= prd.rank_upd
+        group by prd.jan_new,prd.attr1,prd.attr2 ,prd.rank_upd,prd.jan_old
+        order by prd.attr1,prd.attr2,prd.rank_upd
+    </select>
 </mapper>

@@ -44,7 +44,7 @@ public interface ClassicPriorityOrderDataService {
      */
     Map<String,Object> getPriorityOrderDataUpd(List<String> colNameList,Integer priorityOrderCd,String companyCd);
 
-    Map<String,Object> getPriorityOrderListInfo(String companyCd,Integer priorityOrderCd);
+    Map<String,Object> getPriorityOrderListInfo(String companyCd,Integer priorityOrderCd,List<String> colNameList);
 
     /**
      * 属性列名の名前を取得
@@ -67,4 +67,6 @@ public interface ClassicPriorityOrderDataService {
      * @return
      */
     Map<String, Object> editPriorityOrderData(PriorityOrderDataDto priorityOrderDataDto);
+
+    void setPtsClassify(List<String> colNameList, String shelfPatternCd, String companyCd, Integer priorityOrderCd);
 }
