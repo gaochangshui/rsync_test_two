@@ -155,13 +155,6 @@ class PlanoCycleApiApplicationTests {
 
     @Test
     public  void test8(){
-       String context = "0001_0002";
-       String context1 = "0001_00021";
-
-
-       String context2 = "0001_0002.csv";
-
-
 
 
     }

@@ -25,18 +25,18 @@ private  MstJanParamMapper mstJanParamMapper;
     public static List listToTree(List arr, String id, String pid, String child){
         List r = new ArrayList();
         Map<String,Object> hash = new HashMap<>();
-        //将数组转为Object的形式，key为数组中的id
+        //配列をObject形式に変換し、keyは配列中のid
         for(int i=0;i<arr.size();i++){
             Map<String,Object> json = (Map<String,Object>) arr.get(i);
             hash.put((String) json.get(id), json);
         }
-        //遍历结果集
+        //結果セットのトラバース
         for(int j=0;j<arr.size();j++){
-            //单条记录
+            //シングルレコード
             Map<String,Object> aVal = (Map<String,Object>) arr.get(j);
-            //在hash中取出key为单条记录中pid的值
+            //1つのレコードにおけるpidの値であるkeyをhashから取り出す
             Map<String,Object> hashVP = (Map<String,Object>) hash.get(aVal.get(pid).toString());
-            //如果记录的pid存在，则说明它有父节点，将她添加到孩子节点的集合中
+            //記録されたpidが存在する場合は、親ノードがあり、子ノードのコレクションに追加されます
             if(hashVP!=null){
                 //检查是否有child属性
                 if(hashVP.get(child)!=null){

@@ -16,6 +16,7 @@ public class PriorityOrderMst {
     private Short topPartitionFlag;
 
     private Short topPartitionVal;
+
     private String attrOption;
 
     private String commonPartsData;

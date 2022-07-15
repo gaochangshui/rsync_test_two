@@ -110,6 +110,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     private PriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
     private ClaasicPriorityOrderAttributeClassifyMapper claasicPriorityOrderAttributeClassifyMapper;
+    @Autowired
+    private ClassicPriorityOrderMstMapper classicPriorityOrderMstMapper;
     /**
      * 初期取得優先順位テーブルデータ
      *
@@ -121,6 +123,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         String companyCd = priorityOrderDataDto.getCompanyCd();
         Integer priorityPowerCd = priorityOrderDataDto.getPriorityOrderCd();
         String authorCd = session.getAttribute("aud").toString();
+        classicPriorityOrderMstMapper.deleteWork(priorityOrderDataDto.getPriorityOrderCd());
+        classicPriorityOrderMstMapper.setWork(priorityOrderDataDto,authorCd);
         // 初始化数据
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, priorityOrderDataDto.getShelfPatternCd());
         //只是用品名2
@@ -406,6 +410,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         Integer priorityOrderCd = priorityOrderDataDto.getPriorityOrderCd();
 
         //最終表をテンポラリ・テーブルに戻す
+        classicPriorityOrderMstMapper.deleteWork(priorityOrderCd);
+        classicPriorityOrderMstMapper.setWorkForFinal(companyCd,priorityOrderCd);
+
         priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
         priorityOrderJanCardMapper.setWorkForFinal(companyCd,priorityOrderCd);
 
@@ -994,9 +1001,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd,priorityOrderCd);
         classicPriorityOrderMstAttrSortMapper.insertAttrSortWk(companyCd,priorityOrderCd,colNameList);
         List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
-
+         classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+        //priorityOrderDataService.setPtsClassify(colNameList,patternOrProduct.,companyCd,priorityOrderCd);
         priorityOrderDataService.getPriorityOrderListInfo(companyCd,priorityOrderCd);
         List<LinkedHashMap<String, Object>> datas = priorityOrderDataMapper.getTempDataAndMst(colNameList,attrList, companyCd, priorityOrderCd);
+
         if (!datas.isEmpty()) {
             priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
             priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,datas,authorCd);

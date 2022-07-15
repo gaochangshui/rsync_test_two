@@ -10,6 +10,17 @@
   <sql id="Base_Column_List">
     company_cd, priority_order_cd, priority_order_name, product_power_cd
   </sql>
+  <insert id="setWork">
+    insert into priority.work_priority_order_mst (company_cd, priority_order_cd,
+                                             product_power_cd,author_cd,create_time,editer_cd,edit_time,shelf_pattern_cd)
+    values (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER},
+            #{list.productPowerCd,jdbcType=INTEGER},#{authorCd},now(),#{authorCd},now(),#{list.shelfPatternCd})
+  </insert>
+  <insert id="setWorkForFinal">
+    insert  into priority.work_priority_order_mst
+    select * from priority.priority_order_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd =#{priorityOrderCd,jdbcType=INTEGER}
+  </insert>
   <select id="selectByPrimaryKey" parameterType="java.lang.String"
           resultType="com.trechina.planocycle.entity.po.PriorityOrderMst">
     select
@@ -63,13 +74,19 @@
   <delete id="deleteforid">
     delete from priority.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderMst">
+  <delete id="deleteWork">
+    delete from priority.work_priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trechina.planocycle.entity.dto.PriorityOrderMstDto">
     insert into priority.priority_order_mst (company_cd, priority_order_cd, priority_order_name,attr_option,
-      product_power_cd,author_cd,create_time,editer_cd,edit_time)
+      product_power_cd,author_cd,create_time,editer_cd,edit_time,shelf_pattern_cd)
     values (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.priorityOrderName,jdbcType=VARCHAR},
-      #{list.attrOption,jdbcType=VARCHAR},#{list.productPowerCd,jdbcType=INTEGER},#{authorCd},now(),#{authorCd},now())
+      #{list.attrOption,jdbcType=VARCHAR},#{list.productPowerCd,jdbcType=INTEGER},#{authorCd},now(),#{authorCd},now(),#{list.shelfPatternCd})
   </insert>
   <select id="getCommonPartsData" resultType="string">
     select common_parts_data from priority.priority_order_mst
+  </select>
+  <select id="getPriorityOrderMst" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstDto">
+    select product_power_cd,shelf_pattern_cd from priority.work_priority_order_mst where
   </select>
 </mapper>
