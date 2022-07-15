@@ -1,7 +1,9 @@
 package com.trechina.planocycle.entity.po;
 
-import java.math.BigDecimal;
+import lombok.Data;
 
+import java.math.BigDecimal;
+@Data
 public class WorkProductPowerReserveData {
     private String companyCd;
     private String authorCd;
@@ -10,51 +12,5 @@ public class WorkProductPowerReserveData {
     private BigDecimal dataValue;
     private Integer productPowerCd;
 
-    public String getCompanyCd() {
-        return companyCd;
-    }
 
-    public void setCompanyCd(String companyCd) {
-        this.companyCd = companyCd;
-    }
-
-    public String getAuthorCd() {
-        return authorCd;
-    }
-
-    public void setAuthorCd(String authorCd) {
-        this.authorCd = authorCd;
-    }
-
-    public Integer getDataCd() {
-        return dataCd;
-    }
-
-    public void setDataCd(Integer dataCd) {
-        this.dataCd = dataCd;
-    }
-
-    public String getJan() {
-        return jan;
-    }
-
-    public void setJan(String jan) {
-        this.jan = jan;
-    }
-
-    public BigDecimal getDataValue() {
-        return dataValue;
-    }
-
-    public void setDataValue(BigDecimal dataValue) {
-        this.dataValue = dataValue;
-    }
-
-    public Integer getProductPowerCd() {
-        return productPowerCd;
-    }
-
-    public void setProductPowerCd(Integer productPowerCd) {
-        this.productPowerCd = productPowerCd;
-    }
 }

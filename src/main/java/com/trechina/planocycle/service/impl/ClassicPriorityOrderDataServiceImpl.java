@@ -844,7 +844,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             janNew.setRank(jan.getTanapositionCd());
             janNew.setPriorityOrderCd(priorityOrderCd);
             janNew.setBranchAccount(BigDecimal.ZERO);
-            janNew.setBranchnum(jan.getBranchNum());
+            janNew.setBranchNum(jan.getBranchNum());
             janNew.setNameNew(jan.getName());
             return janNew;
         }).collect(Collectors.toList());

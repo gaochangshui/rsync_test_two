@@ -10,6 +10,7 @@ import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMst;
+import com.trechina.planocycle.entity.po.PriorityOrderPattern;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -161,6 +162,18 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             //sort保存
             priorityOrderMstAttrSortMapper.deleteAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMstAttrSortMapper.insertAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+            List<PriorityOrderPattern> priorityOrderPatternList = new ArrayList<>();
+            String[] shelfPatternList = priorityOrderMstDto.getShelfPatternCd().split(",");
+            for (int i = 0; i < shelfPatternList.length; i++) {
+                PriorityOrderPattern priorityOrderPattern = new PriorityOrderPattern();
+                priorityOrderPattern.setCompanyCd(priorityOrderMstDto.getCompanyCd());
+                priorityOrderPattern.setPriorityOrderCd(priorityOrderMstDto.getPriorityOrderCd());
+                priorityOrderPattern.setShelfPatternCd(Integer.valueOf(shelfPatternList[i]));
+                priorityOrderPatternList.add(priorityOrderPattern);
+            }
+            logger.info("優先順位テーブルpattertテーブルが保存するデータを保存する："+priorityOrderPatternList.toString());
+            priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
+            priorityOrderPatternMapper.insert(priorityOrderPatternList);
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
             logger.info("エラーを報告:{}",e);

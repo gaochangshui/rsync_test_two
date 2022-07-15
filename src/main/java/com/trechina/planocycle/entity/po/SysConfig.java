@@ -1,12 +1,9 @@
 package com.trechina.planocycle.entity.po;
+
+import lombok.Data;
+
+@Data
 public class SysConfig {
     private String coreCompany;
 
-    public String getCoreCompany() {
-        return coreCompany;
-    }
-
-    public void setCoreCompany(String coreCompany) {
-        this.coreCompany = coreCompany;
-    }
 }

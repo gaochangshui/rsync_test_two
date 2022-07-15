@@ -1,5 +1,8 @@
 package com.trechina.planocycle.entity.po;
 
+import lombok.Data;
+
+@Data
 public class ProductPowerParamMst {
     private String conpanyCd;
 
@@ -27,126 +30,4 @@ public class ProductPowerParamMst {
 
     private Integer itemFlg;
 
-    public String getConpanyCd() {
-        return conpanyCd;
-    }
-
-    public void setConpanyCd(String conpanyCd) {
-        this.conpanyCd = conpanyCd;
-    }
-
-    public Integer getProductPowerCd() {
-        return productPowerCd;
-    }
-
-    public void setProductPowerCd(Integer productPowerCd) {
-        this.productPowerCd = productPowerCd;
-    }
-
-    public Integer getPeridFlag() {
-        return peridFlag;
-    }
-
-    public void setPeridFlag(Integer peridFlag) {
-        this.peridFlag = peridFlag;
-    }
-
-    public String getStartPerid() {
-        return startPerid;
-    }
-
-    public void setStartPerid(String startPerid) {
-        this.startPerid = startPerid;
-    }
-
-    public String getEndPerid() {
-        return endPerid;
-    }
-
-    public void setEndPerid(String endPerid) {
-        this.endPerid = endPerid;
-    }
-
-    public Integer getSeasonPeridFlag() {
-        return seasonPeridFlag;
-    }
-
-    public void setSeasonPeridFlag(Integer seasonPeridFlag) {
-        this.seasonPeridFlag = seasonPeridFlag;
-    }
-
-    public String getSeasonStPerid() {
-        return seasonStPerid;
-    }
-
-    public void setSeasonStPerid(String seasonStPerid) {
-        this.seasonStPerid = seasonStPerid;
-    }
-
-    public String getSeasonEndPerid() {
-        return seasonEndPerid;
-    }
-
-    public void setSeasonEndPerid(String seasonEndPerid) {
-        this.seasonEndPerid = seasonEndPerid;
-    }
-
-    public String getStoreCd() {
-        return storeCd;
-    }
-
-    public void setStoreCd(String storeCd) {
-        this.storeCd = storeCd;
-    }
-
-    public String getPrdCd() {
-        return prdCd;
-    }
-
-    public void setPrdCd(String prdCd) {
-        this.prdCd = prdCd;
-    }
-
-    public String getChannelName() {
-        return channelName;
-    }
-
-    public void setChannelName(String channelName) {
-        this.channelName = channelName;
-    }
-
-    public String getCountyName() {
-        return countyName;
-    }
-
-    public void setCountyName(String countyName) {
-        this.countyName = countyName;
-    }
-
-    public Integer getItemFlg() {
-        return itemFlg;
-    }
-
-    public void setItemFlg(Integer itemFlg) {
-        this.itemFlg = itemFlg;
-    }
-
-    @Override
-    public String toString() {
-        return "ProductPowerParamMst{" +
-                "conpanyCd='" + conpanyCd + '\'' +
-                ", productPowerCd=" + productPowerCd +
-                ", peridFlag=" + peridFlag +
-                ", startPerid='" + startPerid + '\'' +
-                ", endPerid='" + endPerid + '\'' +
-                ", seasonPeridFlag=" + seasonPeridFlag +
-                ", seasonStPerid='" + seasonStPerid + '\'' +
-                ", seasonEndPerid='" + seasonEndPerid + '\'' +
-                ", storeCd='" + storeCd + '\'' +
-                ", prdCd='" + prdCd + '\'' +
-                ", channelName='" + channelName + '\'' +
-                ", countyName='" + countyName + '\'' +
-                ", itemFlg=" + itemFlg +
-                '}';
-    }
 }
