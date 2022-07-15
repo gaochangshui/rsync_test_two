@@ -17,6 +17,7 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
+import com.trechina.planocycle.utils.sshFtpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -283,86 +286,86 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
      */
     @Override
     public Map<String, Object> getPtsFileDownLoad(PriorityOrderPtsDownDto priorityOrderPtsDownDto, HttpServletResponse response,String ptsDownPath) {
-//        刘鑫宇
-//        logger.info("pts出力パラメータを取得する:"+priorityOrderPtsDownDto);
-//        // 从cgiつかむ取数据
-//        String uuid = UUID.randomUUID().toString();
-//        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-//        String path = resourceBundle.getString("PriorityOrderData");
-//        priorityOrderPtsDownDto.setGuid(uuid);
-//        // rankAttributeCd
-//        List<Map<String, Object>> array = (List<Map<String, Object>>) JSONArray.parse(priorityOrderPtsDownDto.getRankAttributeList());
-//        logger.info("rankAttributeCdList"+array);
-//        String rankInfo = "";
-//        String attrInfo = "";
-//        String rankInfo_mulit = "";
-//        String attrInfo_mulit = "";
-//        String sortStr = "";
-//        String sort = "";
-//        for (int i = 1; i <= array.size(); i++) {
-//            for (int j = 0; j < array.size(); j++) {
-//                sortStr = String.valueOf(array.get(j).get("sort"));
-//                sort = "";
-//                if(sortStr.equals("")){
-//                    sort="0";
-//                } else {
-//                    sort=sortStr;
-//                }
-//                if (String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i ==array.size()){
-//                    rankInfo_mulit += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
-//                    attrInfo_mulit += "13,";
-//                }else {
-//                    if (!String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i == Integer.valueOf(String.valueOf(array.get(j).get("value")))){
-//                        rankInfo += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
-//                        attrInfo += array.get(j).get("cd")+",";
-//                    }
-//                }
-//            }
-//        }
-//        rankInfo = rankInfo+rankInfo_mulit;
-//        attrInfo = attrInfo+attrInfo_mulit;
-//        String rankFinalInfo = rankInfo.substring(0,rankInfo.length()-1);
-//        String attrFinalInfo = attrInfo.substring(0,attrInfo.length()-1);
-//        logger.info("處理完的rankAttributeCd"+rankFinalInfo);
-//        priorityOrderPtsDownDto.setAttributeCd(attrFinalInfo);
-//        priorityOrderPtsDownDto.setRankAttributeCd(rankFinalInfo);
-//        // shelfPatternNoNm
-//        String resultShelf=shelfPatternService.getShePatternNoNm(priorityOrderPtsDownDto.getShelfPatternNo());
-//        logger.info("抽出完的shelfPatternNoNm"+resultShelf);
-//        priorityOrderPtsDownDto.setShelfPatternNoNm(resultShelf.replaceAll(" ","*"));
-//        logger.info("つかむ取處理完的pts出力参数:"+priorityOrderPtsDownDto);
-//        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-//        Map<String,Object> ptsPath = new HashMap<>();
-//        //cgiを再帰的に呼び出し、まずtaskidに行きます。
-//
-//        String result = cgiUtil.postCgi(path,priorityOrderPtsDownDto,tokenInfo);
-//        logger.info("taskIdリターン："+result);
-//        String queryPath = resourceBundle.getString("TaskQuery");
-//        //taskIdを持っています，cgiに実行状態の取得を再度要求する
-//        ptsPath =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-//        logger.info("ptsパスがデータを返す："+ptsPath);
-//
-//        String filePath = ptsPath.get("data").toString();
-//        if (filePath.length()>1) {
-//            String[] fileName = filePath.split("/");
-//
-//            sshFtpUtils sshFtp = new sshFtpUtils();
-//            try {
-//                logger.info("ptsフルパス出力："+ptsDownPath+ptsPath.get("data").toString());
-//                byte[] files = sshFtp.downLoafCgi(ptsDownPath+ptsPath.get("data").toString(),tokenInfo);
-//                logger.info("files byte:"+files);
-//                response.setContentType("application/Octet-stream");
-//                logger.info("finename:"+fileName[fileName.length-1]);
-//                response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName[fileName.length-1], "UTF-8"));
-//                OutputStream outputStream = response.getOutputStream();
-//                outputStream.write(files);
-//                outputStream.close();
-//            } catch (IOException e) {
-////                e.printStackTrace();
-//                logger.info("ptsファイルダウンロードエラーの取得"+e);
-//            }
-//        }
-//        logger.info("ダウンロード成功");
+
+        logger.info("pts出力パラメータを取得する:"+priorityOrderPtsDownDto);
+        // 从cgiつかむ取数据
+        String uuid = UUID.randomUUID().toString();
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+        String path = resourceBundle.getString("PriorityOrderData");
+        priorityOrderPtsDownDto.setGuid(uuid);
+        // rankAttributeCd
+        List<Map<String, Object>> array = (List<Map<String, Object>>) JSONArray.parse(priorityOrderPtsDownDto.getRankAttributeList());
+        logger.info("rankAttributeCdList"+array);
+        String rankInfo = "";
+        String attrInfo = "";
+        String rankInfo_mulit = "";
+        String attrInfo_mulit = "";
+        String sortStr = "";
+        String sort = "";
+        for (int i = 1; i <= array.size(); i++) {
+            for (int j = 0; j < array.size(); j++) {
+                sortStr = String.valueOf(array.get(j).get("sort"));
+                sort = "";
+                if(sortStr.equals("")){
+                    sort="0";
+                } else {
+                    sort=sortStr;
+                }
+                if (String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i ==array.size()){
+                    rankInfo_mulit += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
+                    attrInfo_mulit += "13,";
+                }else {
+                    if (!String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i == Integer.valueOf(String.valueOf(array.get(j).get("value")))){
+                        rankInfo += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
+                        attrInfo += array.get(j).get("cd")+",";
+                    }
+                }
+            }
+        }
+        rankInfo = rankInfo+rankInfo_mulit;
+        attrInfo = attrInfo+attrInfo_mulit;
+        String rankFinalInfo = rankInfo.substring(0,rankInfo.length()-1);
+        String attrFinalInfo = attrInfo.substring(0,attrInfo.length()-1);
+        logger.info("處理完的rankAttributeCd"+rankFinalInfo);
+        priorityOrderPtsDownDto.setAttributeCd(attrFinalInfo);
+        priorityOrderPtsDownDto.setRankAttributeCd(rankFinalInfo);
+        // shelfPatternNoNm
+        String resultShelf=shelfPatternService.getShePatternNoNm(priorityOrderPtsDownDto.getShelfPatternNo());
+        logger.info("抽出完的shelfPatternNoNm"+resultShelf);
+        priorityOrderPtsDownDto.setShelfPatternNoNm(resultShelf.replaceAll(" ","*"));
+        logger.info("つかむ取處理完的pts出力参数:"+priorityOrderPtsDownDto);
+        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
+        Map<String,Object> ptsPath = new HashMap<>();
+        //cgiを再帰的に呼び出し、まずtaskidに行きます。
+
+        String result = cgiUtil.postCgi(path,priorityOrderPtsDownDto,tokenInfo);
+        logger.info("taskIdリターン："+result);
+        String queryPath = resourceBundle.getString("TaskQuery");
+        //taskIdを持っています，cgiに実行状態の取得を再度要求する
+        ptsPath =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
+        logger.info("ptsパスがデータを返す："+ptsPath);
+
+        String filePath = ptsPath.get("data").toString();
+        if (filePath.length()>1) {
+            String[] fileName = filePath.split("/");
+
+            sshFtpUtils sshFtp = new sshFtpUtils();
+            try {
+                logger.info("ptsフルパス出力："+ptsDownPath+ptsPath.get("data").toString());
+                byte[] files = sshFtp.downLoafCgi(ptsDownPath+ptsPath.get("data").toString(),tokenInfo);
+                logger.info("files byte:"+files);
+                response.setContentType("application/Octet-stream");
+                logger.info("finename:"+fileName[fileName.length-1]);
+                response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName[fileName.length-1], "UTF-8"));
+                OutputStream outputStream = response.getOutputStream();
+                outputStream.write(files);
+                outputStream.close();
+            } catch (IOException e) {
+//                e.printStackTrace();
+                logger.info("ptsファイルダウンロードエラーの取得"+e);
+            }
+        }
+        logger.info("ダウンロード成功");
         return null;
     }
 
