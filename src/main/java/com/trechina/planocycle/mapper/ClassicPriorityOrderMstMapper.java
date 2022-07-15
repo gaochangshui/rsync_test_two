@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.ShelfPtsDataDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMst;
 import org.apache.ibatis.annotations.Mapper;
@@ -27,4 +28,6 @@ public interface ClassicPriorityOrderMstMapper {
     List<TableNameDto> getTableNameByCompanyCd(String companyCd, String authorCd);
 
     String getCommonPartsData(String companyCd, Integer priorityOrderCd);
+
+    List<ShelfPtsDataDto> selectPattern(String companyCd, Integer priorityOrderCd);
 }

@@ -30,5 +30,10 @@
   <delete id="deleteforid">
     delete from priority.priority_order_pattern where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
-
+  <select id="selectPattern" resultType="com.trechina.planocycle.entity.dto.ShelfPtsDataDto">
+    select id, pattern.shelf_pattern_cd,shelf_pattern_name from planocycle.priority_order_pattern pattern
+                                                                  inner join planocycle.shelf_pattern_mst patternmst on patternmst.shelf_pattern_cd=pattern.shelf_pattern_cd
+                                                                  inner join planocycle.shelf_pts_data pts_data on pts_data.shelf_pattern_cd=pattern.shelf_pattern_cd
+    where priority_order_cd=#{priorityOrderCd} and pattern.company_cd=#{companyCd}
+  </select>
 </mapper>

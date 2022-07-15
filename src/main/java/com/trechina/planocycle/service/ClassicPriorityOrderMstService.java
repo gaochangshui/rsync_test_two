@@ -5,6 +5,7 @@ import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 
 public interface ClassicPriorityOrderMstService {
@@ -76,4 +77,7 @@ public interface ClassicPriorityOrderMstService {
     String selPriorityOrderCdForProdCd(String companyCd,Integer productPowerCd);
 
     Map<String, Object> setWorkPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto);
+
+
+    Map<String, Object> downloadPts(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg, Integer ptsVersion, HttpServletResponse response) throws IOException;
 }

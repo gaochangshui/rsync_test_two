@@ -72,4 +72,10 @@
   <select id="getCommonPartsData" resultType="string">
     select common_parts_data from priority.priority_order_mst
   </select>
+  <select id="selectPattern" resultType="com.trechina.planocycle.entity.dto.ShelfPtsDataDto">
+    select id, pattern.shelf_pattern_cd,shelf_pattern_name from priority.priority_order_pattern pattern
+    inner join priority.shelf_pattern_mst patternmst on patternmst.shelf_pattern_cd=pattern.shelf_pattern_cd
+    inner join priority.shelf_pts_data pts_data on pts_data.shelf_pattern_cd=pattern.shelf_pattern_cd
+    where priority_order_cd=#{priorityOrderCd} and pattern.company_cd=#{companyCd}
+  </select>
 </mapper>

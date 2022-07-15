@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ClassicPriorityOrderCommodityMustMapper {
@@ -25,4 +26,8 @@ public interface ClassicPriorityOrderCommodityMustMapper {
     int deleteFinal(String companyCd, Integer priorityOrderCd);
 
     int setWorkForFinal(String companyCd, Integer priorityOrderCd);
+
+    Integer selectCountMustJan(String companyCd, Integer priorityOrderCd, Integer shelfPatternCd);
+
+    List<Map<String, Object>> selectMustJan(String companyCd, Integer priorityOrderCd, String branchList, Integer shelfPatternCd);
 }

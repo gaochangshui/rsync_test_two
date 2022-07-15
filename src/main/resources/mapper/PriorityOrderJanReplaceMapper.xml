@@ -55,4 +55,11 @@
     delete from planocycle.priority_order_jan_replace where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     and author_cd = #{authorCd,jdbcType=VARCHAR}
   </delete>
+  <select id="selectJanReplace" resultType="map">
+    select jan_old,jan_new from priority.priority_order_jan_replace jan
+    where company_cd = #{companyCd}
+    union all
+    select jan_old,jan_new from priority.priority_order_jan_proposal where company_cd = #{companyCd}
+    and priority_order_cd=#{priorityOrderCd} and flag=1
+  </select>
 </mapper>
