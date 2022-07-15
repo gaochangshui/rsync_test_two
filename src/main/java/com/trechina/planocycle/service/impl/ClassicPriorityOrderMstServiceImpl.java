@@ -32,6 +32,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +43,7 @@ import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -117,6 +116,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     private ShelfPtsDataMapper shelfPtsDataMapper;
     @Autowired
     private WorkPriorityOrderPtsClassifyMapper priorityOrderPtsClassifyMapper;
+    @Autowired
+    private ThreadPoolTaskExecutor taskExecutor;
 
     @Autowired
     private JansMapper jansMapper;
@@ -648,6 +649,61 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         json.put("fileName", zipFileName);
         cacheUtil.put(taskId, json.toJSONString());
         return null;
+    }
+
+    @Override
+    public Map<String, Object> downloadPtsTask(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg,
+                                               Integer ptsVersion, HttpServletResponse response) {
+        if(Strings.isNullOrEmpty(taskId)){
+            taskId = priorityOrderCd+"_"+System.currentTimeMillis();
+        }
+
+        if (cacheUtil.get(taskId)!=null) {
+            String s = cacheUtil.get(taskId).toString();
+
+            if("-1".equals(s)){
+                return ResultMaps.result(ResultEnum.FAILURE);
+            }else if("1".equals(s)){
+                JSONObject json = new JSONObject();
+                json.put("status", "9");
+                json.put("taskId", taskId);
+                return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+            }else{
+                JSONObject json = new JSONObject();
+                json.put("taskId", taskId);
+                return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+            }
+
+        }
+
+        String finalTaskId = taskId;
+        Future<?> submit = taskExecutor.submit(() -> {
+            try {
+                this.downloadPts(finalTaskId, companyCd, priorityOrderCd, newCutFlg, ptsVersion, response);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        try {
+            submit.get(10, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            JSONObject json = new JSONObject();
+            json.put("status", "9");
+            json.put("taskId", taskId);
+            return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+        } catch(InterruptedException e ){
+            Thread.currentThread().interrupt();
+            logger.error("", e);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        } catch (ExecutionException e){
+            logger.error("", e);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
+
+        JSONObject json = new JSONObject();
+        json.put("taskId", taskId);
+        return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
     }
 
     private Map<String, List<Map<String, Object>>> doNewOldPtsCompare(Map<String, List<Map<String, Object>>> ptsJanDtoListByGroup,
