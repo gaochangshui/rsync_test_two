@@ -113,6 +113,7 @@ public class MstJanServiceImpl implements MstJanService {
             janKaisouInfo.put("id",janInfoList1.get((Integer.valueOf(stringObjectLinkedHashMap.get("3").toString())-1)+""));
             janKaisouInfo.put("title",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
             janKaisouInfo.put("pid","zokusei"+stringObjectLinkedHashMap.get("3"));
+            janKaisouInfo.put("isRequired",stringObjectLinkedHashMap.get("7"));
 
             janClass.add(janKaisouInfo);
 
@@ -127,6 +128,7 @@ public class MstJanServiceImpl implements MstJanService {
             janAttrInfo.put("title",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
             janAttrInfo.put("id",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
             janAttrInfo.put("pid","zokusei"+stringObjectLinkedHashMap.get("3"));
+            janAttrInfo.put("isRequired",stringObjectLinkedHashMap.get("7"));
             janAttrInfo.put("type",stringObjectLinkedHashMap.get("8"));
             attrGroup1.add(janAttrInfo);
 
@@ -139,6 +141,7 @@ public class MstJanServiceImpl implements MstJanService {
             janAttrInfo.put("title",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
             janAttrInfo.put("id",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
             janAttrInfo.put("pid","zokusei"+stringObjectLinkedHashMap.get("3"));
+            janAttrInfo.put("isRequired",stringObjectLinkedHashMap.get("7"));
             janAttrInfo.put("type",stringObjectLinkedHashMap.get("8"));
             janAttr.add(janAttrInfo);
 
