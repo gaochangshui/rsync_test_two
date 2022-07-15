@@ -59,11 +59,13 @@ private  MstJanParamMapper mstJanParamMapper;
     public Map<String, Object> getAttributeTree(JanParamVO janParamVO) {
         log.info("jan分類のパラメータを取得するには:{}",janParamVO);
         String companyCd ="";
-        String classCd = janParamVO.getCommonPartsData().getShelfMstClass();
+        String classCd ="";
         if (StringUtils.hasLength(janParamVO.getCommonPartsData().getShelfMstClass())) {
+             classCd = janParamVO.getCommonPartsData().getShelfMstClass();
             companyCd= MagicString.DEFAULT_COMPANY_CD;
         }else{
             companyCd= janParamVO.getCompanyCd();
+             classCd = janParamVO.getCommonPartsData().getProdMstClass();
         }
         List<Map<String,Object>> goodsAttrTree = mstJanParamMapper.getAttributeTree(companyCd,classCd);
         List<Map<String,Object>> jsonArray = listToTree(goodsAttrTree, "attrCd", "pid", "children");

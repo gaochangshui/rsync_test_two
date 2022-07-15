@@ -105,24 +105,42 @@ public class MstJanServiceImpl implements MstJanService {
 
         Map<String,Object> janInfo = new HashMap<>();
 
-        Map<String,Object> janClass = new HashMap<>();
+       List janClass = new ArrayList();
 
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janKaisouList) {
             Map<String,Object> janKaisouInfo = new HashMap<>();
             janKaisouInfo.put("name",stringObjectLinkedHashMap.get("2"));
             janKaisouInfo.put("id",janInfoList1.get((Integer.valueOf(stringObjectLinkedHashMap.get("3").toString())-1)+""));
             janKaisouInfo.put("title",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
-            janClass.put("zokusai"+stringObjectLinkedHashMap.get("3"),janKaisouInfo);
+            janKaisouInfo.put("pid","zokusei"+stringObjectLinkedHashMap.get("3"));
+
+            janClass.add(janKaisouInfo);
 
         }
         janInfo.put("janClass",janClass);
-        Map<String,Object> janAttr = new HashMap<>();
-        Map<String,Object> attrGroup1 = new HashMap<>();
+        List janAttr = new ArrayList();
+        List attrGroup1 = new ArrayList();
+
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup1) {
             Map<String,Object> janAttrInfo = new HashMap<>();
             janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
             janAttrInfo.put("title",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
-            janAttr.put("zokusai"+stringObjectLinkedHashMap.get("3"),janAttrInfo);
+            janAttrInfo.put("id",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
+            janAttrInfo.put("pid","zokusei"+stringObjectLinkedHashMap.get("3"));
+            janAttrInfo.put("type",stringObjectLinkedHashMap.get("8"));
+            attrGroup1.add(janAttrInfo);
+
+        }
+        janAttr.add(attrGroup1);
+
+        for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup2) {
+            Map<String,Object> janAttrInfo = new HashMap<>();
+            janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
+            janAttrInfo.put("title",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
+            janAttrInfo.put("id",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
+            janAttrInfo.put("pid","zokusei"+stringObjectLinkedHashMap.get("3"));
+            janAttrInfo.put("type",stringObjectLinkedHashMap.get("8"));
+            janAttr.add(janAttrInfo);
 
         }
         janInfo.put("janAttr",janAttr);
