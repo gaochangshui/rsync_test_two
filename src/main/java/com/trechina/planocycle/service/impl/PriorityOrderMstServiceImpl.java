@@ -459,7 +459,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         priorityOrderAttrDto.setCommonPartsData(workPriorityOrderMst.getCommonPartsData());
 
         //商品力点数表情報
-        //sort情报
+        //sort情報
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
         //陳列順情報の取得
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(workPriorityOrderMst.getCommonPartsData(), companyCd);

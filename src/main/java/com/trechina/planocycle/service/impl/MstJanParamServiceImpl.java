@@ -38,7 +38,7 @@ private  MstJanParamMapper mstJanParamMapper;
             Map<String,Object> hashVP = (Map<String,Object>) hash.get(aVal.get(pid).toString());
             //記録されたpidが存在する場合は、親ノードがあり、子ノードのコレクションに追加されます
             if(hashVP!=null){
-                //检查是否有child属性
+                //child属性があるかどうかをチェック
                 if(hashVP.get(child)!=null){
                     List ch = (List) hashVP.get(child);
                     ch.add(aVal);
