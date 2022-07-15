@@ -176,8 +176,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderPatternMapper.insert(priorityOrderPatternList);
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
-            logger.info("エラーを報告:{}",e);
-            logger.error("保存優先順位テーブルエラー：{}",e);
+            logger.info("エラーを報告:"+e);
+            logger.error("保存優先順位テーブルエラー："+e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }

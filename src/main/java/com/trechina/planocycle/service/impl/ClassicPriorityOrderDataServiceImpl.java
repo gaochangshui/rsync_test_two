@@ -1127,10 +1127,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             if (objectMap.get("branch_amount_upd") == null || objectMap.get("branch_amount_upd") .equals("_")) {
                 objectMap.put("branch_amount_upd", 0);
             }
-            Integer difference = Integer.parseInt(objectMap.get("branch_num_upd").toString()) - Integer.parseInt(objectMap.get("branch_num").toString());
-            Double saleForecast = difference * Double.parseDouble(objectMap.get("branch_amount_upd").toString())  / 1000;
-            BigDecimal bd = new BigDecimal(saleForecast);
-            saleForecast = bd.setScale(0,BigDecimal.ROUND_HALF_UP).doubleValue();
+            int difference = Integer.parseInt(objectMap.get("branch_num_upd").toString()) - Integer.parseInt(objectMap.get("branch_num").toString());
+            double saleForecast = difference * Double.parseDouble(objectMap.get("branch_amount_upd").toString())  / 1000;
+
+            BigDecimal bd = BigDecimal.valueOf(saleForecast);
+            saleForecast = bd.setScale(0,RoundingMode.HALF_UP).doubleValue();
             objectMap.put("difference", difference);
             objectMap.put("sale_forecast", saleForecast);
         }
