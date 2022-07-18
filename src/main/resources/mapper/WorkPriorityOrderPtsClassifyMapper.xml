@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.WorkPriorityOrderPtsClassifyMapper">
     <insert id="setWorkPtsClassify">
-        insert into planocycle.work_priority_order_pts_classify(company_cd,priority_order_cd,pts_cd,sku_num,pts_branch_num,sku_num_init,
+        insert into priority.work_priority_order_pts_classify(company_cd,priority_order_cd,pts_cd,sku_num,pts_branch_num,sku_num_init,
         <foreach collection="colNameList" separator="," item="item">
             ${item}
         </foreach>
@@ -31,11 +31,11 @@
 
     </insert>
     <update id="setSkuForInit">
-        update planocycle.work_priority_order_pts_classify set sku_num = sku_num_init
+        update priority.work_priority_order_pts_classify set sku_num = sku_num_init
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </update>
     <update id="setSkuForCatePakSmall">
-        update planocycle.work_priority_order_pts_classify set sku_num = sku_num -1
+        update priority.work_priority_order_pts_classify set sku_num = sku_num -1
         where  company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
         and sku_num >= #{maps.rank}::integer
         and
@@ -73,7 +73,7 @@
               </foreach>
     </update>
     <update id="setSkuForCatePakBig">
-        update planocycle.work_priority_order_pts_classify set sku_num = sku_num +1
+        update priority.work_priority_order_pts_classify set sku_num = sku_num +1
         where  company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
         and sku_num >= #{maps.rank}::integer
         and
@@ -111,19 +111,19 @@
         </foreach>
     </update>
     <insert id="setWorkForFinal">
-        insert into  planocycle.work_priority_order_pts_classify
-        select * from planocycle.priority_order_pts_classify
+        insert into  priority.work_priority_order_pts_classify
+        select * from priority.priority_order_pts_classify
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </insert>
     <delete id="deleteWork">
         delete from priority.work_priority_order_pts_classify where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </delete>
     <delete id="deleteFinal">
-        delete from planocycle.priority_order_pts_classify where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+        delete from priority.priority_order_pts_classify where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </delete>
     <insert id="setFinalForWork">
-        insert into  planocycle.priority_order_pts_classify
-        select * from planocycle.work_priority_order_pts_classify
+        insert into  priority.priority_order_pts_classify
+        select * from priority.work_priority_order_pts_classify
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </insert>
     <select id="getJanPtsCd" resultType="integer">
@@ -158,7 +158,7 @@
     </select>
     <select id="getAllJanPtsCd" resultType="java.lang.Integer">
         select pts_cd
-        from planocycle.work_priority_order_pts_classify
+        from priority.work_priority_order_pts_classify
         where sku_num >=${map.rank_upd}
         and
         <foreach collection="map" separator="and" item="item" index="index" >
@@ -173,7 +173,7 @@
     <select id="getAttrInfo" resultType="map">
         select distinct
          attr1,attr2,attr3,attr4,attr5,attr6,attr7,attr8,attr9,mulit_attr
-         from planocycle.work_priority_order_pts_classify
+         from priority.work_priority_order_pts_classify
         where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
     </select>
 </mapper>
