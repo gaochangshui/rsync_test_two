@@ -785,12 +785,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             String group = entry.getKey();
             logger.info("group:{}",group);
 
-            int skuNumInit = 0, skuNum = 0;
+            int skuNumInit = 0;
             List<Map<String, Object>> attrList = ptsSkuNum.stream().filter(map -> map.get(MagicString.ATTR_LIST).toString().equals(group)).collect(Collectors.toList());
             if (!attrList.isEmpty()) {
                 Map<String, Object> attrMap = attrList.get(0);
                 skuNumInit = Integer.parseInt(attrMap.get("sku_num_init").toString());
-                skuNum = Integer.parseInt(attrMap.get("sku_num").toString());
             }
 
             List<Map<String, Object>> ptsJanList = entry.getValue();
@@ -881,8 +880,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                 }
 
                             }
+                            repeatOldJan.put(jan,newJan);
                             if(ptsVersion==1){
-                                repeatOldJan.put(jan,newJan);
                                 if(!newRankJan.isEmpty()){
                                     ptsJan.put(MagicString.RANK_UPD, newRankJan.get(0));
                                 }
@@ -897,7 +896,10 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         if(!newRankJan.isEmpty()){
                             ptsJan.put(MagicString.RANK_UPD, newRankJan.get(0));
                         }
-                        ptsJan.put(MagicString.JAN, repeatOldJan.get(jan));
+
+                        if(ptsVersion == 1){
+                            ptsJan.put(MagicString.JAN, repeatOldJan.get(jan));
+                        }
                     }else if(newJanIndex < notInPtsJanList.size()){
                         String newJan = notInPtsJanList.get(newJanIndex).get(MagicString.JAN).toString();
                         Integer newJanRank = MapUtils.getInteger(notInPtsJanList.get(newJanIndex), MagicString.RANK_UPD);
@@ -950,20 +952,24 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                             }
                         }
 
+                        ptsJan.put(MagicString.RANK_UPD, newJanRank);
+                        repeatOldJan.put(jan,newJan);
                         if(ptsVersion==1){
-                            repeatOldJan.put(jan,newJan);
-                            ptsJan.put(MagicString.RANK_UPD, newJanRank);
                             ptsJan.put(MagicString.JAN, newJan);
                         }
                     }else{
                         if(ptsVersion==1){
                             ptsJan.put(MagicString.DEL_FLAG, "1");
+                        }else if(ptsVersion==2){
+                            //not exist jan replace old jan,record flag
+                            ptsJan.put(MagicString.DEL_FLAG, "0");
                         }
                     }
 
                     if(ptsVersion == 2){
                         //確認用棚割
                         ptsJan.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd, jan));
+                        ptsJan.put(MagicString.DUMMY_JAN, "1");
                     }
 
                     adoptPtsJanList.set(i, ptsJan);
@@ -1018,8 +1024,10 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             String attrBigs = bigs;
             String attrSmalls = smalls;
 
-            List<Map<String, Object>> bigList = newPtsJanMap.get(attrBigs);
-            List<Map<String, Object>> smallList = newPtsJanMap.get(attrSmalls);
+            List<Map<String, Object>> bigList = newPtsJanMap.get(attrBigs).stream().filter(map->
+                    !"1".equals(MapUtils.getString(map, MagicString.DEL_FLAG)) && !"0".equals(MapUtils.getString(map, MagicString.DEL_FLAG))).collect(Collectors.toList());
+            List<Map<String, Object>> smallList = newPtsJanMap.get(attrSmalls).stream().filter(map->
+                    !"1".equals(MapUtils.getString(map, MagicString.DEL_FLAG)) && !"0".equals(MapUtils.getString(map, MagicString.DEL_FLAG))).collect(Collectors.toList());
 
             List<Map<String, Object>> smallListSortByRank = smallList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, MagicString.RANK_UPD))).collect(Collectors.toList());
             Map<String, Object> compressJan = smallListSortByRank.get(smallList.size() - 1);
@@ -1050,7 +1058,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 //no jan can 拡
                 if(ptsVersion == 2){
                     smallList = smallList.stream().map(map-> {
-                        if (MapUtils.getString(map, MagicString.JAN).equals(smallJan)) {
+                        if (MapUtils.getString(map, MagicString.JAN).equals(smallJan) && !"1".equals(MapUtils.getString(map, MagicString.DUMMY_JAN))) {
                             map.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,smallJan));
                         }
                         return map;
@@ -1068,7 +1076,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
                 if(ptsVersion == 2){
                     smallList = smallList.stream().map(map-> {
-                        if(MapUtils.getString(map, MagicString.JAN).equals(smallJan)){
+                        if(MapUtils.getString(map, MagicString.JAN).equals(smallJan) && !"1".equals(MapUtils.getString(map, MagicString.DUMMY_JAN))){
                             map.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,smallJan));
                         }
 

@@ -72,6 +72,8 @@ public class MagicString {
      * 棚割専用
      */
     public static final String JAN = "jan";
+
+    public static final String DUMMY_JAN = "dummy_jan";
     public static final String JAN_NAME = "JanName";
     public static final String NAME = "name";
     public static final String VALUE = "value";
