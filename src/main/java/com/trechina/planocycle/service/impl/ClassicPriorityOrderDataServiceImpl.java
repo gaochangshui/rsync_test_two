@@ -917,8 +917,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             if(rowIndex<startRowIndex){
                 if(rowIndex==0){
                     String mode = csvRow.getField(1);
-                    if(!"V1.0".equals(mode)){
+                    if(!MagicString.PTS_VERSION.equals(mode)){
                         return ResultMaps.result(ResultEnum.VERSION_ERROR);
+                    }
+                }else if(rowIndex==1){
+                    String modeName = csvRow.getField(0);
+                    if(!modeName.startsWith("変更後")){
+                        return ResultMaps.result(ResultEnum.UPDATE_RANK);
                     }
                 }
                 rowIndex++;

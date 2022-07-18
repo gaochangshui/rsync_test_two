@@ -25,7 +25,9 @@ public enum ResultEnum {
     KAISOU_COUNT_LIMIT(70001,"kaisou count not enough"),
 
     KAISOU_name_LIMIT(70002, "kaisou name exists"),
-    HEIGHT_NOT_ENOUGH(60001,"height not enough");
+    HEIGHT_NOT_ENOUGH(60001,"height not enough"),
+
+    UPDATE_RANK(40015,"変更後Rankで取込してください。");
 
     private Integer code;
     private String msg;
