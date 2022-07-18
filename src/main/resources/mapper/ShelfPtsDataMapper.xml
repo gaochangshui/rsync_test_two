@@ -609,7 +609,7 @@
   <select id="getPtsCdByPatternCd" resultMap="BaseResultMap">
     select id,file_name from planocycle.shelf_pts_data where company_cd=#{companyCd} and shelf_pattern_cd::varchar=any(string_to_array(#{patternCd},','))
   </select>
-  <select id="getInitialExtraction" resultType="java.util.LinkedHashMap">
+  <select id="getInitialExtraction" resultType="java.util.Map">
     select t1.jan as jan_old,t1.jan as jan_new ,coalesce(t1."2",'') as sku,
            <foreach collection="listAttr" separator="," item="item" >
              coalesce(${item.tableName}.${item.col},'') as ${item.colName}

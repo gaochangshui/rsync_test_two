@@ -157,6 +157,97 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         return priorityOrderJanNewMapper.delete(companyCd, priorityOrderCd);
     }
 
+    @Override
+    public Map<String, Object> getSimilarity(Map<String, Object> map) {
+        String companyCd = map.get("companyCd").toString();
+        String tableName = "public.priorityorder" + session.getAttribute("aud");
+        Integer priorityOrderCd = Integer.valueOf(map.get("priorityOrderCd").toString());
+        List<Map<String,Object>> data = (List<Map<String,Object>>)map.get("data");
+        Set<Map<String,Object>> list = new HashSet<>();
+        List<Map<String,Object>> errorMsgJan = priorityOrderJanNewMapper.getErrorMsgJan(companyCd, priorityOrderCd);
+        for (Map<String, Object> map1 : data) {
+            for (Map<String, Object> s : errorMsgJan) {
+                if (map1.get("janNew").equals(s.get("jan_new"))) {
+                    map1.put("errMsg", s.get("errmsg"));
+                    list.add(map1);
+
+                }
+            }
+        }
+        Map<String, Object> objectMap1 = new HashMap<>();
+
+        objectMap1.putAll(data.get(0));
+        objectMap1.remove("janNew");
+        objectMap1.remove("janName");
+        objectMap1.remove("rank");
+        objectMap1.remove("branchNum");
+        objectMap1.remove("branchAccount");
+        objectMap1.remove("errMsg");
+        objectMap1.remove("target");
+        objectMap1.remove("companyCd");
+        objectMap1.remove("priorityOrderCd");
+        map.remove("companyCd");
+        map.remove("priorityOrderCd");
+        map.remove("janNew");
+        List<Map<String, Object>> similarity = priorityOrderJanNewMapper.getSimilarity(objectMap1,companyCd,priorityOrderCd);
+        for (Map<String, Object> objectMap : similarity) {
+            objectMap.put("janNew",objectMap.get("jan_new"));
+            objectMap.put("janName",objectMap.get("sku"));
+            objectMap.put("rank_upd",objectMap.get("rank"));
+            objectMap.remove("jan_new");
+            objectMap.remove("sku");
+        }
+        for (Map<String, Object> objectMap : data) {
+            objectMap.put("rank_upd",objectMap.get("rank"));
+            objectMap.put("rank",-1);
+            objectMap.put("errorMsg","");
+        }
+        if(!similarity.isEmpty()){
+            similarity.addAll(data);
+        }
+        list.addAll(data);
+        similarity = similarity.stream()
+                .sorted(Comparator.comparing(map1 -> Integer.parseInt(map1.get("rank_upd").toString()))).collect(Collectors.toList());
+        List<Map<String, Object>> list1 = priorityOrderDataService.calRank(similarity, new ArrayList<>());
+        for (Map<String, Object> objectMap : list1) {
+            objectMap.put("rank",objectMap.get("rank_upd"));
+            objectMap.remove("rank_upd");
+        }
+
+        List list2 = new ArrayList();
+        if (data.isEmpty()){
+            list2.add(new ArrayList<>());
+        }else {
+            List<Map<String,Object>> listMap = new ArrayList<>();
+            listMap.addAll(list1);
+            for (Map<String, Object> objectMap : listMap) {
+                objectMap.put("jan_new",objectMap.get("janNew"));
+                objectMap.put("jan_old","_");
+                objectMap.put("companyCd",companyCd);
+                objectMap.put("priorityOrderCd",priorityOrderCd);
+                objectMap.put("rank_upd",objectMap.get("rank"));
+            }
+            List<Map<String, Object>> branchNum = (List<Map<String, Object>>)priorityOrderDataService.getBranchNum(list1).get("data");
+            for (Map<String, Object> objectMap : list1) {
+                for (Map<String, Object> stringObjectMap : branchNum) {
+                    if (objectMap.get("janNew").equals(stringObjectMap.get("jan_new"))){
+                        objectMap.put("branchNum",stringObjectMap.get("branch_num_upd"));
+                        objectMap.remove("jan_new");
+                        objectMap.remove("jan_old");
+                        objectMap.remove("companyCd");
+                        objectMap.remove("priorityOrderCd");
+                        objectMap.remove("rank_upd");
+                    }
+                }
+            }
+            list2.add(list1);
+        }
+
+        list2.add(list);
+
+        return ResultMaps.result(ResultEnum.SUCCESS,list2);
+    }
+
     private void dataSave(JSONArray jsonArray, List<ClassicPriorityOrderJanNew> janNewList,
                           List<PriorityOrderJanAttribute> janAttributeList, String companyCd,
                           Integer priorityOrderCd) {

@@ -42,10 +42,11 @@ public interface ClassicPriorityOrderDataService {
      * @param colNameList
      * @return
      */
-    Map<String,Object> getPriorityOrderDataUpd(List<String> colNameList,Integer priorityOrderCd,String companyCd);
+    Map<String,Object> getPriorityOrderDataUpd(List<String> colNameList,Integer priorityOrderCd,String companyCd,Integer delFlg);
 
     Map<String,Object> getPriorityOrderListInfo(String companyCd,Integer priorityOrderCd,List<String> colNameList);
 
+    List<Map<String, Object>> calRank(List<Map<String, Object>> result, List<String> colNameList);
     /**
      * 属性列名の名前を取得
      * @param enterpriseAxisDto
@@ -54,8 +55,6 @@ public interface ClassicPriorityOrderDataService {
     Map<String,Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto);
 
     void downloadForCsv(DownloadSortDto downloadDto, HttpServletResponse response) throws IOException;
-
-    Map<String, Object> getPriorityOrderDataForSmt(String [] jans,String companyCd,Integer priorityOrderCd,Integer productPowerCd);
 
     Map<String, Object> getPriorityOrderDataForDb(String[] jans, Map<String,String> attrSortMap);
 
@@ -69,8 +68,6 @@ public interface ClassicPriorityOrderDataService {
     Map<String, Object> editPriorityOrderData(PriorityOrderDataDto priorityOrderDataDto);
 
     void setPtsClassify(List<String> colNameList, String shelfPatternCd, String companyCd, Integer priorityOrderCd);
-
-    List<Map<String, Object>> calRank(List<Map<String, Object>> result, List<String> colNameList);
 
     Map<String, Object> getBranchNum(List<Map<String, Object>> map);
 }

@@ -459,7 +459,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         }
 
         priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
-        List<LinkedHashMap<String, Object>> linkedHashMaps = new Gson().fromJson(datas.toString(), new TypeToken<List<LinkedHashMap<String, Object>>>() {
+        List<Map<String, Object>> linkedHashMaps = new Gson().fromJson(datas.toString(), new TypeToken<List<LinkedHashMap<String, Object>>>() {
         }.getType());
 
         priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,linkedHashMaps,authorCd);

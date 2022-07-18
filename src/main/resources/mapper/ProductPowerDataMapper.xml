@@ -732,16 +732,6 @@
     </select>
 
 
-    <insert id="selectWKKIntager">
-        insert into planocycle.work_product_power_intage(company_cd,product_power_cd,jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
-            intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
-            intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,author_cd)
-        values
-        <foreach collection="list" separator="," item="item">
-            (#{companyCd},#{productPowerCd},#{item},1,2,3,4,5,6,7,8,9,10,11,12,13,14,#{authorCd})
-        </foreach>
-
-    </insert>
     <select id="selectSameNameJan" resultType="com.trechina.planocycle.entity.po.PriorityOrderJanProposal">
         select t1.jan as janOld,t2.jan janNew from
         (select distinct jan, janinfo."${janNameCol}" jan_name from ${tableName} janinfo
@@ -758,7 +748,10 @@
         where product_power_cd = #{productPowerCd}
     </select>
     <select id="getPatternList" resultType="java.lang.String">
-        select string_agg(distinct shelf_pattern_cd::varchar, ',') as shelfPatternCd from planocycle.shelf_pattern_branch
+        select string_agg(distinct branchs.shelf_pattern_cd::varchar, ',') as shelfPatternCd
+        from planocycle.shelf_pattern_branch branchs
+        inner join planocycle.shelf_pts_data ptsdata
+        on ptsdata.shelf_pattern_cd = branchs.shelf_pattern_cd
         where branch in
         <foreach  collection="branchList" separator="," open="(" close=")" item="item">
             #{item}

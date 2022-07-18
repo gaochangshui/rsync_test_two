@@ -3,6 +3,7 @@ package com.trechina.planocycle.controller;
 import com.trechina.planocycle.entity.dto.DownloadSortDto;
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderUpdDto;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -42,12 +44,17 @@ public class ClassicPriorityOrderDataController {
 
     /**
      * rank属性ソート+優先順位表反応ボタン抽出データ
-     * @param colNameList
+     * @param priorityOrderUpdDto
      * @return
      */
-    @GetMapping("/getPriorityOrderDataUpd")
-    public Map<String,Object> getPriorityOrderDataUpd(@RequestParam List<String> colNameList,Integer priorityOrderCd,String companyCd){
-        return priorityOrderDataService.getPriorityOrderDataUpd(colNameList,priorityOrderCd,companyCd);
+    @PostMapping("/getPriorityOrderDataUpd")
+    public Map<String,Object> getPriorityOrderDataUpd(@RequestBody PriorityOrderUpdDto priorityOrderUpdDto){
+        String colName = priorityOrderUpdDto.getColNameList();
+        List<String> colNameList = Arrays.asList(colName.split(","));
+        Integer priorityOrderCd = priorityOrderUpdDto.getPriorityOrderCd();
+        String companyCd = priorityOrderUpdDto.getCompanyCd();
+        Integer delFlg = priorityOrderUpdDto.getDelFlg();
+        return priorityOrderDataService.getPriorityOrderDataUpd(colNameList,priorityOrderCd,companyCd,delFlg);
     }
 
     /**
@@ -92,5 +99,8 @@ public class ClassicPriorityOrderDataController {
        return priorityOrderDataService.getPatternAndName(productPowerCd);
     }
 
-
+    @PostMapping("/getBranchNum")
+    Map<String,Object> getBranchNum(@RequestBody List<Map<String,Object>> map){
+        return priorityOrderDataService.getBranchNum(map);
+    }
 }

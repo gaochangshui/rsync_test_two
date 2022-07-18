@@ -349,7 +349,7 @@
         </foreach>
         and rank != -1
     </select>
-    <select id="getTempDataAndMst" resultType="java.util.LinkedHashMap">
+    <select id="getTempDataAndMst" resultType="java.util.Map">
         select jan_old,jan_new,sku,
             <foreach collection="colNameList" item="item" separator=",">
                 ${item}
@@ -640,6 +640,15 @@
         and wkC.sku_num_init >= prd.rank_upd
         group by prd.jan_new,prd.attr1,prd.attr2 ,prd.rank_upd,prd.jan_old
         order by prd.attr1,prd.attr2,prd.rank_upd
+    </select>
+    <select id="getData" resultType="java.util.Map">
+        SELECT * FROM priority.work_priority_order_result_data
+        ORDER BY
+        <foreach collection="colNameList" item="item" separator=",">
+            ${item}
+        </foreach>
+        ,rank_upd
+        where priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getJanBranchNum" resultType="java.util.Map">
         select  branch_num  , pos_amount_upd

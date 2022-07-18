@@ -50,4 +50,7 @@ public interface ClassicPriorityOrderJanNewMapper {
 
     List<Map<String,Object>> getJanNews(Integer priorityOrderCd, List<String> colName,String companyCd);
 
+    List<Map<String,Object>> getErrorMsgJan(String companyCd, Integer priorityOrderCd);
+
+    List<Map<String, Object>> getSimilarity(Map<String, Object> objectMap1, String companyCd, Integer priorityOrderCd);
 }
