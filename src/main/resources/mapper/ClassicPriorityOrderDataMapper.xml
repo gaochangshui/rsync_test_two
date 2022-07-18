@@ -643,11 +643,16 @@
     </select>
     <select id="getData" resultType="java.util.Map">
         SELECT * FROM priority.work_priority_order_result_data
+        where priority_order_cd = #{priorityOrderCd}
         ORDER BY
         <foreach collection="colNameList" item="item" separator=",">
             ${item}
         </foreach>
         ,rank_upd
-        where priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getJanBranchNum" resultType="java.util.Map">
+        select  branch_num  , branch_amount_upd
+        from priority.work_priority_order_result_data where jan_old = #{janOld} and jan_new = #{janNew}
+        and  priority_order_cd = #{priorityOrderCd}
     </select>
 </mapper>

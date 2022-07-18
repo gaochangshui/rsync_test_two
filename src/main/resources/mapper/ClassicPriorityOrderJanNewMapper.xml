@@ -167,7 +167,7 @@
     </select>
     <select id="getJanNews" resultType="java.util.Map">
         select
-        jan_new ,name_new as sku,rank as rank_upd,branch_account as pos_amount_upd,branch_num as branch_num_upd, rank as goods_rank,
+        jan_new ,name_new as sku,rank as rank_upd,branch_account as branch_amount_upd,branch_num as branch_num_upd, rank as goods_rank,
         rank as rank_prop,
         <foreach collection="colName" item="item" separator=",">
             ${item}

@@ -117,4 +117,6 @@ public interface ClassicPriorityOrderDataMapper {
     List<Map<String, Object>> getJanBranchNumList(String aud, Integer priorityOrderCd, List<String> colNameList);
 
     List<Map<String, Object>> getData(Integer priorityOrderCd,List<String> colNameList);
+
+    Map<String, Object> getJanBranchNum(String janOld,String janNew,Integer priorityOrderCd);
 }
