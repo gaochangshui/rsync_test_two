@@ -48,4 +48,6 @@ public interface ShelfPatternMstMapper {
     List<Map<String, Object>> selectPatternCommonPartsData(Integer priorityOrderCd);
 
     List<ShelfPatternNameVO> getPatternForStorel(String storeIsCore,String companyCd);
+
+    List<Integer> getpatternIdOfFilename(String fileName, String companyCd);
 }
