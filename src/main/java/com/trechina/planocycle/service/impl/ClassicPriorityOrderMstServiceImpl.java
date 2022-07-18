@@ -520,7 +520,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             List<ShelfPtsDataDto> patternList = patternMapper.selectPattern(companyCd, priorityOrderCd);
             List<Map<String, Object>> branchs = shelfPatternBranchMapper.selectAllPatternBranch(priorityOrderCd, companyCd);
             List<Map<String, String>> janReplace = janReplaceMapper.selectJanReplace(companyCd, priorityOrderCd);
-            Map<String, String> janReplaceMap = janReplace.stream().collect(Collectors.toMap(map-> MapUtils.getString(map, MagicString.JAN_OLD), map->MapUtils.getString(map, MagicString.JAN_NEW)));
+            Map<String, String> janReplaceMap = janReplace.stream().collect(Collectors.toMap(map->MapUtils.getString(map, MagicString.JAN_OLD), map->MapUtils.getString(map, MagicString.JAN_NEW)));
             List<Map<String, Object>> allNewJanList = new ArrayList<>();
             List<Map<String, Object>> allDeleteJanList = new ArrayList<>();
 
