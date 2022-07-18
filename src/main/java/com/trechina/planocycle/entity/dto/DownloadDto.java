@@ -6,6 +6,7 @@ import lombok.Data;
 public class DownloadDto {
 
         private String jan;
+        private String janOld;
         private Integer taiCd;
         private Integer tanaCd;
         private String attr1;
@@ -15,7 +16,9 @@ public class DownloadDto {
         private Integer priorityOrderCd;
         private Integer rank;
         private String name;
-
-        private Integer branchNum;
-
+        private String difference;
+        private String branchNum;
+        private String attrList;
+        private Integer rankNow;
+        private String saleForecast;
 }

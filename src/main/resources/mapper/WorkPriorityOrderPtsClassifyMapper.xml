@@ -153,7 +153,7 @@
         select sku_num,sku_num_init
         <foreach collection="rankAttr" open="," separator=" || " close=" as attr_list" item="item" index="index">
             <if test="index>0">','||</if>concat('${item}',':',${item})</foreach>
-        from planocycle.priority_order_pts_classify pts_classify
+        from priority.priority_order_pts_classify pts_classify
         where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd} and pts_cd=#{ptsCd}
     </select>
     <select id="getAllJanPtsCd" resultType="java.lang.Integer">

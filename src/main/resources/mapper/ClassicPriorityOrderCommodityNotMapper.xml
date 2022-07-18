@@ -67,13 +67,13 @@
   </insert>
   <select id="selectNotJan" resultType="map">
     select branch,jan_new
-    from planocycle.priority_order_commodity_not
+    from priority.priority_order_commodity_not
     where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
       and branch=any(string_to_array(#{branchList},',')) and flag=1 and shelf_pattern_cd=#{shelfPatternCd}
   </select>
   <select id="selectCountNotJan" resultType="int">
     select count(distinct branch)branch
-    from planocycle.priority_order_commodity_not comm_must
+    from priority.priority_order_commodity_not comm_must
     where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd} and shelf_pattern_cd=#{shelfPatternCd} and flag=1
   </select>
 </mapper>

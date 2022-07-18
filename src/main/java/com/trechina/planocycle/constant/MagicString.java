@@ -104,6 +104,8 @@ public class MagicString {
 
     public static final String TANAPOSITION_CD = "tanaposition_cd";
 
+    public static  final String PTS_VERSION = "Ｖ１．０";
+
     /**
      * 必須区分
      */

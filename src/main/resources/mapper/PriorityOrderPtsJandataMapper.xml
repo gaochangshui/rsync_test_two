@@ -33,9 +33,13 @@
         </where>
     </update>
     <select id="selectJanRank" resultType="com.trechina.planocycle.entity.dto.DownloadDto">
-        select jan_new jan, ROW_NUMBER() OVER(PARTITION by
+        select jan_new jan,jan_old,  case "orderdata".rank when -1 then jandata.rank else ROW_NUMBER() OVER(PARTITION by
         <foreach collection="sortList" item="obj" separator=",">${obj}</foreach>
-         order by case "orderdata".rank when -1 then -1 else 0 end,jandata.rank,rank_prop, "orderdata".rank) rank
+         order by case "orderdata".rank when -1 then -1 else 0 end,jandata.rank,rank_prop, "orderdata".rank) end rank,
+        "orderdata".rank rank_now,
+        <foreach collection="sortList" item="obj" index="index" separator="||" close="as attrList">
+            <if test="index>0">','||</if>'${obj}:'||${obj}
+        </foreach>
         from priority.work_priority_order_result_data "orderdata" inner join
         priority.priority_order_pts_jandata jandata on jandata.jan_cd="orderdata".jan_new and jandata.priority_order_cd=orderdata.priority_order_cd
         where jandata.company_cd=#{companyCd} and jandata.priority_order_cd=#{priorityOrderCd} and flg!=99999999;
@@ -43,11 +47,29 @@
     <update id="updateRankUpd">
         update priority.work_priority_order_result_data
         set rank_upd=
-        CASE jan_new
+        CASE concat(jan_old, jan_new)
         <foreach collection="ptsJanList" item="obj">
-            WHEN trim(#{obj.jan}) THEN #{obj.rank}
+            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN #{obj.rank}
         </foreach>
-        ELSE rank_upd END
+        ELSE rank_upd END,
+        branch_num_upd=
+        CASE concat(jan_old, jan_new)
+        <foreach collection="ptsJanList" item="obj">
+            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN #{obj.branchNum}
+        </foreach>
+        ELSE branch_num_upd END,
+        difference=
+        CASE concat(jan_old, jan_new)
+        <foreach collection="ptsJanList" item="obj">
+            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN #{obj.difference}
+        </foreach>
+        ELSE difference END,
+        sale_forecast=
+        CASE concat(jan_old, jan_new)
+        <foreach collection="ptsJanList" item="obj">
+            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN #{obj.saleForecast}
+        </foreach>
+        ELSE sale_forecast END
         where rank_upd != 99999999 and priority_order_cd=#{priorityOrderCd}
     </update>
     <update id="updateAttr">

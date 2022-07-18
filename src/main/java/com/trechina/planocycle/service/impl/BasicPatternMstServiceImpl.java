@@ -275,26 +275,47 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     public GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd ) {
 
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
-        String prodMstClass = jsonObject.get("prodMstClass").toString();
-        String prodIsCore = jsonObject.get("prodIsCore").toString();
-
-        GetCommonPartsDataDto getCommonPartsDataDto = new GetCommonPartsDataDto();
-        getCommonPartsDataDto.setProdMstClass(prodMstClass);
 
         String coreCompany = sysConfigMapper.selectSycConfig("core_company");
-        String isCompanyCd = null;
-        if ("1".equals(prodIsCore)) {
-            isCompanyCd = coreCompany;
-        } else {
-            isCompanyCd = companyCd;
-        }
-        getCommonPartsDataDto.setProdIsCore(isCompanyCd);
+        GetCommonPartsDataDto getCommonPartsDataDto = new GetCommonPartsDataDto();
 
-        getCommonPartsDataDto.setProKaisouTable(MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass));
-        getCommonPartsDataDto.setProAttrTable(MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass));
-        getCommonPartsDataDto.setProInfoTable(MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass));
-        getCommonPartsDataDto.setProZokuseiDataTable(MessageFormat.format("\"{0}\".zokusei_{1}_mst_data", isCompanyCd, prodMstClass));
-        getCommonPartsDataDto.setProZokuseiMstTable(MessageFormat.format("\"{0}\".zokusei_{1}_mst", isCompanyCd, prodMstClass));
+        if(jsonObject.containsKey("prodMstClass") && jsonObject.containsKey("prodIsCore")){
+            String prodMstClass = jsonObject.get("prodMstClass").toString();
+            String prodIsCore = jsonObject.get("prodIsCore").toString();
+            String isCompanyCd = null;
+
+            getCommonPartsDataDto.setProdMstClass(prodMstClass);
+
+            if ("1".equals(prodIsCore)) {
+                isCompanyCd = coreCompany;
+            } else {
+                isCompanyCd = companyCd;
+            }
+
+            getCommonPartsDataDto.setProdIsCore(isCompanyCd);
+
+            getCommonPartsDataDto.setProKaisouTable(MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass));
+            getCommonPartsDataDto.setProAttrTable(MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass));
+            getCommonPartsDataDto.setProInfoTable(MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass));
+        }
+
+
+        if (jsonObject.containsKey("storeIsCore") && jsonObject.containsKey("storeMstClass")) {
+            String storeIsCore = jsonObject.get("storeIsCore").toString();
+            String storeMstClass = jsonObject.get("storeMstClass").toString();
+            String isCompanyCd = null;
+
+            if ("1".equals(storeIsCore)) {
+                isCompanyCd = coreCompany;
+            } else {
+                isCompanyCd = companyCd;
+            }
+
+            getCommonPartsDataDto.setStoreIsCore(storeIsCore);
+            getCommonPartsDataDto.setStoreMstClass(storeMstClass);
+            getCommonPartsDataDto.setStoreInfoTable(MessageFormat.format("\"{0}\".ten_{1}_ten_info", isCompanyCd, storeMstClass));
+//            getCommonPartsDataDto.setStoreKaisouTable(MessageFormat.format("\"{0}\".ten_{1}_ten_kaisou_header_sys", isCompanyCd, storeMstClass));
+        }
 
         return getCommonPartsDataDto;
     }
