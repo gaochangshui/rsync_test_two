@@ -84,5 +84,7 @@ public interface ClassicPriorityOrderMstService {
     Map<String, Object> downloadPtsTask(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg,
                                                Integer ptsVersion, HttpServletResponse response);
 
+    void packagePtsZip(String taskId, HttpServletResponse response) throws IOException;
+
     Map<String, Object> getAttrInfo(String companyCd, Integer priorityOrderCd);
 }

@@ -347,6 +347,11 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     }
 
     @Override
+    public List<Integer> getpatternIdOfFilename(String fileName, String companyCd) {
+        return shelfPatternMstMapper.getpatternIdOfFilename(fileName,companyCd);
+    }
+
+    @Override
     public Map<String, Object> getShelfPatternForArea(String companyCd) {
         List<ShelfNamePatternVo> shelfPatternForArea = shelfPatternMstMapper.getShelfPatternForArea(companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS,shelfPatternForArea);

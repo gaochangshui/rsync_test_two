@@ -32,13 +32,18 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriUtils;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -46,6 +51,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderMstService {
@@ -733,6 +740,30 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         return ResultMaps.result(ResultEnum.SUCCESS,attrInfo);
     }
 
+    @Override
+    public void packagePtsZip(String taskId, HttpServletResponse response) throws IOException {
+        String s = cacheUtil.get(taskId).toString();
+        JSONObject jsonObject = JSON.parseObject(s);
+        String zipFileName = jsonObject.getString("fileName");
+        String fileParentPath = jsonObject.getString("path");
+
+        String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(zipFileName, "utf-8"));
+
+        response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, format);
+
+        ServletOutputStream outputStream = response.getOutputStream();
+        try(ZipOutputStream zos = new ZipOutputStream(outputStream)) {
+            writeZip(fileParentPath, zos);
+        } catch (IOException e) {
+            logger.error("", e);
+        } finally {
+            outputStream.close();
+            this.deleteDir(new File(fileParentPath));
+            cacheUtil.remove(taskId);
+        }
+    }
+
     private Map<String, List<Map<String, Object>>> doNewOldPtsCompare(Map<String, List<Map<String, Object>>> ptsJanDtoListByGroup,
                                                                       List<Map<String, Object>> resultDataList, List<Map<String, Object>> ptsSkuNum,
                                                                       ShelfPtsDataDto pattern, ShelfPtsHeaderDto shelfPtsHeaderDto,
@@ -761,17 +792,16 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             String group = entry.getKey();
             logger.info("group:{}",group);
 
-            int skuNumInit = 0, skuNum = 0;
+            int skuNumInit = 0;
             List<Map<String, Object>> attrList = ptsSkuNum.stream().filter(map -> map.get(MagicString.ATTR_LIST).toString().equals(group)).collect(Collectors.toList());
             if (!attrList.isEmpty()) {
                 Map<String, Object> attrMap = attrList.get(0);
                 skuNumInit = Integer.parseInt(attrMap.get("sku_num_init").toString());
-                skuNum = Integer.parseInt(attrMap.get("sku_num").toString());
             }
 
             List<Map<String, Object>> ptsJanList = entry.getValue();
             List<String> ptsJanCdList = ptsJanList.stream().map(map -> map.get(MagicString.JAN).toString()).collect(Collectors.toList());
-            AtomicInteger maxSkuNum = new AtomicInteger(Math.max(skuNumInit, skuNum));
+            AtomicInteger maxSkuNum = new AtomicInteger(skuNumInit);
             List<String> commodityNotJansCd = new ArrayList<>();
             if(branch!=null){
                 commodityNotJansCd = commodityNotJans.stream().map(map->map.get("jan_new").toString()).collect(Collectors.toList());
@@ -801,23 +831,16 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 }).collect(Collectors.toList());
             }
 
-            resultDataByAttr = resultDataByAttr.stream().map(map->{
-                int rank = Integer.parseInt(map.get("rank_upd").toString());
-                String attrKey =  Arrays.stream(map.get(MagicString.ATTR_LIST).toString().split(","))
-                        .collect(Collectors.joining(","));
-                if(catePakList.stream().anyMatch(catePak -> catePak.getSmalls().equals(attrKey) && catePak.getRank().equals(rank)
-                        && rank <= maxSkuNum.get())){
-                    maxSkuNum.getAndIncrement();
-                }
-                return map;
-            }).collect(Collectors.toList());
-
             int finalSkuNum = maxSkuNum.get();
             List<Map<String, Object>> resultData = resultDataByAttr.stream()
                     .filter(s->Integer.parseInt(s.get(MagicString.RANK_UPD).toString()) <= finalSkuNum
                             && !finalCommodityNotJansCd.contains(s.get(MagicString.JAN).toString()))
                     .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()))).collect(Collectors.toList());
-            List<Map<String, Object>> notInPtsJanList = resultData.stream().filter(map -> !ptsJanCdList.contains(map.get(MagicString.JAN).toString())).collect(Collectors.toList());
+            List<Map<String, Object>> bkResultData = resultDataByAttr.stream()
+                    .filter(s->!finalCommodityNotJansCd.contains(s.get(MagicString.JAN).toString()))
+                    .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()))).collect(Collectors.toList());
+            List<Map<String, Object>> notInPtsJanList = bkResultData.stream().filter(map -> !ptsJanCdList.contains(map.get(MagicString.JAN).toString()))
+                    .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()))).collect(Collectors.toList());
             notInPtsJanListByGroup.put(group, notInPtsJanList);
 
             int newJanIndex = 0;
@@ -843,6 +866,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     }else {
                         if(janReplaceMap.containsKey(jan)) {
                             String newJan = MapUtils.getString(janReplaceMap, jan);
+                            List<String> newRankJan = resultData.stream().filter(data -> MapUtils.getString(data, MagicString.JAN).equals(repeatOldJan.get(jan))).map(data -> MapUtils.getString(data, MagicString.RANK_UPD)).collect(Collectors.toList());
+
                             //old pts not exists and jan replace
                             if (ptsJanDtoList.stream().noneMatch(map->MapUtils.getString(map, MagicString.JAN).equals(newJan))&&
                                     newJanList.stream().noneMatch(map->newJan.equals(map.get(MagicString.JAN).toString()))) {
@@ -856,13 +881,17 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                     newCopyJanMap.put("branch_amount_upd", oldJan.get("branch_amount_upd"));
                                     newCopyJanMap.put("pattern_name", pattern.getShelfPatternName());
                                     newCopyJanMap.put(MagicString.PTS_NAME, fileName);
+                                    newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(oldJan, MagicString.RANK_UPD));
                                     //priority_order_data exist jan
                                     newJanList.add(newCopyJanMap);
                                 }
 
                             }
+                            repeatOldJan.put(jan,newJan);
                             if(ptsVersion==1){
-                                repeatOldJan.put(jan,newJan);
+                                if(!newRankJan.isEmpty()){
+                                    ptsJan.put(MagicString.RANK_UPD, newRankJan.get(0));
+                                }
                                 ptsJan.put(MagicString.JAN, newJan);
                             }
                         }
@@ -870,7 +899,14 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
                     logger.info("patternCd:{}, repeatOldJan:{}", pattern.getId(), repeatOldJan);
                     if(repeatOldJan.containsKey(jan)){
-                        ptsJan.put(MagicString.JAN, repeatOldJan.get(jan));
+                        List<String> newRankJan = resultData.stream().filter(data -> MapUtils.getString(data, MagicString.JAN).equals(repeatOldJan.get(jan))).map(data -> MapUtils.getString(data, MagicString.RANK_UPD)).collect(Collectors.toList());
+                        if(!newRankJan.isEmpty()){
+                            ptsJan.put(MagicString.RANK_UPD, newRankJan.get(0));
+                        }
+
+                        if(ptsVersion == 1){
+                            ptsJan.put(MagicString.JAN, repeatOldJan.get(jan));
+                        }
                     }else if(newJanIndex < notInPtsJanList.size()){
                         String newJan = notInPtsJanList.get(newJanIndex).get(MagicString.JAN).toString();
                         Integer newJanRank = MapUtils.getInteger(notInPtsJanList.get(newJanIndex), MagicString.RANK_UPD);
@@ -891,6 +927,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                     newCopyJanMap.put("branch_amount_upd", oldJan.get("branch_amount_upd"));
                                     newCopyJanMap.put("pattern_name", pattern.getShelfPatternName());
                                     newCopyJanMap.put(MagicString.PTS_NAME, fileName);
+                                    newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(oldJan, MagicString.RANK_UPD));
                                     //priority_order_data exist jan
                                     newJanList.add(newCopyJanMap);
                                 }
@@ -914,6 +951,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                 newCopyJanMap.put("branch_amount_upd", newJanMap.get("branch_amount_upd"));
                                 newCopyJanMap.put("pattern_name", pattern.getShelfPatternName());
                                 newCopyJanMap.put(MagicString.PTS_NAME, fileName);
+                                newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(newJanMap, MagicString.RANK_UPD));
                                 //priority_order_data exist jan
                                 newJanList.add(newCopyJanMap);
 
@@ -921,24 +959,29 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                             }
                         }
 
+                        ptsJan.put(MagicString.RANK_UPD, newJanRank);
+                        repeatOldJan.put(jan,newJan);
                         if(ptsVersion==1){
-                            repeatOldJan.put(jan,newJan);
                             ptsJan.put(MagicString.JAN, newJan);
                         }
                     }else{
                         if(ptsVersion==1){
                             ptsJan.put(MagicString.DEL_FLAG, "1");
+                        }else if(ptsVersion==2){
+                            //not exist jan replace old jan,record flag
+                            ptsJan.put(MagicString.DEL_FLAG, "0");
                         }
                     }
 
                     if(ptsVersion == 2){
                         //確認用棚割
                         ptsJan.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd, jan));
+                        ptsJan.put(MagicString.DUMMY_JAN, "1");
                     }
 
                     adoptPtsJanList.set(i, ptsJan);
                 }else{
-                    boolean ptsIsExist = ptsJanList.stream().anyMatch(pts->MapUtils.getString(pts, MagicString.JAN).equals(jan));
+                    boolean ptsIsExist = resultData.stream().anyMatch(pts->MapUtils.getString(pts, MagicString.JAN).equals(jan));
                     Optional<PriorityOrderCatePakVO> smallOpt = catePakList.stream().filter(catePak -> catePak.getSmalls().equals(attrKey)
                             && catePak.getRank().toString().equals(rankUpd) && ptsIsExist).findAny();
                     int finalI = i;
@@ -988,10 +1031,12 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             String attrBigs = bigs;
             String attrSmalls = smalls;
 
-            List<Map<String, Object>> bigList = newPtsJanMap.get(attrBigs);
-            List<Map<String, Object>> smallList = newPtsJanMap.get(attrSmalls);
+            List<Map<String, Object>> bigList = newPtsJanMap.get(attrBigs).stream().filter(map->
+                    !"1".equals(MapUtils.getString(map, MagicString.DEL_FLAG)) && !"0".equals(MapUtils.getString(map, MagicString.DEL_FLAG))).collect(Collectors.toList());
+            List<Map<String, Object>> smallList = newPtsJanMap.get(attrSmalls).stream().filter(map->
+                    !"1".equals(MapUtils.getString(map, MagicString.DEL_FLAG)) && !"0".equals(MapUtils.getString(map, MagicString.DEL_FLAG))).collect(Collectors.toList());
 
-            List<Map<String, Object>> smallListSortByRank = smallList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, "rank_upd"))).collect(Collectors.toList());
+            List<Map<String, Object>> smallListSortByRank = smallList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, MagicString.RANK_UPD))).collect(Collectors.toList());
             Map<String, Object> compressJan = smallListSortByRank.get(smallList.size() - 1);
             //縮attr's last rank index
             int smallsIndex = 0;
@@ -1020,7 +1065,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 //no jan can 拡
                 if(ptsVersion == 2){
                     smallList = smallList.stream().map(map-> {
-                        if (MapUtils.getString(map, MagicString.JAN).equals(smallJan)) {
+                        if (MapUtils.getString(map, MagicString.JAN).equals(smallJan) && !"1".equals(MapUtils.getString(map, MagicString.DUMMY_JAN))) {
                             map.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,smallJan));
                         }
                         return map;
@@ -1038,7 +1083,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
                 if(ptsVersion == 2){
                     smallList = smallList.stream().map(map-> {
-                        if(MapUtils.getString(map, MagicString.JAN).equals(smallJan)){
+                        if(MapUtils.getString(map, MagicString.JAN).equals(smallJan) && !"1".equals(MapUtils.getString(map, MagicString.DUMMY_JAN))){
                             map.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,smallJan));
                         }
 
@@ -1263,6 +1308,47 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             workbook.write(fos);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void writeZip(String parentFilePath, ZipOutputStream zos){
+        File file = new File(parentFilePath);
+        if(file.isDirectory()){
+            for (File f : Objects.requireNonNull(file.listFiles())) {
+                try(FileInputStream fis = new FileInputStream(f)) {
+                    zos.putNextEntry(new ZipEntry(f.getName()));
+//                    if(f.getName().endsWith("csv")){
+//                        byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+//                        zos.write(bom);
+//                    }
+
+                    byte[] bytes = new byte[1024];
+                    int len;
+                    while ((len = fis.read(bytes))!=-1){
+                        zos.write(bytes, 0, len);
+                    }
+                    zos.closeEntry();
+                } catch (IOException e) {
+                    logger.error("写zip文件失敗", e);
+                }
+            }
+        }
+
+    }
+
+    private void deleteDir(File dir) {
+        try {
+            if (dir.isDirectory()) {
+                String[] children = dir.list();
+                //ディレクトリ内のサブディレクトリを再帰的に削除
+                for (int i = 0; i < children.length; i++) {
+                    Files.deleteIfExists(new File(dir, children[i]).getAbsoluteFile().toPath());
+                }
+            }
+            // ディレクトリが空です，削除可能
+            Files.deleteIfExists(dir.getAbsoluteFile().toPath());
+        } catch (IOException e) {
+            logger.error("", e);
         }
     }
 }

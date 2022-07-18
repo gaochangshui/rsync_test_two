@@ -85,6 +85,8 @@ public interface ShelfPatternService {
      */
     List<Integer> getpatternIdOfPtsKey(String ptsKey);
 
+    List<Integer> getpatternIdOfFilename(String fileName, String companyCd);
+
     /**
      * areaに基づいて棚名と棚patternを取得
      * @param companyCd

@@ -225,4 +225,10 @@
         and patternmst.company_cd=orderpattern.company_cd
         where priority_order_cd=#{priorityOrderCd}
     </select>
+    <select id="getpatternIdOfFilename" resultType="java.lang.Integer">
+      select shelf_pattern_cd from planocycle.shelf_pattern_mst
+      where #{fileName} like concat(ptskey,'%') and company_cd = #{companyCd,jdbcType=VARCHAR}
+        and ptskey is not null and ptskey!=''
+      order by length(ptskey) desc
+    </select>
 </mapper>
