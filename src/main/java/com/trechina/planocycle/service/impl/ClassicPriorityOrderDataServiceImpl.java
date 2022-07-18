@@ -111,7 +111,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Autowired
     private ClassicPriorityOrderMstMapper classicPriorityOrderMstMapper;
     @Autowired
-    private WorkPriorityOrderPtsClassify workPriorityOrderPtsClassify;
+    private WorkPriorityOrderPtsClassifyMapper workPriorityOrderPtsClassify;
     @Autowired
     private ClassicPriorityOrderPatternMapper priorityOrderPatternMapper;
 

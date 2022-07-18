@@ -11,7 +11,7 @@ import java.util.Map;
 public interface WorkPriorityOrderPtsClassifyMapper {
 
 
-    void setWorkPtsClassify(String companyCd,Integer priorityOrderCd, List<ShelfPtsData> shelfPtsData,List<String> colNameList,String tableName);
+    void setWorkPtsClassify(String companyCd,Integer priorityOrderCd, List<ShelfPtsData> shelfPtsData,List<String> colNameList);
 
     void deleteWork(String companyCd, Integer priorityOrderCd);
 
