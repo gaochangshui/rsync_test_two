@@ -201,23 +201,23 @@
         and not exists(select jan_old from priority.work_priority_order_result_data datas where jannews.jan_new = datas.jan_old and datas.priority_order_cd= #{priorityOrderCd})
     </select>
     <select id="getErrorMsgJan" resultType="java.util.Map">
-        SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as errMsg
-        from ${tableName} where rank != -1
+        SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as "errMsg"
+        from priority.work_priority_order_result_data  where rank != -1
         union
-        SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as errMsg
-        from planocycle.priority_order_jan_replace
+        SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as "errMsg"
+        from priority.priority_order_jan_replace
         where company_cd = #{companyCd}
         union
-        SELECT jan_old as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as errMsg
-        from planocycle.priority_order_jan_replace
+        SELECT jan_old as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as "errMsg"
+        from priority.priority_order_jan_replace
         where company_cd = #{companyCd}
         union
-        SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as errMsg
-        from planocycle.work_priority_order_jan_proposal
+        SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as "errMsg"
+        from priority.work_priority_order_jan_proposal
         where priority_order_cd = #{priorityOrderCd}
         union
-        SELECT jan_old as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as errMsg
-        from planocycle.work_priority_order_jan_proposal
+        SELECT jan_old as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as "errMsg"
+        from priority.work_priority_order_jan_proposal
         where priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getSimilarity" resultType="java.util.Map">
@@ -225,17 +225,18 @@
         <foreach collection="map" separator="," index="index">
             mst.${index}
         </foreach>
-        ,mst.rank_upd as rank,branch_num_upd ::int as "branchNum",pos_amount_upd ::int as "branchAccount"
-        from ${tableName} mst
-        left join planocycle.priority_order_jan_replace rep
+        ,mst.rank_upd as rank,branch_num_upd ::int as "branchNum",branch_amount_upd ::int as "branchAccount"
+        from priority.work_priority_order_result_data mst
+        left join priority.priority_order_jan_replace rep
         on rep.jan_old = mst.jan_old and rep.company_cd = #{companyCd}
-        left join planocycle.work_priority_order_jan_proposal pro
+        left join priority.work_priority_order_jan_proposal pro
         on pro.jan_old = mst.jan_old and pro.priority_order_cd = #{priorityOrderCd} and pro.flag = 1
         where
         <foreach collection="map" item="item" index="index" separator="and">
             mst.${index} = '${item}'
         </foreach>
-        AND mst.rank != -1 and mst.rank_upd != 99999999
+        and mst.rank != -1 and mst.rank_upd != 99999999
+        and mst.priority_order_cd = #{priorityOrderCd}
     </select>
 
 

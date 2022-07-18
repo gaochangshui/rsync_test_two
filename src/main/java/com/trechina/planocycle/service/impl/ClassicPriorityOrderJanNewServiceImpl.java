@@ -160,7 +160,6 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
     @Override
     public Map<String, Object> getSimilarity(Map<String, Object> map) {
         String companyCd = map.get("companyCd").toString();
-        String tableName = "public.priorityorder" + session.getAttribute("aud");
         Integer priorityOrderCd = Integer.valueOf(map.get("priorityOrderCd").toString());
         List<Map<String,Object>> data = (List<Map<String,Object>>)map.get("data");
         Set<Map<String,Object>> list = new HashSet<>();
@@ -168,7 +167,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         for (Map<String, Object> map1 : data) {
             for (Map<String, Object> s : errorMsgJan) {
                 if (map1.get("janNew").equals(s.get("jan_new"))) {
-                    map1.put("errMsg", s.get("errmsg"));
+                    map1.put("errMsg", s.get("errMsg"));
                     list.add(map1);
 
                 }

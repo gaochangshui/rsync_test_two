@@ -469,33 +469,33 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 branchNumNow.put("branch_amount_upd",0);
             }
 
-
             List<Integer> ptsCd = workPriorityOrderPtsClassify.getJanPtsCd(companyCd, priorityOrderCd, objectMap);
             Map<String, Object> janBranchNum =  new HashMap<>();
             janBranchNum.put("jan_old",objectMap.get("jan_old"));
             janBranchNum.put("jan_new",objectMap.get("jan_new"));
             if (ptsCd.isEmpty()){
                 Integer difference = -Integer.parseInt(branchNumNow.getOrDefault("branch_num",0).toString());
-                Double sale_forecast = difference  * Double.parseDouble(branchNumNow.getOrDefault("branch_amount_upd",0).toString()) / 1000;
-                BigDecimal bd = new BigDecimal(sale_forecast);
-                sale_forecast = bd.setScale(0,BigDecimal.ROUND_HALF_UP).doubleValue();
+                double saleForecast = difference  * Double.parseDouble(branchNumNow.getOrDefault("branch_amount_upd",0).toString()) / 1000;
+
+                BigDecimal bd = BigDecimal.valueOf(saleForecast);
+                saleForecast = bd.setScale(0,RoundingMode.HALF_UP).doubleValue();
+
                 janBranchNum.put("branch_num_upd",0);
                 janBranchNum.put("difference",difference);
-                janBranchNum.put("sale_forecast",sale_forecast);
+                janBranchNum.put("sale_forecast",saleForecast);
             }else {
                 Integer branchNum = workPriorityOrderPtsClassify.getJanBranchNum(ptsCd, objectMap);
-                logger.info("iii{}",branchNumNow.get("branch_num").toString());
+                logger.info("店铺数{}",branchNumNow.get("branch_num"));
                 Integer difference = branchNum - Integer.parseInt(branchNumNow.getOrDefault("branch_num",0).toString());
-                Double sale_forecast = difference  * Double.parseDouble(branchNumNow.getOrDefault("branch_amount_upd",0).toString()) / 1000;
-                BigDecimal bd = new BigDecimal(sale_forecast);
-                sale_forecast = bd.setScale(0,BigDecimal.ROUND_HALF_UP).doubleValue();
+                double saleForecast = difference  * Double.parseDouble(branchNumNow.getOrDefault("branch_amount_upd",0).toString()) / 1000;
+                BigDecimal bd = BigDecimal.valueOf(saleForecast);
+                saleForecast = bd.setScale(0,RoundingMode.HALF_UP).doubleValue();
                 janBranchNum.put("branch_num_upd",branchNum);
                 janBranchNum.put("difference",difference);
-                janBranchNum.put("sale_forecast",sale_forecast);
+                janBranchNum.put("sale_forecast",saleForecast);
             }
             lists.add(janBranchNum);
         }
-
         return ResultMaps.result(ResultEnum.SUCCESS,lists);
     }
 
