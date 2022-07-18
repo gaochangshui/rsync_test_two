@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -93,6 +94,11 @@ public class ClassicPriorityOrderMstController {
                 priorityOrderPtsDownDto.getPriorityNo(),
                 priorityOrderPtsDownDto.getNewCutFlg(), priorityOrderPtsDownDto.getPtsVerison(), response);
 //        return priorityOrderMstService.getPtsFileDownLoad(priorityOrderPtsDownDto,response,ptsDownPath);
+    }
+
+    @GetMapping("/getPtsFileDownLoadByTask")
+    public void getPtsFileZipDownLoad(String taskId, HttpServletResponse response) throws IOException {
+        priorityOrderMstService.packagePtsZip(taskId, response);
     }
 
     /**

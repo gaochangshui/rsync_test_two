@@ -32,13 +32,18 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriUtils;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -46,6 +51,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderMstService {
@@ -726,6 +733,30 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
     }
 
+    @Override
+    public void packagePtsZip(String taskId, HttpServletResponse response) throws IOException {
+        String s = cacheUtil.get(taskId).toString();
+        JSONObject jsonObject = JSON.parseObject(s);
+        String zipFileName = jsonObject.getString("fileName");
+        String fileParentPath = jsonObject.getString("path");
+
+        String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(zipFileName, "utf-8"));
+
+        response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, format);
+
+        ServletOutputStream outputStream = response.getOutputStream();
+        try(ZipOutputStream zos = new ZipOutputStream(outputStream)) {
+            writeZip(fileParentPath, zos);
+        } catch (IOException e) {
+            logger.error("", e);
+        } finally {
+            outputStream.close();
+            this.deleteDir(new File(fileParentPath));
+            cacheUtil.remove(taskId);
+        }
+    }
+
     private Map<String, List<Map<String, Object>>> doNewOldPtsCompare(Map<String, List<Map<String, Object>>> ptsJanDtoListByGroup,
                                                                       List<Map<String, Object>> resultDataList, List<Map<String, Object>> ptsSkuNum,
                                                                       ShelfPtsDataDto pattern, ShelfPtsHeaderDto shelfPtsHeaderDto,
@@ -1256,6 +1287,47 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             workbook.write(fos);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void writeZip(String parentFilePath, ZipOutputStream zos){
+        File file = new File(parentFilePath);
+        if(file.isDirectory()){
+            for (File f : Objects.requireNonNull(file.listFiles())) {
+                try(FileInputStream fis = new FileInputStream(f)) {
+                    zos.putNextEntry(new ZipEntry(f.getName()));
+//                    if(f.getName().endsWith("csv")){
+//                        byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+//                        zos.write(bom);
+//                    }
+
+                    byte[] bytes = new byte[1024];
+                    int len;
+                    while ((len = fis.read(bytes))!=-1){
+                        zos.write(bytes, 0, len);
+                    }
+                    zos.closeEntry();
+                } catch (IOException e) {
+                    logger.error("写zip文件失敗", e);
+                }
+            }
+        }
+
+    }
+
+    private void deleteDir(File dir) {
+        try {
+            if (dir.isDirectory()) {
+                String[] children = dir.list();
+                //ディレクトリ内のサブディレクトリを再帰的に削除
+                for (int i = 0; i < children.length; i++) {
+                    Files.deleteIfExists(new File(dir, children[i]).getAbsoluteFile().toPath());
+                }
+            }
+            // ディレクトリが空です，削除可能
+            Files.deleteIfExists(dir.getAbsoluteFile().toPath());
+        } catch (IOException e) {
+            logger.error("", e);
         }
     }
 }
