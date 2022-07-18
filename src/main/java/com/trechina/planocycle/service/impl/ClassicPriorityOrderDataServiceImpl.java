@@ -457,9 +457,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
     @Override
     public Map<String, Object> getBranchNum(List<Map<String, Object>> map) {
-        //String companyCd = map.get(0).get("companyCd").toString();
-        //Integer priorityOrderCd = Integer.valueOf(map.get(0).get("priorityOrderCd").toString());
-        //String tableName = "public.priorityorder" +session.getAttribute("aud").toString();
+        String companyCd = map.get(0).get("companyCd").toString();
+        Integer priorityOrderCd = Integer.valueOf(map.get(0).get("priorityOrderCd").toString());
         //
         List<Map<String, Object>> lists = new ArrayList<>();
         //for (Map<String, Object> objectMap : map) {

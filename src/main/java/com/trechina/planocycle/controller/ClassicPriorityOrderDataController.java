@@ -47,7 +47,7 @@ public class ClassicPriorityOrderDataController {
      * @param priorityOrderUpdDto
      * @return
      */
-    @GetMapping("/getPriorityOrderDataUpd")
+    @PostMapping("/getPriorityOrderDataUpd")
     public Map<String,Object> getPriorityOrderDataUpd(@RequestBody PriorityOrderUpdDto priorityOrderUpdDto){
         String colName = priorityOrderUpdDto.getColNameList();
         List<String> colNameList = Arrays.asList(colName.split(","));
@@ -99,5 +99,8 @@ public class ClassicPriorityOrderDataController {
        return priorityOrderDataService.getPatternAndName(productPowerCd);
     }
 
-
+    @PostMapping("/getBranchNum")
+    Map<String,Object> getBranchNum(@RequestBody List<Map<String,Object>> map){
+        return priorityOrderDataService.getBranchNum(map);
+    }
 }
