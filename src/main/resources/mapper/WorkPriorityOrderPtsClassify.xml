@@ -33,4 +33,27 @@
     <delete id="deleteWork">
         delete from priority.work_priority_order_pts_classify where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </delete>
+    <select id="getJanPtsCd" resultType="integer">
+        select pts_cd
+        from priority.work_priority_order_pts_classify
+        where sku_num_init >=${map.rank_upd}
+        and priority_order_cd = #{priorityOrderCd}
+        and
+        <foreach collection="map" separator="and" item="item" index="index" >
+            <if test="index == 'attr1' || index == 'attr2' || index == 'attr3' || index == 'attr4' || index == 'attr5' || index == 'attr6' || index == 'attr7' || index == 'attr8' || index == 'attr9' || index == 'mulit_attr'">
+                ${index} = #{item}
+            </if>
+        </foreach>
+        GROUP BY pts_cd
+    </select>
+    <select id="getJanBranchNum" resultType="java.lang.Integer">
+        SELECT count(DISTINCT branch)as branch_num_upd
+        from planocycle.shelf_pts_data ptsdata
+        left join planocycle.shelf_pattern_branch branch
+        on ptsdata.shelf_pattern_cd = branch.shelf_pattern_cd
+        where id in
+        <foreach collection="ptsCd" item="item" separator="," open="(" close=")" >
+            #{item}
+        </foreach>
+    </select>
 </mapper>

@@ -13,7 +13,7 @@ public class ClassicPriorityOrderJanNew {
 
     private Integer rank;
 
-    private Integer branchNum;
+    private String branchNum;
 
     private BigDecimal branchAccount;
 

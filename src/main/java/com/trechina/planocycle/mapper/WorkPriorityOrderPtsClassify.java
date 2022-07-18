@@ -5,6 +5,7 @@ import com.trechina.planocycle.entity.po.ShelfPtsData;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface WorkPriorityOrderPtsClassify {
@@ -14,4 +15,7 @@ public interface WorkPriorityOrderPtsClassify {
 
     void deleteWork(String companyCd, Integer priorityOrderCd);
 
+    List<Integer> getJanPtsCd(String companyCd, Integer priorityOrderCd, Map<String, Object> map );
+
+    Integer getJanBranchNum(List<Integer> ptsCd,Map<String,Object> map);
 }

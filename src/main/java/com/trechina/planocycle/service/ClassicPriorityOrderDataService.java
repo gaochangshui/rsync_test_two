@@ -69,4 +69,8 @@ public interface ClassicPriorityOrderDataService {
     Map<String, Object> editPriorityOrderData(PriorityOrderDataDto priorityOrderDataDto);
 
     void setPtsClassify(List<String> colNameList, String shelfPatternCd, String companyCd, Integer priorityOrderCd);
+
+    List<Map<String, Object>> calRank(List<Map<String, Object>> result, List<String> colNameList);
+
+    Map<String, Object> getBranchNum(List<Map<String, Object>> map);
 }

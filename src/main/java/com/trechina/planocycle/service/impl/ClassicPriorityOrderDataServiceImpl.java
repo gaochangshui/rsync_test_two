@@ -45,7 +45,6 @@ import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -130,6 +129,20 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         String authorCd = session.getAttribute("aud").toString();
         classicPriorityOrderMstMapper.deleteWork(priorityOrderDataDto.getPriorityOrderCd());
         classicPriorityOrderMstMapper.setWork(priorityOrderDataDto,authorCd);
+
+        List<PriorityOrderPattern> priorityOrderPatternList = new ArrayList<>();
+        String[] shelfPatternList = priorityOrderDataDto.getShelfPatternCd().split(",");
+        for (int i = 0; i < shelfPatternList.length; i++) {
+            PriorityOrderPattern priorityOrderPattern = new PriorityOrderPattern();
+            priorityOrderPattern.setCompanyCd(priorityOrderDataDto.getCompanyCd());
+            priorityOrderPattern.setPriorityOrderCd(priorityOrderDataDto.getPriorityOrderCd());
+            priorityOrderPattern.setShelfPatternCd(Integer.valueOf(shelfPatternList[i]));
+            priorityOrderPatternList.add(priorityOrderPattern);
+        }
+        logger.info("保存优先顺位表pattert表要保存的数据："+priorityOrderPatternList.toString());
+        priorityOrderPatternMapper.deleteWork(priorityOrderDataDto.getPriorityOrderCd());
+        priorityOrderPatternMapper.insertWork(priorityOrderPatternList);
+
         // 初始化数据
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, priorityOrderDataDto.getShelfPatternCd());
         //只是用品名2
@@ -673,6 +686,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                     dataMap.put("branch_amount","_");
                     dataMap.put("branch_num","0");
                     dataMap.put("unit_price","_");
+                    dataMap.put("difference",Math.round(Double.parseDouble(downloadDto.getBranchNum())));
+                    dataMap.put("branch_num_upd",Math.round(Double.parseDouble(downloadDto.getBranchNum())));
                     dataMap.put("pos_amount_upd","_");
                     dataMap.put("pos_before_rate","_");
                     dataMap.put("pos_amount","_");
@@ -698,8 +713,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 priorityOrderPtsJandataMapper.updatePtsJanRank(company, priorityOrderCd, subUploadJanList);
             }
 
+            List<String> attrSort = Arrays.stream(attrList.split(",")).collect(Collectors.toList());
             List<DownloadDto> newRankList = null;
             String[] attrArray = attrList.split(",");
+            List<String> taiTana = Arrays.asList(attrArray).subList(0, 2);
 
             uploadJanList.stream().peek(jan->{
                 Optional<PriorityOrderAttributeClassify> attr1Opt = classifyList.stream()
@@ -710,10 +727,69 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                         .filter(classify -> classify.getTanaCd().equals(jan.getTanaCd()) && classify.getTaiCd().equals(jan.getTaiCd())).findFirst();
                 attr2Opt.ifPresent(priorityOrderAttributeClassify -> jan.setAttr2(priorityOrderAttributeClassify.getAttr2()));
             }).collect(Collectors.toList());
-            priorityOrderPtsJandataMapper.updateAttr(uploadJanList, priorityOrderCd, taiCd, tanaCd);
+            priorityOrderPtsJandataMapper.updateAttr(uploadJanList, priorityOrderCd, taiTana.get(0), taiTana.get(1));
 
             newRankList = priorityOrderPtsJandataMapper.selectJanRank(company, priorityOrderCd, Arrays.stream(attrArray).collect(Collectors.toList()));
+            List<Map<String, Object>> newRankMapList = newRankList.stream().map(map -> {
+                Map<String, Object> itemMap = Maps.newHashMap();
+                itemMap.put("jan", map.getJan());
+                itemMap.put("rank", map.getRankNow());
+                itemMap.put("rank_upd", map.getRank());
+                itemMap.put("jan_old", map.getJanOld());
+                itemMap.put("jan_new", map.getJan());
+                itemMap.put("companyCd", company);
+                itemMap.put("priorityOrderCd", priorityOrderCd);
+                String[] attrArr = map.getAttrList().split(",");
+                for (String s : attrArr) {
+                    String[] attrVal = s.split(":");
+                    if(attrVal.length > 1){
+                        itemMap.put(attrVal[0], attrVal[1]);
+                    }else{
+                        itemMap.put(attrVal[0], "");
+                    }
+                }
+
+                return itemMap;
+            }).collect(Collectors.toList());
+            newRankMapList = calRank(newRankMapList, attrSort);
+            Map<String, Object> branchNumResult = this.getBranchNum(newRankMapList);
+            List<DownloadDto> newRankPoList = newRankMapList.stream().map(map -> {
+                DownloadDto downloadDto = new DownloadDto();
+                map.put("companyCd", company);
+                map.put("priorityOrderCd", priorityOrderCd);
+                map.put("jan_new", map.get("jan_new").toString());
+                map.put("jan_old", map.get("jan_old").toString());
+                downloadDto.setJan(map.get("jan_new").toString());
+                downloadDto.setJanOld(map.get("jan_old").toString());
+                downloadDto.setRankNow(Integer.parseInt(map.get("rank").toString()));
+                String branchNumUpd = getBranchNumWrapper(branchNumResult, map);
+                downloadDto.setRank(Integer.parseInt(map.get("rank_upd").toString()));
+                downloadDto.setBranchNum(branchNumUpd);
+                downloadDto.setDifference(MapUtils.getString(map, "difference"));
+                downloadDto.setSaleForecast(MapUtils.getString(map, "sale_forecast"));
+                return downloadDto;
+            }).collect(Collectors.toList());
             priorityOrderPtsJandataMapper.updateRankUpd(newRankList, taiCd, tanaCd, priorityOrderCd);
+
+            if(!needJanNewList.isEmpty()){
+                List<Map<String, Object>> lists = new ArrayList<>();
+                for (DownloadDto downloadDto : needJanNewList) {
+                    Optional<DownloadDto> first = newRankPoList.stream().filter(dto -> dto.getJan().equals(downloadDto.getJan())).findFirst();
+                    if(first.isPresent()){
+                        String branchNum = first.get().getBranchNum();
+                        Map<String, Object> map = new HashMap();
+                        map.put("jan_new", downloadDto.getJan());
+                        map.put("branch_num", branchNum);
+                        map.put("companyCd", company);
+                        map.put("priorityOrderCd", priorityOrderCd);
+
+                        lists.add(map);
+                    }
+                }
+
+                priorityOrderJanNewMapper.updateBranchNumByList(priorityOrderCd, lists);
+            }
+
             cacheUtil.put(authorCd, attrList);
         } catch (IOException e) {
             logger.error("", e);
@@ -819,7 +895,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                     }
                     this.fillCommonParam(downloadDto, item);
                     downloadDto.setName(item.get("sku").toString());
-                    downloadDto.setBranchNum(branchNum);
+                    downloadDto.setBranchNum(item.get("branch_num_upd").toString());
                     newJanList.set(i, downloadDto);
                 }
             }
@@ -1153,5 +1229,184 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             objectMap.put("sale_forecast", saleForecast);
         }
 
+    }
+
+    @Override
+    public List<Map<String, Object>> calRank(List<Map<String, Object>> result, List<String> colNameList) {
+        result = result.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, "rank_upd"))).collect(Collectors.toList());
+        //get 新规jan
+        List<Map<String, Object>> janNewList = result.stream().filter(map -> "-1".equals(map.get("rank").toString())).collect(Collectors.toList());
+        //新规jan group by 階層
+        Map<String, List<Map<String, Object>>> janNewMap = janNewList.stream()
+                .collect(Collectors.groupingBy(map -> colNameList.stream().map(col->map.get(col).toString()).collect(Collectors.joining(",")),
+                        LinkedHashMap::new, Collectors.toList()));
+        //既存Jan
+        List<Map<String, Object>> janList = result.stream().filter(map -> !"-1".equals(map.get("rank").toString())).collect(Collectors.toList());
+        //既存Jan
+        Map<String, List<Map<String, Object>>> janMap = janList.stream()
+                .collect(Collectors.groupingBy(map -> colNameList.stream().map(col->map.get(col).toString()).collect(Collectors.joining(",")),
+                        LinkedHashMap::new, Collectors.toList()));
+        //既存Jan group by 階層
+        Map<String, List<Map<String, Object>>> resultJanMap = new HashMap<>();
+
+        for (String group : janNewMap.keySet()) {
+            //start index
+            int start = 0;
+            //既存jan index,record the position traversed by the list(janList)
+            int oldIndex = 0;
+
+            List<Map<String, Object>> resultJanList = new ArrayList<>();
+            List<Map<String, Object>> janNewTmp = janNewMap.get(group);
+
+            if(!janMap.containsKey(group)){
+                resultJanList.addAll(janNewTmp);
+                resultJanMap.put(group, resultJanList);
+                continue;
+            }
+            List<Map<String, Object>> janListTmp = janMap.get(group);
+            for (int i = 0; i < janNewTmp.size(); i++) {
+                Map<String, Object> curJan = janNewTmp.get(i);
+                Integer curRank = Integer.valueOf(curJan.get("rank_upd").toString());
+                if(curRank.equals(99999999)){
+                    resultJanList.add(janNewTmp.get(i));
+                    continue;
+                }
+
+                //How many elements can be inserted between two rank
+                int rangeNum = 0;
+                if(i == 0){
+                    rangeNum = curRank - start - 1;
+                }else{
+                    Map<String, Object> preJan = janNewTmp.get(i-1);
+                    Integer preRank = Integer.valueOf(preJan.get("rank_upd").toString());
+                    rangeNum = curRank - preRank - 1;
+                }
+
+                //Prevent (oldIndex + rangeNum) > janListTmp.length and array out of bounds
+                if((oldIndex + rangeNum) > janListTmp.size()){
+                    rangeNum = janListTmp.size()-oldIndex;
+                }
+
+                int end = Math.min(oldIndex + rangeNum, janListTmp.size());
+                if(rangeNum<=janListTmp.size()){
+                    resultJanList.addAll(janListTmp.subList(oldIndex, end));
+                    //record the position index
+                }
+                oldIndex += rangeNum;
+                resultJanList.add(janNewTmp.get(i));
+            }
+
+            if(oldIndex < janListTmp.size()){
+                resultJanList.addAll(janListTmp.subList(oldIndex, janListTmp.size()));
+            }
+            resultJanMap.put(group, resultJanList);
+        }
+
+        List<Map<String, Object>> finalResultList = new ArrayList<>();
+        for (Map.Entry<String, List<Map<String, Object>>> entry : resultJanMap.entrySet()) {
+            List<Map<String, Object>> resultJanList = entry.getValue();
+            finalResultList.addAll(this.reOrder(resultJanList));
+        }
+
+        for (Map.Entry<String, List<Map<String, Object>>> entry : janMap.entrySet()) {
+            if(!resultJanMap.containsKey(entry.getKey())){
+                List<Map<String, Object>> resultJanList = entry.getValue();
+                finalResultList.addAll(this.reOrder(resultJanList));
+            }
+        }
+   /*     Comparator<Map<String, Object>> attrCompare = null;
+        for (int i = 0; i < colNameList.size(); i++) {
+            if(i==0){
+                int finalI = i;
+                attrCompare = Comparator.comparing(map->map.get(colNameList.get(finalI)).toString());
+            }else{
+                int finalI1 = i;
+                attrCompare.thenComparing(map->map.get(colNameList.get(finalI1)).toString());
+            }
+        }
+        if(attrCompare!=null){
+            attrCompare.thenComparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()));
+        }else{
+            attrCompare = Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()));
+        }
+
+        finalResultList.sort(attrCompare);*/
+
+        return finalResultList;
+    }
+
+    private  List<Map<String, Object>> reOrder(List<Map<String, Object>> resultJanList){
+        List<Map<String, Object>> finalResultList = new ArrayList<>();
+
+        for (int i = 0; i < resultJanList.size(); i++) {
+            Map<String, Object> curMap = resultJanList.get(i);
+            if( !"99999999".equals(curMap.get("rank_upd").toString())){
+                //新规jan rank don't reorder
+                curMap.put("rank_upd", i+1);
+            }
+            finalResultList.add(curMap);
+        }
+
+        return finalResultList;
+    }
+
+    private String getBranchNumWrapper(Map<String, Object> branchNum, Map<String, Object> tmpItem){
+        String branchNumUpd = "0";
+        if(branchNum.get("code").equals(ResultEnum.SUCCESS.getCode())){
+            List<Map<String, Object>> mapList = (List<Map<String, Object>>) branchNum.get("data");
+            Optional<Map<String, Object>> first = mapList.stream().filter(map -> map.get("jan_old").toString().equals(tmpItem.get("jan_old"))).findFirst();
+            if(first.isPresent()){
+                branchNumUpd = MapUtils.getInteger(first.get(), "branch_num_upd", 0)+"";
+
+                tmpItem.put("branch_num_upd", branchNumUpd);
+                tmpItem.put("difference", MapUtils.getInteger(first.get(), "difference", 0)+"");
+                tmpItem.put("sale_forecast", MapUtils.getInteger(first.get(), "sale_forecast", 0)+"");
+            }
+        }
+
+        return branchNumUpd;
+    }
+
+    @Override
+    public Map<String, Object> getBranchNum(List<Map<String, Object>> map) {
+        String companyCd = map.get(0).get("companyCd").toString();
+        Integer priorityOrderCd = Integer.valueOf(map.get(0).get("priorityOrderCd").toString());
+
+        List<Map<String, Object>> lists = new ArrayList<>();
+        for (Map<String, Object> objectMap : map) {
+            Map<String,Object> branchNumNow = priorityOrderDataMapper.getJanBranchNum(priorityOrderCd, objectMap.get("jan_old").toString(),objectMap.get("jan_new").toString());
+            if (branchNumNow == null){
+                branchNumNow = new HashMap<>();
+                branchNumNow.put("branch_num",0);
+                branchNumNow.put("pos_amount_upd",0);
+            }
+
+            List<Integer> ptsCd = workPriorityOrderPtsClassify.getJanPtsCd(companyCd, priorityOrderCd, objectMap);
+            Map<String, Object> janBranchNum =  new HashMap<>();
+            janBranchNum.put("jan_old",objectMap.get("jan_old"));
+            janBranchNum.put("jan_new",objectMap.get("jan_new"));
+            if (ptsCd.isEmpty()){
+                Integer difference = -Integer.parseInt(branchNumNow.getOrDefault("branch_num",0).toString());
+                Double sale_forecast = difference  * Double.parseDouble(branchNumNow.getOrDefault("pos_amount_upd",0).toString()) / 1000;
+                BigDecimal bd = new BigDecimal(sale_forecast);
+                sale_forecast = bd.setScale(0,BigDecimal.ROUND_HALF_UP).doubleValue();
+                janBranchNum.put("branch_num_upd",0);
+                janBranchNum.put("difference",difference);
+                janBranchNum.put("sale_forecast",sale_forecast);
+            }else {
+                Integer branchNum = workPriorityOrderPtsClassify.getJanBranchNum(ptsCd, objectMap);
+                logger.info("iii{}",branchNumNow.get("branch_num").toString());
+                Integer difference = branchNum - Integer.parseInt(branchNumNow.getOrDefault("branch_num",0).toString());
+                Double sale_forecast = difference  * Double.parseDouble(branchNumNow.getOrDefault("pos_amount_upd",0).toString()) / 1000;
+                BigDecimal bd = new BigDecimal(sale_forecast);
+                sale_forecast = bd.setScale(0,BigDecimal.ROUND_HALF_UP).doubleValue();
+                janBranchNum.put("branch_num_upd",branchNum);
+                janBranchNum.put("difference",difference);
+                janBranchNum.put("sale_forecast",sale_forecast);
+            }
+            lists.add(janBranchNum);
+        }
+
+        return ResultMaps.result(ResultEnum.SUCCESS,lists);
     }
 }

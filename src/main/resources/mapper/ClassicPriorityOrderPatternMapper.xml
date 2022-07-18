@@ -38,11 +38,22 @@
   </select>
   <select id="getShelfName" resultType="java.lang.String">
     select DISTINCT namemst.shelf_name
-    from planocycle.work_priority_order_pattern pattern
+    from priority.work_priority_order_pattern pattern
            inner join planocycle.shelf_pattern_mst patternmst
                       on patternmst.shelf_pattern_cd = pattern.shelf_pattern_cd
            inner join planocycle.shelf_name_mst namemst
                       on patternmst.shelf_name_cd = namemst.id
     where priority_order_cd = #{priorityOrderCd}
   </select>
+  <insert id="insertWork">
+    insert into priority.work_priority_order_pattern (priority_order_cd, company_cd, shelf_pattern_cd
+    )
+    values
+    <foreach collection="lists" item="list" separator=",">
+      (#{list.priorityOrderCd,jdbcType=INTEGER}, #{list.companyCd,jdbcType=VARCHAR}, #{list.shelfPatternCd,jdbcType=INTEGER})
+    </foreach>
+  </insert>
+  <delete id="deleteWork">
+    delete from priority.work_priority_order_pattern where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </delete>
 </mapper>

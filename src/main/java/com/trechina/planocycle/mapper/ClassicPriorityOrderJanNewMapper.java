@@ -27,6 +27,8 @@ public interface ClassicPriorityOrderJanNewMapper {
 
     void updateBranchNum(Integer priorityOrderCd, String janNew, Integer branchNum);
 
+    void updateBranchNumByList(Integer priorityOrderCd, List<Map<String,Object>> list);
+
     List<ClassicPriorityOrderJanNew> selectJanNameFromJanNewByCompanyAndCd(String company, Integer priorityOrderCd);
 
     //最終テーブルに保存

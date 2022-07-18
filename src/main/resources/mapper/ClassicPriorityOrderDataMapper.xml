@@ -641,4 +641,9 @@
         group by prd.jan_new,prd.attr1,prd.attr2 ,prd.rank_upd,prd.jan_old
         order by prd.attr1,prd.attr2,prd.rank_upd
     </select>
+    <select id="getJanBranchNum" resultType="java.util.Map">
+        select  branch_num  , pos_amount_upd
+        from priority.work_priority_order_result_data where jan_old = #{janOld} and jan_new = #{janNew}
+        and priority_order_cd=#{priorityOrderCd}
+    </select>
 </mapper>

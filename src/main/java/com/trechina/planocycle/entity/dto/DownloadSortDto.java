@@ -13,7 +13,7 @@ public class DownloadSortDto {
     private  String tanaCd;
     private  String mode;
     private Integer priorityOrderCd;
-    private  Integer flag;
+    private  Integer flag = 1;
     private List<PriorityOrderAttributeClassify> list;
 
 }
