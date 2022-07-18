@@ -57,7 +57,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Override
     public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo) {
 
-            logger.info("つかむ取新規商品list参数：{}{}{}",companyCd,",",priorityOrderCd);
+            logger.info("つかむ取新規商品list参数：{},{}",companyCd,priorityOrderCd);
         String authorCd = session.getAttribute("aud").toString();
         List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
         List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());

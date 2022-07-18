@@ -200,6 +200,43 @@
         and not exists(select jan_old from priority.priority_order_jan_replace rep2 where jannews.jan_new = rep2.jan_old and rep2.company_cd = #{companyCd})
         and not exists(select jan_old from priority.work_priority_order_result_data datas where jannews.jan_new = datas.jan_old and datas.priority_order_cd= #{priorityOrderCd})
     </select>
+    <select id="getErrorMsgJan" resultType="java.util.Map">
+        SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as errMsg
+        from ${tableName} where rank != -1
+        union
+        SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as errMsg
+        from planocycle.priority_order_jan_replace
+        where company_cd = #{companyCd}
+        union
+        SELECT jan_old as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as errMsg
+        from planocycle.priority_order_jan_replace
+        where company_cd = #{companyCd}
+        union
+        SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as errMsg
+        from planocycle.work_priority_order_jan_proposal
+        where priority_order_cd = #{priorityOrderCd}
+        union
+        SELECT jan_old as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as errMsg
+        from planocycle.work_priority_order_jan_proposal
+        where priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getSimilarity" resultType="java.util.Map">
+        select coalesce (rep.jan_new,pro.jan_new,mst.jan_new) as jan_new ,mst.sku ,
+        <foreach collection="map" separator="," index="index">
+            mst.${index}
+        </foreach>
+        ,mst.rank_upd as rank,branch_num_upd ::int as "branchNum",pos_amount_upd ::int as "branchAccount"
+        from ${tableName} mst
+        left join planocycle.priority_order_jan_replace rep
+        on rep.jan_old = mst.jan_old and rep.company_cd = #{companyCd}
+        left join planocycle.work_priority_order_jan_proposal pro
+        on pro.jan_old = mst.jan_old and pro.priority_order_cd = #{priorityOrderCd} and pro.flag = 1
+        where
+        <foreach collection="map" item="item" index="index" separator="and">
+            mst.${index} = '${item}'
+        </foreach>
+        AND mst.rank != -1 and mst.rank_upd != 99999999
+    </select>
 
 
 </mapper>
