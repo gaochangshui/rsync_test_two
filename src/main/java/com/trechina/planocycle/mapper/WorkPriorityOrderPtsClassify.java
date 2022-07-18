@@ -18,4 +18,6 @@ public interface WorkPriorityOrderPtsClassify {
     List<Integer> getJanPtsCd(String companyCd, Integer priorityOrderCd, Map<String, Object> map);
 
     Integer getJanBranchNum(List<Integer> ptsCd, Map<String, Object> map);
+
+    List<Map<String, Object>> getAttrInfo(String companyCd, Integer priorityOrderCd);
 }

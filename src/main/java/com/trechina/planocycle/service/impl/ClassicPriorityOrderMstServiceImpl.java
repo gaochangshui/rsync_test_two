@@ -122,7 +122,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     private ShelfPatternMstMapper patternMstMapper;
     @Autowired
     private BasicPatternMstService basicPatternMstService;
-
+    @Autowired
+    private WorkPriorityOrderPtsClassify workPriorityOrderPtsClassify;
     @Autowired
     private JansMapper jansMapper;
     /**
@@ -724,6 +725,12 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         JSONObject json = new JSONObject();
         json.put("taskId", taskId);
         return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+    }
+
+    @Override
+    public Map<String, Object> getAttrInfo(String companyCd, Integer priorityOrderCd) {
+        List<Map<String, Object>> attrInfo = workPriorityOrderPtsClassify.getAttrInfo(companyCd, priorityOrderCd);
+        return ResultMaps.result(ResultEnum.SUCCESS,attrInfo);
     }
 
     private Map<String, List<Map<String, Object>>> doNewOldPtsCompare(Map<String, List<Map<String, Object>>> ptsJanDtoListByGroup,

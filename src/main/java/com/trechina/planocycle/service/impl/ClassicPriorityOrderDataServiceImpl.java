@@ -1121,9 +1121,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd,priorityOrderCd);
         classicPriorityOrderMstAttrSortMapper.insertAttrSortWk(companyCd,priorityOrderCd,colNameList);
         List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
-        PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+
         List<Map<String, Object>> datas = null;
         if (delFlg == 0 ){
+            PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
             priorityOrderDataService.setPtsClassify(colNameList,priorityOrderMst.getShelfPatternCd(),companyCd,priorityOrderCd);
              datas = priorityOrderDataMapper.getTempDataAndMst(colNameList,attrList, companyCd, priorityOrderCd);
 

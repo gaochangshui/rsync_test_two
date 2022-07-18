@@ -1,20 +1,12 @@
 package com.trechina.planocycle.service;
 
-import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Strings;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDownDto;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
-import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.utils.ResultMaps;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public interface ClassicPriorityOrderMstService {
 
@@ -91,4 +83,6 @@ public interface ClassicPriorityOrderMstService {
 
     Map<String, Object> downloadPtsTask(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg,
                                                Integer ptsVersion, HttpServletResponse response);
+
+    Map<String, Object> getAttrInfo(String companyCd, Integer priorityOrderCd);
 }

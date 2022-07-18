@@ -1,6 +1,8 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
 import com.trechina.planocycle.entity.po.PriorityOrderCatepak;
@@ -8,9 +10,11 @@ import com.trechina.planocycle.entity.po.PriorityOrderCatepakAttribute;
 import com.trechina.planocycle.entity.vo.PriorityOrderCatePakVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ClassicPriorityOrderCatepakAttributeMapper;
+import com.trechina.planocycle.mapper.ClassicPriorityOrderJanNewMapper;
 import com.trechina.planocycle.mapper.ClassicPriorityOrderMstAttrSortMapper;
 import com.trechina.planocycle.mapper.PriorityOrderCatepakMapper;
 import com.trechina.planocycle.service.ClassicPriorityOrderCatePakService;
+import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +37,10 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
     private ClassicPriorityOrderCatepakAttributeMapper priorityOrderCatepakAttributeMapper;
     @Autowired
     private ClassicPriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+    @Autowired
+    private ClassicPriorityOrderJanNewMapper priorityOrderJanNewMapper;
+    @Autowired
+    private ClassicPriorityOrderDataService classicPriorityOrderDataService;
     /**
      * つかむ取カテパケ拡縮
      *
@@ -124,16 +132,27 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
     public Map<String, Object> setPriorityOrderCatePak(JSONArray jsonArray) {
         try {
             logger.info("保存カテパケ拡縮参数:"+jsonArray);
-            //つかむ取参数中第一行的企業和優先順位号
+            //获取参数中第一行的企业和优先顺位号
+
             String companyCd = String.valueOf(((HashMap) jsonArray.get(0)).get("companyCd"));
             Integer priorityOrderCd = Integer.parseInt(((HashMap) jsonArray.get(0)).get("priorityOrderCd").toString());
-            // 全削
+            List<HashMap<String,Object>> mapList =new Gson().fromJson(jsonArray.toJSONString(), new TypeToken<List<HashMap<String, Object>>>(){}.getType());
+
+            for (Map<String,Object> map : mapList) {
+                if(map.get("rank")==null || "".equals(map.get("rank"))){
+                    continue;
+                }
+
+                map.remove("similarBtn");
+            }
+
+            // 全删
             priorityOrderCatepakMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-            // 遍暦前端給的jsonArray 構筑カテパケ拡縮表和関連的動態属性列表的實体類字符串
+            // 遍历前端给的jsonArray 构筑カテパケ拡縮表和关联的动态属性列表的实体类字符串
             jsonArray.forEach(item->{
-                // 構造主表的参数
-                if (((HashMap) item).containsKey("rank") && ((HashMap) item).get("rank")!=null) {
+                // 构造主表的参数
+                if (((HashMap) item).containsKey("rank") && ((HashMap) item).get("rank")!=null && !"".equals(((HashMap) item).get("rank"))) {
                     PriorityOrderCatepak priorityOrderCatepak = new PriorityOrderCatepak();
                     if("".equals(((HashMap<?, ?>) item).get("branchNum"))){
                         priorityOrderCatepak.setBranchNum(null);
@@ -142,16 +161,16 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                     priorityOrderCatepak.setPriorityOrderCd(priorityOrderCd);
                     priorityOrderCatepak.setRank(Integer.valueOf(((HashMap) item).get("rank").toString()));
 //                priorityOrderCatepak.setBranchNum(Integer.valueOf(((HashMap) item).get("branchNum").toString()));
-                    // 写入数据重新取号，返回自增列id，實体類自動接收
+                    // 写入数据重新取号，返回自增列id，实体类自动接收
                     priorityOrderCatepakMapper.insert(priorityOrderCatepak);
-                    logger.info("保存カテパケ拡縮返回:{}",  priorityOrderCatepak.toString());
+                    logger.info("保存カテパケ拡縮返回值:" + priorityOrderCatepak.toString());
                     catePakAttr(companyCd, priorityOrderCd, (HashMap) item, priorityOrderCatepak);
                 }
 
             });
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
-            logger.info("保存カテパケ拡縮報錯:"+e);
+            logger.info("保存カテパケ拡縮报错:"+e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -178,6 +197,81 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
     @Override
     public Integer delPriorityOrderCatePakAttrInfo(String companyCd, Integer priorityOrderCd) {
         return priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
+    }
+
+    @Override
+    public Map<String, Object> getCatePakSimilarity(Map<String, Object> map) {
+        String companyCd = map.get("companyCd").toString();
+        Integer priorityOrderCd = Integer.parseInt(map.get("priorityOrderCd").toString());
+        map.remove("companyCd");
+        map.remove("priorityOrderCd");
+        String tableName = "public.priorityorder"+session.getAttribute("aud").toString();
+        Map<String,Object> maps = new HashMap<>();
+        for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+            String[] attrSmalls = stringObjectEntry.getKey().split("attrSmall");
+            maps.put("attr" + (Integer.parseInt(attrSmalls[1])+1), stringObjectEntry.getValue());
+
+        }
+
+        List<Map<String, Object>> catePakSimilarity = priorityOrderCatepakMapper.getCatePakSimilarity(priorityOrderCd, maps);
+        for (Map<String, Object> objectMap : catePakSimilarity) {
+            objectMap.put("janNew",objectMap.get("jan_new"));
+            objectMap.put("janName",objectMap.get("sku"));
+            objectMap.remove("jan_new");
+            objectMap.remove("sku");
+            objectMap.put("rank_upd",objectMap.get("rank"));
+        }
+        List<Map<String, Object>> janNewList = priorityOrderJanNewMapper.getJanNewList(priorityOrderCd, maps,companyCd);
+        for (Map<String, Object> objectMap : janNewList) {
+            objectMap.put("janNew",objectMap.get("jan_new"));
+            objectMap.put("janName",objectMap.get("name_new"));
+            objectMap.remove("name_new");
+            objectMap.remove("jan_new");
+        }
+        Iterator<Map<String, Object>> iterator = catePakSimilarity.iterator();
+        for (;iterator.hasNext();){
+            Map<String, Object> next = iterator.next();
+            String janNew = next.get("janNew").toString();
+            if (janNewList.stream().anyMatch(map1-> map1.get("janNew").equals(janNew))){
+                iterator.remove();
+            }
+        }
+
+        for (Map<String, Object> objectMap : janNewList) {
+            objectMap.put("rank_upd",objectMap.get("rank"));
+            objectMap.put("rank",-1);
+
+            catePakSimilarity.add(objectMap);
+
+
+        }
+        List<Map<String, Object>> list = classicPriorityOrderDataService.calRank(catePakSimilarity, new ArrayList<>());
+        List<Map<String,Object>> listMap = new ArrayList<>();
+        listMap.addAll(list);
+        int i = 1;
+        for (Map<String, Object> objectMap : listMap) {
+            objectMap.put("jan_new",objectMap.get("janNew"));
+            objectMap.put("jan_old",i++);
+            objectMap.put("companyCd",companyCd);
+            objectMap.put("priorityOrderCd",priorityOrderCd);
+        }
+        List<Map<String, Object>> branchNum = (List<Map<String, Object>>)classicPriorityOrderDataService.getBranchNum(list).get("data");
+        for (Map<String, Object> objectMap : list) {
+            for (Map<String, Object> stringObjectMap : branchNum) {
+                if (objectMap.get("janNew").equals(stringObjectMap.get("jan_new"))&& objectMap.get("jan_old")==stringObjectMap.get("jan_old")){
+                    objectMap.put("branchNum",stringObjectMap.get("branch_num_upd"));
+                    objectMap.put("rank",objectMap.get("rank_upd"));
+                    objectMap.put("branchAccount",Double.valueOf(objectMap.get("branchAccount").toString()));
+                    objectMap.remove("jan_new");
+                    objectMap.remove("jan_old");
+                    objectMap.remove("companyCd");
+                    objectMap.remove("priorityOrderCd");
+                    objectMap.remove("rank_upd");
+                }
+            }
+        }
+
+        return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 
     /**
