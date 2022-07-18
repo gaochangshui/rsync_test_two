@@ -1049,7 +1049,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         if (!datas.isEmpty()) {
             priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
             priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,datas,authorCd);
-            datas = priorityOrderDataMapper.getData(priorityOrderCd,colNameList);
+            //datas = priorityOrderDataMapper.getData(priorityOrderCd,colNameList);
             return ResultMaps.result(ResultEnum.SUCCESS,datas);
         }
 
