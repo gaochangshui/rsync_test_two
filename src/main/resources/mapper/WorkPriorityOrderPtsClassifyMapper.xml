@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.WorkPriorityOrderPtsClassifyMapper">
+    <insert id="setWorkPtsClassify">
+        insert into planocycle.work_priority_order_pts_classify(company_cd,priority_order_cd,pts_cd,sku_num,pts_branch_num,sku_num_init,
+        <foreach collection="colNameList" separator="," item="item">
+            ${item}
+        </foreach>
+        )
+        select #{companyCd},#{priorityOrderCd}, pts_cd, count(DISTINCT jandata.jan) as sku_num ,count(DISTINCT branch) as branch_num,count(DISTINCT jandata.jan) as sku_num,
+
+        <foreach collection="colNameList" item="item" separator=",">
+            mst.${item}
+        </foreach>
+        from
+        planocycle.shelf_pts_data_jandata jandata
+        left join ${tableName} mst
+        on mst.jan_old = jandata.jan
+        INNER join planocycle.shelf_pts_data ptsdata
+        on jandata.pts_cd = ptsdata."id"
+        INNER join planocycle.shelf_pattern_branch branch
+        on branch.shelf_pattern_cd = ptsdata.shelf_pattern_cd
+        where jandata.pts_cd in
+        <foreach collection="shelfPtsData" item="item" separator="," open="(" index="index" close=")">
+            #{item.id}
+        </foreach>
+        GROUP BY pts_cd,
+        <foreach collection="colNameList" item="item" separator=",">
+            mst.${item}
+        </foreach>
+
+    </insert>
+    <update id="setSkuForInit">
+        update planocycle.work_priority_order_pts_classify set sku_num = sku_num_init
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </update>
+    <update id="setSkuForCatePakSmall">
+        update planocycle.work_priority_order_pts_classify set sku_num = sku_num -1
+        where  company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+        and sku_num >= #{maps.rank}::integer
+        and
+              <foreach collection="maps" index="index" item="item" separator="and">
+                  <if test="index == 'attrSmall0'">
+                      attr1 = #{item}
+                  </if>
+                  <if test="index == 'attrSmall1'">
+                      attr2 = #{item}
+                  </if>
+                  <if test="index == 'attrSmall2'">
+                      attr3 = #{item}
+                  </if>
+                  <if test="index == 'attrSmall3'">
+                      attr4 = #{item}
+                  </if>
+                  <if test="index == 'attrSmall4'">
+                      attr5 = #{item}
+                  </if>
+                  <if test="index == 'attrSmall5'">
+                      attr6 = #{item}
+                  </if>
+                  <if test="index == 'attrSmall6'">
+                      attr7 = #{item}
+                  </if>
+                  <if test="index == 'attrSmall7'">
+                      attr8 = #{item}
+                  </if>
+                  <if test="index == 'attrSmall8'">
+                      attr9 = #{item}
+                  </if>
+                  <if test="index == 'attrSmall9'">
+                      attr10 = #{item}
+                  </if>
+              </foreach>
+    </update>
+    <update id="setSkuForCatePakBig">
+        update planocycle.work_priority_order_pts_classify set sku_num = sku_num +1
+        where  company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+        and sku_num >= #{maps.rank}::integer
+        and
+        <foreach collection="maps" index="index" item="item" separator="and">
+            <if test="index == 'attrBig0'">
+                attr1 = #{item}
+            </if>
+            <if test="index == 'attrBig1'">
+                attr2 = #{item}
+            </if>
+            <if test="index == 'attrBig2'">
+                attr3 = #{item}
+            </if>
+            <if test="index == 'attrBig3'">
+                attr4 = #{item}
+            </if>
+            <if test="index == 'attrBig4'">
+                attr5 = #{item}
+            </if>
+            <if test="index == 'attrBig5'">
+                attr6 = #{item}
+            </if>
+            <if test="index == 'attrBig6'">
+                attr7 = #{item}
+            </if>
+            <if test="index == 'attrBig7'">
+                attr8 = #{item}
+            </if>
+            <if test="index == 'attrBig8'">
+                attr9 = #{item}
+            </if>
+            <if test="index == 'attrBig9'">
+                attr10 = #{item}
+            </if>
+        </foreach>
+    </update>
+    <insert id="setWorkForFinal">
+        insert into  planocycle.work_priority_order_pts_classify
+        select * from planocycle.priority_order_pts_classify
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </insert>
+    <delete id="deleteWork">
+        delete from planocycle.work_priority_order_pts_classify where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </delete>
+    <delete id="deleteFinal">
+        delete from planocycle.priority_order_pts_classify where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </delete>
+    <insert id="setFinalForWork">
+        insert into  planocycle.priority_order_pts_classify
+        select * from planocycle.work_priority_order_pts_classify
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </insert>
+    <select id="getJanPtsCd" resultType="integer">
+        select pts_cd
+        from planocycle.work_priority_order_pts_classify
+        where sku_num_init >=${map.rank_upd}
+          and priority_order_cd = #{priorityOrderCd}
+          and
+              <foreach collection="map" separator="and" item="item" index="index" >
+                <if test="index == 'attr1' || index == 'attr2' || index == 'attr3' || index == 'attr4' || index == 'attr5' || index == 'attr6' || index == 'attr7' || index == 'attr8' || index == 'attr9' || index == 'mulit_attr'">
+                    ${index} = #{item}
+                </if>
+              </foreach>
+        GROUP BY pts_cd
+    </select>
+    <select id="getJanBranchNum" resultType="java.lang.Integer">
+        SELECT count(DISTINCT branch)as branch_num_upd
+        from planocycle.shelf_pts_data ptsdata
+                                               left join planocycle.shelf_pattern_branch branch
+                                                         on ptsdata.shelf_pattern_cd = branch.shelf_pattern_cd
+        where id in
+            <foreach collection="ptsCd" item="item" separator="," open="(" close=")" >
+                #{item}
+            </foreach>
+    </select>
+    <select id="getPtsSkuNum" resultType="map">
+        select sku_num,sku_num_init
+        <foreach collection="rankAttr" open="," separator=" || " close=" as attr_list" item="item" index="index">
+            <if test="index>0">','||</if>concat('${item}',':',${item})</foreach>
+        from planocycle.priority_order_pts_classify pts_classify
+        where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd} and pts_cd=#{ptsCd}
+    </select>
+    <select id="getAllJanPtsCd" resultType="java.lang.Integer">
+        select pts_cd
+        from planocycle.work_priority_order_pts_classify
+        where sku_num >=${map.rank_upd}
+        and
+        <foreach collection="map" separator="and" item="item" index="index" >
+              <foreach collection="list" item="item1">
+                  <if test="item1 == index">
+                      ${index} = #{item}
+                  </if>
+              </foreach>
+        </foreach>
+        GROUP BY pts_cd
+    </select>
+    <select id="getAttrInfo" resultType="map">
+        select distinct
+         attr1,attr2,attr3,attr4,attr5,attr6,attr7,attr8,attr9,mulit_attr
+         from planocycle.work_priority_order_pts_classify
+        where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
+    </select>
+</mapper>

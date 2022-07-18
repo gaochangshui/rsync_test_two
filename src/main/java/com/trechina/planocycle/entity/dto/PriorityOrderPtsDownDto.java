@@ -9,6 +9,7 @@ public class PriorityOrderPtsDownDto {
     private String guid;
     private String mode;
     private Integer priorityNo;
+    private String taskId;
     private String rankAttributeList;
     private String attributeCd;
     private String rankAttributeCd;

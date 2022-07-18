@@ -16,4 +16,5 @@ public interface ClassicPriorityOrderResultDataMapper {
     //select the branch num of the same attribute Jan
     Integer selectBranchNumByAttr(Integer priorityOrderCd, String companyCd, Map<String, Object> attrValMap);
 
+    List<Map<String, Object>> selectFinalDataByAttr(Integer priorityOrderCd, String companyCd,List<String> attrList);
 }

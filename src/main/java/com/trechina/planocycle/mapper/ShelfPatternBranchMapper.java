@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
+
 @Mapper
 public interface ShelfPatternBranchMapper {
     int deleteByPrimaryKey(@Param("shelfPatternCd") Integer shelfPatternCd,@Param("authorCd") String authorCd);
@@ -26,5 +28,6 @@ public interface ShelfPatternBranchMapper {
 
     List<ShelfPatternBranch> getPatternBranch(@Param("list")List<Integer> shelfPatternCdList);
 
+    List<Map<String, Object>> selectAllPatternBranch(@Param("priorityOrderCd") Integer priorityOrderCd, String companyCd);
 
 }

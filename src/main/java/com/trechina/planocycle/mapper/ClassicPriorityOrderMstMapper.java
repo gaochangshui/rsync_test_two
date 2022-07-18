@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.ShelfPtsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
@@ -41,4 +42,6 @@ public interface ClassicPriorityOrderMstMapper {
     void setWorkForFinal(String companyCd, Integer priorityOrderCd);
 
     PriorityOrderMstDto getPriorityOrderMst(String companyCd, Integer priorityOrderCd);
+
+    List<ShelfPtsDataDto> selectPattern(String companyCd, Integer priorityOrderCd);
 }

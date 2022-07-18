@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.ClassicPriorityOrderMstAttrSortDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import org.apache.ibatis.annotations.Mapper;
@@ -44,5 +45,7 @@ public interface ClassicPriorityOrderMstAttrSortMapper {
     String getAttrCol(String companyCd, Integer priorityOrderCd, String value);
 
     List<String> attrValueList(String companyCd, Integer priorityOrderCd);
+
+    List<ClassicPriorityOrderMstAttrSortDto> selectAttrName(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
 }
