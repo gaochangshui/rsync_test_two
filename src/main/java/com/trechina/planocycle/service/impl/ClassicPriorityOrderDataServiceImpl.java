@@ -114,6 +114,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     private ClassicPriorityOrderMstMapper classicPriorityOrderMstMapper;
     @Autowired
     private WorkPriorityOrderPtsClassify workPriorityOrderPtsClassify;
+    @Autowired
+    private ClassicPriorityOrderPatternMapper priorityOrderPatternMapper;
 
     /**
      * 初期取得優先順位テーブルデータ
@@ -265,46 +267,56 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             item.setPriorityOrderCd(downloadDto.getPriorityOrderCd());
             item.setCompanyCd(downloadDto.getCompanyCd());
         });
-            //修改jan属性cd
-        if (!downloadDto.getList().isEmpty()) {
+        //修改jan属性cd
+        if (!downloadDto.getList().isEmpty() && downloadDto.getFlag()!=0) {
             priorityOrderAttributeClassifyService.setClassifyList(downloadDto.getList());
         }
-            String [] version = {"共通棚割情報","V1.0","NS"};
-            String [] headers = {"棚台番号","棚段番号","棚位置","商品コード","フェース数","フェース面","フェース回転","積上数","陳列種別"};
-            String  fileName = "品揃えPTS_20220401"+System.currentTimeMillis()+".csv";
+        String shelfName = priorityOrderPatternMapper.getShelfName(priorityOrderCd, companyCd);
+        String colName = null;
+        if (downloadDto.getFlag() == 0){
+            shelfName = "現状_品揃えPTS_"+shelfName;
+            colName = "rank";
+
+        }else {
+            shelfName = "変更後_品揃えPTS_"+shelfName;
+            colName = "rank_upd";
+        }
+        String [] version = {"共通棚割情報",MagicString.PTS_VERSION,"NS"};
+        String [] headers = {"棚台番号","棚段番号","棚位置","商品コード","フェース数","フェース面","フェース回転","積上数","陳列種別"};
+        String  fileName = "品揃えPTS_20220401"+System.currentTimeMillis()+".csv";
 
         List<DownloadDto> datas = null;
-        datas = priorityOrderDataMapper.downloadForCsv(downloadDto.getTaiCd(), downloadDto.getTanaCd(),downloadDto.getPriorityOrderCd());
+
+        datas = priorityOrderDataMapper.downloadForCsv(downloadDto.getTaiCd(), downloadDto.getTanaCd()
+                ,downloadDto.getPriorityOrderCd(),colName);
 
         datas.stream().forEach(item->{
             item.setCompanyCd(downloadDto.getCompanyCd());
             item.setPriorityOrderCd(downloadDto.getPriorityOrderCd());
         });
-
-        priorityOrderPtsJandataMapper.delete(companyCd,priorityOrderCd);
+        if (!downloadDto.getList().isEmpty() && downloadDto.getFlag()!=0) {
+            priorityOrderPtsJandataMapper.delete(companyCd, priorityOrderCd);
             priorityOrderPtsJandataMapper.insert(datas);
-            response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=utf-8");
-            OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8);
-            String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
-            response.setHeader("Content-Disposition", format);
-            byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-            writer.write(new String(bom));
-            writer.flush();
-            try(CsvWriter csvWriter = CsvWriter.builder().build(writer)) {
-                csvWriter.writeRow(version);
-                csvWriter.writeRow("");
-                csvWriter.writeRow(headers);
-                List<String> janData = null;
-                for (DownloadDto data : datas) {
-                    janData = Lists.newArrayList(String.valueOf(data.getTaiCd()),String.valueOf(data.getTanaCd()),String.valueOf(data.getTanapositionCd()), data.getJan()
-                    ,"1","1","0","1","1");
-                    csvWriter.writeRow(janData);
+        }
+        response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=Shift_JIS");
+        OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream(), Charset.forName("Shift_JIS"));
+        String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
+        response.setHeader("Content-Disposition", format);
+//            byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+//            writer.write(new String(bom));
+//            writer.flush();
+        try(CsvWriter csvWriter = CsvWriter.builder().build(writer)) {
+            csvWriter.writeRow(version);
+            csvWriter.writeRow(shelfName);
+            csvWriter.writeRow(headers);
+            List<String> janData = null;
+            for (DownloadDto data : datas) {
+                janData = Lists.newArrayList(String.valueOf(data.getTaiCd()),String.valueOf(data.getTanaCd()),String.valueOf(data.getTanapositionCd()), data.getJan()
+                        ,"1","1","0","1","1");
+                csvWriter.writeRow(janData);
 
-                }
             }
-
-
-
+        }
     }
 
     @Override

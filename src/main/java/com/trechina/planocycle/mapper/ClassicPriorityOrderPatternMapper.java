@@ -18,4 +18,6 @@ public interface ClassicPriorityOrderPatternMapper {
     int deleteforid(Integer priorityOrderCd);
 
     List<ShelfPtsDataDto> selectPattern(String companyCd, Integer priorityOrderCd);
+
+    String getShelfName(Integer priorityOrderCd,String companyCd);
 }
