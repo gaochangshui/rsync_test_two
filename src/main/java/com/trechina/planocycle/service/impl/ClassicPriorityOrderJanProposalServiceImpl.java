@@ -182,8 +182,10 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      */
     @Override
     public Map<String, Object> savePriorityOrderJanProposal(JSONArray jsonArray,String companyCd,Integer priorityOrderCd) {
-        int result = priorityOrderJanProposalMapper.insert(jsonArray,companyCd,priorityOrderCd);
-        return null;
+        if(!jsonArray.isEmpty()){
+            priorityOrderJanProposalMapper.insert(jsonArray,companyCd,priorityOrderCd);
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
