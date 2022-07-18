@@ -15,4 +15,8 @@
   <delete id="deleteByPrimaryKey">
     delete from masterdb.jans
   </delete>
+
+  <select id="selectDummyJan" resultType="string">
+    select dummyjan from "${companyCd}".jans where jan=#{jan}
+  </select>
 </mapper>

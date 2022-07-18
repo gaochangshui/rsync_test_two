@@ -77,9 +77,33 @@ public class MagicString {
     public static final String VALUE = "value";
     public static final String INPUT_SHOW = "inputShow";
     public static final String TITLE = "title";
+    public static final String JAN_OLD = "jan_old";
+    public static final String JAN_NEW = "jan_new";
+
+    public static final String ATTR_LIST = "attr_list";
+
+    public static final String RANK_UPD = "rank_upd";
 
     public static final String COLUMN_INDEX_JANINFO_COLUMN = "3";
     public static final String COLUMN_INDEX_KAISOU_COLUMN = "4";
+
+    public static final String DATE_FORMATER = "yyyyMMddHHmm";
+    public static final String DELETE_LIST = "deleteList";
+    public static final String NEW_LIST = "newList";
+
+    public static final String PTS_NAME="pts_name";
+
+    public static final String DEL_FLAG = "del_flg";
+
+    public static final String SMALLS = "smalls";
+    public static final String SMALLS_INDEX = "smallsIndex";
+    public static final String SMALLS_JAN = "smallsJan";
+    public static final String BIG_LAST_INDEX = "bigLastIndex";
+    public static final String BRANCH_NUM = "branch_num";
+    public static final String BRANCH_AMOUNT = "branch_amount";
+
+    public static final String TANAPOSITION_CD = "tanaposition_cd";
+
     /**
      * 必須区分
      */

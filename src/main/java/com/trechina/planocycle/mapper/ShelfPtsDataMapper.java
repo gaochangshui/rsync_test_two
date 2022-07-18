@@ -1,9 +1,12 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
+import com.trechina.planocycle.entity.dto.ShelfPtsHeaderDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.ShelfPtsData;
+import com.trechina.planocycle.entity.po.ShelfPtsDataTaimst;
+import com.trechina.planocycle.entity.po.ShelfPtsDataTanamst;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
 import com.trechina.planocycle.entity.vo.*;
 import org.apache.ibatis.annotations.Mapper;
@@ -187,4 +190,12 @@ public interface ShelfPtsDataMapper {
     void updTanaSize(List<PtsTanaVo> ptsTanaVoList, Integer id, String authorCd, String companyCd);
 
     void insertPtsData1(PriorityOrderPtsDataDto priorityOrderPtsDataDto);
+
+    ShelfPtsHeaderDto selectShelfPts(Integer shelfPatternCd);
+
+    List<Map<String, Object>> selectClassifyPtsData(List<String> rankAttr, Integer patternCd, Integer priorityOrderCd);
+
+    List<ShelfPtsDataTaimst> selectShelfPtsTaiMst(Integer patternCd);
+
+    List<ShelfPtsDataTanamst> selectShelfPtsTanaMst(Integer patternCd);
 }

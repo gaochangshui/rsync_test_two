@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.PriorityOrderCatepakAttribute;
+import com.trechina.planocycle.entity.vo.PriorityOrderCatePakVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,4 +20,6 @@ public interface ClassicPriorityOrderCatepakAttributeMapper {
     int insertFinalData(String companyCd, Integer priorityOrderCd);
 
     int setWorkForFinal(String companyCd, Integer priorityOrderCd);
+
+    List<PriorityOrderCatePakVO> selectFinalByPrimaryKey(List<Integer> rankAttrList, String companyCd, Integer priorityOrderCd);
 }
