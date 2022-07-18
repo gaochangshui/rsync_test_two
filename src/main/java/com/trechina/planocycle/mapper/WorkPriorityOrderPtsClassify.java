@@ -15,7 +15,7 @@ public interface WorkPriorityOrderPtsClassify {
 
     void deleteWork(String companyCd, Integer priorityOrderCd);
 
-    List<Integer> getJanPtsCd(String companyCd, Integer priorityOrderCd, Map<String, Object> map );
+    List<Integer> getJanPtsCd(String companyCd, Integer priorityOrderCd, Map<String, Object> map);
 
-    Integer getJanBranchNum(List<Integer> ptsCd,Map<String,Object> map);
+    Integer getJanBranchNum(List<Integer> ptsCd, Map<String, Object> map);
 }

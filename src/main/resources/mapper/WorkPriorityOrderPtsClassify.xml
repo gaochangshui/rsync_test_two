@@ -33,14 +33,14 @@
     <delete id="deleteWork">
         delete from priority.work_priority_order_pts_classify where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </delete>
-    <select id="getJanPtsCd" resultType="integer">
+    <select id="getJanPtsCd" resultType="java.lang.Integer">
         select pts_cd
         from priority.work_priority_order_pts_classify
         where sku_num_init >=${map.rank_upd}
         and priority_order_cd = #{priorityOrderCd}
         and
         <foreach collection="map" separator="and" item="item" index="index" >
-            <if test="index == 'attr1' || index == 'attr2' || index == 'attr3' || index == 'attr4' || index == 'attr5' || index == 'attr6' || index == 'attr7' || index == 'attr8' || index == 'attr9' || index == 'mulit_attr'">
+            <if test="index == 'attr1' || index == 'attr2' || index == 'attr3' || index == 'attr4' || index == 'attr5' || index == 'attr6' || index == 'attr7' || index == 'attr8' || index == 'attr9' || index == 'attr10'">
                 ${index} = #{item}
             </if>
         </foreach>
