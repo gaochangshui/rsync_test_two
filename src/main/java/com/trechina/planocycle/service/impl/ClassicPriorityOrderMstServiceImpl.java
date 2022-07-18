@@ -118,6 +118,10 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     private WorkPriorityOrderPtsClassifyMapper priorityOrderPtsClassifyMapper;
     @Autowired
     private ThreadPoolTaskExecutor taskExecutor;
+    @Autowired
+    private ShelfPatternMstMapper patternMstMapper;
+    @Autowired
+    private BasicPatternMstService basicPatternMstService;
 
     @Autowired
     private JansMapper jansMapper;
@@ -516,9 +520,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         }
 
         try {
+            List<Map<String, Object>> patternCommonPartsData = patternMstMapper.selectPatternCommonPartsData(priorityOrderCd);
+
             //pts foreach
             List<ShelfPtsDataDto> patternList = patternMapper.selectPattern(companyCd, priorityOrderCd);
-            List<Map<String, Object>> branchs = shelfPatternBranchMapper.selectAllPatternBranch(priorityOrderCd, companyCd);
+            List<Map<String, Object>> branchs = new ArrayList<>();
             List<Map<String, String>> janReplace = janReplaceMapper.selectJanReplace(companyCd, priorityOrderCd);
             Map<String, String> janReplaceMap = janReplace.stream().collect(Collectors.toMap(map->MapUtils.getString(map, MagicString.JAN_OLD), map->MapUtils.getString(map, MagicString.JAN_NEW)));
             List<Map<String, Object>> allNewJanList = new ArrayList<>();
@@ -528,18 +534,28 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             rankAttr.sort(Comparator.comparing(PriorityOrderMstAttrSort::getValue));
             List<String> rankAttrList = new ArrayList<>();
             Map<String, String> multiAttrMap = new HashMap<>();
+            Map<String, String> tenTableName = null;
 
-            List<Integer> transferRankAttr = rankAttr.stream().map(rank->Integer.parseInt(rank.getValue())-1).collect(Collectors.toList());
+            List<Integer> transferRankAttr = rankAttr.stream().map(rank->Integer.parseInt(rank.getValue().replace("attr",""))).collect(Collectors.toList());
             List<PriorityOrderCatePakVO> catePakList = priorityOrderCatepakAttributeMapper.selectFinalByPrimaryKey(transferRankAttr, companyCd, priorityOrderCd);
 
             for (ShelfPtsDataDto pattern : patternList) {
                 boolean branchMustNot = true;
+                tenTableName = new HashMap<>();
+
+                for (Map<String, Object> data : patternCommonPartsData) {
+                    String commonPartsData = MapUtils.getString(data, "common_parts_data");
+                    GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+                    tenTableName.put(commonTableName.getStoreInfoTable(), commonTableName.getStoreIsCore());
+                }
 
                 Integer shelfPatternCd = pattern.getShelfPatternCd();
+                List<Map<String, Object>> patternBranches = shelfPatternBranchMapper.selectAllPatternBranch(priorityOrderCd, companyCd, tenTableName, shelfPatternCd);
+                branchs.addAll(patternBranches);
                 //pattern link branches
-                List<Map<String, Object>> patternBranches = branchs.stream()
-                        .filter(map -> map.get("shelf_pattern_cd").toString().equals(shelfPatternCd.toString()))
-                        .collect(Collectors.toList());
+//                List<Map<String, Object>> patternBranches = branchs.stream()
+//                        .filter(map -> map.get("shelf_pattern_cd").toString().equals(shelfPatternCd.toString()))
+//                        .collect(Collectors.toList());
 
                 List<String> patternBranchCd = patternBranches.stream().map(map->map.get("branch").toString()).collect(Collectors.toList());
                 List<Map<String, Object>> commodityMustJans = priorityOrderCommodityMustMapper.selectMustJan(companyCd, priorityOrderCd, Joiner.on(",").join(patternBranchCd), shelfPatternCd);

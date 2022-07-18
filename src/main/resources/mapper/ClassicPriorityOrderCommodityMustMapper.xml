@@ -67,8 +67,8 @@
     </insert>
   <select id="selectMustJan" resultType="map">
     select jan_new,branch
-    from planocycle.priority_order_commodity_must comm_must
-    where not exists(select * from planocycle.priority_order_commodity_not comm_not
+    from priority.priority_order_commodity_must comm_must
+    where not exists(select * from priority.priority_order_commodity_not comm_not
                      where comm_must.company_cd = comm_not.company_cd
                        and comm_not.jan_new = comm_must.jan_new and comm_not.branch = comm_must.branch
                        and comm_not.priority_order_cd = #{priorityOrderCd} and flag=1
@@ -80,7 +80,7 @@
   </select>
   <select id="selectCountMustJan" resultType="int">
     select count(distinct branch)
-    from planocycle.priority_order_commodity_must comm_must
+    from priority.priority_order_commodity_must comm_must
     where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd} and shelf_pattern_cd=#{shelfPatternCd} and flag=1
   </select>
 </mapper>

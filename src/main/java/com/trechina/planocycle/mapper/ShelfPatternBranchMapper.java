@@ -28,6 +28,7 @@ public interface ShelfPatternBranchMapper {
 
     List<ShelfPatternBranch> getPatternBranch(@Param("list")List<Integer> shelfPatternCdList);
 
-    List<Map<String, Object>> selectAllPatternBranch(@Param("priorityOrderCd") Integer priorityOrderCd, String companyCd);
+    List<Map<String, Object>> selectAllPatternBranch(@Param("priorityOrderCd") Integer priorityOrderCd, String companyCd,
+                                                     Map<String, String> tenTableName, Integer shelfPatternCd);
 
 }

@@ -219,4 +219,10 @@
       (#{companyCd},#{item.shelfNameCD},#{item.shelfPatternName},now(),#{authorCd},now(),#{authorCd},now(),#{item.ptsRelationID},#{item.commonPartsData})
     </foreach>
   </insert>
-    </mapper>
+    <select id="selectPatternCommonPartsData" resultType="map">
+        select orderpattern.shelf_pattern_cd, common_parts_data from planocycle.shelf_pattern_mst patternmst
+        inner join priority.priority_order_pattern orderpattern on patternmst.shelf_pattern_cd=orderpattern.shelf_pattern_cd
+        and patternmst.company_cd=orderpattern.company_cd
+        where priority_order_cd=#{priorityOrderCd}
+    </select>
+</mapper>

@@ -687,7 +687,7 @@
       <if test="index>0">','||</if>concat('${item}',':',${item})</foreach>
     from planocycle.shelf_pts_data patternmst
     inner join planocycle.shelf_pts_data_jandata jandata on jandata.pts_cd=patternmst."id"
-    inner join planocycle.priority_order_result_data jans on jans.jan_old=jandata.jan  and priority_order_cd=#{priorityOrderCd}
+    inner join priority.priority_order_result_data jans on jans.jan_old=jandata.jan  and priority_order_cd=#{priorityOrderCd}
     where patternmst.shelf_pattern_cd=#{patternCd}
     order by jandata.tai_cd, jandata.tana_cd, jandata.tanaposition_cd
   </select>
