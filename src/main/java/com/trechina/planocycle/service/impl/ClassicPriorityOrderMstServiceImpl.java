@@ -539,11 +539,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
             List<PriorityOrderMstAttrSort> rankAttr = mstAttrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
             rankAttr.sort(Comparator.comparing(PriorityOrderMstAttrSort::getValue));
-            List<String> rankAttrList = new ArrayList<>();
-
-            for (int i = 0; i < rankAttr.size(); i++) {
-                rankAttrList.add(rankAttr.get(i).getValue());
-            }
+            List<String> rankAttrList = rankAttr.stream().map(PriorityOrderMstAttrSort::getValue).collect(Collectors.toList());
 
             Map<String, String> tenTableName = null;
 
@@ -655,9 +651,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         Map<String, List<Map<String, Object>>> tmpResult = future.get();
                         allNewJanList.addAll(tmpResult.get(MagicString.NEW_LIST));
                         allDeleteJanList.addAll(tmpResult.get(MagicString.DELETE_LIST));
-                    } catch (InterruptedException | ExecutionException e) {
-                        logger.error("{}",e);
-                        throw new RuntimeException(e);
+                    } catch (InterruptedException e) {
+                        logger.error("",e);
+                        Thread.currentThread().interrupt();
+                    } catch (ExecutionException e){
+                        logger.error("",e);
                     }
                 }));
                 futures.join();

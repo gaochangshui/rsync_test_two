@@ -56,7 +56,7 @@
     from
     (select
     pak.id,pak.company_cd,pak.priority_order_cd,
-    string_agg('attr'||(attrs.attr_cd+1)||':'||coalesce(attrs.attr_value,''),',' order by attrs.attr_cd) as smalls,
+    string_agg('attr'||(attrs.attr_cd)||':'||coalesce(attrs.attr_value,''),',' order by attrs.attr_cd) as smalls,
     pak.rank,pak.branch_num
     from priority.priority_order_catepak pak
     left join priority.priority_order_catepak_attribute  attrs
@@ -68,7 +68,7 @@
     left join
     (select
     pak.id,
-    string_agg('attr'||(attrm.attr_cd+1)||':'||coalesce(attrm.attr_value,''),',' order by attrm.attr_cd) as bigs
+    string_agg('attr'||(attrm.attr_cd)||':'||coalesce(attrm.attr_value,''),',' order by attrm.attr_cd) as bigs
     from priority.priority_order_catepak pak
     left join priority.priority_order_catepak_attribute attrm
     on pak.id = attrm.catepak_cd
