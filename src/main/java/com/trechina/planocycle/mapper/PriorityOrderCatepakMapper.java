@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface PriorityOrderCatepakMapper {
@@ -22,4 +23,6 @@ public interface PriorityOrderCatepakMapper {
     int insertFinalData(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
+    List<Map<String, Object>> getCatePakSimilarity(Integer priorityOrderCd, Map<String, Object> maps);
 }

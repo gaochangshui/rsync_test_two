@@ -42,7 +42,21 @@
       where sm.company_cd = #{companyCd,jdbcType=VARCHAR}
     and sm.priority_order_cd =#{priorityOrderCd,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey">
+    <select id="getCatePakSimilarity" resultType="java.util.Map">
+      select jan_new ,sku  ,rank_upd as rank,branch_amount_upd  as "branchAccount",
+      <foreach collection="maps" separator="," index="index">
+        ${index}
+      </foreach>
+      from priority.work_priority_order_result_data
+      where
+      <foreach collection="maps" separator="and" index="index" item="item">
+        ${index} = #{item}
+      </foreach>
+      and rank_upd != 99999999
+      where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      order by rank_upd;
+    </select>
+    <delete id="deleteByPrimaryKey">
     delete from priority.work_priority_order_catepak
     where company_cd = #{companyCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

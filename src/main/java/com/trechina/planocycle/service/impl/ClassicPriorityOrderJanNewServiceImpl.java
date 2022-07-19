@@ -1,10 +1,8 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.trechina.planocycle.entity.dto.ClassicPriorityOrderJanNewDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanNew;
 import com.trechina.planocycle.entity.po.Jans;
@@ -43,6 +41,10 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
     private ClassicPriorityOrderDataService priorityOrderDataService;
     @Autowired
     private ClassicPriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+    @Autowired
+    private ClassicPriorityOrderMstAttrSortMapper classicPriorityOrderMstAttrSortMapper;
+    @Autowired
+    private WorkPriorityOrderPtsClassifyMapper workPriorityOrderPtsClassifyMapper;
 
     /**
      * 新規商品リストの取得
@@ -133,16 +135,58 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
 
         // フロントエンドから与えられたjsonArrayを巡回して、新しい商品リストと関連する動的属性リストのエンティティークラス文字列を構築し、データを保存します。
-        dataSave(jsonArray, janNewList, janAttributeList, companyCd, priorityOrderCd);
+        List<Map<String,Object>> janNew = new Gson().fromJson(jsonArray.toJSONString(), new TypeToken< List<Map<String,Object>>>(){}.getType());
+        janNew=  janNew.stream().filter(map->map.get("janNew")!=null &&!"".equals(map.get("janNew"))).collect(Collectors.toList());
+        for (Map<String, Object> objectMap : janNew) {
+            objectMap.put("rank",Double.valueOf(objectMap.get("rank").toString()).intValue());
+        }
+        if (janNew.isEmpty()){
+            return ResultMaps.result(ResultEnum.SUCCESS);
+        }
+        List<Map<String,Object>> list = new ArrayList();
+        this.setBranchNum(janNew,priorityOrderCd,companyCd,list);
 
-        List<ClassicPriorityOrderJanNewDto> janNewAll = new Gson().fromJson(jsonArray.toJSONString(), new TypeToken<List<ClassicPriorityOrderJanNewDto>>(){}.getType());
-            List<String> janNews = janNewAll.stream().map(ClassicPriorityOrderJanNewDto::getJanNew).collect(Collectors.toList());
-            if(!janNews.isEmpty()){
-                priorityOrderDataMapper.deleteExistJanNew(janNews,
-                        "priority.work_priority_order_result_data");
-            }
+        dataSave(janNew, janNewList, janAttributeList, companyCd, priorityOrderCd,list);
 
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+    public void  setBranchNum(List<Map<String,Object>> janNew,Integer priorityOrderCd,String companyCd,List<Map<String,Object>> list){
+        List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrSortList(companyCd, priorityOrderCd);
+        List<Map<String, Object>> result = priorityOrderDataMapper.getDataNotExistNewJan(priorityOrderCd);
+        for (Map<String, Object> objectMap : result) {
+            objectMap.put("janNew", objectMap.get("jan_new"));
+        }
+        for (Map<String, Object> item : janNew) {
+            item.put("jan_new",item.get("janNew"));
+            item.put("rank_upd",item.get("rank"));
+            item.put("rank",-1);
+            result.add(item);
+        }
+        result = priorityOrderDataService.calRank(result, attrList);
+        for (Map<String, Object> objectMap : result) {
+            for (Map<String, Object> item : janNew) {
+                if (item.get("janNew").equals(objectMap.get("janNew")) && objectMap.get("rank").toString().equals("-1")){
+                    item.put("rank",objectMap.get("rank_upd"));
+                }
+            }
+        }
+
+        for (Map<String, Object> jan : janNew) {
+            if (jan.get("janNew") != null) {
+
+                Map<String, Object> map = new HashMap();
+                map.put("jan_new", jan.get("janNew"));
+                jan.put("rank_upd", jan.get("rank"));
+                List<Integer> ptsCd = workPriorityOrderPtsClassifyMapper.getJanPtsCd(companyCd, priorityOrderCd, jan);
+                if (ptsCd.isEmpty()) {
+                    map.put("branch_num", 0);
+                } else {
+                    Integer branchNum = workPriorityOrderPtsClassifyMapper.getJanBranchNum(ptsCd, jan);
+                    map.put("branch_num", branchNum);
+                }
+                list.add(map);
+            }
+        }
     }
 
     /**
@@ -160,7 +204,6 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
     @Override
     public Map<String, Object> getSimilarity(Map<String, Object> map) {
         String companyCd = map.get("companyCd").toString();
-        String tableName = "public.priorityorder" + session.getAttribute("aud");
         Integer priorityOrderCd = Integer.valueOf(map.get("priorityOrderCd").toString());
         List<Map<String,Object>> data = (List<Map<String,Object>>)map.get("data");
         Set<Map<String,Object>> list = new HashSet<>();
@@ -168,7 +211,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         for (Map<String, Object> map1 : data) {
             for (Map<String, Object> s : errorMsgJan) {
                 if (map1.get("janNew").equals(s.get("jan_new"))) {
-                    map1.put("errMsg", s.get("errmsg"));
+                    map1.put("errMsg", s.get("errMsg"));
                     list.add(map1);
 
                 }
@@ -248,24 +291,24 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         return ResultMaps.result(ResultEnum.SUCCESS,list2);
     }
 
-    private void dataSave(JSONArray jsonArray, List<ClassicPriorityOrderJanNew> janNewList,
+    private void dataSave(List<Map<String,Object>> jsonArray, List<ClassicPriorityOrderJanNew> janNewList,
                           List<PriorityOrderJanAttribute> janAttributeList, String companyCd,
-                          Integer priorityOrderCd) {
+                          Integer priorityOrderCd,List<Map<String,Object>> list) {
 
         for (int i = 0; i < jsonArray.size(); i++) {
-            HashMap item = (HashMap) jsonArray.get(i);
-            // 構造jannew主表的参数
+            Map item =  jsonArray.get(i);
+            // 构造jannew主表的参数
             if (item.get("janNew") != null) {
-                janNew(janNewList, companyCd, priorityOrderCd, (HashMap) jsonArray.get(i));
-                // 構造jan動態属性列的参数
-                janAttr(janAttributeList, companyCd, priorityOrderCd, (HashMap) jsonArray.get(i));
+                janNew(janNewList, companyCd, priorityOrderCd,  jsonArray.get(i));
+                // 构造jan动态属性列的参数
+                janAttr(janAttributeList, companyCd, priorityOrderCd,  jsonArray.get(i));
             }
         }
-        logger.info("新しい商品リストマスターテーブルの処理後のパラメータを保存します。：{}",janNewList.toString());
-        logger.info("新規商品リストの動的属性列の処理後のパラメータを保存します。：{}", janAttributeList.toString());
-        List<String> janNews = janNewList.stream().map(item -> item.getJanNew()).collect(Collectors.toList());
+        logger.info("保存新规商品list主表处理完后的参数：" + janNewList.toString());
+        logger.info("保存新规商品list动态属性列处理完后的参数：" + janAttributeList.toString());
+        List<String> janNews = janNewList.stream().map(ClassicPriorityOrderJanNew::getJanNew).collect(Collectors.toList());
         if (!janNews.isEmpty()) {
-            List<Jans> janNewMst = priorityOrderJanNewMapper.getJanNewMst(janNews);
+            List<Jans> janNewMst = priorityOrderJanNewMapper.getJanNewMst(janNews, companyCd);
             if (!janNews.isEmpty()) {
                 for (Jans jans : janNewMst) {
                     for (ClassicPriorityOrderJanNew priorityOrderJanNew : janNewList) {
@@ -277,77 +320,15 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
             }
         }
 
-        //全挿入
+        //全插入
         if (!janNewList.isEmpty()) {
             priorityOrderJanNewMapper.insert(janNewList);
             priorityOrderJanAttributeMapper.insert(janAttributeList);
-            //すべてのjannewを検索して荷重を変更する店舗数
-            List<Map<String, Object>> maps = priorityOrderJanNewMapper.selectJanNewOrAttr(companyCd, priorityOrderCd);
-            maps.forEach(item -> {
-                String[] attrName = item.get("attr").toString().split(",");
-                StringBuilder sel = new StringBuilder();
-                for (int i = 1; i <= attrName.length; i++) {
-                    sel.append("attr").append(i).append("='").append(attrName[i - 1]).append("',");
-                }
-                List<String> colValueList = Arrays.asList(sel.toString().split(","));
-                String branchNum = priorityOrderCatepakAttributeMapper.selectForTempTable(colValueList, priorityOrderCd);
-                logger.info("定番店舗数の照会{}", branchNum);
-                if (branchNum != null) {
-                    priorityOrderJanNewMapper.updateBranchNum(Integer.valueOf(item.get("priority_order_cd").toString()),
-                            item.get("jan_new").toString(), Integer.valueOf(branchNum));
-                } else {
-                    priorityOrderJanNewMapper.updateBranchNum(Integer.valueOf(item.get("priority_order_cd").toString()),
-                            item.get("jan_new").toString(), 0);
-                }
-            });
+            priorityOrderJanNewMapper.updateBranchNum(priorityOrderCd,list);
         }
     }
 
-    private void notExistsData(String companyCd, Integer priorityOrderCd) {
-        List<Map<String, Object>> priorityOrderData = priorityOrderJanNewMapper.selectJanNewNotExistsMst(companyCd, priorityOrderCd,
-                "public.priorityorder" + session.getAttribute("aud").toString());
-        logger.info("不存在的数据" + priorityOrderData.toString());
-        if (priorityOrderData.size() > 0) {
-            priorityOrderData.forEach(item -> {
-                String[] attrList = item.get("attr").toString().split(",");
-                String[] valList;
-                for (int i = 0; i < attrList.length - 1; i++) {
-                    valList = attrList[i].split(":");
-                    item.put("attr" + valList[0], valList[1]);
-                }
-                // 10番目の属性はマルチ属性の列名に変更されます。
-                item.put("mulit_attr", attrList[attrList.length - 1].split(":")[1]);
-                item.remove("attr");
-//                // 千分記号を回転
-//                Float amount = Float.parseFloat(item.get("pos_amount_upd").toString());
-//                item.remove("pos_amount_upd");
-//                item.put("pos_amount_upd", NumberFormat.getIntegerInstance(Locale.getDefault()).format(amount));
-                String janName = priorityOrderDataMapper.selectJanName(item.get("jan_new").toString());
-                if (janName == null) {
-                    janName = priorityOrderDataMapper.selectJanNameFromJanNew(item.get("jan_new").toString(), companyCd, priorityOrderCd);
-                }
-                if("".equals(item.get("pos_before_rate"))|| item.get("pos_before_rate")==null){
-                    item.put("pos_before_rate", "_");
-                }
 
-                if("".equals(item.get("branch_amount"))|| item.get("branch_amount")==null){
-                    item.put("branch_amount", "_");
-                }
-                item.remove("sku");
-                item.put("sku", janName);
-            });
-            //存在しないデータをマスターテーブルに挿入する
-            ClassicPriorityOrderDataServiceImpl priorityOrderDataService = new ClassicPriorityOrderDataServiceImpl();
-            List<Map<String, String>> keyNameList = new ArrayList<>();
-            //ヘッダーの生成
-            JSONArray priJsonArray = (JSONArray) JSONObject.toJSON(priorityOrderData);
-            priorityOrderDataService.colNameList(priJsonArray, keyNameList);
-            //データの挿入
-
-            priorityOrderDataMapper.insert(priJsonArray, keyNameList, "public.priorityorder" + session.getAttribute("aud").toString());
-
-        }
-    }
 
     /**
      * jannewマスターテーブルを構築するパラメータ
@@ -357,7 +338,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
      * @param priorityOrderCd
      * @param item
      */
-    private void janAttr(List<PriorityOrderJanAttribute> janAttributeList, String companyCd, Integer priorityOrderCd, HashMap item) {
+    private void janAttr(List<PriorityOrderJanAttribute> janAttributeList, String companyCd, Integer priorityOrderCd, Map item) {
         for (Object key : item.keySet()) {
             // 動態属性列表
             PriorityOrderJanAttribute priorityOrderJanAttribute = new PriorityOrderJanAttribute();
@@ -381,7 +362,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
      * @param priorityOrderCd
      * @param item
      */
-    private void janNew(List<ClassicPriorityOrderJanNew> janNewList, String companyCd, Integer priorityOrderCd, HashMap item) {
+    private void janNew(List<ClassicPriorityOrderJanNew> janNewList, String companyCd, Integer priorityOrderCd, Map item) {
         // 新規商品リスト
         ClassicPriorityOrderJanNew priorityOrderJanNew = new ClassicPriorityOrderJanNew();
         priorityOrderJanNew.setCompanyCd(companyCd);

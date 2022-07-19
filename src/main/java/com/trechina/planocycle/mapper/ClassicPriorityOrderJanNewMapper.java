@@ -25,7 +25,7 @@ public interface ClassicPriorityOrderJanNewMapper {
 
     List<Map<String, Object>> selectJanNewOrAttr(String companyCd, Integer priorityOrderCd);
 
-    void updateBranchNum(Integer priorityOrderCd, String janNew, Integer branchNum);
+    void updateBranchNum(Integer priorityOrderCd, List<Map<String,Object>> list);
 
     void updateBranchNumByList(Integer priorityOrderCd, List<Map<String,Object>> list);
 
@@ -46,11 +46,13 @@ public interface ClassicPriorityOrderJanNewMapper {
 
     void deleteJanNew(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
-    List<Jans> getJanNewMst(@Param("list")List<String> janNews);
+    List<Jans> getJanNewMst(@Param("list")List<String> janNews,String companyCd);
 
     List<Map<String,Object>> getJanNews(Integer priorityOrderCd, List<String> colName,String companyCd);
 
     List<Map<String,Object>> getErrorMsgJan(String companyCd, Integer priorityOrderCd);
 
-    List<Map<String, Object>> getSimilarity(Map<String, Object> objectMap1, String companyCd, Integer priorityOrderCd);
+    List<Map<String, Object>> getSimilarity(Map<String, Object> map, String companyCd, Integer priorityOrderCd);
+
+    List<Map<String, Object>> getJanNewList(Integer priorityOrderCd, Map<String, Object> maps, String companyCd);
 }

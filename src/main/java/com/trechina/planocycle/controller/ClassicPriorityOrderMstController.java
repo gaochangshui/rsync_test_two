@@ -110,5 +110,11 @@ public class ClassicPriorityOrderMstController {
     public Map<String,Object> delPriorityOrderAllInfo(@RequestBody PriorityOrderPrimaryKeyVO primaryKeyVO){
         return priorityOrderMstService.delPriorityOrderAllInfo(primaryKeyVO);
     }
-
+    /**
+     *属性group
+     */
+    @GetMapping("/getAttrInfo")
+    public Map<String,Object> getAttrInfo(String companyCd,Integer priorityOrderCd){
+        return priorityOrderMstService.getAttrInfo(companyCd,priorityOrderCd);
+    }
 }
