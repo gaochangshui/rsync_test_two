@@ -215,19 +215,9 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
 
         List<Map<String, Object>> catePakSimilarity = priorityOrderCatepakMapper.getCatePakSimilarity(priorityOrderCd, maps);
         for (Map<String, Object> objectMap : catePakSimilarity) {
-            objectMap.put("janNew",objectMap.get("jan_new"));
-            objectMap.put("janName",objectMap.get("sku"));
-            objectMap.remove("jan_new");
-            objectMap.remove("sku");
             objectMap.put("rank_upd",objectMap.get("rank"));
         }
         List<Map<String, Object>> janNewList = priorityOrderJanNewMapper.getJanNewList(priorityOrderCd, maps,companyCd);
-        for (Map<String, Object> objectMap : janNewList) {
-            objectMap.put("janNew",objectMap.get("jan_new"));
-            objectMap.put("janName",objectMap.get("name_new"));
-            objectMap.remove("name_new");
-            objectMap.remove("jan_new");
-        }
         Iterator<Map<String, Object>> iterator = catePakSimilarity.iterator();
         for (;iterator.hasNext();){
             Map<String, Object> next = iterator.next();

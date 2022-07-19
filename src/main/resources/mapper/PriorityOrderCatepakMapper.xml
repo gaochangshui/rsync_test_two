@@ -43,7 +43,7 @@
     and sm.priority_order_cd =#{priorityOrderCd,jdbcType=INTEGER}
   </select>
     <select id="getCatePakSimilarity" resultType="java.util.Map">
-      select jan_new ,sku  ,rank_upd as rank,branch_amount_upd  as "branchAccount",
+      select jan_new as "janNew" ,sku as "janName" ,rank_upd as rank,branch_amount_upd  as "branchAccount",
       <foreach collection="maps" separator="," index="index">
         ${index}
       </foreach>
@@ -53,7 +53,7 @@
         ${index} = #{item}
       </foreach>
       and rank_upd != 99999999
-      where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
       order by rank_upd;
     </select>
     <delete id="deleteByPrimaryKey">
