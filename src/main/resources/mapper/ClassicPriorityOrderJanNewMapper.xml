@@ -254,7 +254,7 @@
     </select>
     <select id="getJanNewList" resultType="java.util.Map">
         select
-        jan_new,name_new,rank,branch_account  as "branchAccount",
+        jan_new as "janNew",name_new as "janName",rank,branch_account  as "branchAccount",
         <foreach collection="maps" index="index" separator=",">
             ${index}
         </foreach>

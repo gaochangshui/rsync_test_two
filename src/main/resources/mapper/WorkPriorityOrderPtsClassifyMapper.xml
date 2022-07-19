@@ -10,12 +10,12 @@
         select #{companyCd},#{priorityOrderCd}, pts_cd, count(DISTINCT jandata.jan) as sku_num ,count(DISTINCT branch) as branch_num,count(DISTINCT jandata.jan) as sku_num,
 
         <foreach collection="colNameList" item="item" separator=",">
-            mst.${item}
+            COALESCE(mst.${item},'')
         </foreach>
         from
         planocycle.shelf_pts_data_jandata jandata
         left join priority.work_priority_order_result_data mst
-        on mst.jan_old = jandata.jan
+        on mst.jan_old = jandata.jan and mst.priority_order_cd = #{priorityOrderCd}
         INNER join planocycle.shelf_pts_data ptsdata
         on jandata.pts_cd = ptsdata."id"
         INNER join planocycle.shelf_pattern_branch branch
@@ -172,7 +172,7 @@
     </select>
     <select id="getAttrInfo" resultType="map">
         select distinct
-         coalesce attr1,attr2,attr3,attr4,attr5,attr6,attr7,attr8,attr9,attr10
+          attr1,attr2,attr3,attr4,attr5,attr6,attr7,attr8,attr9,attr10
          from priority.work_priority_order_pts_classify
         where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
     </select>
