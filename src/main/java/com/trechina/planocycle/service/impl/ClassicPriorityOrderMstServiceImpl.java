@@ -130,7 +130,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Autowired
     private BasicPatternMstService basicPatternMstService;
     @Autowired
-    private WorkPriorityOrderPtsClassify workPriorityOrderPtsClassify;
+    private WorkPriorityOrderPtsClassifyMapper workPriorityOrderPtsClassify;
     @Autowired
     private JansMapper jansMapper;
     /**
@@ -165,7 +165,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         if (count >0) {
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
-         //パラメータを2つのテーブルのデータに処理するinsert
+        Integer priorityOrderCd = priorityOrderMstDto.getPriorityOrderCd();
+        String companyCd = priorityOrderMstDto.getCompanyCd();
+        //パラメータを2つのテーブルのデータに処理するinsert
         priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
         try {
             logger.info("優先順位テーブルパラメータの保存：{}",priorityOrderMstDto);
@@ -209,6 +211,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             //sort保存
             priorityOrderMstAttrSortMapper.deleteAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMstAttrSortMapper.insertAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+            //group保存
+            priorityOrderPtsClassifyMapper.deleteWork(companyCd,priorityOrderCd);
+            priorityOrderPtsClassifyMapper.setFinalForWork(companyCd,priorityOrderCd);
             List<PriorityOrderPattern> priorityOrderPatternList = new ArrayList<>();
             String[] shelfPatternList = priorityOrderMstDto.getShelfPatternCd().split(",");
             for (int i = 0; i < shelfPatternList.length; i++) {
@@ -469,7 +474,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
         List<Map<String, Object>> linkedHashMaps = new Gson().fromJson(datas.toString(), new TypeToken<List<LinkedHashMap<String, Object>>>() {
         }.getType());
-
+        for (Map<String, Object> linkedHashMap : linkedHashMaps) {
+            linkedHashMap.remove("priority_order_cd");
+            linkedHashMap.remove("company_cd");
+            linkedHashMap.remove("author_cd");
+        }
         priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,linkedHashMaps,authorCd);
         if (!goodsRank.isEmpty()) {
             priorityOrderDataMapper.updateGoodsRank(goodsRank, companyCd, priorityOrderCd);
