@@ -209,7 +209,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
         Map<String,Object> maps = new HashMap<>();
         for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
             String[] attrSmalls = stringObjectEntry.getKey().split("attrSmall");
-            maps.put("attr" + (Integer.parseInt(attrSmalls[1])+1), stringObjectEntry.getValue());
+            maps.put("attr" + (Integer.parseInt(attrSmalls[1])), stringObjectEntry.getValue());
 
         }
 
