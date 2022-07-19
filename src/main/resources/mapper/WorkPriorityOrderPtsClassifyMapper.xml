@@ -172,7 +172,7 @@
     </select>
     <select id="getAttrInfo" resultType="map">
         select distinct
-         attr1,attr2,attr3,attr4,attr5,attr6,attr7,attr8,attr9,attr10
+         coalesce attr1,attr2,attr3,attr4,attr5,attr6,attr7,attr8,attr9,attr10
          from priority.work_priority_order_pts_classify
         where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
     </select>
