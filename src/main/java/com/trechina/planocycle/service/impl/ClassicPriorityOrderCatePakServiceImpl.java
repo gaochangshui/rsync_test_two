@@ -304,6 +304,11 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
             }
 
         }
+        attributeList.forEach(map->{
+            if ("null".equals(map.getAttrValue())){
+                map.setAttrValue("");
+            }
+        });
         priorityOrderCatepakAttributeMapper.insert(attributeList);
         branchNumSel(priorityOrderCatepak, colValue, idx);
 

@@ -638,6 +638,7 @@
         left join planocycle.shelf_pattern_branch ptsB
         on ptsP.shelf_pattern_cd = ptsB.shelf_pattern_cd
         and wkC.sku_num_init >= prd.rank_upd
+        where prd.priority_order_cd =#{priorityOrderCd}
         group by prd.jan_new,prd.attr1,prd.attr2 ,prd.rank_upd,prd.jan_old
         order by prd.attr1,prd.attr2,prd.rank_upd
     </select>

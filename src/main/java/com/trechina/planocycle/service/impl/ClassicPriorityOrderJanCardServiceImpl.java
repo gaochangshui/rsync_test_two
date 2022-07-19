@@ -105,14 +105,10 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
                     }
                 }
             }
-            String tableName = "public.priorityorder" + session.getAttribute("aud").toString();
-         //   priorityOrderDataMapper.updateCutJanForProp(tableName);
-            if (exists.size()>0) {
+            if (!exists.isEmpty()) {
                 //全挿入
                 priorityOrderJanCardMapper.insert(exists);
 
-                // 優先順位の存在するjan情報を修正する
-            //    priorityOrderDataMapper.updatePriorityOrderDataForCard(companyCd, priorityOrderCd,tableName);
             }
             if (notExists.length()>0){
                 return ResultMaps.result(ResultEnum.JANNOTESISTS,notExists.substring(0,notExists.length()-1));

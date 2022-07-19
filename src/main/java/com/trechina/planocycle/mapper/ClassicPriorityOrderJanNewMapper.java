@@ -55,4 +55,6 @@ public interface ClassicPriorityOrderJanNewMapper {
     List<Map<String, Object>> getSimilarity(Map<String, Object> map, String companyCd, Integer priorityOrderCd);
 
     List<Map<String, Object>> getJanNewList(Integer priorityOrderCd, Map<String, Object> maps, String companyCd);
+
+    String getJan(String companyCd, Integer priorityOrderCd);
 }

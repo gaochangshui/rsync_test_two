@@ -2,10 +2,13 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
+import com.trechina.planocycle.entity.po.ProductPowerParamVo;
 import com.trechina.planocycle.entity.vo.PriorityOrderCommodityVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -42,6 +45,12 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     private ClassicPriorityOrderJanCardMapper priorityOrderJanCardMapper;
     @Autowired
     private ClassicPriorityOrderDataService priorityOrderDataService;
+    @Autowired
+    private ClassicPriorityOrderMstMapper classicPriorityOrderMstMapper;
+    @Autowired
+    private ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
+    private BasicPatternMstServiceImpl basicPatternMstService;
     @Autowired
     private cgiUtils cgiUtil;
     /**
@@ -148,7 +157,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             //削除
             priorityOrderCommodityMustMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             // jancheck
-            String janInfo = priorityOrderJanReplaceService.getJanInfo();
+            PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+            ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
+            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+            String proInfoTable = commonTableName.getProInfoTable();
+            String janInfo = priorityOrderJanReplaceService.getJanInfo(proInfoTable);
             List<String> list= Arrays.asList(janInfo.split(","));
             String notExists = "";
             List<PriorityOrderCommodityMust> exists = new ArrayList<>();
@@ -207,7 +220,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             //削除
             priorityOrderCommodityNotMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             // jancheck
-            String janInfo = priorityOrderJanReplaceService.getJanInfo();
+            PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+            ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
+            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+            String proInfoTable = commonTableName.getProInfoTable();
+            String janInfo = priorityOrderJanReplaceService.getJanInfo(proInfoTable);
             List<String> list= Arrays.asList(janInfo.split(","));
             String notExists = "";
             List<PriorityOrderCommodityNot> exists = new ArrayList<>();

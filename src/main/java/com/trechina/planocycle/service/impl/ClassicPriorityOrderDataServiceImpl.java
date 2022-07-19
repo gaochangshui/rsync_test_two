@@ -205,11 +205,25 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         if (datas.isEmpty()){
             return ResultMaps.result(ResultEnum.SIZEISZERO);
         }
+        for (Map<String, Object> data : datas) {
+            BigDecimal branch_amount_upd = BigDecimal.valueOf(Double.parseDouble(data.get("branch_amount_upd").toString()));
+            branch_amount_upd = branch_amount_upd.setScale(0,RoundingMode.HALF_UP);
+            data.put("branch_amount_upd",branch_amount_upd);
+
+            BigDecimal branch_amount = BigDecimal.valueOf(Double.parseDouble(data.get("branch_amount").toString()));
+            branch_amount = branch_amount.setScale(0,RoundingMode.HALF_UP);
+            data.put("branch_amount",branch_amount);
+
+            BigDecimal unit_price = BigDecimal.valueOf(Double.parseDouble(data.get("unit_price").toString()));
+            unit_price = unit_price.setScale(0,RoundingMode.HALF_UP);
+            data.put("unit_price",unit_price);
+        }
+
         priorityOrderDataMapper.deleteWorkData(companyCd,priorityPowerCd);
         priorityOrderDataMapper.insertWorkData(companyCd,priorityPowerCd,datas,authorCd);
         for (Map<String, Object> data : datas) {
             data.remove("goods_rank");
-            if (Integer.valueOf(data.get("rank").toString())==99999998){
+            if (Integer.parseInt(data.get("rank").toString())==99999998){
                 data.put("rank","_");
                 data.put("rank_upd","_");
                 data.put("rank_prop","_");
@@ -221,21 +235,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
     }
 
-    private void commParseJsonArray(JSONArray datas, String company, Integer priorityNO){
-        List<ClassicPriorityOrderJanNew> janNewList = priorityOrderJanNewMapper.selectJanNameFromJanNewByCompanyAndCd(company, priorityNO);
-        // 有新規Jan的時候，将新規JAN中名字為'_'的替換成新規JAN表中的数据。
-        if (!janNewList.isEmpty()) {
-            for (int i = 0; i < datas.size(); i++) {
-                JSONObject obj = datas.getJSONObject(i);
-                for (ClassicPriorityOrderJanNew janObj : janNewList) {
-                    if (janObj.getJanNew().equals(obj.get("jan_new")) && "_".equals(obj.get("sku"))) {
-                        obj.put("sku", janObj.getNameNew());
-                    }
-                }
-            }
-        }
-        priorityOrderData(datas);
-    }
 
     /**
      * 属性列名の名前を取得

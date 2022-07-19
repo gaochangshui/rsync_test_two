@@ -46,11 +46,11 @@
   <select id="selectJanInfo" resultType="com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanReplaceVO">
     select jan_old as janOld,jan_new as janNew,"${janNameCol}" as janName from priority.priority_order_jan_replace jan
     left join ${tableName} mst
-    on jan.jan_new  = mst."${janCdCol}"
+    on jan.jan_old  = mst."${janCdCol}"
     where company_cd = #{companyCd,jdbcType=VARCHAR}
   </select>
   <select id="selectJanDistinct" resultType="java.lang.String">
-    select array_to_string(array_agg("1"),',') from "1000".prod_0000_jan_info
+    select array_to_string(array_agg("1"),',') from ${proInfoTable}
   </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanReplace">
     insert into priority.priority_order_jan_replace (company_cd, priority_order_cd, jan_old,
