@@ -212,7 +212,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderMstAttrSortMapper.deleteAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMstAttrSortMapper.insertAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
             //group保存
-            priorityOrderPtsClassifyMapper.deleteWork(companyCd,priorityOrderCd);
+            priorityOrderPtsClassifyMapper.deleteFinal(companyCd,priorityOrderCd);
             priorityOrderPtsClassifyMapper.setFinalForWork(companyCd,priorityOrderCd);
             List<PriorityOrderPattern> priorityOrderPatternList = new ArrayList<>();
             String[] shelfPatternList = priorityOrderMstDto.getShelfPatternCd().split(",");
