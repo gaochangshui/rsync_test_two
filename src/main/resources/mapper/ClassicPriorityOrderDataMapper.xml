@@ -390,7 +390,9 @@
     </select>
     <select id="getTmpTable" resultType="java.util.Map">
         select
-        datas.company_cd,datas.priority_order_cd,datas.author_cd,datas.jan_old,coalesce (rep.jan_new,pro.jan_new,datas.jan_old)  as  jan_new
+        datas.company_cd,datas.priority_order_cd,datas.author_cd,datas.jan_old
+             ,case coalesce (rep.jan_new,pro.jan_new,datas.jan_old) when '_' then datas.jan_new
+              else  coalesce (rep.jan_new,pro.jan_new,datas.jan_old) end as  jan_new
                ,datas.sku,
         <foreach collection="colNameList" item="item" separator=",">
             coalesce(datas.${item},'') as ${item}

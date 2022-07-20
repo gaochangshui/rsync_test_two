@@ -10,7 +10,7 @@
         select #{companyCd},#{priorityOrderCd}, pts_cd, count(DISTINCT jandata.jan) as sku_num ,count(DISTINCT branch) as branch_num,count(DISTINCT jandata.jan) as sku_num,
 
         <foreach collection="colNameList" item="item" separator=",">
-            COALESCE(mst.${item},'')
+            COALESCE(mst.${item},'_')
         </foreach>
         from
         planocycle.shelf_pts_data_jandata jandata

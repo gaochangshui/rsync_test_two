@@ -478,6 +478,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             linkedHashMap.remove("priority_order_cd");
             linkedHashMap.remove("company_cd");
             linkedHashMap.remove("author_cd");
+            linkedHashMap.remove("repeatFlg");
         }
         priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,linkedHashMaps,authorCd);
         if (!goodsRank.isEmpty()) {

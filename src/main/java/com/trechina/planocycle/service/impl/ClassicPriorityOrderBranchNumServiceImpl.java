@@ -111,41 +111,14 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Override
     public Map<String, Object> getPriorityOrderCommodityMust(String companyCd, Integer priorityOrderCd) {
         logger.info("必須商品リストのパラメータを取得する：{},{}",companyCd,priorityOrderCd);
-
-        PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
-        ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
-        GetCommonPartsDataDto productPartsData = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
-        String janInfoTable = productPartsData.getProInfoTable();
-        List<String> shelfPatternList = Arrays.asList(priorityOrderMst.getShelfPatternCd().split(","));
-        List<String> commonPartsData = shelfPatternMstMapper.isCompany(shelfPatternList);
-        List<GetCommonPartsDataDto> list = new ArrayList<>();
-        for (String commonPartsDatum : commonPartsData) {
-            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsDatum, companyCd);
-            list.add(commonTableName);
-        }
-        List<PriorityOrderCommodityVO> priorityOrderCommodityVOList = null;
         String table1 = "";
         String table2 = "";
-        if (list.size()>1){
-            if (list.get(0).getProdIsCore().equals("1000")){
-                table1 = list.get(0).getStoreInfoTable();
-                table2 = list.get(1).getStoreInfoTable();
-            }else {
-                table1 = list.get(1).getStoreInfoTable();
-                table2 = list.get(0).getStoreInfoTable();
-            }
-             priorityOrderCommodityVOList = priorityOrderCommodityMustMapper
-                    .selectMystInfo(companyCd,priorityOrderCd,table1,table2,janInfoTable);
-        }else {
-            if (list.get(0).getProdIsCore().equals("1000")){
-                table1 = list.get(0).getStoreInfoTable();
-            }else {
-                table2 = list.get(1).getStoreInfoTable();
-            }
-            priorityOrderCommodityVOList = priorityOrderCommodityMustMapper
-                    .selectMystInfo(companyCd,priorityOrderCd,table1,table2,janInfoTable);
-        }
+        String janInfoTable = "";
+        this.getTableName(companyCd,priorityOrderCd,table1,table2,janInfoTable);
+        List<PriorityOrderCommodityVO> priorityOrderCommodityVOList = null;
 
+        priorityOrderCommodityVOList = priorityOrderCommodityMustMapper
+                .selectMystInfo(companyCd,priorityOrderCd,table1,table2,janInfoTable);
         logger.info("必須商品リストの戻り値を取得する：{}",priorityOrderCommodityVOList);
 
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderCommodityVOList);
@@ -178,7 +151,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     public Map<String, Object> setPriorityOrderCommodityMust(List<PriorityOrderCommodityMust> priorityOrderCommodityMust) {
         logger.info("必須商品リストパラメータを保存する：{}",priorityOrderCommodityMust);
 //取得したパラメータは1行目に企業と順位テーブルcdがあるだけで、パラメータを巡回し、すべての行に値を割り当てる必要があります。
-        try{
+//        try{
             String companyCd = priorityOrderCommodityMust.get(0).getCompanyCd();
             Integer priorityOrderCd = priorityOrderCommodityMust.get(0).getPriorityOrderCd();
             dataConverUtils dataConverUtil = new dataConverUtils();
@@ -266,10 +239,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
            else{
                 return ResultMaps.result(ResultEnum.SUCCESS);
            }
-        } catch (Exception e) {
-            logger.error("保存必須商品リスト：",e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        //} catch (Exception e) {
+        //    logger.error("保存必須商品リスト：",e);
+        //    return ResultMaps.result(ResultEnum.FAILURE);
+        //}
     }
 
 
@@ -409,5 +382,37 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         Integer priorityOrderCd = priorityOrderCommodityMust.get(0).getPriorityOrderCd();
         List<String> janList = priorityOrderCommodityMust.stream().map(item -> item.getJan()).collect(Collectors.toList());
         return  new ArrayList<>(priorityOrderDataService.checkIsJanNew(janList, companyCd, priorityOrderCd, tableName).keySet());
+    }
+
+
+    public void getTableName(String companyCd,Integer priorityOrderCd,String table1,String table2,String janInfoTable ){
+        PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+        ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
+        GetCommonPartsDataDto productPartsData = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+         janInfoTable = productPartsData.getProInfoTable();
+        List<String> shelfPatternList = Arrays.asList(priorityOrderMst.getShelfPatternCd().split(","));
+        List<String> commonPartsData = shelfPatternMstMapper.isCompany(shelfPatternList);
+        List<GetCommonPartsDataDto> list = new ArrayList<>();
+        for (String commonPartsDatum : commonPartsData) {
+            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsDatum, companyCd);
+            list.add(commonTableName);
+        }
+
+        if (list.size()>1){
+            if (list.get(0).getProdIsCore().equals("1000")){
+                table1 = list.get(0).getStoreInfoTable();
+                table2 = list.get(1).getStoreInfoTable();
+            }else {
+                table1 = list.get(1).getStoreInfoTable();
+                table2 = list.get(0).getStoreInfoTable();
+            }
+        }else {
+            if (list.get(0).getStoreIsCore().equals("1")){
+                table1 = list.get(0).getStoreInfoTable();
+            }else {
+                table2 = list.get(0).getStoreInfoTable();
+            }
+
+        }
     }
 }

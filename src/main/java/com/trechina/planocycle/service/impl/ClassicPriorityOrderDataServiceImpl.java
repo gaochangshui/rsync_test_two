@@ -1155,7 +1155,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> getPriorityOrderListInfo(String companyCd, Integer priorityOrderCd,List<String> colNameList) {
 
         String authorCd = session.getAttribute("aud").toString();

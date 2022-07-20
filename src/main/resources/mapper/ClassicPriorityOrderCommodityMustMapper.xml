@@ -100,7 +100,7 @@
     where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd} and shelf_pattern_cd=#{shelfPatternCd} and flag=1
   </select>
     <select id="selectPatternByBranch" resultType="java.lang.Integer">
-      select orderpattern.shelf_pattern_cd shelf_pattern_cd from planocycle.work_priority_order_pattern orderpattern
+      select orderpattern.shelf_pattern_cd shelf_pattern_cd from priority.work_priority_order_pattern orderpattern
           inner join planocycle.shelf_pattern_branch patternbranch on orderpattern.shelf_pattern_cd=patternbranch.shelf_pattern_cd
       where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
         and (branch=#{branch} or split_part(branch, '_', 2)=#{branch})
