@@ -12,4 +12,11 @@ public class PriorityOrderCommodityNot {
 
     private String jan;
 
+    private Integer shelfPatternCd;
+
+    private String branchOrigin;
+
+    private Integer beforeFlag;
+
+    private Integer flag;
 }

@@ -14,6 +14,15 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </insert>
+  <update id="updateFlag">
+    update priority.work_priority_order_commodity_not set flag=
+    CASE concat(shelf_pattern_cd, branch)
+    <foreach collection="list" item="item">
+      WHEN concat(#{item.shelfPatternCd}, #{item.branch}) THEN #{item.flag}
+    </foreach>
+    ELSE flag END
+    where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd} and jan_new=#{jan}
+  </update>
   <select id="existJan" resultType="string">
     select jan_new from priority.work_priority_order_commodity_not
     where company_cd = #{companyCd,jdbcType=VARCHAR}
@@ -39,14 +48,36 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
+  <delete id="delCommodityNotBranch">
+    delete from priority.work_priority_order_commodity_not where
+      company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd} and jan_new=#{jan}
+  </delete>
   <select id="selectNotInfo" resultType="com.trechina.planocycle.entity.vo.PriorityOrderCommodityVO">
-    select nots.branch,branchs."2" as branchName,jan_new as jan,jans."2" as janName,'' as errMsg
+    select distinct nots.branch,
+          <if test="table1 != '' and table2 != ''">
+            coalesce (branchs."2",company_branchs."2")  as branchName,
+          </if>
+          <if test="table1 != ''">
+            branchs."2"  as branchName,
+          </if>
+          <if test="table2 != ''">
+            company_branchs."2"  as branchName,
+          </if>
+    nots.jan_new as jan,coalesce (jans."2" ,jannew.name_new) as janName,'' as errMsg
     from priority.work_priority_order_commodity_not nots
-           left join "1000".prod_0000_jan_info jans on nots.jan_new = jans."1"
-           left join "1000".ten_0000_ten_info branchs on nots.branch = split_part( branchs."1", '_', 2 )
-      and branchs."1" like #{companyCd} || '_%'
+           left join ${janInfoTable} jans on nots.jan_new = jans."1"
+          <if test="table1 != ''">
+            left join ${table1} branchs
+            on  nots.branch = split_part(branchs."1", '_', 2) and branchs."1" like #{companyCd} ||'_%'
+          </if>
+          <if test="table2 != ''">
+            left join ${table2} company_branchs
+            on  nots.branch = company_branchs."1"
+          </if>
+    left join priority.work_priority_order_jan_new jannew
+    on jannew.priority_order_cd = nots.priority_order_cd and jannew.jan_new = nots.jan_new
     where nots.company_cd = #{companyCd,jdbcType=VARCHAR}
-    and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    and nots.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and nots.flag = 1
   </select>
   <select id="selectBranchCDForCalcLength" resultType="java.lang.String">
     select branch_cd
@@ -56,12 +87,12 @@
   </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderCommodityNot">
     insert into priority.work_priority_order_commodity_not (company_cd, priority_order_cd, branch,
-      jan_new)
+      jan_new,flag,shelf_pattern_cd, before_flag)
     values
      <foreach collection="lists" item="list" separator=",">
        <if test="list.companyCd!=null and list.priorityOrderCd!=null and list.branch!=null and list.jan!=null">
            (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.branch,jdbcType=VARCHAR},
-      #{list.jan,jdbcType=VARCHAR})
+      #{list.jan,jdbcType=VARCHAR},#{list.flag},#{list.shelfPatternCd},#{list.beforeFlag})
        </if>
      </foreach>
   </insert>
@@ -75,5 +106,35 @@
     select count(distinct branch)branch
     from priority.priority_order_commodity_not comm_must
     where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd} and shelf_pattern_cd=#{shelfPatternCd} and flag=1
+  </select>
+  <select id="getPriorityOrderNotList" resultType="java.util.Map">
+    select distinct nots.jan_new as jan
+    ,COALESCE(mst.sku,'') as sku, ''  as errMsg,
+    <foreach collection="attrList" separator="," item="item">
+      COALESCE(mst.${item},'') as ${item}
+    </foreach>
+    from priority.work_priority_order_commodity_not nots
+    left join priority.work_priority_order_result_data mst
+    on nots.jan_new = mst.jan_new and mst.priority_order_cd = #{priorityOrderCd}
+    where nots.priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getBranchAndPattern" resultType="com.trechina.planocycle.entity.dto.PriorityOrderBranchNumDto">
+    select branch,nots.shelf_pattern_cd,shelf_pattern_name,concat(branch,'_',branchs.branch_name) as branchName
+    from priority.work_priority_order_commodity_not nots
+           left join masterdb.branchs branchs
+                     on branchs.branch_cd = nots.branch and branchs.company_cd = nots.company_cd
+           left join planocycle.shelf_pattern_mst patternmst
+                     on patternmst.shelf_pattern_cd = nots.shelf_pattern_cd
+    where nots.priority_order_cd = #{priorityOrderCd} and nots.jan_new = #{janNew} and nots.flag = 1
+    order by nots.shelf_pattern_cd,branch
+  </select>
+  <select id="getExistCommodityNotBranchList" resultType="com.trechina.planocycle.entity.vo.CommodityBranchVO">
+    select nots.shelf_pattern_cd shelf_pattern_cd, coalesce(shelf_pattern_name, '') shelf_pattern_name, concat(branchs.branch_cd, '_', branch_name) branch_name, before_flag,flag
+    from priority.work_priority_order_commodity_not nots
+           left join planocycle.shelf_pattern_mst patternmst
+               on patternmst.shelf_pattern_cd=nots.shelf_pattern_cd
+           inner join masterdb.branchs branchs
+               on branchs.branch_cd = nots.branch and branchs.company_cd=nots.company_cd
+    where priority_order_cd=#{priorityOrderCd} and jan_new=#{jan} order by nots.shelf_pattern_cd, branchs.branch_cd;
   </select>
 </mapper>

@@ -2,6 +2,7 @@ package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
+import com.trechina.planocycle.entity.vo.CommodityBranchPrimaryKeyVO;
 
 import java.util.List;
 import java.util.Map;
@@ -77,4 +78,57 @@ public interface ClassicPriorityOrderBranchNumService {
     Map<String,Object> checkIsJanCommodityNot(List<PriorityOrderCommodityNot> priorityOrderCommodityNot);
 
     List<String> checkIsJanCommodityMust(List<PriorityOrderCommodityMust> priorityOrderCommodityMust);
+    /**
+     * 必須リスト
+     * @param companyCd
+     * @return
+     */
+    Map<String, Object> getPriorityOrderMustList(String companyCd, Integer priorityOrderCd);
+    /**
+     * リスト不可
+     * @param companyCd
+     * @return
+     */
+    Map<String, Object> getPriorityOrderNotList(String companyCd, Integer priorityOrderCd);
+    /**
+     * 詳細が必要です
+     * @param companyCd
+     * @param priorityOrderCd
+     * @param jan
+     * @return
+     */
+    Map<String, Object> getCommodityMustBranchList(String companyCd, Integer priorityOrderCd, String jan);
+    /**
+     * 詳細不可
+     * @param companyCd
+     * @param priorityOrderCd
+     * @param jan
+     * @return
+     */
+    Map<String, Object> getCommodityNotBranchList(String companyCd, Integer priorityOrderCd, String jan);
+
+    /**
+     * 詳細保存不可
+     * @param companyCd,priorityOrderCd,jan,commodityList
+     * @return
+     */
+    Map<String, Object> saveCommodityNotBranchList(String companyCd, Integer priorityOrderCd, String jan, String commodityList);
+    /**
+     * 詳細を保存する必要があります
+     * @param companyCd,priorityOrderCd,jan,commodityList
+     * @return
+     */
+    Map<String, Object> saveCommodityMustBranchList(String companyCd, Integer priorityOrderCd, String jan, String commodityList);
+    /**
+     * 詳細を削除する必要があります
+     * @param commodityBranchPrimaryKeyVO
+     * @return
+     */
+    Map<String, Object> delCommodityMustBranch(CommodityBranchPrimaryKeyVO commodityBranchPrimaryKeyVO);
+    /**
+     * 詳細削除不可
+     * @param commodityBranchPrimaryKeyVO
+     * @return
+     */
+    Map<String, Object> delCommodityNotBranch(CommodityBranchPrimaryKeyVO commodityBranchPrimaryKeyVO);
 }

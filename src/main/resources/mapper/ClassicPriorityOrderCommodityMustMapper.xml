@@ -21,6 +21,15 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </insert>
+  <update id="updateFlag">
+    update priority.work_priority_order_commodity_must must set flag=
+    CASE concat(shelf_pattern_cd, branch)
+    <foreach collection="list" item="item">
+      WHEN concat(#{item.shelfPatternCd}, #{item.branch}) THEN #{item.flag}
+    </foreach>
+    ELSE flag END
+    where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd} and jan_new=#{jan}
+  </update>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority.work_priority_order_commodity_must
     where company_cd = #{companyCd,jdbcType=VARCHAR}
@@ -36,8 +45,12 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
+  <delete id="delCommodityMustBranch">
+    delete from priority.work_priority_order_commodity_must where
+      company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd} and jan_new=#{jan}
+  </delete>
   <select id="selectMystInfo" resultType="com.trechina.planocycle.entity.vo.PriorityOrderCommodityVO">
-      select branch,
+      select distinct musts.branch,
         <if test="table1 != '' and table2 != ''">
           coalesce (branchs."2",company_branchs."2")  as branchName,
         </if>
@@ -47,7 +60,10 @@
         <if test="table2 != ''">
           company_branchs."2"  as branchName,
         </if>
-             jan_new as jan,jans."2" as janName,'' as errMsg
+    musts.jan_new as jan,coalesce (jans."2",jannew.name_new) as janName,
+    case when card.jan_old is not null then 'カット商品で必須設定できません。'
+    when nots.jan_new is not null then '不可商品にすでに設定されていますので削除してください。'
+    else '' end as errMsg
       from priority.work_priority_order_commodity_must musts
              left join ${janInfoTable} jans
                        on musts.jan_new = jans."1"
@@ -59,17 +75,23 @@
               left join ${table2} company_branchs
               on  musts.branch = company_branchs."1"
             </if>
+    left join priority.work_priority_order_commodity_not nots
+    on nots.priority_order_cd = musts.priority_order_cd and nots.flag = 1 and nots.jan_new = musts.jan_new
+    left join priority.work_priority_order_jan_card card
+    on card.priority_order_cd = musts.priority_order_cd and card.jan_old = musts.jan_new
+    left join priority.work_priority_order_jan_new jannew
+    on jannew.priority_order_cd = musts.priority_order_cd and jannew.jan_new = musts.jan_new
       where musts.company_cd = #{companyCd,jdbcType=VARCHAR}
-      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+      and musts.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and musts.flag = 1
     </select>
     <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderCommodityMust">
     insert into priority.work_priority_order_commodity_must (company_cd, priority_order_cd, branch,
-      jan_new)
+      jan_new,flag, shelf_pattern_cd, before_flag)
     values
     <foreach collection="lists" item="list" separator=",">
     <if test="list.companyCd!=null and list.priorityOrderCd!=null and list.branch!=null and list.jan!=null">
     (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.branch,jdbcType=VARCHAR},
-      #{list.jan,jdbcType=VARCHAR})
+      #{list.jan,jdbcType=VARCHAR},#{list.flag},  #{list.shelfPatternCd},  #{list.beforeFlag})
     </if>
     </foreach>
   </insert>
@@ -81,6 +103,19 @@
          #{list.num,jdbcType=INTEGER}::Integer)
         </foreach>
     </insert>
+  <insert id="insertCommodityBranchList">
+    insert into priority.${tableName}
+    select #{companyCd}, #{priorityOrderCd}, branch_cd,#{jan}, patternmst.shelf_pattern_cd, 0,
+           case when jandata.jan is null then 0 else 1 end as before_flag
+    from priority.work_priority_order_pattern pattern
+          inner join planocycle.shelf_pattern_mst patternmst on pattern.shelf_pattern_cd=patternmst.shelf_pattern_cd
+          inner join planocycle.shelf_pattern_branch branch on branch.shelf_pattern_cd=pattern.shelf_pattern_cd
+          inner join masterdb.branchs branchs on (branchs.branch_cd = branch.branch or branchs.branch_cd=split_part(branch.branch, '_', 2))
+      and branchs.company_cd=#{companyCd}
+         inner join planocycle.shelf_pts_data ptsdata on ptsdata.shelf_pattern_cd=patternmst.shelf_pattern_cd
+         left join (select "pts_cd", max(jan)jan from planocycle.shelf_pts_data_jandata group by "pts_cd", jan) jandata on jandata.pts_cd=ptsdata."id" and jandata.jan=#{jan}
+    where priority_order_cd=#{priorityOrderCd};
+  </insert>
   <select id="selectMustJan" resultType="map">
     select jan_new,branch
     from priority.priority_order_commodity_must comm_must
@@ -108,5 +143,44 @@
   <select id="selectExistJan" resultType="java.lang.Integer">
     select count(*) from planocycle.shelf_pts_data pts inner join planocycle.shelf_pts_data_jandata jandata
           on pts.id=jandata.pts_cd where shelf_pattern_cd=#{shelfPattern} and jan=#{jan}
+  </select>
+  <select id="getPriorityOrderMustList" resultType="java.util.Map">
+    select distinct must.jan_new as jan
+    ,COALESCE(mst.sku,'') as sku,
+    case when mst.rank_upd =99999999 then 'すでに削除商品として入力済みです'
+    when mst.sku is null  then 'すでにJAN変商品として入力済みです'
+    else '' end as errMsg,
+    <foreach collection="attrList" separator="," item="item">
+      COALESCE(mst.${item},'') as ${item}
+    </foreach>
+    from priority.work_priority_order_commodity_must must
+    left join priority.work_priority_order_result_data mst
+    on must.jan_new = mst.jan_new and mst.priority_order_cd = #{priorityOrderCd}
+    left join priority.work_priority_order_commodity_not nots
+    on nots.jan_new = must.jan_new and nots.priority_order_cd = must.priority_order_cd
+    where must.priority_order_cd = #{priorityOrderCd}
+  </select>
+  <select id="getBranchAndPattern" resultType="com.trechina.planocycle.entity.dto.PriorityOrderBranchNumDto">
+    select must.branch,must.shelf_pattern_cd,shelf_pattern_name,concat(must.branch,'_',branchs.branch_name) as branchName,
+           case when nots.branch is not null then 'すでに不可商品として入力済みです' ELSE '' end as errMsg
+    from priority.work_priority_order_commodity_must must
+           left join masterdb.branchs branchs
+                     on branchs.branch_cd = must.branch and branchs.company_cd = must.company_cd
+           left join planocycle.shelf_pattern_mst patternmst
+                     on patternmst.shelf_pattern_cd = must.shelf_pattern_cd
+           left join priority.work_priority_order_commodity_not nots
+                     on nots.priority_order_cd = must.priority_order_cd and nots.jan_new = must.jan_new and must.branch = nots.branch
+                       and nots.flag = 1
+    where must.priority_order_cd = #{priorityOrderCd} and must.jan_new = #{janNew} and  must.flag = 1
+    order by must.shelf_pattern_cd,branch
+  </select>
+  <select id="getExistCommodityMustBranchList" resultType="com.trechina.planocycle.entity.vo.CommodityBranchVO">
+    select must.shelf_pattern_cd shelf_pattern_cd, coalesce(shelf_pattern_name, '') shelf_pattern_name, concat(branchs.branch_cd, '_', branch_name) branch_name, before_flag,flag
+    from priority.work_priority_order_commodity_must must
+           left join planocycle.shelf_pattern_mst patternmst
+               on patternmst.shelf_pattern_cd=must.shelf_pattern_cd
+           inner join masterdb.branchs branchs
+               on branchs.branch_cd = must.branch and branchs.company_cd=must.company_cd
+    where priority_order_cd=#{priorityOrderCd} and jan_new=#{jan} order by must.shelf_pattern_cd, branchs.branch_cd;
   </select>
 </mapper>

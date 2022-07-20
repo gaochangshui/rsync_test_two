@@ -1,7 +1,10 @@
 package com.trechina.planocycle.mapper;
 
 import com.alibaba.fastjson.JSONArray;
+import com.trechina.planocycle.entity.dto.PriorityOrderBranchNumDto;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
+import com.trechina.planocycle.entity.vo.CommodityBranchPrimaryKeyVO;
+import com.trechina.planocycle.entity.vo.CommodityBranchVO;
 import com.trechina.planocycle.entity.vo.PriorityOrderCommodityVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -34,4 +37,17 @@ public interface ClassicPriorityOrderCommodityMustMapper {
     List<Integer> selectPatternByBranch(Integer priorityOrderCd, String companyCd, String branch);
 
     int selectExistJan(Integer shelfPattern, String jan);
+
+    List<Map<String,Object>> getPriorityOrderMustList(String companyCd, Integer priorityOrderCd, List<String> attrList);
+
+    List<PriorityOrderBranchNumDto> getBranchAndPattern(String janNew, Integer priorityOrderCd);
+
+    List<CommodityBranchVO> getExistCommodityMustBranchList(Integer priorityOrderCd, String jan);
+
+    void insertCommodityBranchList(String companyCd, Integer priorityOrderCd, String jan,String tableName);
+
+    void updateFlag(String companyCd, Integer priorityOrderCd, String jan, List<Map<String, Object>> list);
+
+    void delCommodityMustBranch(CommodityBranchPrimaryKeyVO commodityBranchPrimaryKeyVO);
+
 }
