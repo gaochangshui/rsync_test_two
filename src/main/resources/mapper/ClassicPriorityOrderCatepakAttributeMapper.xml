@@ -23,12 +23,15 @@
     where company_cd = #{companyCd,jdbcType=INTEGER}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
-  <select id="selectForTempTable" resultType="java.lang.String">
-    select max(branch_num) as branch_num from priority.work_priority_order_result_data
-    where priority_order_cd=#{priorityOrderCd}
+  <select id="selectForTempTable" resultType="java.lang.Integer">
+    select pts_cd
+    from priority.work_priority_order_pts_classify
+    where sku_num_init >=${rank}
+    and priority_order_cd = #{priorityOrderCd}
     <foreach collection="lists" separator="and" open=" and " item="list">
       ${list}
     </foreach>
+    GROUP BY pts_cd
   </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderCatepakAttribute">
     insert into priority.work_priority_order_catepak_attribute (attr_cd, catepak_cd, company_cd,

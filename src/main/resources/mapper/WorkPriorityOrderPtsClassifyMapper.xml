@@ -176,4 +176,7 @@
          from priority.work_priority_order_pts_classify
         where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
     </select>
+    <select id="getCatepakBranchNum" resultType="java.lang.Integer">
+
+    </select>
 </mapper>

@@ -50,4 +50,6 @@ public interface ShelfPatternMstMapper {
     List<ShelfPatternNameVO> getPatternForStorel(String storeIsCore,String companyCd);
 
     List<Integer> getpatternIdOfFilename(String fileName, String companyCd);
+
+    List<String> isCompany(List<String> shelfPatternList);
 }

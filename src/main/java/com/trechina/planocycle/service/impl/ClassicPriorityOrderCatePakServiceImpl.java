@@ -9,10 +9,7 @@ import com.trechina.planocycle.entity.po.PriorityOrderCatepak;
 import com.trechina.planocycle.entity.po.PriorityOrderCatepakAttribute;
 import com.trechina.planocycle.entity.vo.PriorityOrderCatePakVO;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.ClassicPriorityOrderCatepakAttributeMapper;
-import com.trechina.planocycle.mapper.ClassicPriorityOrderJanNewMapper;
-import com.trechina.planocycle.mapper.ClassicPriorityOrderMstAttrSortMapper;
-import com.trechina.planocycle.mapper.PriorityOrderCatepakMapper;
+import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderCatePakService;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -41,6 +38,8 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
     private ClassicPriorityOrderJanNewMapper priorityOrderJanNewMapper;
     @Autowired
     private ClassicPriorityOrderDataService classicPriorityOrderDataService;
+    @Autowired
+    private WorkPriorityOrderPtsClassifyMapper workPriorityOrderPtsClassifyMapper;
     /**
      * つかむ取カテパケ拡縮
      *
@@ -160,10 +159,9 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                     priorityOrderCatepak.setCompanyCd(companyCd);
                     priorityOrderCatepak.setPriorityOrderCd(priorityOrderCd);
                     priorityOrderCatepak.setRank(Integer.valueOf(((HashMap) item).get("rank").toString()));
-//                priorityOrderCatepak.setBranchNum(Integer.valueOf(((HashMap) item).get("branchNum").toString()));
                     // 写入数据重新取号，返回自增列id，实体类自动接收
                     priorityOrderCatepakMapper.insert(priorityOrderCatepak);
-                    logger.info("保存カテパケ拡縮返回值:" + priorityOrderCatepak.toString());
+                    logger.info("保存カテパケ拡縮返回值:{}" , priorityOrderCatepak);
                     catePakAttr(companyCd, priorityOrderCd, (HashMap) item, priorityOrderCatepak);
                 }
 
@@ -275,7 +273,6 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
         List<PriorityOrderCatepakAttribute> attributeList = new ArrayList<>();
 
         String colValue = "";
-        int idx =1;
         for (Object key: item.keySet()) {
             if (key.toString().contains(MagicString.ATTR_SMALL) || key.toString().contains(MagicString.ATTR_BIG)) {
                 PriorityOrderCatepakAttribute catepakAttribute = new PriorityOrderCatepakAttribute();
@@ -288,8 +285,8 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                     catepakAttribute.setFlg(0);
                     catepakAttribute.setAttrCd(Integer.valueOf(key.toString().replace(MagicString.ATTR_SMALL, "")));
                     // レコード列名+値
-                    colValue+="attr"+idx+"='"+item.get(key)+"',";
-                    idx+=1;
+                    String[] split = (key.toString()).split("attrSmall");
+                    colValue+="attr"+split[1]+"='"+item.get(key)+"',";
                 }
                 if (key.toString().contains(MagicString.ATTR_BIG)) {
                     //拡張は1です。
@@ -310,17 +307,21 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
             }
         });
         priorityOrderCatepakAttributeMapper.insert(attributeList);
-        branchNumSel(priorityOrderCatepak, colValue, idx);
+        branchNumSel(priorityOrderCatepak, colValue);
 
     }
 
-    private void branchNumSel(PriorityOrderCatepak priorityOrderCatepak, String colValue, int idx) {
+    private void branchNumSel(PriorityOrderCatepak priorityOrderCatepak, String colValue) {
         // 定番店舗数の照会
+        Integer priorityOrderCd = priorityOrderCatepak.getPriorityOrderCd();
+        Integer rank = priorityOrderCatepak.getRank();
         List<String> colValueList = Arrays.asList(colValue.split(","));
-        String branchNum =  priorityOrderCatepakAttributeMapper.selectForTempTable(colValueList,
-                priorityOrderCatepak.getPriorityOrderCd());
-        logger.info("査詢定番店鋪数{}",branchNum);
-        if (branchNum!=null){
+        List<Integer> ptsCd =  priorityOrderCatepakAttributeMapper.selectForTempTable(colValueList,
+                priorityOrderCd,rank);
+        logger.info("pts:{}",ptsCd);
+        if (!ptsCd.isEmpty()){
+            Integer branchNum = workPriorityOrderPtsClassifyMapper.getJanBranchNum(ptsCd,new HashMap<>());
+            logger.info("査詢定番店鋪数{}",branchNum);
             priorityOrderCatepakMapper.updateBranchNum(priorityOrderCatepak.getId(),Integer.valueOf(branchNum));
         } else {
             priorityOrderCatepakMapper.updateBranchNum(priorityOrderCatepak.getId(),0);

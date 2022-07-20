@@ -183,7 +183,15 @@
           and shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
           and area = #{area,jdbcType=INTEGER}
       </delete>
-        <update id="deleteByShelfName">
+  <select id="isCompany" resultType="string">
+    select distinct common_parts_data from planocycle.shelf_pattern_mst
+    where shelf_pattern_cd in
+        <foreach collection="shelfPatternList" separator="," item="item" open="(" close=")">
+          #{item}
+        </foreach>
+
+  </select>
+  <update id="deleteByShelfName">
           update planocycle.shelf_pattern_mst
           set deleteflg=1 , maintainer_cd=#{authorCd} , modified=now()
           where shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
@@ -198,7 +206,8 @@
             ,ptskey=#{ptsRelationID},maintainer_cd=#{maintainerCd},modified=now()
             where shelf_pattern_cd=#{shelfPatternCd}
         </update>
-        <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternMst">
+
+    <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ShelfPatternMst">
           <selectKey resultType="int" keyProperty="shelfPatternCd" order="AFTER">
             select  currval('planocycle.shelf_pattern_mst_shelf_pattern_cd_seq'::regclass) as id
           </selectKey>

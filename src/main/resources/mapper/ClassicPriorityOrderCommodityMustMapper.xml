@@ -37,12 +37,14 @@
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
   <select id="selectMystInfo" resultType="com.trechina.planocycle.entity.vo.PriorityOrderCommodityVO">
-      select branch,branchs."2"  as branchName,jan_new as jan,jans."2" as janName,'' as errMsg
+      select branch,branchs.COALESCE(branchs."2",company_branch."2")  as branchName,jan_new as jan,jans."2" as janName,'' as errMsg
       from priority.work_priority_order_commodity_must musts
-             left join "1000".prod_0000_jan_info jans
+             left join ${janInfo} jans
                        on musts.jan_new = jans."1"
              left join "1000".ten_0000_ten_info branchs
                        on  musts.branch = split_part(branchs."1", '_', 2) and branchs."1" like #{companyCd} ||'_%'
+            left join ${tenTableName} company_branch
+            on  musts.branch =company_branch."1"
       where musts.company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     </select>
@@ -82,5 +84,15 @@
     select count(distinct branch)
     from priority.priority_order_commodity_must comm_must
     where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd} and shelf_pattern_cd=#{shelfPatternCd} and flag=1
+  </select>
+    <select id="selectPatternByBranch" resultType="java.lang.Integer">
+      select orderpattern.shelf_pattern_cd shelf_pattern_cd from planocycle.work_priority_order_pattern orderpattern
+          inner join planocycle.shelf_pattern_branch patternbranch on orderpattern.shelf_pattern_cd=patternbranch.shelf_pattern_cd
+      where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd}
+        and (branch=#{branch} or split_part(branch, '_', 2)=#{branch})
+    </select>
+  <select id="selectExistJan" resultType="java.lang.Integer">
+    select count(*) from planocycle.shelf_pts_data pts inner join planocycle.shelf_pts_data_jandata jandata
+          on pts.id=jandata.pts_cd where shelf_pattern_cd=#{shelfPattern} and jan=#{jan}
   </select>
 </mapper>

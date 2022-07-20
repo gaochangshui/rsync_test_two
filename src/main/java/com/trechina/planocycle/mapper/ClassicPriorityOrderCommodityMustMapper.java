@@ -15,7 +15,7 @@ public interface ClassicPriorityOrderCommodityMustMapper {
 
     int insert(@Param("lists") List<PriorityOrderCommodityMust> record);
 
-    List<PriorityOrderCommodityVO> selectMystInfo(String companyCd, Integer priorityOrderCd);
+    List<PriorityOrderCommodityVO> selectMystInfo(String companyCd, Integer priorityOrderCd,String table1,String table2,String janInfoTable);
 
     void insertPriorityBranchNum(@Param("lists") JSONArray jsonArray,@Param("companyCd")String companyCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 
@@ -30,4 +30,8 @@ public interface ClassicPriorityOrderCommodityMustMapper {
     Integer selectCountMustJan(String companyCd, Integer priorityOrderCd, Integer shelfPatternCd);
 
     List<Map<String, Object>> selectMustJan(String companyCd, Integer priorityOrderCd, String branchList, Integer shelfPatternCd);
+
+    List<Integer> selectPatternByBranch(Integer priorityOrderCd, String companyCd, String branch);
+
+    int selectExistJan(Integer shelfPattern, String jan);
 }
