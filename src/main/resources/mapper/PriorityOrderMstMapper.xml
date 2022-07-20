@@ -94,7 +94,7 @@
   </select>
   <select id="getPatternOrProduct" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstDto">
     SELECT mst.product_power_cd,mst.shelf_pattern_cd as shelfPatternCd,mst.attr_option
-    from priority.priority_order_mst  mst
+    from priority.work_priority_order_mst  mst
     where mst.company_cd = #{companyCd} and mst.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
     <select id="selectCommonPartsData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrDto">

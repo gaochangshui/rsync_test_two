@@ -11,5 +11,6 @@ public class PriorityOrderDataDto {
     private String shelfPatternCd;
     private LinkedHashMap<String,Object> attrList;
     private Integer priorityOrderCd;
+    private  Integer flag;
 
 }
