@@ -6,10 +6,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderBranchNumDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
@@ -462,6 +459,18 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         priorityOrderMustList.addAll(priorityOrderAttr);
         priorityOrderMustList = priorityOrderMustList.stream()
                 .sorted(Comparator.comparing(map1 -> MapUtils.getString(map1, "jan"))).collect(Collectors.toList());
+        Map<String,Object> map = new HashMap<>();
+        List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSorts = classicPriorityOrderMstAttrSortMapper.selectWKRankSort(companyCd, priorityOrderCd);
+        Map<String, String> attrMap = priorityOrderMstAttrSorts.stream()
+                .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getSort, PriorityOrderMstAttrSortDto::getName,
+                        (k1,k2)->k1, LinkedHashMap::new));
+        map.put("jan", "Jan");
+        map.put("janName", "商品名");
+        map.put("shelfPatternName", "該当棚パターン");
+        map.put("branchName", "店舗");
+        map.put("errmsg", "エラーメッセージ");
+        map.putAll(attrMap);
+        priorityOrderMustList.add(0,map);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderMustList);
     }
 
@@ -486,6 +495,18 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         priorityOrderNotList.addAll(priorityOrderAttr);
         priorityOrderNotList = priorityOrderNotList.stream()
                 .sorted(Comparator.comparing(map1 -> MapUtils.getString(map1, "jan"))).collect(Collectors.toList());
+        Map<String,Object> map = new HashMap<>();
+        List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSorts = classicPriorityOrderMstAttrSortMapper.selectWKRankSort(companyCd, priorityOrderCd);
+        Map<String, String> attrMap = priorityOrderMstAttrSorts.stream()
+                .collect(Collectors.toMap(PriorityOrderMstAttrSortDto::getSort, PriorityOrderMstAttrSortDto::getName,
+                        (k1,k2)->k1, LinkedHashMap::new));
+        map.put("jan", "Jan");
+        map.put("janName", "商品名");
+        map.put("shelfPatternName", "該当棚パターン");
+        map.put("branchName", "店舗");
+        map.put("errmsg", "エラーメッセージ");
+        map.putAll(attrMap);
+        priorityOrderNotList.add(0,map);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderNotList);
     }
 

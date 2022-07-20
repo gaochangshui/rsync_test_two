@@ -169,7 +169,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         String companyCd = priorityOrderMstDto.getCompanyCd();
         //パラメータを2つのテーブルのデータに処理するinsert
         priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
-        try {
+        //try {
             logger.info("優先順位テーブルパラメータの保存：{}",priorityOrderMstDto);
             priorityOrderMstMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMstMapper.insert(priorityOrderMstDto,authorCd);
@@ -227,11 +227,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderPatternMapper.insert(priorityOrderPatternList);
             return ResultMaps.result(ResultEnum.SUCCESS);
-        } catch (Exception e) {
-            logger.info("エラーを報告:"+e);
-            logger.error("保存優先順位テーブルエラー："+e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        //} catch (Exception e) {
+        //    logger.info("エラーを報告:"+e);
+        //    logger.error("保存優先順位テーブルエラー："+e);
+        //    return ResultMaps.result(ResultEnum.FAILURE);
+        //}
     }
 
 
