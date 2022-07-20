@@ -1136,8 +1136,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             datas = priorityOrderDataService.calRank(datas, colNameList);
 
         }
-
-
+        if (!datas.isEmpty()) {
+        priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
+        priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,datas,authorCd);
+        }
         //店舗数の計算
         this.branchNumCalculation(datas,priorityOrderCd,colNameList);
 

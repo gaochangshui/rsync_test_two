@@ -187,7 +187,7 @@
     select distinct common_parts_data from planocycle.shelf_pattern_mst
     where shelf_pattern_cd in
         <foreach collection="shelfPatternList" separator="," item="item" open="(" close=")">
-          #{item}
+          #{item} :: integer
         </foreach>
 
   </select>

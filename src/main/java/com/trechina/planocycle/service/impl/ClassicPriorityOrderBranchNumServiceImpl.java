@@ -123,13 +123,29 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsDatum, companyCd);
             list.add(commonTableName);
         }
-        String table1 = list.get(0).getStoreInfoTable();
-        String table2 =null;
+        List<PriorityOrderCommodityVO> priorityOrderCommodityVOList = null;
+        String table1 = "";
+        String table2 = "";
         if (list.size()>1){
-             table2 = list.get(1).getStoreInfoTable();
+            if (list.get(0).getProdIsCore().equals("1000")){
+                table1 = list.get(0).getStoreInfoTable();
+                table2 = list.get(1).getStoreInfoTable();
+            }else {
+                table1 = list.get(1).getStoreInfoTable();
+                table2 = list.get(0).getStoreInfoTable();
+            }
+             priorityOrderCommodityVOList = priorityOrderCommodityMustMapper
+                    .selectMystInfo(companyCd,priorityOrderCd,table1,table2,janInfoTable);
+        }else {
+            if (list.get(0).getProdIsCore().equals("1000")){
+                table1 = list.get(0).getStoreInfoTable();
+            }else {
+                table2 = list.get(1).getStoreInfoTable();
+            }
+            priorityOrderCommodityVOList = priorityOrderCommodityMustMapper
+                    .selectMystInfo(companyCd,priorityOrderCd,table1,table2,janInfoTable);
         }
-        List<PriorityOrderCommodityVO> priorityOrderCommodityVOList = priorityOrderCommodityMustMapper
-                                                    .selectMystInfo(companyCd,priorityOrderCd,table1,table2,janInfoTable);
+
         logger.info("必須商品リストの戻り値を取得する：{}",priorityOrderCommodityVOList);
 
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderCommodityVOList);
