@@ -525,7 +525,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 janBranchNum.put("sale_forecast",saleForecast);
             }else {
                 Integer branchNum = workPriorityOrderPtsClassify.getJanBranchNum(ptsCd, objectMap);
-                logger.info("店铺数{}",branchNumNow.get("branch_num"));
+                logger.info("店舗数{}",branchNumNow.get("branch_num"));
                 Integer difference = branchNum - Integer.parseInt(branchNumNow.getOrDefault("branch_num",0).toString());
                 double saleForecast = difference  * Double.parseDouble(branchNumNow.getOrDefault("branch_amount_upd",0).toString()) / 1000;
                 BigDecimal bd = BigDecimal.valueOf(saleForecast);
@@ -1223,7 +1223,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         for (int i = 0; i < resultJanList.size(); i++) {
             Map<String, Object> curMap = resultJanList.get(i);
             if( !"99999999".equals(curMap.get("rank_upd").toString())){
-                //新规jan rank don't reorder
+                //新規jan rank don't reorder
                 curMap.put("rank_upd", i+1);
             }
             finalResultList.add(curMap);
@@ -1292,9 +1292,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Override
     public List<Map<String, Object>> calRank(List<Map<String, Object>> result, List<String> colNameList) {
         result = result.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, "rank_upd"))).collect(Collectors.toList());
-        //get 新规jan
+        //get 新規jan
         List<Map<String, Object>> janNewList = result.stream().filter(map -> "-1".equals(map.get("rank").toString())).collect(Collectors.toList());
-        //新规jan group by 階層
+        //新規jan group by 階層
         Map<String, List<Map<String, Object>>> janNewMap = janNewList.stream()
                 .collect(Collectors.groupingBy(map -> colNameList.stream().map(col->map.get(col).toString()).collect(Collectors.joining(",")),
                         LinkedHashMap::new, Collectors.toList()));

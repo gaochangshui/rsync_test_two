@@ -13,15 +13,17 @@ import java.util.Map;
 public interface ClassicPriorityOrderDataService {
     /**
      * 初期取得優先順位テーブルデータ
+     *
      * @param priorityOrderDataDto
      * @return
      */
-    Map<String,Object> getPriorityOrderData(PriorityOrderDataDto priorityOrderDataDto);
+    Map<String, Object> getPriorityOrderData(PriorityOrderDataDto priorityOrderDataDto);
 
     Map<String, String> checkIsJanNew(List<String> janList, String company, Integer priorityOrderCd, String tableName);
 
     /**
      * ptsアップロード後のソート+優先順位表反応ボタン抽出データ
+     *
      * @param company
      * @param priorityOrderCd
      * @return
@@ -29,7 +31,7 @@ public interface ClassicPriorityOrderDataService {
     Map<String, Object> getUploadPriorityOrderData(String company, Integer priorityOrderCd);
 
     @Transactional(rollbackFor = Exception.class)
-    Map<String, Object> uploadPriorityOrderData(String taiCd, String tanaCd,MultipartFile file, String company, Integer priorityOrderCd,
+    Map<String, Object> uploadPriorityOrderData(String taiCd, String tanaCd, MultipartFile file, String company, Integer priorityOrderCd,
                                                 String attrStr);
 
     void doJanCut(List<DownloadDto> cutJanList, String company, Integer priorityOrderCd);
@@ -39,29 +41,33 @@ public interface ClassicPriorityOrderDataService {
 
     /**
      * rank属性ソート+優先順位表反応ボタン抽出データ
+     *
      * @param colNameList
      * @return
      */
-    Map<String,Object> getPriorityOrderDataUpd(List<String> colNameList,Integer priorityOrderCd,String companyCd,Integer delFlg);
+    Map<String, Object> getPriorityOrderDataUpd(List<String> colNameList, Integer priorityOrderCd, String companyCd, Integer delFlg);
 
-    Map<String,Object> getPriorityOrderListInfo(String companyCd,Integer priorityOrderCd,List<String> colNameList);
+    Map<String, Object> getPriorityOrderListInfo(String companyCd, Integer priorityOrderCd, List<String> colNameList);
 
     List<Map<String, Object>> calRank(List<Map<String, Object>> result, List<String> colNameList);
+
     /**
      * 属性列名の名前を取得
+     *
      * @param enterpriseAxisDto
      * @return
      */
-    Map<String,Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto);
+    Map<String, Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto);
 
     void downloadForCsv(DownloadSortDto downloadDto, HttpServletResponse response) throws IOException;
 
-    Map<String, Object> getPriorityOrderDataForDb(String[] jans, Map<String,String> attrSortMap);
+    Map<String, Object> getPriorityOrderDataForDb(String[] jans, Map<String, String> attrSortMap);
 
     Map<String, Object> getPatternAndName(Integer productPowerCd);
 
     /**
      * 取得優先順位テーブルデータの編集
+     *
      * @param priorityOrderDataDto
      * @return
      */

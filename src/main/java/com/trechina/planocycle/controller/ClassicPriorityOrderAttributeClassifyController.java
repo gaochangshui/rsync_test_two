@@ -17,12 +17,24 @@ import java.util.Map;
 public class ClassicPriorityOrderAttributeClassifyController {
     @Autowired
     private ClassicPriorityOrderAttributeClassifyService priorityOrderAttributeClassifyService;
+
+    /**
+     *janのすべての属性の分類ソートを取得する
+     * @param downloadSortDto
+     * @return
+     */
     @PostMapping("/getClassifyList")
-    public Map<String,Object> getClassifyList(@RequestBody DownloadSortDto downloadSortDto){
+    public Map<String, Object> getClassifyList(@RequestBody DownloadSortDto downloadSortDto) {
         return priorityOrderAttributeClassifyService.getClassifyList(downloadSortDto);
     }
+
+    /**
+     * janのすべての属性の分類順序を変更する
+     * @param classifyList
+     * @return
+     */
     @PostMapping("setClassifyList")
-    public Map<String,Object> setClassifyList(@RequestBody List<PriorityOrderAttributeClassify> classifyList){
+    public Map<String, Object> setClassifyList(@RequestBody List<PriorityOrderAttributeClassify> classifyList) {
         return priorityOrderAttributeClassifyService.setClassifyList(classifyList);
     }
 }

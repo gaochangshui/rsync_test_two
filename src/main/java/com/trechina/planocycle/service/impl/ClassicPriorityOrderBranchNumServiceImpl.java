@@ -6,6 +6,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
@@ -69,43 +70,6 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     private cgiUtils cgiUtil;
 
     public static final Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-    /**
-     *smart処理後の必須+不可商品の結菓セットを取得し、保存
-     *
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public Map<String, Object> getPriorityOrderBranchNum(String companyCd, Integer priorityOrderCd,String shelfPatternCd) {
-        String uuid = UUID.randomUUID().toString();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String pathInfo = resourceBundle.getString("PriorityOrderData");
-        PriorityOrderDataForCgiDto priorityOrderDataForCgiDto = new PriorityOrderDataForCgiDto();
-        priorityOrderDataForCgiDto.setCompany(companyCd);
-        priorityOrderDataForCgiDto.setShelfPatternNo(shelfPatternCd);
-        priorityOrderDataForCgiDto.setPriorityNO(priorityOrderCd);
-        priorityOrderDataForCgiDto.setGuid(uuid);
-        priorityOrderDataForCgiDto.setMode("priority_jan_storecnt");
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("priority_を呼び出します。jan_storecntのパラメータ{}",priorityOrderDataForCgiDto);
-
-        String result = cgiUtil.postCgi(pathInfo, priorityOrderDataForCgiDto, tokenInfo);
-        logger.info("priority_jan_storecnt処理結菓{}",result);
-        String queryPath = resourceBundle.getString("TaskQuery");
-        // 帶着taskid，再次請求cgiつかむ取運行ステータス/数据
-        Map<String,Object> data = cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-        logger.info("priority_を呼び出します。jan_storecntの結菓{}" ,data);
-        JSONArray jsonArray = JSON.parseArray(String.valueOf(data.get("data")));
-        logger.info("jsonを回した後：{}",jsonArray.toString());
-        if (!jsonArray.isEmpty()){
-            priorityOrderCommodityMustMapper.deletePriorityBranchNum(companyCd,priorityOrderCd);
-
-            priorityOrderCommodityMustMapper.insertPriorityBranchNum(jsonArray,companyCd,priorityOrderCd);
-        }
-        return ResultMaps.result(ResultEnum.SUCCESS);
-    }
 
     /**
      * 必須商品リストの取得
@@ -161,7 +125,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     public Map<String, Object> setPriorityOrderCommodityMust(List<PriorityOrderCommodityMust> priorityOrderCommodityMust) {
         logger.info("必須商品リストパラメータを保存する：{}",priorityOrderCommodityMust);
 //取得したパラメータは1行目に企業と順位テーブルcdがあるだけで、パラメータを巡回し、すべての行に値を割り当てる必要があります。
-//        try{
+        try{
             String companyCd = priorityOrderCommodityMust.get(0).getCompanyCd();
             Integer priorityOrderCd = priorityOrderCommodityMust.get(0).getPriorityOrderCd();
             dataConverUtils dataConverUtil = new dataConverUtils();
@@ -249,10 +213,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
            else{
                 return ResultMaps.result(ResultEnum.SUCCESS);
            }
-        //} catch (Exception e) {
-        //    logger.error("保存必須商品リスト：",e);
-        //    return ResultMaps.result(ResultEnum.FAILURE);
-        //}
+        } catch (Exception e) {
+            logger.error("保存必須商品リスト：",e);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
     }
 
 
@@ -277,7 +241,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             logger.info("不可商品リスト処理後のパラメータを保存する：{}",not);
             // 査詢企業的店cd是几位数
             String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd);
-            Integer branchLen = branchCd.length();
+            int branchLen = branchCd.length();
             // 遍暦not 給店cd補0
             not.forEach(item->{
                 item.setBranchOrigin(item.getBranch());
@@ -445,13 +409,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         priorityOrderDataService.getPriorityOrderListInfo(companyCd,priorityOrderCd,attrList);
         List<Map<String, Object>> priorityOrderAttr = classicPriorityOrderDataMapper.getPriorityOrderMustAttr( attrList,mustTable,priorityOrderCd);
         for (Map<String, Object> objectMap : priorityOrderAttr) {
-            objectMap.put("janName",objectMap.get("sku"));
+            objectMap.put(MagicString.JAN_NAME,objectMap.get("sku"));
             objectMap.remove("sku");
             objectMap.put("__children",new ArrayList<>());
         }
         List<Map<String, Object>> priorityOrderNotList = priorityOrderCommodityNotMapper.getPriorityOrderNotList(companyCd, priorityOrderCd, attrList);
         for (Map<String, Object> objectMap : priorityOrderNotList) {
-            objectMap.put("janName",objectMap.get("sku"));
+            objectMap.put(MagicString.JAN_NAME,objectMap.get("sku"));
             objectMap.remove("sku");
             List<PriorityOrderBranchNumDto> children = priorityOrderCommodityNotMapper.getBranchAndPattern(objectMap.get("jan").toString(), priorityOrderCd);
             objectMap.put("__children",children);

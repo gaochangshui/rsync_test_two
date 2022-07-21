@@ -15,16 +15,6 @@ import java.util.Map;
 public class ClassicPriorityOrderBranchNumController {
     @Autowired
     private ClassicPriorityOrderBranchNumService priorityOrderBranchNumService;
-    /**
-     * smart処理後の必須+不可商品の結菓セットを取得し、保存
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
-    @GetMapping("/getPriorityOrderBranchNum")
-    public Map<String,Object> getPriorityOrderBranchNum(String companyCd,Integer priorityOrderCd,String shelfPatternCd){
-        return  priorityOrderBranchNumService.getPriorityOrderBranchNum(companyCd,priorityOrderCd,shelfPatternCd);
-    }
 
     /**
      * 必須商品リストの取得

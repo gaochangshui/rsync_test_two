@@ -297,15 +297,15 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
 
         for (int i = 0; i < jsonArray.size(); i++) {
             Map item =  jsonArray.get(i);
-            // 构造jannew主表的参数
+            // jannewマスターテーブルを作成するためのパラメータ
             if (item.get("janNew") != null) {
                 janNew(janNewList, companyCd, priorityOrderCd,  jsonArray.get(i));
-                // 构造jan动态属性列的参数
+                // jan動的属性列を構築するためのパラメータ
                 janAttr(janAttributeList, companyCd, priorityOrderCd,  jsonArray.get(i));
             }
         }
-        logger.info("保存新规商品list主表处理完后的参数：" + janNewList.toString());
-        logger.info("保存新规商品list动态属性列处理完后的参数：" + janAttributeList.toString());
+        logger.info("新規商品リストマスターテーブルの処理後のパラメータを保存する：" + janNewList.toString());
+        logger.info("新規商品リスト動的属性列の処理後のパラメータを保存する：" + janAttributeList.toString());
         List<String> janNews = janNewList.stream().map(ClassicPriorityOrderJanNew::getJanNew).collect(Collectors.toList());
         if (!janNews.isEmpty()) {
             List<Jans> janNewMst = priorityOrderJanNewMapper.getJanNewMst(janNews, companyCd);
@@ -320,7 +320,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
             }
         }
 
-        //全插入
+        //すべて挿入
         if (!janNewList.isEmpty()) {
             priorityOrderJanNewMapper.insert(janNewList);
             priorityOrderJanAttributeMapper.insert(janAttributeList);

@@ -8,13 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ClassicPriorityOrderBranchNumService {
-    /**
-     * smart処理後の必須+不可商品の結菓セットを取得し、保存
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
-    Map<String,Object> getPriorityOrderBranchNum(String companyCd,Integer priorityOrderCd,String shelfPatternCd);
+
 
     /**
      * 必須商品リストの取得
