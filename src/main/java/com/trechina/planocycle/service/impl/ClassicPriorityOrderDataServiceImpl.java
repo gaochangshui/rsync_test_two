@@ -142,13 +142,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             priorityOrderPattern.setShelfPatternCd(Integer.valueOf(shelfPatternList[i]));
             priorityOrderPatternList.add(priorityOrderPattern);
         }
-        logger.info("保存优先顺位表pattert表要保存的数据："+priorityOrderPatternList.toString());
+        logger.info("優先順位テーブルpattertテーブルが保存するデータを保存するには{}：",priorityOrderPatternList);
         priorityOrderPatternMapper.deleteWork(priorityOrderDataDto.getPriorityOrderCd());
         priorityOrderPatternMapper.insertWork(priorityOrderPatternList);
 
-        // 初始化数据
+        // 初期化データ
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, priorityOrderDataDto.getShelfPatternCd());
-        //只是用品名2
+        //ただの用品名2
         String tableName = "\"1000\".prod_0000_jan_info";
 
         Set<Map.Entry<String, Object>> entrySet = priorityOrderDataDto.getAttrList().entrySet();
@@ -408,7 +408,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     public Map<String, Object> editPriorityOrderData(PriorityOrderDataDto priorityOrderDataDto) {
         String companyCd = priorityOrderDataDto.getCompanyCd();
         Integer priorityOrderCd = priorityOrderDataDto.getPriorityOrderCd();
-
+            logger.info("取得優先順位テーブルデータの編集パラメータは:{}",priorityOrderDataDto);
+        priorityOrderDataDto.setFlag(0);
         if (priorityOrderDataDto.getFlag()==0) {
             //最終表をテンポラリ・テーブルに戻す
             Date date = new Date();
@@ -480,12 +481,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         list.add(patternOrProduct);
         list.add(workData);
         list.add(attrValueList);
-
+        logger.info("取得優先順位テーブルデータの編集リターンマッチ:{}",list);
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 
     @Override
     public void setPtsClassify(List<String> colNameList, String shelfPatternCd, String companyCd, Integer priorityOrderCd) {
+        logger.info("pts classifyパラメータの保存:{},{},{}",colNameList,shelfPatternCd,priorityOrderCd);
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, shelfPatternCd);
         workPriorityOrderPtsClassify.deleteWork(companyCd,priorityOrderCd);
         workPriorityOrderPtsClassify.setWorkPtsClassify(companyCd,priorityOrderCd,shelfPtsData,colNameList);
@@ -1124,9 +1126,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> getPriorityOrderDataUpd(List<String> colNameList, Integer priorityOrderCd,String companyCd,Integer delFlg) {
-        if (delFlg==null) {
-            delFlg = 0;
-        }
         String authorCd = session.getAttribute("aud").toString();
         claasicPriorityOrderAttributeClassifyMapper.delete(priorityOrderCd);
         classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd,priorityOrderCd);
@@ -1146,14 +1145,14 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             datas = priorityOrderDataService.calRank(datas, colNameList);
 
         }
+        
         if (!datas.isEmpty()) {
-        priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
-        priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,datas,authorCd);
-        }
-        //店舗数の計算
-        this.branchNumCalculation(datas,priorityOrderCd,colNameList);
+            //データを保存してください
+            priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
+            priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,datas,authorCd);
 
-        if (!datas.isEmpty()) {
+            this.branchNumCalculation(datas,priorityOrderCd,colNameList);
+            //店舗数の計算
             priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
             priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,datas,authorCd);
             datas = priorityOrderDataMapper.getData(priorityOrderCd,colNameList);

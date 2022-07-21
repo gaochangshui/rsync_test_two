@@ -131,7 +131,6 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
     public Map<String, Object> setPriorityOrderCatePak(JSONArray jsonArray) {
         try {
             logger.info("保存カテパケ拡縮参数:"+jsonArray);
-            //获取参数中第一行的企业和优先顺位号
 
             String companyCd = String.valueOf(((HashMap) jsonArray.get(0)).get("companyCd"));
             Integer priorityOrderCd = Integer.parseInt(((HashMap) jsonArray.get(0)).get("priorityOrderCd").toString());
@@ -145,12 +144,10 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                 map.remove("similarBtn");
             }
 
-            // 全删
             priorityOrderCatepakMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-            // 遍历前端给的jsonArray 构筑カテパケ拡縮表和关联的动态属性列表的实体类字符串
             jsonArray.forEach(item->{
-                // 构造主表的参数
+
                 if (((HashMap) item).containsKey("rank") && ((HashMap) item).get("rank")!=null && !"".equals(((HashMap) item).get("rank"))) {
                     PriorityOrderCatepak priorityOrderCatepak = new PriorityOrderCatepak();
                     if("".equals(((HashMap<?, ?>) item).get("branchNum"))){
@@ -159,16 +156,16 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                     priorityOrderCatepak.setCompanyCd(companyCd);
                     priorityOrderCatepak.setPriorityOrderCd(priorityOrderCd);
                     priorityOrderCatepak.setRank(Integer.valueOf(((HashMap) item).get("rank").toString()));
-                    // 写入数据重新取号，返回自增列id，实体类自动接收
+                    // データを書き込んで番号を取り直し、自増列IDを返し、エンティティークラスは自動的に受信する
                     priorityOrderCatepakMapper.insert(priorityOrderCatepak);
-                    logger.info("保存カテパケ拡縮返回值:{}" , priorityOrderCatepak);
+                    logger.info("タテパケ拡大戻り値の保存:{}" , priorityOrderCatepak);
                     catePakAttr(companyCd, priorityOrderCd, (HashMap) item, priorityOrderCatepak);
                 }
 
             });
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
-            logger.info("保存カテパケ拡縮报错:"+e);
+            logger.info("カテパケ拡大縮小エラーの保存:"+e);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
