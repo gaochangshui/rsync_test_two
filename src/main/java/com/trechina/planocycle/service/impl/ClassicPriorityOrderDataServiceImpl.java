@@ -1145,7 +1145,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             datas = priorityOrderDataService.calRank(datas, colNameList);
 
         }
-        
+
         if (!datas.isEmpty()) {
             //データを保存してください
             priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
