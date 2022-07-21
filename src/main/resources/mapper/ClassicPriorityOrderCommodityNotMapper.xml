@@ -129,7 +129,7 @@
     order by nots.shelf_pattern_cd,branch
   </select>
   <select id="getExistCommodityNotBranchList" resultType="com.trechina.planocycle.entity.vo.CommodityBranchVO">
-    select nots.shelf_pattern_cd shelf_pattern_cd, coalesce(shelf_pattern_name, '') shelf_pattern_name, concat(branchs.branch_cd, '_', branch_name) branch_name, before_flag,flag
+    select nots.shelf_pattern_cd shelf_pattern_cd, coalesce(shelf_pattern_name, '') shelf_pattern_name,branchs.branch_cd  branch, concat(branchs.branch_cd, '_', branch_name) branch_name, before_flag,flag
     from priority.work_priority_order_commodity_not nots
            left join planocycle.shelf_pattern_mst patternmst
                on patternmst.shelf_pattern_cd=nots.shelf_pattern_cd

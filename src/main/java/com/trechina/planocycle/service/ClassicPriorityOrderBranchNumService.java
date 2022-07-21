@@ -71,14 +71,6 @@ public interface ClassicPriorityOrderBranchNumService {
     Integer delPriorityOrderBranchNumInfo(String companyCd,Integer priorityOrderCd);
 
     /**
-     * 不可商品が他のmstと重複しているかどうかをチェック
-     * @param priorityOrderCommodityNot
-     * @return
-     */
-    Map<String,Object> checkIsJanCommodityNot(List<PriorityOrderCommodityNot> priorityOrderCommodityNot);
-
-    List<String> checkIsJanCommodityMust(List<PriorityOrderCommodityMust> priorityOrderCommodityMust);
-    /**
      * 必須リスト
      * @param companyCd
      * @return

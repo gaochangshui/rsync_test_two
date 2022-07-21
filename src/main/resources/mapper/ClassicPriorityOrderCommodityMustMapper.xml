@@ -116,7 +116,23 @@
          left join (select "pts_cd", max(jan)jan from planocycle.shelf_pts_data_jandata group by "pts_cd", jan) jandata on jandata.pts_cd=ptsdata."id" and jandata.jan=#{jan}
     where priority_order_cd=#{priorityOrderCd};
   </insert>
-  <select id="selectMustJan" resultType="map">
+    <insert id="insertSurplusCommodityBranch">
+      insert into priority.${tableName}
+      select #{companyCd}, #{priorityOrderCd}, branch_cd,#{jan}, patternmst.shelf_pattern_cd, 0,
+      case when jandata.jan is null then 0 else 1 end as before_flag from priority.work_priority_order_pattern pattern
+      inner join planocycle.shelf_pattern_mst patternmst on pattern.shelf_pattern_cd=patternmst.shelf_pattern_cd
+      inner join planocycle.shelf_pattern_branch branch on branch.shelf_pattern_cd=pattern.shelf_pattern_cd
+      inner join masterdb.branchs branchs on (branchs.branch_cd = branch.branch or branchs.branch_cd=split_part(branch.branch, '_', 2))
+      and branchs.company_cd=#{companyCd}
+      inner join planocycle.shelf_pts_data ptsdata on ptsdata.shelf_pattern_cd=patternmst.shelf_pattern_cd
+      left join (select "pts_cd", max(jan)jan from planocycle.shelf_pts_data_jandata group by "pts_cd", jan) jandata on jandata.pts_cd=ptsdata."id" and jandata.jan=#{jan}
+      where priority_order_cd=#{priorityOrderCd}
+      and concat(branch_cd,patternmst.shelf_pattern_cd) not in
+      <foreach collection="existCommodityBranchList" item="item" separator="," open="(" close=")" >
+        #{item.branch} || #{item.shelfPatternCd}
+      </foreach>
+    </insert>
+    <select id="selectMustJan" resultType="map">
     select jan_new,branch
     from priority.priority_order_commodity_must comm_must
     where not exists(select * from priority.priority_order_commodity_not comm_not
@@ -175,7 +191,7 @@
     order by must.shelf_pattern_cd,branch
   </select>
   <select id="getExistCommodityMustBranchList" resultType="com.trechina.planocycle.entity.vo.CommodityBranchVO">
-    select must.shelf_pattern_cd shelf_pattern_cd, coalesce(shelf_pattern_name, '') shelf_pattern_name, concat(branchs.branch_cd, '_', branch_name) branch_name, before_flag,flag
+    select must.shelf_pattern_cd shelf_pattern_cd, coalesce(shelf_pattern_name, '') shelf_pattern_name, branchs.branch_cd  branch,concat(branchs.branch_cd, '_', branch_name) branch_name, before_flag,flag
     from priority.work_priority_order_commodity_must must
            left join planocycle.shelf_pattern_mst patternmst
                on patternmst.shelf_pattern_cd=must.shelf_pattern_cd

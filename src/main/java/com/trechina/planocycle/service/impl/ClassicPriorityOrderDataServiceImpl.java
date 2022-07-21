@@ -409,7 +409,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         String companyCd = priorityOrderDataDto.getCompanyCd();
         Integer priorityOrderCd = priorityOrderDataDto.getPriorityOrderCd();
             logger.info("取得優先順位テーブルデータの編集パラメータは:{}",priorityOrderDataDto);
-        priorityOrderDataDto.setFlag(0);
+            if (priorityOrderDataDto.getFlag()==null){
+                priorityOrderDataDto.setFlag(0);
+            }
         if (priorityOrderDataDto.getFlag()==0) {
             //最終表をテンポラリ・テーブルに戻す
             Date date = new Date();

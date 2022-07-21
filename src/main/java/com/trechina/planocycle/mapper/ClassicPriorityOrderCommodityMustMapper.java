@@ -50,4 +50,5 @@ public interface ClassicPriorityOrderCommodityMustMapper {
 
     void delCommodityMustBranch(CommodityBranchPrimaryKeyVO commodityBranchPrimaryKeyVO);
 
+    void insertSurplusCommodityBranch(String companyCd, Integer priorityOrderCd, String jan, String tableName, List<CommodityBranchVO> existCommodityBranchList);
 }
