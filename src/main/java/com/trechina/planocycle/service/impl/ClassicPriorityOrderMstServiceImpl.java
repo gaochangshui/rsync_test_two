@@ -156,7 +156,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) {
-        logger.info("優先順位テーブルパラメータの保存"+priorityOrderMstDto);
+        logger.info("優先順位テーブルパラメータの保存{}",priorityOrderMstDto);
         String authorCd = session.getAttribute("aud").toString();
         // チェック優先順位テーブル名
         Integer count = priorityOrderPatternMapper.selectByPriorityOrderName(priorityOrderMstDto.getCompanyCd(),

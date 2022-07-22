@@ -410,7 +410,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         Integer priorityOrderCd = priorityOrderDataDto.getPriorityOrderCd();
             logger.info("取得優先順位テーブルデータの編集パラメータは:{}",priorityOrderDataDto);
             if (priorityOrderDataDto.getFlag()==null){
-                priorityOrderDataDto.setFlag(0);
+                priorityOrderDataDto.setFlag(1);
             }
         if (priorityOrderDataDto.getFlag()==0) {
             //最終表をテンポラリ・テーブルに戻す
@@ -1126,7 +1126,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
      * @return
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> getPriorityOrderDataUpd(List<String> colNameList, Integer priorityOrderCd,String companyCd,Integer delFlg) {
         String authorCd = session.getAttribute("aud").toString();
         claasicPriorityOrderAttributeClassifyMapper.delete(priorityOrderCd);

@@ -304,8 +304,8 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
                 janAttr(janAttributeList, companyCd, priorityOrderCd,  jsonArray.get(i));
             }
         }
-        logger.info("新規商品リストマスターテーブルの処理後のパラメータを保存する：" + janNewList.toString());
-        logger.info("新規商品リスト動的属性列の処理後のパラメータを保存する：" + janAttributeList.toString());
+        logger.info("新規商品リストマスターテーブルの処理後のパラメータを保存する：{}" , janNewList);
+        logger.info("新規商品リスト動的属性列の処理後のパラメータを保存する：{}" , janAttributeList);
         List<String> janNews = janNewList.stream().map(ClassicPriorityOrderJanNew::getJanNew).collect(Collectors.toList());
         if (!janNews.isEmpty()) {
             List<Jans> janNewMst = priorityOrderJanNewMapper.getJanNewMst(janNews, companyCd);
