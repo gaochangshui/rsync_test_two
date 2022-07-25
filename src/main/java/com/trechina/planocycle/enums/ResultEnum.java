@@ -1,7 +1,5 @@
 package com.trechina.planocycle.enums;
 
-import com.trechina.planocycle.utils.ResultMaps;
-
 public enum ResultEnum {
     SUCCESS(101,"成功"),
     SUCCESS_BUT_NEW_JAN(102,"成功"),
@@ -15,6 +13,8 @@ public enum ResultEnum {
     NAMEISEXISTS(30001,"名称已経存在"),
     NOTDATAS(30002,"没有数据"),
     JANNOTESISTS(30003,"jan不存在"),
+    BRANCHNOTESISTS(30004,"該当優先順位表に存在しない店舗情報が含まれています。"),
+
     FILEVERSIONFAILURE(40001,"文件版本不はい"),
     FILECONTENTFAILURE(40002,"文件内容不はい"),
     DATAISTOOLARGE(40003,"数据量を過ぎて大"),
@@ -28,6 +28,8 @@ public enum ResultEnum {
     HEIGHT_NOT_ENOUGH(60001,"height not enough"),
 
     UPDATE_RANK(40015,"変更後Rankで取込してください。");
+
+
 
     private Integer code;
     private String msg;

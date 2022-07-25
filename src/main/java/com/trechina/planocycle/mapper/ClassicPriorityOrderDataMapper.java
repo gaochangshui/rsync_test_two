@@ -122,4 +122,6 @@ public interface ClassicPriorityOrderDataMapper {
     Map<String,Object> getJanBranchNum(Integer priorityOrderCd, String janOld,String janNew);
 
     List<Map<String, Object>> getDataNotExistNewJan(Integer priorityOrderCd);
+
+    List<Map<String, Object>> getPriorityOrderMustAttr(List<String> attrList, String branchNum, Integer priorityOrderCd);
 }

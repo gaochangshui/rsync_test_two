@@ -16,6 +16,7 @@ import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
+import com.trechina.planocycle.utils.CommonUtil;
 import com.trechina.planocycle.utils.ResultMaps;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import org.slf4j.Logger;
@@ -559,7 +560,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             }.getType());
             List<Map<String, Object>> janMapList = new Gson().fromJson(new Gson().toJson(janList), new TypeToken<List<Map<String, Object>>>() {
             }.getType());
-            List<Map<String, Object>> mapList = janNewService.janSort(janMapList, janNewMapList, "skuRank");
+            List<Map<String, Object>> mapList = CommonUtil.janSort(janMapList, janNewMapList, "skuRank");
             resultData = new Gson().fromJson(new Gson().toJson(mapList), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
             }.getType());
         }

@@ -14,7 +14,8 @@ public class TableNameDto {
     @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy/MM/dd")
     private Date createTime;
 
-
     private String authorName;
+
+    private Boolean flag;
 
 }

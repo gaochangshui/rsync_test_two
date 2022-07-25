@@ -1,7 +1,9 @@
 package com.trechina.planocycle.constant;
 
 public class MagicString {
-    private MagicString(){}
+    private MagicString() {
+    }
+
     public static final String CORE_COMPANY = "core_company";
 
     public static final String FIRST_CLASS_CD = "0000";
@@ -41,7 +43,7 @@ public class MagicString {
     /**
      * 棚変更：高さ変更
      */
-    public static final String MSG_HEIGHT_CHANGE= "高さ変更 元：{height}mm";
+    public static final String MSG_HEIGHT_CHANGE = "高さ変更 元：{height}mm";
     /**
      * 棚変更：棚新規作成
      */
@@ -93,20 +95,24 @@ public class MagicString {
     public static final String DELETE_LIST = "deleteList";
     public static final String NEW_LIST = "newList";
 
-    public static final String PTS_NAME="pts_name";
+    public static final String PTS_NAME = "pts_name";
 
     public static final String DEL_FLAG = "del_flg";
 
     public static final String SMALLS = "smalls";
+
     public static final String SMALLS_INDEX = "smallsIndex";
+
     public static final String SMALLS_JAN = "smallsJan";
+
     public static final String BIG_LAST_INDEX = "bigLastIndex";
+
     public static final String BRANCH_NUM = "branch_num";
     public static final String BRANCH_AMOUNT = "branch_amount";
 
     public static final String TANAPOSITION_CD = "tanaposition_cd";
 
-    public static  final String PTS_VERSION = "Ｖ１．０";
+    public static final String PTS_VERSION = "Ｖ１．０";
 
     /**
      * 必須区分

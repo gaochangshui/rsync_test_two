@@ -2,18 +2,13 @@ package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
+import com.trechina.planocycle.entity.vo.CommodityBranchPrimaryKeyVO;
 
 import java.util.List;
 import java.util.Map;
 
 public interface ClassicPriorityOrderBranchNumService {
-    /**
-     * smart処理後の必須+不可商品の結菓セットを取得し、保存
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
-    Map<String,Object> getPriorityOrderBranchNum(String companyCd,Integer priorityOrderCd,String shelfPatternCd);
+
 
     /**
      * 必須商品リストの取得
@@ -70,11 +65,56 @@ public interface ClassicPriorityOrderBranchNumService {
     Integer delPriorityOrderBranchNumInfo(String companyCd,Integer priorityOrderCd);
 
     /**
-     * 不可商品が他のmstと重複しているかどうかをチェック
-     * @param priorityOrderCommodityNot
+     * 必須リスト
+     * @param companyCd
      * @return
      */
-    Map<String,Object> checkIsJanCommodityNot(List<PriorityOrderCommodityNot> priorityOrderCommodityNot);
+    Map<String, Object> getPriorityOrderMustList(String companyCd, Integer priorityOrderCd);
+    /**
+     * リスト不可
+     * @param companyCd
+     * @return
+     */
+    Map<String, Object> getPriorityOrderNotList(String companyCd, Integer priorityOrderCd);
+    /**
+     * 詳細が必要です
+     * @param companyCd
+     * @param priorityOrderCd
+     * @param jan
+     * @return
+     */
+    Map<String, Object> getCommodityMustBranchList(String companyCd, Integer priorityOrderCd, String jan);
+    /**
+     * 詳細不可
+     * @param companyCd
+     * @param priorityOrderCd
+     * @param jan
+     * @return
+     */
+    Map<String, Object> getCommodityNotBranchList(String companyCd, Integer priorityOrderCd, String jan);
 
-    List<String> checkIsJanCommodityMust(List<PriorityOrderCommodityMust> priorityOrderCommodityMust);
+    /**
+     * 詳細保存不可
+     * @param companyCd,priorityOrderCd,jan,commodityList
+     * @return
+     */
+    Map<String, Object> saveCommodityNotBranchList(String companyCd, Integer priorityOrderCd, String jan, String commodityList);
+    /**
+     * 詳細を保存する必要があります
+     * @param companyCd,priorityOrderCd,jan,commodityList
+     * @return
+     */
+    Map<String, Object> saveCommodityMustBranchList(String companyCd, Integer priorityOrderCd, String jan, String commodityList);
+    /**
+     * 詳細を削除する必要があります
+     * @param commodityBranchPrimaryKeyVO
+     * @return
+     */
+    Map<String, Object> delCommodityMustBranch(CommodityBranchPrimaryKeyVO commodityBranchPrimaryKeyVO);
+    /**
+     * 詳細削除不可
+     * @param commodityBranchPrimaryKeyVO
+     * @return
+     */
+    Map<String, Object> delCommodityNotBranch(CommodityBranchPrimaryKeyVO commodityBranchPrimaryKeyVO);
 }

@@ -8,8 +8,16 @@ public class PriorityOrderCommodityMust {
 
     private Integer priorityOrderCd;
 
+    private String branchOrigin;
+
     private String branch;
 
     private String jan;
+
+    private Integer shelfPatternCd;
+
+    private Integer beforeFlag;
+
+    private Integer flag;
 
 }

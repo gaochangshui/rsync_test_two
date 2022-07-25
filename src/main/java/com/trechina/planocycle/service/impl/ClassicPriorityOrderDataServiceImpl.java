@@ -45,6 +45,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -126,8 +127,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         String companyCd = priorityOrderDataDto.getCompanyCd();
         Integer priorityPowerCd = priorityOrderDataDto.getPriorityOrderCd();
         String authorCd = session.getAttribute("aud").toString();
+
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
         classicPriorityOrderMstMapper.deleteWork(priorityOrderDataDto.getPriorityOrderCd());
-        classicPriorityOrderMstMapper.setWork(priorityOrderDataDto,authorCd);
+        classicPriorityOrderMstMapper.setWork(priorityOrderDataDto,authorCd,simpleDateFormat.format(date));
 
         List<PriorityOrderPattern> priorityOrderPatternList = new ArrayList<>();
         String[] shelfPatternList = priorityOrderDataDto.getShelfPatternCd().split(",");
@@ -138,13 +142,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             priorityOrderPattern.setShelfPatternCd(Integer.valueOf(shelfPatternList[i]));
             priorityOrderPatternList.add(priorityOrderPattern);
         }
-        logger.info("保存优先顺位表pattert表要保存的数据："+priorityOrderPatternList.toString());
+        logger.info("優先順位テーブルpattertテーブルが保存するデータを保存するには{}：",priorityOrderPatternList);
         priorityOrderPatternMapper.deleteWork(priorityOrderDataDto.getPriorityOrderCd());
         priorityOrderPatternMapper.insertWork(priorityOrderPatternList);
 
-        // 初始化数据
+        // 初期化データ
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, priorityOrderDataDto.getShelfPatternCd());
-        //只是用品名2
+        //ただの用品名2
         String tableName = "\"1000\".prod_0000_jan_info";
 
         Set<Map.Entry<String, Object>> entrySet = priorityOrderDataDto.getAttrList().entrySet();
@@ -205,11 +209,25 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         if (datas.isEmpty()){
             return ResultMaps.result(ResultEnum.SIZEISZERO);
         }
+        for (Map<String, Object> data : datas) {
+            BigDecimal branch_amount_upd = BigDecimal.valueOf(Double.parseDouble(data.get("branch_amount_upd").toString()));
+            branch_amount_upd = branch_amount_upd.setScale(0,RoundingMode.HALF_UP);
+            data.put("branch_amount_upd",branch_amount_upd);
+
+            BigDecimal branch_amount = BigDecimal.valueOf(Double.parseDouble(data.get("branch_amount").toString()));
+            branch_amount = branch_amount.setScale(0,RoundingMode.HALF_UP);
+            data.put("branch_amount",branch_amount);
+
+            BigDecimal unit_price = BigDecimal.valueOf(Double.parseDouble(data.get("unit_price").toString()));
+            unit_price = unit_price.setScale(0,RoundingMode.HALF_UP);
+            data.put("unit_price",unit_price);
+        }
+
         priorityOrderDataMapper.deleteWorkData(companyCd,priorityPowerCd);
         priorityOrderDataMapper.insertWorkData(companyCd,priorityPowerCd,datas,authorCd);
         for (Map<String, Object> data : datas) {
             data.remove("goods_rank");
-            if (Integer.valueOf(data.get("rank").toString())==99999998){
+            if (Integer.parseInt(data.get("rank").toString())==99999998){
                 data.put("rank","_");
                 data.put("rank_upd","_");
                 data.put("rank_prop","_");
@@ -221,21 +239,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
     }
 
-    private void commParseJsonArray(JSONArray datas, String company, Integer priorityNO){
-        List<ClassicPriorityOrderJanNew> janNewList = priorityOrderJanNewMapper.selectJanNameFromJanNewByCompanyAndCd(company, priorityNO);
-        // 有新規Jan的時候，将新規JAN中名字為'_'的替換成新規JAN表中的数据。
-        if (!janNewList.isEmpty()) {
-            for (int i = 0; i < datas.size(); i++) {
-                JSONObject obj = datas.getJSONObject(i);
-                for (ClassicPriorityOrderJanNew janObj : janNewList) {
-                    if (janObj.getJanNew().equals(obj.get("jan_new")) && "_".equals(obj.get("sku"))) {
-                        obj.put("sku", janObj.getNameNew());
-                    }
-                }
-            }
-        }
-        priorityOrderData(datas);
-    }
 
     /**
      * 属性列名の名前を取得
@@ -405,41 +408,50 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     public Map<String, Object> editPriorityOrderData(PriorityOrderDataDto priorityOrderDataDto) {
         String companyCd = priorityOrderDataDto.getCompanyCd();
         Integer priorityOrderCd = priorityOrderDataDto.getPriorityOrderCd();
+            logger.info("取得優先順位テーブルデータの編集パラメータは:{}",priorityOrderDataDto);
+            if (priorityOrderDataDto.getFlag()==null){
+                priorityOrderDataDto.setFlag(1);
+            }
+        if (priorityOrderDataDto.getFlag()==0) {
+            //最終表をテンポラリ・テーブルに戻す
+            Date date = new Date();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+            classicPriorityOrderMstMapper.deleteWork(priorityOrderCd);
+            classicPriorityOrderMstMapper.setWorkForFinal(companyCd, priorityOrderCd,simpleDateFormat.format(date));
 
-        //最終表をテンポラリ・テーブルに戻す
-        classicPriorityOrderMstMapper.deleteWork(priorityOrderCd);
-        classicPriorityOrderMstMapper.setWorkForFinal(companyCd,priorityOrderCd);
+            priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
+            priorityOrderJanCardMapper.setWorkForFinal(companyCd, priorityOrderCd);
 
-        priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-        priorityOrderJanCardMapper.setWorkForFinal(companyCd,priorityOrderCd);
+            priorityOrderJanNewMapper.delete(companyCd, priorityOrderCd);
+            priorityOrderJanNewMapper.setWorkForFinal(companyCd, priorityOrderCd);
 
-        priorityOrderJanNewMapper.delete(companyCd,priorityOrderCd);
-        priorityOrderJanNewMapper.setWorkForFinal(companyCd,priorityOrderCd);
+            priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
+            priorityOrderJanAttributeMapper.setWorkForFinal(companyCd, priorityOrderCd);
 
-        priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-        priorityOrderJanAttributeMapper.setWorkForFinal(companyCd,priorityOrderCd);
+            priorityOrderJanProposalMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
+            priorityOrderJanProposalMapper.setWorkForFinal(companyCd, priorityOrderCd);
 
-        priorityOrderJanProposalMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-        priorityOrderJanProposalMapper.setWorkForFinal(companyCd,priorityOrderCd);
+            priorityOrderCatepakMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
+            priorityOrderCatepakMapper.setWorkForFinal(companyCd, priorityOrderCd);
 
-        priorityOrderCatepakMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-        priorityOrderCatepakMapper.setWorkForFinal(companyCd,priorityOrderCd);
+            priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
+            priorityOrderCatepakAttributeMapper.setWorkForFinal(companyCd, priorityOrderCd);
 
-        priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-        priorityOrderCatepakAttributeMapper.setWorkForFinal(companyCd,priorityOrderCd);
+            priorityOrderMapper.delete(priorityOrderCd);
+            priorityOrderMapper.insertWork(companyCd, priorityOrderCd);
 
-        priorityOrderMapper.delete(priorityOrderCd);
-        priorityOrderMapper.insertWork(companyCd,priorityOrderCd);
+            priorityOrderDataMapper.deleteWorkData(companyCd, priorityOrderCd);
+            priorityOrderDataMapper.insertWorkDataForFinal(companyCd, priorityOrderCd);
 
-        priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
-        priorityOrderDataMapper.insertWorkDataForFinal(companyCd,priorityOrderCd);
+            workPriorityOrderPtsClassify.deleteWork(companyCd, priorityOrderCd);
+            workPriorityOrderPtsClassify.setWorkForFinal(companyCd, priorityOrderCd);
 
-        workPriorityOrderPtsClassify.deleteFinal(companyCd,priorityOrderCd);
-        workPriorityOrderPtsClassify.setWorkForFinal(companyCd,priorityOrderCd);
-        classicPriorityOrderMstAttrSortMapper.deleteAttrWk(companyCd,priorityOrderCd);
-        classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd,priorityOrderCd);
-        classicPriorityOrderMstAttrSortMapper.insertAttrForFinal(companyCd,priorityOrderCd);
-        classicPriorityOrderMstAttrSortMapper.insertAttrSortForFinal(companyCd,priorityOrderCd);
+            classicPriorityOrderMstAttrSortMapper.deleteAttrWk(companyCd, priorityOrderCd);
+            classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd, priorityOrderCd);
+
+            classicPriorityOrderMstAttrSortMapper.insertAttrForFinal(companyCd, priorityOrderCd);
+            classicPriorityOrderMstAttrSortMapper.insertAttrSortForFinal(companyCd, priorityOrderCd);
+        }
         List list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
         map.put("jan_old","旧JAN");
@@ -471,12 +483,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         list.add(patternOrProduct);
         list.add(workData);
         list.add(attrValueList);
-
+        logger.info("取得優先順位テーブルデータの編集リターンマッチ:{}",list);
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 
     @Override
     public void setPtsClassify(List<String> colNameList, String shelfPatternCd, String companyCd, Integer priorityOrderCd) {
+        logger.info("pts classifyパラメータの保存:{},{},{}",colNameList,shelfPatternCd,priorityOrderCd);
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, shelfPatternCd);
         workPriorityOrderPtsClassify.deleteWork(companyCd,priorityOrderCd);
         workPriorityOrderPtsClassify.setWorkPtsClassify(companyCd,priorityOrderCd,shelfPtsData,colNameList);
@@ -512,7 +525,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 janBranchNum.put("sale_forecast",saleForecast);
             }else {
                 Integer branchNum = workPriorityOrderPtsClassify.getJanBranchNum(ptsCd, objectMap);
-                logger.info("店铺数{}",branchNumNow.get("branch_num"));
+                logger.info("店舗数{}",branchNumNow.get("branch_num"));
                 Integer difference = branchNum - Integer.parseInt(branchNumNow.getOrDefault("branch_num",0).toString());
                 double saleForecast = difference  * Double.parseDouble(branchNumNow.getOrDefault("branch_amount_upd",0).toString()) / 1000;
                 BigDecimal bd = BigDecimal.valueOf(saleForecast);
@@ -1113,11 +1126,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
      * @return
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> getPriorityOrderDataUpd(List<String> colNameList, Integer priorityOrderCd,String companyCd,Integer delFlg) {
-        if (delFlg==null) {
-            delFlg = 0;
-        }
         String authorCd = session.getAttribute("aud").toString();
         claasicPriorityOrderAttributeClassifyMapper.delete(priorityOrderCd);
         classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd,priorityOrderCd);
@@ -1138,11 +1147,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
         }
 
-
-        //店舗数の計算
-        this.branchNumCalculation(datas,priorityOrderCd,colNameList);
-
         if (!datas.isEmpty()) {
+            //データを保存してください
+            priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
+            priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,datas,authorCd);
+
+            this.branchNumCalculation(datas,priorityOrderCd,colNameList);
+            //店舗数の計算
             priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
             priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,datas,authorCd);
             datas = priorityOrderDataMapper.getData(priorityOrderCd,colNameList);
@@ -1154,7 +1165,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> getPriorityOrderListInfo(String companyCd, Integer priorityOrderCd,List<String> colNameList) {
 
         String authorCd = session.getAttribute("aud").toString();
@@ -1212,7 +1222,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         for (int i = 0; i < resultJanList.size(); i++) {
             Map<String, Object> curMap = resultJanList.get(i);
             if( !"99999999".equals(curMap.get("rank_upd").toString())){
-                //新规jan rank don't reorder
+                //新規jan rank don't reorder
                 curMap.put("rank_upd", i+1);
             }
             finalResultList.add(curMap);
@@ -1281,9 +1291,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Override
     public List<Map<String, Object>> calRank(List<Map<String, Object>> result, List<String> colNameList) {
         result = result.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, "rank_upd"))).collect(Collectors.toList());
-        //get 新规jan
+        //get 新規jan
         List<Map<String, Object>> janNewList = result.stream().filter(map -> "-1".equals(map.get("rank").toString())).collect(Collectors.toList());
-        //新规jan group by 階層
+        //新規jan group by 階層
         Map<String, List<Map<String, Object>>> janNewMap = janNewList.stream()
                 .collect(Collectors.groupingBy(map -> colNameList.stream().map(col->map.get(col).toString()).collect(Collectors.joining(",")),
                         LinkedHashMap::new, Collectors.toList()));

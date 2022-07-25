@@ -390,7 +390,9 @@
     </select>
     <select id="getTmpTable" resultType="java.util.Map">
         select
-        datas.company_cd,datas.priority_order_cd,datas.author_cd,datas.jan_old,coalesce (rep.jan_new,pro.jan_new,datas.jan_old)  as  jan_new
+        datas.company_cd,datas.priority_order_cd,datas.author_cd,datas.jan_old
+             ,case coalesce (rep.jan_new,pro.jan_new,datas.jan_old) when '_' then datas.jan_new
+              else  coalesce (rep.jan_new,pro.jan_new,datas.jan_old) end as  jan_new
                ,datas.sku,
         <foreach collection="colNameList" item="item" separator=",">
             coalesce(datas.${item},'') as ${item}
@@ -638,6 +640,7 @@
         left join planocycle.shelf_pattern_branch ptsB
         on ptsP.shelf_pattern_cd = ptsB.shelf_pattern_cd
         and wkC.sku_num_init >= prd.rank_upd
+        where prd.priority_order_cd =#{priorityOrderCd}
         group by prd.jan_new,prd.attr1,prd.attr2 ,prd.rank_upd,prd.jan_old
         order by prd.attr1,prd.attr2,prd.rank_upd
     </select>
@@ -657,5 +660,18 @@
     </select>
     <select id="getDataNotExistNewJan" resultType="java.util.Map">
         SELECT * FROM priority.work_priority_order_result_data where rank != -1 and priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getPriorityOrderMustAttr" resultType="java.util.Map">
+        select  datas.jan_new as jan,datas.sku,
+        case when datas.rank_upd =99999999 then 'すでに削除商品として入力済みです'
+        when datas.sku is null  then 'すでにJAN変商品として入力済みです'
+        else '' end as errMsg,
+        <foreach collection="attrList" separator="," item="item">
+            datas.${item}
+        </foreach>
+
+        from priority.work_priority_order_result_data datas
+        where  not exists(select * from ${branchNum} mst where mst.priority_order_cd = #{priorityOrderCd}
+        and datas.jan_new =mst.jan_new) and datas.priority_order_cd = #{priorityOrderCd}
     </select>
 </mapper>

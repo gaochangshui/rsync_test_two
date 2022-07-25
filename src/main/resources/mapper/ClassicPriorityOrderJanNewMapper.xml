@@ -291,6 +291,11 @@
         and not exists(select jan_old from priority.priority_order_jan_replace rep2 where jannews.jan_new = rep2.jan_old and rep2.company_cd = #{companyCd})
         and not exists(select jan_old from priority.work_priority_order_result_data datas where jannews.jan_new = datas.jan_old and datas.priority_order_cd= #{priorityOrderCd})
     </select>
+    <select id="getJan" resultType="java.lang.String">
+        select array_to_string(array_agg(jan_new),',')
+        from    priority.work_priority_order_jan_new
+        where priority_order_cd = #{priorityOrderCd}
+    </select>
 
 
 </mapper>

@@ -156,7 +156,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) {
-        logger.info("優先順位テーブルパラメータの保存"+priorityOrderMstDto);
+        logger.info("優先順位テーブルパラメータの保存{}",priorityOrderMstDto);
         String authorCd = session.getAttribute("aud").toString();
         // チェック優先順位テーブル名
         Integer count = priorityOrderPatternMapper.selectByPriorityOrderName(priorityOrderMstDto.getCompanyCd(),
@@ -169,7 +169,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         String companyCd = priorityOrderMstDto.getCompanyCd();
         //パラメータを2つのテーブルのデータに処理するinsert
         priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
-        try {
+        //try {
             logger.info("優先順位テーブルパラメータの保存：{}",priorityOrderMstDto);
             priorityOrderMstMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMstMapper.insert(priorityOrderMstDto,authorCd);
@@ -227,11 +227,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderPatternMapper.insert(priorityOrderPatternList);
             return ResultMaps.result(ResultEnum.SUCCESS);
-        } catch (Exception e) {
-            logger.info("エラーを報告:"+e);
-            logger.error("保存優先順位テーブルエラー："+e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        //} catch (Exception e) {
+        //    logger.info("エラーを報告:"+e);
+        //    logger.error("保存優先順位テーブルエラー："+e);
+        //    return ResultMaps.result(ResultEnum.FAILURE);
+        //}
     }
 
 
@@ -478,6 +478,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             linkedHashMap.remove("priority_order_cd");
             linkedHashMap.remove("company_cd");
             linkedHashMap.remove("author_cd");
+            linkedHashMap.remove("repeatFlg");
         }
         priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,linkedHashMaps,authorCd);
         if (!goodsRank.isEmpty()) {

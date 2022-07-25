@@ -33,9 +33,13 @@ public class GetCommonPartsDataDto {
     private String proZokuseiMstTable;
 
     private String proZokuseiDataTable;
+
     private String prodMstClass;
+
     private String prodIsCore;
+
     private String storeIsCore;
+
     private String storeMstClass;
 
 
