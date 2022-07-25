@@ -46,6 +46,9 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     private ClassicPriorityOrderCommodityNotMapper priorityOrderCommodityNotMapper;
     @Autowired
     private ClassicPriorityOrderJanReplaceService priorityOrderJanReplaceService;
+
+    @Autowired
+    private ClassicPriorityOrderJanReplaceMapper priorityOrderJanReplaceMapper;
     @Autowired
     private ClassicPriorityOrderBranchNumMapper priorityOrderBranchNumMapper;
     @Autowired
@@ -160,9 +163,9 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
             GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
             String proInfoTable = commonTableName.getProInfoTable();
-            String janInfo = priorityOrderJanReplaceService.getJanInfo(proInfoTable);
+//            String janInfo = priorityOrderJanReplaceService.getJanInfo(proInfoTable);
             String jan = classicPriorityOrderJanNewMapper.getJan(companyCd, priorityOrderCd);
-            List<String> list= Arrays.asList(janInfo.split(","));
+//            List<String> list= Arrays.asList(janInfo.split(","));
             List<String> newList= new ArrayList<>();
             if (jan != null ){
                 newList= Arrays.asList(jan.split(","));
@@ -173,7 +176,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             List<PriorityOrderCommodityMust> exists = new ArrayList<>();
             for (int i = 0; i < mustList.size(); i++) {
                 PriorityOrderCommodityMust must = mustList.get(i);
-                if (must.getJan()!=null&& !"".equals(must.getJan()) && !list.contains(must.getJan()) && !newList.contains(must.getJan())){
+                boolean exist = priorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, must.getJan().trim())>0;
+                if (must.getJan()!=null&& !"".equals(must.getJan()) && !exist && !newList.contains(must.getJan())){
                     notExists += must.getJan()+",";
                 } else {
                     String branch = must.getBranch();
@@ -265,19 +269,20 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
             GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
             String proInfoTable = commonTableName.getProInfoTable();
-            String janInfo = priorityOrderJanReplaceService.getJanInfo(proInfoTable);
+//            String janInfo = priorityOrderJanReplaceService.getJanInfo(proInfoTable);
             String jan = classicPriorityOrderJanNewMapper.getJan(companyCd, priorityOrderCd);
             List<String> newList= new ArrayList<>();
             if (jan != null){
                 newList= Arrays.asList(jan.split(","));
             }
-            List<String> list= Arrays.asList(janInfo.split(","));
+//            List<String> list= Arrays.asList(janInfo.split(","));
             String notExists = "";
             List<String> notBranchExists = new ArrayList<>();
             List<PriorityOrderCommodityNot> exists = new ArrayList<>();
             for (int i = 0; i < not.size(); i++) {
                 PriorityOrderCommodityNot commodityNot = not.get(i);
-                if (commodityNot.getJan()!=null&& !"".equals(commodityNot.getJan()) && !list.contains(commodityNot.getJan()) && !newList.contains(commodityNot.getJan())){
+                boolean exist = priorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, commodityNot.getJan().trim())>0;
+                if (commodityNot.getJan()!=null&& !"".equals(commodityNot.getJan()) && !exist && !newList.contains(commodityNot.getJan())){
                     notExists += commodityNot.getJan()+",";
                 } else {
                     String branch = commodityNot.getBranch();
