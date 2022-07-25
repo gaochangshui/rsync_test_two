@@ -97,19 +97,17 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
             String proInfoTable = commonTableName.getProInfoTable();
 
 
-            String resuleJanDistinct =getJanInfo(proInfoTable);
-            logger.info("checkjanの戻り値"+resuleJanDistinct);
             //削除
 
             priorityOrderJanReplaceMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             List<PriorityOrderJanReplace> exists = new ArrayList<>();
             String notExists = "";
-            List<String> list= Arrays.asList(resuleJanDistinct.split(","));
             for (int i = 0; i < jan.size(); i++) {
                 if(jan.get(i).getJanNew()==null && jan.get(i).getJanOld()==null){
                     continue;
                 }
-                 if (!list.contains(jan.get(i).getJanOld())){
+                boolean existJanInfo = isExistJanInfo(proInfoTable, jan.get(i).getJanOld());
+                if (!existJanInfo){
                     notExists += jan.get(i).getJanOld()+",";
                 }else {
                     exists.add(jan.get(i));
@@ -172,6 +170,11 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
     @Override
     public String getJanInfo(String proInfoTable) {
         return priorityOrderJanReplaceMapper.selectJanDistinct(proInfoTable);
+    }
+
+    @Override
+    public boolean isExistJanInfo(String proInfoTable, String jan) {
+        return priorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, jan) > 0;
     }
 
     /**
