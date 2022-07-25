@@ -16,7 +16,7 @@
     values
            <foreach collection="lists" separator="," item="list">
            (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janNew,jdbcType=VARCHAR},
-      #{list.rank,jdbcType=INTEGER} , #{list.branchNum,jdbcType=INTEGER} , #{list.branchAccount,jdbcType=NUMERIC} , #{list.nameNew,jdbcType=VARCHAR})
+      #{list.rank,jdbcType=INTEGER} , #{list.branchNum,jdbcType=INTEGER}::integer , #{list.branchAccount,jdbcType=NUMERIC} , #{list.nameNew,jdbcType=VARCHAR})
            </foreach>
   </insert>
 

@@ -714,8 +714,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                     dataMap.put("branch_amount","_");
                     dataMap.put("branch_num","0");
                     dataMap.put("unit_price","_");
-                    dataMap.put("difference",Math.round(Double.parseDouble(downloadDto.getBranchNum())));
-                    dataMap.put("branch_num_upd",Math.round(Double.parseDouble(downloadDto.getBranchNum())));
+                    dataMap.put("difference","_".equals(downloadDto.getBranchNum())?0:Math.round(Double.parseDouble(downloadDto.getBranchNum())));
+                    dataMap.put("branch_num_upd","_".equals(downloadDto.getBranchNum())?0:Math.round(Double.parseDouble(downloadDto.getBranchNum())));
                     dataMap.put("pos_amount_upd","_");
                     dataMap.put("pos_before_rate","_");
                     dataMap.put("pos_amount","_");
@@ -970,14 +970,14 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             janNew.setRank(jan.getTanapositionCd());
             janNew.setPriorityOrderCd(priorityOrderCd);
             janNew.setBranchAccount(BigDecimal.ZERO);
-            janNew.setBranchNum(jan.getBranchNum());
+            janNew.setBranchNum(jan.getBranchNum().equals("_")?"0":jan.getBranchNum());
             janNew.setNameNew(jan.getName());
             return janNew;
         }).collect(Collectors.toList());
 
         priorityOrderJanNewMapper.insert(priorityOrderJanNewList);
         resultMap.put("data", priorityOrderJanNewList);
-        return null;
+        return resultMap;
     }
 
     private void fillCommonParam(DownloadDto downloadDto, Map<String, Object> item){
