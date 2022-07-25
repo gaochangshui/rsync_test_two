@@ -917,6 +917,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
                         if(ptsVersion == 1){
                             ptsJan.put(MagicString.JAN, repeatOldJan.get(jan));
+                        }else{
+                            ptsJan.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,jan));
                         }
                     }else if(newJanIndex < notInPtsJanList.size()){
                         String newJan = notInPtsJanList.get(newJanIndex).get(MagicString.JAN).toString();
