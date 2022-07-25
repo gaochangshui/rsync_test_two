@@ -604,7 +604,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 boolean isAllForMust = Objects.equals(allBranchSize,priorityOrderCommodityMustMapper.selectCountMustJan(companyCd, priorityOrderCd, shelfPatternCd));
                 boolean isAllForNot = Objects.equals(allBranchSize,priorityOrderCommodityNotMapper.selectCountNotJan(companyCd, priorityOrderCd, shelfPatternCd));
                 //must and not only one branch, download a pts csv
-                if(mustNotBranch.size()!=1){
+                if(mustNotBranch.size()!=1 && !(isAllForNot||isAllForMust)){
                     String json = new Gson().toJson(ptsJanDtoListByGroup);
                     Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
                             new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
@@ -664,9 +664,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         allDeleteJanList.addAll(tmpResult.get(MagicString.DELETE_LIST));
                     } catch (InterruptedException e) {
                         logger.error("",e);
+                        cacheUtil.put(taskId, "-1");
                         Thread.currentThread().interrupt();
                     } catch (ExecutionException e){
                         logger.error("",e);
+                        cacheUtil.put(taskId, "-1");
                     }
                 }));
                 futures.join();
@@ -775,9 +777,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     private Map<String, List<Map<String, Object>>> doNewOldPtsCompare(Map<String, List<Map<String, Object>>> ptsJanDtoListByGroup,
                                                                       List<Map<String, Object>> resultDataList, List<Map<String, Object>> ptsSkuNum,
                                                                       ShelfPtsDataDto pattern, ShelfPtsHeaderDto shelfPtsHeaderDto,
-                                                                      Integer ptsVersion, List<PriorityOrderCatePakVO> catePakList, String companyCd, String fileParentPath,
-                                                                      Map<String, Object> branch, List<Map<String, Object>> commodityMustJans,
-                                                                      List<Map<String, Object>> commodityNotJans, Map<String, String> janReplaceMap, List<Map<String, Object>> ptsJanDtoList){
+          Integer ptsVersion, List<PriorityOrderCatePakVO> catePakList, String companyCd, String fileParentPath,
+          Map<String, Object> branch, List<Map<String, Object>> commodityMustJans,
+          List<Map<String, Object>> commodityNotJans, Map<String, String> janReplaceMap, List<Map<String, Object>> ptsJanDtoList){
         Map<String, Map<String, String>> catePakMap = new HashMap<>();
         List<Map<String, Object>> newJanList = new ArrayList<>();
         List<Map<String, Object>> deleteJanList = new ArrayList<>();
@@ -828,6 +830,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     int rank = Integer.parseInt(map.get("rank_upd").toString());
                     if (commodityMustJansCd.contains(janNew) && rank>maxSkuNum.get()) {
                         maxSkuNum.getAndDecrement();
+                        map.put("rank_upd_original", MapUtils.getString(map, MagicString.RANK_UPD));
                         map.put("rank_upd", "0");
                     }
 
@@ -1032,8 +1035,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             }
 
             String smalls = catePakItemMap.get(MagicString.SMALLS);
-//            int smallsIndex = Integer.parseInt(catePakItemMap.get(MagicString.SMALLS_INDEX));
-//            String smallJan = MapUtils.getString(catePakItemMap, MagicString.SMALLS_JAN);
             int bigLastIndex = Integer.parseInt(catePakItemMap.getOrDefault(MagicString.BIG_LAST_INDEX, "0"));
 
             String attrBigs = bigs;
