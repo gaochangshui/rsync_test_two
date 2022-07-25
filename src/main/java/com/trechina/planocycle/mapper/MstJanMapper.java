@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.po.JanAttrName;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
 import com.trechina.planocycle.entity.vo.JanParamVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -41,4 +42,10 @@ public interface MstJanMapper {
     List<LinkedHashMap<String,Object>> getJanAttrList(@Param("tableName")String tableNameAttr);
 
     List<LinkedHashMap<String,Object>> getJanKaisouList(@Param("tableName")String tableNameAttr);
+
+    /**
+     * 表示項目設定の取得
+     * @return
+     */
+    List<JanAttrName> getAttrName(String tableName);
 }

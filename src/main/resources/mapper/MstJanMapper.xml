@@ -46,4 +46,18 @@
         </if>
     </sql>
 
+    <select id="getAttrName" resultType="com.trechina.planocycle.entity.po.JanAttrName">
+        select "1" "value","2" "label",
+        case "8" when "1" then '基本項目'
+        when "2" then '商品分類'
+        when "3" then '商品属性'
+        when "4" then 'Plano-Cycle専用'
+        when "5" then 'Plano-Cycle追加'
+        else ''
+        end as "attrType",
+        case "9" when "1" then true else false end as "mandatory",
+        case "9" when "1" then true else false end as "flag" from ${tableName}
+        order by "4" nulls first,"3"
+    </select>
+
 </mapper>

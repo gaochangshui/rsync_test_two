@@ -1,5 +1,6 @@
 package com.trechina.planocycle.controller;
 
+import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
 import com.trechina.planocycle.entity.po.JanInfoList;
@@ -46,6 +47,17 @@ public class MstJanController {
     @PostMapping("/saveKaisouInfo")
     public Map<String,Object> saveKaisouInfo(@RequestBody ProductItemVO productItemVO){
         return janKaisouService.saveProductItem(productItemVO);
+    }
+
+    /**
+     * 表示項目設定の取得
+     *
+     * @param enterpriseAxisDto
+     * @return
+     */
+    @PostMapping("/getAttrName")
+    public Map<String, Object> getAttrName(@RequestBody EnterpriseAxisDto enterpriseAxisDto) {
+        return mstJanService.getAttrName(enterpriseAxisDto);
     }
 
 }

@@ -1,6 +1,9 @@
 package com.trechina.planocycle.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
@@ -47,7 +50,7 @@ public class MstJanServiceImpl implements MstJanService {
             janParamVO.setCompanyCd(MagicString.DEFAULT_COMPANY_CD);
             janParamVO.getCommonPartsData().setProdMstClass(janParamVO.getCommonPartsData().getShelfMstClass());
         }else if("1".equals(janParamVO.getCommonPartsData().getProdIsCore())){
-            janParamVO.setCompanyCd(sysConfigMapper.selectSycConfig("core_company"));
+            janParamVO.setCompanyCd(sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY));
         }
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
@@ -149,5 +152,28 @@ public class MstJanServiceImpl implements MstJanService {
         janInfo.put("janAttr",janAttr);
         janInfoMap.put("janInfo",janInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,janInfoMap);
+    }
+
+    /**
+     * 表示項目設定の取得
+     * @param enterpriseAxisDto
+     * @return
+     */
+    @Override
+    public Map<String, Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto) {
+        String companyCd = enterpriseAxisDto.getCompanyCd();
+        String commonPartsData = enterpriseAxisDto.getCommonPartsData();
+        JSONObject jsonObject = JSON.parseObject(commonPartsData);
+        String prodMstClass = jsonObject.get("prodMstClass").toString();
+        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        String isCompanyCd;
+        if ("1".equals(prodIsCore)) {
+            isCompanyCd = coreCompany;
+        } else {
+            isCompanyCd = companyCd;
+        }
+        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
+        return ResultMaps.result(ResultEnum.SUCCESS,mstJanMapper.getAttrName(tableNameAttr));
     }
 }
