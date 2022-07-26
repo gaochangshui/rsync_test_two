@@ -719,6 +719,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             try {
                 this.downloadPts(finalTaskId, companyCd, priorityOrderCd, newCutFlg, ptsVersion, response);
             } catch (IOException e) {
+                cacheUtil.put(finalTaskId, "-1");
                 throw new RuntimeException(e);
             }
         });
@@ -1146,7 +1147,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         }
         //order by tai_cd,tana_cd, tanaposition_cd
         newPtsJanList = newPtsJanList.stream().filter(map->!"1".equals(map.getOrDefault(MagicString.DEL_FLAG,"").toString()))
-                .sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TANAPOSITION_CD)))
+                .sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TANA_POSITION_CD)))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TANA_CD)))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TAI_CD)))
                 .collect(Collectors.toList());
@@ -1154,7 +1155,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         newPtsJanList.stream().peek(map->{
             String taiTanaKey = MapUtils.getInteger(map, MagicString.TAI_CD)+"_"+MapUtils.getInteger(map, MagicString.TANA_CD);
             Integer order = taiTanaMap.getOrDefault(taiTanaKey, 0)+1;
-            map.put(MagicString.TANAPOSITION_CD, order);
+            map.put(MagicString.TANA_POSITION_CD, order);
             taiTanaMap.put(taiTanaKey, order);
         }).collect(Collectors.toList());
 
@@ -1202,8 +1203,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             }
 
             for (Map<String, Object> ptsDataJandata : newPtsJanList) {
-                List<String> janData = Lists.newArrayList(MapUtils.getInteger(ptsDataJandata, "tai_cd") + "",
-                        MapUtils.getInteger(ptsDataJandata,"tana_cd") + "", MapUtils.getInteger(ptsDataJandata,MagicString.TANAPOSITION_CD) + "", ptsDataJandata.get("jan") + "",
+                List<String> janData = Lists.newArrayList(MapUtils.getInteger(ptsDataJandata, MagicString.TAI_CD) + "",
+                        MapUtils.getInteger(ptsDataJandata,MagicString.TANA_CD) + "", MapUtils.getInteger(ptsDataJandata,MagicString.TANA_POSITION_CD) + "", ptsDataJandata.get("jan") + "",
                         Optional.ofNullable(MapUtils.getInteger(ptsDataJandata,"face_count")).orElse(0) + "",
                         Optional.ofNullable(MapUtils.getInteger(ptsDataJandata,"face_men")).orElse(0) + "",
                         Optional.ofNullable(MapUtils.getInteger(ptsDataJandata,"face_kaiten")).orElse(0) + "",
