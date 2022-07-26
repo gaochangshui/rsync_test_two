@@ -145,11 +145,9 @@
     where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
   </select>
   <select id="selectAttrName" resultType="com.trechina.planocycle.entity.dto.ClassicPriorityOrderMstAttrSortDto">
-    select case attrsort.cd::varchar when '13' then 'mulit_attr' else value::varchar end as value, attrname, attrcd
-    from planocycle.priority_order_mst_attrsort attrsort
-      inner join masterdb.attribute attribute on attribute.attrcd=attrsort.cd
-    where company_cd = #{companyCd,jdbcType=VARCHAR}
-      and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-    order by value
+    select name as "attrName", attr.sort as "value" from priority.priority_order_mst_attr attr
+    inner join priority.work_priority_order_mst_attrsort attrsort on attr.sort=attrsort."value" and attr.company_cd=attrsort.company_cd
+    and attr.priority_order_cd = attrsort.priority_order_cd
+    where attr.company_cd = #{companyCd,jdbcType=VARCHAR} and attr.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER};
   </select>
 </mapper>
