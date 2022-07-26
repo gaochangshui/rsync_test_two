@@ -35,9 +35,9 @@ public interface ClassicPriorityOrderCommodityNotMapper {
 
     List<Map<String, Object>> getPriorityOrderNotList(String companyCd, Integer priorityOrderCd, List<String> attrList);
 
-    List<PriorityOrderBranchNumDto> getBranchAndPattern(String janNew, Integer priorityOrderCd);
+    List<PriorityOrderBranchNumDto> getBranchAndPattern(String janNew, String companyCd,Integer priorityOrderCd,String table1,String table2);
 
-    List<CommodityBranchVO> getExistCommodityNotBranchList(Integer priorityOrderCd, String jan);
+    List<CommodityBranchVO> getExistCommodityNotBranchList(String companyCd,Integer priorityOrderCd, String jan,String table1,String table2);
 
     void updateFlag(String companyCd, Integer priorityOrderCd, String jan, List<Map<String, Object>> list);
 

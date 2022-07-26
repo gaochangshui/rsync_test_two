@@ -18,7 +18,7 @@ public interface ClassicPriorityOrderJanReplaceMapper {
 
     String selectJanDistinct(String proInfoTable);
 
-    int selectJanDistinctByJan(String proInfoTable, String jan);
+    List<String> selectJanDistinctByJan(String proInfoTable, List<String> jan);
 
     int setFinalForWork(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 

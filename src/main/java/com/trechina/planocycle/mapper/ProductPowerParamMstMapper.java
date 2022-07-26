@@ -6,6 +6,8 @@ import com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Map;
+
 @Mapper
 public interface ProductPowerParamMstMapper {
 
@@ -13,7 +15,6 @@ public interface ProductPowerParamMstMapper {
 
     ProductPowerParamMst selectCommodityParam(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd);
 
-    int deleteCommofityParamForChange(ProductPowerParamMst record);
 
     int deleteCommofityParam(@Param("conpanyCd") String conpanyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
@@ -29,4 +30,7 @@ public interface ProductPowerParamMstMapper {
 
     ProductPowerParam getParam(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
+    void setWork(@Param("item") Map<String, Object> map,@Param("authorCd") String authorCd,@Param("customerCondition") String customerCondition);
+
+    void deleteWork(String companyCd, Integer productPowerCd);
 }

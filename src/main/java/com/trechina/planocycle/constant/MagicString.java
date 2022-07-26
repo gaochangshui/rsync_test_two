@@ -10,6 +10,8 @@ public class MagicString {
 
     public static final String JAN_HEADER_JAN_CD_COL = "jan_cd";
     public static final String JAN_HEADER_JAN_NAME_COL = "jan_name";
+
+    public static final String TASK_ID = "taskID";
     /**
      * jan_cd is default column 1
      */

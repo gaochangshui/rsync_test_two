@@ -162,7 +162,7 @@
   </select>
   <select id="getPriorityOrderMustList" resultType="java.util.Map">
     select distinct must.jan_new as jan
-    ,COALESCE(mst.sku,'') as sku,
+    ,COALESCE(mst.sku,'') as "janName",
     case when mst.rank_upd =99999999 then 'すでに削除商品として入力済みです'
     when mst.sku is null  then 'すでにJAN変商品として入力済みです'
     else '' end as errMsg,
@@ -191,12 +191,29 @@
     order by must.shelf_pattern_cd,branch
   </select>
   <select id="getExistCommodityMustBranchList" resultType="com.trechina.planocycle.entity.vo.CommodityBranchVO">
-    select must.shelf_pattern_cd shelf_pattern_cd, coalesce(shelf_pattern_name, '') shelf_pattern_name, branchs.branch_cd  branch,concat(branchs.branch_cd, '_', branch_name) branch_name, before_flag,flag
+    select must.shelf_pattern_cd shelf_pattern_cd, coalesce(shelf_pattern_name, '') shelf_pattern_name, must.branch  branch
+
+    <if test="table1 != '' and table2 != ''">
+      ,concat(coalesce (branchs."1",company_branchs."1"), '_', coalesce (branchs."2",company_branchs."2")) branch_name
+    </if>
+    <if test="table1 != ''">
+      ,concat(branchs."1", '_', branchs."2") branch_name
+    </if>
+    <if test="table2 != ''">
+      ,concat(company_branchs."1", '_', company_branchs."2") branch_name
+    </if>
+         , before_flag,flag,'_'as area,'_' as company
     from priority.work_priority_order_commodity_must must
            left join planocycle.shelf_pattern_mst patternmst
                on patternmst.shelf_pattern_cd=must.shelf_pattern_cd
-           inner join masterdb.branchs branchs
-               on branchs.branch_cd = must.branch and branchs.company_cd=must.company_cd
-    where priority_order_cd=#{priorityOrderCd} and jan_new=#{jan} order by must.shelf_pattern_cd, branchs.branch_cd;
+          <if test="table1 != ''">
+            left join ${table1} branchs
+            on  must.branch = split_part(branchs."1", '_', 2) and branchs."1" like #{companyCd} ||'_%'
+          </if>
+          <if test="table2 != ''">
+            left join ${table2} company_branchs
+            on  must.branch = company_branchs."1"
+          </if>
+    where priority_order_cd=#{priorityOrderCd} and jan_new=#{jan} order by must.shelf_pattern_cd, branchs."1";
   </select>
 </mapper>

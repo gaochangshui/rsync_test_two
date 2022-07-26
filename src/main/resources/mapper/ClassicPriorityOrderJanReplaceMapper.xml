@@ -52,8 +52,11 @@
   <select id="selectJanDistinct" resultType="java.lang.String">
     select array_to_string(array_agg("1"),',') from ${proInfoTable}
   </select>
-  <select id="selectJanDistinctByJan" resultType="int">
-    select count(*) from ${proInfoTable} where "1"=#{jan}
+  <select id="selectJanDistinctByJan" resultType="string">
+    select "1" from ${proInfoTable} where "1" in
+    <foreach collection="jan" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
   </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanReplace">
     insert into priority.priority_order_jan_replace (company_cd, priority_order_cd, jan_old,

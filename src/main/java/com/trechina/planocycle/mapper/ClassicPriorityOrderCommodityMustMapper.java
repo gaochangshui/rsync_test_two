@@ -42,7 +42,7 @@ public interface ClassicPriorityOrderCommodityMustMapper {
 
     List<PriorityOrderBranchNumDto> getBranchAndPattern(String janNew, Integer priorityOrderCd);
 
-    List<CommodityBranchVO> getExistCommodityMustBranchList(Integer priorityOrderCd, String jan);
+    List<CommodityBranchVO> getExistCommodityMustBranchList(String companyCd,Integer priorityOrderCd, String jan,String table1,String table2);
 
     void insertCommodityBranchList(String companyCd, Integer priorityOrderCd, String jan,String tableName);
 

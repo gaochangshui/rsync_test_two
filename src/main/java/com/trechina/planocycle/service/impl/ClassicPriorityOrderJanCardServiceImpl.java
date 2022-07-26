@@ -1,17 +1,19 @@
 package com.trechina.planocycle.service.impl;
 
 import com.google.api.client.util.Strings;
+import com.google.common.base.Joiner;
 import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard;
+import com.trechina.planocycle.entity.po.ProductPowerParamVo;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanCardVO;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanNewVO;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.ClassicPriorityOrderJanCardMapper;
-import com.trechina.planocycle.mapper.ClassicPriorityOrderJanNewMapper;
-import com.trechina.planocycle.mapper.JanClassifyMapper;
-import com.trechina.planocycle.mapper.SysConfigMapper;
+import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanCardService;
 import com.trechina.planocycle.service.PriorityOrderJanReplaceService;
+import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.dataConverUtils;
 import org.slf4j.Logger;
@@ -36,6 +38,14 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
 
     @Autowired
     private ClassicPriorityOrderJanNewMapper priorityOrderJanNewMapper;
+    @Autowired
+    private ClassicPriorityOrderJanReplaceMapper classicPriorityOrderJanReplaceMapper;
+    @Autowired
+    private ClassicPriorityOrderMstMapper classicPriorityOrderMstMapper;
+    @Autowired
+    private BasicPatternMstServiceImpl basicPatternMstService;
+    @Autowired
+    private ProductPowerDataMapper productPowerDataMapper;
     @Autowired
     private JanClassifyMapper janClassifyMapper;
     @Autowired
@@ -88,30 +98,29 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
             // 処理パラメータ
             List<ClassicPriorityOrderJanCard> cards = dataConverUtil.priorityOrderCommonMstInsertMethod(ClassicPriorityOrderJanCard.class,
                     priorityOrderJanCard,companyCd,priorityOrderCd);
+            cards = cards.stream().filter(map -> map.getJanOld() != null && !"".equals(map.getJanOld())).collect(Collectors.toList());
             logger.info("保存card商品list的處理完的参数："+cards);
             //全削除
             priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             // jancheck
-            String janInfo = priorityOrderJanReplaceService.getJanInfo();
-            List<String> list= Arrays.asList(janInfo.split(","));
-            String notExists = "";
-            List<ClassicPriorityOrderJanCard> exists = new ArrayList<>();
-            for (int i = 0; i < cards.size(); i++) {
-                if (cards.get(i).getJanOld()!=null) {
-                    if (list.indexOf(cards.get(i).getJanOld())==-1){
-                        notExists += cards.get(i).getJanOld()+",";
-                    } else {
-                        exists.add(cards.get(i));
-                    }
-                }
+            if (cards.isEmpty()){
+                return ResultMaps.result(ResultEnum.SUCCESS);
             }
-            if (!exists.isEmpty()) {
-                //全挿入
-                priorityOrderJanCardMapper.insert(exists);
+            PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+            ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
+            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+            String proInfoTable = commonTableName.getProInfoTable();
+            List<String> janList = cards.stream().map(ClassicPriorityOrderJanCard::getJanOld).collect(Collectors.toList());
+            List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList);
 
+            List<String> notExistJan = ListDisparityUtils.getListDisparitStr(janList,existJan);
+
+            if (!existJan.isEmpty()) {
+                //全挿入
+                priorityOrderJanCardMapper.insertWork(existJan,companyCd,priorityOrderCd);
             }
-            if (notExists.length()>0){
-                return ResultMaps.result(ResultEnum.JANNOTESISTS,notExists.substring(0,notExists.length()-1));
+            if (!notExistJan.isEmpty()){
+                return ResultMaps.result(ResultEnum.JANNOTESISTS, Joiner.on(",").join(notExistJan));
 
             }else {
                 return ResultMaps.result(ResultEnum.SUCCESS);

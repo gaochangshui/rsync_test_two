@@ -109,7 +109,7 @@
   </select>
   <select id="getPriorityOrderNotList" resultType="java.util.Map">
     select distinct nots.jan_new as jan
-    ,COALESCE(mst.sku,'') as sku, ''  as errMsg,
+    ,COALESCE(mst.sku,'') as "janName", ''  as errMsg,
     <foreach collection="attrList" separator="," item="item">
       COALESCE(mst.${item},'') as ${item}
     </foreach>
@@ -119,22 +119,53 @@
     where nots.priority_order_cd = #{priorityOrderCd}
   </select>
   <select id="getBranchAndPattern" resultType="com.trechina.planocycle.entity.dto.PriorityOrderBranchNumDto">
-    select branch,nots.shelf_pattern_cd,shelf_pattern_name,concat(branch,'_',branchs.branch_name) as branchName
+    select branch,nots.shelf_pattern_cd,shelf_pattern_name
+    <if test="table1 != '' and table2 != ''">
+      ,concat(coalesce (branchs."1",company_branchs."1"), '_', coalesce (branchs."2",company_branchs."2")) as branchName
+    </if>
+    <if test="table1 != ''">
+      ,concat(branchs."1", '_', branchs."2") as branchName
+    </if>
+    <if test="table2 != ''">
+      ,concat(company_branchs."1", '_', company_branchs."2") as branchName
+    </if>
     from priority.work_priority_order_commodity_not nots
-           left join masterdb.branchs branchs
-                     on branchs.branch_cd = nots.branch and branchs.company_cd = nots.company_cd
+        <if test="table1 != ''">
+          left join ${table1} branchs
+          on  nots.branch = split_part(branchs."1", '_', 2) and branchs."1" like #{companyCd} ||'_%'
+        </if>
+        <if test="table2 != ''">
+          left join ${table2} company_branchs
+          on  nots.branch = company_branchs."1"
+        </if>
            left join planocycle.shelf_pattern_mst patternmst
                      on patternmst.shelf_pattern_cd = nots.shelf_pattern_cd
     where nots.priority_order_cd = #{priorityOrderCd} and nots.jan_new = #{janNew} and nots.flag = 1
     order by nots.shelf_pattern_cd,branch
   </select>
   <select id="getExistCommodityNotBranchList" resultType="com.trechina.planocycle.entity.vo.CommodityBranchVO">
-    select nots.shelf_pattern_cd shelf_pattern_cd, coalesce(shelf_pattern_name, '') shelf_pattern_name,branchs.branch_cd  branch, concat(branchs.branch_cd, '_', branch_name) branch_name, before_flag,flag
+    select nots.shelf_pattern_cd shelf_pattern_cd, coalesce(shelf_pattern_name, '') shelf_pattern_name,nots.branch  branch
+      <if test="table1 != '' and table2 != ''">
+        ,concat(coalesce (branchs."1",company_branchs."1"), '_', coalesce (branchs."2",company_branchs."2")) branch_name
+      </if>
+      <if test="table1 != ''">
+        ,concat(branchs."1", '_', branchs."2") branch_name
+      </if>
+      <if test="table2 != ''">
+        ,concat(company_branchs."1", '_', company_branchs."2") branch_name
+      </if>
+         , before_flag,flag,'_'as area,'_' as company
     from priority.work_priority_order_commodity_not nots
            left join planocycle.shelf_pattern_mst patternmst
                on patternmst.shelf_pattern_cd=nots.shelf_pattern_cd
-           inner join masterdb.branchs branchs
-               on branchs.branch_cd = nots.branch and branchs.company_cd=nots.company_cd
-    where priority_order_cd=#{priorityOrderCd} and jan_new=#{jan} order by nots.shelf_pattern_cd, branchs.branch_cd;
+          <if test="table1 != ''">
+            left join ${table1} branchs
+            on  nots.branch = split_part(branchs."1", '_', 2) and branchs."1" like #{companyCd} ||'_%'
+          </if>
+          <if test="table2 != ''">
+            left join ${table2} company_branchs
+            on  nots.branch = company_branchs."1"
+          </if>
+    where priority_order_cd=#{priorityOrderCd} and jan_new=#{jan} order by nots.shelf_pattern_cd, branchs."1";
   </select>
 </mapper>

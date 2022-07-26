@@ -19,6 +19,8 @@ public interface ClassicPriorityOrderJanCardMapper {
 
     int insert(@Param("lists") List<ClassicPriorityOrderJanCard> record);
 
+    int insertWork(List<String> janList,String companyCd,Integer priorityOrderCd);
+
     int setFinalForWork(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     int deleteFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);

@@ -153,4 +153,12 @@
         </if>
        </foreach>
   </insert>
+    <insert id="insertWork">
+        insert into priority.work_priority_order_jan_card (company_cd, priority_order_cd, jan_old
+        )
+        values
+        <foreach collection="janList" separator="," item="jan">
+                (#{companyCd,jdbcType=VARCHAR}, #{priorityOrderCd,jdbcType=INTEGER}, #{jan,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
 </mapper>

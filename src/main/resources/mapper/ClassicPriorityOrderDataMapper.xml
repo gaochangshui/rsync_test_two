@@ -662,7 +662,7 @@
         SELECT * FROM priority.work_priority_order_result_data where rank != -1 and priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getPriorityOrderMustAttr" resultType="java.util.Map">
-        select  datas.jan_new as jan,datas.sku,
+        select  datas.jan_new as "jan",datas.sku as "janName",
         case when datas.rank_upd =99999999 then 'すでに削除商品として入力済みです'
         when datas.sku is null  then 'すでにJAN変商品として入力済みです'
         else '' end as errMsg,

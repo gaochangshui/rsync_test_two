@@ -1,13 +1,13 @@
 package com.trechina.planocycle.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.*;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderBranchNumDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
 import com.trechina.planocycle.entity.po.ProductPowerParamVo;
@@ -19,6 +19,7 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderBranchNumService;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanReplaceService;
+import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
 import com.trechina.planocycle.utils.dataConverUtils;
@@ -48,7 +49,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     private ClassicPriorityOrderJanReplaceService priorityOrderJanReplaceService;
 
     @Autowired
-    private ClassicPriorityOrderJanReplaceMapper priorityOrderJanReplaceMapper;
+    private ClassicPriorityOrderJanReplaceMapper classicPriorityOrderJanReplaceMapper;
     @Autowired
     private ClassicPriorityOrderBranchNumMapper priorityOrderBranchNumMapper;
     @Autowired
@@ -135,9 +136,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             // 共通メソッドを呼び出し、データを処理する
             List<PriorityOrderCommodityMust> mustList =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderCommodityMust.class,priorityOrderCommodityMust,
                     companyCd ,priorityOrderCd);
-
+            mustList = mustList.stream().filter(map -> map.getJan() != null && !"".equals(map.getJan())).collect(Collectors.toList());
             logger.info("必須商品リストの処理後のパラメータを保存する：{}",mustList);
-
+            //削除
+            priorityOrderCommodityMustMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
+            if (mustList.isEmpty()){
+                return ResultMaps.result(ResultEnum.SUCCESS);
+            }
             String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd);
             int branchLen = branchCd.length();
             // notを巡回して店cdに0を補充する
@@ -156,30 +161,22 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 }
             });
             logger.info("必須商品の店補0後の結菓を保存する{}",mustList);
-            //削除
-            priorityOrderCommodityMustMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
+
             // jancheck
             PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
             ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
             GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
             String proInfoTable = commonTableName.getProInfoTable();
-//            String janInfo = priorityOrderJanReplaceService.getJanInfo(proInfoTable);
-            String jan = classicPriorityOrderJanNewMapper.getJan(companyCd, priorityOrderCd);
-//            List<String> list= Arrays.asList(janInfo.split(","));
-            List<String> newList= new ArrayList<>();
-            if (jan != null ){
-                newList= Arrays.asList(jan.split(","));
-            }
+            List<String> janList = mustList.stream().map(PriorityOrderCommodityMust::getJan).collect(Collectors.toList());
+            List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList);
+            List<String> notExistJan = ListDisparityUtils.getListDisparitStr(janList,existJan);
+            List<PriorityOrderCommodityMust> existJanList = mustList.stream().filter(map -> existJan.contains(map.getJan())).collect(Collectors.toList());
 
-            String notExists = "";
+
             List<String> notBranchExists = new ArrayList<>();
             List<PriorityOrderCommodityMust> exists = new ArrayList<>();
-            for (int i = 0; i < mustList.size(); i++) {
-                PriorityOrderCommodityMust must = mustList.get(i);
-                boolean exist = priorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, must.getJan().trim())>0;
-                if (must.getJan()!=null&& !"".equals(must.getJan()) && !exist && !newList.contains(must.getJan())){
-                    notExists += must.getJan()+",";
-                } else {
+            for (int i = 0; i < existJanList.size(); i++) {
+                PriorityOrderCommodityMust must = existJanList.get(i);
                     String branch = must.getBranch();
                     List<Integer> patternCdList = priorityOrderCommodityMustMapper.selectPatternByBranch(priorityOrderCd, companyCd, branch);
                     if(patternCdList.isEmpty()&& ! "".equals(must.getBranchOrigin()) &&  must.getBranchOrigin() != null){
@@ -203,14 +200,14 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                         newMust.setShelfPatternCd(patternCd);
                         exists.add(newMust);
                     }
-                }
+
             }
             if (!exists.isEmpty()){
                 //データベースへの書き込み
                 priorityOrderCommodityMustMapper.insert(exists);
             }
-           if (notExists.length()>0){
-               return ResultMaps.result(ResultEnum.JANNOTESISTS,notExists.substring(0,notExists.length()-1));
+           if (!notExistJan.isEmpty()){
+               return ResultMaps.result(ResultEnum.BRANCHNOTESISTS, Joiner.on(",").join(notExistJan));
            }else if (!notBranchExists.isEmpty()){
                return ResultMaps.result(ResultEnum.BRANCHNOTESISTS, Joiner.on(",").join(notBranchExists));
            }
@@ -242,7 +239,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             // 調用共同方法，處理数据
             List<PriorityOrderCommodityNot> not =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderCommodityNot.class,priorityOrderCommodityNot,
                     companyCd ,priorityOrderCd);
+            not = not.stream().filter(map -> map.getJan() != null && !"".equals(map.getJan())).collect(Collectors.toList());
             logger.info("不可商品リスト処理後のパラメータを保存する：{}",not);
+            //削除
+            priorityOrderCommodityNotMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
+            if (not.isEmpty()){
+                return ResultMaps.result(ResultEnum.SUCCESS);
+            }
             // 査詢企業的店cd是几位数
             String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd);
             int branchLen = branchCd.length();
@@ -262,29 +265,21 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 }
             });
             logger.info("不可商品list店が0を補充した結菓を保存します{}",not);
-            //削除
-            priorityOrderCommodityNotMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
+
             // jancheck
             PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
             ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
             GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
             String proInfoTable = commonTableName.getProInfoTable();
-//            String janInfo = priorityOrderJanReplaceService.getJanInfo(proInfoTable);
-            String jan = classicPriorityOrderJanNewMapper.getJan(companyCd, priorityOrderCd);
-            List<String> newList= new ArrayList<>();
-            if (jan != null){
-                newList= Arrays.asList(jan.split(","));
-            }
-//            List<String> list= Arrays.asList(janInfo.split(","));
-            String notExists = "";
+
+            List<String> janList = not.stream().map(PriorityOrderCommodityNot::getJan).collect(Collectors.toList());
+            List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList);
+            List<String> notExistJan = ListDisparityUtils.getListDisparitStr(janList,existJan);
+            List<PriorityOrderCommodityNot> existJanList = not.stream().filter(map -> existJan.contains(map.getJan())).collect(Collectors.toList());
             List<String> notBranchExists = new ArrayList<>();
             List<PriorityOrderCommodityNot> exists = new ArrayList<>();
-            for (int i = 0; i < not.size(); i++) {
-                PriorityOrderCommodityNot commodityNot = not.get(i);
-                boolean exist = priorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, commodityNot.getJan().trim())>0;
-                if (commodityNot.getJan()!=null&& !"".equals(commodityNot.getJan()) && !exist && !newList.contains(commodityNot.getJan())){
-                    notExists += commodityNot.getJan()+",";
-                } else {
+            for (int i = 0; i < existJanList.size(); i++) {
+                PriorityOrderCommodityNot commodityNot = existJanList.get(i);
                     String branch = commodityNot.getBranch();
                     List<Integer> patternCdList = priorityOrderCommodityMustMapper.selectPatternByBranch(priorityOrderCd, companyCd, branch);
                     if(patternCdList.isEmpty() && ! "".equals(commodityNot.getBranchOrigin()) &&  commodityNot.getBranchOrigin() != null ){
@@ -307,14 +302,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                         newNot.setShelfPatternCd(patternCd);
                         exists.add(newNot);
                     }
-                }
             }
             if (!exists.isEmpty()){
                 //写入数据庫
                 priorityOrderCommodityNotMapper.insert(exists);
             }
-            if (notExists.length()>0){
-                return ResultMaps.result(ResultEnum.JANNOTESISTS,notExists.substring(0,notExists.length()-1));
+            if (!notExistJan.isEmpty()){
+                return ResultMaps.result(ResultEnum.JANNOTESISTS,Joiner.on(",").join(notExistJan));
             }else if(!notBranchExists.isEmpty()){
                 return ResultMaps.result(ResultEnum.BRANCHNOTESISTS,Joiner.on(",").join(notBranchExists));
             }else{
@@ -374,14 +368,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         priorityOrderDataService.getPriorityOrderListInfo(companyCd,priorityOrderCd,attrList);
         List<Map<String, Object>> priorityOrderAttr = classicPriorityOrderDataMapper.getPriorityOrderMustAttr( attrList,mustTable,priorityOrderCd);
         for (Map<String, Object> objectMap : priorityOrderAttr) {
-            objectMap.put("janName",objectMap.get("sku"));
-            objectMap.remove("sku");
             objectMap.put("__children",new ArrayList<>());
         }
         List<Map<String, Object>> priorityOrderMustList = priorityOrderCommodityMustMapper.getPriorityOrderMustList(companyCd, priorityOrderCd, attrList);
         for (Map<String, Object> objectMap : priorityOrderMustList) {
-            objectMap.put("janName",objectMap.get("sku"));
-            objectMap.remove("sku");
+
             List<PriorityOrderBranchNumDto> children = priorityOrderCommodityMustMapper.getBranchAndPattern(objectMap.get("jan").toString(), priorityOrderCd);
             objectMap.put("__children",children);
         }
@@ -410,19 +401,20 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Override
     public Map<String, Object> getPriorityOrderNotList(String companyCd, Integer priorityOrderCd) {
         String mustTable = "priority.work_priority_order_commodity_not";
+        Map<String, Object> tableNameList = this.getTableName(companyCd, priorityOrderCd);
+        String table1 = tableNameList.get("table1").toString();
+        String table2 = tableNameList.get("table2").toString();
         List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrSortList(companyCd, priorityOrderCd);
         priorityOrderDataService.getPriorityOrderListInfo(companyCd,priorityOrderCd,attrList);
         List<Map<String, Object>> priorityOrderAttr = classicPriorityOrderDataMapper.getPriorityOrderMustAttr( attrList,mustTable,priorityOrderCd);
         for (Map<String, Object> objectMap : priorityOrderAttr) {
-            objectMap.put(MagicString.JAN_NAME,objectMap.get("sku"));
-            objectMap.remove("sku");
             objectMap.put("__children",new ArrayList<>());
         }
         List<Map<String, Object>> priorityOrderNotList = priorityOrderCommodityNotMapper.getPriorityOrderNotList(companyCd, priorityOrderCd, attrList);
         for (Map<String, Object> objectMap : priorityOrderNotList) {
-            objectMap.put(MagicString.JAN_NAME,objectMap.get("sku"));
-            objectMap.remove("sku");
-            List<PriorityOrderBranchNumDto> children = priorityOrderCommodityNotMapper.getBranchAndPattern(objectMap.get("jan").toString(), priorityOrderCd);
+
+            List<PriorityOrderBranchNumDto> children = priorityOrderCommodityNotMapper.getBranchAndPattern(objectMap.get("jan").toString()
+                    , companyCd,priorityOrderCd,table1,table2);
             objectMap.put("__children",children);
         }
         priorityOrderNotList.addAll(priorityOrderAttr);
@@ -451,32 +443,35 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
      */
     @Override
     public Map<String, Object> getCommodityMustBranchList(String companyCd, Integer priorityOrderCd, String jan) {
+        Map<String, Object> tableNameList = this.getTableName(companyCd, priorityOrderCd);
+        String table1 = tableNameList.get("table1").toString();
+        String table2 = tableNameList.get("table2").toString();
         String tableName = "work_priority_order_commodity_must";
-        List<CommodityBranchVO> existCommodityMustBranchList = priorityOrderCommodityMustMapper.getExistCommodityMustBranchList(priorityOrderCd, jan);
+        List<CommodityBranchVO> existCommodityMustBranchList = priorityOrderCommodityMustMapper.getExistCommodityMustBranchList(companyCd,priorityOrderCd, jan,table1,table2);
         if(existCommodityMustBranchList.isEmpty()){
             priorityOrderCommodityMustMapper.insertCommodityBranchList(companyCd, priorityOrderCd, jan, tableName);
         }else {
             priorityOrderCommodityMustMapper.insertSurplusCommodityBranch(companyCd, priorityOrderCd, jan, tableName,existCommodityMustBranchList);
         }
 
-        existCommodityMustBranchList = priorityOrderCommodityMustMapper.getExistCommodityMustBranchList(priorityOrderCd, jan);
-        List<Map<String, Object>> resultList = new ArrayList<>();
-        Map<String, List<CommodityBranchVO>> existCommodityMustBranchByGroup = existCommodityMustBranchList.stream().collect(Collectors.groupingBy(CommodityBranchVO::getShelfPatternName, Collectors.toList()));
+        existCommodityMustBranchList = priorityOrderCommodityMustMapper.getExistCommodityMustBranchList(companyCd,priorityOrderCd, jan,table1,table2);
+        //List<Map<String, Object>> resultList = new ArrayList<>();
+        //Map<String, List<CommodityBranchVO>> existCommodityMustBranchByGroup = existCommodityMustBranchList.stream().collect(Collectors.groupingBy(CommodityBranchVO::getShelfPatternName, Collectors.toList()));
+        //
+        //existCommodityMustBranchByGroup.entrySet().stream().forEach(item->{
+        //    List<CommodityBranchVO> value = item.getValue();
+        //
+        //    CommodityBranchVO commodityBranchVO = value.get(0);
+        //    Map<String, Object> itemMap = new HashMap<>(2);
+        //    itemMap.put("shelfPatternName", item.getKey());
+        //    itemMap.put("branchName", value.size()+"店舗");
+        //    itemMap.put("beforeFlag", commodityBranchVO.getBeforeFlag());
+        //    itemMap.put("flag", value.size()== ((Long) value.stream().filter(vo -> vo.getFlag() == 1).count()).intValue()?1:0);
+        //    itemMap.put("__children", value);
+        //    resultList.add(itemMap);
+        //});
 
-        existCommodityMustBranchByGroup.entrySet().stream().forEach(item->{
-            List<CommodityBranchVO> value = item.getValue();
-
-            CommodityBranchVO commodityBranchVO = value.get(0);
-            Map<String, Object> itemMap = new HashMap<>(2);
-            itemMap.put("shelfPatternName", item.getKey());
-            itemMap.put("branchName", value.size()+"店舗");
-            itemMap.put("beforeFlag", commodityBranchVO.getBeforeFlag());
-            itemMap.put("flag", value.size()== ((Long) value.stream().filter(vo -> vo.getFlag() == 1).count()).intValue()?1:0);
-            itemMap.put("__children", value);
-            resultList.add(itemMap);
-        });
-
-        return ResultMaps.result(ResultEnum.SUCCESS, resultList);
+        return ResultMaps.result(ResultEnum.SUCCESS, existCommodityMustBranchList);
     }
     /**
      * 詳細不可
@@ -488,31 +483,34 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Override
     public Map<String, Object> getCommodityNotBranchList(String companyCd, Integer priorityOrderCd, String jan) {
         String tableName = "work_priority_order_commodity_not";
-        List<CommodityBranchVO> existCommodityNotBranchList = priorityOrderCommodityNotMapper.getExistCommodityNotBranchList(priorityOrderCd, jan);
+        Map<String, Object> tableNameList = this.getTableName(companyCd, priorityOrderCd);
+        String table1 = tableNameList.get("table1").toString();
+        String table2 = tableNameList.get("table2").toString();
+        List<CommodityBranchVO> existCommodityNotBranchList = priorityOrderCommodityNotMapper.getExistCommodityNotBranchList(companyCd,priorityOrderCd, jan,table1,table2);
         if(existCommodityNotBranchList.isEmpty()){
             priorityOrderCommodityMustMapper.insertCommodityBranchList(companyCd, priorityOrderCd, jan,tableName );
         }else {
             priorityOrderCommodityMustMapper.insertSurplusCommodityBranch(companyCd, priorityOrderCd, jan, tableName,existCommodityNotBranchList);
         }
 
-        existCommodityNotBranchList = priorityOrderCommodityNotMapper.getExistCommodityNotBranchList(priorityOrderCd, jan);
+        existCommodityNotBranchList = priorityOrderCommodityNotMapper.getExistCommodityNotBranchList(companyCd,priorityOrderCd, jan,table1,table2);
 
-        List<Map<String, Object>> resultList = new ArrayList<>();
-        Map<String, List<CommodityBranchVO>> existCommodityMustBranchByGroup = existCommodityNotBranchList.stream().collect(Collectors.groupingBy(CommodityBranchVO::getShelfPatternName, Collectors.toList()));
+        //List<Map<String, Object>> resultList = new ArrayList<>();
+        //Map<String, List<CommodityBranchVO>> existCommodityMustBranchByGroup = existCommodityNotBranchList.stream().collect(Collectors.groupingBy(CommodityBranchVO::getShelfPatternName, Collectors.toList()));
+        //
+        //existCommodityMustBranchByGroup.entrySet().stream().forEach(item->{
+        //    List<CommodityBranchVO> value = item.getValue();
+        //    CommodityBranchVO commodityBranchVO = value.get(0);
+        //    Map<String, Object> itemMap = new HashMap<>(2);
+        //    itemMap.put("shelfPatternName", item.getKey());
+        //    itemMap.put("branchName", value.size()+"店舗");
+        //    itemMap.put("beforeFlag", commodityBranchVO.getBeforeFlag());
+        //    itemMap.put("__children", value);
+        //    itemMap.put("flag", value.size()== ((Long) value.stream().filter(vo -> vo.getFlag() == 1).count()).intValue()?1:0);
+        //    resultList.add(itemMap);
+        //});
 
-        existCommodityMustBranchByGroup.entrySet().stream().forEach(item->{
-            List<CommodityBranchVO> value = item.getValue();
-            CommodityBranchVO commodityBranchVO = value.get(0);
-            Map<String, Object> itemMap = new HashMap<>(2);
-            itemMap.put("shelfPatternName", item.getKey());
-            itemMap.put("branchName", value.size()+"店舗");
-            itemMap.put("beforeFlag", commodityBranchVO.getBeforeFlag());
-            itemMap.put("__children", value);
-            itemMap.put("flag", value.size()== ((Long) value.stream().filter(vo -> vo.getFlag() == 1).count()).intValue()?1:0);
-            resultList.add(itemMap);
-        });
-
-        return ResultMaps.result(ResultEnum.SUCCESS, resultList);
+        return ResultMaps.result(ResultEnum.SUCCESS, existCommodityNotBranchList);
     }
     /**
      * 詳細保存不可
@@ -522,15 +520,15 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Override
     public Map<String, Object> saveCommodityNotBranchList(String companyCd, Integer priorityOrderCd, String jan, String commodityNot) {
         List<Map<String, Object>> commodityNotList = new Gson().fromJson(commodityNot, new TypeToken<List<Map<String, Object>>>(){}.getType());
-        List<Map<String, Object>> updateList = new ArrayList<>(commodityNotList.size());
-        for (Map<String, Object> commodityNotMap : commodityNotList) {
-            String children = MapUtils.getString(commodityNotMap, "__children");
-            List<Map<String, Object>> childrenMap = new Gson().fromJson(children, new TypeToken<List<Map<String, Object>>>() {
-            }.getType());
-            childrenMap.stream().forEach(child -> child.put("branch",MapUtils.getString(child, "branchName").split("_")[0]));
-            updateList.addAll(childrenMap);
-        }
-        priorityOrderCommodityNotMapper.updateFlag(companyCd, priorityOrderCd, jan, updateList);
+        //List<Map<String, Object>> updateList = new ArrayList<>(commodityNotList.size());
+        //for (Map<String, Object> commodityNotMap : commodityNotList) {
+        //    String children = MapUtils.getString(commodityNotMap, "__children");
+        //    List<Map<String, Object>> childrenMap = new Gson().fromJson(children, new TypeToken<List<Map<String, Object>>>() {
+        //    }.getType());
+        //    childrenMap.stream().forEach(child -> child.put("branch",MapUtils.getString(child, "branchName").split("_")[0]));
+        //    updateList.addAll(childrenMap);
+        //}
+        priorityOrderCommodityNotMapper.updateFlag(companyCd, priorityOrderCd, jan, commodityNotList);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
     /**
@@ -541,15 +539,15 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Override
     public Map<String, Object> saveCommodityMustBranchList(String companyCd, Integer priorityOrderCd, String jan, String commodityMust) {
         List<Map<String, Object>> commodityNotList = new Gson().fromJson(commodityMust, new TypeToken<List<Map<String, Object>>>(){}.getType());
-        List<Map<String, Object>> updateList = new ArrayList<>(commodityNotList.size());
-        for (Map<String, Object> commodityNotMap : commodityNotList) {
-            String children = MapUtils.getString(commodityNotMap, "__children");
-            List<Map<String, Object>> childrenMap = new Gson().fromJson(children, new TypeToken<List<Map<String, Object>>>() {
-            }.getType());
-            childrenMap.stream().forEach(child -> child.put("branch",MapUtils.getString(child, "branchName").split("_")[0]));
-            updateList.addAll(childrenMap);
-        }
-        priorityOrderCommodityMustMapper.updateFlag(companyCd, priorityOrderCd, jan, updateList);
+        //List<Map<String, Object>> updateList = new ArrayList<>(commodityNotList.size());
+        //for (Map<String, Object> commodityNotMap : commodityNotList) {
+        //    String children = MapUtils.getString(commodityNotMap, "__children");
+        //    List<Map<String, Object>> childrenMap = new Gson().fromJson(children, new TypeToken<List<Map<String, Object>>>() {
+        //    }.getType());
+        //    childrenMap.stream().forEach(child -> child.put("branch",MapUtils.getString(child, "branchName").split("_")[0]));
+        //    updateList.addAll(childrenMap);
+        //}
+        priorityOrderCommodityMustMapper.updateFlag(companyCd, priorityOrderCd, jan, commodityNotList);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
     /**
