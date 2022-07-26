@@ -23,7 +23,7 @@ public interface ClassicPriorityOrderJanReplaceService {
 
     String getJanInfo(String proInfoTable);
 
-    boolean isExistJanInfo(String proInfoTable, String jan);
+    boolean isExistJanInfo(String proInfoTable, String jan,Integer priorityOrderCd);
 
     /**
      * janを削除してリストを変更する

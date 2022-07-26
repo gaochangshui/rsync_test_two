@@ -57,6 +57,12 @@
     <foreach collection="jan" item="item" open="(" close=")" separator=",">
       #{item}
     </foreach>
+    union
+    SELECT jan_new from priority.work_priority_order_jan_new
+    where  priority_order_cd = #{priorityOrderCd} and jan_new in
+    <foreach collection="jan" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
   </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanReplace">
     insert into priority.priority_order_jan_replace (company_cd, priority_order_cd, jan_old,

@@ -111,7 +111,7 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
             GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
             String proInfoTable = commonTableName.getProInfoTable();
             List<String> janList = cards.stream().map(ClassicPriorityOrderJanCard::getJanOld).collect(Collectors.toList());
-            List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList);
+            List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList,priorityOrderCd);
 
             List<String> notExistJan = ListDisparityUtils.getListDisparitStr(janList,existJan);
 
