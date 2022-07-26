@@ -13,7 +13,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/PriorityAllMst")
+@RequestMapping("/planoCycleApi/PriorityAllMst")
 public class PriorityAllMstController {
     @Autowired
     private HttpSession session;

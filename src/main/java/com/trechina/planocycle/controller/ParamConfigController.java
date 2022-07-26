@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/ParamConfig")
+@RequestMapping("/planoCycleApi/ParamConfig")
 public class ParamConfigController {
     @Autowired
     private ParamConfigService paramConfigService;

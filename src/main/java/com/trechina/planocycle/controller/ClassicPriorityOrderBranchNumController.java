@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/priority/PriorityOrderBranchNum")
+@RequestMapping("/planoCycleApi/priority/PriorityOrderBranchNum")
 public class ClassicPriorityOrderBranchNumController {
     @Autowired
     private ClassicPriorityOrderBranchNumService priorityOrderBranchNumService;

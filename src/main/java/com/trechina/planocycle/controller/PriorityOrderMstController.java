@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 @RestController
-@RequestMapping("/planoCycle/PriorityOrderMst")
+@RequestMapping("/planoCycleApi/PriorityOrderMst")
 public class PriorityOrderMstController {
     @Autowired
     private HttpSession session;

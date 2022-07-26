@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/ShelfPatternMst")
+@RequestMapping("/planoCycleApi/ShelfPatternMst")
 public class CommodityScoreMasterController {
     @Autowired
     private CommodityScoreMasterService commodityScoreMasterService;

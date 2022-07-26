@@ -9,7 +9,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/planoCycle/MstCommodity")
+@RequestMapping("/planoCycleApi/MstCommodity")
 public class MstCommodityController {
 
     @Autowired

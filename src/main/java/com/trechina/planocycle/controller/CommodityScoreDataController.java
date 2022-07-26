@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/CommodityScoreData")
+@RequestMapping("/planoCycleApi/CommodityScoreData")
 public class CommodityScoreDataController {
     @Autowired
     private CommodityScoreDataService commodityScoreDataService;

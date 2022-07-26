@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import com.google.common.collect.Lists;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
@@ -23,7 +24,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -174,7 +174,8 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
 
     @Override
     public boolean isExistJanInfo(String proInfoTable, String jan) {
-        return priorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, jan) > 0;
+
+        return priorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, Lists.newArrayList(jan)).isEmpty();
     }
 
     /**

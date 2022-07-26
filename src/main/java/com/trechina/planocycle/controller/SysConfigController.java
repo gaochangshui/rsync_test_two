@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/sysConfig")
+@RequestMapping("/planoCycleApi/sysConfig")
 public class SysConfigController {
     @Autowired
     private SysConfigService sysConfigService;

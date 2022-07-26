@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/IDGenerator")
+@RequestMapping("/planoCycleApi/IDGenerator")
 public class IDGeneratorController {
     @Autowired
     private IDGeneratorService idGeneratorService;

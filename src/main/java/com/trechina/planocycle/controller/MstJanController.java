@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 @RestController
-@RequestMapping("/planoCycle/MstJan")
+@RequestMapping("/planoCycleApi/MstJan")
 public class MstJanController {
 
     @Autowired

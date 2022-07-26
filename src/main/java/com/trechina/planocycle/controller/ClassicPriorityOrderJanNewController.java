@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/priority/PriorityOrderJanNew")
+@RequestMapping("/planoCycleApi/priority/PriorityOrderJanNew")
 public class ClassicPriorityOrderJanNewController {
     @Autowired
     private ClassicPriorityOrderJanNewService priorityOrderJanNewService;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/PriorityOrderMstAttrSort")
+@RequestMapping("/planoCycleApi/PriorityOrderMstAttrSort")
 public class PriorityOrderMstAttrSortController {
     @Autowired
     private PriorityOrderMstAttrSortService priorityOrderMstAttrSortService;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/PriorityOrderRestrict")
+@RequestMapping("/planoCycleApi/PriorityOrderRestrict")
 
 public class PriorityOrderRestrictSetController {
 @Autowired

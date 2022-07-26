@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 @RestController
-@RequestMapping("/planoCycle/Files")
+@RequestMapping("/planoCycleApi/Files")
 public class FilesOperationController {
     @Autowired
     private FilesOperationService filesOperationService;

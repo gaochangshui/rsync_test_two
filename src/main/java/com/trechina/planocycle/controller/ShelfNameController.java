@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/ShelfName")
+@RequestMapping("/planoCycleApi/ShelfName")
 public class ShelfNameController {
     @Autowired
     private ShelfNameService shelfNameService;

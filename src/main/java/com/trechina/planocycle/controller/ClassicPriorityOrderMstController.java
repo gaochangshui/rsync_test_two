@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/priority/PriorityOrderMst")
+@RequestMapping("/planoCycleApi/priority/PriorityOrderMst")
 public class ClassicPriorityOrderMstController {
     @Autowired
     private HttpSession session;
