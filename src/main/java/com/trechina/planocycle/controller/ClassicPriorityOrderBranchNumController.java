@@ -2,6 +2,7 @@ package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
+import com.trechina.planocycle.entity.vo.CommodityBranchPrimaryKeyVO;
 import com.trechina.planocycle.service.ClassicPriorityOrderBranchNumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -10,20 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/priority/PriorityOrderBranchNum")
+@RequestMapping("/planoCycleApi/priority/PriorityOrderBranchNum")
 public class ClassicPriorityOrderBranchNumController {
     @Autowired
     private ClassicPriorityOrderBranchNumService priorityOrderBranchNumService;
-    /**
-     * smart処理後の必須+不可商品の結菓セットを取得し、保存
-     * @param companyCd
-     * @param priorityOrderCd
-     * @return
-     */
-    @GetMapping("/getPriorityOrderBranchNum")
-    public Map<String,Object> getPriorityOrderBranchNum(String companyCd,Integer priorityOrderCd,String shelfPatternCd){
-        return  priorityOrderBranchNumService.getPriorityOrderBranchNum(companyCd,priorityOrderCd,shelfPatternCd);
-    }
 
     /**
      * 必須商品リストの取得
@@ -65,5 +56,90 @@ public class ClassicPriorityOrderBranchNumController {
     @PostMapping("/setPriorityOrderCommodityNot")
     public Map<String,Object> setPriorityOrderCommodityNot(@RequestBody List<PriorityOrderCommodityNot> priorityOrderCommodityNot) {
         return priorityOrderBranchNumService.setPriorityOrderCommodityNot(priorityOrderCommodityNot);
+    }
+
+    /**
+     * 必須リスト
+     * @param companyCd
+     * @return
+     */
+    @GetMapping("getPriorityOrderMustList")
+    public Map<String,Object> getPriorityOrderMustList(String companyCd, Integer priorityOrderCd) {
+        return priorityOrderBranchNumService.getPriorityOrderMustList(companyCd,priorityOrderCd);
+    }
+    /**
+     * リスト不可
+     * @param companyCd
+     * @return
+     */
+    @GetMapping("getPriorityOrderNotList")
+    public Map<String,Object> getPriorityOrderNotList(String companyCd, Integer priorityOrderCd) {
+        return priorityOrderBranchNumService.getPriorityOrderNotList(companyCd,priorityOrderCd);
+    }
+
+    /**
+     * 詳細が必要です
+     * @param companyCd
+     * @param priorityOrderCd
+     * @param jan
+     * @return
+     */
+    @GetMapping("/getCommodityMustBranchList")
+    public Map<String,Object> getCommodityMustBranchList(String companyCd, Integer priorityOrderCd, String jan) {
+        return priorityOrderBranchNumService.getCommodityMustBranchList(companyCd, priorityOrderCd, jan);
+    }
+
+    /**
+     * 詳細不可
+     * @param companyCd
+     * @param priorityOrderCd
+     * @param jan
+     * @return
+     */
+    @GetMapping("/getCommodityNotBranchList")
+    public Map<String,Object> getCommodityNotBranchList(String companyCd, Integer priorityOrderCd, String jan) {
+        return priorityOrderBranchNumService.getCommodityNotBranchList(companyCd, priorityOrderCd, jan);
+    }
+
+    /**
+     * 詳細保存不可
+     * @param commodityBranchPrimaryKeyVO
+     * @return
+     */
+    @PostMapping("/saveCommodityNotBranch")
+    public Map<String,Object> saveCommodityNotBranchList(@RequestBody CommodityBranchPrimaryKeyVO commodityBranchPrimaryKeyVO) {
+        return priorityOrderBranchNumService.saveCommodityNotBranchList(commodityBranchPrimaryKeyVO.getCompanyCd(),
+                commodityBranchPrimaryKeyVO.getPriorityOrderCd(), commodityBranchPrimaryKeyVO.getJan(), commodityBranchPrimaryKeyVO.getCommodityList());
+    }
+
+    /**
+     * 詳細を保存する必要があります
+     * @param commodityBranchPrimaryKeyVO
+     * @return
+     */
+    @PostMapping("/saveCommodityMustBranch")
+    public Map<String,Object> saveCommodityMustBranchList(@RequestBody CommodityBranchPrimaryKeyVO commodityBranchPrimaryKeyVO) {
+        return priorityOrderBranchNumService.saveCommodityMustBranchList(commodityBranchPrimaryKeyVO.getCompanyCd(),
+                commodityBranchPrimaryKeyVO.getPriorityOrderCd(), commodityBranchPrimaryKeyVO.getJan(), commodityBranchPrimaryKeyVO.getCommodityList());
+    }
+
+    /**
+     * 詳細を削除する必要があります
+     * @param commodityBranchPrimaryKeyVO
+     * @return
+     */
+    @DeleteMapping("/delCommodityMustBranch")
+    public Map<String,Object> delCommodityMustBranch(@RequestBody CommodityBranchPrimaryKeyVO commodityBranchPrimaryKeyVO){
+        return priorityOrderBranchNumService.delCommodityMustBranch(commodityBranchPrimaryKeyVO);
+    }
+
+    /**
+     * 詳細削除不可
+     * @param commodityBranchPrimaryKeyVO
+     * @return
+     */
+    @DeleteMapping("/delCommodityNotBranch")
+    public Map<String,Object> delCommodityNotBranch(@RequestBody CommodityBranchPrimaryKeyVO commodityBranchPrimaryKeyVO){
+        return priorityOrderBranchNumService.delCommodityNotBranch(commodityBranchPrimaryKeyVO);
     }
 }

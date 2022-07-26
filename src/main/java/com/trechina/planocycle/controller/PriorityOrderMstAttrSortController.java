@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/PriorityOrderMstAttrSort")
+@RequestMapping("/planoCycleApi/PriorityOrderMstAttrSort")
 public class PriorityOrderMstAttrSortController {
     @Autowired
     private PriorityOrderMstAttrSortService priorityOrderMstAttrSortService;
@@ -36,7 +36,7 @@ public class PriorityOrderMstAttrSortController {
 
 
     /**
-     * 获取group数据
+     * groupデータの取得
      */
     @PostMapping("/getAttrGroup")
     public Map<String,Object> getAttrGroup(@RequestBody PriorityOrderAttrDto priorityOrderAttrDto){

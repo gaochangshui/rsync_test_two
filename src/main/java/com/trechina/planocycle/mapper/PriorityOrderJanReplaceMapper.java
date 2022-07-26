@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface PriorityOrderJanReplaceMapper {
@@ -23,4 +24,6 @@ public interface PriorityOrderJanReplaceMapper {
     int insertBySelect(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     int deleteByAuthorCd(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
+    List<Map<String, String>> selectJanReplace(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 }

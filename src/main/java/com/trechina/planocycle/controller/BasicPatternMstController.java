@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("planoCycle/BasicPatternMst")
+@RequestMapping("planoCycleApi/BasicPatternMst")
 public class BasicPatternMstController {
     @Autowired
     private BasicPatternMstService basicPatternMstService;

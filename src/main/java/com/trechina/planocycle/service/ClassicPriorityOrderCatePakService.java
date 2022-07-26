@@ -35,4 +35,6 @@ public interface ClassicPriorityOrderCatePakService {
      * @return
      */
     Integer delPriorityOrderCatePakAttrInfo(String companyCd,Integer priorityOrderCd);
+
+    Map<String, Object> getCatePakSimilarity(Map<String, Object> map);
 }

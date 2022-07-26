@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/PresetAttribute")
+@RequestMapping("/planoCycleApi/PresetAttribute")
 public class PresetAttributeController {
     @Autowired
     private PresetAttributeService presetAttributeService;

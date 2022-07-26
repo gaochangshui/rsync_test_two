@@ -8,4 +8,6 @@ public interface JansMapper {
 
 
     int updateTransfer();
+
+    String selectDummyJan(String companyCd, String jan);
 }

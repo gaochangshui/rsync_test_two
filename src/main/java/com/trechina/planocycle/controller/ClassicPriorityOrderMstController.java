@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/priority/PriorityOrderMst")
+@RequestMapping("/planoCycleApi/priority/PriorityOrderMst")
 public class ClassicPriorityOrderMstController {
     @Autowired
     private HttpSession session;
@@ -89,7 +90,15 @@ public class ClassicPriorityOrderMstController {
      */
     @PostMapping("/getPtsFileDownLoad")
     public Map<String,Object> getPtsFileDownLoad(@RequestBody PriorityOrderPtsDownDto priorityOrderPtsDownDto, HttpServletResponse response) {
-        return priorityOrderMstService.getPtsFileDownLoad(priorityOrderPtsDownDto,response,ptsDownPath);
+        return priorityOrderMstService.downloadPtsTask(priorityOrderPtsDownDto.getTaskId(), priorityOrderPtsDownDto.getCompany(),
+                priorityOrderPtsDownDto.getPriorityNo(),
+                priorityOrderPtsDownDto.getNewCutFlg(), priorityOrderPtsDownDto.getPtsVerison(), response);
+//        return priorityOrderMstService.getPtsFileDownLoad(priorityOrderPtsDownDto,response,ptsDownPath);
+    }
+
+    @GetMapping("/getPtsFileDownLoadByTask")
+    public void getPtsFileZipDownLoad(String taskId, HttpServletResponse response) throws IOException {
+        priorityOrderMstService.packagePtsZip(taskId, response);
     }
 
     /**
@@ -101,5 +110,11 @@ public class ClassicPriorityOrderMstController {
     public Map<String,Object> delPriorityOrderAllInfo(@RequestBody PriorityOrderPrimaryKeyVO primaryKeyVO){
         return priorityOrderMstService.delPriorityOrderAllInfo(primaryKeyVO);
     }
-
+    /**
+     *属性group
+     */
+    @GetMapping("/getAttrInfo")
+    public Map<String,Object> getAttrInfo(String companyCd,Integer priorityOrderCd){
+        return priorityOrderMstService.getAttrInfo(companyCd,priorityOrderCd);
+    }
 }

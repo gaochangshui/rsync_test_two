@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/priority/PriorityOrderCatePak")
+@RequestMapping("/planoCycleApi/priority/PriorityOrderCatePak")
 public class ClassicPriorityOrderCatePakController {
     @Autowired
     private ClassicPriorityOrderCatePakService priorityOrderCatePakService;
@@ -32,5 +32,16 @@ public class ClassicPriorityOrderCatePakController {
     @PostMapping("/setPriorityOrderCatePak")
     public Map<String,Object> setPriorityOrderCatePak(@RequestBody JSONArray jsonArray){
         return priorityOrderCatePakService.setPriorityOrderCatePak(jsonArray);
+    }
+
+
+    /**
+     * 分類によって商品の力点数表を除いて同類の商品を抽出する
+     * @param
+     * @return
+     */
+    @PostMapping("getCatePakSimilarity")
+    public Map<String, Object> getCatePakSimilarity(@RequestBody Map<String, Object> map) {
+        return priorityOrderCatePakService.getCatePakSimilarity(map);
     }
 }

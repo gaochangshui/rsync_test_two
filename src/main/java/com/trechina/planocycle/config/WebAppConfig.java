@@ -15,7 +15,7 @@ public class WebAppConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry){
         registry.addInterceptor(new LoginInterceptor())
-                .excludePathPatterns("/TableTransfer/**")
+                .excludePathPatterns("/planoCycleApi/TableTransfer/**")
                 .addPathPatterns("/**");
     }
 }

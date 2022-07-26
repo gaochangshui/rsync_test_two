@@ -21,7 +21,7 @@ fileSaveRemote方法,切換物理机代碼
 
 # 本地調試環境変量
 ```$xslt
-PLANO_URL=jdbc:postgresql://10.100.1.161:54332/PLANOCYCLE?characterEncoding=UTF-8&useSSL=false
+PLANO_URL=jdbc:postgresql://10.100.1.161:54333/PLANOCYCLE?characterEncoding=UTF-8&useSSL=false
 PLANO_USERNAME=admin
 PLANO_PASSWORD=admin1234
 loggingFilePath=D:\files

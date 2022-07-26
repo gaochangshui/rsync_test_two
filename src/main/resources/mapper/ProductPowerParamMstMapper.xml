@@ -74,21 +74,6 @@
            #{item.recentlyEndTime},#{item.recentlyFlag},#{item.recentlyStTime},#{item.seasonEndTime},#{item.seasonFlag},#{item.seasonStTime},#{item.storeCd},
            #{item.yearFlag},#{authorCd},now(),#{item.commonPartsData},#{item.placeNm},#{item.channelNm},#{item.project},#{item.shelfPatternCd},#{item.janName2colNum})
   </insert>
-  <delete id="deleteCommofityParamForChange" parameterType="com.trechina.planocycle.entity.po.ProductPowerParamMst">
-    delete from planocycle.product_power_param_mst
-    where company_cd = #{conpanyCd,jdbcType=VARCHAR}
-      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
-      and (perid_flag != #{peridFlag,jdbcType=INTEGER}
-            or start_perid != #{startPerid,jdbcType=TIMESTAMP}
-             or end_perid != #{endPerid,jdbcType=TIMESTAMP}
-             or season_perid_flag != #{seasonPeridFlag,jdbcType=INTEGER}
-             or season_st_perid != #{seasonStPerid,jdbcType=TIMESTAMP}
-             or season_end_perid != #{seasonEndPerid,jdbcType=TIMESTAMP}
-             or store_cd != #{storeCd,jdbcType=VARCHAR}
-             or channel_name != #{channelName,jdbcType=VARCHAR}
-             or county_name != #{countyName,jdbcType=VARCHAR}
-            or prod_cd != #{prdCd,jdbcType=VARCHAR})
-  </delete>
     <delete id="delete">
      delete from  planocycle.product_power_param_mst
       where company_cd = #{conpanyCd,jdbcType=VARCHAR}
@@ -99,7 +84,18 @@
     where company_cd = #{conpanyCd,jdbcType=VARCHAR}
       and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
   </update>
-  <delete id="deleteParam">
+    <insert id="setWork">
+      insert into planocycle.work_product_power_param_mst (company_cd,product_power_cd,customer_condition,prd_cd,recently_end_time,
+         recently_flag,recently_st_time,season_end_time,season_flag,season_st_time,store_cd,year_flag,author_cd,create_time,common_parts_data,
+         place_nm,channel_nm,project,shelf_pattern_cd,jan_name2col_num)
+      values(#{item.company},#{item.productPowerNo},#{customerCondition},#{item.prdCd},
+             #{item.recentlyEndTime},#{item.recentlyFlag},#{item.recentlyStTime},#{item.seasonEndTime},#{item.seasonFlag},#{item.seasonStTime},#{item.storeCd},
+             #{item.yearFlag},#{authorCd},now(),#{item.commonPartsData},#{item.placeNm},#{item.channelNm},#{item.project},#{item.shelfPatternCd},#{item.janName2colNum})
+    </insert>
+    <delete id="deleteParam">
     delete from planocycle.product_power_param_mst where company_cd=#{companyCd} and product_power_cd =#{productPowerCd}
+  </delete>
+  <delete id="deleteWork">
+    delete from planocycle.work_product_power_param_mst where company_cd=#{companyCd} and product_power_cd =#{productPowerCd}
   </delete>
 </mapper>

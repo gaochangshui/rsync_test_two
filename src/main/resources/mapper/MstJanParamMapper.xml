@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.MstJanParamMapper">
+    <select id="getAttributeTree" resultType="java.util.Map">
+        --Tree
+        select datas.val as "attrCd",coalesce(datas.val_parent,'')as "pid" ,datas.nm as "attrName",datas.zokusei_id as "zokuseiId"
+             ,mst.zokusei_nm as "zokuseiName"
+        from masterdb.planocycle_zokusei_mst_data datas
+                 left join masterdb.planocycle_zokusei_mst mst
+                           on mst.zokusei_id = datas.zokusei_id
+                               and datas.company_cd = mst.company_cd and datas.class_cd = mst.class_cd
+        where datas.company_cd =#{companyCd} and datas.class_cd = #{classCd} and datas.type = '1'
+    </select>
+</mapper>

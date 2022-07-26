@@ -8,7 +8,6 @@ import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +57,8 @@ public interface ClassicPriorityOrderDataMapper {
 
     int deleteJanNew(String companyCd, Integer priorityOrderCd, String tablename);
 
-    List<DownloadDto> downloadForCsv(@Param("tai") String tai,@Param("tana") String tana,@Param("priorityOrderCd")Integer priorityOrderCd);
+    List<DownloadDto> downloadForCsv(@Param("tai") String tai,@Param("tana") String tana,@Param("priorityOrderCd")Integer priorityOrderCd
+            ,@Param("colName")String colName);
 
     List<DownloadDto> downloadSavedForCsv(@Param("tai") String tai,@Param("tana") String tana,
                                           @Param("companyCd") String company, @Param("priorityOrderCd")Integer priorityOrderCd);
@@ -79,7 +79,7 @@ public interface ClassicPriorityOrderDataMapper {
 
     List<String> selectExistJan(@Param("tableName")String tableName, List<DownloadDto> newJanList);
 
-    List<LinkedHashMap<String, Object>> getTempDataAndMst(@Param("colSortNameList") List<String> colSortNameList,
+    List<Map<String, Object>> getTempDataAndMst(@Param("colSortNameList") List<String> colSortNameList,
                                                 @Param("colNameList") List<String> colNameList,
                                                 @Param("companyCd") String companyCd,
                                                 @Param("priorityOrderCd") Integer priorityOrderCd);
@@ -109,9 +109,19 @@ public interface ClassicPriorityOrderDataMapper {
 
     int deleteWorkData(String companyCd,Integer priorityOrderCd);
 
-    int insertWorkData(String companyCd, Integer priorityOrderCd, List<LinkedHashMap<String, Object>> datas,String authorCd);
+    int insertWorkData(String companyCd, Integer priorityOrderCd, List<Map<String, Object>> datas,String authorCd);
 
     int insertWorkDataForFinal(String companyCd, Integer priorityOrderCd);
 
     List<Map<String,Object>> getWorkData(String companyCd,Integer priorityOrderCd,List<String> attrSortList);
+
+    List<Map<String, Object>> getJanBranchNumList(String aud, Integer priorityOrderCd, List<String> colNameList);
+
+    List<Map<String, Object>> getData(Integer priorityOrderCd,List<String> colNameList);
+
+    Map<String,Object> getJanBranchNum(Integer priorityOrderCd, String janOld,String janNew);
+
+    List<Map<String, Object>> getDataNotExistNewJan(Integer priorityOrderCd);
+
+    List<Map<String, Object>> getPriorityOrderMustAttr(List<String> attrList, String branchNum, Integer priorityOrderCd);
 }

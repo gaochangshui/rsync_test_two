@@ -1,5 +1,8 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.ShelfPtsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMst;
 import org.apache.ibatis.annotations.Mapper;
@@ -12,7 +15,7 @@ import java.util.Map;
 public interface ClassicPriorityOrderMstMapper {
     int deleteByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
-    int insert(@Param("list") PriorityOrderMst record,@Param("authorCd") String authorCd);
+    int insert(@Param("list") PriorityOrderMstDto list, @Param("authorCd") String authorCd);
 
     List<PriorityOrderMst> selectByPrimaryKey(@Param("companyCd") String companyCd);
 
@@ -27,4 +30,18 @@ public interface ClassicPriorityOrderMstMapper {
     List<TableNameDto> getTableNameByCompanyCd(String companyCd, String authorCd);
 
     String getCommonPartsData(String companyCd, Integer priorityOrderCd);
+
+    /**
+     * テンポラリ・テーブルの削除
+     * @param priorityOrderCd
+     */
+    void deleteWork(Integer priorityOrderCd);
+
+    void setWork(@Param("list") PriorityOrderDataDto priorityOrderDataDto, @Param("authorCd") String authorCd,@Param("date")String date);
+
+    void setWorkForFinal(String companyCd, Integer priorityOrderCd,String date);
+
+    PriorityOrderMstDto getPriorityOrderMst(String companyCd, Integer priorityOrderCd);
+
+    List<ShelfPtsDataDto> selectPattern(String companyCd, Integer priorityOrderCd);
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("planoCycle/BasicAllPatternMst")
+@RequestMapping("planoCycleApi/BasicAllPatternMst")
 public class BasicAllPatternMstController {
     @Autowired
     private BasicAllPatternMstService basicAllPatternMstService;

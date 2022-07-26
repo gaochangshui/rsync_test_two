@@ -1,5 +1,8 @@
 package com.trechina.planocycle.entity.po;
 
+import lombok.Data;
+
+@Data
 public class PriorityOrderMstAttrSort {
     private String companyCd;
 
@@ -11,54 +14,5 @@ public class PriorityOrderMstAttrSort {
 
     private Integer cd;
 
-    public String getCompanyCd() {
-        return companyCd;
-    }
 
-    public void setCompanyCd(String companyCd) {
-        this.companyCd = companyCd == null ? null : companyCd.trim();
-    }
-
-    public Integer getPriorityOrderCd() {
-        return priorityOrderCd;
-    }
-
-    public void setPriorityOrderCd(Integer priorityOrderCd) {
-        this.priorityOrderCd = priorityOrderCd;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public Integer getSort() {
-        return sort;
-    }
-
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
-
-    public Integer getCd() {
-        return cd;
-    }
-
-    public void setCd(Integer cd) {
-        this.cd = cd;
-    }
-
-    @Override
-    public String toString() {
-        return "PriorityOrderMstAttrSort{" +
-                "companyCd='" + companyCd + '\'' +
-                ", priorityOrderCd=" + priorityOrderCd +
-                ", value=" + value +
-                ", sort=" + sort +
-                ", cd=" + cd +
-                '}';
-    }
 }

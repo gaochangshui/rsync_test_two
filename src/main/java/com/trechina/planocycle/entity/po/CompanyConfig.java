@@ -1,5 +1,8 @@
 package com.trechina.planocycle.entity.po;
 
+import lombok.Data;
+
+@Data
 public class CompanyConfig {
     private String companyCd;
 
@@ -11,10 +14,4 @@ public class CompanyConfig {
         this.companyCd = companyCd;
     }
 
-    @Override
-    public String toString() {
-        return "CompanyConfig{" +
-                "companyCd='" + companyCd + '\'' +
-                '}';
-    }
 }

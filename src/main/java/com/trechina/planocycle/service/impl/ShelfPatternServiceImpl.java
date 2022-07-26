@@ -60,7 +60,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     public Map<String, Object> getShelfPatternInfo(String companyCd) {
         logger.info("棚pattern情報のパラメータの取得：{}",companyCd);
         List<ShelfPatternMst> resultInfo = shelfPatternMstMapper.selectByPrimaryKey(companyCd);
-        resultInfo.stream().peek(result -> {
+        resultInfo = resultInfo.stream().peek(result -> {
             if (result.getStoreCdStr()==null) {
                 result.setStoreCd(new String[]{});
             }else{
@@ -108,7 +108,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 shelfPatternBranch = new ShelfPatternBranch();
                 shelfPatternBranch.setBranch(cd);
                 shelfPatternBranch.setStartTime(new Date());
-                shelfPatternBranch.setShelfPattrenCd(shelfPatternMst.getShelfPatternCd());
+                shelfPatternBranch.setShelfPatternCd(shelfPatternMst.getShelfPatternCd());
                 branchList.add(shelfPatternBranch);
             }
             shelfPatternBranchMapper.deleteByPatternCd(shelfPatternMst.getShelfPatternCd());
@@ -161,7 +161,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 shelfPatternBranch.setBranch(cd);
                 shelfPatternBranch.setAuthorCd(authorCd);
                 shelfPatternBranch.setStartTime(new Date());
-                shelfPatternBranch.setShelfPattrenCd(shelfPatternMst.getShelfPatternCd());
+                shelfPatternBranch.setShelfPatternCd(shelfPatternMst.getShelfPatternCd());
                 branchList.add(shelfPatternBranch);
             }
             shelfPatternBranchMapper.deleteByPatternCd(shelfPatternMst.getShelfPatternCd());
@@ -202,7 +202,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         if (!list.isEmpty()) {
             list.forEach(item -> branchList.add(String.valueOf(item.getBranch())));
             shelfPatternBranchVO.setBranchCd(branchList);
-            shelfPatternBranchVO.setShelfPatternCd(list.get(0).getShelfPattrenCd());
+            shelfPatternBranchVO.setShelfPatternCd(list.get(0).getShelfPatternCd());
             shelfPatternBranchVO.setStartTime(list.get(0).getStartTime());
             logger.info("つかむ取棚pattern関連的店cd変換クラス型后：{}",shelfPatternBranchVO);
             return ResultMaps.result(ResultEnum.SUCCESS,shelfPatternBranchVO);
@@ -245,7 +245,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
       if (!delBranchList.isEmpty()){
           delBranchList.forEach(item->{
               ShelfPatternBranch shelfPatternBranch = new ShelfPatternBranch();
-              shelfPatternBranch.setShelfPattrenCd(shelfPatternBranchVO.getShelfPatternCd());
+              shelfPatternBranch.setShelfPatternCd(shelfPatternBranchVO.getShelfPatternCd());
               shelfPatternBranch.setBranch(item);
               shelfPatternBranch.setStartTime(shelfPatternBranchVO.getStartTime());
               delList.add(shelfPatternBranch);
@@ -259,7 +259,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
       if (!setBranchList.isEmpty()){
           setBranchList.forEach(item->{
               ShelfPatternBranch shelfPatternBranch = new ShelfPatternBranch();
-              shelfPatternBranch.setShelfPattrenCd(shelfPatternBranchVO.getShelfPatternCd());
+              shelfPatternBranch.setShelfPatternCd(shelfPatternBranchVO.getShelfPatternCd());
               shelfPatternBranch.setBranch(item);
               shelfPatternBranch.setStartTime(shelfPatternBranchVO.getStartTime());
               setList.add(shelfPatternBranch);
@@ -347,6 +347,11 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     }
 
     @Override
+    public List<Integer> getpatternIdOfFilename(String fileName, String companyCd) {
+        return shelfPatternMstMapper.getpatternIdOfFilename(fileName,companyCd);
+    }
+
+    @Override
     public Map<String, Object> getShelfPatternForArea(String companyCd) {
         List<ShelfNamePatternVo> shelfPatternForArea = shelfPatternMstMapper.getShelfPatternForArea(companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS,shelfPatternForArea);
@@ -376,7 +381,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 shelfPatternBranch = new ShelfPatternBranch();
                 shelfPatternBranch.setBranch(cd);
                 shelfPatternBranch.setStartTime(new Date());
-                shelfPatternBranch.setShelfPattrenCd(patternDto.getShelfPatternCd());
+                shelfPatternBranch.setShelfPatternCd(patternDto.getShelfPatternCd());
                 branchList.add(shelfPatternBranch);
                 if (branchList.size()==5000){
                     shelfPatternBranchMapper.insert(branchList, authorCd);
@@ -456,7 +461,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             for (ShelfPatternBranch branch : patternBranch) {
                 int sellIndex = 0;
                 row = sheet2.createRow(rowIndex);
-                row.createCell(sellIndex++).setCellValue(branch.getShelfPattrenCd());
+                row.createCell(sellIndex++).setCellValue(branch.getShelfPatternCd());
                 row.createCell(sellIndex++).setCellValue(branch.getBranch());
                 rowIndex++;
             }

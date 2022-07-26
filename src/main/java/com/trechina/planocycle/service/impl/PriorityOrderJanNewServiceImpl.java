@@ -12,9 +12,9 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
+import com.trechina.planocycle.utils.CommonUtil;
 import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
-import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +57,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Override
     public Map<String, Object> getPriorityOrderJanNew(String companyCd, Integer priorityOrderCd,Integer productPowerNo) {
 
-            logger.info("つかむ取新規商品list参数：{}{}{}",companyCd,",",priorityOrderCd);
+            logger.info("つかむ取新規商品list参数：{},{}",companyCd,priorityOrderCd);
         String authorCd = session.getAttribute("aud").toString();
         List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
         List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
@@ -272,7 +272,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         }
         
         if (!productPowerData.isEmpty()) {
-            productPowerData = this.janSort(productPowerData, data, "rank");
+            productPowerData = CommonUtil.janSort(productPowerData, data, "rank");
         }
         List list1 = new ArrayList();
         list1.add(data);
@@ -306,27 +306,5 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         return ResultMaps.result(ResultEnum.SUCCESS,janNewInfo);
     }
 
-    @Override
-    public List<Map<String, Object>> janSort(List<Map<String, Object>> ptsJanList, List<Map<String, Object>> janNewList, String rankName) {
-        ptsJanList = ptsJanList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
-        janNewList = janNewList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, rankName))).collect(Collectors.toList());
-        janNewList = janNewList.stream().filter(map->map.get("errMsg")==null || !map.get("errMsg").toString().equals("pts棚に並んでいる可能性がありますので削除してください。")).collect(Collectors.toList());
-        int i = 1;
-        for (Map<String, Object> objectMap : ptsJanList) {
-            objectMap.put(rankName,i++);
-        }
-        for (Map<String, Object> objectMap : janNewList) {
-            if (Integer.parseInt(objectMap.get(rankName).toString())>ptsJanList.size()){
-                ptsJanList.add(objectMap);
-            }else {
-            ptsJanList.add(Integer.parseInt(objectMap.get(rankName).toString())-1,objectMap);
-            }
-        }
-        i = 1;
-        for (Map<String, Object> objectMap : ptsJanList) {
-            objectMap.put(rankName,i++);
-        }
-        return ptsJanList;
-    }
 
 }

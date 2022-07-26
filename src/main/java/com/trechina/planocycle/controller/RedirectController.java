@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/planoCycle/Redirect")
+@RequestMapping("/planoCycleApi/Redirect")
 public class RedirectController {
 
     @Value("${SystemPath}")

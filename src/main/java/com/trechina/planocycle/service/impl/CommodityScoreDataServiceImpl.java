@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -8,6 +9,7 @@ import com.trechina.planocycle.service.CommodityScoreDataService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
 import com.trechina.planocycle.utils.cgiUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,16 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CommodityScoreDataServiceImpl implements CommodityScoreDataService {
     @Autowired
     private HttpSession session;
@@ -44,6 +52,10 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Autowired
     private SkuNameConfigMapper skuNameConfigMapper;
     @Autowired
+    private ProductPowerMstMapper productPowerMstMapper;
+    @Autowired
+    private ProductPowerParamMstMapper productPowerParamMstMapper;
+    @Autowired
     private cgiUtils cgiUtil;
 
     @Value("${smartUrlPath}")
@@ -56,24 +68,26 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      */
     @Override
     public Map<String, Object> getCommodityScoreData(Map<String,Object> taskIdMap) {
-        String taskID = taskIdMap.get("taskID").toString();
+
+        String taskID = taskIdMap.get(MagicString.TASK_ID).toString();
         String commonPartsData = taskIdMap.get("commonPartsData").toString();
         Integer productPowerCd = Integer.valueOf(taskIdMap.get("productPowerCd").toString());
         String companyCd = taskIdMap.get("companyCd").toString();
-
         String authorCd = session.getAttribute("aud").toString();
+
         if (taskID.equals("")){
             return ResultMaps.result(ResultEnum.FAILURE);
         }
-        if (vehicleNumCache.get(taskIdMap.get("taskID").toString()+"Exception")!=null){
+        if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()+"Exception")!=null){
             return ResultMaps.result(ResultEnum.CGIERROR);
         }
-       if (vehicleNumCache.get(taskIdMap.get("taskID").toString())==null){
+       if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString())==null){
            return ResultMaps.result(ResultEnum.SUCCESS,"9");
        }
-       logger.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get("taskID").toString()));
-       vehicleNumCache.remove(taskIdMap.get("taskID").toString());
-        String coreCompany = sysConfigMapper.selectSycConfig("core_company");
+
+       log.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()));
+       vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
         String prodMstClass = jsonObject.get("prodMstClass").toString();
         String prodIsCore = jsonObject.get("prodIsCore").toString();
@@ -109,7 +123,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         resultData.add(colMap);
         resultData.addAll(allData);
 
-        logger.info("返回pos基本情報はい{}", resultData);
+        log.info("返回pos基本情報はい{}", resultData);
         return ResultMaps.result(ResultEnum.SUCCESS, resultData);
 
 
@@ -127,6 +141,19 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     public Map<String, Object> getCommodityScoreTaskId( Map<String,Object> map) {
         //smtデータソースを教える
         Integer paramCount = productPowerDataMapper.getParamCount(map);
+        String authorCd = session.getAttribute("aud").toString();
+        String companyCd = map.get("company").toString();
+        String commonPartsData = map.get("commonPartsData").toString();
+        Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
+        //mst
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        productPowerMstMapper.deleteWork(companyCd,productPowerCd);
+        productPowerMstMapper.setWork(productPowerCd,companyCd,authorCd,simpleDateFormat.format(date));
+        //param
+        String customerConditionStr = map.get("customerCondition").toString();
+        productPowerParamMstMapper.deleteWork(companyCd,productPowerCd);
+        productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr);
         if (paramCount >0){
             map.put("changeFlag","1");
         }else {
@@ -139,9 +166,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             map.put("seasonStTime","_");
         }
         String uuid1 = UUID.randomUUID().toString();
-        String authorCd = session.getAttribute("aud").toString();
-        String companyCd = map.get("company").toString();
-        String commonPartsData = map.get("commonPartsData").toString();
+
         String company_kokigyou = planocycleKigyoListMapper.getGroupInfo(companyCd);
         //グループ企業かどうかを判断する
         if (company_kokigyou!=null){
@@ -176,7 +201,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             map.put("tenpo_kaisou_mst","tenpo_kaisou_kigyomst");
         }
         map.remove("commonPartsData");
-        Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
+
         //選択した品名を判断する
         Integer janName2colNum = Integer.valueOf(map.get("janName2colNum").toString());
         if (janName2colNum == 2){
@@ -201,6 +226,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         map.put("tableName","planocycle.work_product_power_kokyaku");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("調用cgiつかむ取data的参数：{}", map);
+
         //yobi
         productPowerDataMapper.deleteWKYobiiitern(authorCd, companyCd,productPowerCd);
         productPowerDataMapper.deleteWKYobiiiternData(authorCd, companyCd,productPowerCd);
@@ -222,7 +248,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String productPowerData = cgiUtil.setPath("ProductPowerData");
         String posResult = cgiUtil.postCgi(productPowerData, posMap, tokenInfo,smartPath);
         String smartPath = this.smartPath;
-        executor.execute(() -> {
+        Future<?> future = executor.submit(() -> {
             String uuid = "";
                 Map<String, Object> map1 = null;
                     while (true) {
@@ -272,6 +298,17 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             vehicleNumCache.put(posResult,"ok");
                 });
         String result =  posResult;
+        try {
+            future.get(10, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e){
+            logger.error("thread is interrupted", e);
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException e) {
+            return ResultMaps.result(ResultEnum.SUCCESS, result);
+        }
+
         logger.info("taskId返回：{}", result);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }

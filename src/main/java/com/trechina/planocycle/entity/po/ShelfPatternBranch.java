@@ -1,9 +1,11 @@
 package com.trechina.planocycle.entity.po;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
 import java.util.Date;
 
+@Data
 public class ShelfPatternBranch {
 
     private Integer shelfPatternCd;
@@ -14,44 +16,4 @@ public class ShelfPatternBranch {
 
     private String authorCd;
 
-    public String getAuthorCd() {
-        return authorCd;
-    }
-
-    public void setAuthorCd(String authorCd) {
-        this.authorCd = authorCd;
-    }
-
-    public Integer getShelfPattrenCd() {
-        return shelfPatternCd;
-    }
-
-    public void setShelfPattrenCd(Integer shelfPattrenCd) {
-        this.shelfPatternCd = shelfPattrenCd;
-    }
-
-    public String getBranch() {
-        return branch;
-    }
-
-    public void setBranch(String branch) {
-        this.branch = branch;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    @Override
-    public String toString() {
-        return "ShelfPatternBranch{" +
-                "shelfPattrenCd=" + shelfPatternCd +
-                ", branch=" + branch +
-                ", startTime=" + startTime +
-                '}';
-    }
 }

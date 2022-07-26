@@ -23,4 +23,14 @@
             ${index}=#{val}
         </foreach>
     </select>
+    <select id="selectFinalDataByAttr" resultType="map">
+        select jan_new jan,rank_upd,sku,branch_num,branch_amount, branch_amount_upd,branch_num_upd,rank
+        <foreach collection="attrList" item="item" index="index" open="," separator=" || " close=" as attr_list">
+            <if test="index > 0">','||</if>concat('${item}',':',${item})</foreach>
+        from priority.priority_order_result_data
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd} and rank_upd!=99999999
+        order by
+        <foreach collection="attrList" item="item" index="index" separator="," close=",">${item}</foreach>
+        rank_upd
+    </select>
 </mapper>

@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.ShelfPtsDataDto;
 import com.trechina.planocycle.entity.po.PriorityOrderPattern;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,4 +16,12 @@ public interface ClassicPriorityOrderPatternMapper {
     int selectByPriorityOrderName(String companyCd,String priorityOrderName,Integer priorityOrderCd,String authorCd);
 
     int deleteforid(Integer priorityOrderCd);
+
+    List<ShelfPtsDataDto> selectPattern(String companyCd, Integer priorityOrderCd);
+
+    String getShelfName(Integer priorityOrderCd,String companyCd);
+
+    int deleteWork(Integer priorityOrderCd);
+
+    int insertWork(@Param("lists") List<PriorityOrderPattern> record);
 }

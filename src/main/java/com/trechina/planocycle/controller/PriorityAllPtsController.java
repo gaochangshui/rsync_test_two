@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/priorityAllPts")
+@RequestMapping("/planoCycleApi/priorityAllPts")
 public class PriorityAllPtsController {
     @Autowired
     private PriorityAllPtsService priorityAllPtsService;

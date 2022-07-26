@@ -609,7 +609,7 @@
   <select id="getPtsCdByPatternCd" resultMap="BaseResultMap">
     select id,file_name from planocycle.shelf_pts_data where company_cd=#{companyCd} and shelf_pattern_cd::varchar=any(string_to_array(#{patternCd},','))
   </select>
-  <select id="getInitialExtraction" resultType="java.util.LinkedHashMap">
+  <select id="getInitialExtraction" resultType="java.util.Map">
     select t1.jan as jan_old,t1.jan as jan_new ,coalesce(t1."2",'') as sku,
            <foreach collection="listAttr" separator="," item="item" >
              coalesce(${item.tableName}.${item.col},'') as ${item.colName}
@@ -674,5 +674,29 @@
                                             on ptsdata.id = tanamst.pts_cd
     where ptsdata.priority_order_cd = #{priorityOrderCd}
     group by id
+  </select>
+  <select id="selectShelfPts" resultType="com.trechina.planocycle.entity.dto.ShelfPtsHeaderDto">
+    select commoninfo, versioninfo, outflg, modename, tai_header, tana_header, jan_header,file_name
+    from planocycle.shelf_pts_data pts_data inner join planocycle.shelf_pts_data_version data_version on
+      pts_data.id=data_version.pts_cd where shelf_pattern_cd=#{shelfPatternCd}
+  </select>
+  <select id="selectClassifyPtsData" resultType="map">
+    select id,jan, jan_old,tai_cd "taiCd",tana_cd "tanaCd",tanaposition_cd "tanaPositionCd",face_count,face_men,face_kaiten,tumiagesu,zaikosu,face_displayflg,
+    face_position,depth_display_num,coalesce(sku, '') sku, branch_num, branch_amount, rank_upd, rank
+    <foreach collection="rankAttr" separator=" || " open="," item="item" index="index" close=" as attr_list">
+      <if test="index>0">','||</if>concat('${item}',':',${item})</foreach>
+    from planocycle.shelf_pts_data patternmst
+    inner join planocycle.shelf_pts_data_jandata jandata on jandata.pts_cd=patternmst."id"
+    inner join priority.priority_order_result_data jans on jans.jan_old=jandata.jan  and priority_order_cd=#{priorityOrderCd}
+    where patternmst.shelf_pattern_cd=#{patternCd}
+    order by jandata.tai_cd, jandata.tana_cd, jandata.tanaposition_cd
+  </select>
+  <select id="selectShelfPtsTaiMst" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataTaimst">
+    select tai_cd,tai_height,tai_width,tai_depth from planocycle.shelf_pts_data_taimst where pts_cd=#{ptsCd}
+    order by tai_cd
+  </select>
+  <select id="selectShelfPtsTanaMst" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataTanamst">
+    select tai_cd,tana_cd,tana_height,tana_width,tana_depth,tana_thickness from planocycle.shelf_pts_data_tanamst where pts_cd=#{ptsCd}
+    order by tai_cd, tana_cd
   </select>
 </mapper>

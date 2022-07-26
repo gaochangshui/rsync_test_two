@@ -21,7 +21,9 @@ public interface ClassicPriorityOrderJanReplaceService {
      */
     Map<String,Object> setPriorityOrderJanInfo(List<PriorityOrderJanReplace> priorityOrderJanReplace);
 
-    String getJanInfo();
+    String getJanInfo(String proInfoTable);
+
+    boolean isExistJanInfo(String proInfoTable, String jan);
 
     /**
      * janを削除してリストを変更する

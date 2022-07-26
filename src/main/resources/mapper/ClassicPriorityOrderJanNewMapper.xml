@@ -16,7 +16,7 @@
     values
            <foreach collection="lists" separator="," item="list">
            (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janNew,jdbcType=VARCHAR},
-      #{list.rank,jdbcType=INTEGER} , #{list.branchNum,jdbcType=INTEGER} , #{list.branchAccount,jdbcType=NUMERIC} , #{list.nameNew,jdbcType=VARCHAR})
+      #{list.rank,jdbcType=INTEGER} , #{list.branchNum,jdbcType=INTEGER}::integer , #{list.branchAccount,jdbcType=NUMERIC} , #{list.nameNew,jdbcType=VARCHAR})
            </foreach>
   </insert>
 
@@ -28,9 +28,23 @@
 
     <update id="updateBranchNum">
         update priority.work_priority_order_jan_new
-        set branch_num = #{branchNum,jdbcType=INTEGER}
+        set branch_num =
+        CASE jan_new
+        <foreach collection="list" item="item" >
+            WHEN trim(#{item.jan_new}) THEN #{item.branch_num}::integer
+        </foreach>
+        else 0 end
         where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-        and jan_new = #{janNew,jdbcType=VARCHAR}
+    </update>
+    <update id="updateBranchNumByList">
+        update planocycle.work_priority_order_jan_new
+        set branch_num =
+        CASE jan_new
+        <foreach collection="list" item="item" >
+            WHEN trim(#{item.jan_new}) THEN #{item.branch_num}::integer
+        </foreach>
+        else 0 end
+        where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     </update>
     <insert id="setWorkForFinal">
         insert into priority.work_priority_order_jan_new
@@ -164,6 +178,123 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
+    </select>
+    <select id="getJanNews" resultType="java.util.Map">
+        select
+        jan_new ,name_new as sku,rank as rank_upd,branch_account as branch_amount_upd,branch_num as branch_num_upd, rank as goods_rank,
+        rank as rank_prop,
+        <foreach collection="colName" item="item" separator=",">
+            ${item}
+        </foreach>
+        from (
+        select jannew.jan_new,name_new,rank,branch_account,branch_num,
+        max( case when attr.attr_cd = 1 then attr.attr_value else null end ) as attr1,
+        max( case when attr.attr_cd = 2 then attr.attr_value else null end ) as attr2,
+        max(  case when attr.attr_cd = 3 then attr.attr_value else null end)  as attr3,
+        max( case when attr.attr_cd = 4 then attr.attr_value else null end ) as attr4,
+        max( case when attr.attr_cd = 5 then attr.attr_value else null end)  as attr5,
+        max( case when attr.attr_cd = 6 then attr.attr_value else null end)  as attr6,
+        max(  case when attr.attr_cd = 7 then attr.attr_value else null end ) as attr7,
+        max(   case when attr.attr_cd = 8 then attr.attr_value else null end ) as attr8,
+        max(   case when attr.attr_cd = 9 then attr.attr_value else null end)  as attr9,
+        max(   case when attr.attr_cd = 10 then attr.attr_value else null end)  as attr10
+
+        from priority.work_priority_order_jan_new  jannew
+
+        left join priority.work_priority_order_jan_attribute attr
+        on jannew.priority_order_cd =attr.priority_order_cd and jannew.jan_new = attr.jan_new
+
+        where jannew.priority_order_cd = #{priorityOrderCd}
+
+        GROUP BY  jannew.jan_new,name_new,rank,branch_account,branch_num)as jannews
+        where
+        not exists(select jan_old from priority.work_priority_order_jan_proposal pro1 where jannews.jan_new = pro1.jan_old and pro1.priority_order_cd = #{priorityOrderCd} and pro1.flag=1)
+        and not exists(select jan_old from priority.work_priority_order_jan_proposal pro2 where jannews.jan_new = pro2.jan_new and pro2.priority_order_cd = #{priorityOrderCd} and pro2.flag=1)
+        and not exists(select jan_old from priority.priority_order_jan_replace rep1 where jannews.jan_new = rep1.jan_new and rep1.company_cd = #{companyCd})
+        and not exists(select jan_old from priority.priority_order_jan_replace rep2 where jannews.jan_new = rep2.jan_old and rep2.company_cd = #{companyCd})
+        and not exists(select jan_old from priority.work_priority_order_result_data datas where jannews.jan_new = datas.jan_old and datas.priority_order_cd= #{priorityOrderCd})
+    </select>
+    <select id="getErrorMsgJan" resultType="java.util.Map">
+        SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as "errMsg"
+        from priority.work_priority_order_result_data  where rank != -1
+        union
+        SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as "errMsg"
+        from priority.priority_order_jan_replace
+        where company_cd = #{companyCd}
+        union
+        SELECT jan_old as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as "errMsg"
+        from priority.priority_order_jan_replace
+        where company_cd = #{companyCd}
+        union
+        SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as "errMsg"
+        from priority.work_priority_order_jan_proposal
+        where priority_order_cd = #{priorityOrderCd}
+        union
+        SELECT jan_old as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as "errMsg"
+        from priority.work_priority_order_jan_proposal
+        where priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getSimilarity" resultType="java.util.Map">
+        select coalesce (rep.jan_new,pro.jan_new,mst.jan_new) as jan_new ,mst.sku ,
+        <foreach collection="map" separator="," index="index">
+            mst.${index}
+        </foreach>
+        ,mst.rank_upd as rank,branch_num_upd ::int as "branchNum",branch_amount_upd ::int as "branchAccount"
+        from priority.work_priority_order_result_data mst
+        left join priority.priority_order_jan_replace rep
+        on rep.jan_old = mst.jan_old and rep.company_cd = #{companyCd}
+        left join priority.work_priority_order_jan_proposal pro
+        on pro.jan_old = mst.jan_old and pro.priority_order_cd = #{priorityOrderCd} and pro.flag = 1
+        where
+        <foreach collection="map" item="item" index="index" separator="and">
+            mst.${index} = '${item}'
+        </foreach>
+        and mst.rank != -1 and mst.rank_upd != 99999999
+        and mst.priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getJanNewList" resultType="java.util.Map">
+        select
+        jan_new as "janNew",name_new as "janName",rank,branch_account  as "branchAccount",
+        <foreach collection="maps" index="index" separator=",">
+            ${index}
+        </foreach>
+        from (
+        select jannew.jan_new,name_new,rank,branch_account,
+        max( case when attr.attr_cd = 1 then attr.attr_value else null end ) as attr1,
+        max( case when attr.attr_cd = 2 then attr.attr_value else null end ) as attr2,
+        max(  case when attr.attr_cd = 3 then attr.attr_value else null end)  as attr3,
+        max( case when attr.attr_cd = 4 then attr.attr_value else null end ) as attr4,
+        max( case when attr.attr_cd = 5 then attr.attr_value else null end)  as attr5,
+        max( case when attr.attr_cd = 6 then attr.attr_value else null end)  as attr6,
+        max(  case when attr.attr_cd = 7 then attr.attr_value else null end ) as attr7,
+        max(   case when attr.attr_cd = 8 then attr.attr_value else null end ) as attr8,
+        max(   case when attr.attr_cd = 9 then attr.attr_value else null end)  as attr9,
+        max(   case when attr.attr_cd = 9 then attr.attr_value else null end)  as attr10
+
+        from priority.work_priority_order_jan_new  jannew
+
+        left join priority.work_priority_order_jan_attribute attr
+        on jannew.priority_order_cd =attr.priority_order_cd and jannew.jan_new = attr.jan_new
+
+        where jannew.priority_order_cd = #{priorityOrderCd}
+        GROUP BY  jannew.jan_new,name_new,rank,branch_account
+        )
+        as jannews
+
+        where  <foreach collection="maps" item="item" index="index" separator="and">
+        ${index} = #{item}
+    </foreach>
+        and
+        not exists(select jan_old from priority.work_priority_order_jan_proposal pro1 where jannews.jan_new = pro1.jan_old and pro1.priority_order_cd = #{priorityOrderCd} and pro1.flag=1)
+        and not exists(select jan_old from priority.work_priority_order_jan_proposal pro2 where jannews.jan_new = pro2.jan_new and pro2.priority_order_cd = #{priorityOrderCd} and pro2.flag=1)
+        and not exists(select jan_old from priority.priority_order_jan_replace rep1 where jannews.jan_new = rep1.jan_new and rep1.company_cd = #{companyCd})
+        and not exists(select jan_old from priority.priority_order_jan_replace rep2 where jannews.jan_new = rep2.jan_old and rep2.company_cd = #{companyCd})
+        and not exists(select jan_old from priority.work_priority_order_result_data datas where jannews.jan_new = datas.jan_old and datas.priority_order_cd= #{priorityOrderCd})
+    </select>
+    <select id="getJan" resultType="java.lang.String">
+        select array_to_string(array_agg(jan_new),',')
+        from    priority.work_priority_order_jan_new
+        where priority_order_cd = #{priorityOrderCd}
     </select>
 
 

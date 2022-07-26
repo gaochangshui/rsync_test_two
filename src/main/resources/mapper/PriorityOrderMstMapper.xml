@@ -93,13 +93,9 @@
     select <include refid="Base_Column_List"/> from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and deleteflg=0
   </select>
   <select id="getPatternOrProduct" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstDto">
-    SELECT mst.product_power_cd,string_agg(pattern.shelf_pattern_cd ::VARCHAR, ',') as shelfPatternCd,mst.attr_option
-
-    from priority.priority_order_mst  mst
-           left join priority.priority_order_pattern pattern
-                     on pattern.priority_order_cd = mst.priority_order_cd
+    SELECT mst.product_power_cd,mst.shelf_pattern_cd as shelfPatternCd,mst.attr_option
+    from priority.work_priority_order_mst  mst
     where mst.company_cd = #{companyCd} and mst.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-    GROUP BY product_power_cd, mst.priority_order_cd,mst.attr_option
   </select>
     <select id="selectCommonPartsData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderAttrDto">
       select common_parts_data,priority_order_cd,company_cd  from planocycle.work_priority_order_mst
@@ -124,9 +120,7 @@
           <if test="heightSpace == null and heightSpace != ''">
             top_partition_val = 0 , top_partition_flag = 0,
           </if>
-          <if test="tanaWidthCheck != null and tanaWidthCheck != ''">
             tana_wid_check = #{tanaWidthCheck}
-          </if>
         </trim>
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd = #{authorCd}
     </update>

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-    @RequestMapping("/planoCycle/Users")
+    @RequestMapping("/planoCycleApi/Users")
 public class UserController {
     @Autowired
     private UserService userService;

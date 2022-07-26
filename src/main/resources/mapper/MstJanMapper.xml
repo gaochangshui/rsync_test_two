@@ -21,10 +21,10 @@
         select * from ${tableName} where "1" = #{jan}
     </select>
     <select id="getJanAttrList" resultType="java.util.LinkedHashMap">
-    select "1","2","3","4" from ${tableName} where "4" is not null
+    select "1","2","3","4","7","8","9" from ${tableName} where "4" is not null order by "3"
     </select>
     <select id="getJanKaisouList" resultType="java.util.LinkedHashMap">
-        select "1","2","3","4" from ${tableName} where "4" is not null
+        select "1","2","3","4","7" from ${tableName} where "4" is not null and "1" like '%_name'
     </select>
 
     <!--"{0}".prod_{1}_jan_info  -->
@@ -45,5 +45,34 @@
             </foreach>)
         </if>
     </sql>
+
+    <select id="getAttrName" resultType="com.trechina.planocycle.entity.po.JanAttrName">
+        select "1" "value","2" "label",
+        case "8" when '1' then '基本項目'
+        when '2' then '商品分類'
+        when '3' then '商品属性'
+        when '4' then 'Plano-Cycle専用'
+        when '5' then 'Plano-Cycle追加'
+        else ''
+        end as "attrType",
+        case "9" when '1' then true else false end as "mandatory",
+        case when "9" = '1' then true
+        when t2.item_cd is not null then true
+        else false end as "flag"
+        from ${tableName} t1
+        left join ${tableNamePreset} t2 on t1."1" =t2.item_cd and t2.author_cd = #{authorCd}
+        order by "4" nulls first,"3"
+    </select>
+
+    <insert id="insertPresetAttribute">
+        insert into ${tableName}
+        values
+        <foreach collection="presetAttr" separator="," item="item">
+            (#{authorCd},#{item})
+        </foreach>
+    </insert>
+    <delete id="deleteByAuthorCd">
+        delete from ${tableName} where author_cd=#{authorCd}
+    </delete>
 
 </mapper>

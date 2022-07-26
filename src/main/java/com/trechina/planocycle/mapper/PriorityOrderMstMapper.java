@@ -56,7 +56,7 @@ public interface PriorityOrderMstMapper {
 
     //テンポラリ・テーブル・ストア
     int setPartition(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd") String authorCd,
-                     @Param("partition") Integer partition, Integer heightSpace, Integer tanaWidthCheck);
+                     @Param("partition") Integer partition, Integer heightSpace, @Param("tanaWidthCheck") Integer tanaWidthCheck);
 
     PriorityOrderMstDto getPatternOrProduct(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 

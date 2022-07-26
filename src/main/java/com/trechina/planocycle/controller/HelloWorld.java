@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping(("/planoCycle/HelloWorld"))
+@RequestMapping(("/planoCycleApi/HelloWorld"))
 public class HelloWorld {
     @GetMapping("/getHelloWorld")
     public String getHelloWorld(){

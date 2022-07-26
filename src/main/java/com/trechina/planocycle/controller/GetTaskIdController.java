@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping(("/planoCycle/GetTaskId"))
+@RequestMapping(("/planoCycleApi/GetTaskId"))
 public class GetTaskIdController {
     @Autowired GetTaskIdService getTaskIdService;
     @PostMapping("/getTaskId")

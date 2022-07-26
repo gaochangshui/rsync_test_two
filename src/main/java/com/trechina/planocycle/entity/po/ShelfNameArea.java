@@ -1,5 +1,8 @@
 package com.trechina.planocycle.entity.po;
 
+import lombok.Data;
+
+@Data
 public class ShelfNameArea {
 
     private Integer shelfNameCd;
@@ -9,37 +12,4 @@ public class ShelfNameArea {
     private String companyCd;
 
 
-
-    public Integer getShelfNameCd() {
-        return shelfNameCd;
-    }
-
-    public void setShelfNameCd(Integer shelfNameCd) {
-        this.shelfNameCd = shelfNameCd;
-    }
-
-    public Integer getAreacd() {
-        return areacd;
-    }
-
-    public void setAreacd(Integer areacd) {
-        this.areacd = areacd;
-    }
-
-    public String getCompanyCd() {
-        return companyCd;
-    }
-
-    public void setCompanyCd(String companyCd) {
-        this.companyCd = companyCd == null ? null : companyCd.trim();
-    }
-
-    @Override
-    public String toString() {
-        return "ShelfNameArea{" +
-                "shelfNameCd=" + shelfNameCd +
-                ", areacd=" + areacd +
-                ", companyCd='" + companyCd + '\'' +
-                '}';
-    }
 }

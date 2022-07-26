@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/ShelfPattern")
+@RequestMapping("/planoCycleApi/ShelfPattern")
 public class ShelfPatternController {
     @Autowired
     private ShelfPatternService shelfPatternService;

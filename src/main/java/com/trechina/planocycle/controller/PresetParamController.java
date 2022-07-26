@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/PresetParam")
+@RequestMapping("/planoCycleApi/PresetParam")
 public class PresetParamController {
     @Autowired
     private PresetParamService presetParamService;

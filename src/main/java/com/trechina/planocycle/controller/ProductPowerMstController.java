@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/ProductPowerMst")
+@RequestMapping("/planoCycleApi/ProductPowerMst")
 public class ProductPowerMstController {
     @Autowired
     private ProductPowerMstService powerMstService;

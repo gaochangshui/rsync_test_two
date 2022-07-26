@@ -57,9 +57,17 @@
     set product_power_cd = #{productPowerCd}
     where company_cd = #{companyCd} and author_cd = #{authorCd} and priority_order_cd = #{priorityOrderCd}
   </update>
+  <delete id="deleteWork">
+    delete from planocycle.work_product_power_mst where company_cd = #{companyCd}  and product_power_cd=#{productPowerCd}
+  </delete>
+  <insert id="setWork">
+      insert  into planocycle.work_product_power_mst (company_cd ,product_power_cd,product_power_name,author_cd,author_name,registered,maintainer_cd,
+                                                      maintainer_name,modified)
+        values (#{companyCd},#{productPowerCd},concat('一時保存データ',#{date}),#{authorCd},#{authorCd},now(),#{authorCd},#{authorCd},now())
+    </insert>
 
 
-  <select id="selectCommodityList" parameterType="map" resultMap="CommodityListInfo">
+    <select id="selectCommodityList" parameterType="map" resultMap="CommodityListInfo">
     select distinct
       product_power_cd,product_power_name
     from planocycle.product_power_mst

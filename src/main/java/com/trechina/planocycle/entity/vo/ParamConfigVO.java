@@ -1,5 +1,8 @@
 package com.trechina.planocycle.entity.vo;
 
+import lombok.Data;
+
+@Data
 public class ParamConfigVO {
     private String itemName;
     private String itemCd;
@@ -9,51 +12,4 @@ public class ParamConfigVO {
     private String itemType;
     private Integer rankFlag;
 
-    public String getItemType() {
-        return itemType;
-    }
-
-    public void setItemType(String itemType) {
-        this.itemType = itemType;
-    }
-
-    public Integer getRankFlag() {
-        return rankFlag;
-    }
-
-    public void setRankFlag(Integer rankFlag) {
-        this.rankFlag = rankFlag;
-    }
-
-    public String getItemName() {
-        return itemName;
-    }
-
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
-    }
-
-    public String getItemCd() {
-        return itemCd;
-    }
-
-    public void setItemCd(String itemCd) {
-        this.itemCd = itemCd;
-    }
-
-    public String getItemValue() {
-        return itemValue;
-    }
-
-    public void setItemValue(String itemValue) {
-        this.itemValue = itemValue;
-    }
-
-    public Integer getFlag() {
-        return flag;
-    }
-
-    public void setFlag(Integer flag) {
-        this.flag = flag;
-    }
 }

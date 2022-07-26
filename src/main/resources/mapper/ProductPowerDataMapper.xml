@@ -162,7 +162,7 @@
                                                            customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,customer_store_item05,customer_store_item06,customer_store_item07,
                                                            customer_store_item08,customer_store_item09,customer_store_item10,customer_item01,customer_item02,customer_item03,customer_item04,customer_item05,customer_item06,
                                                            customer_item07,customer_item08,customer_item09,customer_item10,customer_item11,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,intage_item06,
-                                                           intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02)
+                                                           intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02 )
         select #{companyCd},#{productPowerCd},#{authorCd},s.jan,yobi.item1,yobi.item2,yobi.item3,yobi.item4,yobi.item5,yobi.item6,yobi.item7,yobi.item8,yobi.item9,yobi.item10,
                pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,
                pos_store_item01,pos_store_item02,pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,
@@ -438,7 +438,7 @@
     <select id="selectShowData" resultType="map">
         select
         syokika.jan jan
-            <foreach collection="showList" item="item" open="," separator=",">coalesce(${item.itemCd},'') as ${item.itemCd}</foreach>
+            <foreach collection="showList" item="item" open="," separator=",">coalesce(${item.itemCd},'0') as ${item.itemCd}</foreach>
             <foreach collection="showPreparedList" item="item" open="," separator=",">coalesce(${item.data_cd},0) as ${item.data_cd}</foreach>
         from  planocycle.work_product_power_syokika syokika
             <if test="prepareCd.size()>0">
@@ -604,12 +604,12 @@
         <foreach collection="map" item="item" separator="+" index="index">
             "${index}_rank" ::INTEGER * ${item} :: integer
         </foreach>
-        asc
+
         ) as rank_result
                from
                (select s.jan,
-        <foreach collection="map" index="index" separator="," item="item">DENSE_RANK() over(order by ${index} ::decimal
-            desc ) as "${index}_rank"
+        <foreach collection="map" index="index" separator="," item="item">DENSE_RANK() over(order by ${index},0 ::decimal
+            desc nulls last ) as "${index}_rank"
         </foreach>
 
         from planocycle
@@ -732,16 +732,6 @@
     </select>
 
 
-    <insert id="selectWKKIntager">
-        insert into planocycle.work_product_power_intage(company_cd,product_power_cd,jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
-            intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
-            intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,author_cd)
-        values
-        <foreach collection="list" separator="," item="item">
-            (#{companyCd},#{productPowerCd},#{item},1,2,3,4,5,6,7,8,9,10,11,12,13,14,#{authorCd})
-        </foreach>
-
-    </insert>
     <select id="selectSameNameJan" resultType="com.trechina.planocycle.entity.po.PriorityOrderJanProposal">
         select t1.jan as janOld,t2.jan janNew from
         (select distinct jan, janinfo."${janNameCol}" jan_name from ${tableName} janinfo
@@ -758,7 +748,10 @@
         where product_power_cd = #{productPowerCd}
     </select>
     <select id="getPatternList" resultType="java.lang.String">
-        select string_agg(distinct shelf_pattern_cd::varchar, ',') as shelfPatternCd from planocycle.shelf_pattern_branch
+        select string_agg(distinct branchs.shelf_pattern_cd::varchar, ',') as shelfPatternCd
+        from planocycle.shelf_pattern_branch branchs
+        inner join planocycle.shelf_pts_data ptsdata
+        on ptsdata.shelf_pattern_cd = branchs.shelf_pattern_cd
         where branch in
         <foreach  collection="branchList" separator="," open="(" close=")" item="item">
             #{item}

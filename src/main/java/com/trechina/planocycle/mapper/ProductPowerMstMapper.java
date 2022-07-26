@@ -45,4 +45,7 @@ public interface ProductPowerMstMapper {
 
     GetPatternForProductPowerCd getPatternAndName(@Param("productPowerCd") Integer productPowerCd);
 
+    void setWork(Integer productPowerCd, String companyCd,String authorCd, String date);
+
+    void deleteWork(String companyCd, Integer productPowerCd);
 }

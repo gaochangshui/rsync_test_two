@@ -1,13 +1,17 @@
 package com.trechina.planocycle.constant;
 
 public class MagicString {
-    private MagicString(){}
+    private MagicString() {
+    }
+
     public static final String CORE_COMPANY = "core_company";
 
     public static final String FIRST_CLASS_CD = "0000";
 
     public static final String JAN_HEADER_JAN_CD_COL = "jan_cd";
     public static final String JAN_HEADER_JAN_NAME_COL = "jan_name";
+
+    public static final String TASK_ID = "taskID";
     /**
      * jan_cd is default column 1
      */
@@ -41,7 +45,7 @@ public class MagicString {
     /**
      * 棚変更：高さ変更
      */
-    public static final String MSG_HEIGHT_CHANGE= "高さ変更 元：{height}mm";
+    public static final String MSG_HEIGHT_CHANGE = "高さ変更 元：{height}mm";
     /**
      * 棚変更：棚新規作成
      */
@@ -72,10 +76,54 @@ public class MagicString {
      * 棚割専用
      */
     public static final String JAN = "jan";
+
+    public static final String DUMMY_JAN = "dummy_jan";
     public static final String JAN_NAME = "JanName";
     public static final String NAME = "name";
     public static final String VALUE = "value";
     public static final String INPUT_SHOW = "inputShow";
     public static final String TITLE = "title";
+    public static final String JAN_OLD = "jan_old";
+    public static final String JAN_NEW = "jan_new";
+
+    public static final String ATTR_LIST = "attr_list";
+
+    public static final String RANK_UPD = "rank_upd";
+
+    public static final String COLUMN_INDEX_JANINFO_COLUMN = "3";
+    public static final String COLUMN_INDEX_KAISOU_COLUMN = "4";
+
+    public static final String DATE_FORMATER = "yyyyMMddHHmm";
+    public static final String DELETE_LIST = "deleteList";
+    public static final String NEW_LIST = "newList";
+
+    public static final String PTS_NAME = "pts_name";
+
+    public static final String DEL_FLAG = "del_flg";
+
+    public static final String SMALLS = "smalls";
+
+    public static final String SMALLS_INDEX = "smallsIndex";
+
+    public static final String SMALLS_JAN = "smallsJan";
+
+    public static final String BIG_LAST_INDEX = "bigLastIndex";
+
+    public static final String BRANCH_NUM = "branch_num";
+    public static final String BRANCH_AMOUNT = "branch_amount";
+
+    public static final String TANAPOSITION_CD = "tanaposition_cd";
+
+    public static final String PTS_VERSION = "Ｖ１．０";
+
+    /**
+     * 必須区分
+     */
+    public static final String COLUMN_INDEX_REQUIRED = "7";
+
+    /**
+     * 項目区分
+     */
+    public static final String COLUMN_INDEX_ITEM_TYPE = "8";
 
 }

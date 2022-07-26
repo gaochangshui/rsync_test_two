@@ -110,33 +110,33 @@ public class sshFtpUtils {
         OutputStream outputStream = null;
 
         try(FileOutputStream downFile = new FileOutputStream(file)){
-                outputStream = response.getOutputStream();
-                Connection connection = getConnection();
-                boolean auth = connection.authenticateWithPassword(user,pw);
-                logger.info("ssh服務器身分驗證返回値：{}",auth);
-                if (auth) {
-                    logger.info("検証成功");
-                    SCPClient client =new SCPClient(connection);
-                    is = client.get(remoteFile);
-                    if(!file.createNewFile()){
-                        return "転送失敗";
-                    }
-                    // 構造一个長い度はい1024的字節数組
-                    byte[] buffer = new byte[1024];
-                    int len = 0;
-                    while ((len = is.read(buffer)) != -1){
-                        downFile.write(buffer,0,len);
-                        outputStream.write(buffer,0,len);
-                        downFile.flush();
-                        outputStream.flush();
-                    }
-                    connection.close();
-                    return "転送成功";
-                } else {
+            outputStream = response.getOutputStream();
+            Connection connection = getConnection();
+            boolean auth = connection.authenticateWithPassword(user,pw);
+            logger.info("ssh服務器身分驗證返回値：{}",auth);
+            if (auth) {
+                logger.info("検証成功");
+                SCPClient client =new SCPClient(connection);
+                is = client.get(remoteFile);
+                if(!file.createNewFile()){
                     return "転送失敗";
                 }
+                // 構造一个長い度はい1024的字節数組
+                byte[] buffer = new byte[1024];
+                int len = 0;
+                while ((len = is.read(buffer)) != -1){
+                    downFile.write(buffer,0,len);
+                    outputStream.write(buffer,0,len);
+                    downFile.flush();
+                    outputStream.flush();
+                }
+                connection.close();
+                return "転送成功";
+            } else {
+                return "転送失敗";
+            }
 
-            } catch (IOException e) {
+        } catch (IOException e) {
             logger.info("error:",e);
             return "connect失敗";
         } finally {

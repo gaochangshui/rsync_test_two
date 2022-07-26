@@ -27,4 +27,11 @@ public interface ClassicPriorityOrderJanNewService {
      * @return
      */
     Integer delriorityOrderJanNewInfo(String companyCd,Integer priorityOrderCd);
+
+    /**
+     * 分類によって商品の力点数表を除いて同類の商品を抽出する
+     * @param
+     * @return
+     */
+    Map<String, Object> getSimilarity(Map<String,Object> map);
 }

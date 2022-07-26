@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/planoCycle/CommodityScorePara")
+@RequestMapping("/planoCycleApi/CommodityScorePara")
 public class CommodityScoreParaController {
     @Autowired
     private CommodityScoreParaService commodityScoreParaService;

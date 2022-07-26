@@ -9,6 +9,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
+
 @Mapper
 public interface ShelfPatternMstMapper {
     int deleteByPrimaryKey(@Param("conpanyCd") String conpanyCd, @Param("shelfPatternCd") Integer shelfPatternCd, @Param("area") Integer area);
@@ -43,5 +45,11 @@ public interface ShelfPatternMstMapper {
 
     List<String> getPatternName(@Param("list")List<ShelfPatternDto> shelfPatternDto,@Param("companyCd") String companyCd);
 
+    List<Map<String, Object>> selectPatternCommonPartsData(Integer priorityOrderCd);
+
     List<ShelfPatternNameVO> getPatternForStorel(String storeIsCore,String companyCd);
+
+    List<Integer> getpatternIdOfFilename(String fileName, String companyCd);
+
+    List<String> isCompany(List<String> shelfPatternList);
 }

@@ -1,11 +1,14 @@
 package com.trechina.planocycle.service.impl;
 
+import com.google.common.collect.Lists;
 import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanReplace;
 import com.trechina.planocycle.entity.po.PriorityOrderJanReplace;
+import com.trechina.planocycle.entity.po.ProductPowerParamVo;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanReplaceVO;
-import com.trechina.planocycle.entity.vo.PriorityOrderJanReplaceVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanReplaceService;
@@ -21,7 +24,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,6 +43,14 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
     private ClassicPriorityOrderJanCardMapper priorityOrderJanCardMapper;
     @Autowired
     private ClassicPriorityOrderCommodityNotMapper priorityOrderCommodityNotMapper;
+    @Autowired
+    private ClassicPriorityOrderMstMapper classicPriorityOrderMstMapper;
+    @Autowired
+    private ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
+    private BasicPatternMstServiceImpl basicPatternMstService;
+    @Autowired
+    private ClassicPriorityOrderJanNewMapper classicPriorityOrderJanNewMapper;
     /**
      * jan変更リストの情報を取得する
      *
@@ -50,12 +60,12 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
      */
     @Override
     public Map<String, Object> getPriorityOrderJanInfo(String companyCd, Integer priorityOrderCd) {
-        logger.info("jan変の情報パラメータを取得する："+companyCd+","+priorityOrderCd);
+        logger.info("jan変の情報パラメータを取得する：{},{}",companyCd,priorityOrderCd);
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         String tableName = String.format("\"%s\".prod_%s_jan_info", coreCompany, MagicString.FIRST_CLASS_CD);
         List<ClassicPriorityOrderJanReplaceVO> priorityOrderJanReplaceVOList = priorityOrderJanReplaceMapper
                 .selectJanInfo(companyCd,priorityOrderCd, tableName, MagicString.JAN_HEADER_JAN_CD_DEFAULT, MagicString.JAN_HEADER_JAN_NAME_DEFAULT);
-        logger.info("jan変の情報戻り値を取得する："+priorityOrderJanReplaceVOList);
+        logger.info("jan変の情報戻り値を取得する：{}",priorityOrderJanReplaceVOList);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanReplaceVOList);
     }
 
@@ -80,34 +90,35 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
 
             logger.info("jan変の情報を保存して処理した後のパラメータ："+jan);
             // check
-            String resuleJanDistinct =getJanInfo();
-            logger.info("checkjanの戻り値"+resuleJanDistinct);
+
+            PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+            ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
+            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+            String proInfoTable = commonTableName.getProInfoTable();
+
+
             //削除
 
             priorityOrderJanReplaceMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             List<PriorityOrderJanReplace> exists = new ArrayList<>();
             String notExists = "";
-            List<String> list= Arrays.asList(resuleJanDistinct.split(","));
             for (int i = 0; i < jan.size(); i++) {
                 if(jan.get(i).getJanNew()==null && jan.get(i).getJanOld()==null){
                     continue;
                 }
-                if (!list.contains(jan.get(i).getJanNew())){
-                    notExists += jan.get(i).getJanNew()+",";
-                }else if (!list.contains(jan.get(i).getJanOld())){
+                boolean existJanInfo = isExistJanInfo(proInfoTable, jan.get(i).getJanOld());
+                if (!existJanInfo){
                     notExists += jan.get(i).getJanOld()+",";
                 }else {
                     exists.add(jan.get(i));
                 }
             }
-            logger.info("存在するjan情報"+exists.toString());
-            logger.info("存在しないjan情報"+notExists);
+            logger.info("存在するjan情報{}",exists);
+            logger.info("存在しないjan情報{}",notExists);
             //データベースへの書き込み
-            if (exists.size()>0) {
+            if (!exists.isEmpty()) {
                 priorityOrderJanReplaceMapper.insert(exists);
-                //マスターテーブルの変更
-                //priorityOrderDataMapper.updatePriorityOrderDataForJanNew(companyCd,priorityOrderCd,
-                //        "public.priorityorder"+session.getAttribute("aud").toString());
+
             }
             if (notExists.length()>0) {
                 return ResultMaps.result(ResultEnum.JANNOTESISTS,notExists.substring(0,notExists.length()-1));
@@ -115,7 +126,7 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
         } catch (Exception e) {
-            logger.error("jan変情報の保存エラー："+e);
+            logger.error("jan変情報の保存エラー：{}",e);
             // トランザクションの手動ロールバック
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultMaps.result(ResultEnum.FAILURE);
@@ -157,8 +168,14 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
         return existJan;
     }
     @Override
-    public String getJanInfo() {
-        return priorityOrderJanReplaceMapper.selectJanDistinct();
+    public String getJanInfo(String proInfoTable) {
+        return priorityOrderJanReplaceMapper.selectJanDistinct(proInfoTable);
+    }
+
+    @Override
+    public boolean isExistJanInfo(String proInfoTable, String jan) {
+
+        return priorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, Lists.newArrayList(jan)).isEmpty();
     }
 
     /**

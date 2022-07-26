@@ -11,7 +11,7 @@
         select  '"' || table_schema || '"' || '.' || '"' || table_name || '"'	from  information_schema.tables where table_schema  in ('87c6f4','1000') and "table_name" like '%wk'
     </select>
     <select id="selectJanClassify" resultType="map">
-        select tai_cd as "taiCd",tana_cd as "tanaCd", tanaposition_cd "tanaPositionCd", sum(janmst."${sizeAndIrisuMap.width}"::integer*jandata.face_count) as "width"
+        select tai_cd as "taiCd",tana_cd as "tanaCd", tanaposition_cd "tanaPositionCd",COALESCE(sum(janmst."${sizeAndIrisuMap.width}"::integer*jandata.face_count),0)  as "width"
         <foreach collection="zokuseiList" item="item" open="," separator=",">
             <if test="cdList[cdList.size-1]>=item.zokuseiCol">
                 <foreach collection="cdList" item="item1" separator="|| '_' ||">
