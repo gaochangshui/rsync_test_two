@@ -211,10 +211,8 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
         }
 
         List<Map<String, Object>> list = CommonUtil.janSort(catePakSimilarity, janNewList, "rank");
-        List<Map<String, Object>> listMap = new ArrayList<>();
-        listMap.addAll(list);
         int i = 1;
-        for (Map<String, Object> objectMap : listMap) {
+        for (Map<String, Object> objectMap : list) {
             objectMap.put("jan_new", objectMap.get("janNew"));
             objectMap.put("jan_old", i++);
             objectMap.put("companyCd", companyCd);

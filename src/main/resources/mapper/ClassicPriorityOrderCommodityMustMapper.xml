@@ -195,14 +195,17 @@
 
     <if test="table1 != '' and table2 != ''">
       ,concat(coalesce (branchs."1",company_branchs."1"), '_', coalesce (branchs."2",company_branchs."2")) branch_name
+         ,coalesce (branchs."6",company_branchs."6")as area,coalesce (branchs."4",company_branchs."4") as company
     </if>
     <if test="table1 != ''">
       ,concat(branchs."1", '_', branchs."2") branch_name
+        ,branchs."6" as area,branchs."4"as company
     </if>
     <if test="table2 != ''">
       ,concat(company_branchs."1", '_', company_branchs."2") branch_name
+      ,company_branchs."6" as area,company_branchs."4"as company
     </if>
-         , before_flag,flag,'_'as area,'_' as company
+         , before_flag,flag
     from priority.work_priority_order_commodity_must must
            left join planocycle.shelf_pattern_mst patternmst
                on patternmst.shelf_pattern_cd=must.shelf_pattern_cd
