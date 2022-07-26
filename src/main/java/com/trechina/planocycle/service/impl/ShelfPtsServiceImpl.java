@@ -116,7 +116,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 ptsKey = "__";
             }
             logger.info("手動で組み合わせたptskey：{}", ptsKey);
-            List<Integer> patternIdList = shelfPatternService.getpatternIdOfPtsKey(ptsKey.substring(0, ptsKey.length() - 1));
+            List<Integer> patternIdList = shelfPatternService.getpatternIdOfFilename(shelfPtsDto.getFileName(),shelfPtsDto.getCompanyCd());
             logger.info("組み合わせのptskeyによってpatternidを探します：{}", patternIdList);
             if (!patternIdList.isEmpty()) {
                 Integer patternId = patternIdList.get(0);
