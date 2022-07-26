@@ -47,5 +47,17 @@ public interface MstJanMapper {
      * 表示項目設定の取得
      * @return
      */
-    List<JanAttrName> getAttrName(String tableName);
+    List<JanAttrName> getAttrName(String authorCd, String tableName, String tableNamePreset);
+
+    /**
+     * ユーザー表示項目設定を削除
+     * @return
+     */
+    int insertPresetAttribute(String authorCd, String[] presetAttr, String tableName);
+
+    /**
+     * ユーザー表示項目設定を保存
+     * @return
+     */
+    int deleteByAuthorCd(String authorCd, String tableName);
 }

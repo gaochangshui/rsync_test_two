@@ -681,7 +681,7 @@
       pts_data.id=data_version.pts_cd where shelf_pattern_cd=#{shelfPatternCd}
   </select>
   <select id="selectClassifyPtsData" resultType="map">
-    select id,jan, jan_old,tai_cd,tana_cd,tanaposition_cd,face_count,face_men,face_kaiten,tumiagesu,zaikosu,face_displayflg,
+    select id,jan, jan_old,tai_cd "taiCd",tana_cd "tanaCd",tanaposition_cd "tanaPositionCd",face_count,face_men,face_kaiten,tumiagesu,zaikosu,face_displayflg,
     face_position,depth_display_num,coalesce(sku, '') sku, branch_num, branch_amount, rank_upd, rank
     <foreach collection="rankAttr" separator=" || " open="," item="item" index="index" close=" as attr_list">
       <if test="index>0">','||</if>concat('${item}',':',${item})</foreach>

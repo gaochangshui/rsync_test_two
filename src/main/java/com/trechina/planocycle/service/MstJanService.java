@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
 import com.trechina.planocycle.entity.po.JanInfoList;
+import com.trechina.planocycle.entity.vo.JanPresetAttribute;
 
 import java.util.Map;
 
@@ -25,4 +26,13 @@ public interface MstJanService {
      * @return
      */
     Map<String, Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto);
+
+    /**
+     * 表示項目設定のプリセット
+     *
+     * @param janPresetAttribute
+     * @return
+     */
+    Map<String, Object> setPresetAttribute(JanPresetAttribute janPresetAttribute);
+
 }

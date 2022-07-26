@@ -7,6 +7,7 @@ import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
+import com.trechina.planocycle.entity.vo.JanPresetAttribute;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.mapper.MstJanMapper;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,6 +31,8 @@ public class MstJanServiceImpl implements MstJanService {
     MstJanMapper mstJanMapper;
     @Autowired
     private SysConfigMapper sysConfigMapper;
+    @Autowired
+    private HttpSession session;
 
     /**
      * janデータの取得
@@ -161,6 +165,7 @@ public class MstJanServiceImpl implements MstJanService {
      */
     @Override
     public Map<String, Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto) {
+        String aud = session.getAttribute("aud").toString();
         String companyCd = enterpriseAxisDto.getCompanyCd();
         String commonPartsData = enterpriseAxisDto.getCommonPartsData();
         JSONObject jsonObject = JSON.parseObject(commonPartsData);
@@ -174,6 +179,33 @@ public class MstJanServiceImpl implements MstJanService {
             isCompanyCd = companyCd;
         }
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
-        return ResultMaps.result(ResultEnum.SUCCESS,mstJanMapper.getAttrName(tableNameAttr));
+        String tableNamePreset = MessageFormat.format("\"{0}\".prod_{1}_jan_preset_param", isCompanyCd, prodMstClass);
+        return ResultMaps.result(ResultEnum.SUCCESS, mstJanMapper.getAttrName(aud, tableNameAttr, tableNamePreset));
+    }
+
+    /**
+     * 表示項目設定のプリセット
+     *
+     * @param janPresetAttribute
+     * @return
+     */
+    @Override
+    public Map<String, Object> setPresetAttribute(JanPresetAttribute janPresetAttribute) {
+        String aud = session.getAttribute("aud").toString();
+        String companyCd = janPresetAttribute.getCompanyCd();
+        JSONObject jsonObject = JSON.parseObject(janPresetAttribute.getCommonPartsData());
+        String prodMstClass = jsonObject.get("prodMstClass").toString();
+        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        String isCompanyCd;
+        if ("1".equals(prodIsCore)) {
+            isCompanyCd = coreCompany;
+        } else {
+            isCompanyCd = companyCd;
+        }
+        String tableNamePreset = MessageFormat.format("\"{0}\".prod_{1}_jan_preset_param", isCompanyCd, prodMstClass);
+        mstJanMapper.deleteByAuthorCd(aud, tableNamePreset);
+        mstJanMapper.insertPresetAttribute(aud, janPresetAttribute.getClassCd().split(","), tableNamePreset);
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 }
