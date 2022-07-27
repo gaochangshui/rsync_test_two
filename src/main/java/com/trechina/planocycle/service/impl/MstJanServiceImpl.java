@@ -155,8 +155,6 @@ public class MstJanServiceImpl implements MstJanService {
 
         }
 
-
-
         janInfo.put("janAttr",janAttr);
         janInfoMap.put("janInfo",janInfo);
 

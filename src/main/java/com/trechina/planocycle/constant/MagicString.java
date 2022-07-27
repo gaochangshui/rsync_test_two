@@ -78,7 +78,7 @@ public class MagicString {
     public static final String JAN = "jan";
 
     public static final String DUMMY_JAN = "dummy_jan";
-    public static final String JAN_NAME = "JanName";
+    public static final String JAN_NAME = "janName";
     public static final String NAME = "name";
     public static final String VALUE = "value";
     public static final String INPUT_SHOW = "inputShow";
