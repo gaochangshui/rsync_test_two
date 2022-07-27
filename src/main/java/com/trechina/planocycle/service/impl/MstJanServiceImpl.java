@@ -15,6 +15,7 @@ import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.MstJanService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.dataConverUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -77,39 +78,38 @@ public class MstJanServiceImpl implements MstJanService {
 
     @Override
     public Map<String, Object> getJanListInfo(JanInfoList janInfoList) {
-        String companyCd = MagicString.DEFAULT_COMPANY_CD;
+        String companyCd = "1000";
 
-        String tableNameAttr ="";
-        String janInfoTableName ="";
-        String tableNameKaisou ="";
-        if (StringUtils.hasLength(janInfoList.getCommonPartsData().getShelfMstClass())) {
-
-             tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd,
-                    janInfoList.getCommonPartsData().getShelfMstClass());
-            tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", companyCd,
-                    janInfoList.getCommonPartsData().getShelfMstClass());
-             janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,
-                    janInfoList.getCommonPartsData().getShelfMstClass());
-        }else {
+        if ("0".equals(janInfoList.getCommonPartsData().getProdIsCore())) {
             companyCd = janInfoList.getCompanyCd();
-             tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd,
-                    janInfoList.getCommonPartsData().getProdMstClass());
-            tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", companyCd,
-                    janInfoList.getCommonPartsData().getProdMstClass());
-             janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,
-                    janInfoList.getCommonPartsData().getProdMstClass());
         }
+        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd,
+                janInfoList.getCommonPartsData().getProdMstClass());
+        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", companyCd,
+                janInfoList.getCommonPartsData().getProdMstClass());
+        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,
+                janInfoList.getCommonPartsData().getProdMstClass());
         LinkedHashMap<String, Object> janInfoList1 = mstJanMapper.getJanInfoList(janInfoTableName, janInfoList.getJan());
         List<LinkedHashMap<String,Object>> janAttrList = mstJanMapper.getJanAttrList(tableNameAttr);
+        List<LinkedHashMap<String,Object>> update = janAttrList.stream().filter(map->map.get("8").equals("4")).collect(Collectors.toList());
 
         List<LinkedHashMap<String,Object>> janKaisouList = mstJanMapper.getJanKaisouList(tableNameKaisou);
-        List<LinkedHashMap<String,Object>> janAttrGroup1 = janAttrList.stream().filter(map->map.get("9").equals("0")).collect(Collectors.toList());
-        List<LinkedHashMap<String,Object>> janAttrGroup2 = janAttrList.stream().filter(map->map.get("9").equals("1")).collect(Collectors.toList());
+        List<LinkedHashMap<String,Object>> janAttrGroup1 = janAttrList.stream().filter(map->map.get("8").equals("1") || map.get("8").equals("6"))
+                .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
+        List<LinkedHashMap<String,Object>> janAttrGroup2 = janAttrList.stream().filter(map->map.get("8").equals("5"))
+                .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
+
         Map<String,Object> janInfoMap = new HashMap<>();
 
         janInfoMap.put(MagicString.JAN,janInfoList1.get("1"));
        janInfoMap.put(MagicString.JAN_NAME,janInfoList1.get("2"));
+        for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : update) {
+            janInfoMap.put(stringObjectLinkedHashMap.get("1").toString(),janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""));
 
+        }
+        if (janInfoMap.get("sync").equals("")){
+            janInfoMap.put("sync",true);
+        }
         Map<String,Object> janInfo = new HashMap<>();
 
        List janClass = new ArrayList();
@@ -117,10 +117,9 @@ public class MstJanServiceImpl implements MstJanService {
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janKaisouList) {
             Map<String,Object> janKaisouInfo = new HashMap<>();
             janKaisouInfo.put("name",stringObjectLinkedHashMap.get("2"));
-            janKaisouInfo.put("id",janInfoList1.get((Integer.valueOf(stringObjectLinkedHashMap.get("3").toString())-1)+""));
-            janKaisouInfo.put("title",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
+            janKaisouInfo.put("id",janInfoList1.get((Integer.parseInt(stringObjectLinkedHashMap.get("3").toString())-1)+""));
+            janKaisouInfo.put("title",janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""));
             janKaisouInfo.put("pid","zokusei"+stringObjectLinkedHashMap.get("3"));
-            janKaisouInfo.put("isRequired",stringObjectLinkedHashMap.get("7"));
 
             janClass.add(janKaisouInfo);
 
@@ -132,29 +131,44 @@ public class MstJanServiceImpl implements MstJanService {
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup1) {
             Map<String,Object> janAttrInfo = new HashMap<>();
             janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
-            janAttrInfo.put("title",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
-            janAttrInfo.put("id",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
-            janAttrInfo.put("pid","zokusei"+stringObjectLinkedHashMap.get("3"));
-            janAttrInfo.put("isRequired",stringObjectLinkedHashMap.get("7"));
-            janAttrInfo.put("type",stringObjectLinkedHashMap.get("8"));
+            janAttrInfo.put("title",janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""));
+            janAttrInfo.put("id",janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""));
+            janAttrInfo.put("pid",stringObjectLinkedHashMap.get("1"));
+            if (stringObjectLinkedHashMap.get("8").equals("6")) {
+                janAttrInfo.put("isDelete",1);
+            }else {
+                janAttrInfo.put("isDelete",0);
+            }
+            if (stringObjectLinkedHashMap.get("10").equals("0")) {
+                janAttrInfo.put("type","number");
+            }else {
+                janAttrInfo.put("type","string");
+            }
+
             attrGroup1.add(janAttrInfo);
 
         }
         janAttr.add(attrGroup1);
 
+
+        janInfo.put("janAttr",janAttr);
+        janInfoMap.put("janInfo",janInfo);
+        List janBulk = new ArrayList();
+
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup2) {
             Map<String,Object> janAttrInfo = new HashMap<>();
             janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
-            janAttrInfo.put("title",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
-            janAttrInfo.put("id",janInfoList1.get(stringObjectLinkedHashMap.get("3")));
-            janAttrInfo.put("pid","zokusei"+stringObjectLinkedHashMap.get("3"));
-            janAttrInfo.put("isRequired",stringObjectLinkedHashMap.get("7"));
-            janAttrInfo.put("type",stringObjectLinkedHashMap.get("8"));
-            janAttr.add(janAttrInfo);
-
+            janAttrInfo.put("title",janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""));
+            janAttrInfo.put("id",janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""));
+            janAttrInfo.put("pid",stringObjectLinkedHashMap.get("1"));
+            if (stringObjectLinkedHashMap.get("10").equals("0")) {
+                janAttrInfo.put("type","number");
+            }else {
+                janAttrInfo.put("type","string");
+            }
+            janBulk.add(janAttrInfo);
         }
-        janInfo.put("janAttr",janAttr);
-        janInfoMap.put("janInfo",janInfo);
+        janInfoMap.put("janBulk",janBulk);
         return ResultMaps.result(ResultEnum.SUCCESS,janInfoMap);
     }
 

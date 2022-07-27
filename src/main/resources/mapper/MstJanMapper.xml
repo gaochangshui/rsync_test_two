@@ -21,10 +21,10 @@
         select * from ${tableName} where "1" = #{jan}
     </select>
     <select id="getJanAttrList" resultType="java.util.LinkedHashMap">
-    select "1","2","3","4","7","8","9" from ${tableName} where "4" is not null order by "3"
+    select "1","2","3","4","8","10" from ${tableName} where "1" != 'jan_name' and "1" != 'jan_cd'  order by "4"
     </select>
     <select id="getJanKaisouList" resultType="java.util.LinkedHashMap">
-        select "1","2","3","4","7" from ${tableName} where "4" is not null and "1" like '%_name'
+        select "1","2","3" from ${tableName} where "4" is not null and "1" like '%_name'
     </select>
 
     <!--"{0}".prod_{1}_jan_info  -->

@@ -76,7 +76,7 @@
               on  musts.branch = company_branchs."1"
             </if>
     left join priority.work_priority_order_commodity_not nots
-    on nots.priority_order_cd = musts.priority_order_cd and nots.flag = 1 and nots.jan_new = musts.jan_new
+    on nots.priority_order_cd = musts.priority_order_cd and nots.flag = 1 and nots.jan_new = musts.jan_new and nots.branch = musts.branch
     left join priority.work_priority_order_jan_card card
     on card.priority_order_cd = musts.priority_order_cd and card.jan_old = musts.jan_new
     left join priority.work_priority_order_jan_new jannew

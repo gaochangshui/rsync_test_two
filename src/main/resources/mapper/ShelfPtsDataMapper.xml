@@ -610,9 +610,9 @@
     select id,file_name from planocycle.shelf_pts_data where company_cd=#{companyCd} and shelf_pattern_cd::varchar=any(string_to_array(#{patternCd},','))
   </select>
   <select id="getInitialExtraction" resultType="java.util.Map">
-    select t1.jan as jan_old,t1.jan as jan_new ,coalesce(t1."2",'') as sku,
+    select t1.jan as jan_old,t1.jan as jan_new ,coalesce(t1."2",'_') as sku,
            <foreach collection="listAttr" separator="," item="item" >
-             coalesce(${item.tableName}.${item.col},'') as ${item.colName}
+             coalesce(${item.tableName}.${item.col},'_') as ${item.colName}
            </foreach>
 
          ,coalesce(t2.pos_item01,'0') as pos_amount,coalesce(t2.pos_item03,'0') as unit_price,coalesce(t2.pos_store_item01,'0') as branch_amount,
