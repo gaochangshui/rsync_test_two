@@ -9,7 +9,6 @@ public class JanParamVO {
     private String janKato;
     private String fuzzyQuery;
     private String companyCd;
-    private Integer page;
-    private Integer pageSize;
+    private String classCd;
 
 }
