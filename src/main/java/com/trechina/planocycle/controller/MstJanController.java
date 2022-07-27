@@ -1,11 +1,10 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
+import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
-import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.JanPresetAttribute;
-import com.trechina.planocycle.entity.vo.ProductItemVO;
 import com.trechina.planocycle.service.JanKaisouService;
 import com.trechina.planocycle.service.MstJanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +43,19 @@ public class MstJanController {
     public Map<String,Object> getJanListInfo(@RequestBody JanInfoList janInfoList){
         return mstJanService.getJanListInfo(janInfoList);
     }
+    /**
+     * janデータの取得
+     * @param map 検索条件
+     * @return
+     */
+    @PostMapping("/setJanListInfo")
+    public Map<String,Object> setJanListInfo(@RequestBody Map<String,Object> map){
+        return mstJanService.setJanListInfo(map);
+    }
 
     @PostMapping("/saveKaisouInfo")
-    public Map<String,Object> saveKaisouInfo(@RequestBody ProductItemVO productItemVO){
-        return janKaisouService.saveProductItem(productItemVO);
+    public Map<String,Object> saveKaisouInfo(@RequestBody Map<String,Object> map){
+        return janKaisouService.saveProductItem(map);
     }
 
     /**

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.MstJanMapper">
+    <update id="setJanInfo">
+
+    </update>
     <!--"{0}".prod_{1}_jan_attr_header_sys  -->
     <select id="getJanHeader" resultType="com.trechina.planocycle.entity.po.JanHeaderAttr">
         select "1" "attr","2" "attrVal","3" "sort", "4" "colSort" from ${tableName}

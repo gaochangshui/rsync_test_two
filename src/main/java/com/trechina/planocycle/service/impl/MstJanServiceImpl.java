@@ -5,11 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
+import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
 import com.trechina.planocycle.entity.vo.JanPresetAttribute;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.mapper.MstJanMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.MstJanService;
@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -229,6 +230,54 @@ public class MstJanServiceImpl implements MstJanService {
         String tableNamePreset = MessageFormat.format("\"{0}\".prod_{1}_jan_preset_param", isCompanyCd, prodMstClass);
         mstJanMapper.deleteByAuthorCd(aud, tableNamePreset);
         mstJanMapper.insertPresetAttribute(aud, janPresetAttribute.getClassCd().split(","), tableNamePreset);
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public Map<String, Object> setJanListInfo(Map<String, Object> map) {
+        Map<String,Object> commonPartsDto = (Map<String,Object>) map.get(MagicString.COMMON_PARTS_DATA);
+
+        String companyCd = "1000";
+        String authorCd = session.getAttribute("aud").toString();
+        if ("0".equals(commonPartsDto.get(MagicString.PROD_IS_CORE))) {
+            companyCd = map.get("companyCd").toString();
+        }
+        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd,
+                commonPartsDto.get(MagicString.PROD_MST_CLASS));
+
+        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,
+                commonPartsDto.get(MagicString.PROD_MST_CLASS));
+
+        Map <String,Object> setInfoMap = new HashMap<>();
+        String jan = map.get(MagicString.JAN).toString();
+
+        for (String s : map.keySet()) {
+            if (s.contains("zokusei")){
+                String zokuseiId = s.replace("zokusei", "");
+                setInfoMap.put(zokuseiId,map.get(s));
+
+            }
+        }
+
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        List<LinkedHashMap<String,Object>> janAttrList = mstJanMapper.getJanAttrList(tableNameAttr);
+        for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrList) {
+            for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+                if (stringObjectLinkedHashMap.get("1").equals(stringObjectEntry.getKey())){
+                    setInfoMap.put(stringObjectLinkedHashMap.get("3").toString(),stringObjectEntry.getValue());
+                }
+            }
+            if ("update_time".equals(stringObjectLinkedHashMap.get("1"))){
+                setInfoMap.put(stringObjectLinkedHashMap.get("3").toString(),simpleDateFormat.format(date));
+            }
+
+            if ("updater".equals(stringObjectLinkedHashMap.get("1"))){
+                setInfoMap.put(stringObjectLinkedHashMap.get("3").toString(),authorCd);
+            }
+        }
+
+        mstJanMapper.setJanInfo(setInfoMap,jan,janInfoTableName);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 }

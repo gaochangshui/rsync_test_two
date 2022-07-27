@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface MstJanMapper {
@@ -63,4 +64,6 @@ public interface MstJanMapper {
      * @return
      */
     int deleteByAuthorCd(String authorCd, String tableName);
+
+    void setJanInfo(@Param("list") Map<String, Object> setInfoMap, @Param("jan") String jan, @Param("tableName") String janInfoTableName);
 }

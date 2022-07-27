@@ -35,4 +35,5 @@ public interface MstJanService {
      */
     Map<String, Object> setPresetAttribute(JanPresetAttribute janPresetAttribute);
 
+    Map<String, Object> setJanListInfo(Map<String, Object> map);
 }
