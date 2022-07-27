@@ -47,21 +47,32 @@
     </sql>
 
     <select id="getAttrName" resultType="com.trechina.planocycle.entity.po.JanAttrName">
+        select * from (
         select "1" "value","2" "label",
         case "8" when '1' then '基本項目'
         when '2' then '商品分類'
         when '3' then '商品属性'
         when '4' then 'Plano-Cycle専用'
-        when '5' then 'Plano-Cycle追加'
+        when '5' then 'Plano-Cycle専用'
+        when '6' then 'Plano-Cycle追加'
         else ''
         end as "attrType",
         case "9" when '1' then true else false end as "mandatory",
         case when "9" = '1' then true
         when t2.item_cd is not null then true
-        else false end as "flag"
+        else false end as "flag",t1."8",t1."3"
         from ${tableName} t1
         left join ${tableNamePreset} t2 on t1."1" =t2.item_cd and t2.author_cd = #{authorCd}
-        order by "4" nulls first,"3"
+        union all
+        select
+        "1" "value","2" "label", '商品分類' "attrType",
+        false  as "mandatory",
+        case when t2.item_cd is not null then true
+        else false end as "flag",'2' as "8",t1."3"
+        from ${tableNameKaisou} t1
+        left join ${tableNamePreset} t2 on t1."1" =t2.item_cd and t2.author_cd = #{authorCd}
+        where "1" not in('jan_cd','jan_name')) a
+        order by "8","3"
     </select>
 
     <insert id="insertPresetAttribute">
