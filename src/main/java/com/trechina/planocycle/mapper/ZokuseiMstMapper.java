@@ -32,4 +32,15 @@ public interface ZokuseiMstMapper {
     List<Map<String,Object>> getZokuseiCol(List<Integer> attrList ,String companyCd, String classCd);
 
     List<Map<String,Object>> getzokuseiName(@Param("companyCd") String companyCd,@Param("classCd")String classCd);
+
+
+    void updateZokuseiMstData(List<Map<String, Object>> map, String companyCd, String classCd);
+
+    void updateZokuseiMst(List<Map<String, Object>> map, String companyCd, String classCd);
+
+    Integer getZokuseiIdForCol(String colName, String companyCd, String classCd);
+
+    void delZokuseiMstForId(String classCd, String companyCd, Integer zokuseiId);
+
+    void delZokuseiMstDataForId(String classCd, String companyCd, Integer zokuseiId);
 }

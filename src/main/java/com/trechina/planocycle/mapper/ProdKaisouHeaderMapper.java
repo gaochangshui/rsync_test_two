@@ -22,4 +22,6 @@ public interface ProdKaisouHeaderMapper {
     void delItem(String value,String tableName);
 
      String getItem(String value, String tableNameAttr);
+
+    List<Map<String,Object>> getZokuseiId(String companyCd,String classCd);
 }

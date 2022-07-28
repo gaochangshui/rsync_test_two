@@ -6,15 +6,12 @@ import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
 import com.trechina.planocycle.entity.po.JanInfoList;
-import com.trechina.planocycle.entity.vo.JanInfoVO;
-import com.trechina.planocycle.entity.vo.JanParamVO;
-import com.trechina.planocycle.entity.vo.JanPresetAttribute;
-import com.trechina.planocycle.entity.vo.CheckVO;
-import com.trechina.planocycle.entity.vo.DownFlagVO;
+import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.MstJanMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.MstJanService;
+import com.trechina.planocycle.service.ZokuseiMstDataService;
 import com.trechina.planocycle.utils.CacheUtil;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.dataConverUtils;
@@ -24,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriUtils;
 
@@ -48,6 +46,11 @@ public class MstJanServiceImpl implements MstJanService {
     private HttpSession session;
     @Autowired
     private CacheUtil cacheUtil;
+    @Autowired
+    private ZokuseiMstDataService zokuseiMstDataService;
+    @Autowired
+    private ThreadPoolTaskExecutor executor;
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
@@ -341,6 +344,10 @@ public class MstJanServiceImpl implements MstJanService {
         setInfoMap.put("2", map.get(MagicString.JAN_NAME).toString());
         setInfoMap.putAll(kaiSouName);
         mstJanMapper.setJanInfo(setInfoMap,jan,janInfoTableName);
+        String finalCompanyCd = companyCd;
+        //executor.execute(()->
+                zokuseiMstDataService.syncZokuseiMstData(finalCompanyCd, commonPartsDto.get(MagicString.PROD_MST_CLASS).toString());
+                //))
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 }
