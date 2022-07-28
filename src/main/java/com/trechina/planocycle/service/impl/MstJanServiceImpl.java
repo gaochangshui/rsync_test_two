@@ -34,6 +34,8 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -107,13 +109,14 @@ public class MstJanServiceImpl implements MstJanService {
         if(Integer.valueOf(0).equals(downFlagVO.getDownFlag())){
             janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
                     .collect(Collectors.joining(",")));
-            janInfoVO.setJanColumn(dataConverUtils.camelize(json.getString(janColumn)));
+            janInfoVO.setJanColumn(dataConverUtils.camelize(janColumn));
         }
         if(Integer.valueOf(1).equals(downFlagVO.getDownFlag())){
             response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=utf-8");
             try (
                 OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8)){
-                String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("%s.csv", "JANマスターデータ"), "utf-8"));
+                String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("商品明細-%s.xlsx",
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
                 response.setHeader("Content-Disposition", format);
                 byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
                 writer.write(new String(bom));

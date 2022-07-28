@@ -65,7 +65,7 @@
         </if>
         <if test="janParamVO.prodCd != null and janParamVO.prodCd != ''">
             and(
-            <foreach collection="janParamVO.prodCd" item="items" separator="or" >
+            <foreach collection="janParamVO.prodCd.split(',')" item="items" separator="or" >
                 <foreach collection="items.split('_')" item="item" index="index" separator="and" open ="(" close = ")">
                     "${index*2+3}" =
                     <choose>

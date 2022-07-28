@@ -10,6 +10,6 @@ public class JanParamVO {
     private String fuzzyQuery;
     private String companyCd;
     private String classCd;
-    private String[] prodCd;
+    private String prodCd;
 
 }
