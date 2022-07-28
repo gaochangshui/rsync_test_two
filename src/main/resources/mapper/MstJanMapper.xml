@@ -96,7 +96,7 @@
         case "9" when '1' then true else false end as "mandatory",
         case when "9" = '1' then true
         when t2.item_cd is not null then true
-        else false end as "flag",t1."8",t1."3"
+        else false end as "flag",t1."8",t1."3"::integer
         from ${tableName} t1
         left join ${tableNamePreset} t2 on t1."1" =t2.item_cd and t2.author_cd = #{authorCd}
         union all
@@ -104,7 +104,7 @@
         "1" "value","2" "label", '商品分類' "attrType",
         false  as "mandatory",
         case when t2.item_cd is not null then true
-        else false end as "flag",'2' as "8",t1."3"
+        else false end as "flag",'2' as "8",t1."3"::integer
         from ${tableNameKaisou} t1
         left join ${tableNamePreset} t2 on t1."1" =t2.item_cd and t2.author_cd = #{authorCd}
         where "1" not in('jan_cd','jan_name')) a

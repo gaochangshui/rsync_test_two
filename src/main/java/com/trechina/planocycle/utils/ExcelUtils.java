@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +101,36 @@ public class ExcelUtils {
                 }
             }
 
+            workbook.write(outputStream);
+        }catch (Exception e){
+            logger.error("", e);
+        }
+    }
+
+    public static void generateNormalExcel(List<String[]> allData, OutputStream outputStream) {
+        try(XSSFWorkbook workbook = new XSSFWorkbook()){
+            XSSFSheet sheet = workbook.createSheet();
+            XSSFRow janRow;
+            XSSFCell janCell;
+            for (int i = 0; i < allData.size(); i++) {
+                int columnIndex = 0;
+                janRow = sheet.createRow(i);
+                for (String column : allData.get(i)) {
+                        Object value = column;
+                        janCell= janRow.createCell(columnIndex);
+                        if(value instanceof BigDecimal){
+                            janCell.setCellType(CellType.NUMERIC);
+                            janCell.setCellValue(((BigDecimal) value).intValue());
+                        }else if(value instanceof Integer){
+                            janCell.setCellType(CellType.NUMERIC);
+                            janCell.setCellValue((Integer)value);
+                        }else{
+                            janCell.setCellType(CellType.STRING);
+                            janCell.setCellValue(Objects.nonNull(value)?String.valueOf(value):"");
+                        }
+                        columnIndex++;
+                    }
+            }
             workbook.write(outputStream);
         }catch (Exception e){
             logger.error("", e);
