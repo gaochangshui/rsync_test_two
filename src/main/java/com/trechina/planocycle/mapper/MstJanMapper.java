@@ -65,5 +65,14 @@ public interface MstJanMapper {
      */
     int deleteByAuthorCd(String authorCd, String tableName);
 
-    void setJanInfo(@Param("list") Map<String, Object> setInfoMap, @Param("jan") String jan, @Param("tableName") String janInfoTableName);
+    /**
+     * jan詳細保存
+     *
+     * @param setInfoMap
+     * @param jan
+     * @param janInfoTableName
+     */
+    void setJanInfo(@Param("list") LinkedHashMap<String, Object> setInfoMap, @Param("jan") String jan, @Param("tableName") String janInfoTableName);
+
+    Map<String, Object> getKaiSouName(@Param("map") Map<String, Object> map, @Param("tableName") String janInfoTableName,@Param("list")List<String> list);
 }

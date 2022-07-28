@@ -2,7 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.MstJanMapper">
     <update id="setJanInfo">
-
+        insert into ${tableName}("1"
+        <foreach collection="list" item="item" index="index">
+            ,"${index}"
+        </foreach>
+        )
+        values (#{jan}
+        <foreach collection="list" item="item">
+            ,#{item}
+        </foreach>
+        )
+            on conflict("1")
+        do update set
+            <foreach collection="list" item="item" index="index" separator=",">
+                "${index}" = #{item}
+            </foreach>
     </update>
     <!--"{0}".prod_{1}_jan_attr_header_sys  -->
     <select id="getJanHeader" resultType="com.trechina.planocycle.entity.po.JanHeaderAttr">
@@ -76,6 +90,17 @@
         left join ${tableNamePreset} t2 on t1."1" =t2.item_cd and t2.author_cd = #{authorCd}
         where "1" not in('jan_cd','jan_name')) a
         order by "8","3"
+    </select>
+    <select id="getKaiSouName" resultType="java.util.Map">
+        select distinct
+         <foreach collection="list" item="item" separator=",">
+             "${item}"
+         </foreach>
+         from ${tableName}
+        where
+    <foreach collection="map" index="index" item="item" separator="and">
+        "${index}" = #{item}
+    </foreach>
     </select>
 
     <insert id="insertPresetAttribute">

@@ -303,9 +303,6 @@ zokusei8 is null and zokusei9 is null and zokusei10 is null
         do update set
           zokusei${item.zokuseiId} = #{item.val}
 
-
-
-
     </insert>
   <insert id="insertBySelect">
     insert into planocycle.priority_order_restrict_set(priority_order_cd,company_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5,zokusei6,

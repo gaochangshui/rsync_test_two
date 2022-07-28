@@ -101,15 +101,15 @@ public class MstJanServiceImpl implements MstJanService {
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
 
         Map<String,Object> janInfoMap = new HashMap<>();
+            janInfoMap.put(MagicString.JAN, janInfoList1!=null?janInfoList1.getOrDefault("1", ""):"");
+            janInfoMap.put(MagicString.JAN_NAME, janInfoList1!=null?janInfoList1.getOrDefault("2", ""):"");
 
-        janInfoMap.put(MagicString.JAN,janInfoList1.get("1"));
-       janInfoMap.put(MagicString.JAN_NAME,janInfoList1.get("2"));
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : update) {
             if (stringObjectLinkedHashMap.get("1").toString().equals("update_time")){
-                janInfoMap.put("updateTime",janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""));
+                janInfoMap.put("updateTime",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
 
             }else {
-                janInfoMap.put(stringObjectLinkedHashMap.get("1").toString(),janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""));
+                janInfoMap.put(stringObjectLinkedHashMap.get("1").toString(),janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
 
             }
 
@@ -124,8 +124,8 @@ public class MstJanServiceImpl implements MstJanService {
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janKaisouList) {
             Map<String,Object> janKaisouInfo = new HashMap<>();
             janKaisouInfo.put("name",stringObjectLinkedHashMap.get("2"));
-            janKaisouInfo.put("id",janInfoList1.get((Integer.parseInt(stringObjectLinkedHashMap.get("3").toString())-1)+""));
-            janKaisouInfo.put("title",janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""));
+            janKaisouInfo.put("id",janInfoList1!=null?janInfoList1.get((Integer.parseInt(stringObjectLinkedHashMap.get("3").toString())-1)+""):"");
+            janKaisouInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janKaisouInfo.put("value","zokusei"+stringObjectLinkedHashMap.get("3"));
 
             janClass.add(janKaisouInfo);
@@ -138,8 +138,8 @@ public class MstJanServiceImpl implements MstJanService {
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup1) {
             Map<String,Object> janAttrInfo = new HashMap<>();
             janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
-            janAttrInfo.put("title",janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""));
-            janAttrInfo.put("id",janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""));
+            janAttrInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
+            janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("value",stringObjectLinkedHashMap.get("1"));
             if (stringObjectLinkedHashMap.get("8").equals("6")) {
                 janAttrInfo.put("isDelete",1);
@@ -166,8 +166,8 @@ public class MstJanServiceImpl implements MstJanService {
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup2) {
             Map<String,Object> janAttrInfo = new HashMap<>();
             janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
-            janAttrInfo.put("title",janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""));
-            janAttrInfo.put("id",janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""));
+            janAttrInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
+            janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("value",stringObjectLinkedHashMap.get("1"));
             if (stringObjectLinkedHashMap.get("10").equals("0")) {
                 janAttrInfo.put("type","number");
@@ -248,17 +248,18 @@ public class MstJanServiceImpl implements MstJanService {
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,
                 commonPartsDto.get(MagicString.PROD_MST_CLASS));
 
-        Map <String,Object> setInfoMap = new HashMap<>();
+        LinkedHashMap <String,Object> setInfoMap = new LinkedHashMap<>();
         String jan = map.get(MagicString.JAN).toString();
-
+        List<String> list = new ArrayList();
         for (String s : map.keySet()) {
             if (s.contains("zokusei")){
-                String zokuseiId = s.replace("zokusei", "");
-                setInfoMap.put(zokuseiId,map.get(s));
+                Integer zokuseiId = Integer.parseInt(s.replace("zokusei", ""))-1;
+                list.add(s.replace("zokusei", ""));
+                setInfoMap.put(zokuseiId+"",map.get(s));
 
             }
         }
-
+        Map<String,Object> kaiSouName= mstJanMapper.getKaiSouName(setInfoMap,janInfoTableName,list);
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
         List<LinkedHashMap<String,Object>> janAttrList = mstJanMapper.getJanAttrList(tableNameAttr);
@@ -276,7 +277,8 @@ public class MstJanServiceImpl implements MstJanService {
                 setInfoMap.put(stringObjectLinkedHashMap.get("3").toString(),authorCd);
             }
         }
-
+        setInfoMap.put("2", map.get(MagicString.JAN_NAME).toString());
+        setInfoMap.putAll(kaiSouName);
         mstJanMapper.setJanInfo(setInfoMap,jan,janInfoTableName);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
