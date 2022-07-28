@@ -64,6 +64,23 @@
                 #{items}
             </foreach>)
         </if>
+        <if test="janParamVO.prodCd != null and janParamVO.prodCd != ''">
+            and(
+            <foreach collection="janParamVO.prodCd" item="items" separator="or" >
+                <foreach collection="items.split('_')" item="item" index="index" separator="and" open ="(" close = ")">
+                    "${index*2+3}" =
+                    <choose>
+                        <when test="item.split('-').length==2">
+                            '${item.split('-')[1]}'
+                        </when>
+                        <otherwise>
+                            '${item}'
+                        </otherwise>
+                    </choose>
+                </foreach>
+            </foreach>
+            )
+        </if>
     </sql>
 
     <select id="getAttrName" resultType="com.trechina.planocycle.entity.po.JanAttrName">

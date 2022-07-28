@@ -68,16 +68,13 @@ public class MstJanServiceImpl implements MstJanService {
     @Override
     public CheckVO getJanListCheck(JanParamVO janParamVO) {
         CheckVO checkVO = new CheckVO();
-        checkVO.setCheckFlag(false);
         //2類のパラメーター
         if("1".equals(janParamVO.getCommonPartsData().getProdIsCore())){
             janParamVO.setCompanyCd(sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY));
         }
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
-        if (mstJanMapper.getJanCount(janParamVO, janInfoTableName, "count(\"1\")") > 30000) {
-            checkVO.setCheckFlag(true);
-        }
+        checkVO.setTotal(mstJanMapper.getJanCount(janParamVO, janInfoTableName, "count(\"1\")"));
         String taskId = UUID.randomUUID().toString();
         JSONObject json = new JSONObject();
         json.put("janParamVO",janParamVO);
