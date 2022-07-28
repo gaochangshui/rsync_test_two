@@ -173,7 +173,7 @@ public class MstJanServiceImpl implements MstJanService {
             }
 
         }
-        if (janInfoMap.get("sync").equals("") || janInfoMap.get("sync").equals("1")){
+        if (janInfoMap == null || janInfoMap.get("sync").equals("") || janInfoMap.get("sync").equals("1")){
             janInfoMap.put("sync",true);
         }else {
             janInfoMap.put("sync",false);
