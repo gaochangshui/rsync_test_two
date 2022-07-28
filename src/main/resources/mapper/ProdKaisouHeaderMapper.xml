@@ -36,4 +36,8 @@
     <select id="getItem" resultType="string">
         select "3" from ${tableNameAttr} where "1" = #{value}
     </select>
+    <select id="getZokuseiId" resultType="map">
+        select distinct zokusei_id,"row_number"() over (order by zokusei_id) as sort
+        from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd} order by zokusei_id
+    </select>
 </mapper>

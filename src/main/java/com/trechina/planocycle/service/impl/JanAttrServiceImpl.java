@@ -6,6 +6,7 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.MstJanMapper;
 import com.trechina.planocycle.mapper.ProdKaisouHeaderMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
+import com.trechina.planocycle.mapper.ZokuseiMstMapper;
 import com.trechina.planocycle.service.JanAttrService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.apache.commons.collections4.MapUtils;
@@ -26,6 +27,8 @@ public class JanAttrServiceImpl implements JanAttrService {
     private SysConfigMapper sysConfigMapper;
     @Autowired
     private MstJanMapper mstJanMapper;
+    @Autowired
+    private ZokuseiMstMapper zokuseiMstMapper;
 
     @Override
     public Map<String, Object> saveProductItem(ProductItemVO productItemVO){
@@ -61,6 +64,7 @@ public class JanAttrServiceImpl implements JanAttrService {
             map.put("10","1");
         }
         prodKaisouHeaderMapper.setItem(map,tableNameAttr);
+
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -75,7 +79,16 @@ public class JanAttrServiceImpl implements JanAttrService {
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,classCd);
         String colName = prodKaisouHeaderMapper.getItem(productItemVO.getValue(), tableNameAttr);
         prodKaisouHeaderMapper.delItem(productItemVO.getValue(),tableNameAttr);
-        mstJanMapper.clearCol(colName,janInfoTableName);
+        if (colName != null) {
+            mstJanMapper.clearCol(colName, janInfoTableName);
+        }
+        //
+        //Integer zokuseiIdForCol = zokuseiMstMapper.getZokuseiIdForCol(colName, companyCd, classCd);
+        //zokuseiMstMapper.delZokuseiMstForId(classCd, companyCd,zokuseiIdForCol);
+        //zokuseiMstMapper.delZokuseiMstDataForId(classCd, companyCd,zokuseiIdForCol);
+        //List<Map<String, Object>> zokuseiId = prodKaisouHeaderMapper.getZokuseiId(companyCd,classCd);
+        //zokuseiMstMapper.updateZokuseiMstData(zokuseiId,companyCd,classCd);
+        //zokuseiMstMapper.updateZokuseiMst(zokuseiId,companyCd,classCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

@@ -40,7 +40,7 @@
         select * from ${tableName} where "1" = #{jan}
     </select>
     <select id="getJanAttrList" resultType="java.util.LinkedHashMap">
-    select "1","2","3","4","8","10" from ${tableName} where "1" != 'jan_name' and "1" != 'jan_cd'  order by "4"
+    select "1","2","3","4","8","10" from ${tableName} where "1" not in ('jan_name','jan_cd')   order by "4"
     </select>
     <select id="getJanKaisouList" resultType="java.util.LinkedHashMap">
         select "1","2","3" from ${tableName} where "4" is not null and "1" like '%_name'
