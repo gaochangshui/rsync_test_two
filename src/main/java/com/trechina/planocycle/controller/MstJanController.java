@@ -7,10 +7,7 @@ import com.trechina.planocycle.mapper.MstJanMapper;
 import com.trechina.planocycle.service.JanAttrService;
 import com.trechina.planocycle.service.MstJanService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -82,7 +79,7 @@ public class MstJanController {
      * @param productItemVO
      * @return
      */
-    @PostMapping("/delAttrInfo")
+    @DeleteMapping("/delAttrInfo")
     public Map<String,Object> delAttrInfo(@RequestBody ProductItemVO productItemVO){
         return janAttrService.delProductItem(productItemVO);
     }
