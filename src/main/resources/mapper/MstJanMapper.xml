@@ -115,5 +115,8 @@
     <delete id="deleteByAuthorCd">
         delete from ${tableName} where author_cd=#{authorCd}
     </delete>
+    <update id="clearCol">
+        update ${janInfoTableName} set "${colName}" = null
+    </update>
 
 </mapper>

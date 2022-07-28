@@ -73,4 +73,7 @@ public interface MstJanMapper {
     void setJanInfo(@Param("list") LinkedHashMap<String, Object> setInfoMap, @Param("jan") String jan, @Param("tableName") String janInfoTableName);
 
     Map<String, Object> getKaiSouName(@Param("map") Map<String, Object> map, @Param("tableName") String janInfoTableName,@Param("list")List<String> list);
+
+    void clearCol(String colName, String janInfoTableName);
+
 }

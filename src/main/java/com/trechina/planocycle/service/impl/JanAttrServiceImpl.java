@@ -39,7 +39,7 @@ public class JanAttrServiceImpl implements JanAttrService {
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,classCd);
         List<Map<String, Object>> planItem = prodKaisouHeaderMapper.getPlanItem(tableNameAttr);
         List<String> colNameList = planItem.stream().map(map->map.get(MagicString.COLUMN_INDEX_JANINFO_COLUMN).toString()).collect(Collectors.toList());
-        String itemSort = planItem.stream().mapToInt(value -> MapUtils.getInteger(value,MagicString.COLUMN_INDEX_KAISOU_COLUMN)).max().orElse(111) +"";
+        String itemSort = planItem.stream().mapToInt(value -> MapUtils.getInteger(value,MagicString.COLUMN_INDEX_KAISOU_COLUMN)).max().orElse(111)+1 +"";
 
         String itemColName = "";
         for (Integer i = MagicString.PLAN_START; i <= MagicString.PLAN_END; i++) {
@@ -49,10 +49,10 @@ public class JanAttrServiceImpl implements JanAttrService {
             }
         }
         LinkedHashMap<String,Object> map = new LinkedHashMap<>();
-        map.put("1","");
+        map.put("1","plano"+itemColName);
         map.put("2",productItemVO.getName());
         map.put(MagicString.COLUMN_INDEX_JANINFO_COLUMN,itemColName);
-        map.put(MagicString.COLUMN_INDEX_KAISOU_COLUMN,itemColName);
+        map.put(MagicString.COLUMN_INDEX_KAISOU_COLUMN,itemSort);
         map.put("8","6");
         map.put("9","");
         if ("number".equals(productItemVO.getType())){
@@ -60,22 +60,23 @@ public class JanAttrServiceImpl implements JanAttrService {
         }else if ("string".equals(productItemVO.getType())){
             map.put("10","1");
         }
-        prodKaisouHeaderMapper.setItem(map,tableNameKaisou);
+        prodKaisouHeaderMapper.setItem(map,tableNameAttr);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     @Override
     public Map<String, Object> delProductItem(ProductItemVO productItemVO) {
-        String companyCd = "1000";
+        String companyCd = MagicString.SELF_SERVICE;
         String classCd = productItemVO.getCommonPartsData().getProdMstClass();
         if ("0".equals(productItemVO.getCommonPartsData().getProdIsCore())) {
             companyCd = productItemVO.getCompanyCd();
         }
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd, classCd);
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,classCd);
+        String colName = prodKaisouHeaderMapper.getItem(productItemVO.getValue(), tableNameAttr);
         prodKaisouHeaderMapper.delItem(productItemVO.getValue(),tableNameAttr);
-
-        return null;
+        mstJanMapper.clearCol(colName,janInfoTableName);
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
 

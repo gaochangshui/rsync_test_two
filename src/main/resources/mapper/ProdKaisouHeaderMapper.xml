@@ -8,15 +8,17 @@
     </insert>
     <insert id="setItem">
         insert into ${tableName} (
-                    <foreach collection="map" index="index" separator=",">
-                        ${index}
-                    </foreach>
-            values (
-            <foreach collection="map" item="item" index="index" separator=",">
+        <foreach collection="map" index="index" separator=",">
+                                  "${index}"
+        </foreach>
+        )
+        values
+        (
+        <foreach collection="map" item="item" index="index" separator=",">
                 #{item}
             </foreach>
             )
-        )
+
     </insert>
     <delete id="delItem">
         delete from ${tableName} where "1" = #{value}
@@ -30,5 +32,8 @@
     </select>
     <select id="getPlanItem" resultType="map">
         select "1","2","3","4" from ${tableNameAttr} where "8" = '6' order by "3"
+    </select>
+    <select id="getItem" resultType="string">
+        select "3" from ${tableNameAttr} where "1" = #{value}
     </select>
 </mapper>

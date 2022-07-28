@@ -2,13 +2,7 @@ package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.po.JanInfoList;
-import com.trechina.planocycle.entity.vo.JanInfoVO;
-import com.trechina.planocycle.entity.vo.JanParamVO;
-import com.trechina.planocycle.entity.vo.JanPresetAttribute;
-import com.trechina.planocycle.entity.vo.CheckVO;
-import com.trechina.planocycle.entity.vo.DownFlagVO;
-import com.trechina.planocycle.service.JanKaisouService;
-import com.trechina.planocycle.entity.vo.ProductItemVO;
+import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.service.JanAttrService;
 import com.trechina.planocycle.service.MstJanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +53,7 @@ public class MstJanController {
         return mstJanService.getJanListInfo(janInfoList);
     }
     /**
-     * janデータの取得
+     * janデータの保存
      * @param map 検索条件
      * @return
      */
@@ -68,11 +62,25 @@ public class MstJanController {
         return mstJanService.setJanListInfo(map);
     }
 
+    /**
+     * 属性の追加
+     * @param productItemVO
+     * @return
+     */
     @PostMapping("/saveAttrInfo")
     public Map<String,Object> saveAttrInfo(@RequestBody ProductItemVO productItemVO){
         return janAttrService.saveProductItem(productItemVO);
     }
 
+    /**
+     * 属性の削除
+     * @param productItemVO
+     * @return
+     */
+    @PostMapping("/delAttrInfo")
+    public Map<String,Object> delAttrInfo(@RequestBody ProductItemVO productItemVO){
+        return janAttrService.delProductItem(productItemVO);
+    }
     /**
      * 表示項目設定の取得
      *

@@ -20,4 +20,6 @@ public interface ProdKaisouHeaderMapper {
     void setItem(LinkedHashMap<String, Object> map, String tableName);
 
     void delItem(String value,String tableName);
+
+     String getItem(String value, String tableNameAttr);
 }

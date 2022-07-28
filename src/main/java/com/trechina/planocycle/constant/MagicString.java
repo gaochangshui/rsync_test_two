@@ -72,6 +72,10 @@ public class MagicString {
 
     public static final String ATTR_BIG = "attrBig";
 
+    public static final String SELF_SERVICE = "1000";
+
+
+
     /**
      * 棚割専用
      */
