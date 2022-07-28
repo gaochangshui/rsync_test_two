@@ -9,18 +9,29 @@ import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
 import com.trechina.planocycle.entity.vo.JanPresetAttribute;
+import com.trechina.planocycle.entity.vo.CheckVO;
+import com.trechina.planocycle.entity.vo.DownFlagVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.MstJanMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.MstJanService;
+import com.trechina.planocycle.utils.CacheUtil;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.dataConverUtils;
+import de.siegmar.fastcsv.writer.CsvWriter;
 import org.apache.commons.collections4.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.web.util.UriUtils;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -35,9 +46,12 @@ public class MstJanServiceImpl implements MstJanService {
     private SysConfigMapper sysConfigMapper;
     @Autowired
     private HttpSession session;
+    @Autowired
+    private CacheUtil cacheUtil;
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * janデータの取得
+     * janデータのチェック
      * @param janParamVO 検索条件
      * commonPartsData 商品軸情報
      *     prodIsCore    0企業1自社
@@ -49,31 +63,76 @@ public class MstJanServiceImpl implements MstJanService {
      * @return
      */
     @Override
-    public JanInfoVO getJanList(JanParamVO janParamVO) {
-        JanInfoVO janInfoVO = new JanInfoVO();
-        //３類のパラメーター
-        if (StringUtils.hasLength(janParamVO.getCommonPartsData().getShelfMstClass())) {
-            janParamVO.setCompanyCd(MagicString.DEFAULT_COMPANY_CD);
-            janParamVO.getCommonPartsData().setProdMstClass(janParamVO.getCommonPartsData().getShelfMstClass());
-        }else if("1".equals(janParamVO.getCommonPartsData().getProdIsCore())){
+    public CheckVO getJanListCheck(JanParamVO janParamVO) {
+        CheckVO checkVO = new CheckVO();
+        checkVO.setCheckFlag(false);
+        //2類のパラメーター
+        if("1".equals(janParamVO.getCommonPartsData().getProdIsCore())){
             janParamVO.setCompanyCd(sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY));
         }
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", janParamVO.getCompanyCd(),
-                janParamVO.getCommonPartsData().getProdMstClass());
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
-        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr);
+        if (mstJanMapper.getJanCount(janParamVO, janInfoTableName, "count(\"1\")") > 30000) {
+            checkVO.setCheckFlag(true);
+        }
+        String taskId = UUID.randomUUID().toString();
+        JSONObject json = new JSONObject();
+        json.put("janParamVO",janParamVO);
+        json.put("janInfoTableName",janInfoTableName);
+        json.put("janColumn",janParamVO.getClassCd());
+        cacheUtil.put(taskId, json);
+        checkVO.setTaskID(taskId);
+        return checkVO;
+    }
+
+    /**
+     * janデータの取得
+     * @param downFlagVO 検索Task
+     * @return
+     */
+    @Override
+    public JanInfoVO getJanList(DownFlagVO downFlagVO, HttpServletResponse response) {
+        JanInfoVO janInfoVO = new JanInfoVO();
+        if(cacheUtil.get(downFlagVO.getTaskID())== null ){
+            return null;
+        }
+        JSONObject json =JSON.parseObject(cacheUtil.get(downFlagVO.getTaskID()).toString());
+        JanParamVO janParamVO = JSON.parseObject(json.getString("janParamVO"),JanParamVO.class);
+        String janInfoTableName = json.getString("janInfoTableName");
+        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", janParamVO.getCompanyCd(),
+                janParamVO.getCommonPartsData().getProdMstClass());
+        String janColumn = json.getString("janColumn");
+        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr,janColumn);
         //SQL文の列： "\"1\" \"jan_cd\",\"2\" \"jan_name\",\"21\" \"kikaku\",\"22\" \"maker\",\"23\"
         String column = janHeader.stream().map(map -> "COALESCE(\"" + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
                 .collect(Collectors.joining(","));
-        janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
-                .collect(Collectors.joining(",")));
-        janInfoVO.setJanColumn(janHeader.stream().map(map -> String.valueOf(dataConverUtils.camelize(map.getAttr())))
-                .collect(Collectors.joining(",")));
-        janInfoVO.setTotal(mstJanMapper.getJanCount(janParamVO, janInfoTableName, "count(\"1\")"));
-        Integer pageCount = (janParamVO.getPage() - 1) * janParamVO.getPageSize();
-        janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTableName,
-                column, janParamVO.getPageSize(),pageCount));
+        janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTableName, column));
+        if(Integer.valueOf(0).equals(downFlagVO.getDownFlag())){
+            janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
+                    .collect(Collectors.joining(",")));
+            janInfoVO.setJanColumn(dataConverUtils.camelize(json.getString(janColumn)));
+        }
+        if(Integer.valueOf(1).equals(downFlagVO.getDownFlag())){
+            response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=utf-8");
+            try (
+                OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8)){
+                String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("%s.csv", "JANマスターデータ"), "utf-8"));
+                response.setHeader("Content-Disposition", format);
+                byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+                writer.write(new String(bom));
+                writer.flush();
+                try(CsvWriter csvWriter = CsvWriter.builder().build(writer)) {
+                    csvWriter.writeRow(janColumn.split(","));
+                    for(LinkedHashMap<String, Object> map:janInfoVO.getJanDataList()){
+                        csvWriter.writeRow(map.values().stream().map(Object::toString).collect(Collectors.toList()));
+                    }
+                }
+            } catch (IOException e) {
+                logger.error("janデータダウンロード", e);
+            }
+            return null;
+        }
+
         return janInfoVO;
     }
 

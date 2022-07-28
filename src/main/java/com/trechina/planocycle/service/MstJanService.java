@@ -3,19 +3,29 @@ package com.trechina.planocycle.service;
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
-import com.trechina.planocycle.entity.po.JanInfoList;
+import com.trechina.planocycle.entity.vo.CheckVO;
+import com.trechina.planocycle.entity.vo.DownFlagVO;
 import com.trechina.planocycle.entity.vo.JanPresetAttribute;
+import com.trechina.planocycle.entity.po.JanInfoList;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 public interface MstJanService {
 
     /**
-     * janデータの取得
+     * janデータのチェック
      * @param janParamVO 検索条件
      * @return
      */
-    JanInfoVO getJanList(JanParamVO janParamVO);
+    CheckVO getJanListCheck(JanParamVO janParamVO);
+
+    /**
+     * janデータの取得
+     * @param downFlagVO
+     * @return
+     */
+    JanInfoVO getJanList(DownFlagVO downFlagVO, HttpServletResponse response);
 
     Map<String, Object> getJanListInfo(JanInfoList janInfoList);
 

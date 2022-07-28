@@ -35,7 +35,7 @@
     <select id="selectHeader" resultType="map">
         select "1" as col,"2" as name,"3" sort,0 as "type" from ${tableName}
         where "1" not like 'jan%'
-        order by "3"::integer
+        order by "4"::integer
     </select>
     <select id="selectAllAttrTable" resultType="string">
         select "table_name" from information_schema.tables

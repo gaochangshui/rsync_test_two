@@ -17,7 +17,7 @@ public interface MstJanMapper {
      * janHeaderの取得
      * @return
      */
-    List<JanHeaderAttr> getJanHeader(String tableName);
+    List<JanHeaderAttr> getJanHeader(String tableName, String janColumn);
 
     /**
      * janデータの計数
@@ -34,9 +34,7 @@ public interface MstJanMapper {
      */
     List<LinkedHashMap<String, Object>> getJanList(@Param("janParamVO") JanParamVO janParamVO,
                                                    @Param("tableName") String tableName,
-                                                   @Param("column") String column,
-                                                   @Param("pageSize") Integer pageSize,
-                                                   @Param("pageCount") Integer pageCount);
+                                                   @Param("column") String column);
 
     LinkedHashMap<String,Object> getJanInfoList(@Param("tableName")String janInfoTableName, @Param("jan") String jan);
 

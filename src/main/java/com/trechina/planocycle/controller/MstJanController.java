@@ -5,6 +5,9 @@ import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
 import com.trechina.planocycle.entity.vo.JanPresetAttribute;
+import com.trechina.planocycle.entity.vo.CheckVO;
+import com.trechina.planocycle.entity.vo.DownFlagVO;
+import com.trechina.planocycle.service.JanKaisouService;
 import com.trechina.planocycle.entity.vo.ProductItemVO;
 import com.trechina.planocycle.service.JanAttrService;
 import com.trechina.planocycle.service.MstJanService;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 @RestController
 @RequestMapping("/planoCycleApi/MstJan")
@@ -26,13 +30,23 @@ public class MstJanController {
     private JanAttrService janAttrService;
 
     /**
-     * janデータの取得
+     * janデータのチェック
      * @param janParamVO 検索条件
      * @return
      */
+    @PostMapping("/getJanListCheck")
+    public CheckVO getJanListCheck(@RequestBody JanParamVO janParamVO){
+        return mstJanService.getJanListCheck(janParamVO);
+    }
+
+    /**
+     * janデータの取得
+     * @param downFlagVO
+     * @return
+     */
     @PostMapping("/getJanList")
-    public JanInfoVO getJanList(@RequestBody JanParamVO janParamVO){
-        return mstJanService.getJanList(janParamVO);
+    public JanInfoVO getJanList(@RequestBody DownFlagVO downFlagVO, HttpServletResponse response){
+        return mstJanService.getJanList(downFlagVO, response);
     }
 
     /**
