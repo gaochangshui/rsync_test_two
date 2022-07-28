@@ -154,7 +154,9 @@ public class MstJanServiceImpl implements MstJanService {
         List<LinkedHashMap<String,Object>> update = janAttrList.stream().filter(map->map.get("8").equals("4")).collect(Collectors.toList());
 
         List<LinkedHashMap<String,Object>> janKaisouList = mstJanMapper.getJanKaisouList(tableNameKaisou);
-        List<LinkedHashMap<String,Object>> janAttrGroup1 = janAttrList.stream().filter(map->map.get("8").equals("1") || map.get("8").equals("6"))
+        List<LinkedHashMap<String,Object>> janAttrGroup1 = janAttrList.stream().filter(map->map.get("8").equals("1") )
+                .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
+        List<LinkedHashMap<String,Object>> janAttrGroup3 = janAttrList.stream().filter(map->map.get("8").equals("6") )
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
         List<LinkedHashMap<String,Object>> janAttrGroup2 = janAttrList.stream().filter(map->map.get("8").equals("5"))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
@@ -195,7 +197,7 @@ public class MstJanServiceImpl implements MstJanService {
         janInfo.put("janClass",janClass);
         List janAttr = new ArrayList();
 
-
+        List group1 = new ArrayList();
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup1) {
             Map<String,Object> janAttrInfo = new HashMap<>();
             janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
@@ -213,10 +215,29 @@ public class MstJanServiceImpl implements MstJanService {
                 janAttrInfo.put("type","string");
             }
 
-            janAttr.add(janAttrInfo);
+            group1.add(janAttrInfo);
+
 
         }
+        janAttr.add(group1);
+        List group2 = new ArrayList();
+        for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup3) {
+            Map<String,Object> janAttrInfo = new HashMap<>();
+            janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
+            janAttrInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
+            janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
+            janAttrInfo.put("value",stringObjectLinkedHashMap.get("1"));
+            if (stringObjectLinkedHashMap.get("10").equals("0")) {
+                janAttrInfo.put("type","number");
+            }else {
+                janAttrInfo.put("type","string");
+            }
 
+            group2.add(janAttrInfo);
+
+
+        }
+        janAttr.add(group2);
         janInfo.put("janAttr",janAttr);
         janInfoMap.put("janInfo",janInfo);
 

@@ -24,4 +24,6 @@ public interface ProdKaisouHeaderMapper {
      String getItem(String value, String tableNameAttr);
 
     List<Map<String,Object>> getZokuseiId(String companyCd,String classCd);
+
+    void updateName(ProductItemVO productItemVO,String tableName);
 }

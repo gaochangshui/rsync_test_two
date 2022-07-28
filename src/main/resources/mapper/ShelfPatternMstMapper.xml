@@ -240,4 +240,17 @@
         and ptskey is not null and ptskey!=''
       order by length(ptskey) desc
     </select>
+    <select id="getShelfPts" resultType="java.lang.Integer">
+      select distinct id from planocycle.shelf_pattern_mst pmst
+                       left join planocycle.shelf_pattern_branch pbranch
+                                 on pmst.shelf_pattern_cd = pbranch.shelf_pattern_cd
+                       inner join planocycle.shelf_pts_data ptsdata
+                                  on pbranch.shelf_pattern_cd = ptsdata.shelf_pattern_cd and  ptsdata.company_cd = pmst.company_cd
+
+      where pmst.company_cd = #{companyCd} and branch in (
+          <foreach collection="storeCd" item="item" separator=",">
+            #{item},#{companyCd} || '_'|| #{item}
+          </foreach>
+        ) and pmst.deleteflg = 0
+    </select>
 </mapper>

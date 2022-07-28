@@ -3,6 +3,7 @@ package com.trechina.planocycle.controller;
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.*;
+import com.trechina.planocycle.mapper.MstJanMapper;
 import com.trechina.planocycle.service.JanAttrService;
 import com.trechina.planocycle.service.MstJanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class MstJanController {
 
     @Autowired
     private JanAttrService janAttrService;
+    @Autowired
+    private MstJanMapper mstJanMapper;
 
     /**
      * janデータのチェック
@@ -69,7 +72,9 @@ public class MstJanController {
      */
     @PostMapping("/saveAttrInfo")
     public Map<String,Object> saveAttrInfo(@RequestBody ProductItemVO productItemVO){
-        return janAttrService.saveProductItem(productItemVO);
+
+        return productItemVO.getValue()==null?
+                janAttrService.saveProductItem(productItemVO) :janAttrService.updateAttrInfo(productItemVO);
     }
 
     /**
@@ -81,6 +86,8 @@ public class MstJanController {
     public Map<String,Object> delAttrInfo(@RequestBody ProductItemVO productItemVO){
         return janAttrService.delProductItem(productItemVO);
     }
+
+
     /**
      * 表示項目設定の取得
      *

@@ -33,4 +33,6 @@ public interface ProductPowerParamMstMapper {
     void setWork(@Param("item") Map<String, Object> map,@Param("authorCd") String authorCd,@Param("customerCondition") String customerCondition);
 
     void deleteWork(String companyCd, Integer productPowerCd);
+
+    ProductPowerParam getWorkParam(String companyCd, Integer productPowerCd);
 }

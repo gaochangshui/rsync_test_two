@@ -121,6 +121,9 @@
         "${index}" = #{item}
     </foreach>
     </select>
+    <select id="getNameExist" resultType="java.lang.String">
+        select "1" from ${tableName} where "2" = #{name}
+    </select>
 
     <insert id="insertPresetAttribute">
         insert into ${tableName}

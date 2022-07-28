@@ -589,9 +589,29 @@
                 case  when jan_info."${item.sort}" is null then '' else jan_info."${item.sort}"  end  as ${item.attr}
 
             </if>
+
         </foreach>
+        ,coalesce (branchs."branchCount",0)as "branchNum"
         from planocycle.work_product_power_syokika power_syokika
         left join ${tableName} jan_info on power_syokika.jan=jan_info.${janCdColName}
+        left join (
+
+        select jan,count(DISTINCT branch) "branchCount" from planocycle.shelf_pts_data_jandata  jandata
+        left join planocycle.shelf_pts_data ptsdata on ptsdata.id = jandata.pts_cd
+        inner join planocycle.shelf_pattern_branch branchs on ptsdata.shelf_pattern_cd = branchs.shelf_pattern_cd
+
+        and branch in
+        <foreach collection="storeCd" separator="," item="item" open="(" close=")" >
+            #{item},#{companyCd} ||'_'||#{item}
+        </foreach>
+
+        where jandata.pts_cd in
+        <foreach collection="ptsCd" separator="," item="item" open="(" close=")" >
+            #{item}
+        </foreach>
+        GROUP BY jan
+        ) branchs
+        on branchs.jan = power_syokika.jan
         where power_syokika.author_cd = #{authorCd} and power_syokika.company_cd = #{companyCd} and power_syokika.product_power_cd = #{productPowerCd}
         order by power_syokika.jan
     </select>
@@ -668,8 +688,27 @@
                 case  when jan_info."${item.sort}" is null then '' else jan_info."${item.sort}"  end  as ${item.attr}
             </if>
         </foreach>
+        ,coalesce (branchs."branchCount",0) as "branchNum"
         from planocycle.product_power_mst_data datas
         left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
+        left join (
+
+        select jan,count(DISTINCT branch) "branchCount" from planocycle.shelf_pts_data_jandata  jandata
+        left join planocycle.shelf_pts_data ptsdata on ptsdata.id = jandata.pts_cd
+        inner join planocycle.shelf_pattern_branch branchs on ptsdata.shelf_pattern_cd = branchs.shelf_pattern_cd
+
+        and branch in
+        <foreach collection="storeCd" separator="," item="item" open="(" close=")" >
+            #{item},#{companyCd} ||'_'||#{item}
+        </foreach>
+
+        where jandata.pts_cd in
+        <foreach collection="ptsCd" separator="," item="item" open="(" close=")" >
+            #{item}
+        </foreach>
+        GROUP BY jan
+        ) branchs
+        on branchs.jan = datas.jan
         where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
         order by rank_result ,datas.jan
     </select>

@@ -61,6 +61,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Autowired
     private SysConfigMapper sysConfigMapper;
     @Autowired
+    private ShelfPatternMstMapper shelfPatternMstMapper;
+    @Autowired
     private cgiUtils cgiUtil;
 
     /**
@@ -291,7 +293,12 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
         List<LinkedHashMap<String, Object>> returnDataAttr = new ArrayList<>();
-        List<LinkedHashMap<String, Object>> allDataAttr = productPowerDataMapper.getAllDataAttr(companyCd, productPowerNo, cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName);
+        ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerNo);
+        List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
+        List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
+        List<LinkedHashMap<String, Object>> allDataAttr = productPowerDataMapper.getAllDataAttr(companyCd, productPowerNo
+                , cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName,shelfPts,storeCd);
+        colMap.put("branchNum","定番店铺数");
         returnDataAttr.add(colMap);
         returnDataAttr.addAll(allDataAttr);
         List<LinkedHashMap<String, Object>> returnDataItem = new ArrayList<>();

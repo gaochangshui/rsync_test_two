@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -56,6 +57,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Autowired
     private ProductPowerParamMstMapper productPowerParamMstMapper;
     @Autowired
+    private ShelfPatternMstMapper shelfPatternMstMapper;
+    @Autowired
     private cgiUtils cgiUtil;
 
     @Value("${smartUrlPath}")
@@ -103,7 +106,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
              colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
         }
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
         List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
         for (Map<String, Object> map : janClassifyList) {
@@ -112,10 +114,14 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             }
         }
         Map<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1,k2)->k1, LinkedHashMap::new));
+        colMap.put("branchNum","定番店铺数");
         Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
+        ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
+        List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
+        List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
         List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
-                janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd);
+                janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd,shelfPts,storeCd);
         List<Map<String, Object>> resultData = new ArrayList<>();
         if (allData.isEmpty()){
             return ResultMaps.result(ResultEnum.SIZEISZERO);

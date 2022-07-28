@@ -76,4 +76,5 @@ public interface MstJanMapper {
 
     void clearCol(String colName, String janInfoTableName);
 
+    String getNameExist(String name,String tableName);
 }

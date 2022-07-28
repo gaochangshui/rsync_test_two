@@ -11,4 +11,6 @@ public interface JanAttrService {
     Map<String, Object> delProductItem(ProductItemVO productItemVO);
 
 
+    Map<String, Object> updateAttrInfo(ProductItemVO productItemVO);
+
 }
