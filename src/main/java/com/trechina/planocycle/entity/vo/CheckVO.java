@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class CheckVO {
-    private Boolean checkFlag;
+    private Long total;
     private String taskID;
 }
