@@ -168,7 +168,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
             String proInfoTable = commonTableName.getProInfoTable();
             List<String> janList = mustList.stream().map(PriorityOrderCommodityMust::getJan).collect(Collectors.toList());
-            List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList);
+            List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList,priorityOrderCd);
             List<String> notExistJan = ListDisparityUtils.getListDisparitStr(janList,existJan);
             List<PriorityOrderCommodityMust> existJanList = mustList.stream().filter(map -> existJan.contains(map.getJan())).collect(Collectors.toList());
 
@@ -273,7 +273,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             String proInfoTable = commonTableName.getProInfoTable();
 
             List<String> janList = not.stream().map(PriorityOrderCommodityNot::getJan).collect(Collectors.toList());
-            List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList);
+            List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList,priorityOrderCd);
             List<String> notExistJan = ListDisparityUtils.getListDisparitStr(janList,existJan);
             List<PriorityOrderCommodityNot> existJanList = not.stream().filter(map -> existJan.contains(map.getJan())).collect(Collectors.toList());
             List<String> notBranchExists = new ArrayList<>();

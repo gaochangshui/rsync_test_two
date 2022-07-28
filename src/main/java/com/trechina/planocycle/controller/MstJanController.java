@@ -1,11 +1,12 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
+import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
-import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.JanPresetAttribute;
-import com.trechina.planocycle.entity.vo.ProductItemVO;
+import com.trechina.planocycle.entity.vo.CheckVO;
+import com.trechina.planocycle.entity.vo.DownFlagVO;
 import com.trechina.planocycle.service.JanKaisouService;
 import com.trechina.planocycle.service.MstJanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 @RestController
 @RequestMapping("/planoCycleApi/MstJan")
@@ -26,13 +28,23 @@ public class MstJanController {
     private JanKaisouService janKaisouService;
 
     /**
-     * janデータの取得
+     * janデータのチェック
      * @param janParamVO 検索条件
      * @return
      */
+    @PostMapping("/getJanListCheck")
+    public CheckVO getJanListCheck(@RequestBody JanParamVO janParamVO){
+        return mstJanService.getJanListCheck(janParamVO);
+    }
+
+    /**
+     * janデータの取得
+     * @param downFlagVO
+     * @return
+     */
     @PostMapping("/getJanList")
-    public JanInfoVO getJanList(@RequestBody JanParamVO janParamVO){
-        return mstJanService.getJanList(janParamVO);
+    public JanInfoVO getJanList(@RequestBody DownFlagVO downFlagVO, HttpServletResponse response){
+        return mstJanService.getJanList(downFlagVO, response);
     }
 
     /**
@@ -44,10 +56,19 @@ public class MstJanController {
     public Map<String,Object> getJanListInfo(@RequestBody JanInfoList janInfoList){
         return mstJanService.getJanListInfo(janInfoList);
     }
+    /**
+     * janデータの取得
+     * @param map 検索条件
+     * @return
+     */
+    @PostMapping("/setJanListInfo")
+    public Map<String,Object> setJanListInfo(@RequestBody Map<String,Object> map){
+        return mstJanService.setJanListInfo(map);
+    }
 
     @PostMapping("/saveKaisouInfo")
-    public Map<String,Object> saveKaisouInfo(@RequestBody ProductItemVO productItemVO){
-        return janKaisouService.saveProductItem(productItemVO);
+    public Map<String,Object> saveKaisouInfo(@RequestBody Map<String,Object> map){
+        return janKaisouService.saveProductItem(map);
     }
 
     /**

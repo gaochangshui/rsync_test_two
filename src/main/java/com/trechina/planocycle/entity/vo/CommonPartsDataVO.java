@@ -6,6 +6,4 @@ import lombok.Data;
 public class CommonPartsDataVO {
     private String prodIsCore;
     private String prodMstClass;
-    private String shelfMstClass;
-
 }

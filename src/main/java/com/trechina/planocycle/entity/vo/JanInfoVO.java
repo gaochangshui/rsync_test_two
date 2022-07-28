@@ -10,6 +10,5 @@ public class JanInfoVO {
     private String janHeader;
     private String janColumn;
     private List<LinkedHashMap<String, Object>> janDataList;
-    private Long total;
 
 }

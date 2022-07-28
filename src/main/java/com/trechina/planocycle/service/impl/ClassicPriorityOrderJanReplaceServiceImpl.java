@@ -106,7 +106,7 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
                 if(jan.get(i).getJanNew()==null && jan.get(i).getJanOld()==null){
                     continue;
                 }
-                boolean existJanInfo = isExistJanInfo(proInfoTable, jan.get(i).getJanOld());
+                boolean existJanInfo = isExistJanInfo(proInfoTable, jan.get(i).getJanOld(),priorityOrderCd);
                 if (!existJanInfo){
                     notExists += jan.get(i).getJanOld()+",";
                 }else {
@@ -126,7 +126,7 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
         } catch (Exception e) {
-            logger.error("jan変情報の保存エラー：{}",e);
+            logger.error("jan変情報の保存エラー：",e);
             // トランザクションの手動ロールバック
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultMaps.result(ResultEnum.FAILURE);
@@ -173,9 +173,9 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
     }
 
     @Override
-    public boolean isExistJanInfo(String proInfoTable, String jan) {
+    public boolean isExistJanInfo(String proInfoTable, String jan,Integer priorityOrderCd) {
 
-        return priorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, Lists.newArrayList(jan)).isEmpty();
+        return !priorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, Lists.newArrayList(jan),priorityOrderCd).isEmpty();
     }
 
     /**

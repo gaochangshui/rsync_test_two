@@ -78,7 +78,7 @@ public class MagicString {
     public static final String JAN = "jan";
 
     public static final String DUMMY_JAN = "dummy_jan";
-    public static final String JAN_NAME = "JanName";
+    public static final String JAN_NAME = "janName";
     public static final String NAME = "name";
     public static final String VALUE = "value";
     public static final String INPUT_SHOW = "inputShow";
@@ -115,6 +115,13 @@ public class MagicString {
     public static final String TANAPOSITION_CD = "tanaposition_cd";
 
     public static final String PTS_VERSION = "Ｖ１．０";
+
+
+    public static final String COMMON_PARTS_DATA = "commonPartsData";
+    public static final String PROD_MST_CLASS = "prodMstClass";
+    public static final String PROD_IS_CORE = "prodIsCore";
+
+
 
     /**
      * 必須区分
