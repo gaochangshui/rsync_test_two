@@ -98,6 +98,7 @@ public class MagicString {
     public static final String COLUMN_INDEX_KAISOU_COLUMN = "4";
 
     public static final String DATE_FORMATER = "yyyyMMddHHmm";
+    public static final String DATE_FORMATER_SS = "yyyyMMddHHmmss";
     public static final String DELETE_LIST = "deleteList";
     public static final String NEW_LIST = "newList";
 

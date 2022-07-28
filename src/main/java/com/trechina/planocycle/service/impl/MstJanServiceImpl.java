@@ -13,9 +13,9 @@ import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.MstJanService;
 import com.trechina.planocycle.service.ZokuseiMstDataService;
 import com.trechina.planocycle.utils.CacheUtil;
+import com.trechina.planocycle.utils.ExcelUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.dataConverUtils;
-import de.siegmar.fastcsv.writer.CsvWriter;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +25,14 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriUtils;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -93,7 +94,7 @@ public class MstJanServiceImpl implements MstJanService {
     @Override
     public JanInfoVO getJanList(DownFlagVO downFlagVO, HttpServletResponse response) {
         JanInfoVO janInfoVO = new JanInfoVO();
-        if(cacheUtil.get(downFlagVO.getTaskID())== null ){
+        if (cacheUtil.get(downFlagVO.getTaskID()) == null) {
             return null;
         }
         JSONObject json =JSON.parseObject(cacheUtil.get(downFlagVO.getTaskID()).toString());
@@ -107,28 +108,25 @@ public class MstJanServiceImpl implements MstJanService {
         String column = janHeader.stream().map(map -> "COALESCE(\"" + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
                 .collect(Collectors.joining(","));
         janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTableName, column));
-        if(Integer.valueOf(0).equals(downFlagVO.getDownFlag())){
-            janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
-                    .collect(Collectors.joining(",")));
-            janInfoVO.setJanColumn(dataConverUtils.camelize(json.getString(janColumn)));
-        }
+        janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
+                .collect(Collectors.joining(",")));
+        janInfoVO.setJanColumn(dataConverUtils.camelize(janColumn));
         if(Integer.valueOf(1).equals(downFlagVO.getDownFlag())){
-            response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=utf-8");
+            response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+            String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("商品明細-%s.xlsx",
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
+            response.setHeader("Content-Disposition", format);
             try (
-                OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8)){
-                String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("%s.csv", "JANマスターデータ"), "utf-8"));
-                response.setHeader("Content-Disposition", format);
-                byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-                writer.write(new String(bom));
-                writer.flush();
-                try(CsvWriter csvWriter = CsvWriter.builder().build(writer)) {
-                    csvWriter.writeRow(janColumn.split(","));
-                    for(LinkedHashMap<String, Object> map:janInfoVO.getJanDataList()){
-                        csvWriter.writeRow(map.values().stream().map(Object::toString).collect(Collectors.toList()));
-                    }
+                ServletOutputStream outputStream = response.getOutputStream()){
+                List<String[]> excelData = new ArrayList<>();
+                excelData.add(janInfoVO.getJanHeader().split(","));
+                for(LinkedHashMap<String, Object> map:janInfoVO.getJanDataList()){
+                    excelData.add(map.values().stream().map(Object::toString).toArray(String[]::new));
                 }
+                ExcelUtils.generateNormalExcel(excelData, outputStream);
+                outputStream.flush();
             } catch (IOException e) {
-                logger.error("janデータダウンロード", e);
+                logger.error("商品明細ダウンロード", e);
             }
             return null;
         }
