@@ -364,14 +364,17 @@ public class MstJanServiceImpl implements MstJanService {
         setInfoMap.putAll(kaiSouName);
         mstJanMapper.setJanInfo(setInfoMap,jan,janInfoTableName);
         List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, commonPartsDto.get(MagicString.PROD_MST_CLASS).toString());
+        Map<String,Object> maps = new HashMap<>();
         for (Map<String, Object> objectMap : zokuseiIdAndCol) {
             for (Map.Entry<String, Object> stringObjectEntry : setInfoMap.entrySet()) {
-
+                if (objectMap.get("zokusei_col").equals(stringObjectEntry.getKey())){
+                    maps.put(objectMap.get("zokusei_id").toString(),stringObjectEntry.getValue());
+                }
             }
         }
         String finalCompanyCd = companyCd;
         //executor.execute(()->
-                zokuseiMstDataService.syncZokuseiMstData(finalCompanyCd, commonPartsDto.get(MagicString.PROD_MST_CLASS).toString());
+        //        zokuseiMstDataService.syncZokuseiMstData(finalCompanyCd, commonPartsDto.get(MagicString.PROD_MST_CLASS).toString());
                 //))
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
