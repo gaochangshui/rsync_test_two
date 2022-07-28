@@ -109,4 +109,7 @@
         from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd} and zokusei_col = #{colName}
         order by zokusei_id
     </select>
+    <select id="getZokuseiIdAndCol" resultType="java.util.Map">
+        select  zokusei_col ,zokusei_nm from planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
+    </select>
 </mapper>

@@ -70,7 +70,7 @@ public class MstJanController {
     @PostMapping("/saveAttrInfo")
     public Map<String,Object> saveAttrInfo(@RequestBody ProductItemVO productItemVO){
 
-        return productItemVO.getValue()==null?
+        return !"".equals(productItemVO.getValue())?
                 janAttrService.saveProductItem(productItemVO) :janAttrService.updateAttrInfo(productItemVO);
     }
 

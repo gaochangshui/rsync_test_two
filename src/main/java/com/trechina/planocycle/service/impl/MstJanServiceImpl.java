@@ -10,6 +10,7 @@ import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.MstJanMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
+import com.trechina.planocycle.mapper.ZokuseiMstMapper;
 import com.trechina.planocycle.service.MstJanService;
 import com.trechina.planocycle.service.ZokuseiMstDataService;
 import com.trechina.planocycle.utils.CacheUtil;
@@ -49,6 +50,8 @@ public class MstJanServiceImpl implements MstJanService {
     private CacheUtil cacheUtil;
     @Autowired
     private ZokuseiMstDataService zokuseiMstDataService;
+    @Autowired
+    private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
     private ThreadPoolTaskExecutor executor;
 
@@ -360,6 +363,7 @@ public class MstJanServiceImpl implements MstJanService {
         setInfoMap.put("2", map.get(MagicString.JAN_NAME).toString());
         setInfoMap.putAll(kaiSouName);
         mstJanMapper.setJanInfo(setInfoMap,jan,janInfoTableName);
+
         String finalCompanyCd = companyCd;
         //executor.execute(()->
                 zokuseiMstDataService.syncZokuseiMstData(finalCompanyCd, commonPartsDto.get(MagicString.PROD_MST_CLASS).toString());

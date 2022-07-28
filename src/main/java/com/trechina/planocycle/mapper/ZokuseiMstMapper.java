@@ -43,4 +43,7 @@ public interface ZokuseiMstMapper {
     void delZokuseiMstForId(String classCd, String companyCd, Integer zokuseiId);
 
     void delZokuseiMstDataForId(String classCd, String companyCd, Integer zokuseiId);
+
+    List<Map<String,Object>> getZokuseiIdAndCol(String companyCd, String classCd);
+
 }
