@@ -110,7 +110,13 @@ public class JanAttrServiceImpl implements JanAttrService {
         if (nameExist != null && !nameExist.equals(productItemVO.getValue())){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
-        prodKaisouHeaderMapper.updateName(productItemVO,tableNameAttr);
+        String type = "";
+        if ("number".equals(productItemVO.getType())){
+            type ="0";
+        }else if ("string".equals(productItemVO.getType())){
+            type ="1";
+        }
+        prodKaisouHeaderMapper.updateName(productItemVO,tableNameAttr,type);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
