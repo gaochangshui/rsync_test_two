@@ -106,8 +106,10 @@ public class MstJanServiceImpl implements MstJanService {
         String janInfoTableName = json.getString("janInfoTableName");
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
+        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", janParamVO.getCompanyCd(),
+                janParamVO.getCommonPartsData().getProdMstClass());
         String janColumn = json.getString("janColumn");
-        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr,janColumn);
+        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr, tableNameKaisou, janColumn);
         List<JanHeaderAttr> janHeaderSort = new ArrayList<>();
         for (String column : janColumn.split(",")) {
             Optional<JanHeaderAttr> optional = janHeader.stream().filter(e->column.equals(e.getAttr())).findFirst();

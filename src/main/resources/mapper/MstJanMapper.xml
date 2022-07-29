@@ -25,7 +25,12 @@
         <foreach collection="janColumn.split(',')" item="item" index="idx" separator=",">
             #{item,jdbcType=VARCHAR}
         </foreach>)
-        order by "4" nulls first,"3"
+        union
+        select "1" "attr","2" "attrVal","3" "sort", "4" "colSort" from ${tableNameKaisou}
+        where "1" in (
+        <foreach collection="janColumn.split(',')" item="item" index="idx" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>)
     </select>
 
     <select id="getJanHeaderByName" resultType="com.trechina.planocycle.entity.po.JanHeaderAttr">

@@ -17,7 +17,7 @@ public interface MstJanMapper {
      * janHeaderの取得
      * @return
      */
-    List<JanHeaderAttr> getJanHeader(String tableName, String janColumn);
+    List<JanHeaderAttr> getJanHeader(String tableName, String tableNameKaisou, String janColumn);
 
     /**
      * 名前でjanHeaderを取得
