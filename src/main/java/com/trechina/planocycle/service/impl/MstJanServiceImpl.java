@@ -161,7 +161,9 @@ public class MstJanServiceImpl implements MstJanService {
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
         List<LinkedHashMap<String,Object>> janAttrGroup2 = janAttrList.stream().filter(map->map.get("8").equals("5"))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
-
+        if (janInfoList1 == null && !"".equals(janInfoList.getJan())){
+            return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
+        }
         Map<String,Object> janInfoMap = new HashMap<>();
             janInfoMap.put(MagicString.JAN, janInfoList1!=null?janInfoList1.getOrDefault("1", ""):"");
             janInfoMap.put(MagicString.JAN_NAME, janInfoList1!=null?janInfoList1.getOrDefault("2", ""):"");
