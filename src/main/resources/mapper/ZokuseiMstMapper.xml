@@ -52,6 +52,19 @@
         else zokusei_id end
         where company_cd  = #{companyCd} and class_cd = #{classCd}
     </update>
+    <update id="setVal">
+        insert into masterdb.planocycle_zokusei_mst_data(
+            val,zokusei_id,type,nm,company_cd,class_cd)
+        values
+            <foreach collection="maps" item="item" index="index" separator="," >
+                (#{item},#{index} :: integer,0,#{item},#{companyCd},#{classCd})
+            </foreach>
+
+        on conflict(zokusei_id,val,company_cd,class_cd)
+        do update set
+        company_cd = #{companyCd}
+
+    </update>
     <select id="selectHeader" resultType="map">
         select "1" as col,"2" as name,"3" sort,0 as "type" from ${tableName}
         where "1" not like 'jan%' and "1" not in ('description','sync','update_time','updater', 'width','height','depth','hook_x','hook_y','product_shape')

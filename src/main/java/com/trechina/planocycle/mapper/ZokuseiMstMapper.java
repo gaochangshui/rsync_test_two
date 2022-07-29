@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.po.Zokusei;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,4 +47,5 @@ public interface ZokuseiMstMapper {
 
     List<Map<String,Object>> getZokuseiIdAndCol(String companyCd, String classCd);
 
+    void setVal(LinkedHashMap<String, Object> maps,String companyCd,String classCd);
 }
