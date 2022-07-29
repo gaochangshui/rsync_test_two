@@ -8,6 +8,7 @@ import com.trechina.planocycle.service.JanAttrService;
 import com.trechina.planocycle.service.MstJanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -105,6 +106,22 @@ public class MstJanController {
     @PostMapping("/setPresetAttribute")
     public Map<String, Object> setPresetParam(@RequestBody JanPresetAttribute janPresetAttribute){
         return mstJanService.setPresetAttribute(janPresetAttribute);
+    }
+
+    /**
+     * データ一括取込
+     *
+     * @param file
+     * @param fileName
+     * @return
+     */
+    @PostMapping("/uploadJanData")
+    public Map<String, Object> uploadJanData(MultipartFile file,
+                                             String fileName,
+                                             String classCd,
+                                             String commonPartsData,
+                                             String companyCd){
+        return mstJanService.uploadJanData(file, fileName, classCd, commonPartsData, companyCd);
     }
 
 }

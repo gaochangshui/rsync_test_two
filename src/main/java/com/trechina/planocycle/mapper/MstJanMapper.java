@@ -20,6 +20,12 @@ public interface MstJanMapper {
     List<JanHeaderAttr> getJanHeader(String tableName, String janColumn);
 
     /**
+     * 名前でjanHeaderを取得
+     * @return
+     */
+    List<JanHeaderAttr> getJanHeaderByName(String tableName, String tableNameKaisou, String headerName);
+
+    /**
      * janデータの計数
      * @param janParamVO 検索条件
      * @return
@@ -77,4 +83,13 @@ public interface MstJanMapper {
     void clearCol(String colName, String janInfoTableName);
 
     String getNameExist(String name,String tableName);
+
+    /**
+     * batch更新JAN
+     * @param tableName
+     * @param janData
+     * @param infoHeader
+     * @return
+     */
+    int insertJanList(String tableName,String infoHeader, List<LinkedHashMap<String, Object>> janData);
 }
