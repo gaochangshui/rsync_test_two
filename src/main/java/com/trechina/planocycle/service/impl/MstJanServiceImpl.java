@@ -397,7 +397,7 @@ public class MstJanServiceImpl implements MstJanService {
     @Override
     public Map<String, Object> uploadJanData(MultipartFile file, String fileName, String classCd,
                                              String commonPartsData, String companyCd) {
-        if (!fileName.startsWith("商品明細-") || fileName.endsWith(".xlsx")) {
+        if (!fileName.startsWith("商品明細-") || !fileName.endsWith(".xlsx")) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), "正しいファイルをアップロードしてください");
         }
         List<String[]> excelData = ExcelUtils.readExcel(file);
@@ -420,9 +420,9 @@ public class MstJanServiceImpl implements MstJanService {
         if (header.length > janHeader.size()) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), "識別されていない列があります、修正してください");
         }
-        Map<String,String> headerNameIndex= new HashMap<>();
+        Map<String, String> headerNameIndex = new HashMap<>();
         for (JanHeaderAttr headerAttr : janHeader) {
-            headerNameIndex.put(headerAttr.getAttrVal(),headerAttr.getSort());
+            headerNameIndex.put(headerAttr.getAttrVal(), headerAttr.getSort());
         }
         List<String> columnHeader = new ArrayList<>();
         for (String column : header) {
@@ -432,7 +432,7 @@ public class MstJanServiceImpl implements MstJanService {
         List<LinkedHashMap<String, Object>> janData = new ArrayList<>();
         LinkedHashMap<String, Object> jan;
         try {
-            for (int i = 1; i<excelData.size();i++) {
+            for (int i = 1; i < excelData.size(); i++) {
                 String[] row = excelData.get(i);
                 jan = new LinkedHashMap<>();
                 for (int j = 0; j < row.length; j++) {
@@ -441,7 +441,7 @@ public class MstJanServiceImpl implements MstJanService {
                 janData.add(jan);
             }
             mstJanMapper.insertJanList(tableNameInfo, infoHeader, janData);
-        }catch(Exception e){
+        } catch (Exception e) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), "商品明細更新は失敗しました");
         }
         return ResultMaps.result(ResultEnum.SUCCESS.getCode(), "商品明細は更新しました");
