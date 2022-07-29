@@ -3,7 +3,6 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
 import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.*;
@@ -270,17 +269,15 @@ public class MstJanServiceImpl implements MstJanService {
 
     /**
      * 表示項目設定の取得
-     * @param enterpriseAxisDto
+     * @param janPresetAttribute
      * @return
      */
     @Override
-    public Map<String, Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto) {
+    public Map<String, Object> getAttrName(JanPresetAttribute janPresetAttribute) {
         String aud = session.getAttribute("aud").toString();
-        String companyCd = enterpriseAxisDto.getCompanyCd();
-        String commonPartsData = enterpriseAxisDto.getCommonPartsData();
-        JSONObject jsonObject = JSON.parseObject(commonPartsData);
-        String prodMstClass = jsonObject.get("prodMstClass").toString();
-        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        String companyCd = janPresetAttribute.getCompanyCd();
+        String prodMstClass = janPresetAttribute.getCommonPartsData().getProdMstClass();
+        String prodIsCore = janPresetAttribute.getCommonPartsData().getProdIsCore();
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         String isCompanyCd;
         if ("1".equals(prodIsCore)) {
@@ -304,9 +301,8 @@ public class MstJanServiceImpl implements MstJanService {
     public Map<String, Object> setPresetAttribute(JanPresetAttribute janPresetAttribute) {
         String aud = session.getAttribute("aud").toString();
         String companyCd = janPresetAttribute.getCompanyCd();
-        JSONObject jsonObject = JSON.parseObject(janPresetAttribute.getCommonPartsData());
-        String prodMstClass = jsonObject.get("prodMstClass").toString();
-        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        String prodMstClass = janPresetAttribute.getCommonPartsData().getProdMstClass();
+        String prodIsCore = janPresetAttribute.getCommonPartsData().getProdIsCore();
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         String isCompanyCd;
         if ("1".equals(prodIsCore)) {

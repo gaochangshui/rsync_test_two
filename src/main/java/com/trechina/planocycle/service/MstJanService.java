@@ -1,6 +1,5 @@
 package com.trechina.planocycle.service;
 
-import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
 import com.trechina.planocycle.entity.vo.CheckVO;
@@ -33,10 +32,10 @@ public interface MstJanService {
     /**
      * 表示項目設定の取得
      *
-     * @param enterpriseAxisDto
+     * @param janPresetAttribute
      * @return
      */
-    Map<String, Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto);
+    Map<String, Object> getAttrName(JanPresetAttribute janPresetAttribute);
 
     /**
      * 表示項目設定のプリセット

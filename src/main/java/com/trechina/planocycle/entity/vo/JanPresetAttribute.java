@@ -8,6 +8,6 @@ public class JanPresetAttribute {
     @JsonIgnore
     private String companyCd;
     private String classCd;
-    private String commonPartsData;
+    private CommonPartsDataVO commonPartsData;
 
 }

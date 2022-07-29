@@ -1,6 +1,5 @@
 package com.trechina.planocycle.controller;
 
-import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.mapper.MstJanMapper;
@@ -89,12 +88,12 @@ public class MstJanController {
     /**
      * 表示項目設定の取得
      *
-     * @param enterpriseAxisDto
+     * @param janPresetAttribute
      * @return
      */
     @PostMapping("/getPresetAttribute")
-    public Map<String, Object> getAttrName(@RequestBody EnterpriseAxisDto enterpriseAxisDto) {
-        return mstJanService.getAttrName(enterpriseAxisDto);
+    public Map<String, Object> getAttrName(@RequestBody JanPresetAttribute janPresetAttribute) {
+        return mstJanService.getAttrName(janPresetAttribute);
     }
 
     /**
