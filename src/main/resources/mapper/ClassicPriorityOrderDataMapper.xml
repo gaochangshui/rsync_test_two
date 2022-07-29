@@ -274,7 +274,7 @@
         select "2" as label ,concat( #{isCompanyCd} ,'_', #{prodIsCore} ,'_', "3") as value,2 as attr_type
         FROM ${tableNameAttr}
 
-        where "4" is not null
+        where "4" is not null and "1" not in ('jan_cd','jan_name','description','sync','update_time','updater', 'width','height','depth','hook_x','hook_y','product_shape')
         order by "4"::integer
     </select>
     <select id="selectPriorityAttrValue" resultType="java.lang.String">
