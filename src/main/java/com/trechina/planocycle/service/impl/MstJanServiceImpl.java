@@ -108,6 +108,14 @@ public class MstJanServiceImpl implements MstJanService {
                 janParamVO.getCommonPartsData().getProdMstClass());
         String janColumn = json.getString("janColumn");
         List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr,janColumn);
+        List<JanHeaderAttr> janHeaderSort = new ArrayList<>();
+        for (String column : janColumn.split(",")) {
+            Optional<JanHeaderAttr> optional = janHeader.stream().filter(e->column.equals(e.getAttr())).findFirst();
+            if(optional.isPresent()){
+                janHeaderSort.add(optional.get());
+            }
+        }
+        janHeader = janHeaderSort;
         //SQL文の列： "\"1\" \"jan_cd\",\"2\" \"jan_name\",\"21\" \"kikaku\",\"22\" \"maker\",\"23\"
         String column = janHeader.stream().map(map -> "COALESCE(\"" + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
                 .collect(Collectors.joining(","));
@@ -401,8 +409,8 @@ public class MstJanServiceImpl implements MstJanService {
         String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", companyCd, prodMstClass);
         String tableNameInfo = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd, prodMstClass);
         String[] header = excelData.get(0);
-        Optional<String> a = Stream.of(header).filter(e -> MagicString.JAN.equalsIgnoreCase(e)).findAny();
-        if (!a.isPresent()) {
+        Optional<String> optional = Stream.of(header).filter(MagicString.JAN::equalsIgnoreCase).findAny();
+        if (!optional.isPresent()) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), "商品コードを追加してください");
         }
         String janColumn = String.join(",", header);
