@@ -1,12 +1,12 @@
 package com.trechina.planocycle.service;
 
-import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
 import com.trechina.planocycle.entity.vo.CheckVO;
 import com.trechina.planocycle.entity.vo.DownFlagVO;
 import com.trechina.planocycle.entity.vo.JanPresetAttribute;
 import com.trechina.planocycle.entity.po.JanInfoList;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -32,10 +32,10 @@ public interface MstJanService {
     /**
      * 表示項目設定の取得
      *
-     * @param enterpriseAxisDto
+     * @param janPresetAttribute
      * @return
      */
-    Map<String, Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto);
+    Map<String, Object> getAttrName(JanPresetAttribute janPresetAttribute);
 
     /**
      * 表示項目設定のプリセット
@@ -46,4 +46,14 @@ public interface MstJanService {
     Map<String, Object> setPresetAttribute(JanPresetAttribute janPresetAttribute);
 
     Map<String, Object> setJanListInfo(Map<String, Object> map);
+
+    /**
+     * データ一括取込
+     * @param file
+     * @param fileName
+     * @param classCd
+     * @return
+     */
+    Map<String, Object> uploadJanData(MultipartFile file, String fileName, String classCd,
+                                      String commonPartsData, String companyCd);
 }

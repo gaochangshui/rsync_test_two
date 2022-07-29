@@ -20,7 +20,7 @@ public enum ResultEnum {
     DATAISTOOLARGE(40003,"数据量を過ぎて大"),
     CLASSIFY_NOT_EXIST(40004,"classify not exist"),
     VERSION_ERROR(40005,"version error"),
-    JANCDINEXISTENCE(50004,"JAN不存在"),
+    JANCDINEXISTENCE(50004,"該当商品がありません。"),
 
     KAISOU_COUNT_LIMIT(70001,"kaisou count not enough"),
 

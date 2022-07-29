@@ -3,7 +3,6 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
 import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.*;
@@ -24,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.ServletOutputStream;
@@ -36,6 +36,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class MstJanServiceImpl implements MstJanService {
@@ -268,17 +269,15 @@ public class MstJanServiceImpl implements MstJanService {
 
     /**
      * 表示項目設定の取得
-     * @param enterpriseAxisDto
+     * @param janPresetAttribute
      * @return
      */
     @Override
-    public Map<String, Object> getAttrName(EnterpriseAxisDto enterpriseAxisDto) {
+    public Map<String, Object> getAttrName(JanPresetAttribute janPresetAttribute) {
         String aud = session.getAttribute("aud").toString();
-        String companyCd = enterpriseAxisDto.getCompanyCd();
-        String commonPartsData = enterpriseAxisDto.getCommonPartsData();
-        JSONObject jsonObject = JSON.parseObject(commonPartsData);
-        String prodMstClass = jsonObject.get("prodMstClass").toString();
-        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        String companyCd = janPresetAttribute.getCompanyCd();
+        String prodMstClass = janPresetAttribute.getCommonPartsData().getProdMstClass();
+        String prodIsCore = janPresetAttribute.getCommonPartsData().getProdIsCore();
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         String isCompanyCd;
         if ("1".equals(prodIsCore)) {
@@ -288,7 +287,7 @@ public class MstJanServiceImpl implements MstJanService {
         }
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
         String tableNamePreset = MessageFormat.format("\"{0}\".prod_{1}_jan_preset_param", isCompanyCd, prodMstClass);
-        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", companyCd, prodMstClass);
+        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
         return ResultMaps.result(ResultEnum.SUCCESS, mstJanMapper.getAttrName(aud, tableNameAttr, tableNamePreset, tableNameKaisou));
     }
 
@@ -302,9 +301,8 @@ public class MstJanServiceImpl implements MstJanService {
     public Map<String, Object> setPresetAttribute(JanPresetAttribute janPresetAttribute) {
         String aud = session.getAttribute("aud").toString();
         String companyCd = janPresetAttribute.getCompanyCd();
-        JSONObject jsonObject = JSON.parseObject(janPresetAttribute.getCommonPartsData());
-        String prodMstClass = jsonObject.get("prodMstClass").toString();
-        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        String prodMstClass = janPresetAttribute.getCommonPartsData().getProdMstClass();
+        String prodIsCore = janPresetAttribute.getCommonPartsData().getProdIsCore();
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         String isCompanyCd;
         if ("1".equals(prodIsCore)) {
@@ -377,5 +375,65 @@ public class MstJanServiceImpl implements MstJanService {
         zokuseiMstMapper.setVal(maps,companyCd,commonPartsDto.get(MagicString.PROD_MST_CLASS).toString());
 
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    /**
+     * データ一括取込
+     * @param file
+     * @param fileName
+     * @param classCd
+     * @return
+     */
+    @Override
+    public Map<String, Object> uploadJanData(MultipartFile file, String fileName, String classCd,
+                                             String commonPartsData, String companyCd) {
+        if (!fileName.startsWith("商品明細-") || fileName.endsWith(".xlsx")) {
+            return ResultMaps.result(ResultEnum.FAILURE.getCode(), "正しいファイルをアップロードしてください");
+        }
+        List<String[]> excelData = ExcelUtils.readExcel(file);
+        JSONObject jsonObject = JSON.parseObject(commonPartsData);
+        String prodMstClass = jsonObject.get("prodMstClass").toString();
+        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        if ("1".equals(prodIsCore)) {
+            companyCd = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        }
+        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd, prodMstClass);
+        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", companyCd, prodMstClass);
+        String tableNameInfo = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd, prodMstClass);
+        String[] header = excelData.get(0);
+        Optional<String> a = Stream.of(header).filter(e -> MagicString.JAN.equalsIgnoreCase(e)).findAny();
+        if (!a.isPresent()) {
+            return ResultMaps.result(ResultEnum.FAILURE.getCode(), "商品コードを追加してください");
+        }
+        String janColumn = String.join(",", header);
+        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeaderByName(tableNameAttr, tableNameKaisou, janColumn);
+        if (header.length > janHeader.size()) {
+            return ResultMaps.result(ResultEnum.FAILURE.getCode(), "識別されていない列があります、修正してください");
+        }
+        Map<String,String> headerNameIndex= new HashMap<>();
+        for (JanHeaderAttr headerAttr : janHeader) {
+            headerNameIndex.put(headerAttr.getAttrVal(),headerAttr.getSort());
+        }
+        List<String> columnHeader = new ArrayList<>();
+        for (String column : header) {
+            columnHeader.add(headerNameIndex.get(column));
+        }
+        String infoHeader = "\"" + String.join("\",\"", columnHeader) + "\"";
+        List<LinkedHashMap<String, Object>> janData = new ArrayList<>();
+        LinkedHashMap<String, Object> jan;
+        try {
+            for (int i = 1; i<excelData.size();i++) {
+                String[] row = excelData.get(i);
+                jan = new LinkedHashMap<>();
+                for (int j = 0; j < row.length; j++) {
+                    jan.put(headerNameIndex.get(header[j]), row[j]);
+                }
+                janData.add(jan);
+            }
+            mstJanMapper.insertJanList(tableNameInfo, infoHeader, janData);
+        }catch(Exception e){
+            return ResultMaps.result(ResultEnum.FAILURE.getCode(), "商品明細更新は失敗しました");
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS.getCode(), "商品明細は更新しました");
     }
 }
