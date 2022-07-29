@@ -29,13 +29,46 @@
     <insert id="insertZokuseiData1">
         insert into masterdb.planocycle_zokusei_mst_data(zokusei_id,val,val_parent,type,nm,company_cd,class_cd)
         select distinct #{zokuseiId},COALESCE("${col}", ''),null
-                      ,0,"${col}",#{company},#{classCd}
+                      ,0,COALESCE("${col}", ''),#{company},#{classCd}
         from "${company}".prod_${classCd}_jan_info
     </insert>
+    <update id="updateZokuseiMstData">
+        update masterdb.planocycle_zokusei_mst_data
+        set zokusei_id=
+        case zokusei_id
+        <foreach collection="map" item="item">
+            when #{item.zokusei_id} then #{item.sort}
+        </foreach>
+        else zokusei_id end
+        where company_cd  = #{companyCd} and class_cd = #{classCd}
+    </update>
+    <update id="updateZokuseiMst">
+        update masterdb.planocycle_zokusei_mst
+        set zokusei_id=
+        case zokusei_id
+        <foreach collection="map" item="item">
+            when #{item.zokusei_id} then #{item.sort}
+        </foreach>
+        else zokusei_id end
+        where company_cd  = #{companyCd} and class_cd = #{classCd}
+    </update>
+    <update id="setVal">
+        insert into masterdb.planocycle_zokusei_mst_data(
+            val,zokusei_id,type,nm,company_cd,class_cd)
+        values
+            <foreach collection="maps" item="item" index="index" separator="," >
+                (#{item},#{index} :: integer,0,#{item},#{companyCd},#{classCd})
+            </foreach>
+
+        on conflict(zokusei_id,val,company_cd,class_cd)
+        do update set
+        company_cd = #{companyCd}
+
+    </update>
     <select id="selectHeader" resultType="map">
         select "1" as col,"2" as name,"3" sort,0 as "type" from ${tableName}
-        where "1" not like 'jan%'
-        order by "3"::integer
+        where "1" not like 'jan%' and "1" not in ('description','sync','update_time','updater', 'width','height','depth','hook_x','hook_y','product_shape')
+        order by "4"::integer
     </select>
     <select id="selectAllAttrTable" resultType="string">
         select "table_name" from information_schema.tables
@@ -54,6 +87,12 @@
     </delete>
     <delete id="deleteData">
         delete from masterdb.planocycle_zokusei_mst_data where company_cd=#{companyCd} and class_cd=#{classCd}
+    </delete>
+    <delete id="delZokuseiMstForId">
+        delete from masterdb.planocycle_zokusei_mst where company_cd=#{companyCd} and class_cd=#{classCd} and zokusei_id = #{zokuseiId}
+    </delete>
+    <delete id="delZokuseiMstDataForId">
+        delete from masterdb.planocycle_zokusei_mst_data where company_cd=#{companyCd} and class_cd=#{classCd} and zokusei_id = #{zokuseiId}
     </delete>
     <select id="selectByZokuseiId" resultType="com.trechina.planocycle.entity.po.Zokusei">
         select zokusei_id,zokusei_col  from masterdb.planocycle_zokusei_mst where zokusei_id::varchar=any(string_to_array(#{zokuseiId},','))
@@ -77,5 +116,13 @@
             zokusei_id,zokusei_nm
         from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
         order by zokusei_id
+    </select>
+    <select id="getZokuseiIdForCol" resultType="java.lang.Integer">
+        select zokusei_id
+        from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd} and zokusei_col = #{colName}
+        order by zokusei_id
+    </select>
+    <select id="getZokuseiIdAndCol" resultType="java.util.Map">
+        select  zokusei_col ,zokusei_nm,zokusei_id from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
     </select>
 </mapper>

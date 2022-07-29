@@ -4,9 +4,10 @@ import lombok.Data;
 
 @Data
 public class ProductItemVO {
-    private String itemCd;
-    private String itemName;
-    private Integer requiredType;
-    private Integer itemType;
+    private String name;
+    private String value;
+    private String type;
+    private CommonPartsDataVO commonPartsData;
+    private String companyCd;
 
 }

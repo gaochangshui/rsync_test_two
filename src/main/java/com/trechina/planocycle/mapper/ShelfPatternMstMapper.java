@@ -52,4 +52,6 @@ public interface ShelfPatternMstMapper {
     List<Integer> getpatternIdOfFilename(String fileName, String companyCd);
 
     List<String> isCompany(List<String> shelfPatternList);
+
+    List<Integer> getShelfPts(List<String> storeCd, String companyCd);
 }

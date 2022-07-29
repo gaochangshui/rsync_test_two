@@ -6,11 +6,41 @@
         SELECT #{itemVO.itemCd},#{itemVO.itemName},#{maxCol},#{kaisouMaxCol},#{itemVO.requiredType},#{itemVO.itemType}
         FROM (select 1) tmp WHERE NOT EXISTS(select * FROM "9999".prod_0000_jan_attr_header_sys where "3"=#{maxCol})
     </insert>
+    <insert id="setItem">
+        insert into ${tableName} (
+        <foreach collection="map" index="index" separator=",">
+                                  "${index}"
+        </foreach>
+        )
+        values
+        (
+        <foreach collection="map" item="item" index="index" separator=",">
+                #{item}
+            </foreach>
+            )
+
+    </insert>
+    <update id="updateName">
+        update ${tableName} set "2" = #{productItemVO.name} where "1" = #{productItemVO.value}
+    </update>
+    <delete id="delItem">
+        delete from ${tableName} where "1" = #{value}
+    </delete>
     <select id="selectMaxByCol" resultType="integer">
         select max("${targetColumn}"::integer)+1 from "9999".prod_0000_jan_attr_header_sys
     </select>
-    <select id="selectItemName" resultType="integer">
+    <select id="selectPlanItem" resultType="integer">
         select count("2")from "9999".prod_0000_jan_attr_header_sys
         where "2"=#{itemName}
+    </select>
+    <select id="getPlanItem" resultType="map">
+        select "1","2","3","4" from ${tableNameAttr} where "8" = '6' order by "3"
+    </select>
+    <select id="getItem" resultType="string">
+        select "3" from ${tableNameAttr} where "1" = #{value}
+    </select>
+    <select id="getZokuseiId" resultType="map">
+        select distinct zokusei_id,"row_number"() over (order by zokusei_id) as sort
+        from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd} order by zokusei_id
     </select>
 </mapper>

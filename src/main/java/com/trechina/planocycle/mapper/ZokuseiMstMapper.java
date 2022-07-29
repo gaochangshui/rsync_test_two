@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.po.Zokusei;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,4 +33,19 @@ public interface ZokuseiMstMapper {
     List<Map<String,Object>> getZokuseiCol(List<Integer> attrList ,String companyCd, String classCd);
 
     List<Map<String,Object>> getzokuseiName(@Param("companyCd") String companyCd,@Param("classCd")String classCd);
+
+
+    void updateZokuseiMstData(List<Map<String, Object>> map, String companyCd, String classCd);
+
+    void updateZokuseiMst(List<Map<String, Object>> map, String companyCd, String classCd);
+
+    Integer getZokuseiIdForCol(String colName, String companyCd, String classCd);
+
+    void delZokuseiMstForId(String classCd, String companyCd, Integer zokuseiId);
+
+    void delZokuseiMstDataForId(String classCd, String companyCd, Integer zokuseiId);
+
+    List<Map<String,Object>> getZokuseiIdAndCol(String companyCd, String classCd);
+
+    void setVal(LinkedHashMap<String, Object> maps,String companyCd,String classCd);
 }

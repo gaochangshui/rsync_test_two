@@ -1,19 +1,15 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
-import com.trechina.planocycle.entity.vo.JanInfoVO;
-import com.trechina.planocycle.entity.vo.JanParamVO;
 import com.trechina.planocycle.entity.po.JanInfoList;
-import com.trechina.planocycle.entity.vo.JanPresetAttribute;
-import com.trechina.planocycle.entity.vo.ProductItemVO;
-import com.trechina.planocycle.service.JanKaisouService;
+import com.trechina.planocycle.entity.vo.*;
+import com.trechina.planocycle.mapper.MstJanMapper;
+import com.trechina.planocycle.service.JanAttrService;
 import com.trechina.planocycle.service.MstJanService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 @RestController
 @RequestMapping("/planoCycleApi/MstJan")
@@ -23,16 +19,28 @@ public class MstJanController {
     private MstJanService mstJanService;
 
     @Autowired
-    private JanKaisouService janKaisouService;
+    private JanAttrService janAttrService;
+    @Autowired
+    private MstJanMapper mstJanMapper;
 
     /**
-     * janデータの取得
+     * janデータのチェック
      * @param janParamVO 検索条件
      * @return
      */
+    @PostMapping("/getJanListCheck")
+    public CheckVO getJanListCheck(@RequestBody JanParamVO janParamVO){
+        return mstJanService.getJanListCheck(janParamVO);
+    }
+
+    /**
+     * janデータの取得
+     * @param downFlagVO
+     * @return
+     */
     @PostMapping("/getJanList")
-    public JanInfoVO getJanList(@RequestBody JanParamVO janParamVO){
-        return mstJanService.getJanList(janParamVO);
+    public JanInfoVO getJanList(@RequestBody DownFlagVO downFlagVO, HttpServletResponse response){
+        return mstJanService.getJanList(downFlagVO, response);
     }
 
     /**
@@ -44,11 +52,38 @@ public class MstJanController {
     public Map<String,Object> getJanListInfo(@RequestBody JanInfoList janInfoList){
         return mstJanService.getJanListInfo(janInfoList);
     }
-
-    @PostMapping("/saveKaisouInfo")
-    public Map<String,Object> saveKaisouInfo(@RequestBody ProductItemVO productItemVO){
-        return janKaisouService.saveProductItem(productItemVO);
+    /**
+     * janデータの保存
+     * @param map 検索条件
+     * @return
+     */
+    @PostMapping("/setJanListInfo")
+    public Map<String,Object> setJanListInfo(@RequestBody Map<String,Object> map){
+        return mstJanService.setJanListInfo(map);
     }
+
+    /**
+     * 属性の追加
+     * @param productItemVO
+     * @return
+     */
+    @PostMapping("/saveAttrInfo")
+    public Map<String,Object> saveAttrInfo(@RequestBody ProductItemVO productItemVO){
+
+        return "".equals(productItemVO.getValue())?
+                janAttrService.saveProductItem(productItemVO) :janAttrService.updateAttrInfo(productItemVO);
+    }
+
+    /**
+     * 属性の削除
+     * @param productItemVO
+     * @return
+     */
+    @DeleteMapping("/delAttrInfo")
+    public Map<String,Object> delAttrInfo(@RequestBody ProductItemVO productItemVO){
+        return janAttrService.delProductItem(productItemVO);
+    }
+
 
     /**
      * 表示項目設定の取得

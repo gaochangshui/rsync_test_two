@@ -1,10 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.MstJanMapper">
+    <update id="setJanInfo">
+        insert into ${tableName}("1"
+        <foreach collection="list" item="item" index="index">
+            ,"${index}"
+        </foreach>
+        )
+        values (#{jan}
+        <foreach collection="list" item="item">
+            ,#{item}
+        </foreach>
+        )
+            on conflict("1")
+        do update set
+            <foreach collection="list" item="item" index="index" separator=",">
+                "${index}" = #{item}
+            </foreach>
+    </update>
     <!--"{0}".prod_{1}_jan_attr_header_sys  -->
     <select id="getJanHeader" resultType="com.trechina.planocycle.entity.po.JanHeaderAttr">
         select "1" "attr","2" "attrVal","3" "sort", "4" "colSort" from ${tableName}
-        where "7" = '1'
+        where "1" in (
+        <foreach collection="janColumn.split(',')" item="item" index="idx" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>)
         order by "4" nulls first,"3"
     </select>
 
@@ -15,16 +35,15 @@
     <select id="getJanList" resultType="java.util.LinkedHashMap">
         <include refid="Base_Jan_List" />
         order by "1"
-        limit #{pageSize} offset #{pageCount}
     </select>
     <select id="getJanInfoList" resultType="java.util.LinkedHashMap">
         select * from ${tableName} where "1" = #{jan}
     </select>
     <select id="getJanAttrList" resultType="java.util.LinkedHashMap">
-    select "1","2","3","4","7","8","9" from ${tableName} where "4" is not null order by "3"
+    select "1","2","3","4","8","10" from ${tableName} where "1" not in ('jan_name','jan_cd')   order by "4"
     </select>
     <select id="getJanKaisouList" resultType="java.util.LinkedHashMap">
-        select "1","2","3","4","7" from ${tableName} where "4" is not null and "1" like '%_name'
+        select "1","2","3" from ${tableName} where "4" is not null and "1" like '%_name'
     </select>
 
     <!--"{0}".prod_{1}_jan_info  -->
@@ -44,24 +63,66 @@
                 #{items}
             </foreach>)
         </if>
+        <if test="janParamVO.prodCd != null and janParamVO.prodCd != ''">
+            and(
+            <foreach collection="janParamVO.prodCd.split(',')" item="items" separator="or" >
+                <foreach collection="items.split('_')" item="item" index="index" separator="and" open ="(" close = ")">
+                    "${index*2+3}" =
+                    <choose>
+                        <when test="item.split('-').length==2">
+                            '${item.split('-')[1]}'
+                        </when>
+                        <otherwise>
+                            '${item}'
+                        </otherwise>
+                    </choose>
+                </foreach>
+            </foreach>
+            )
+        </if>
     </sql>
 
     <select id="getAttrName" resultType="com.trechina.planocycle.entity.po.JanAttrName">
+        select * from (
         select "1" "value","2" "label",
         case "8" when '1' then '基本項目'
         when '2' then '商品分類'
         when '3' then '商品属性'
         when '4' then 'Plano-Cycle専用'
-        when '5' then 'Plano-Cycle追加'
+        when '5' then 'Plano-Cycle専用'
+        when '6' then 'Plano-Cycle追加'
         else ''
         end as "attrType",
         case "9" when '1' then true else false end as "mandatory",
         case when "9" = '1' then true
         when t2.item_cd is not null then true
-        else false end as "flag"
+        else false end as "flag",t1."8",t1."3"::integer
         from ${tableName} t1
         left join ${tableNamePreset} t2 on t1."1" =t2.item_cd and t2.author_cd = #{authorCd}
-        order by "4" nulls first,"3"
+        union all
+        select
+        "1" "value","2" "label", '商品分類' "attrType",
+        false  as "mandatory",
+        case when t2.item_cd is not null then true
+        else false end as "flag",'2' as "8",t1."3"::integer
+        from ${tableNameKaisou} t1
+        left join ${tableNamePreset} t2 on t1."1" =t2.item_cd and t2.author_cd = #{authorCd}
+        where "1" not in('jan_cd','jan_name')) a
+        order by "8","3"
+    </select>
+    <select id="getKaiSouName" resultType="java.util.Map">
+        select distinct
+         <foreach collection="list" item="item" separator=",">
+             "${item}"
+         </foreach>
+         from ${tableName}
+        where
+    <foreach collection="map" index="index" item="item" separator="and">
+        "${index}" = #{item}
+    </foreach>
+    </select>
+    <select id="getNameExist" resultType="java.lang.String">
+        select "1" from ${tableName} where "2" = #{name}
     </select>
 
     <insert id="insertPresetAttribute">
@@ -74,5 +135,8 @@
     <delete id="deleteByAuthorCd">
         delete from ${tableName} where author_cd=#{authorCd}
     </delete>
+    <update id="clearCol">
+        update ${janInfoTableName} set "${colName}" = null
+    </update>
 
 </mapper>

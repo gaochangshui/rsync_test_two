@@ -72,13 +72,17 @@ public class MagicString {
 
     public static final String ATTR_BIG = "attrBig";
 
+    public static final String SELF_SERVICE = "1000";
+
+
+
     /**
      * 棚割専用
      */
     public static final String JAN = "jan";
 
     public static final String DUMMY_JAN = "dummy_jan";
-    public static final String JAN_NAME = "JanName";
+    public static final String JAN_NAME = "janName";
     public static final String NAME = "name";
     public static final String VALUE = "value";
     public static final String INPUT_SHOW = "inputShow";
@@ -94,6 +98,7 @@ public class MagicString {
     public static final String COLUMN_INDEX_KAISOU_COLUMN = "4";
 
     public static final String DATE_FORMATER = "yyyyMMddHHmm";
+    public static final String DATE_FORMATER_SS = "yyyyMMddHHmmss";
     public static final String DELETE_LIST = "deleteList";
     public static final String NEW_LIST = "newList";
 
@@ -116,6 +121,13 @@ public class MagicString {
 
     public static final String PTS_VERSION = "Ｖ１．０";
 
+
+    public static final String COMMON_PARTS_DATA = "commonPartsData";
+    public static final String PROD_MST_CLASS = "prodMstClass";
+    public static final String PROD_IS_CORE = "prodIsCore";
+
+
+
     /**
      * 必須区分
      */
@@ -126,4 +138,6 @@ public class MagicString {
      */
     public static final String COLUMN_INDEX_ITEM_TYPE = "8";
 
+    public static final Integer PLAN_START = 111;
+    public static final Integer PLAN_END = 140;
 }

@@ -53,6 +53,11 @@
     FROM planocycle.product_power_param_mst
     WHERE company_cd = #{companyCd} and product_power_cd = #{productPowerCd}
   </select>
+  <select id="getWorkParam" resultType="com.trechina.planocycle.entity.po.ProductPowerParam">
+    select store_cd
+    FROM planocycle.work_product_power_param_mst
+    WHERE company_cd = #{companyCd} and product_power_cd = #{productPowerCd}
+  </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.ProductPowerParamMst">
     insert into planocycle.product_power_param_mst (company_cd, product_power_cd, perid_flag,
       start_perid, end_perid,season_perid_flag, season_st_perid,

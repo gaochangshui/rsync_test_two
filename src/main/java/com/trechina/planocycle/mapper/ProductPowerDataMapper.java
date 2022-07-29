@@ -135,7 +135,9 @@ public interface ProductPowerDataMapper {
     int setData(@Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
 
     List<LinkedHashMap<String,Object>> getAllDataAttr(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("list")List<String> list
-            ,@Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify, @Param("tableName") String tableName);
+            ,@Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify, @Param("tableName") String tableName
+            ,@Param("ptsCd")List<Integer> ptsCd,@Param("storeCd")List<String> storeCd);
+
 
     List<LinkedHashMap<String,Object>> getAllDataItem(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("list")List<String> list
             ,@Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify, @Param("tableName") String tableName);
@@ -153,7 +155,8 @@ public interface ProductPowerDataMapper {
              @Param("checkedCodeList") String[] checkedCodeList);
 
     List<Map<String, Object>> getSyokikaAllData(@Param("companyCd") String companyCd, @Param("tableName") String tableName,
-                                                @Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify,@Param("authorCd") String authorCd,@Param("productPowerCd") Integer productPowerCd);
+                                                @Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify
+            ,@Param("authorCd") String authorCd,@Param("productPowerCd") Integer productPowerCd,@Param("ptsCd")List<Integer> ptsCd,@Param("storeCd") List<String> storeCd);
     List<Map<String, Object>> getDynamicAllData(String companyCd, Integer productPowerCd, String tableName,
                                                 String janCdColName, List<Map<String, Object>> classify, String[] projects,
                                                 Integer janNameColIndex);

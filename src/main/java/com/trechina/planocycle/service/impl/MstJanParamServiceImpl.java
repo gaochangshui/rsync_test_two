@@ -1,6 +1,5 @@
 package com.trechina.planocycle.service.impl;
 
-import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.vo.JanParamVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.MstJanParamMapper;
@@ -9,7 +8,6 @@ import com.trechina.planocycle.utils.ResultMaps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,13 +57,11 @@ private  MstJanParamMapper mstJanParamMapper;
     public Map<String, Object> getAttributeTree(JanParamVO janParamVO) {
         log.info("jan分類のパラメータを取得するには:{}",janParamVO);
         String companyCd ="";
-        String classCd ="";
-        if (StringUtils.hasLength(janParamVO.getCommonPartsData().getShelfMstClass())) {
-             classCd = janParamVO.getCommonPartsData().getShelfMstClass();
-            companyCd= MagicString.DEFAULT_COMPANY_CD;
+        String classCd = janParamVO.getCommonPartsData().getProdMstClass();
+        if (janParamVO.getCommonPartsData().getProdIsCore().equals("1")) {
+            companyCd= "1000";
         }else{
             companyCd= janParamVO.getCompanyCd();
-             classCd = janParamVO.getCommonPartsData().getProdMstClass();
         }
         List<Map<String,Object>> goodsAttrTree = mstJanParamMapper.getAttributeTree(companyCd,classCd);
         List<Map<String,Object>> jsonArray = listToTree(goodsAttrTree, "attrCd", "pid", "children");
