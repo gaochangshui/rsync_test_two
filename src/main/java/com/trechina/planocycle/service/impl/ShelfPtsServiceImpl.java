@@ -348,7 +348,11 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
 
         if (ptsDetailData != null){
-
+            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu," ;
+            if ("V3.0".equals(ptsDetailData.getVersioninfo())){
+                s = s+"faceDisplayflg,facePosition,depthDisplayNum";
+            }
+            ptsDetailData.setJanColumns(s);
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(patternCd));
             ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(patternCd));
