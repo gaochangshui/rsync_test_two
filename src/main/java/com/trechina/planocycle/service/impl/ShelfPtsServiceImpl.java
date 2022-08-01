@@ -348,6 +348,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
 
         if (ptsDetailData != null){
+
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(patternCd));
             ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(patternCd));
@@ -720,7 +721,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 s = s+"remarks";
             }
             for (Map<String, Object> map : attrList) {
-                s=s+","+"zokuseiName"+map.get("value");
+                s=s+","+"zokusei"+map.get("value");
             }
             s = s + ",width,height,depth";
             ptsDetailData.setJanColumns(s);
