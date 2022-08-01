@@ -22,5 +22,6 @@ public class PtsDetailDataVo {
     private List<PtsTaiVo> ptsTaiList;
     private List<PtsTanaVo> ptsTanaVoList;
     private List ptsJanDataList;
+    private String janCols;
 
 }
