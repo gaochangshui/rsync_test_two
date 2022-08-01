@@ -319,6 +319,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 shelfPtsDataMapper.deletePtsTanamst(id);
                 //クリアワーク_priority_order_pts_data_version
                 shelfPtsDataMapper.deletePtsVersion(id);
+
             }
             Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
             PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
