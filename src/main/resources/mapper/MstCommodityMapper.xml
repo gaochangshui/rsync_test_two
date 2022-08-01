@@ -6,4 +6,11 @@
         order by "1";
     </select>
 
+    <select id="getSyncSet" resultType="com.trechina.planocycle.entity.po.CommoditySyncSet">
+        select 1 as "prodIsCore", "1"  "prodMstClass", "2" "prodMstName","3" "flag"
+        from ${tableName}
+        union select  0 as "prodIsCore", "1"  "prodMstClass", "2" "prodMstName","3" "flag"
+        from ${tableNameCompany}
+    </select>
+
 </mapper>

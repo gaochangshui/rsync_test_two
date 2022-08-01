@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.po.CommoditySyncSet;
 import com.trechina.planocycle.entity.vo.MstCommodityVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,5 +14,11 @@ public interface MstCommodityMapper {
      * @return
      */
     List<MstCommodityVO> getCommodityList(String tableName);
+
+    /**
+     * 商品マスタ
+     * @return
+     */
+    List<CommoditySyncSet> getSyncSet(String tableName, String tableNameCompany);
 
 }
