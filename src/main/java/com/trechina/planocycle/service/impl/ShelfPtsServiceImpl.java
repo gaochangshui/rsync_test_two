@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -73,6 +74,11 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     private PriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
     private BasicPatternMstService basicPatternMstService;
+    @Autowired
+    private ZokuseiMapper zokuseiMapper;
+    @Autowired
+    private ZokuseiMstMapper zokuseiMstMapper;
+
 
     /**
      * 棚割pts情報の取得
@@ -695,10 +701,26 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
         List<Map<String,Object>> attrList = priorityOrderMstAttrSortMapper.getAttrCol(companyCd, priorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
-
+        List<Integer> value = attrList.stream().map(map->MapUtils.getInteger(map, "value")).collect(Collectors.toList());
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsNewDetailData(priorityOrderCd);
 
+
+        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(value, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
         if (ptsDetailData != null) {
+
+            String zokuseiNm = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "zokusei_nm")).collect(Collectors.toList()));
+            String janHeader = ptsDetailData.getJanHeader()+","+"備考"+","+zokuseiNm+",幅,高,奥行";
+            ptsDetailData.setJanHeader(janHeader);
+            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,faceDisplayflg," +
+                    "facePosition,depthDisplayNum,remarks";
+
+            for (Map<String, Object> map : attrList) {
+                s=s+","+"zokuseiName"+map.get("value");
+            }
+            s = s + "width,height,depth";
+            ptsDetailData.setJanCols(s);
+            ptsDetailData.setTanaHeader(ptsDetailData.getTanaHeader()+","+"備考");
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getNewTaiNum(priorityOrderCd));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getNewTanaNum(priorityOrderCd));
             ptsDetailData.setFaceNum(shelfPtsDataMapper.getNewFaceNum(priorityOrderCd));
@@ -706,7 +728,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             //新台、棚、商品データ
             List<PtsTaiVo> newTaiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);
             List<PtsTanaVo> newTanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
-            List<LinkedHashMap<String,Object>> newJanData = shelfPtsDataMapper.getNewJanDataTypeMap(priorityOrderCd,attrList,commonTableName.getProInfoTable());
+            List<LinkedHashMap<String,Object>> newJanData = shelfPtsDataMapper.getNewJanDataTypeMap(priorityOrderCd,zokuseiCol,commonTableName.getProInfoTable(),janSizeCol);
             //既存台、棚、商品データ
             List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);

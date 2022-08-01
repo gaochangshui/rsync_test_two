@@ -703,11 +703,14 @@
     select
       janData.tai_cd as "taiCd",janData.tana_cd as "tanaCd",janData.tanaposition_cd as "tanapositionCd"
            ,janData.jan as "jan",janData.face_count as "faceCount",janData.face_men as "faceMen",janData.face_kaiten as "faceKaiten",
-      janData.tumiagesu as "tumiagesu",janData.zaikosu as "zaikosu",janData.face_displayflg as "face_displayflg"
+      janData.tumiagesu as "tumiagesu",janData.zaikosu as "zaikosu",janData.face_displayflg as "faceDisplayflg"
          ,janData.face_position as "facePosition" ,janData.depth_display_num as "depthDisplayNum",'' as remarks
         <foreach collection="attrList"  item="item" index="index">
-          ,janinfo."${item.zokusei_col}" as "zokusei${item.value}"
+          ,janinfo."${item.zokusei_col}" as "zokusei${item.zokusei_id}"
         </foreach>
+    <foreach collection="janSizeCol" item="item">
+      ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
+    </foreach>
     from
       planocycle.work_priority_order_pts_data ptsData
         inner join
