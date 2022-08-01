@@ -712,14 +712,17 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             String zokuseiNm = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "zokusei_nm")).collect(Collectors.toList()));
             String janHeader = ptsDetailData.getJanHeader()+","+"備考"+","+zokuseiNm+",幅,高,奥行";
             ptsDetailData.setJanHeader(janHeader);
-            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,faceDisplayflg," +
-                    "facePosition,depthDisplayNum,remarks";
-
+            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu," ;
+            if ("V3.0".equals(ptsDetailData.getVersioninfo())){
+               s = s+"faceDisplayflg,facePosition,depthDisplayNum,remarks";
+            }else {
+                s = s+"remarks";
+            }
             for (Map<String, Object> map : attrList) {
                 s=s+","+"zokuseiName"+map.get("value");
             }
-            s = s + "width,height,depth";
-            ptsDetailData.setJanCols(s);
+            s = s + ",width,height,depth";
+            ptsDetailData.setJanColumns(s);
             ptsDetailData.setTanaHeader(ptsDetailData.getTanaHeader()+","+"備考");
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getNewTaiNum(priorityOrderCd));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getNewTanaNum(priorityOrderCd));
@@ -729,7 +732,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             List<PtsTaiVo> newTaiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);
             List<PtsTanaVo> newTanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
             List<LinkedHashMap<String,Object>> newJanData = shelfPtsDataMapper.getNewJanDataTypeMap(priorityOrderCd,zokuseiCol,commonTableName.getProInfoTable(),janSizeCol);
-            //既存台、棚、商品データ
+
+
+                //既存台、棚、商品データ
             List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
             List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);
