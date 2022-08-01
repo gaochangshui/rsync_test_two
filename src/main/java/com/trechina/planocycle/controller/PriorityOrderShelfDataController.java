@@ -70,4 +70,14 @@ public class PriorityOrderShelfDataController {
         return  priorityOrderShelfDataService.setFaceNumForData(priorityOrderRestrictJanDto);
     }
 
+    /**
+     * 新規では基本的なパタ台棚別jansの詳細情報を入手
+     * @param companyCd,priorityOrderCd
+     * @return
+     */
+    @GetMapping("getPtsJanInfo")
+    public Map<String,Object> getPtsJanInfo(String companyCd,Integer priorityOrderCd,Integer flag){
+        return  priorityOrderShelfDataService.getPtsJanInfo(companyCd,priorityOrderCd,flag);
+    }
+
 }

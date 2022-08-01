@@ -99,7 +99,8 @@
                                                                               and company_cd=#{companyCd} and class_cd=#{classCd}
     </select>
     <select id="getZokuseiCol" resultType="map">
-        select case when "3" is null then zokusei_col :: integer else (zokusei_col :: INTEGER+1) end as zokusei_col,mst.zokusei_id,zokusei_col as cd_col
+        select case when "3" is null then zokusei_col :: integer else (zokusei_col :: INTEGER+1) end as zokusei_col
+        ,mst.zokusei_id,zokusei_col as cd_col,zokusei_nm
         from masterdb.planocycle_zokusei_mst mst
         left join "${companyCd}".prod_${classCd}_jan_kaisou_header_sys kaisou
         on kaisou."3" = trim(mst.zokusei_col :: VARCHAR)
@@ -124,5 +125,8 @@
     </select>
     <select id="getZokuseiIdAndCol" resultType="java.util.Map">
         select  zokusei_col ,zokusei_nm,zokusei_id from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
+    </select>
+    <select id="getJanSizeCol" resultType="java.util.Map">
+        select "1" as "colCd","2" as "colName","3" as "infoCol" from ${proAttrTable} where "1" in ('width','height','depth')
     </select>
 </mapper>

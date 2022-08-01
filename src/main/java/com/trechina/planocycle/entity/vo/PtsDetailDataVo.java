@@ -21,6 +21,6 @@ public class PtsDetailDataVo {
     private Integer skuNum=0;
     private List<PtsTaiVo> ptsTaiList;
     private List<PtsTanaVo> ptsTanaVoList;
-    private List<PtsJanDataVo> ptsJanDataList;
+    private List ptsJanDataList;
 
 }

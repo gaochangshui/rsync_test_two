@@ -48,4 +48,6 @@ public interface ZokuseiMstMapper {
     List<Map<String,Object>> getZokuseiIdAndCol(String companyCd, String classCd);
 
     void setVal(LinkedHashMap<String, Object> maps,String companyCd,String classCd);
+
+    List<Map<String,Object>> getJanSizeCol(String proAttrTable);
 }

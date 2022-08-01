@@ -48,4 +48,7 @@ public interface PriorityOrderShelfDataService {
      * @return
      */
     Map<String, Object> getNewPlatformShedData(String companyCd, Integer priorityOrderCd);
+
+    Map<String, Object> getPtsJanInfo(String companyCd, Integer priorityOrderCd,Integer flag);
+
 }
