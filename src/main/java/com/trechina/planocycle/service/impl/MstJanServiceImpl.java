@@ -106,8 +106,18 @@ public class MstJanServiceImpl implements MstJanService {
         String janInfoTableName = json.getString("janInfoTableName");
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
+        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", janParamVO.getCompanyCd(),
+                janParamVO.getCommonPartsData().getProdMstClass());
         String janColumn = json.getString("janColumn");
-        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr,janColumn);
+        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr, tableNameKaisou, janColumn);
+        List<JanHeaderAttr> janHeaderSort = new ArrayList<>();
+        for (String column : janColumn.split(",")) {
+            Optional<JanHeaderAttr> optional = janHeader.stream().filter(e->column.equals(e.getAttr())).findFirst();
+            if(optional.isPresent()){
+                janHeaderSort.add(optional.get());
+            }
+        }
+        janHeader = janHeaderSort;
         //SQL文の列： "\"1\" \"jan_cd\",\"2\" \"jan_name\",\"21\" \"kikaku\",\"22\" \"maker\",\"23\"
         String column = janHeader.stream().map(map -> "COALESCE(\"" + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
                 .collect(Collectors.joining(","));
@@ -387,7 +397,7 @@ public class MstJanServiceImpl implements MstJanService {
     @Override
     public Map<String, Object> uploadJanData(MultipartFile file, String fileName, String classCd,
                                              String commonPartsData, String companyCd) {
-        if (!fileName.startsWith("商品明細-") || fileName.endsWith(".xlsx")) {
+        if (!fileName.startsWith("商品明細-") || !fileName.endsWith(".xlsx")) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), "正しいファイルをアップロードしてください");
         }
         List<String[]> excelData = ExcelUtils.readExcel(file);
@@ -401,8 +411,8 @@ public class MstJanServiceImpl implements MstJanService {
         String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", companyCd, prodMstClass);
         String tableNameInfo = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd, prodMstClass);
         String[] header = excelData.get(0);
-        Optional<String> a = Stream.of(header).filter(e -> MagicString.JAN.equalsIgnoreCase(e)).findAny();
-        if (!a.isPresent()) {
+        Optional<String> optional = Stream.of(header).filter(MagicString.JAN::equalsIgnoreCase).findAny();
+        if (!optional.isPresent()) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), "商品コードを追加してください");
         }
         String janColumn = String.join(",", header);
@@ -410,9 +420,9 @@ public class MstJanServiceImpl implements MstJanService {
         if (header.length > janHeader.size()) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), "識別されていない列があります、修正してください");
         }
-        Map<String,String> headerNameIndex= new HashMap<>();
+        Map<String, String> headerNameIndex = new HashMap<>();
         for (JanHeaderAttr headerAttr : janHeader) {
-            headerNameIndex.put(headerAttr.getAttrVal(),headerAttr.getSort());
+            headerNameIndex.put(headerAttr.getAttrVal(), headerAttr.getSort());
         }
         List<String> columnHeader = new ArrayList<>();
         for (String column : header) {
@@ -422,7 +432,7 @@ public class MstJanServiceImpl implements MstJanService {
         List<LinkedHashMap<String, Object>> janData = new ArrayList<>();
         LinkedHashMap<String, Object> jan;
         try {
-            for (int i = 1; i<excelData.size();i++) {
+            for (int i = 1; i < excelData.size(); i++) {
                 String[] row = excelData.get(i);
                 jan = new LinkedHashMap<>();
                 for (int j = 0; j < row.length; j++) {
@@ -431,7 +441,7 @@ public class MstJanServiceImpl implements MstJanService {
                 janData.add(jan);
             }
             mstJanMapper.insertJanList(tableNameInfo, infoHeader, janData);
-        }catch(Exception e){
+        } catch (Exception e) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), "商品明細更新は失敗しました");
         }
         return ResultMaps.result(ResultEnum.SUCCESS.getCode(), "商品明細は更新しました");

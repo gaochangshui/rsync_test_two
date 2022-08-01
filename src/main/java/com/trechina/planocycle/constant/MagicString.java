@@ -125,7 +125,7 @@ public class MagicString {
     public static final String COMMON_PARTS_DATA = "commonPartsData";
     public static final String PROD_MST_CLASS = "prodMstClass";
     public static final String PROD_IS_CORE = "prodIsCore";
-
+    public static final String MASTER_SYOHIN = "\"{0}\".master_syohin";
 
 
     /**
