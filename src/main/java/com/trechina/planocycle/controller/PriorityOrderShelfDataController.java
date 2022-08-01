@@ -76,8 +76,8 @@ public class PriorityOrderShelfDataController {
      * @return
      */
     @GetMapping("getPtsJanInfo")
-    public Map<String,Object> getPtsJanInfo(String companyCd,Integer priorityOrderCd,Integer flag){
-        return  priorityOrderShelfDataService.getPtsJanInfo(companyCd,priorityOrderCd,flag);
+    public Map<String,Object> getPtsJanInfo(String companyCd,Integer priorityOrderCd){
+        return  priorityOrderShelfDataService.getPtsJanInfo(companyCd,priorityOrderCd);
     }
 
 }

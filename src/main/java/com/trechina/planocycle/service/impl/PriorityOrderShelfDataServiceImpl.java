@@ -7,7 +7,6 @@ import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
-import com.trechina.planocycle.entity.po.ShelfPtsData;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
 import com.trechina.planocycle.entity.po.ZokuseiMst;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -218,7 +217,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     }
 
     @Override
-    public Map<String, Object> getPtsJanInfo(String companyCd, Integer priorityOrderCd,Integer flag) {
+    public Map<String, Object> getPtsJanInfo(String companyCd, Integer priorityOrderCd) {
 
         String authorCd = session.getAttribute("aud").toString();
         List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
@@ -232,14 +231,14 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
         String tableName ="";
         Integer id = null;
-        if (flag == 0){
-            tableName = "planocycle.shelf_pts_data_jandata";
-            ShelfPtsData ptsData = shelfPtsDataMapper.selectPtsCdByPatternCd(companyCd, workPriorityOrderMst.getShelfPatternCd());
-            id = ptsData.getId();
-        }else {
+        //if (flag == 0){
+        //    tableName = "planocycle.shelf_pts_data_jandata";
+        //    ShelfPtsData ptsData = shelfPtsDataMapper.selectPtsCdByPatternCd(companyCd, workPriorityOrderMst.getShelfPatternCd());
+        //    id = ptsData.getId();
+        //}else {
              tableName = "planocycle.work_priority_order_pts_data_jandata";
              id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
-        }
+        //}
 
         List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.getPtsJanInfo(priorityOrderCd, id, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,tableName,janSizeCol);
         Map<String,Object> map = new HashMap<>();
