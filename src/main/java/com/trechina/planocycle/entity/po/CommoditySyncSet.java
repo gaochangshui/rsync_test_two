@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class CommoditySyncSet {
-    private Integer prodIsCore;
+    private String prodIsCore;
     private String prodMstClass;
     private String prodMstName;
     private Boolean flag;
