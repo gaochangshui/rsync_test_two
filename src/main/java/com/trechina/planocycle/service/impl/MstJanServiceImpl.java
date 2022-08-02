@@ -106,8 +106,18 @@ public class MstJanServiceImpl implements MstJanService {
         String janInfoTableName = json.getString("janInfoTableName");
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
+        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", janParamVO.getCompanyCd(),
+                janParamVO.getCommonPartsData().getProdMstClass());
         String janColumn = json.getString("janColumn");
-        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr,janColumn);
+        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr, tableNameKaisou, janColumn);
+        List<JanHeaderAttr> janHeaderSort = new ArrayList<>();
+        for (String column : janColumn.split(",")) {
+            Optional<JanHeaderAttr> optional = janHeader.stream().filter(e->column.equals(e.getAttr())).findFirst();
+            if(optional.isPresent()){
+                janHeaderSort.add(optional.get());
+            }
+        }
+        janHeader = janHeaderSort;
         //SQL文の列： "\"1\" \"jan_cd\",\"2\" \"jan_name\",\"21\" \"kikaku\",\"22\" \"maker\",\"23\"
         String column = janHeader.stream().map(map -> "COALESCE(\"" + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
                 .collect(Collectors.joining(","));
@@ -153,14 +163,14 @@ public class MstJanServiceImpl implements MstJanService {
                 janInfoList.getCommonPartsData().getProdMstClass());
         LinkedHashMap<String, Object> janInfoList1 = mstJanMapper.getJanInfoList(janInfoTableName, janInfoList.getJan());
         List<LinkedHashMap<String,Object>> janAttrList = mstJanMapper.getJanAttrList(tableNameAttr);
-        List<LinkedHashMap<String,Object>> update = janAttrList.stream().filter(map->map.get("8").equals("4")).collect(Collectors.toList());
+        List<LinkedHashMap<String,Object>> update = janAttrList.stream().filter(map->map.get("11").equals("4")).collect(Collectors.toList());
 
         List<LinkedHashMap<String,Object>> janKaisouList = mstJanMapper.getJanKaisouList(tableNameKaisou);
-        List<LinkedHashMap<String,Object>> janAttrGroup1 = janAttrList.stream().filter(map->map.get("8").equals("1") )
+        List<LinkedHashMap<String,Object>> janAttrGroup1 = janAttrList.stream().filter(map->map.get("11").equals("1") || map.get("11").equals("3"))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
-        List<LinkedHashMap<String,Object>> janAttrGroup3 = janAttrList.stream().filter(map->map.get("8").equals("6") )
+        List<LinkedHashMap<String,Object>> janAttrGroup3 = janAttrList.stream().filter(map->map.get("11").equals("6") )
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
-        List<LinkedHashMap<String,Object>> janAttrGroup2 = janAttrList.stream().filter(map->map.get("8").equals("5"))
+        List<LinkedHashMap<String,Object>> janAttrGroup2 = janAttrList.stream().filter(map->map.get("11").equals("5"))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
         if (janInfoList1 == null && !"".equals(janInfoList.getJan())){
             return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
@@ -208,12 +218,12 @@ public class MstJanServiceImpl implements MstJanService {
             janAttrInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("value",stringObjectLinkedHashMap.get("1"));
-            if (stringObjectLinkedHashMap.get("8").equals("6")) {
+            if (stringObjectLinkedHashMap.get("11").equals("6")) {
                 janAttrInfo.put("isDelete",1);
             }else {
                 janAttrInfo.put("isDelete",0);
             }
-            if (stringObjectLinkedHashMap.get("10").equals("0")) {
+            if (stringObjectLinkedHashMap.get("13").equals("0")) {
                 janAttrInfo.put("type","number");
             }else {
                 janAttrInfo.put("type","string");
@@ -231,7 +241,7 @@ public class MstJanServiceImpl implements MstJanService {
             janAttrInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("value",stringObjectLinkedHashMap.get("1"));
-            if (stringObjectLinkedHashMap.get("10").equals("0")) {
+            if (stringObjectLinkedHashMap.get("13").equals("0")) {
                 janAttrInfo.put("type","number");
             }else {
                 janAttrInfo.put("type","string");
@@ -255,7 +265,7 @@ public class MstJanServiceImpl implements MstJanService {
             janAttrInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("value",stringObjectLinkedHashMap.get("1"));
-            if (stringObjectLinkedHashMap.get("10").equals("0")) {
+            if (stringObjectLinkedHashMap.get("13").equals("0")) {
                 janAttrInfo.put("type","number");
             }else {
                 janAttrInfo.put("type","string");
@@ -387,7 +397,7 @@ public class MstJanServiceImpl implements MstJanService {
     @Override
     public Map<String, Object> uploadJanData(MultipartFile file, String fileName, String classCd,
                                              String commonPartsData, String companyCd) {
-        if (!fileName.startsWith("商品明細-") || fileName.endsWith(".xlsx")) {
+        if (!fileName.startsWith("商品明細-") || !fileName.endsWith(".xlsx")) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), "正しいファイルをアップロードしてください");
         }
         List<String[]> excelData = ExcelUtils.readExcel(file);
@@ -401,8 +411,8 @@ public class MstJanServiceImpl implements MstJanService {
         String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", companyCd, prodMstClass);
         String tableNameInfo = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd, prodMstClass);
         String[] header = excelData.get(0);
-        Optional<String> a = Stream.of(header).filter(e -> MagicString.JAN.equalsIgnoreCase(e)).findAny();
-        if (!a.isPresent()) {
+        Optional<String> optional = Stream.of(header).filter(MagicString.JAN::equalsIgnoreCase).findAny();
+        if (!optional.isPresent()) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), "商品コードを追加してください");
         }
         String janColumn = String.join(",", header);
@@ -410,9 +420,9 @@ public class MstJanServiceImpl implements MstJanService {
         if (header.length > janHeader.size()) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), "識別されていない列があります、修正してください");
         }
-        Map<String,String> headerNameIndex= new HashMap<>();
+        Map<String, String> headerNameIndex = new HashMap<>();
         for (JanHeaderAttr headerAttr : janHeader) {
-            headerNameIndex.put(headerAttr.getAttrVal(),headerAttr.getSort());
+            headerNameIndex.put(headerAttr.getAttrVal(), headerAttr.getSort());
         }
         List<String> columnHeader = new ArrayList<>();
         for (String column : header) {
@@ -422,7 +432,7 @@ public class MstJanServiceImpl implements MstJanService {
         List<LinkedHashMap<String, Object>> janData = new ArrayList<>();
         LinkedHashMap<String, Object> jan;
         try {
-            for (int i = 1; i<excelData.size();i++) {
+            for (int i = 1; i < excelData.size(); i++) {
                 String[] row = excelData.get(i);
                 jan = new LinkedHashMap<>();
                 for (int j = 0; j < row.length; j++) {
@@ -431,7 +441,7 @@ public class MstJanServiceImpl implements MstJanService {
                 janData.add(jan);
             }
             mstJanMapper.insertJanList(tableNameInfo, infoHeader, janData);
-        }catch(Exception e){
+        } catch (Exception e) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), "商品明細更新は失敗しました");
         }
         return ResultMaps.result(ResultEnum.SUCCESS.getCode(), "商品明細は更新しました");

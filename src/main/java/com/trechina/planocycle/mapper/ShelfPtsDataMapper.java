@@ -106,6 +106,10 @@ public interface ShelfPtsDataMapper {
     //取得旧janData情報
     List<PtsJanDataVo> getNewJanData(@Param("priorityOrderCd")Integer priorityOrderCd);
 
+    List<LinkedHashMap<String,Object>> getNewJanDataTypeMap(@Param("priorityOrderCd")Integer priorityOrderCd,
+                                                            @Param("attrList")List<Map<String,Object>> attrList
+                                                            ,@Param("tableName")String tableName,@Param("janSizeCol")List<Map<String,Object>>janSizeCol);
+
     int setDisplay(@Param("list")List< WorkPriorityOrderSort> workPriorityOrderSort,@Param("authorCd")String authorCd);
 
     List<WorkPriorityOrderSort> getDisplay(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);

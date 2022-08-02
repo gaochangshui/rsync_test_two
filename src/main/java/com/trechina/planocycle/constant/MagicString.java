@@ -125,7 +125,7 @@ public class MagicString {
     public static final String COMMON_PARTS_DATA = "commonPartsData";
     public static final String PROD_MST_CLASS = "prodMstClass";
     public static final String PROD_IS_CORE = "prodIsCore";
-
+    public static final String MASTER_SYOHIN = "\"{0}\".master_syohin";
 
 
     /**
@@ -138,6 +138,6 @@ public class MagicString {
      */
     public static final String COLUMN_INDEX_ITEM_TYPE = "8";
 
-    public static final Integer PLAN_START = 111;
-    public static final Integer PLAN_END = 140;
+    public static final Integer PLAN_START = 201;
+    public static final Integer PLAN_END = 240;
 }

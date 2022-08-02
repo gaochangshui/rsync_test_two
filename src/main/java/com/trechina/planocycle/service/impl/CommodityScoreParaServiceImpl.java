@@ -1,7 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.trechina.planocycle.entity.dto.ProductPowerDataForCgiDto;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerParamMst;
 import com.trechina.planocycle.entity.po.WorkProductPowerReserveData;
@@ -44,6 +43,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     private PriorityOrderMstService priorityOrderMstService;
     @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
+    private ShelfPatternMstMapper shelfPatternMstMapper;
     @Autowired
     private cgiUtils cgiUtil;
     ///**
@@ -137,29 +138,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         productPowerParamMstMapper.deleteParam(conpanyCd,productPowerCd);
         productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd);
 
-
-
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        //cgi保存
-        String uuidSave = UUID.randomUUID().toString();
-        ProductPowerDataForCgiDto productPowerDataForCgiSave = new ProductPowerDataForCgiDto();
-        productPowerDataForCgiSave.setMode("data_save");
-        productPowerDataForCgiSave.setCompany(productPowerParam.getCompany());
-        productPowerDataForCgiSave.setGuid(uuidSave);
-        productPowerDataForCgiSave.setProductPowerNo(productPowerParam.getProductPowerNo());
-
-        logger.info("保存jan rank{}",productPowerDataForCgiSave);
-        //再帰呼び出しcgi，まずtaskidを取得する
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("ProductPowerData");
-        String result = null;
-        logger.info("携帯参数：{}", productPowerDataForCgiSave);
-        result = cgiUtil.postCgi(path, productPowerDataForCgiSave, tokenInfo);
-        logger.info("taskid返回--保存jan rank：{}", result);
-        String queryPath = resourceBundle.getString("TaskQuery");
-        // 帯着taskid，再度cgiに運転状態/データの取得を要求する
-        Map<String, Object> data = cgiUtil.postCgiLoop(queryPath, result, tokenInfo);
-        logger.info("保存jan rank{}",data);
+        List<Map<String, Object>> resultData = new ArrayList<>();
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

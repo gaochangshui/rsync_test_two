@@ -216,4 +216,41 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         return ResultMaps.result(ResultEnum.SUCCESS,platformShedData);
     }
 
+    @Override
+    public Map<String, Object> getPtsJanInfo(String companyCd, Integer priorityOrderCd) {
+
+        String authorCd = session.getAttribute("aud").toString();
+        List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
+        List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
+        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        String commonPartsData = workPriorityOrderMst.getCommonPartsData();
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
+        List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
+        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
+        String tableName ="";
+        Integer id = null;
+        //if (flag == 0){
+        //    tableName = "planocycle.shelf_pts_data_jandata";
+        //    ShelfPtsData ptsData = shelfPtsDataMapper.selectPtsCdByPatternCd(companyCd, workPriorityOrderMst.getShelfPatternCd());
+        //    id = ptsData.getId();
+        //}else {
+             tableName = "planocycle.work_priority_order_pts_data_jandata";
+             id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+        //}
+
+        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.getPtsJanInfo(priorityOrderCd, id, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,tableName,janSizeCol);
+        Map<String,Object> map = new HashMap<>();
+        map.put("width","幅");
+        map.put("width","高さ");
+        map.put("depth","奥行");
+        for (Map<String, Object> objectMap : zokuseiCol) {
+            map.put("zokuseiName"+objectMap.get("zokusei_id").toString(),objectMap.get("zokusei_nm"));
+        }
+        zokuseiList.add(0,map);
+        return ResultMaps.result(ResultEnum.SUCCESS,zokuseiList);
+    }
+
+
 }

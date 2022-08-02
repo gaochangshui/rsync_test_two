@@ -261,7 +261,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         map1 = cgiUtil.postCgiOfWeb(taskQuery, posResult, tokenInfo,smartPath);
                         if (!"9".equals(map1.get("data"))) {
                             if (map1.get("data")==null){
-                                vehicleNumCache.put(posResult+"Exception",map.get("msg"));
+                                vehicleNumCache.put(posResult+"Exception",map1.get("msg"));
                             }
                             break;
                         }
