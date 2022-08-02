@@ -64,6 +64,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
      * @param companyCd
      * @return
      */
+
     @Override
     public Map<String, Object> getTableName(String companyCd) {
 
@@ -77,6 +78,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         tableNameMap.put("basicPtsData",basicPtsData);
         tableNameMap.put("wholePtsData",wholePtsData);
         tableNameMap.put("priorityData",priorityData);
+           int a = 1/0;
         return ResultMaps.result(ResultEnum.SUCCESS,tableNameMap);
     }
 

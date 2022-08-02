@@ -4,29 +4,23 @@ public enum ResultEnum {
     SUCCESS(101,"成功"),
     SUCCESS_BUT_NEW_JAN(102,"成功"),
     FAILURE(202,"失敗"),
-    TIMEOUT(10001,"登録超時"),
-    NOTFOUNTCOOKIE(10002,"找不到cookie信息"),
-    CGITIEMOUT(20002,"cgi調用超時"),
-    CGICANCEL(20003,"cgi手動取消"),
-    CGIERROR(20004,"cgi報錯"),
+    TIMEOUT(10001,"セッション切りました。"),
+    NOTFOUNTCOOKIE(10002,"User情報が見つかりません。"),
+    CGITIEMOUT(20002,"SmartDBと接続は切りました。"),
+    CGICANCEL(20003,"cgiを手動キャンセルしました。"),
+    CGIERROR(20004,"cgiでエラーが発生しました。"),
     SIZEISZERO(20005,"数据はい空"),
-    NAMEISEXISTS(30001,"名称已経存在"),
-    NOTDATAS(30002,"没有数据"),
-    JANNOTESISTS(30003,"jan不存在"),
+    NAMEISEXISTS(30001,"同じ名称がすでに存在しています。"),
+    NOTDATAS(30002,"データがありません。"),
+    JANNOTESISTS(30003,"Janが存在しません。"),
     BRANCHNOTESISTS(30004,"該当優先順位表に存在しない店舗情報が含まれています。"),
-
-    FILEVERSIONFAILURE(40001,"文件版本不はい"),
-    FILECONTENTFAILURE(40002,"文件内容不はい"),
+    FILEVERSIONFAILURE(40001,"PTSバージョンが正しくないです。正しいVer2、Ver3にしてください。"),
+    FILECONTENTFAILURE(40002,"PTSファイル書式が正しくないです。"),
     DATAISTOOLARGE(40003,"数据量を過ぎて大"),
     CLASSIFY_NOT_EXIST(40004,"classify not exist"),
     VERSION_ERROR(40005,"version error"),
     JANCDINEXISTENCE(50004,"該当商品がありません。"),
-
-    KAISOU_COUNT_LIMIT(70001,"kaisou count not enough"),
-
-    KAISOU_name_LIMIT(70002, "kaisou name exists"),
-    HEIGHT_NOT_ENOUGH(60001,"height not enough"),
-
+    HEIGHT_NOT_ENOUGH(60001,"棚の高さチェックで、入れない商品がありました。修正してから再度自動計算してください。"),
     UPDATE_RANK(40015,"変更後Rankで取込してください。");
 
 
