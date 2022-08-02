@@ -699,7 +699,7 @@
     select tai_cd,tana_cd,tana_height,tana_width,tana_depth,tana_thickness from planocycle.shelf_pts_data_tanamst where pts_cd=#{ptsCd}
     order by tai_cd, tana_cd
   </select>
-  <select id="getNewJanDataTypeMap" resultType="java.util.LinkedHashMap">
+  <select id="getNewJanDataTypeMap" resultType="map">
     select
       janData.tai_cd as "taiCd",janData.tana_cd as "tanaCd",janData.tanaposition_cd as "tanapositionCd"
            ,janData.jan as "jan",janData.face_count as "faceCount",janData.face_men as "faceMen",janData.face_kaiten as "faceKaiten",

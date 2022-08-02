@@ -15,13 +15,12 @@
             as "zokusei${item1.zokuseiId}"
         </foreach>
         <foreach collection="attrHeaderList" open="," item="item" separator=",">
-            coalesce(janmst."${item.attrVal}", '0') as "${item.attr}"
+            coalesce(janinfo."${item.attrVal}", '0') as "${item.attr}"
         </foreach>
         from planocycle.work_priority_order_jan_new new
         inner join planocycle.work_priority_order_result_data resultdata
             on new.priority_order_cd= resultdata.priority_order_cd and new.jan_new = resultdata.jan_cd
         inner join ${proInfoTable} janinfo on  janinfo."1"=new.jan_new
-        left join "9999".prod_0000_jan_info janmst on janmst."1" = new.jan_new
         where resultdata.priority_order_cd=#{priorityOrderCd} order by sku_rank,jan_rank
     </select>
 </mapper>

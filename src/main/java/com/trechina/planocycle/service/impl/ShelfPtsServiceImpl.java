@@ -728,7 +728,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             //新台、棚、商品データ
             List<PtsTaiVo> newTaiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);
             List<PtsTanaVo> newTanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
-            List<LinkedHashMap<String,Object>> newJanData = shelfPtsDataMapper.getNewJanDataTypeMap(priorityOrderCd,zokuseiCol,commonTableName.getProInfoTable(),janSizeCol);
+            List<Map<String,Object>> newJanData = shelfPtsDataMapper.getNewJanDataTypeMap(priorityOrderCd,zokuseiCol,commonTableName.getProInfoTable(),janSizeCol);
             //既存台、棚、商品データ
             List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);

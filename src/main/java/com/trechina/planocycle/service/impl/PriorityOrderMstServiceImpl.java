@@ -7,8 +7,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
@@ -509,12 +509,13 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         }
 
         Map<String, Object> ptsNewDetailData = shelfPtsService.getNewPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue(),companyCd, priorityOrderCd);
-        Map<String, Object> ptsInfoTemp = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue(),priorityOrderCd);
         //商品力情報
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, workPriorityOrderMst.getProductPowerCd());
         Integer skuNum = productPowerMstMapper.getSkuNum(companyCd, workPriorityOrderMst.getProductPowerCd());
         productPowerInfo.setSku(skuNum);
-        PtsDetailDataVo ptsDetailDataVo = (PtsDetailDataVo)ptsNewDetailData.get("data");
+        String data = new Gson().toJson(ptsNewDetailData.get("data"));
+        PtsDetailDataVo ptsDetailDataVo = new Gson().fromJson(data, new TypeToken<PtsDetailDataVo>(){}.getType());
+        Map<String, Object> ptsInfoTemp = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue(),priorityOrderCd);
         Map<String, Object> ptsInfoTemps =(Map<String, Object>)ptsInfoTemp.get("data");
         Map<String, Object> attrDisplay = basicPatternMstService.getAttrDisplay(companyCd, priorityOrderCd);
         Map<String,Object> sortSettings = new HashMap<>();
@@ -560,7 +561,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         map.put("shelfPatternSettings",shelfPatternSettings);
         map.put("SortSettings",sortSettings);
         map.put("ptsDetailData",ptsDetailData);
-        map.put("ptsNewDetailData",ptsNewDetailData.get("data"));
+        map.put("ptsNewDetailData",ptsDetailDataVo.getPtsJanDataList());
         map.put("attrDisplay",attrDisplay.get("data"));
         map.put("ptsInfoTemp",ptsInfoTemp.get("data"));
         return ResultMaps.result(ResultEnum.SUCCESS,map);

@@ -212,7 +212,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                                                   Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
                                                   int isReOrder) {
         List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(commonTableName.getProAttrTable());
-        List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd, sizeAndIrisu, isReOrder);
+        List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd, sizeAndIrisu, isReOrder,
+                commonTableName.getProInfoTable());
         List<Map<String, Object>> cutList = janCutMapper.selectJanCut(priorityOrderCd);
 
         Integer currentTaiCd=1;
