@@ -63,7 +63,6 @@ public class JanAttrServiceImpl implements JanAttrService {
         map.put(MagicString.COLUMN_INDEX_JANINFO_COLUMN,itemColName);
         map.put(MagicString.COLUMN_INDEX_KAISOU_COLUMN,itemSort);
         map.put("11","6");
-        map.put("12","");
         if ("number".equals(productItemVO.getType())){
             map.put("13","0");
         }else if ("string".equals(productItemVO.getType())){
