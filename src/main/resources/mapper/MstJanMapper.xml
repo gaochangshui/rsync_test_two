@@ -137,7 +137,9 @@
          from ${tableName}
         where
     <foreach collection="map" index="index" item="item" separator="and">
-        "${index}" = #{item}
+              <if test="item != null and item != ''">
+                  "${index}" = #{item}
+              </if>
     </foreach>
     </select>
     <select id="getNameExist" resultType="java.lang.String">
