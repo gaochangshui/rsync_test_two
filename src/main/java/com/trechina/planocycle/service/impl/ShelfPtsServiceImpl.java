@@ -319,6 +319,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 shelfPtsDataMapper.deletePtsTanamst(id);
                 //クリアワーク_priority_order_pts_data_version
                 shelfPtsDataMapper.deletePtsVersion(id);
+
             }
             Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
             PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
@@ -347,6 +348,11 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
 
         if (ptsDetailData != null){
+            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu," ;
+            if ("V3.0".equals(ptsDetailData.getVersioninfo())){
+                s = s+"faceDisplayflg,facePosition,depthDisplayNum";
+            }
+            ptsDetailData.setJanColumns(s);
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(patternCd));
             ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(patternCd));
@@ -712,14 +718,17 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             String zokuseiNm = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "zokusei_nm")).collect(Collectors.toList()));
             String janHeader = ptsDetailData.getJanHeader()+","+"備考"+","+zokuseiNm+",幅,高,奥行";
             ptsDetailData.setJanHeader(janHeader);
-            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,faceDisplayflg," +
-                    "facePosition,depthDisplayNum,remarks";
-
-            for (Map<String, Object> map : attrList) {
-                s=s+","+"zokuseiName"+map.get("value");
+            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu," ;
+            if ("V3.0".equals(ptsDetailData.getVersioninfo())){
+               s = s+"faceDisplayflg,facePosition,depthDisplayNum,remarks";
+            }else {
+                s = s+"remarks";
             }
-            s = s + "width,height,depth";
-            ptsDetailData.setJanCols(s);
+            for (Map<String, Object> map : attrList) {
+                s=s+","+"zokusei"+map.get("value");
+            }
+            s = s + ",width,height,depth";
+            ptsDetailData.setJanColumns(s);
             ptsDetailData.setTanaHeader(ptsDetailData.getTanaHeader()+","+"備考");
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getNewTaiNum(priorityOrderCd));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getNewTanaNum(priorityOrderCd));
@@ -728,8 +737,10 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             //新台、棚、商品データ
             List<PtsTaiVo> newTaiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);
             List<PtsTanaVo> newTanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
-            List<Map<String,Object>> newJanData = shelfPtsDataMapper.getNewJanDataTypeMap(priorityOrderCd,zokuseiCol,commonTableName.getProInfoTable(),janSizeCol);
-            //既存台、棚、商品データ
+            List<LinkedHashMap<String,Object>> newJanData = shelfPtsDataMapper.getNewJanDataTypeMap(priorityOrderCd,zokuseiCol,commonTableName.getProInfoTable(),janSizeCol);
+
+
+                //既存台、棚、商品データ
             List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
             List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(patternCd);

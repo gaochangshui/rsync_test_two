@@ -70,12 +70,9 @@
   </select>
 
   <select id="getAttribute" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
-  </select>
-
-  <select id="getAttributeSort" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
-    select zokusei_id as attrCd,zokusei_nm as attrName from masterdb.zokusei_mst  where sort_type = 0
-    order by zokusei_sort;
+    select zokusei_id as attrCd,zokusei_nm as attrName
+    from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
+    order by attrCd
   </select>
 
   <select id="getAttrList" resultType="java.lang.String">

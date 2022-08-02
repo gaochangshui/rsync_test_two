@@ -212,8 +212,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                                                   Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
                                                   int isReOrder) {
         List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(commonTableName.getProAttrTable());
-        List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd, sizeAndIrisu, isReOrder,
-                commonTableName.getProInfoTable());
+        //TODO
+        List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd, sizeAndIrisu, isReOrder,commonTableName.getProInfoTable());
         List<Map<String, Object>> cutList = janCutMapper.selectJanCut(priorityOrderCd);
 
         Integer currentTaiCd=1;
@@ -238,6 +238,7 @@ public class CommonMstServiceImpl implements CommonMstService {
         }
 
         //jan group relation restrict_cd
+        //TODO
         List<Map<String, Object>> newList = janNewMapper.selectJanNew(priorityOrderCd, allCdList, zokuseiMsts, commonTableName.getProInfoTable(),
                 sizeAndIrisu);
         for (int i = 0; i < newList.size(); i++) {

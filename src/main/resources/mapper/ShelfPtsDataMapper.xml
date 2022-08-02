@@ -703,7 +703,7 @@
     select
       janData.tai_cd as "taiCd",janData.tana_cd as "tanaCd",janData.tanaposition_cd as "tanapositionCd"
            ,janData.jan as "jan",janData.face_count as "faceCount",janData.face_men as "faceMen",janData.face_kaiten as "faceKaiten",
-      janData.tumiagesu as "tumiagesu",janData.zaikosu as "zaikosu",janData.face_displayflg as "faceDisplayflg"
+      janData.tumiagesu as "tumiagesu",coalesce (janData.zaikosu,0) as "zaikosu",janData.face_displayflg as "faceDisplayflg"
          ,janData.face_position as "facePosition" ,janData.depth_display_num as "depthDisplayNum",'' as remarks
         <foreach collection="attrList"  item="item" index="index">
           ,janinfo."${item.zokusei_col}" as "zokusei${item.zokusei_id}"

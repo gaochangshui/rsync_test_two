@@ -11,6 +11,7 @@ import com.trechina.planocycle.service.MstCommodityService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -53,16 +54,17 @@ public class MstCommodityServiceImpl implements MstCommodityService {
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> setSyncSet(CommoditySyncSetVO commoditySyncSetVO) {
         String companyCd = commoditySyncSetVO.getCompanyCd();
-        if("1".equals(commoditySyncSetVO.getCommonPartsData().getProdIsCore())){
-            companyCd = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
-        }
-        String tableName = MessageFormat.format(MagicString.MASTER_SYOHIN, companyCd);
-        try {
-            mstCommodityMapper.setSyncSet(tableName, commoditySyncSetVO.getCommonPartsData());
-        }catch(Exception e){
-            return ResultMaps.result(ResultEnum.FAILURE);
+        String coreCompanyCd = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        List<CommoditySyncSet> commonPartsData = commoditySyncSetVO.getCommonPartsData();
+        for(CommoditySyncSet commoditySyncSet: commonPartsData){
+            if("1".equals(commoditySyncSet.getProdIsCore())){
+                companyCd= coreCompanyCd;
+            }
+            String tableName = MessageFormat.format(MagicString.MASTER_SYOHIN, companyCd);
+            mstCommodityMapper.setSyncSet(tableName, commoditySyncSet);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

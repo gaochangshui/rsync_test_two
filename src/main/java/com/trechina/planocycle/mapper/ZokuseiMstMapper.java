@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.Zokusei;
+import com.trechina.planocycle.entity.vo.ProductItemVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -50,4 +51,10 @@ public interface ZokuseiMstMapper {
     void setVal(LinkedHashMap<String, Object> maps,String companyCd,String classCd);
 
     List<Map<String,Object>> getJanSizeCol(String proAttrTable);
+
+    Integer getMaxZokuseiId(String companyCd, String classCd);
+
+    void setItem(String itemColName, Integer maxZokuseiId, String companyCd, String classCd, String name);
+
+    void updateZokuseiName(ProductItemVO productItemVO,String companyCd, String classCd ,String zokuseiCol);
 }
