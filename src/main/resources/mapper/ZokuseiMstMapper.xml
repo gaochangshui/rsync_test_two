@@ -65,6 +65,14 @@
         company_cd = #{companyCd}
 
     </update>
+    <update id="updateZokuseiName">
+        update masterdb.planocycle_zokusei_mst set zokusei_nm = #{productItemVO.name} where company_cd = #{companyCd} and class_cd = #{classCd} and zokusei_col = #{zokuseiCol,jdbcType=INTEGER}
+    </update>
+    <insert id="setItem">
+        insert into masterdb.planocycle_zokusei_mst (company_cd,class_cd,zokusei_id,zokusei_nm,zokusei_sort,type,zokusei_col)
+
+        values (#{companyCd},#{classCd},#{maxZokuseiId},#{name},#{itemColName} ::integer,0,#{itemColName} ::integer)
+    </insert>
     <select id="selectHeader" resultType="map">
         select "1" as col,"2" as name,"3" sort,0 as "type" from ${tableName}
         where "1" not like 'jan%' and "1" not in ('description','sync','update_time','updater', 'width','height','depth','hook_x','hook_y','product_shape')
@@ -128,5 +136,8 @@
     </select>
     <select id="getJanSizeCol" resultType="java.util.Map">
         select "1" as "colCd","2" as "colName","3" as "infoCol" from ${proAttrTable} where "1" in ('width','height','depth')
+    </select>
+    <select id="getMaxZokuseiId" resultType="java.lang.Integer">
+        SELECT MAX(zokusei_id) FROM masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
     </select>
 </mapper>

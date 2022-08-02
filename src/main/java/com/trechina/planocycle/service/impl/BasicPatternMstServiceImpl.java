@@ -129,7 +129,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         priorityOrderMstAttrSortMapper.deleteAttrList(companyCd,priorityOrderCd);
         priorityOrderMstAttrSortMapper.setAttrList(companyCd,priorityOrderCd,list);
         List<ShelfPtsDataTanamst> tanamsts = shelfPtsDataTanamst.selectByPatternCd((long) shelfPatternCd);
-        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu();
+
+        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(commonTableName.getProAttrTable());
         Map<String, String> sizeAndIrisuMap = sizeAndIrisu.stream().collect(Collectors.toMap(map -> MapUtils.getString(map, "attr"), map -> MapUtils.getString(map, "attrVal")));
         List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd,
                 zokuseiMsts, cdList, sizeAndIrisuMap);

@@ -204,6 +204,7 @@ public class CommonMstServiceImpl implements CommonMstService {
      * @return
      */
     @Override
+
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> commSetJanForShelf(Integer patternCd, String companyCd, Integer priorityOrderCd,
                                                   Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
@@ -211,8 +212,9 @@ public class CommonMstServiceImpl implements CommonMstService {
                                                   GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
                                                   Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
                                                   int isReOrder) {
-        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu();
-        List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd, sizeAndIrisu, isReOrder);
+        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(commonTableName.getProAttrTable());
+        //TODO
+        List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd, sizeAndIrisu, isReOrder,commonTableName.getProInfoTable());
         List<Map<String, Object>> cutList = janCutMapper.selectJanCut(priorityOrderCd);
 
         Integer currentTaiCd=1;
@@ -237,6 +239,7 @@ public class CommonMstServiceImpl implements CommonMstService {
         }
 
         //jan group relation restrict_cd
+        //TODO
         List<Map<String, Object>> newList = janNewMapper.selectJanNew(priorityOrderCd, allCdList, zokuseiMsts, commonTableName.getProInfoTable(),
                 sizeAndIrisu);
         for (int i = 0; i < newList.size(); i++) {

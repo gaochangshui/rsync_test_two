@@ -48,7 +48,7 @@ public class JanAttrServiceImpl implements JanAttrService {
         }
         List<Map<String, Object>> planItem = prodKaisouHeaderMapper.getPlanItem(tableNameAttr);
         List<String> colNameList = planItem.stream().map(map->map.get(MagicString.COLUMN_INDEX_JANINFO_COLUMN).toString()).collect(Collectors.toList());
-        String itemSort = planItem.stream().mapToInt(value -> MapUtils.getInteger(value,MagicString.COLUMN_INDEX_KAISOU_COLUMN)).max().orElse(111)+1 +"";
+        String itemSort = planItem.stream().mapToInt(value -> MapUtils.getInteger(value,MagicString.COLUMN_INDEX_KAISOU_COLUMN)).max().orElse(201) +"";
 
         String itemColName = "";
         for (Integer i = MagicString.PLAN_START; i <= MagicString.PLAN_END; i++) {
@@ -62,15 +62,16 @@ public class JanAttrServiceImpl implements JanAttrService {
         map.put("2",productItemVO.getName());
         map.put(MagicString.COLUMN_INDEX_JANINFO_COLUMN,itemColName);
         map.put(MagicString.COLUMN_INDEX_KAISOU_COLUMN,itemSort);
-        map.put("8","6");
-        map.put("9","");
+        map.put("11","6");
+        map.put("12","");
         if ("number".equals(productItemVO.getType())){
-            map.put("10","0");
+            map.put("13","0");
         }else if ("string".equals(productItemVO.getType())){
-            map.put("10","1");
+            map.put("13","1");
         }
         prodKaisouHeaderMapper.setItem(map,tableNameAttr);
-
+        Integer maxZokuseiId = zokuseiMstMapper.getMaxZokuseiId(companyCd, classCd);
+        zokuseiMstMapper.setItem(itemColName,maxZokuseiId+1,companyCd,classCd,productItemVO.getName());
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -88,13 +89,13 @@ public class JanAttrServiceImpl implements JanAttrService {
         if (colName != null) {
             mstJanMapper.clearCol(colName, janInfoTableName);
         }
-        //
-        //Integer zokuseiIdForCol = zokuseiMstMapper.getZokuseiIdForCol(colName, companyCd, classCd);
-        //zokuseiMstMapper.delZokuseiMstForId(classCd, companyCd,zokuseiIdForCol);
-        //zokuseiMstMapper.delZokuseiMstDataForId(classCd, companyCd,zokuseiIdForCol);
-        //List<Map<String, Object>> zokuseiId = prodKaisouHeaderMapper.getZokuseiId(companyCd,classCd);
-        //zokuseiMstMapper.updateZokuseiMstData(zokuseiId,companyCd,classCd);
-        //zokuseiMstMapper.updateZokuseiMst(zokuseiId,companyCd,classCd);
+
+        Integer zokuseiIdForCol = zokuseiMstMapper.getZokuseiIdForCol(colName, companyCd, classCd);
+        zokuseiMstMapper.delZokuseiMstForId(classCd, companyCd,zokuseiIdForCol);
+        zokuseiMstMapper.delZokuseiMstDataForId(classCd, companyCd,zokuseiIdForCol);
+        List<Map<String, Object>> zokuseiId = prodKaisouHeaderMapper.getZokuseiId(companyCd,classCd);
+        zokuseiMstMapper.updateZokuseiMstData(zokuseiId,companyCd,classCd);
+        zokuseiMstMapper.updateZokuseiMst(zokuseiId,companyCd,classCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -117,6 +118,8 @@ public class JanAttrServiceImpl implements JanAttrService {
             type ="1";
         }
         prodKaisouHeaderMapper.updateName(productItemVO,tableNameAttr,type);
+        String zokuseiCol = prodKaisouHeaderMapper.getItem(productItemVO.getValue(), tableNameAttr);
+        zokuseiMstMapper.updateZokuseiName(productItemVO,companyCd,classCd,zokuseiCol);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
