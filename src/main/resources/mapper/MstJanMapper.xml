@@ -104,7 +104,7 @@
     <select id="getAttrName" resultType="com.trechina.planocycle.entity.po.JanAttrName">
         select * from (
         select "1" "value","2" "label",
-        case "8" when '1' then '基本項目'
+        case "11" when '1' then '基本項目'
         when '2' then '商品分類'
         when '3' then '商品属性'
         when '4' then 'Plano-Cycle専用'
@@ -112,10 +112,10 @@
         when '6' then 'Plano-Cycle追加'
         else ''
         end as "attrType",
-        case "9" when '1' then true else false end as "mandatory",
-        case when "9" = '1' then true
+        case "12" when '1' then true else false end as "mandatory",
+        case when "12" = '1' then true
         when t2.item_cd is not null then true
-        else false end as "flag",t1."8",t1."3"::integer
+        else false end as "flag",t1."11",t1."3"::integer
         from ${tableName} t1
         left join ${tableNamePreset} t2 on t1."1" =t2.item_cd and t2.author_cd = #{authorCd}
         union all
@@ -123,11 +123,11 @@
         "1" "value","2" "label", '商品分類' "attrType",
         false  as "mandatory",
         case when t2.item_cd is not null then true
-        else false end as "flag",'2' as "8",t1."3"::integer
+        else false end as "flag",'2' as "11",t1."3"::integer
         from ${tableNameKaisou} t1
         left join ${tableNamePreset} t2 on t1."1" =t2.item_cd and t2.author_cd = #{authorCd}
         where "1" not in('jan_cd','jan_name')) a
-        order by "8","3"
+        order by "11","3"
     </select>
     <select id="getKaiSouName" resultType="java.util.Map">
         select distinct
