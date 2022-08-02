@@ -170,6 +170,8 @@
         </foreach>
         on conflict("1")
         do update set
-        "1" = EXCLUDED."1"
+        <foreach collection="infoHeader.split(',')" item="item" separator=",">
+            ${item} = EXCLUDED.${item}
+        </foreach>
     </insert>
 </mapper>
