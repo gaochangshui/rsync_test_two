@@ -22,7 +22,7 @@
         delete from ${tableName} where "1" = #{value}
     </delete>
     <select id="getPlanItem" resultType="map">
-        select "1","2","3","4" from ${tableNameAttr} where "8" = '6' order by "3"
+        select "1","2","3","4" from ${tableNameAttr} where "11" = '6' order by "3"
     </select>
     <select id="getItem" resultType="string">
         select "3" from ${tableNameAttr} where "1" = #{value}

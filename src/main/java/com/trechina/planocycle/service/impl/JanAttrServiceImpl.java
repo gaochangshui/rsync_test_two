@@ -48,7 +48,7 @@ public class JanAttrServiceImpl implements JanAttrService {
         }
         List<Map<String, Object>> planItem = prodKaisouHeaderMapper.getPlanItem(tableNameAttr);
         List<String> colNameList = planItem.stream().map(map->map.get(MagicString.COLUMN_INDEX_JANINFO_COLUMN).toString()).collect(Collectors.toList());
-        String itemSort = planItem.stream().mapToInt(value -> MapUtils.getInteger(value,MagicString.COLUMN_INDEX_KAISOU_COLUMN)).max().orElse(201) +"";
+        String itemSort = planItem.stream().mapToInt(value -> MapUtils.getInteger(value,MagicString.COLUMN_INDEX_KAISOU_COLUMN)).max().orElse(200)+1 +"";
 
         String itemColName = "";
         for (Integer i = MagicString.PLAN_START; i <= MagicString.PLAN_END; i++) {
