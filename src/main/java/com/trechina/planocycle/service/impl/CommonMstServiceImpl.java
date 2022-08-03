@@ -428,7 +428,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                         newJanDto.setTanaCd(Integer.parseInt(tanaCd));
                         adoptJan.add(newJanDto);
                         jan.setAdoptFlag(1);
-                        usedArea+=newJanDto.getWidth()*newJanDto.getFaceFact()+partitionVal;
+                        usedArea+=Optional.ofNullable(newJanDto.getWidth()).orElse(MagicString.DEFAULT_WIDTH)*newJanDto.getFaceFact()+partitionVal;
                     }
                 }
             }
@@ -480,7 +480,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             //カットで対象商品のface数を落とすことはできません
             //入数=1のもののみを処理し、1に等しくないものはcutを行わない
             List<PriorityOrderResultDataDto> resultDataDtoByIrisu = resultDataDtoList.stream()
-                    .filter(data-> 1 == Long.parseLong(data.getIrisu())).collect(Collectors.toList());
+                    .filter(data-> 1 == Long.parseLong(Optional.ofNullable(data.getIrisu()).orElse("1"))).collect(Collectors.toList());
 
             if(resultDataDtoByIrisu.isEmpty()){
                 //条件を満たさないとcutできない
@@ -488,7 +488,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             }
 
             //最小faceで放置すると、どのくらいの幅が必要か(仕切りがある場合を考慮する必要がある)+残りの無駄な幅
-            long needWidth = targetResultData.getWidth() * minFace + partitionVal;
+            long needWidth = Optional.ofNullable(targetResultData.getWidth()).orElse(MagicString.DEFAULT_WIDTH) * minFace + partitionVal;
             PriorityOrderResultDataDto currentResultData = null;
             for (int i = resultDataDtoByIrisu.size()-1; i >= 0 ; i--) {
                 currentResultData = resultDataDtoByIrisu.get(i);
@@ -497,7 +497,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 //最小face以下ではcutできません
                 //現在の商品は1つのface数を減らして、目標の商品を置くことができますか
                 //Cut 1つのfaceの幅に残りの幅を加えてターゲットの上に置くのに必要な幅を満たすことができるかどうか
-                if(faceFact > minFace && currentResultData.getWidth() + remainderWidth >= needWidth){
+                if(faceFact > minFace && Optional.ofNullable(currentResultData.getWidth()).orElse(MagicString.DEFAULT_WIDTH) + remainderWidth >= needWidth){
                     currentResultData.setFaceFact(faceFact -  1);
                     targetResultData.setFaceFact(minFace);
                     isSetByCut = true;

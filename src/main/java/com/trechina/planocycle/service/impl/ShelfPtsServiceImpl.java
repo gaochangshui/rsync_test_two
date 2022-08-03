@@ -660,7 +660,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public Map<String,Object> setPtsTanaSize(List<PtsTanaVo> ptsTanaVoList) {
         try {
 
