@@ -356,7 +356,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             PriorityOrderResultDataDto newJanDto = new PriorityOrderResultDataDto();
             List<Map<String, Object>> cutJan = cutList.stream().filter(map -> MapUtils.getString(map, "jan").equals(jan.getJanCd())).collect(Collectors.toList());
 
-            Long width = Optional.ofNullable(jan.getWidth()).orElse(MagicString.DEFAULT_WITDH);
+            Long width = Optional.ofNullable(jan.getWidth()).orElse(MagicString.DEFAULT_WIDTH);
             Long face = jan.getFace();
             Long janWidth = width + partitionVal;
 
@@ -381,9 +381,9 @@ public class CommonMstServiceImpl implements CommonMstService {
                     newJanDto.setRank(-1L);
                     newJanDto.setSkuRank(MapUtils.getLong(newJan, "sku_rank"));
                     newJanDto.setRestrictCd(MapUtils.getLong(newJan, MagicString.RESTRICT_CD));
-                    newJanDto.setWidth(MapUtils.getLong(newJan, "width"));
-                    newJanDto.setHeight(MapUtils.getLong(newJan, "height"));
-                    newJanDto.setIrisu(MapUtils.getString(newJan, "irisu"));
+                    newJanDto.setWidth(MapUtils.getLong(newJan, MagicString.WIDTH_NAME));
+                    newJanDto.setHeight(MapUtils.getLong(newJan, MagicString.HEIGHT_NAME));
+                    newJanDto.setIrisu(MapUtils.getString(newJan, MagicString.IRISU_NAME));
 
                     if(janWidth*face + usedArea + partitionVal <= groupArea) {
                         //pre calculation used area

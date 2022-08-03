@@ -1,6 +1,9 @@
 package com.trechina.planocycle.constant;
 
 public class MagicString {
+    public static final String HEIGHT_NAME = "plano_height";
+    public static final String IRISU_NAME = "plano_irisu";
+
     private MagicString() {
     }
 
@@ -136,5 +139,7 @@ public class MagicString {
     public static final Integer PLAN_START = 201;
     public static final Integer PLAN_END = 240;
 
-    public static final Long DEFAULT_WITDH = 67L;
+    public static final Long DEFAULT_WIDTH = 67L;
+
+    public static final String WIDTH_NAME="plano_width";
 }
