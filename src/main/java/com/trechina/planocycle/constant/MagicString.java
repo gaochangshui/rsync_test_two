@@ -142,4 +142,13 @@ public class MagicString {
     public static final Long DEFAULT_WIDTH = 67L;
 
     public static final String WIDTH_NAME="plano_width";
+
+    /**
+     * ファイルをアップロードメッセージ
+     */
+    public static final String MSG_UPLOAD_CORRECT_FILE="正しいファイルをアップロードしてください。";
+    public static final String MSG_NOT_HAVE_JAN_CODE="商品コード列がありません、正しいフォーマットを使って取込してください。";
+    public static final String MSG_UNIDENTIFIED_COLUMN="識別されていない列があります、修正してください。";
+    public static final String MSG_ABNORMALITY_DATA="データ異常がありますので、ご確認ください。\n❊列数が合わない、空行、文字数制限";
+    public static final String MSG_UPLOAD_SUCCESS="件のデータを取込成功しました。";
 }
