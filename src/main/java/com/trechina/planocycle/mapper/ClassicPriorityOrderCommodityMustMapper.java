@@ -44,12 +44,12 @@ public interface ClassicPriorityOrderCommodityMustMapper {
 
     List<CommodityBranchVO> getExistCommodityMustBranchList(String companyCd,Integer priorityOrderCd, String jan,String table1,String table2);
 
-    void insertCommodityBranchList(String companyCd, Integer priorityOrderCd, String jan,String tableName);
+    void insertCommodityBranchList(String companyCd, Integer priorityOrderCd, String jan,String tableName,String table1,String table2);
 
     void updateFlag(String companyCd, Integer priorityOrderCd, String jan, List<Map<String, Object>> list);
 
     void delCommodityMustBranch(CommodityBranchPrimaryKeyVO commodityBranchPrimaryKeyVO);
 
-    void insertSurplusCommodityBranch(String companyCd, Integer priorityOrderCd, String jan, String tableName, List<CommodityBranchVO> existCommodityBranchList);
+    void insertSurplusCommodityBranch(String companyCd, Integer priorityOrderCd, String jan, String tableName, List<CommodityBranchVO> existCommodityBranchList,String table1,String table2);
 
 }

@@ -265,8 +265,12 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List list = new ArrayList<>();
         List<Map<String, Object>> attrName = priorityOrderDataMapper.selectPriorityAttrName(tableNameAttr,isCompanyCd,prodMstClass);
         List<Map<String, Object>> stratumName = priorityOrderDataMapper.selectPriorityStratumName(tableName,isCompanyCd,prodMstClass);
-        list.add(attrName);
+        attrName = attrName.stream().filter(map->!"6".equals(MapUtils.getString(map,"type"))).collect(Collectors.toList());
+        List<Map<String, Object>> attrName1 = attrName.stream().filter(map->"6".equals(MapUtils.getString(map,"type"))).collect(Collectors.toList());
         list.add(stratumName);
+        list.add(attrName);
+        list.add(attrName1);
+
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 
