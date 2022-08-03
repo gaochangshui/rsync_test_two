@@ -458,7 +458,7 @@ public class CommonMstServiceImpl implements CommonMstService {
     private boolean isSetJanByCutFace(List<PriorityOrderResultDataDto> resultDataDtoList, double width, double usedWidth, long partitionVal,
                                       long minFace, PriorityOrderResultDataDto targetResultData){
         Long face = targetResultData.getFace();
-        Long janWidth = targetResultData.getWidth();
+        Long janWidth = Optional.ofNullable(targetResultData.getWidth()).orElse(MagicString.DEFAULT_WIDTH);
 
         //使用可能な幅が残ります(仕切りがある場合を考慮する必要があります)
         double remainderWidth = width - usedWidth;
