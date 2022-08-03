@@ -141,5 +141,7 @@ public class MagicString {
 
     public static final Long DEFAULT_WIDTH = 67L;
 
+    public static final Long DEFAULT_HEIGHT = 240L;
+
     public static final String WIDTH_NAME="plano_width";
 }

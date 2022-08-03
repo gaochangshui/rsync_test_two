@@ -402,7 +402,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             }
 
             if(topPartitionVal!=null){
-                Long janHeight = jan.getHeight() + topPartitionVal;
+                Long janHeight = Optional.ofNullable(jan.getHeight()).orElse(MagicString.DEFAULT_HEIGHT) + topPartitionVal;
                 if(janHeight+topPartitionVal>tanaHeight){
                     Map<String, Object> errInfo = new HashMap<>();
                     errInfo.put("taiCd", Integer.parseInt(taiCd));
