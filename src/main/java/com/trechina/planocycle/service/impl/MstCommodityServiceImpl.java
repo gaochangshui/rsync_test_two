@@ -3,7 +3,6 @@ package com.trechina.planocycle.service.impl;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.CommoditySyncSet;
 import com.trechina.planocycle.entity.vo.CommoditySyncSetVO;
-import com.trechina.planocycle.entity.vo.MstCommodityVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.MstCommodityMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
@@ -24,16 +23,6 @@ public class MstCommodityServiceImpl implements MstCommodityService {
     MstCommodityMapper mstCommodityMapper;
     @Autowired
     private SysConfigMapper sysConfigMapper;
-
-    /**
-     * 商品マスタ
-     * @return
-     */
-    @Override
-    public List<MstCommodityVO> getCommodityList() {
-        String tableNameCommodity = MessageFormat.format(MagicString.MASTER_SYOHIN, MagicString.DEFAULT_COMPANY_CD);
-        return mstCommodityMapper.getCommodityList(tableNameCommodity);
-    }
 
     /**
      * 同期設定を検索

@@ -2,7 +2,6 @@ package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.po.CommoditySyncSet;
 import com.trechina.planocycle.entity.vo.CommoditySyncSetVO;
-import com.trechina.planocycle.entity.vo.MstCommodityVO;
 import com.trechina.planocycle.service.MstCommodityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,15 +16,6 @@ public class MstCommodityController {
 
     @Autowired
     private MstCommodityService mstCommodityService;
-
-    /**
-     * 商品マスタ
-     * @return
-     */
-    @GetMapping("/getCommodityList")
-    public List<MstCommodityVO> getCommodityList(){
-        return mstCommodityService.getCommodityList();
-    }
 
     /**
      * 同期設定を検索

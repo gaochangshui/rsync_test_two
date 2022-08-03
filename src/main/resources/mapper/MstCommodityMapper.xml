@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.MstCommodityMapper">
-    <select id="getCommodityList" resultType="com.trechina.planocycle.entity.vo.MstCommodityVO">
-        select "1" id ,"2" "text" from ${tableName}
-        order by "1";
-    </select>
 
     <select id="getSyncSet" resultType="com.trechina.planocycle.entity.po.CommoditySyncSet">
         select 1 as "prodIsCore", "1" "prodMstClass", "2" "prodMstName","3" "flag"

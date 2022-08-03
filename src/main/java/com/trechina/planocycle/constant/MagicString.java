@@ -63,11 +63,6 @@ public class MagicString {
      */
     public static final String MSG_FACE_CHANGE = "フェース変更 元：";
 
-    /**
-     * 棚割専用cd
-     */
-    public static final String DEFAULT_COMPANY_CD = "9999";
-
     public static final String ATTR_SMALL = "attrSmall";
 
     public static final String ATTR_BIG = "attrBig";
