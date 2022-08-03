@@ -75,7 +75,7 @@
     </insert>
     <select id="selectHeader" resultType="map">
         select "1" as col,"2" as name,"3" sort,0 as "type" from ${tableName}
-        where "1" not like 'jan%' and "1" not in ('description','sync','update_time','updater', 'width','height','depth','hook_x','hook_y','product_shape')
+        where "1" not like 'jan%' and "1" not in ('description','sync','update_time','updater', 'plano_width','plano_height','plano_depth','plano_hook_x','plano_hook_y','product_shape')
         order by "4"::integer
     </select>
     <select id="selectAllAttrTable" resultType="string">
@@ -135,7 +135,7 @@
         select  zokusei_col ,zokusei_nm,zokusei_id from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
     </select>
     <select id="getJanSizeCol" resultType="java.util.Map">
-        select "1" as "colCd","2" as "colName","3" as "infoCol" from ${proAttrTable} where "1" in ('width','height','depth')
+        select "1" as "colCd","2" as "colName","3" as "infoCol" from ${proAttrTable} where "1" in ('plano_width','plano_height','plano_depth')
     </select>
     <select id="getMaxZokuseiId" resultType="java.lang.Integer">
         SELECT MAX(zokusei_id) FROM masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}

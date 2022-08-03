@@ -345,7 +345,7 @@ public class MstJanServiceImpl implements MstJanService {
         String jan = map.get(MagicString.JAN).toString();
         List<String> list = new ArrayList();
         for (String s : map.keySet()) {
-            if (s.contains("zokusei")){
+            if (s.contains("zokusei") && map.get(s) != null && !map.get(s).equals("")){
                 Integer zokuseiId = Integer.parseInt(s.replace("zokusei", ""))-1;
                 list.add(s.replace("zokusei", ""));
                 setInfoMap.put(zokuseiId+"",map.get(s));
