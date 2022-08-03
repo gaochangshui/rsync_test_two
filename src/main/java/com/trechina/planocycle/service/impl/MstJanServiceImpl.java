@@ -64,7 +64,6 @@ public class MstJanServiceImpl implements MstJanService {
      * commonPartsData 商品軸情報
      *     prodIsCore    0企業1自社
      *     prodMstClass  商品軸ID
-     *     shelfMstClass 棚割専用軸ID、値あり代表使用棚割専用9999データ、値なし使用大本マイスター各企業独自データ
      *     janContain    含まれる商品
      *     janKato       除外された商品
      *     fuzzyQuery    ファジィ照会、商品名の照会
@@ -345,7 +344,7 @@ public class MstJanServiceImpl implements MstJanService {
         String jan = map.get(MagicString.JAN).toString();
         List<String> list = new ArrayList();
         for (String s : map.keySet()) {
-            if (s.contains("zokusei")){
+            if (s.contains("zokusei") && map.get(s) != null && !map.get(s).equals("")){
                 Integer zokuseiId = Integer.parseInt(s.replace("zokusei", ""))-1;
                 list.add(s.replace("zokusei", ""));
                 setInfoMap.put(zokuseiId+"",map.get(s));
@@ -397,8 +396,9 @@ public class MstJanServiceImpl implements MstJanService {
     @Override
     public Map<String, Object> uploadJanData(MultipartFile file, String fileName, String classCd,
                                              String commonPartsData, String companyCd) {
+        int count;
         if (!fileName.startsWith("商品明細-") || !fileName.endsWith(".xlsx")) {
-            return ResultMaps.result(ResultEnum.FAILURE.getCode(), "正しいファイルをアップロードしてください");
+            return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_UPLOAD_CORRECT_FILE);
         }
         List<String[]> excelData = ExcelUtils.readExcel(file);
         JSONObject jsonObject = JSON.parseObject(commonPartsData);
@@ -413,12 +413,12 @@ public class MstJanServiceImpl implements MstJanService {
         String[] header = excelData.get(0);
         Optional<String> optional = Stream.of(header).filter(MagicString.JAN::equalsIgnoreCase).findAny();
         if (!optional.isPresent()) {
-            return ResultMaps.result(ResultEnum.FAILURE.getCode(), "商品コードを追加してください");
+            return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_NOT_HAVE_JAN_CODE);
         }
         String janColumn = String.join(",", header);
         List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeaderByName(tableNameAttr, tableNameKaisou, janColumn);
         if (header.length > janHeader.size()) {
-            return ResultMaps.result(ResultEnum.FAILURE.getCode(), "識別されていない列があります、修正してください");
+            return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_UNIDENTIFIED_COLUMN);
         }
         Map<String, String> headerNameIndex = new HashMap<>();
         for (JanHeaderAttr headerAttr : janHeader) {
@@ -440,10 +440,10 @@ public class MstJanServiceImpl implements MstJanService {
                 }
                 janData.add(jan);
             }
-            mstJanMapper.insertJanList(tableNameInfo, infoHeader, janData);
+            count = mstJanMapper.insertJanList(tableNameInfo, infoHeader, janData);
         } catch (Exception e) {
-            return ResultMaps.result(ResultEnum.FAILURE.getCode(), "商品明細更新は失敗しました");
+            return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_ABNORMALITY_DATA);
         }
-        return ResultMaps.result(ResultEnum.SUCCESS.getCode(), "商品明細は更新しました");
+        return ResultMaps.result(ResultEnum.SUCCESS.getCode(), count + MagicString.MSG_UPLOAD_SUCCESS);
     }
 }
