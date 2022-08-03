@@ -382,7 +382,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     newJanDto.setRestrictCd(MapUtils.getLong(newJan, MagicString.RESTRICT_CD));
                     newJanDto.setWidth(MapUtils.getLong(newJan, "width"));
                     newJanDto.setHeight(MapUtils.getLong(newJan, "height"));
-                    newJanDto.setIrisu(MapUtils.getLong(newJan, "irisu"));
+                    newJanDto.setIrisu(MapUtils.getString(newJan, "irisu"));
 
                     if(janWidth*face + usedArea + partitionVal <= groupArea) {
                         //pre calculation used area
@@ -479,7 +479,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             //カットで対象商品のface数を落とすことはできません
             //入数=1のもののみを処理し、1に等しくないものはcutを行わない
             List<PriorityOrderResultDataDto> resultDataDtoByIrisu = resultDataDtoList.stream()
-                    .filter(data-> 1 == data.getIrisu()).collect(Collectors.toList());
+                    .filter(data-> 1 == Long.parseLong(data.getIrisu())).collect(Collectors.toList());
 
             if(resultDataDtoByIrisu.isEmpty()){
                 //条件を満たさないとcutできない

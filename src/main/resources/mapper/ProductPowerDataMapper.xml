@@ -591,15 +591,15 @@
             </if>
 
         </foreach>
-        <if test="ptsCd != null">
+        <if test="ptsCd != null and ptsCd.size > 0">
             ,coalesce (branchs."branchCount",0)as "branchNum"
         </if>
-        <if test="ptsCd == null">
+        <if test="ptsCd == null || ptsCd.size == 0">
             ,0 as "branchNum"
         </if>
         from planocycle.work_product_power_syokika power_syokika
         left join ${tableName} jan_info on power_syokika.jan=jan_info.${janCdColName}
-        <if test="ptsCd != null ">
+        <if test="ptsCd != null  and ptsCd.size > 0">
             left join (
 
             select jan,count(DISTINCT branch) "branchCount" from planocycle.shelf_pts_data_jandata  jandata

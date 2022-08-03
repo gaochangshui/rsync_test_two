@@ -449,27 +449,12 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         String tableName = "work_priority_order_commodity_must";
         List<CommodityBranchVO> existCommodityMustBranchList = priorityOrderCommodityMustMapper.getExistCommodityMustBranchList(companyCd,priorityOrderCd, jan,table1,table2);
         if(existCommodityMustBranchList.isEmpty()){
-            priorityOrderCommodityMustMapper.insertCommodityBranchList(companyCd, priorityOrderCd, jan, tableName);
+            priorityOrderCommodityMustMapper.insertCommodityBranchList(companyCd, priorityOrderCd, jan, tableName,table1,table2);
         }else {
-            priorityOrderCommodityMustMapper.insertSurplusCommodityBranch(companyCd, priorityOrderCd, jan, tableName,existCommodityMustBranchList);
+            priorityOrderCommodityMustMapper.insertSurplusCommodityBranch(companyCd, priorityOrderCd, jan, tableName,existCommodityMustBranchList,table1,table2);
         }
 
         existCommodityMustBranchList = priorityOrderCommodityMustMapper.getExistCommodityMustBranchList(companyCd,priorityOrderCd, jan,table1,table2);
-        //List<Map<String, Object>> resultList = new ArrayList<>();
-        //Map<String, List<CommodityBranchVO>> existCommodityMustBranchByGroup = existCommodityMustBranchList.stream().collect(Collectors.groupingBy(CommodityBranchVO::getShelfPatternName, Collectors.toList()));
-        //
-        //existCommodityMustBranchByGroup.entrySet().stream().forEach(item->{
-        //    List<CommodityBranchVO> value = item.getValue();
-        //
-        //    CommodityBranchVO commodityBranchVO = value.get(0);
-        //    Map<String, Object> itemMap = new HashMap<>(2);
-        //    itemMap.put("shelfPatternName", item.getKey());
-        //    itemMap.put("branchName", value.size()+"店舗");
-        //    itemMap.put("beforeFlag", commodityBranchVO.getBeforeFlag());
-        //    itemMap.put("flag", value.size()== ((Long) value.stream().filter(vo -> vo.getFlag() == 1).count()).intValue()?1:0);
-        //    itemMap.put("__children", value);
-        //    resultList.add(itemMap);
-        //});
 
         return ResultMaps.result(ResultEnum.SUCCESS, existCommodityMustBranchList);
     }
@@ -488,27 +473,12 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         String table2 = tableNameList.get("table2").toString();
         List<CommodityBranchVO> existCommodityNotBranchList = priorityOrderCommodityNotMapper.getExistCommodityNotBranchList(companyCd,priorityOrderCd, jan,table1,table2);
         if(existCommodityNotBranchList.isEmpty()){
-            priorityOrderCommodityMustMapper.insertCommodityBranchList(companyCd, priorityOrderCd, jan,tableName );
+            priorityOrderCommodityMustMapper.insertCommodityBranchList(companyCd, priorityOrderCd, jan,tableName,table1,table2);
         }else {
-            priorityOrderCommodityMustMapper.insertSurplusCommodityBranch(companyCd, priorityOrderCd, jan, tableName,existCommodityNotBranchList);
+            priorityOrderCommodityMustMapper.insertSurplusCommodityBranch(companyCd, priorityOrderCd, jan, tableName,existCommodityNotBranchList,table1,table2);
         }
 
         existCommodityNotBranchList = priorityOrderCommodityNotMapper.getExistCommodityNotBranchList(companyCd,priorityOrderCd, jan,table1,table2);
-
-        //List<Map<String, Object>> resultList = new ArrayList<>();
-        //Map<String, List<CommodityBranchVO>> existCommodityMustBranchByGroup = existCommodityNotBranchList.stream().collect(Collectors.groupingBy(CommodityBranchVO::getShelfPatternName, Collectors.toList()));
-        //
-        //existCommodityMustBranchByGroup.entrySet().stream().forEach(item->{
-        //    List<CommodityBranchVO> value = item.getValue();
-        //    CommodityBranchVO commodityBranchVO = value.get(0);
-        //    Map<String, Object> itemMap = new HashMap<>(2);
-        //    itemMap.put("shelfPatternName", item.getKey());
-        //    itemMap.put("branchName", value.size()+"店舗");
-        //    itemMap.put("beforeFlag", commodityBranchVO.getBeforeFlag());
-        //    itemMap.put("__children", value);
-        //    itemMap.put("flag", value.size()== ((Long) value.stream().filter(vo -> vo.getFlag() == 1).count()).intValue()?1:0);
-        //    resultList.add(itemMap);
-        //});
 
         return ResultMaps.result(ResultEnum.SUCCESS, existCommodityNotBranchList);
     }

@@ -105,29 +105,30 @@
     </insert>
   <insert id="insertCommodityBranchList">
     insert into priority.${tableName}
-    select #{companyCd}, #{priorityOrderCd}, branch_cd,#{jan}, patternmst.shelf_pattern_cd, 0,
+    select #{companyCd}, #{priorityOrderCd},
+           case when position('_' in branch) > 0 then split_part( branch.branch, '_', 2 ) else branch end  as branch_cd
+           ,#{jan}, patternmst.shelf_pattern_cd, 0,
            case when jandata.jan is null then 0 else 1 end as before_flag
     from priority.work_priority_order_pattern pattern
           inner join planocycle.shelf_pattern_mst patternmst on pattern.shelf_pattern_cd=patternmst.shelf_pattern_cd
           inner join planocycle.shelf_pattern_branch branch on branch.shelf_pattern_cd=pattern.shelf_pattern_cd
-          inner join masterdb.branchs branchs on (branchs.branch_cd = branch.branch or branchs.branch_cd=split_part(branch.branch, '_', 2))
-      and branchs.company_cd=#{companyCd}
          inner join planocycle.shelf_pts_data ptsdata on ptsdata.shelf_pattern_cd=patternmst.shelf_pattern_cd
          left join (select "pts_cd", max(jan)jan from planocycle.shelf_pts_data_jandata group by "pts_cd", jan) jandata on jandata.pts_cd=ptsdata."id" and jandata.jan=#{jan}
     where priority_order_cd=#{priorityOrderCd};
   </insert>
     <insert id="insertSurplusCommodityBranch">
       insert into priority.${tableName}
-      select #{companyCd}, #{priorityOrderCd}, branch_cd,#{jan}, patternmst.shelf_pattern_cd, 0,
+      select #{companyCd}, #{priorityOrderCd},branch_cd,#{jan},shelf_pattern_cd, 0,before_flag
+      from (select
+      case when position('_' in branch) > 0 then split_part( branch.branch, '_', 2 ) else branch end  as branch_cd,
+      patternmst.shelf_pattern_cd,
       case when jandata.jan is null then 0 else 1 end as before_flag from priority.work_priority_order_pattern pattern
       inner join planocycle.shelf_pattern_mst patternmst on pattern.shelf_pattern_cd=patternmst.shelf_pattern_cd
       inner join planocycle.shelf_pattern_branch branch on branch.shelf_pattern_cd=pattern.shelf_pattern_cd
-      inner join masterdb.branchs branchs on (branchs.branch_cd = branch.branch or branchs.branch_cd=split_part(branch.branch, '_', 2))
-      and branchs.company_cd=#{companyCd}
       inner join planocycle.shelf_pts_data ptsdata on ptsdata.shelf_pattern_cd=patternmst.shelf_pattern_cd
       left join (select "pts_cd", max(jan)jan from planocycle.shelf_pts_data_jandata group by "pts_cd", jan) jandata on jandata.pts_cd=ptsdata."id" and jandata.jan=#{jan}
-      where priority_order_cd=#{priorityOrderCd}
-      and concat(branch_cd,patternmst.shelf_pattern_cd) not in
+      where priority_order_cd=#{priorityOrderCd}) mst
+      where concat(branch_cd,shelf_pattern_cd) not in
       <foreach collection="existCommodityBranchList" item="item" separator="," open="(" close=")" >
         #{item.branch} || #{item.shelfPatternCd}
       </foreach>

@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -348,9 +347,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
 
         if (ptsDetailData != null){
-            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu," ;
+            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu" ;
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
-                s = s+"faceDisplayflg,facePosition,depthDisplayNum";
+                s = s+",faceDisplayflg,facePosition,depthDisplayNum";
             }
             ptsDetailData.setJanColumns(s);
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));
@@ -454,16 +453,16 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             shelfPtsDataJandata = priorityAllPtsMapper.selectAllJandataByPtsCd(companyCd, ptsCd);
         }
 
-        response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=utf-8");
+        response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=Shift_JIS");
 
-        OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8);
+        OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream(), "Shift_JIS");
         String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
         response.setHeader("Content-Disposition", format);
 
         //EXcelが文字化けしを開く問題を解決するために
-        byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-        writer.write(new String(bom));
-        writer.flush();
+//        byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+//        writer.write(new String(bom));
+//        writer.flush();
 
         this.generateCsv(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, writer);
     }

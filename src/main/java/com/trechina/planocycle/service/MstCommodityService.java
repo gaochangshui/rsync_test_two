@@ -2,18 +2,11 @@ package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.po.CommoditySyncSet;
 import com.trechina.planocycle.entity.vo.CommoditySyncSetVO;
-import com.trechina.planocycle.entity.vo.MstCommodityVO;
 
 import java.util.List;
 import java.util.Map;
 
 public interface MstCommodityService {
-
-    /**
-     * 商品マスタ
-     * @return
-     */
-    List<MstCommodityVO> getCommodityList();
 
     /**
      * 同期設定を検索

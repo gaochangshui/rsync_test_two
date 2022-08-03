@@ -471,6 +471,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue());
 
         if (ptsDetailData != null){
+            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu" ;
+            if ("V3.0".equals(ptsDetailData.getVersioninfo())){
+                s = s+",faceDisplayflg,facePosition,depthDisplayNum";
+            }
+            ptsDetailData.setJanColumns(s);
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
             ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
