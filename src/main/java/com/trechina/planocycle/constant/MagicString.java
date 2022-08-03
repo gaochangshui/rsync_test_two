@@ -135,4 +135,6 @@ public class MagicString {
 
     public static final Integer PLAN_START = 201;
     public static final Integer PLAN_END = 240;
+
+    public static final Long DEFAULT_WITDH = 67L;
 }

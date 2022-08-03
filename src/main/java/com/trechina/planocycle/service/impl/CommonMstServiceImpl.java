@@ -357,21 +357,23 @@ public class CommonMstServiceImpl implements CommonMstService {
             PriorityOrderResultDataDto newJanDto = new PriorityOrderResultDataDto();
             List<Map<String, Object>> cutJan = cutList.stream().filter(map -> MapUtils.getString(map, "jan").equals(jan.getJanCd())).collect(Collectors.toList());
 
-            Long width = jan.getWidth();
+            Long width = Optional.ofNullable(jan.getWidth()).orElse(MagicString.DEFAULT_WITDH);
             Long face = jan.getFace();
             Long janWidth = width + partitionVal;
 
             if(!cutJan.isEmpty()){
                 //The new regulation takes precedence over cut
-//                List<Map<String, Object>> newJanList = newList.stream().filter(map -> restrictCd.equals(MapUtils.getString(map, MagicString.RESTRICT_CD))
                 List<Map<String, Object>> newJanList = newList.stream().filter(map -> MapUtils.getString(map, MagicString.RESTRICT_CD).equals(restrictCd)
-                        && jan.getJanCd().equals(MapUtils.getString(map, MagicString.JAN))
                     && !"1".equals(MapUtils.getString(map, "adoptFlag"))).collect(Collectors.toList());
                 if(newJanList.isEmpty()){
                     continue;
                 }
-
-                for (Map<String, Object> newJan : newJanList) {
+                int count = Math.min(cutJan.size(), newJanList.size());
+                for (int i = 0; i < count; i++) {
+                    if(i >= newJanList.size()){
+                        continue;
+                    }
+                    Map<String, Object> newJan = newJanList.get(i);
                     newJanDto.setJanCd(MapUtils.getString(newJan, "jan"));
                     newJanDto.setFace(jan.getFace());
                     newJanDto.setTaiCd(MapUtils.getInteger(newJan, "taiCd"));
