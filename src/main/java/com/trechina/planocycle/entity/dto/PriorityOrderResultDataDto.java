@@ -30,7 +30,7 @@ public class PriorityOrderResultDataDto {
 
     private Long faceSku;
 
-    private Long irisu;
+    private String irisu;
 
     private Integer taiCd;
 
