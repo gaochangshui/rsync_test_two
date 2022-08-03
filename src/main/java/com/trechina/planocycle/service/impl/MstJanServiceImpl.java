@@ -351,7 +351,10 @@ public class MstJanServiceImpl implements MstJanService {
 
             }
         }
-        Map<String,Object> kaiSouName= mstJanMapper.getKaiSouName(setInfoMap,janInfoTableName,list);
+        Map<String, Object> kaiSouName =new HashMap<>();
+        if (!setInfoMap.isEmpty()) {
+             kaiSouName = mstJanMapper.getKaiSouName(setInfoMap, janInfoTableName, list);
+        }
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
         List<LinkedHashMap<String,Object>> janAttrList = mstJanMapper.getJanAttrList(tableNameAttr);
