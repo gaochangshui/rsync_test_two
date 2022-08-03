@@ -178,7 +178,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             List<Map<String, Object>> newJans = new ArrayList<>();
             for (int i = 0; i < jans.size(); i++) {
                 Map<String, Object> janMap = jans.get(i);
-                double width = MapUtils.getDouble(janMap, "width");
+                double width = MapUtils.getDouble(janMap, "plano_width");
                 StringBuilder key = new StringBuilder();
                 for (String zokusei : zokuseiList) {
                     if(key.length()>0){
