@@ -768,9 +768,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             //商品変更：位置変更
             newJanData.stream()
                     .filter(map -> janData.stream().anyMatch(map1 -> map1.getJan().equals(MapUtils.getString(map,"jan"))
-                            && (!map1.getTaiCd().equals(MapUtils.getString(map,"taiCd"))
-                            || !map1.getTanaCd().equals(MapUtils.getString(map,"tanaCd"))
-                            || !map1.getTanapositionCd().equals(MapUtils.getString(map,"tanapositionCd")))
+                            && (!map1.getTaiCd().equals(MapUtils.getInteger(map,"taiCd"))
+                            || !map1.getTanaCd().equals(MapUtils.getInteger(map,"tanaCd"))
+                            || !map1.getTanapositionCd().equals(MapUtils.getInteger(map,"tanapositionCd")))
                     ))
                     .forEach(map -> {
                         PtsJanDataVo oldPtsJanDataVo = janData.stream().filter(map1 -> map1.getJan().equals(MapUtils.getString(map,"jan"))).findFirst().get();
@@ -781,7 +781,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             //商品変更：フェース変更
             newJanData.stream()
                     .filter(map -> janData.stream().anyMatch(map1 -> map1.getJan().equals(MapUtils.getString(map,"jan"))
-                            && !map1.getFaceCount().equals(MapUtils.getString(map,"faceCount"))
+                            && !map1.getFaceCount().equals(MapUtils.getInteger(map,"faceCount"))
                     ))
                     .forEach(map -> map.put("remarks",(StringUtils.hasLength(map.get("remarks").toString()) ? map.get("remarks").toString() + "," : "")
                             + MagicString.MSG_FACE_CHANGE
