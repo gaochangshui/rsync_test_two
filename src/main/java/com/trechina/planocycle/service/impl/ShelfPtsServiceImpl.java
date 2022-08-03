@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -348,9 +347,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
 
         if (ptsDetailData != null){
-            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu," ;
+            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu" ;
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
-                s = s+"faceDisplayflg,facePosition,depthDisplayNum";
+                s = s+",faceDisplayflg,facePosition,depthDisplayNum";
             }
             ptsDetailData.setJanColumns(s);
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));

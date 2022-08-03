@@ -68,17 +68,18 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     @Override
     public Map<String, Object> getTableName(String companyCd) {
 
-        String aud = session.getAttribute("aud").toString();
-        List<TableNameDto> commodityData = productPowerMstMapper.getTableNameByCompanyCd(companyCd,aud);
-        List<TableNameDto> basicPtsData = priorityOrderMstMapper.getTableNameByCompanyCd(companyCd,aud);
-        List<TableNameDto> wholePtsData = priorityAllMstMapper.getTableNameByCompanyCd(companyCd,aud);
-        List<TableNameDto> priorityData = classicPriorityOrderMstMapper.getTableNameByCompanyCd(companyCd,aud);
-        Map<String,Object> tableNameMap = new HashMap<>();
-        tableNameMap.put("commodityData",commodityData);
-        tableNameMap.put("basicPtsData",basicPtsData);
-        tableNameMap.put("wholePtsData",wholePtsData);
-        tableNameMap.put("priorityData",priorityData);
-         
+        Map<String,Object> tableNameMap = null;
+            String aud = session.getAttribute("aud").toString();
+            List<TableNameDto> commodityData = productPowerMstMapper.getTableNameByCompanyCd(companyCd,aud);
+            List<TableNameDto> basicPtsData = priorityOrderMstMapper.getTableNameByCompanyCd(companyCd,aud);
+            List<TableNameDto> wholePtsData = priorityAllMstMapper.getTableNameByCompanyCd(companyCd,aud);
+            List<TableNameDto> priorityData = classicPriorityOrderMstMapper.getTableNameByCompanyCd(companyCd,aud);
+            tableNameMap = new HashMap<>();
+            tableNameMap.put("commodityData",commodityData);
+            tableNameMap.put("basicPtsData",basicPtsData);
+            tableNameMap.put("wholePtsData",wholePtsData);
+            tableNameMap.put("priorityData",priorityData);
+
         return ResultMaps.result(ResultEnum.SUCCESS,tableNameMap);
     }
 

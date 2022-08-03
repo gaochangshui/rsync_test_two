@@ -1,5 +1,6 @@
 package com.trechina.planocycle.aspect;
 
+import com.alibaba.fastjson.JSONArray;
 import com.trechina.planocycle.mapper.LogMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -9,6 +10,8 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
 
 /**
  * <p>title: com.fengmi.aspect</p>
@@ -32,22 +35,26 @@ public class LogAspect {
 
 
     //定义通知
-    //@Around("point()")
     @AfterThrowing(pointcut = "point()",throwing = "ex")
-    public void serviceMonitor(JoinPoint joinPoint,Throwable ex) throws ClassNotFoundException {
+    public  void serviceMonitor(JoinPoint joinPoint,Throwable ex) {
         //获取目标方法名称
         String methodName = joinPoint.getSignature().getName();
         //获取被代理对象名称
         String targetName = joinPoint.getTarget().getClass().getName();
 
         //获取传入目标方法的参数对象
-        String arguments = joinPoint.getArgs().toString();
+        Object[] arguments = joinPoint.getArgs();
+
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.addAll(Arrays.asList(arguments));
         //获取class对象
         String s = ex.toString();
-        logMapper.saveErrorLog(targetName+"_"+methodName,arguments,s);
-
+        String params = jsonArray.toString();
+        logMapper.saveErrorLog(targetName+"_"+methodName, params,s);
+        System.out.println(1);
 
     }
+
 
 
 
