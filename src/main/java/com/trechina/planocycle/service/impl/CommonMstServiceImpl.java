@@ -265,6 +265,8 @@ public class CommonMstServiceImpl implements CommonMstService {
             newList.set(i, zokusei);
         }
 
+        newList = newList.stream().filter(map->MapUtils.getInteger(map, MagicString.RESTRICT_CD)!=null).collect(Collectors.toList());
+
         Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd = janResult.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd, LinkedHashMap::new, Collectors.toList()));
         Map<String, List<Map<String, Object>>> relationGroupTaiTana = relationMap.stream()
                 .filter(map->!MapUtils.getString(map, MagicString.RESTRICT_CD).equals(MagicString.NO_RESTRICT_CD+""))
