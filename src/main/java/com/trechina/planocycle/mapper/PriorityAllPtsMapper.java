@@ -4,12 +4,12 @@ import com.trechina.planocycle.entity.dto.PriorityAllPtsDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PtsDetailDataVo;
-import com.trechina.planocycle.entity.vo.PtsJanDataVo;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.entity.vo.PtsTanaVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +43,8 @@ public interface PriorityAllPtsMapper {
 
     List<PtsTanaVo> getTanaData(Integer id);
 
-    List<PtsJanDataVo> getJanData(Integer id);
+    List<LinkedHashMap> getJanData(@Param("id") Integer id, @Param("attrList")List<Map<String,Object>> attrList
+            , @Param("tableName")String tableName, @Param("janSizeCol")List<Map<String,Object>>janSizeCol);
 
     PtsDetailDataVo getPtsDetailData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd);
 

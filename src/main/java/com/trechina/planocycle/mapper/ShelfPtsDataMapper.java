@@ -102,7 +102,8 @@ public interface ShelfPtsDataMapper {
     //取得新tana情報
     List<PtsTanaVo> getNewTanaData(@Param("priorityOrderCd")Integer priorityOrderCd);
     //取得janData情報
-    List<PtsJanDataVo> getJanData(@Param("patternCd")Integer patternCd);
+    List<LinkedHashMap> getJanData(@Param("patternCd")Integer patternCd, @Param("attrList")List<Map<String,Object>> attrList
+            ,@Param("tableName")String tableName,@Param("janSizeCol")List<Map<String,Object>>janSizeCol);
     //取得旧janData情報
     List<PtsJanDataVo> getNewJanData(@Param("priorityOrderCd")Integer priorityOrderCd);
 

@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
@@ -16,6 +17,7 @@ import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
 import com.trechina.planocycle.utils.cgiUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
@@ -120,6 +123,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private BasicPatternAttrMapper basicPatternAttrMapper;
     @Autowired
     private BasicPatternRestrictResultDataMapper basicPatternRestrictResultDataMapper;
+    @Autowired
+    private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
     private BasicPatternMstService basicPatternMstService;
 
@@ -470,11 +475,24 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //pts詳細の取得
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue());
 
+
+        PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
+        List<Map<String,Object>> attrList1 = priorityOrderMstAttrSortMapper.getAttrCol(companyCd, priorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+        List<Integer> value = attrList1.stream().map(map2-> MapUtils.getInteger(map2, "value")).collect(Collectors.toList());
+        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(value, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
         if (ptsDetailData != null){
+            String zokuseiNm = Joiner.on(",").join(attrList1.stream().map(map3 -> MapUtils.getString(map3, "zokusei_nm")).collect(Collectors.toList()));
+            String janHeader = ptsDetailData.getJanHeader()+","+zokuseiNm+",幅,高,奥行";
+            ptsDetailData.setJanHeader(janHeader);
             String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu" ;
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
                 s = s+",faceDisplayflg,facePosition,depthDisplayNum";
             }
+            for (Map<String, Object> map1 : zokuseiCol) {
+                s=s+","+"zokusei"+map1.get("zokusei_col");
+            }
+            s = s + ",plano_width,plano_height,plano_depth";
             ptsDetailData.setJanColumns(s);
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
@@ -483,7 +501,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
             List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(workPriorityOrderMst.getShelfPatternCd().intValue());
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(workPriorityOrderMst.getShelfPatternCd().intValue());
-            List<PtsJanDataVo> janData = shelfPtsDataMapper.getJanData(workPriorityOrderMst.getShelfPatternCd().intValue());
+            List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(workPriorityOrderMst.getShelfPatternCd().intValue(),zokuseiCol,commonTableName.getProInfoTable(),janSizeCol);
             ptsDetailData.setPtsTaiList(taiData);
             ptsDetailData.setPtsTanaVoList(tanaData);
             ptsDetailData.setPtsJanDataList(janData);
