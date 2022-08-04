@@ -177,12 +177,20 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
         }
         // 棚パターンのPTS基本情報をもらう
-        Map<String, Object> ptsInfoTemp = shelfPtsService.getTaiNumTanaNum(patternCd,priorityOrderCd);
-        if ((Integer)ptsInfoTemp.get("code") != 101) {
-            return ResultMaps.result(ResultEnum.FAILURE, "該当基本パターンに紐付け棚パターンが見つけていませんでした。");
-        }
+        Map<String, Object> ptsInfoTemp = new HashMap<>();
+        Integer newTaiNum = shelfPtsDataMapper.getNewTaiNum(priorityOrderCd);
+        Integer newFaceNum = shelfPtsDataMapper.getNewFaceNum(priorityOrderCd);
+        Integer newTanaNum = shelfPtsDataMapper.getNewTanaNum(priorityOrderCd);
+        Integer newSkuNum = shelfPtsDataMapper.getNewSkuNum(priorityOrderCd);
+        PriorityOrderAttrDto priorityOrderAttrDto = priorityOrderMstMapper.getCommonPartsData(companyCd, priorityOrderCd);
+        String commonPartsData = priorityOrderAttrDto.getCommonPartsData();
+        ptsInfoTemp.put("taiNum",newTaiNum);
+        ptsInfoTemp.put("tanaNum",newTanaNum);
+        ptsInfoTemp.put("faceNum",newFaceNum);
+        ptsInfoTemp.put("skuNum",newSkuNum);
+        ptsInfoTemp.put("commonPartsData",commonPartsData);
         Map<String, Object> result = new HashMap<>();
-        result.put("tanaInfo", ptsInfoTemp.get("data"));
+        result.put("tanaInfo", ptsInfoTemp);
 
         // 同一棚名称の棚パータンListを取得
 

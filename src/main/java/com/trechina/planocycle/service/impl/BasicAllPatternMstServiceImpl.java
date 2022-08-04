@@ -278,7 +278,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
         //shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrListFinal(companyCd, priorityOrderCd);
-        PriorityOrderAttrDto priorityOrderAttrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
+        PriorityOrderAttrDto priorityOrderAttrDto = priorityOrderMstMapper.getCommonPartsData(companyCd, priorityOrderCd);
         String commonPartsData = priorityOrderAttrDto.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
         String zokuseiIds = Joiner.on(",").join(attrList);
