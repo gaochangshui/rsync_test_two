@@ -1,5 +1,6 @@
 package com.trechina.planocycle.aspect;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.trechina.planocycle.mapper.LogMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ public class LogAspect {
             JSONArray jsonArray = new JSONArray();
             jsonArray.addAll(Arrays.asList(arguments));
             //获取class对象
-            String s = ex.toString();
+            String s = JSON.toJSONString(ex);
             String params = jsonArray.toString();
             logMapper.saveErrorLog(targetName+"_"+methodName, params,s);
         });
