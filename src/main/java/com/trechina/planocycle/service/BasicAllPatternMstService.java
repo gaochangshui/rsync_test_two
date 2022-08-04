@@ -10,4 +10,7 @@ public interface BasicAllPatternMstService {
 
     @Transactional(rollbackFor = Exception.class)
     Integer saveWKAllPatternData(PriorityAllSaveDto priorityAllSaveDto);
+
+
+    void autoDetect(String companyCd,Integer priorityAllCd,Integer patternCd,Integer priorityOrderCd,String aud);
 }

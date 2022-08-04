@@ -308,7 +308,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 // 全パターン制約一覧作成 workPriorityAllRestrict
                  makeWKRestrictList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
                 // 全パターンのRelation一覧作成
-                makeWKRelationList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
 
                 makeWKResultDataList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
 
@@ -594,27 +593,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             , String companyCd, String  authorCd,Integer priorityOrderCd) {
         workPriorityAllRestrictMapper.deleteBasicPatternResult(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
         // 全パターンRelationテーブル更新
-        return workPriorityAllRestrictMapper.setBasicPatternResult(companyCd, priorityOrderCd
-                , pattern.getShelfPatternCd(),priorityAllCd,authorCd);
+        return 1;
     }
 
-    /**
-     *
-     * @param pattern
-     * @param priorityAllCd
-     * @param companyCd
-     * @param authorCd
-     * @param priorityOrderCd
-     * @return
-     */
-    private int makeWKRelationList(PriorityAllPatternListVO pattern
-            , Integer priorityAllCd
-            , String companyCd, String  authorCd,Integer priorityOrderCd){
-        workPriorityAllRestrictRelationMapper.deleteBasicPatternRelation(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
-        return workPriorityAllRestrictRelationMapper.setBasicPatternRelation(companyCd, priorityOrderCd
-                , pattern.getShelfPatternCd(),priorityAllCd,authorCd);
 
-    }
 
 
     public List<Map<String, Object>> getPtsGroup(String companyCd,Integer priorityOrderCd,Integer ptsCd,String authorCd) {

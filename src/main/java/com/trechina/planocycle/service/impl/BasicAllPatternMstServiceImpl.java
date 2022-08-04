@@ -1,8 +1,12 @@
 package com.trechina.planocycle.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
@@ -85,7 +89,12 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     private WorkPriorityAllRestrictMapper priorityAllRestrictMapper;
     @Autowired
     private PriorityOrderMstAttrSortMapper attrSortMapper;
-
+    @Autowired
+    private ShelfPtsDataTanamstMapper shelfPtsDataTanamst;
+    @Autowired
+    private JanClassifyMapper janClassifyMapper;
+    @Autowired
+    private JanInfoMapper janInfoMapper;
     @Autowired
     private PriorityOrderSortMapper priorityOrderSortMapper;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -163,10 +172,11 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 for(PriorityAllPatternListVO pattern : checkedInfo) {
 
 
-                    // 全パターン制約一覧作成 workPriorityAllRestrict
-                    makeWKRestrictList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
-                    // 全パターンのRelation一覧作成
-                    makeWKRelationList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
+                    //// 全パターン制約一覧作成 workPriorityAllRestrict
+                    //makeWKRestrictList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
+                    //// 全パターンのRelation一覧作成
+                    //makeWKRelationList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
+                    autoDetect(companyCd,priorityAllCd,pattern.getShelfPatternCd(),priorityOrderCd,authorCd);
 
                     makeWKResultDataList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
 
@@ -259,6 +269,132 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             return 1;
         }
         return 0;
+    }
+
+    @Override
+    public void autoDetect(String companyCd,Integer priorityAllCd,Integer shelfPatternCd,Integer priorityOrderCd,String aud) {
+
+
+
+        //shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
+        List<String> attrList = priorityOrderMstAttrSortMapper.getAttrListFinal(companyCd, priorityOrderCd);
+        PriorityOrderAttrDto priorityOrderAttrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
+        String commonPartsData = priorityOrderAttrDto.getCommonPartsData();
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+        String zokuseiIds = Joiner.on(",").join(attrList);
+        List<Integer> list = Arrays.asList(zokuseiIds.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
+
+        List<Integer> cdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
+        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(),
+                commonTableName.getProdMstClass(), zokuseiIds);
+
+        List<ShelfPtsDataTanamst> tanamsts = shelfPtsDataTanamst.selectByPatternCd((long) shelfPatternCd);
+
+        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(commonTableName.getProAttrTable());
+        Map<String, String> sizeAndIrisuMap = sizeAndIrisu.stream().collect(Collectors.toMap(map -> MapUtils.getString(map, "attr"), map -> MapUtils.getString(map, "attrVal")));
+        List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd,
+                zokuseiMsts, cdList, sizeAndIrisuMap);
+
+
+        Map<String, BasicPatternRestrictResult> classify = basicPatternMstService.getJanInfoClassify(classifyList, companyCd,
+                zokuseiIds, aud, (long) priorityAllCd);
+
+        workPriorityAllRestrictMapper.deleteBasicPatternResult(companyCd,priorityAllCd,aud,shelfPatternCd);
+        long restrictCd = 1;
+        for (Map.Entry<String, BasicPatternRestrictResult> entry : classify.entrySet()) {
+            BasicPatternRestrictResult value = entry.getValue();
+            value.setRestrictCd(restrictCd);
+            classify.put(entry.getKey(), value);
+            restrictCd++;
+        }
+        List<BasicPatternRestrictResult> basicPatternRestrictResults = new ArrayList<>(classify.values());
+        BasicPatternRestrictResult result = new BasicPatternRestrictResult();
+        result.setRestrictCd(MagicString.NO_RESTRICT_CD);
+        result.setAuthorCd(aud);
+        result.setCompanyCd(companyCd);
+        result.setPriorityOrderCd((long)priorityOrderCd);
+        basicPatternRestrictResults.add(result);
+        workPriorityAllRestrictMapper.setBasicPatternResult(basicPatternRestrictResults,shelfPatternCd);
+        //restrictResultMapper.insertBatch(basicPatternRestrictResults);
+
+        ArrayList<String> zokuseiList = Lists.newArrayList(zokuseiIds.split(","));
+
+        workPriorityAllRestrictRelationMapper.deleteBasicPatternRelation(companyCd,priorityAllCd,aud,shelfPatternCd);
+        //restrictRelationMapper.deleteByPrimaryKey(priorityOrderCd, companyCd);
+        for (ShelfPtsDataTanamst tanamst : tanamsts) {
+            final int[] index = {1};
+            Integer taiCd = tanamst.getTaiCd();
+            Integer tanaCd = tanamst.getTanaCd();
+            Integer tanaWidth = tanamst.getTanaWidth();
+
+            List<Map<String, Object>> jans = classifyList.stream().filter(map -> MapUtils.getInteger(map, MagicString.TAI_CD).equals(taiCd) &&
+                    MapUtils.getInteger(map, MagicString.TANA_CD).equals(tanaCd)).collect(Collectors.toList());
+
+            logger.info("taiCd:{},tanaCd:{}, jans:{}", taiCd, tanaCd,jans);
+            double areaWidth = 0;
+            String lastKey = "";
+
+            //Traverse all groups. If it is different from the previous group, record it. If it is the same, the area will be accumulated
+            List<Map<String, Object>> newJans = new ArrayList<>();
+            for (int i = 0; i < jans.size(); i++) {
+                Map<String, Object> janMap = jans.get(i);
+                double width = MapUtils.getDouble(janMap, "width");
+                StringBuilder key = new StringBuilder();
+                for (String zokusei : zokuseiList) {
+                    if(key.length()>0){
+                        key.append(",");
+                    }
+                    key.append(MapUtils.getString(janMap, zokusei));
+                }
+
+                if(lastKey.equals(key.toString()) && (i+1)==jans.size()){
+                    areaWidth += width;
+                }
+
+                if(!"".equals(lastKey) && (!lastKey.equals(key.toString()) || (i+1)==jans.size())){
+                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 5, RoundingMode.CEILING)
+                            .multiply(BigDecimal.valueOf(100)).doubleValue();
+                    Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
+                            new TypeToken<Map<String, Object>>(){}.getType());
+                    map.put(MagicString.RESTRICT_CD, classify.get(lastKey).getRestrictCd());
+                    map.put("area", percent);
+                    map.put("priorityOrderCd", priorityAllCd);
+                    map.put("companyCd", companyCd);
+                    map.put("authorCd", aud);
+                    newJans.add(map);
+                    areaWidth=width;
+                }else{
+                    areaWidth += width;
+                }
+
+                //If the last grouping is independent, it should be handled separately
+                if(!lastKey.equals(key.toString()) && (i+1)==jans.size()){
+                    areaWidth = width;
+                    int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
+                            .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
+                    Map<String, Object> map = new GsonBuilder().create().fromJson(JSONObject.toJSONString(janMap),
+                            new TypeToken<Map<String, Object>>(){}.getType());
+                    map.put(MagicString.RESTRICT_CD, classify.get(key.toString()).getRestrictCd());
+                    map.put("area", percent);
+                    map.put("priorityOrderCd", priorityOrderCd);
+                    map.put("companyCd", companyCd);
+                    map.put("authorCd", aud);
+                    newJans.add(map);
+                }
+
+                lastKey = key.toString();
+            }
+
+            newJans.stream().forEach(map->{
+                map.put("tanaPosition", index[0]);
+                index[0]++;
+            });
+            if(!newJans.isEmpty()){
+                workPriorityAllRestrictRelationMapper.setBasicPatternRelation(newJans,shelfPatternCd);
+            }
+        }
+
+
     }
 
     /**
@@ -423,8 +559,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             , String companyCd, String  authorCd,Integer priorityOrderCd) {
         workPriorityAllRestrictMapper.deleteBasicPatternResult(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
         // 全パターンRelationテーブル更新
-        return workPriorityAllRestrictMapper.setBasicPatternResult(companyCd, priorityOrderCd
-                , pattern.getShelfPatternCd(),priorityAllCd,authorCd);
+        return 1;
     }
 
     /**
@@ -440,8 +575,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             , Integer priorityAllCd
             , String companyCd, String  authorCd,Integer priorityOrderCd){
         workPriorityAllRestrictRelationMapper.deleteBasicPatternRelation(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
-        return workPriorityAllRestrictRelationMapper.setBasicPatternRelation(companyCd, priorityOrderCd
-                , pattern.getShelfPatternCd(),priorityAllCd,authorCd);
+        return 1;
 
     }
 
