@@ -127,8 +127,9 @@ public class ShelfPtsController {
      * @return
      */
     @GetMapping("getPtsDetailData")
-    public  Map<String,Object> getPtsDetailData(Integer patternCd,String companyCd,@RequestParam(required = false) Integer priorityOrderCd){
-        return shelfPtsService.getPtsDetailData(patternCd,companyCd,priorityOrderCd);
+    public  Map<String,Object> getPtsDetailData(Integer patternCd,String companyCd,@RequestParam(required = false) Integer priorityOrderCd,
+    @RequestParam(required = false) Integer flag){
+        return shelfPtsService.getPtsDetailData(patternCd,companyCd,priorityOrderCd,flag);
 
     }
     /**

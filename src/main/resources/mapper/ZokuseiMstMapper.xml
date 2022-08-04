@@ -75,7 +75,7 @@
     </insert>
     <select id="selectHeader" resultType="map">
         select "1" as col,"2" as name,"3" sort,0 as "type" from ${tableName}
-        where "1" not like 'jan%' and "1" not in ('description','sync','update_time','updater', 'plano_width','plano_height','plano_depth','plano_hook_x','plano_hook_y','product_shape')
+        where "1" not like 'jan%' and "1" not in ('description','sync','update_time','updater','product_shape')
         order by "4"::integer
     </select>
     <select id="selectAllAttrTable" resultType="string">

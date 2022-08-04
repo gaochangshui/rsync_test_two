@@ -391,3 +391,7 @@ org.postgresql.util.PSQLException: ERROR: null value in column "val" violates no
 	at java.lang.Thread.run(Thread.java:748)
 20220804 08:48:58.338  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
 20220804 08:48:58.342  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.
+20220804 09:27:04.348  [http-nio-8383-exec-8] INFO  com.trechina.planocycle.service.impl.IDGeneratorServiceImpl.priorityOrderNumGenerator():40 - 優先順位表自動取号：1576
+20220804 09:27:17.439  [http-nio-8383-exec-4] INFO  com.trechina.planocycle.service.impl.PriorityAllMstServiceImpl.getPriorityOrderList():160 - 基本パターンList：[TableNameDto(id=1573, fileName=0804liu1, createTime=Thu Aug 04 08:06:20 CST 2022, authorName=10215814, flag=null), TableNameDto(id=1483, fileName=testlki, createTime=Mon Aug 01 14:39:58 CST 2022, authorName=10215814, flag=null), TableNameDto(id=1351, fileName=0707liu1, createTime=Thu Jul 07 16:23:01 CST 2022, authorName=10215814, flag=null)]
+20220804 10:20:20.233  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
+20220804 10:20:20.238  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.

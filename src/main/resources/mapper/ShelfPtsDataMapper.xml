@@ -303,15 +303,25 @@
       on ptsData."id" =  taiMst.pts_cd
     where ptsData.shelf_pattern_cd = #{patternCd}
   </select>
-  <select id="getJanData" resultType="com.trechina.planocycle.entity.vo.PtsJanDataVo">
+  <select id="getJanData" resultType="java.util.LinkedHashMap">
     select
-      janData.tai_cd,janData.tana_cd,janData.tanaposition_cd,janData.jan,janData.face_count,janData.face_men,janData.face_kaiten,
-      janData.tumiagesu,janData.zaikosu,janData.face_displayflg,janData.face_position,janData.depth_display_num
+    janData.tai_cd as "taiCd",janData.tana_cd as "tanaCd",janData.tanaposition_cd as "tanapositionCd",janData.jan as "jan",janData.face_count as "faceCount"
+    ,janData.face_men as "faceMen",janData.face_kaiten as "faceKaiten",
+    janData.tumiagesu as "tumiagesu",janData.zaikosu as "zaikosu",janData.face_displayflg as "faceDisplayflg"
+    ,janData.face_position as "facePosition",janData.depth_display_num as "depthDisplayNum"
+    <foreach collection="attrList"  item="item" index="index">
+      ,janinfo."${item.zokusei_col}" as "zokusei${item.zokusei_col}"
+    </foreach>
+    <foreach collection="janSizeCol" item="item">
+      ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
+    </foreach>
     from
       planocycle.shelf_pts_data ptsData
         left join
       planocycle.shelf_pts_data_jandata janData
       on ptsData."id" =  janData.pts_cd
+    left join ${tableName} janinfo
+    on janData.jan = janinfo."1"
     where ptsData.shelf_pattern_cd = #{patternCd}
     order by janData.tai_cd,janData.tana_cd,janData.tanaposition_cd
   </select>
@@ -706,7 +716,7 @@
       janData.tumiagesu as "tumiagesu",coalesce (janData.zaikosu,0) as "zaikosu",janData.face_displayflg as "faceDisplayflg"
          ,janData.face_position as "facePosition" ,janData.depth_display_num as "depthDisplayNum",'' as remarks
         <foreach collection="attrList"  item="item" index="index">
-          ,janinfo."${item.zokusei_col}" as "zokusei${item.zokusei_id}"
+          ,janinfo."${item.zokusei_col}" as "zokusei${item.zokusei_col}"
         </foreach>
     <foreach collection="janSizeCol" item="item">
       ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"

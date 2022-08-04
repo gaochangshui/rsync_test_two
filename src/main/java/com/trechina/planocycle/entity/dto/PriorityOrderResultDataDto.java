@@ -36,6 +36,8 @@ public class PriorityOrderResultDataDto {
 
     private Integer tanaCd;
 
+    private Integer tanapositionCd;
+
     private Integer tanaType;
 
     private Integer restrictType;

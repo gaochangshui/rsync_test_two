@@ -265,6 +265,8 @@ public class CommonMstServiceImpl implements CommonMstService {
             newList.set(i, zokusei);
         }
 
+        newList = newList.stream().filter(map->MapUtils.getInteger(map, MagicString.RESTRICT_CD)!=null).collect(Collectors.toList());
+
         Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd = janResult.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd, LinkedHashMap::new, Collectors.toList()));
         Map<String, List<Map<String, Object>>> relationGroupTaiTana = relationMap.stream()
                 .filter(map->!MapUtils.getString(map, MagicString.RESTRICT_CD).equals(MagicString.NO_RESTRICT_CD+""))
@@ -292,7 +294,10 @@ public class CommonMstServiceImpl implements CommonMstService {
             for (Map<String, Object> relation : relationList) {
                 String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
                 List<PriorityOrderResultDataDto> jans = janResultByRestrictCd.get(Long.valueOf(restrictCd));
-                Map<String, Object> resultMap = this.doSetJan(cutList, newList, partitionVal, topPartitionVal, tanaWidthCheck, minFace, adoptJan, jans, relation, tanaWidth, tanaHeight, taiCd, tanaCd);
+                Map<String, Object> resultMap = null;
+                if(jans!=null){
+                    resultMap = this.doSetJan(cutList, newList, partitionVal, topPartitionVal, tanaWidthCheck, minFace, adoptJan, jans, relation, tanaWidth, tanaHeight, taiCd, tanaCd);
+                }
                 if(resultMap!=null){
                     return resultMap;
                 }
@@ -362,7 +367,7 @@ public class CommonMstServiceImpl implements CommonMstService {
 
             if(!cutJan.isEmpty()){
                 //The new regulation takes precedence over cut
-                List<Map<String, Object>> newJanList = newList.stream().filter(map -> MapUtils.getString(map, MagicString.RESTRICT_CD).equals(restrictCd)
+                List<Map<String, Object>> newJanList = newList.stream().filter(map -> restrictCd.equals(MapUtils.getString(map, MagicString.RESTRICT_CD))
                     && !"1".equals(MapUtils.getString(map, "adoptFlag"))).collect(Collectors.toList());
                 if(newJanList.isEmpty()){
                     continue;
