@@ -617,7 +617,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
                 if(equalsCount == attrList.size()){
                     int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
-                    zokusei.put("restrictCd", restrictCd);
+                    zokusei.put(MagicString.RESTRICT_CD, restrictCd);
                 }
             }
 
@@ -625,6 +625,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         }
 
         restrictResultDataMapper.deleteByPrimaryKey(priorityOrderCd);
+        zokuseiList = zokuseiList.stream().filter(map->map.get(MagicString.RESTRICT_CD)!=null).collect(Collectors.toList());
         restrictResultDataMapper.insertBatch(attrList, zokuseiList, priorityOrderCd, companyCd, authorCd);
     }
 }
