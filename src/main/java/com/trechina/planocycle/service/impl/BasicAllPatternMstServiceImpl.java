@@ -172,10 +172,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 for(PriorityAllPatternListVO pattern : checkedInfo) {
 
 
-                    //// 全パターン制約一覧作成 workPriorityAllRestrict
-                    //makeWKRestrictList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
-                    //// 全パターンのRelation一覧作成
-                    //makeWKRelationList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
                     autoDetect(companyCd,priorityAllCd,pattern.getShelfPatternCd(),priorityOrderCd,authorCd);
 
                     makeWKResultDataList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
@@ -581,7 +577,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
     private int makeWKResultDataList(PriorityAllPatternListVO pattern, Integer priorityAllCd, String companyCd, String authorCd, Integer priorityOrderCd) {
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(pattern.getShelfPatternCd());
-        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd, ptsCd,authorCd);
+        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd, ptsCd,authorCd,priorityAllCd,pattern.getShelfPatternCd());
         workPriorityAllResultDataMapper.deleteWKTableResultData(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
         return  workPriorityAllResultDataMapper.insertWKTableResultData(companyCd, priorityAllCd, authorCd,pattern.getShelfPatternCd(),ptsGroup);
 
@@ -618,7 +614,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
 
 
-    public List<Map<String, Object>> getPtsGroup(String companyCd,Integer priorityOrderCd,Integer ptsCd,String authorCd) {
+    public List<Map<String, Object>> getPtsGroup(String companyCd,Integer priorityOrderCd,Integer ptsCd,String authorCd,Integer priorityAllCd,Integer patternCd) {
 
         List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
         List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
@@ -627,7 +623,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
         List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
-        List<Map<String, Object>> restrictResult = restrictResultMapper.selectByPrimaryKey(priorityOrderCd);
+        List<Map<String, Object>> restrictResult = priorityAllRestrictMapper.selectRestrictResult(priorityAllCd, patternCd, authorCd);
 
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
         List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectAllPatternResultData(priorityOrderCd, ptsCd, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol);

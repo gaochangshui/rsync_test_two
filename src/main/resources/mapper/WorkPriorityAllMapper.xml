@@ -67,4 +67,8 @@
         from planocycle.work_all_pattern_restrict_relation relation where priority_all_cd=#{priorityAllCd} and shelf_pattern_cd=#{patternCd}
         order by tai_cd, tana_cd,tana_position
     </select>
+    <select id="selectRestrictResult" resultType="java.util.Map">
+        select * from  planocycle.work_all_pattern_restrict_result where author_cd = #{authorCd} and priority_all_cd = #{priorityAllCd}
+        and shelf_pattern_cd = #{patternCd}
+    </select>
 </mapper>

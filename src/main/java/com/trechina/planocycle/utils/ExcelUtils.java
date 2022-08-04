@@ -124,16 +124,16 @@ public class ExcelUtils {
                 for (String column : allData.get(i)) {
                         Object value = column;
                         janCell= janRow.createCell(columnIndex);
-                        if(value instanceof BigDecimal){
-                            janCell.setCellType(CellType.NUMERIC);
-                            janCell.setCellValue(((BigDecimal) value).intValue());
-                        }else if(value instanceof Integer){
-                            janCell.setCellType(CellType.NUMERIC);
-                            janCell.setCellValue((Integer)value);
-                        }else{
+                        //if(value instanceof BigDecimal){
+                        //    janCell.setCellType(CellType.NUMERIC);
+                        //    janCell.setCellValue(((BigDecimal) value).intValue());
+                        //}else if(value instanceof Integer){
+                        //    janCell.setCellType(CellType.NUMERIC);
+                        //    janCell.setCellValue((Integer)value);
+                        //}else{
                             janCell.setCellType(CellType.STRING);
                             janCell.setCellValue(Objects.nonNull(value)?String.valueOf(value):"");
-                        }
+                        //}
                         columnIndex++;
                     }
             }
