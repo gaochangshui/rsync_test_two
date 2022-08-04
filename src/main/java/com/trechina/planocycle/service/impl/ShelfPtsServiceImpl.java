@@ -725,7 +725,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             for (Map<String, Object> map : attrList) {
                 s=s+","+"zokusei"+map.get("value");
             }
-            s = s + ",width,height,depth";
+            s = s + ",plano_width,plano_height,plano_depth";
             ptsDetailData.setJanColumns(s);
             ptsDetailData.setTanaHeader(ptsDetailData.getTanaHeader()+","+"備考");
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getNewTaiNum(priorityOrderCd));
