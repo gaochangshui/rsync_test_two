@@ -77,6 +77,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     private ZokuseiMapper zokuseiMapper;
     @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
+    @Autowired
+    private PriorityAllMstMapper priorityAllMstMapper;
 
 
     /**
@@ -342,6 +344,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             shelfPtsDataMapper.insertPtsTaimst(ptsCd, newId, authorCd);
             shelfPtsDataMapper.insertPtsTanamst(ptsCd, newId, authorCd);
             shelfPtsDataMapper.insertPtsVersion(ptsCd, newId, authorCd);
+        }else {
+             priorityOrderCd = priorityAllMstMapper.getWorkPriorityOrderCd(authorCd, 0);
         }
 
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);

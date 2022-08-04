@@ -341,20 +341,28 @@ public class MstJanServiceImpl implements MstJanService {
                 commonPartsDto.get(MagicString.PROD_MST_CLASS));
 
         LinkedHashMap <String,Object> setInfoMap = new LinkedHashMap<>();
+        LinkedHashMap <String,Object> getKaisouNameMap = new LinkedHashMap<>();
         String jan = map.get(MagicString.JAN).toString();
         List<String> list = new ArrayList();
         for (String s : map.keySet()) {
-            if (s.contains("zokusei") && map.get(s) != null && !map.get(s).equals("")){
+            if (s.contains("zokusei")){
                 Integer zokuseiId = Integer.parseInt(s.replace("zokusei", ""))-1;
-                list.add(s.replace("zokusei", ""));
                 setInfoMap.put(zokuseiId+"",map.get(s));
+                if (map.get(s) != null && !map.get(s).equals("")){
+                    list.add(s.replace("zokusei", ""));
+                    getKaisouNameMap.put(zokuseiId+"",map.get(s));
+                }else {
+                    setInfoMap.put(zokuseiId+"","9999");
+                    setInfoMap.put(zokuseiId+1+"","未登録");
+                }
 
             }
         }
         Map<String, Object> kaiSouName =new HashMap<>();
-        if (!setInfoMap.isEmpty()) {
-             kaiSouName = mstJanMapper.getKaiSouName(setInfoMap, janInfoTableName, list);
+        if (!getKaisouNameMap.isEmpty()) {
+             kaiSouName = mstJanMapper.getKaiSouName(getKaisouNameMap, janInfoTableName, list);
         }
+
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
         List<LinkedHashMap<String,Object>> janAttrList = mstJanMapper.getJanAttrList(tableNameAttr);
