@@ -292,7 +292,10 @@ public class CommonMstServiceImpl implements CommonMstService {
             for (Map<String, Object> relation : relationList) {
                 String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
                 List<PriorityOrderResultDataDto> jans = janResultByRestrictCd.get(Long.valueOf(restrictCd));
-                Map<String, Object> resultMap = this.doSetJan(cutList, newList, partitionVal, topPartitionVal, tanaWidthCheck, minFace, adoptJan, jans, relation, tanaWidth, tanaHeight, taiCd, tanaCd);
+                Map<String, Object> resultMap = null;
+                if(jans!=null){
+                    resultMap = this.doSetJan(cutList, newList, partitionVal, topPartitionVal, tanaWidthCheck, minFace, adoptJan, jans, relation, tanaWidth, tanaHeight, taiCd, tanaCd);
+                }
                 if(resultMap!=null){
                     return resultMap;
                 }
