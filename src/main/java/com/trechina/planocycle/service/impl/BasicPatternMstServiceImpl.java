@@ -237,7 +237,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    private Map<String, BasicPatternRestrictResult> getJanInfoClassify(List<Map<String, Object>> classifyList,
+    public Map<String, BasicPatternRestrictResult> getJanInfoClassify(List<Map<String, Object>> classifyList,
             String companyCd, String zokuseiIds, String authorCd, Long priorityOrderCd){
         Map<String, BasicPatternRestrictResult> classify = new HashMap<>();
 

@@ -19,7 +19,7 @@ public interface WorkPriorityAllRestrictRelationMapper {
 
     void deleteFinalTableRelation(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
 
-    int setBasicPatternRelation(String companyCd, Integer priorityOrderCd, Integer shelfPatternCd,Integer priorityAllCd,String authorCd);
+    int setBasicPatternRelation(@Param("lists") List<Map<String,Object>>map,@Param("patternCd")Integer patternCd);
 
  int  deleteBasicPatternRelation(String companyCd, Integer priorityAllCd, String authorCd,Integer patternCd);
     List<Map<String, Object>> selectRelation(Integer priorityAllCd, Integer patternCd);

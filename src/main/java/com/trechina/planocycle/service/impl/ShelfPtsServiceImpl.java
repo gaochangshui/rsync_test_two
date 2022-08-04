@@ -306,9 +306,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      * @return
      */
     @Override
-    public Map<String, Object> getPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd) {
+    public Map<String, Object> getPtsDetailData(Integer patternCd,String companyCd,Integer priorityOrderCd,Integer flag) {
         String authorCd = httpSession.getAttribute("aud").toString();
-        if (priorityOrderCd != null) {
+        if (flag == null) {
             //ptsCdの取得
             Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
             if (id != null) {
@@ -344,8 +344,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             shelfPtsDataMapper.insertPtsTaimst(ptsCd, newId, authorCd);
             shelfPtsDataMapper.insertPtsTanamst(ptsCd, newId, authorCd);
             shelfPtsDataMapper.insertPtsVersion(ptsCd, newId, authorCd);
-        }else {
-             priorityOrderCd = priorityAllMstMapper.getWorkPriorityOrderCd(authorCd, 0);
         }
 
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
