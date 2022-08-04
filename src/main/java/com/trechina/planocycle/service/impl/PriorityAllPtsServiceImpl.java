@@ -112,7 +112,10 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
 
         if(ptsDetailData != null){
             Integer id = ptsDetailData.getId();
-
+            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu" ;
+            if ("V3.0".equals(ptsDetailData.getVersioninfo())){
+                s = s+",faceDisplayflg,facePosition,depthDisplayNum";
+            }
             List<PtsTaiVo> taiData = priorityAllPtsMapper.getTaiData(id);
             List<PtsTanaVo> tanaData = priorityAllPtsMapper.getTanaData(id);
             List<PtsJanDataVo> janData = priorityAllPtsMapper.getJanData(id);
