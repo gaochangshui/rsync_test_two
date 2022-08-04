@@ -365,7 +365,7 @@ public class CommonMstServiceImpl implements CommonMstService {
 
             if(!cutJan.isEmpty()){
                 //The new regulation takes precedence over cut
-                List<Map<String, Object>> newJanList = newList.stream().filter(map -> MapUtils.getString(map, MagicString.RESTRICT_CD).equals(restrictCd)
+                List<Map<String, Object>> newJanList = newList.stream().filter(map -> restrictCd.equals(MapUtils.getString(map, MagicString.RESTRICT_CD))
                     && !"1".equals(MapUtils.getString(map, "adoptFlag"))).collect(Collectors.toList());
                 if(newJanList.isEmpty()){
                     continue;
