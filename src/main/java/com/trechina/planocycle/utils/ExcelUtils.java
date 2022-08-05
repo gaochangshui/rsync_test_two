@@ -2,7 +2,6 @@ package com.trechina.planocycle.utils;
 
 
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -16,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -161,7 +159,9 @@ public class ExcelUtils {
                 for(int j=0;j<row.getPhysicalNumberOfCells();j++) {//16384
                     XSSFCell cell = row.getCell(j);
                     if(cell!=null) {
+                        cell.setCellType(CellType.STRING);
                         String cellValue = getStringVal(cell);
+
                         data[j]=cellValue;
                     }
                 }
@@ -177,27 +177,28 @@ public class ExcelUtils {
 
     public static String getStringVal(XSSFCell cell) {
         CellType cellType=cell.getCellType();
-        if(cellType==CellType.BOOLEAN) {
-            return cell.getBooleanCellValue() ? "TRUE" : "FALSE";
-        }else if(cellType==CellType.FORMULA) {
-            return cell.getCellFormula();
-        }else if(cellType==CellType.NUMERIC) {
-            if(DateUtil.isCellDateFormatted(cell)){
-                return DateFormat.getInstance().format(
-                        cell.getNumericCellValue());
-            }
-            else {
-                String value = String.valueOf(cell.getNumericCellValue());
-                if(value.contains("E")){
-                    cell.setCellType(CellType.STRING);
-                    return cell.getStringCellValue();
-                }
-                return value;
-            }
-        }else if(cellType==CellType.STRING) {
+        //if(cellType==CellType.BOOLEAN) {
+        //    return cell.getBooleanCellValue() ? "TRUE" : "FALSE";
+        //}else if(cellType==CellType.FORMULA) {
+        //    return cell.getCellFormula();
+        //}else if(cellType==CellType.NUMERIC) {
+        //    if(DateUtil.isCellDateFormatted(cell)){
+        //        return DateFormat.getInstance().format(
+        //                cell.getNumericCellValue());
+        //    }
+        //    else {
+        //        String value = String.valueOf(cell.getNumericCellValue());
+        //        if(value.contains("E")){
+        //            cell.setCellType(CellType.STRING);
+        //            return cell.getStringCellValue();
+        //        }
+        //        return value;
+        //    }
+        //}else
+        // if(cellType==CellType.STRING) {
             return cell.getStringCellValue();
-        }else {
-            return "";
-        }
+        //}else {
+        //    return "";
+        //}
     }
 }

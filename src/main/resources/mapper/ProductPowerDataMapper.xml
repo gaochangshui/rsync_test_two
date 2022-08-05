@@ -636,7 +636,8 @@
         ) as rank_result
                from
                (select s.jan,
-        <foreach collection="map" index="index" separator="," item="item">DENSE_RANK() over(order by ${index} ::decimal
+        <foreach collection="map" index="index" separator="," item="item">
+                       DENSE_RANK() over(order by split_part(coalesce (${index},'0'), '.', 1) ::integer
             desc nulls last ) as "${index}_rank"
         </foreach>
 

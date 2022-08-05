@@ -92,4 +92,11 @@ public interface MstJanMapper {
      * @return
      */
     int insertJanList(String tableName,String infoHeader, List<LinkedHashMap<String, Object>> janData);
+
+    String checkKaisou(String tableNameInfo, Map<String,Object>map,String colName);
+
+    Integer getKaiSouLength(String tableNameInfo);
+
+    List<JanHeaderAttr> getPlanoType(String tableName);
+
 }

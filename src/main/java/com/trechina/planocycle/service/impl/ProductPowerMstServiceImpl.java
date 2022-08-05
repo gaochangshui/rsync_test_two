@@ -13,6 +13,7 @@ import com.trechina.planocycle.entity.vo.ProductPowerMstVo;
 import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import com.trechina.planocycle.enums.ProductPowerHeaderEnum;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ProductPowerMstService;
 import com.trechina.planocycle.utils.ExcelUtils;
@@ -69,6 +70,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     public Map<String, Object> getTableName(String companyCd) {
 
         Map<String,Object> tableNameMap = null;
+        try {
+            tableNameMap = null;
             String aud = session.getAttribute("aud").toString();
             List<TableNameDto> commodityData = productPowerMstMapper.getTableNameByCompanyCd(companyCd,aud);
             List<TableNameDto> basicPtsData = priorityOrderMstMapper.getTableNameByCompanyCd(companyCd,aud);
@@ -79,6 +82,9 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             tableNameMap.put("basicPtsData",basicPtsData);
             tableNameMap.put("wholePtsData",wholePtsData);
             tableNameMap.put("priorityData",priorityData);
+        } catch (Exception e) {
+            throw new BusinessException(JSON.toJSONString(e));
+        }
 
         return ResultMaps.result(ResultEnum.SUCCESS,tableNameMap);
     }

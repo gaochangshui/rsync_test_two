@@ -141,7 +141,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
                 s = s+",faceDisplayflg,facePosition,depthDisplayNum,remarks";
             }else {
-                s = s+"remarks";
+                s = s+",remarks";
             }
             for (Map<String, Object> map : zokuseiCol) {
                 s=s+","+"zokusei"+map.get("zokusei_col");
