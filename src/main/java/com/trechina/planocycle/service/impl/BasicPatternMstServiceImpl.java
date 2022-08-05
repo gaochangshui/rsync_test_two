@@ -627,6 +627,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
         restrictResultDataMapper.deleteByPrimaryKey(priorityOrderCd);
         zokuseiList = zokuseiList.stream().filter(map->map.get(MagicString.RESTRICT_CD)!=null).collect(Collectors.toList());
-        restrictResultDataMapper.insertBatch(attrList, zokuseiList, priorityOrderCd, companyCd, authorCd);
+        if(!zokuseiList.isEmpty()){
+            restrictResultDataMapper.insertBatch(attrList, zokuseiList, priorityOrderCd, companyCd, authorCd);
+        }
     }
 }
