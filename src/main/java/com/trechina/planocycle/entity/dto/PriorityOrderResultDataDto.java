@@ -46,6 +46,9 @@ public class PriorityOrderResultDataDto {
     private Double salesCnt;
 
     private Long width;
+    private Long planoWidth;
     private Long height;
+    private Long planoHeight;
+    private String planoIrisu;
 
 }

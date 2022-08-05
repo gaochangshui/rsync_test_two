@@ -147,7 +147,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     }
 
                     Long faceSku = Optional.ofNullable(priorityOrderResultData.getFaceSku()).orElse(1L);
-                    Long janWidth = Optional.ofNullable(priorityOrderResultData.getWidth()).orElse(0L);
+                    Long janWidth = Optional.ofNullable(priorityOrderResultData.getPlanoWidth()).orElse(0L);
                     Long face = priorityOrderResultData.getFace();
 
                     //商品幅nullまたは0の場合はデフォルト幅67 mm、faceSku>1の必要にfaceSkuを乗じます
@@ -210,9 +210,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                                                   List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
                                                   GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
                                                   Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
+                                                  List<PriorityOrderResultDataDto> janResult, List<Map<String, Object>> sizeAndIrisu,
                                                   int isReOrder) {
-        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(commonTableName.getProAttrTable());
-        List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(aud, companyCd, patternCd, priorityOrderCd, sizeAndIrisu, isReOrder,commonTableName.getProInfoTable());
         List<Map<String, Object>> cutList = janCutMapper.selectJanCut(priorityOrderCd);
 
         Integer currentTaiCd=1;
@@ -361,7 +360,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             PriorityOrderResultDataDto newJanDto = new PriorityOrderResultDataDto();
             List<Map<String, Object>> cutJan = cutList.stream().filter(map -> MapUtils.getString(map, "jan").equals(jan.getJanCd())).collect(Collectors.toList());
 
-            Long width = Optional.ofNullable(jan.getWidth()).orElse(MagicString.DEFAULT_WIDTH);
+            Long width = Optional.ofNullable(jan.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH);
             Long face = jan.getFace();
             Long janWidth = width + partitionVal;
 
@@ -433,7 +432,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                         newJanDto.setTanaCd(Integer.parseInt(tanaCd));
                         adoptJan.add(newJanDto);
                         jan.setAdoptFlag(1);
-                        usedArea+=Optional.ofNullable(newJanDto.getWidth()).orElse(MagicString.DEFAULT_WIDTH)*newJanDto.getFaceFact()+partitionVal;
+                        usedArea+=Optional.ofNullable(newJanDto.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH)*newJanDto.getFaceFact()+partitionVal;
                     }
                 }
             }
@@ -463,7 +462,7 @@ public class CommonMstServiceImpl implements CommonMstService {
     private boolean isSetJanByCutFace(List<PriorityOrderResultDataDto> resultDataDtoList, double width, double usedWidth, long partitionVal,
                                       long minFace, PriorityOrderResultDataDto targetResultData){
         Long face = targetResultData.getFace();
-        Long janWidth = Optional.ofNullable(targetResultData.getWidth()).orElse(MagicString.DEFAULT_WIDTH);
+        Long janWidth = Optional.ofNullable(targetResultData.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH);
 
         //使用可能な幅が残ります(仕切りがある場合を考慮する必要があります)
         double remainderWidth = width - usedWidth;
@@ -485,7 +484,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             //カットで対象商品のface数を落とすことはできません
             //入数=1のもののみを処理し、1に等しくないものはcutを行わない
             List<PriorityOrderResultDataDto> resultDataDtoByIrisu = resultDataDtoList.stream()
-                    .filter(data-> 1 == Long.parseLong(Optional.ofNullable(data.getIrisu()).orElse("1"))).collect(Collectors.toList());
+                    .filter(data-> 1 == Long.parseLong(Optional.ofNullable(data.getPlanoIrisu()).orElse("1"))).collect(Collectors.toList());
 
             if(resultDataDtoByIrisu.isEmpty()){
                 //条件を満たさないとcutできない
@@ -493,7 +492,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             }
 
             //最小faceで放置すると、どのくらいの幅が必要か(仕切りがある場合を考慮する必要がある)+残りの無駄な幅
-            long needWidth = Optional.ofNullable(targetResultData.getWidth()).orElse(MagicString.DEFAULT_WIDTH) * minFace + partitionVal;
+            long needWidth = Optional.ofNullable(targetResultData.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH) * minFace + partitionVal;
             PriorityOrderResultDataDto currentResultData = null;
             for (int i = resultDataDtoByIrisu.size()-1; i >= 0 ; i--) {
                 currentResultData = resultDataDtoByIrisu.get(i);
@@ -502,7 +501,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 //最小face以下ではcutできません
                 //現在の商品は1つのface数を減らして、目標の商品を置くことができますか
                 //Cut 1つのfaceの幅に残りの幅を加えてターゲットの上に置くのに必要な幅を満たすことができるかどうか
-                if(faceFact > minFace && Optional.ofNullable(currentResultData.getWidth()).orElse(MagicString.DEFAULT_WIDTH) + remainderWidth >= needWidth){
+                if(faceFact > minFace && Optional.ofNullable(currentResultData.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH) + remainderWidth >= needWidth){
                     currentResultData.setFaceFact(faceFact -  1);
                     targetResultData.setFaceFact(minFace);
                     isSetByCut = true;
@@ -521,7 +520,7 @@ public class CommonMstServiceImpl implements CommonMstService {
      * @return
      */
     @Override
-    public List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData) {
+    public List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData, int isReOrder) {
         //ハウス位置のresultdataデータ
         List<WorkPriorityOrderResultDataDto> positionResultData = new ArrayList<>(workPriorityOrderResultData.size());
         //テーブルに基づいてグループを分けて巡回する
@@ -541,8 +540,13 @@ public class CommonMstServiceImpl implements CommonMstService {
                 //同じ棚で、番号が1から加算され、次の棚で再び1から加算されます。
                 Integer tantaPositionCd=0;
                 Integer tanaCd = entry.getKey();
+                List<WorkPriorityOrderResultDataDto> resultDataByTanaCdList = workPriorityOrderResultDataByTana.get(tanaCd);
 
-                for (WorkPriorityOrderResultDataDto currentDataDto : workPriorityOrderResultDataByTana.get(tanaCd)) {
+                if(isReOrder>0){
+                    resultDataByTanaCdList = resultDataByTanaCdList.stream().sorted(Comparator.comparing(WorkPriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
+                }
+
+                for (WorkPriorityOrderResultDataDto currentDataDto : resultDataByTanaCdList) {
                     currentDataDto.setTanaPositionCd(++tantaPositionCd);
                     currentDataDto.setFaceMen(1);
                     currentDataDto.setFaceKaiten(0);

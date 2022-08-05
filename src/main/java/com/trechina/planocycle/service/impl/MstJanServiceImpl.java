@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -407,6 +408,7 @@ public class MstJanServiceImpl implements MstJanService {
     @Override
     public Map<String, Object> uploadJanData(MultipartFile file, String fileName, String classCd,
                                              String commonPartsData, String companyCd) {
+        Pattern numberPattern = Pattern.compile("[0-9]+");
         int count;
         if (!fileName.startsWith("商品明細-") || !fileName.endsWith(".xlsx")) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_UPLOAD_CORRECT_FILE);
@@ -442,13 +444,56 @@ public class MstJanServiceImpl implements MstJanService {
         String infoHeader = "\"" + String.join("\",\"", columnHeader) + "\"";
         List<LinkedHashMap<String, Object>> janData = new ArrayList<>();
         LinkedHashMap<String, Object> jan;
+        List<LinkedHashMap<String, Object>> janKaisouList = mstJanMapper.getJanKaisouList(tableNameKaisou);
+        Integer kaiSouLength = mstJanMapper.getKaiSouLength(tableNameInfo);
+        List<JanHeaderAttr> planoType = mstJanMapper.getPlanoType(tableNameAttr);
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:sss");
         try {
             for (int i = 1; i < excelData.size(); i++) {
                 String[] row = excelData.get(i);
                 jan = new LinkedHashMap<>();
+                Map<String,Object> map = new HashMap<>();
+
                 for (int j = 0; j < row.length; j++) {
-                    jan.put(headerNameIndex.get(header[j]), row[j]);
+                    for (JanHeaderAttr janHeaderAttr : planoType) {
+                        if (janHeaderAttr.getSort().equals(headerNameIndex.get(header[j]))&& !numberPattern.matcher(row[j]).matches()) {
+                            row[j] = "0";
+                        }
+                    }
+
+                    for (int k = 0; k < janKaisouList.size(); k++) {
+
+                        if (String.valueOf(Integer.parseInt(janKaisouList.get(k).get("3").toString())-1).equals(headerNameIndex.get(header[j]))){
+
+                            int diff = kaiSouLength - row[j].length();
+                            StringBuilder branchStr = new StringBuilder();
+                            for (int l = 0; l < diff; l++) {
+                                branchStr.append("0");
+                            }
+                            row[j] = branchStr + row[j];
+                            map.put(headerNameIndex.get(header[j]),row[j]);
+                            String s = mstJanMapper.checkKaisou(tableNameInfo, map, janKaisouList.get(k).get("3").toString());
+                            if (s != null){
+                                jan.put(headerNameIndex.get(header[j]), row[j]);
+                                jan.put(String.valueOf(Integer.parseInt(headerNameIndex.get(header[j]))+1), s);
+
+                            }else {
+                                jan.put(headerNameIndex.get(header[j]), "9999");
+                                jan.put(String.valueOf(Integer.parseInt(headerNameIndex.get(header[j]))+1), "未登録");
+
+                            }
+                            break;
+                        }else {
+                            if (!"未登録".equals(jan.get(headerNameIndex.get(header[j])))){
+                                jan.put(headerNameIndex.get(header[j]), row[j]);
+                            }
+                        }
+                    }
                 }
+
+                jan.put("102",simpleDateFormat.format(date));
+                jan.put("103",session.getAttribute("aud").toString());
                 janData.add(jan);
             }
             count = mstJanMapper.insertJanList(tableNameInfo, infoHeader, janData);

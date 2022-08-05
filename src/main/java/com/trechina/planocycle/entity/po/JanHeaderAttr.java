@@ -8,5 +8,6 @@ public class JanHeaderAttr {
     private String attrVal;
     private String sort;
     private String colSort;
+    private String type;
 
 }

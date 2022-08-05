@@ -106,9 +106,9 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
 
     @Override
     public void saveWorkPtsJanData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd,
-                                   List<WorkPriorityOrderResultDataDto> priorityOrderResultData) {
+                                   List<WorkPriorityOrderResultDataDto> priorityOrderResultData, int isReOrder) {
         //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
-        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(priorityOrderResultData);
+        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(priorityOrderResultData, isReOrder);
         ShelfPtsData shelfPtsData = priorityAllPtsMapper.selectWorkPtsCdByAuthorCd(companyCd, authorCd, priorityAllCd, patternCd);
 
         //テンポラリ・テーブルのptscd
@@ -141,7 +141,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
                 s = s+",faceDisplayflg,facePosition,depthDisplayNum,remarks";
             }else {
-                s = s+"remarks";
+                s = s+",remarks";
             }
             for (Map<String, Object> map : zokuseiCol) {
                 s=s+","+"zokusei"+map.get("zokusei_col");

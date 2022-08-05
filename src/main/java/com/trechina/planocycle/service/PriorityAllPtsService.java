@@ -13,7 +13,7 @@ public interface PriorityAllPtsService {
     void saveWorkPtsData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd);
 
     void saveWorkPtsJanData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd,
-                            List<WorkPriorityOrderResultDataDto> priorityOrderResultData);
+                            List<WorkPriorityOrderResultDataDto> priorityOrderResultData, int isReOrder);
 
     Map<String, Object> getPtsDetailData(Integer patternCd, String companyCd, Integer priorityAllCd);
 
