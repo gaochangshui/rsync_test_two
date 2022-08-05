@@ -302,7 +302,7 @@
     where shelf_pattern_cd=#{patternCd}) jandata
     left join
     (select *,ROW_NUMBER() over(PARTITION by jan) row_num from planocycle.work_basic_pattern_restrict_result_data where priority_order_cd = #{priorityOrderCd}
-    AND company_cd = #{companyCd} AND author_cd = #{authorCd}) resultdata on resultdata.jan=jandata.jan and resultdata.row_num=jandata.row_num
+    AND company_cd = #{companyCd} AND author_cd = #{authorCd}) resultdata on resultdata.jan=jandata.jan and resultdata.face=jandata.face_count
     left join planocycle.work_priority_order_jan_replace janreplace on janreplace.jan_old=resultdata.jan
     and janreplace.company_cd=resultdata.company_cd and resultdata.author_cd=janreplace.author_cd
     and resultdata.priority_order_cd=janreplace.priority_order_cd

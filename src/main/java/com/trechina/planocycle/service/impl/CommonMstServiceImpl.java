@@ -361,7 +361,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             PriorityOrderResultDataDto newJanDto = new PriorityOrderResultDataDto();
             List<Map<String, Object>> cutJan = cutList.stream().filter(map -> MapUtils.getString(map, "jan").equals(jan.getJanCd())).collect(Collectors.toList());
 
-            Long width = Optional.ofNullable(jan.getWidth()).orElse(MagicString.DEFAULT_WIDTH);
+            Long width = Optional.ofNullable(jan.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH);
             Long face = jan.getFace();
             Long janWidth = width + partitionVal;
 
@@ -485,7 +485,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             //カットで対象商品のface数を落とすことはできません
             //入数=1のもののみを処理し、1に等しくないものはcutを行わない
             List<PriorityOrderResultDataDto> resultDataDtoByIrisu = resultDataDtoList.stream()
-                    .filter(data-> 1 == Long.parseLong(Optional.ofNullable(data.getIrisu()).orElse("1"))).collect(Collectors.toList());
+                    .filter(data-> 1 == Long.parseLong(Optional.ofNullable(data.getPlanoIrisu()).orElse("1"))).collect(Collectors.toList());
 
             if(resultDataDtoByIrisu.isEmpty()){
                 //条件を満たさないとcutできない
