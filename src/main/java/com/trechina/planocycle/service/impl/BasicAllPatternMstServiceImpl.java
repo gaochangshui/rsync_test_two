@@ -125,9 +125,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, basicPatternCd,authorCd);
                 // 全パターンのList
                 List<PriorityAllPatternListVO> checkedInfo = info.stream().filter(vo->vo.getCheckFlag()==1).collect(Collectors.toList());
+                int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
                 for(PriorityAllPatternListVO pattern : checkedInfo) {
-
-
                     autoDetect(companyCd,priorityAllCd,pattern.getShelfPatternCd(),priorityOrderCd,authorCd);
 
                     makeWKResultDataList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
@@ -152,7 +151,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                         Object tmpData = MapUtils.getObject(setJanResultMap, "data");
                         List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
                         }.getType());
-                        priorityAllPtsService.saveWorkPtsJanData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData);
+                        priorityAllPtsService.saveWorkPtsJanData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData, isReOrder);
                         vehicleNumCache.put(uuid,1);
                     }
                 }

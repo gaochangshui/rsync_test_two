@@ -41,8 +41,8 @@ public interface ShelfPtsService {
      * @param authorCd
      * @param priorityOrderCd
      */
-    void saveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd);
 
+    void saveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, int isReOrder);
 
     void basicSaveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, List<WorkPriorityOrderResultDataDto> resultData,
                               int isReOrder);

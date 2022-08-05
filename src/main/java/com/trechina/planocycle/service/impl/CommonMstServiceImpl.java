@@ -521,7 +521,7 @@ public class CommonMstServiceImpl implements CommonMstService {
      * @return
      */
     @Override
-    public List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData) {
+    public List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData, int isReOrder) {
         //ハウス位置のresultdataデータ
         List<WorkPriorityOrderResultDataDto> positionResultData = new ArrayList<>(workPriorityOrderResultData.size());
         //テーブルに基づいてグループを分けて巡回する
@@ -541,8 +541,13 @@ public class CommonMstServiceImpl implements CommonMstService {
                 //同じ棚で、番号が1から加算され、次の棚で再び1から加算されます。
                 Integer tantaPositionCd=0;
                 Integer tanaCd = entry.getKey();
+                List<WorkPriorityOrderResultDataDto> resultDataByTanaCdList = workPriorityOrderResultDataByTana.get(tanaCd);
 
-                for (WorkPriorityOrderResultDataDto currentDataDto : workPriorityOrderResultDataByTana.get(tanaCd)) {
+                if(isReOrder>0){
+                    resultDataByTanaCdList = resultDataByTanaCdList.stream().sorted(Comparator.comparing(WorkPriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
+                }
+
+                for (WorkPriorityOrderResultDataDto currentDataDto : resultDataByTanaCdList) {
                     currentDataDto.setTanaPositionCd(++tantaPositionCd);
                     currentDataDto.setFaceMen(1);
                     currentDataDto.setFaceKaiten(0);

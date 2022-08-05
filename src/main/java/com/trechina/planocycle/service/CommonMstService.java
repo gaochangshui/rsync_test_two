@@ -32,7 +32,7 @@ public interface CommonMstService {
                                            Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
                                            int isReOrder);
 
-    List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData);
+    List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData, int isReOrder);
 
     CommonPartsDto getCommonPartsData(Integer productPowerCd, String companyCd);
 

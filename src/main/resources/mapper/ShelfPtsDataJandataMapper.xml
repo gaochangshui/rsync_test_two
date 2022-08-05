@@ -308,8 +308,7 @@
     and resultdata.priority_order_cd=janreplace.priority_order_cd
      where restrict_cd is not null
     ) tmp left join ${tableName} janmst on janmst."1"=tmp.jan
-    where rowNum=1
     <if test="isReOrder>0">order by sku_rank</if>
-    <if test="isReOrder&lt;1">order by tai_cd, tana_cd, tanaposition_cd,rowNum</if>
+    <if test="isReOrder&lt;1">order by tai_cd, tana_cd, tanaposition_cd</if>
   </select>
 </mapper>
