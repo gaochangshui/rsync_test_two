@@ -30,6 +30,7 @@ public interface CommonMstService {
                                            List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
                                            GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
                                            Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
+                                           List<PriorityOrderResultDataDto> janResult, List<Map<String, Object>> sizeAndIrisu,
                                            int isReOrder);
 
     List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData, int isReOrder);
