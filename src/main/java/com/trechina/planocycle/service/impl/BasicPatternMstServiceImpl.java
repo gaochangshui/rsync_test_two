@@ -8,10 +8,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.FaceNumDataDto;
-import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
-import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
-import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -55,6 +52,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     private JanInfoMapper janInfoMapper;
     @Autowired
     private HttpSession session;
+    @Autowired
+    private ShelfPtsDataJandataMapper jandataMapper;
     @Autowired
     private ShelfPtsDataTanamstMapper shelfPtsDataTanamst;
     @Autowired
@@ -485,10 +484,12 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
                 int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
 
+                List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(commonTableName.getProAttrTable());
+                List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(authorCd, companyCd, patternCd, priorityOrderCd, sizeAndIrisu, isReOrder, commonTableName.getProInfoTable());
                 Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd,
                         minFaceNum, zokuseiMsts, allCdList,
                         restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck,
-                        tanaList, relationMap, isReOrder);
+                        tanaList, relationMap, janResult, sizeAndIrisu, isReOrder);
 
                 if (resultMap!=null && MapUtils.getInteger(resultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
                     vehicleNumCache.put("setJanHeightError"+uuid,resultMap.get("data"));

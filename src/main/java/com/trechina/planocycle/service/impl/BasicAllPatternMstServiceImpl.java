@@ -43,6 +43,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     @Autowired
     private PriorityAllMstMapper priorityAllMstMapper;
     @Autowired
+    private ShelfPtsDataJandataMapper jandataMapper;
+    @Autowired
     private ShelfPtsDataMapper shelfPtsDataMapper;
     @Autowired
     private PriorityOrderRestrictResultMapper priorityOrderRestrictResultMapper;
@@ -125,9 +127,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, basicPatternCd,authorCd);
                 // 全パターンのList
                 List<PriorityAllPatternListVO> checkedInfo = info.stream().filter(vo->vo.getCheckFlag()==1).collect(Collectors.toList());
+                int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
                 for(PriorityAllPatternListVO pattern : checkedInfo) {
-
-
                     autoDetect(companyCd,priorityAllCd,pattern.getShelfPatternCd(),priorityOrderCd,authorCd);
 
                     makeWKResultDataList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
@@ -152,7 +153,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                         Object tmpData = MapUtils.getObject(setJanResultMap, "data");
                         List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
                         }.getType());
-                        priorityAllPtsService.saveWorkPtsJanData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData);
+                        priorityAllPtsService.saveWorkPtsJanData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData, isReOrder);
                         vehicleNumCache.put(uuid,1);
                     }
                 }
@@ -194,9 +195,13 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         List<Map<String, Object>> restrictResult = restrictRelationMapper.selectRelation(priorityAllCd, patternCd);
         int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
         List<Integer> attrList = priorityOrderMstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
+        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(commonTableName.getProAttrTable());
+        List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCdByAll(authorCd, companyCd, patternCd,
+                priorityAllCd,priorityOrderCd, sizeAndIrisu, isReOrder, commonTableName.getProInfoTable());
+
         return commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd, minFaceNum, zokuseiMsts, allCdList,
                 restrictResult, attrList, authorCd, commonTableName,
-                partitionVal, topPartitionVal, tanaWidCheck, tanaList, relationMap, isReOrder);
+                partitionVal, topPartitionVal, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -268,12 +273,10 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         result.setPriorityOrderCd((long)priorityOrderCd);
         basicPatternRestrictResults.add(result);
         workPriorityAllRestrictMapper.setBasicPatternResult(basicPatternRestrictResults,shelfPatternCd);
-        //restrictResultMapper.insertBatch(basicPatternRestrictResults);
 
         ArrayList<String> zokuseiList = Lists.newArrayList(zokuseiIds.split(","));
 
         workPriorityAllRestrictRelationMapper.deleteBasicPatternRelation(companyCd,priorityAllCd,aud,shelfPatternCd);
-        //restrictRelationMapper.deleteByPrimaryKey(priorityOrderCd, companyCd);
         for (ShelfPtsDataTanamst tanamst : tanamsts) {
             final int[] index = {1};
             Integer taiCd = tanamst.getTaiCd();
@@ -583,7 +586,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         List<Map<String, Object>> restrictResult = priorityAllRestrictMapper.selectRestrictResult(priorityAllCd, patternCd, authorCd);
 
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
-        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectAllPatternResultData(priorityOrderCd, ptsCd, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol);
+        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectAllPatternResultData(ptsCd, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol);
         for (int i = 0; i < zokuseiList.size(); i++) {
             Map<String, Object> zokusei = zokuseiList.get(i);
             for (Map<String, Object> restrict : restrictResult) {
@@ -599,12 +602,13 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
                 if(equalsCount == attrList.size()){
                     int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
-                    zokusei.put("restrictCd", restrictCd);
+                    zokusei.put(MagicString.RESTRICT_CD, restrictCd);
                 }
             }
 
             zokuseiList.set(i, zokusei);
         }
+        zokuseiList = zokuseiList.stream().filter(map->MapUtils.getInteger(map, MagicString.RESTRICT_CD)!=null).collect(Collectors.toList());
         return zokuseiList;
     }
 }

@@ -44,16 +44,16 @@
     and priority_order_cd = #{priorityOrderCd}
   </select>
   <select id="getReorder" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
-    select  resultdata.jan as janCd,avgattr1,row_number() over(order by avgattr1
+    select  resultdata.jan as janCd,avgattr1,row_number() over(order by attrmst."${sortName1}", avgattr1
     <if test="sortName2 != null">
-      ,avgattr2
+      ,attrmst."${sortName2}",avgattr2
     </if>
     ,rank_result,resultdata.jan) as resultRank
     from  planocycle.work_basic_pattern_restrict_result_data resultdata
         left join planocycle.product_power_mst_data promst
                   on promst.jan = resultdata.jan and promst.product_power_cd = #{productPowerCd}
         left join "${commonTableName.prodIsCore}".prod_${commonTableName.prodMstClass}_jan_info attrmst
-                  on attrmst."1" = promst.jan
+                  on attrmst."1" = resultdata.jan
         left join (
                     select attrmst."${sortName1}",avg(promst.rank_result) as avgattr1
                     from planocycle.product_power_mst_data promst

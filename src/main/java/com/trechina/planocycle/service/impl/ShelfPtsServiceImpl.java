@@ -526,13 +526,13 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      * @param priorityOrderCd
      */
     @Override
-    public void saveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd) {
+    public void saveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, int isReOrder) {
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
 
         //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
         List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(workPriorityOrderResultData);
+        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(workPriorityOrderResultData, isReOrder);
 
         //既存の新しいptsを検出し,削除してから保存する
         //新しいptsにデータがあるptsCd
@@ -596,7 +596,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         }
 
         //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
-        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(resultData);
+        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(resultData, isReOrder);
 
         //既存の新しいptsを検出し,削除してから保存する
         //新しいptsにデータがあるptsCd

@@ -485,7 +485,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 priorityAllMstMapper.deleteFinalTablePtsVersion(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.deleteFinalTableRestrictResult(companyCd,priorityAllCd,aud);
                 priorityAllMstMapper.deleteFinalTableRestrictRelation(companyCd,priorityAllCd,aud);
-//                priorityAllMstMapper.deleteFinalTableRestrictResultData(companyCd,priorityAllCd,aud);
+                priorityAllMstMapper.deleteFinalTableRestrictResultData(companyCd,priorityAllCd,aud);
 
                 priorityAllMstMapper.setFinalTableMst(companyCd,priorityAllCd,aud,priorityAllName);
                 priorityAllMstMapper.setFinalTableShelfs(companyCd,priorityAllCd,aud);
@@ -619,7 +619,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         List<Map<String, Object>> restrictResult = restrictResultMapper.selectByPrimaryKey(priorityOrderCd);
         Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
-        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectAllPatternResultData(priorityOrderCd, ptsCd, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol);
+        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectAllPatternResultData(ptsCd, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol);
         for (int i = 0; i < zokuseiList.size(); i++) {
             Map<String, Object> zokusei = zokuseiList.get(i);
             for (Map<String, Object> restrict : restrictResult) {
