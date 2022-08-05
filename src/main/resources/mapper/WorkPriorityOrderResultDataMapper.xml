@@ -46,7 +46,7 @@
   <select id="getReorder" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
     select  resultdata.jan as janCd,avgattr1,row_number() over(order by attrmst."${sortName1}", avgattr1
     <if test="sortName2 != null">
-      attrmst."${sortName2}",avgattr2
+      ,attrmst."${sortName2}",avgattr2
     </if>
     ,rank_result,resultdata.jan) as resultRank
     from  planocycle.work_basic_pattern_restrict_result_data resultdata
