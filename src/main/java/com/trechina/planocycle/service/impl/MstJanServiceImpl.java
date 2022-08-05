@@ -448,8 +448,8 @@ public class MstJanServiceImpl implements MstJanService {
         Integer kaiSouLength = mstJanMapper.getKaiSouLength(tableNameInfo);
         List<JanHeaderAttr> planoType = mstJanMapper.getPlanoType(tableNameAttr);
         Date date = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-        //try {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:sss");
+        try {
             for (int i = 1; i < excelData.size(); i++) {
                 String[] row = excelData.get(i);
                 jan = new LinkedHashMap<>();
@@ -497,9 +497,9 @@ public class MstJanServiceImpl implements MstJanService {
                 janData.add(jan);
             }
             count = mstJanMapper.insertJanList(tableNameInfo, infoHeader, janData);
-        //} catch (Exception e) {
-        //    return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_ABNORMALITY_DATA);
-        //}
+        } catch (Exception e) {
+            return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_ABNORMALITY_DATA);
+        }
         return ResultMaps.result(ResultEnum.SUCCESS.getCode(), count + MagicString.MSG_UPLOAD_SUCCESS);
     }
 }

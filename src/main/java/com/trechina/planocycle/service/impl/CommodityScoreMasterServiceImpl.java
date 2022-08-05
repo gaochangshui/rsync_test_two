@@ -298,7 +298,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
         List<LinkedHashMap<String, Object>> allDataAttr = productPowerDataMapper.getAllDataAttr(companyCd, productPowerNo
                 , cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName,shelfPts,storeCd);
-        colMap.put("branchNum","定番店铺数");
+        colMap.put("branchNum","定番店舗数");
         returnDataAttr.add(colMap);
         returnDataAttr.addAll(allDataAttr);
         List<LinkedHashMap<String, Object>> returnDataItem = new ArrayList<>();

@@ -114,7 +114,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             }
         }
         Map<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1,k2)->k1, LinkedHashMap::new));
-        colMap.put("branchNum","定番店铺数");
+        colMap.put("branchNum","定番店舗数");
         Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
         ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
