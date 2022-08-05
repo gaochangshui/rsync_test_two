@@ -147,7 +147,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     }
 
                     Long faceSku = Optional.ofNullable(priorityOrderResultData.getFaceSku()).orElse(1L);
-                    Long janWidth = Optional.ofNullable(priorityOrderResultData.getWidth()).orElse(0L);
+                    Long janWidth = Optional.ofNullable(priorityOrderResultData.getPlanoWidth()).orElse(0L);
                     Long face = priorityOrderResultData.getFace();
 
                     //商品幅nullまたは0の場合はデフォルト幅67 mm、faceSku>1の必要にfaceSkuを乗じます
@@ -433,7 +433,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                         newJanDto.setTanaCd(Integer.parseInt(tanaCd));
                         adoptJan.add(newJanDto);
                         jan.setAdoptFlag(1);
-                        usedArea+=Optional.ofNullable(newJanDto.getWidth()).orElse(MagicString.DEFAULT_WIDTH)*newJanDto.getFaceFact()+partitionVal;
+                        usedArea+=Optional.ofNullable(newJanDto.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH)*newJanDto.getFaceFact()+partitionVal;
                     }
                 }
             }
@@ -463,7 +463,7 @@ public class CommonMstServiceImpl implements CommonMstService {
     private boolean isSetJanByCutFace(List<PriorityOrderResultDataDto> resultDataDtoList, double width, double usedWidth, long partitionVal,
                                       long minFace, PriorityOrderResultDataDto targetResultData){
         Long face = targetResultData.getFace();
-        Long janWidth = Optional.ofNullable(targetResultData.getWidth()).orElse(MagicString.DEFAULT_WIDTH);
+        Long janWidth = Optional.ofNullable(targetResultData.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH);
 
         //使用可能な幅が残ります(仕切りがある場合を考慮する必要があります)
         double remainderWidth = width - usedWidth;
@@ -493,7 +493,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             }
 
             //最小faceで放置すると、どのくらいの幅が必要か(仕切りがある場合を考慮する必要がある)+残りの無駄な幅
-            long needWidth = Optional.ofNullable(targetResultData.getWidth()).orElse(MagicString.DEFAULT_WIDTH) * minFace + partitionVal;
+            long needWidth = Optional.ofNullable(targetResultData.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH) * minFace + partitionVal;
             PriorityOrderResultDataDto currentResultData = null;
             for (int i = resultDataDtoByIrisu.size()-1; i >= 0 ; i--) {
                 currentResultData = resultDataDtoByIrisu.get(i);
@@ -502,7 +502,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 //最小face以下ではcutできません
                 //現在の商品は1つのface数を減らして、目標の商品を置くことができますか
                 //Cut 1つのfaceの幅に残りの幅を加えてターゲットの上に置くのに必要な幅を満たすことができるかどうか
-                if(faceFact > minFace && Optional.ofNullable(currentResultData.getWidth()).orElse(MagicString.DEFAULT_WIDTH) + remainderWidth >= needWidth){
+                if(faceFact > minFace && Optional.ofNullable(currentResultData.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH) + remainderWidth >= needWidth){
                     currentResultData.setFaceFact(faceFact -  1);
                     targetResultData.setFaceFact(minFace);
                     isSetByCut = true;
