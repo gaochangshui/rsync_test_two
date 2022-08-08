@@ -18,6 +18,9 @@ public interface PriorityOrderMstAttrSortMapper {
 
     List<PriorityOrderMstAttrSort> selectByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
+    List<Map<String,Object>> selectZokuseiCol(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
+
 
     //属性リストの取得
     List<PriorityOrderAttrListVo> getAttribute(String companyCd, String classCd);
@@ -57,4 +60,6 @@ public interface PriorityOrderMstAttrSortMapper {
     void setWorkForFinal(String companyCd, Integer priorityOrderCd);
 
     List<Map<String,Object>> getAttrCol(String companyCd, Integer priorityOrderCd,String company,String classCd);
+    List<Map<String,Object>> getAttrColForName(String companyCd, Integer priorityOrderCd,String company,String classCd);
+
 }
