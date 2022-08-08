@@ -3,6 +3,7 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanNew;
 import com.trechina.planocycle.entity.po.Jans;
@@ -45,6 +46,8 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
     private ClassicPriorityOrderMstAttrSortMapper classicPriorityOrderMstAttrSortMapper;
     @Autowired
     private WorkPriorityOrderPtsClassifyMapper workPriorityOrderPtsClassifyMapper;
+    @Autowired
+    private LogAspect logAspect;
 
     /**
      * 新規商品リストの取得
@@ -110,6 +113,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
             return ResultMaps.result(ResultEnum.SUCCESS, jsonArray);
         } catch (Exception e) {
             logger.info("新規janListの取得に失敗しました：",e);
+            logAspect.setTryErrorLog(e,new Object[]{companyCd,priorityOrderCd});
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -123,7 +127,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderJanNew(JSONArray jsonArray) {
-        //try {
+        
         logger.info("新しい商品リストパラメータを保存する:{}" ,jsonArray);
         List<ClassicPriorityOrderJanNew> janNewList = new ArrayList<>();
         List<PriorityOrderJanAttribute> janAttributeList = new ArrayList<>();

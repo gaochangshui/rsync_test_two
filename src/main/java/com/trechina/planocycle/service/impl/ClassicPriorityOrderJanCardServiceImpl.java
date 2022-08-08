@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.google.api.client.util.Strings;
 import com.google.common.base.Joiner;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
@@ -50,6 +51,8 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
     private JanClassifyMapper janClassifyMapper;
     @Autowired
     private SysConfigMapper sysConfigMapper;
+    @Autowired
+    private LogAspect logAspect;
     /**
      * card商品リストの取得
      *
@@ -77,7 +80,7 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
                 }
             }
         }
-        logger.info("card商品list戻り値の取得："+priorityOrderJanCardVOS);
+        logger.info("card商品list戻り値の取得：{}",priorityOrderJanCardVOS);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanCardVOS);
     }
 
@@ -90,7 +93,7 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderJanCard(List<ClassicPriorityOrderJanCard> priorityOrderJanCard) {
-        logger.info("保存card商品list的参数："+priorityOrderJanCard);
+        logger.info("保存card商品list的参数：{}",priorityOrderJanCard);
         try {
             dataConverUtils dataConverUtil = new dataConverUtils();
             String companyCd = priorityOrderJanCard.get(0).getCompanyCd();
@@ -99,7 +102,7 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
             List<ClassicPriorityOrderJanCard> cards = dataConverUtil.priorityOrderCommonMstInsertMethod(ClassicPriorityOrderJanCard.class,
                     priorityOrderJanCard,companyCd,priorityOrderCd);
             cards = cards.stream().filter(map -> map.getJanOld() != null && !"".equals(map.getJanOld())).collect(Collectors.toList());
-            logger.info("保存card商品list的處理完的参数："+cards);
+            logger.info("保存card商品list的處理完的参数：{}",cards);
             //全削除
             priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             // jancheck
@@ -126,7 +129,8 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
         } catch (Exception e) {
-            logger.info("保存card商品list報錯："+e);
+            logger.info("保存card商品list報錯：",e);
+            logAspect.setTryErrorLog(e,new Object[]{priorityOrderJanCard});
             return ResultMaps.result(ResultEnum.FAILURE);
         }
 
