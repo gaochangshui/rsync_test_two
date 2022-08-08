@@ -214,7 +214,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                 }
             }
         }
-        mapHeader.put("group",ptsGroup);
+        mapHeader.put("newData",ptsGroup);
         return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
     }
     /**
