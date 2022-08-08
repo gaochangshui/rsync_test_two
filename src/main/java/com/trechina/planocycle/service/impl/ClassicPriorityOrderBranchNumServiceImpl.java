@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderBranchNumDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
@@ -70,6 +71,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     private ClassicPriorityOrderDataMapper classicPriorityOrderDataMapper;
     @Autowired
     private ClassicPriorityOrderMstAttrSortMapper classicPriorityOrderMstAttrSortMapper;
+    @Autowired
+    private LogAspect logAspect;
     @Autowired
     private cgiUtils cgiUtil;
 
@@ -216,6 +219,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
            }
         } catch (Exception e) {
             logger.error("保存必須商品リスト：",e);
+            logAspect.setTryErrorLog(e,new Object[]{priorityOrderCommodityMust});
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -316,6 +320,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             }
         } catch (Exception e) {
             logger.error("不可商品リストの保存：",e);
+            logAspect.setTryErrorLog(e,new Object[]{priorityOrderCommodityNot});
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }

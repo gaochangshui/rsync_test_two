@@ -79,6 +79,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
     private PriorityAllMstMapper priorityAllMstMapper;
+    @Autowired
+    private PriorityOrderMstAttrSortMapper attrSortMapper;
 
 
     /**
@@ -350,19 +352,19 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
         List<Map<String,Object>> attrList = priorityOrderMstAttrSortMapper.getAttrCol(companyCd, priorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
-        List<Integer> value = attrList.stream().map(map-> MapUtils.getInteger(map, "value")).collect(Collectors.toList());
-        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(value, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
 
         if (ptsDetailData != null){
             String zokuseiNm = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "zokusei_nm")).collect(Collectors.toList()));
-            String janHeader = ptsDetailData.getJanHeader()+","+zokuseiNm+",幅,高,奥行";
+            String janHeader = ptsDetailData.getJanHeader()+",商品名,"+zokuseiNm+",幅,高,奥行";
             ptsDetailData.setJanHeader(janHeader);
             String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu" ;
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
                 s = s+",faceDisplayflg,facePosition,depthDisplayNum";
             }
-            for (Map<String, Object> map : zokuseiCol) {
+            s+=",janName";
+            for (Map<String, Object> map : attrCol) {
                 s=s+","+"zokusei"+map.get("zokusei_col");
             }
             s = s + ",plano_width,plano_height,plano_depth";
@@ -374,7 +376,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
 
             List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
-            List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(patternCd,zokuseiCol,commonTableName.getProInfoTable(),janSizeCol);
+            List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(patternCd,attrCol,commonTableName.getProInfoTable(),janSizeCol);
 
             ptsDetailData.setPtsTaiList(taiData);
             ptsDetailData.setPtsTanaVoList(tanaData);
@@ -720,16 +722,15 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
         List<Map<String,Object>> attrList = priorityOrderMstAttrSortMapper.getAttrCol(companyCd, priorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
-        List<Integer> value = attrList.stream().map(map->MapUtils.getInteger(map, "value")).collect(Collectors.toList());
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsNewDetailData(priorityOrderCd);
 
 
-        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(value, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
         if (ptsDetailData != null) {
 
             String zokuseiNm = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "zokusei_nm")).collect(Collectors.toList()));
-            String janHeader = ptsDetailData.getJanHeader()+","+"備考"+","+zokuseiNm+",幅,高,奥行";
+            String janHeader = ptsDetailData.getJanHeader()+","+"備考"+",商品名,"+zokuseiNm+",幅,高,奥行";
             ptsDetailData.setJanHeader(janHeader);
             String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu," ;
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
@@ -737,7 +738,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             }else {
                 s = s+"remarks";
             }
-            for (Map<String, Object> map : zokuseiCol) {
+            s+= ",janName";
+            for (Map<String, Object> map : attrCol) {
                 s=s+","+"zokusei"+map.get("zokusei_col");
             }
             s = s + ",plano_width,plano_height,plano_depth";
@@ -750,13 +752,13 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             //新台、棚、商品データ
             List<PtsTaiVo> newTaiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);
             List<PtsTanaVo> newTanaData = shelfPtsDataMapper.getNewTanaData(priorityOrderCd);
-            List<LinkedHashMap<String,Object>> newJanData = shelfPtsDataMapper.getNewJanDataTypeMap(priorityOrderCd,zokuseiCol,commonTableName.getProInfoTable(),janSizeCol);
+            List<LinkedHashMap<String,Object>> newJanData = shelfPtsDataMapper.getNewJanDataTypeMap(priorityOrderCd,attrCol,commonTableName.getProInfoTable(),janSizeCol);
 
 
                 //既存台、棚、商品データ
             List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
-            List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(patternCd,zokuseiCol,commonTableName.getProInfoTable(),janSizeCol);
+            List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(patternCd,attrCol,commonTableName.getProInfoTable(),janSizeCol);
             //棚、商品の変更チェック
             //棚変更：高さ変更
             logger.info("start,{}",System.currentTimeMillis());

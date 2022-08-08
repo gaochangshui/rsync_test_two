@@ -60,5 +60,14 @@ public class LogAspect {
         });
     }
 
-
+    public  void setTryErrorLog(Exception ex, Object[] o) {
+        executor.execute(()->{
+            String s = JSON.toJSONString(ex);
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.addAll(Arrays.asList(o));
+            String params = jsonArray.toString();
+            String path = ex.getStackTrace()[0].getFileName()+"_"+ex.getStackTrace()[0].getMethodName();
+            logMapper.saveErrorLog(path, params,s);
+        });
+    }
 }

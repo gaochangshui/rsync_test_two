@@ -350,9 +350,15 @@ public class CommonMstServiceImpl implements CommonMstService {
                           Map<String, Object> relation, Integer tanaWidth, Integer tanaHeight, String taiCd, String tanaCd){
         String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
         double area = MapUtils.getDouble(relation, "area");
+        int janCount = MapUtils.getInteger(relation, "janCount");
         double groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).setScale(3, RoundingMode.CEILING).doubleValue();
         Long usedArea = 0L;
-        int firstOut = 0;
+        int usedJanCount = 0;
+
+        Short partitionValue = partitionVal;
+        if(!Objects.equals(tanaWidthCheck, 1)){
+            partitionValue = 0;
+        }
 
         for (PriorityOrderResultDataDto jan : jans) {
             if(Objects.equals(jan.getAdoptFlag(), 1) || Objects.equals(jan.getCutFlag(), 1)){
@@ -363,7 +369,7 @@ public class CommonMstServiceImpl implements CommonMstService {
 
             Long width = Optional.ofNullable(jan.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH);
             Long face = jan.getFace();
-            Long janWidth = width + partitionVal;
+            Long janWidth = width + partitionValue;
 
             if(!cutJan.isEmpty()){
                 //The new regulation takes precedence over cut
@@ -386,11 +392,15 @@ public class CommonMstServiceImpl implements CommonMstService {
                     newJanDto.setRank(-1L);
                     newJanDto.setSkuRank(MapUtils.getLong(newJan, "sku_rank"));
                     newJanDto.setRestrictCd(MapUtils.getLong(newJan, MagicString.RESTRICT_CD));
-                    newJanDto.setWidth(MapUtils.getLong(newJan, MagicString.WIDTH_NAME));
+                    if (Objects.equals(tanaWidthCheck, 1)) {
+                        newJanDto.setWidth(MapUtils.getLong(newJan, MagicString.WIDTH_NAME));
+                    }else{
+                        newJanDto.setWidth(jan.getPlanoWidth());
+                    }
                     newJanDto.setHeight(MapUtils.getLong(newJan, MagicString.HEIGHT_NAME));
                     newJanDto.setIrisu(MapUtils.getString(newJan, MagicString.IRISU_NAME));
 
-                    if(janWidth*face + usedArea + partitionVal <= groupArea) {
+                    if(Objects.equals(tanaWidthCheck, 1) && janWidth*face + usedArea + partitionValue <= groupArea) {
                         //pre calculation used area
                         jan.setCutFlag(1);
                         newList.forEach(map -> {
@@ -419,18 +429,23 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
             }
 
-            if(!Objects.equals(tanaWidthCheck, 1) && janWidth*face + usedArea > groupArea){
-                firstOut++;
+            boolean condition = false;
+            if(Objects.equals(tanaWidthCheck, 1)){
+                condition = janWidth*face + usedArea <= groupArea;
+            }else{
+                condition = usedJanCount<=janCount;
             }
 
-            if(firstOut==1 || janWidth*face + usedArea <= groupArea){
-                usedArea += janWidth*face + partitionVal;
+            if(condition){
+                usedArea += janWidth*face + partitionValue;
                 newJanDto.setTaiCd(Integer.parseInt(taiCd));
                 newJanDto.setTanaCd(Integer.parseInt(tanaCd));
+                newJanDto.setFaceFact(face);
                 adoptJan.add(newJanDto);
                 jan.setAdoptFlag(1);
+                usedJanCount++;
             }else{
-                if(tanaWidthCheck!=null && Objects.equals(tanaWidthCheck, 1)){
+                if(tanaWidthCheck!=null && Objects.equals(tanaWidthCheck, 1) && usedJanCount<janCount){
                     boolean setJanByCutFace = isSetJanByCutFace(adoptJan, groupArea, usedArea, partitionVal, minFace, newJanDto);
                     if(setJanByCutFace){
                         newJanDto.setTaiCd(Integer.parseInt(taiCd));
@@ -440,6 +455,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                         usedArea+=Optional.ofNullable(newJanDto.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH)*newJanDto.getFaceFact()+partitionVal;
                     }
                 }
+
+                break;
             }
         }
 

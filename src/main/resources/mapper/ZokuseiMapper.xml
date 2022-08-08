@@ -19,7 +19,11 @@
   </sql>
 
   <select id="selectZokusei" resultType="com.trechina.planocycle.entity.po.ZokuseiMst">
-    select zokusei_id,zokusei_col from masterdb.planocycle_zokusei_mst where
+    select zokusei_id,zokusei_col, case when "3" is null then zokusei_col :: integer else (zokusei_col :: INTEGER+1) end as zokuseiSort
+           from masterdb.planocycle_zokusei_mst zokuseimst
+                  left join "${companyCd}".prod_${classCd}_jan_kaisou_header_sys kaisou
+                            on kaisou."3" = trim(zokuseimst.zokusei_col :: VARCHAR)
+    where
     company_cd=#{companyCd} and class_cd=#{classCd} and zokusei_id::varchar=any(string_to_array(#{zokuseiIds}, ','))
   </select>
   <select id="selectCdHeader" resultType="int">

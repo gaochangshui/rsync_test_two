@@ -67,6 +67,8 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
     private HttpSession session;
+    @Autowired
+    private PriorityOrderMstAttrSortMapper attrSortMapper;
     private final Logger logger = LoggerFactory.getLogger(PriorityAllPtsServiceImpl.class);
 
     @Override
@@ -126,8 +128,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
         List<Map<String,Object>> attrList = priorityOrderMstAttrSortMapper.getAttrCol(companyCd, priorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
-        List<Integer> value = attrList.stream().map(map-> MapUtils.getInteger(map, "value")).collect(Collectors.toList());
-        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(value, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
 
         PtsDetailDataVo ptsDetailData = priorityAllPtsMapper.getPtsDetailData(companyCd, authorCd, priorityAllCd, patternCd);
@@ -135,7 +136,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         if(ptsDetailData != null){
             Integer id = ptsDetailData.getId();
             String zokuseiNm = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "zokusei_nm")).collect(Collectors.toList()));
-            String janHeader = ptsDetailData.getJanHeader()+","+"備考"+","+zokuseiNm+",幅,高,奥行";
+            String janHeader = ptsDetailData.getJanHeader()+","+"備考"+",商品名,"+zokuseiNm+",幅,高,奥行";
             ptsDetailData.setJanHeader(janHeader);
             String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu" ;
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
@@ -143,7 +144,8 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             }else {
                 s = s+",remarks";
             }
-            for (Map<String, Object> map : zokuseiCol) {
+            s += ",janName";
+            for (Map<String, Object> map : attrCol) {
                 s=s+","+"zokusei"+map.get("zokusei_col");
             }
             s = s + ",plano_width,plano_height,plano_depth";
@@ -151,13 +153,13 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             ptsDetailData.setTanaHeader(ptsDetailData.getTanaHeader()+","+"備考");
             List<PtsTaiVo> newTaiData = priorityAllPtsMapper.getTaiData(id);
             List<PtsTanaVo> newTanaData = priorityAllPtsMapper.getTanaData(id);
-            List<LinkedHashMap> newJanData = priorityAllPtsMapper.getJanData(id,zokuseiCol,commonTableName.getProInfoTable(),janSizeCol);
+            List<LinkedHashMap> newJanData = priorityAllPtsMapper.getJanData(id,attrCol,commonTableName.getProInfoTable(),janSizeCol);
 
 
             //既存台、棚、商品データ
             List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
-            List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(patternCd,zokuseiCol,commonTableName.getProInfoTable(),janSizeCol);
+            List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(patternCd,attrCol,commonTableName.getProInfoTable(),janSizeCol);
             //棚、商品の変更チェック
             //棚変更：高さ変更
             logger.info("start,{}",System.currentTimeMillis());

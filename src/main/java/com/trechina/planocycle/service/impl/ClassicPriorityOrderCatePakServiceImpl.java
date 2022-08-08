@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
 import com.trechina.planocycle.entity.po.PriorityOrderCatepak;
@@ -39,6 +40,8 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
     private ClassicPriorityOrderDataService classicPriorityOrderDataService;
     @Autowired
     private WorkPriorityOrderPtsClassifyMapper workPriorityOrderPtsClassifyMapper;
+    @Autowired
+    private LogAspect logAspect;
 
     /**
      * つかむ取カテパケ拡縮
@@ -116,6 +119,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
             return ResultMaps.result(ResultEnum.SUCCESS, jsonArray);
         } catch (Exception e) {
             logger.info("つかむ取カテパケ拡縮失敗：", e);
+            logAspect.setTryErrorLog(e,new Object[]{companyCd,priorityOrderCd});
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }
@@ -157,6 +161,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
             logger.info("カテパケ拡大縮小エラーの保存:", e);
+            logAspect.setTryErrorLog(e,new Object[]{jsonArray});
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }

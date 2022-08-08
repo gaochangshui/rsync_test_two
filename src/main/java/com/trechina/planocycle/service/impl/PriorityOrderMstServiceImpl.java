@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -112,7 +111,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     @Autowired
     private PriorityOrderShelfDataService priorityOrderShelfDataService;
     @Autowired
-    private ThreadPoolTaskExecutor executor;
+    private PriorityOrderMstAttrSortMapper attrSortMapper;
     @Autowired
     private VehicleNumCache vehicleNumCache;
     @Autowired
@@ -479,17 +478,18 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         List<Map<String,Object>> attrList1 = priorityOrderMstAttrSortMapper.getAttrCol(companyCd, priorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Integer> value = attrList1.stream().map(map2-> MapUtils.getInteger(map2, "value")).collect(Collectors.toList());
-        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(value, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
         if (ptsDetailData != null){
             String zokuseiNm = Joiner.on(",").join(attrList1.stream().map(map3 -> MapUtils.getString(map3, "zokusei_nm")).collect(Collectors.toList()));
-            String janHeader = ptsDetailData.getJanHeader()+","+zokuseiNm+",幅,高,奥行";
+            String janHeader = ptsDetailData.getJanHeader()+",商品名,"+zokuseiNm+",幅,高,奥行";
             ptsDetailData.setJanHeader(janHeader);
             String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu" ;
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
                 s = s+",faceDisplayflg,facePosition,depthDisplayNum";
             }
-            for (Map<String, Object> map1 : zokuseiCol) {
+            s+=",janName";
+            for (Map<String, Object> map1 : attrCol) {
                 s=s+","+"zokusei"+map1.get("zokusei_col");
             }
             s = s + ",plano_width,plano_height,plano_depth";
@@ -501,7 +501,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
             List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(workPriorityOrderMst.getShelfPatternCd().intValue());
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(workPriorityOrderMst.getShelfPatternCd().intValue());
-            List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(workPriorityOrderMst.getShelfPatternCd().intValue(),zokuseiCol,commonTableName.getProInfoTable(),janSizeCol);
+            List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(workPriorityOrderMst.getShelfPatternCd().intValue(),attrCol,commonTableName.getProInfoTable(),janSizeCol);
             ptsDetailData.setPtsTaiList(taiData);
             ptsDetailData.setPtsTanaVoList(tanaData);
             ptsDetailData.setPtsJanDataList(janData);

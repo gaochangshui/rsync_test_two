@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.ProductPowerParamVo;
@@ -13,7 +14,6 @@ import com.trechina.planocycle.entity.vo.ProductPowerMstVo;
 import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import com.trechina.planocycle.enums.ProductPowerHeaderEnum;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ProductPowerMstService;
 import com.trechina.planocycle.utils.ExcelUtils;
@@ -60,6 +60,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private ShelfPtsDataMapper shelfPtsDataMapper;
+    @Autowired
+    private LogAspect logAspect;
     /**
      * 企業cdによる商品力点数表一覧の取得
      * @param companyCd
@@ -83,7 +85,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             tableNameMap.put("wholePtsData",wholePtsData);
             tableNameMap.put("priorityData",priorityData);
         } catch (Exception e) {
-            throw new BusinessException(JSON.toJSONString(e));
+            logAspect.setTryErrorLog(e,new Object[]{companyCd});
+           return ResultMaps.result(ResultEnum.FAILURE);
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS,tableNameMap);
@@ -231,12 +234,14 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             outputStream.flush();
         } catch (IOException e) {
             logger.error("", e);
+            logAspect.setTryErrorLog(e,new Object[]{companyCd,productPowerCd});
         } finally {
             if(Objects.nonNull(outputStream)){
                 try {
                     outputStream.close();
                 } catch (IOException e) {
                     logger.error("io閉じる異常", e);
+                    logAspect.setTryErrorLog(e,new Object[]{companyCd,productPowerCd});
                 }
             }
         }

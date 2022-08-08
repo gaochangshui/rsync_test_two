@@ -18,6 +18,7 @@ public class BasicAllPatternMstController {
     @Autowired
     private BasicAllPatternMstService basicAllPatternMstService;
 
+
     /**
      * 自動計算
      * @return

@@ -315,6 +315,7 @@
     <foreach collection="janSizeCol" item="item">
       ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
     </foreach>
+    ,janinfo."2" as "janName"
     from
       planocycle.shelf_pts_data ptsData
         left join
@@ -721,6 +722,7 @@
     <foreach collection="janSizeCol" item="item">
       ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
     </foreach>
+    ,janinfo."2" as "janName"
     from
       planocycle.work_priority_order_pts_data ptsData
         inner join
@@ -730,5 +732,8 @@
     on janData.jan = janinfo."1"
     where ptsData.priority_order_cd = #{priorityOrderCd}
     order by tai_cd,tana_cd,tanaposition_cd
+  </select>
+  <select id="getJanDataAndId" resultType="java.util.LinkedHashMap">
+
   </select>
 </mapper>
