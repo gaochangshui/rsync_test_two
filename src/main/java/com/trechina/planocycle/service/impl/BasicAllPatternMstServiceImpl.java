@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
@@ -86,7 +87,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     @Autowired
     private BasicPatternRestrictResultMapper basicPatternRestrictResultMapper;
     @Autowired
-    private BasicPatternRestrictResultMapper restrictResultMapper;
+    private LogAspect logAspect;
     @Autowired
     private WorkPriorityAllRestrictMapper priorityAllRestrictMapper;
     @Autowired
@@ -161,6 +162,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             } catch(Exception ex) {
                 logger.error("", ex);
                 vehicleNumCache.put("IO"+uuid,1);
+                logAspect.setTryErrorLog(ex,new Object[]{priorityAllSaveDto});
                 throw new BusinessException("自動計算失敗");
             }finally {
                 vehicleNumCache.put(uuid,1);
@@ -224,6 +226,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             priorityAllMstMapper.delWKTablePtsVersion(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
         } catch (Exception e) {
             logger.error("全patternの保存に失敗しました:{}",e.getMessage());
+            logAspect.setTryErrorLog(e,new Object[]{priorityAllSaveDto});
             return 1;
         }
         return 0;

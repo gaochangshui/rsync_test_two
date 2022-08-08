@@ -78,7 +78,6 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         String commonPartsData = workPriorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
         List<Map<String, Object>> zokuseiNameList = zokuseiMstMapper.getzokuseiName(commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
-
         Map<String, List<Map<String, Object>>> listMap = ptsGroup.stream().collect(Collectors.groupingBy(map -> {
             String attrKey = "";
             for (Integer col : attrList) {
@@ -92,18 +91,30 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             return attrKey;
 
         }));
-        List<Map<String,Object>> list = new ArrayList<>();
-        for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : listMap.entrySet()) {
-            String attrKey = "";
-            for (Integer col : attrList) {
-                if (attrKey.equals("")){
-                    attrKey += zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+stringListEntry.getValue().get(0).get("zokuseiName"+col);
-                }else {
-                    attrKey +="->"+zokuseiNameList.get(col-1).get("zokusei_nm").toString()+"-"+ stringListEntry.getValue().get(0).get("zokuseiName"+col);
-                }
+        String colHeader = "";
+        String janColumns = "";
+        for (Integer col : attrList) {
+            if (colHeader.equals("")) {
+                janColumns += "zokuseiName" + col;
+                colHeader +=zokuseiNameList.get(col-1).get("zokusei_nm").toString();
+            }else {
+                janColumns += ",zokuseiName" + col;
+                colHeader +=","+zokuseiNameList.get(col-1).get("zokusei_nm").toString();
             }
+        }
+        colHeader+=",SKU数,フェース数";
+        janColumns+=",skuNum,faceNum";
+        List<Map<String,Object>> list = new ArrayList<>();
+        Map<String,Object> mapHeader = new HashMap<>();
+        mapHeader.put("groupHeader",colHeader);
+        mapHeader.put("groupColumns",janColumns);
+        for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : listMap.entrySet()) {
             Map<String,Object> map = new HashMap<>();
-            map.put("restrictName",attrKey);
+            for (Integer col : attrList) {
+                map.put("zokuseiName"+zokuseiNameList.get(col-1).get("zokusei_id").toString(),stringListEntry.getValue().get(0).get("zokuseiName"+col));
+
+            }
+
             map.put("restrictCd",stringListEntry.getValue().get(0).get("restrictCd"));
             int face = 0;
             int sku =stringListEntry.getValue().size();
@@ -115,7 +126,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             list.add(map);
         }
         list= list.stream().sorted(Comparator.comparing(map7->MapUtils.getInteger(map7,"restrictCd"))).collect(Collectors.toList());
-        return ResultMaps.result(ResultEnum.SUCCESS,list);
+        mapHeader.put("group",list);
+        return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
     }
     /**
      * 新規では基本パター制約別janの詳細情報を取得

@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
@@ -115,6 +116,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     private WorkPriorityOrderPtsClassifyMapper workPriorityOrderPtsClassify;
     @Autowired
     private ClassicPriorityOrderPatternMapper priorityOrderPatternMapper;
+    @Autowired
+    private LogAspect logAspect;
 
     /**
      * 初期取得優先順位テーブルデータ
@@ -829,6 +832,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         } catch (IOException e) {
             logger.error("", e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logAspect.setTryErrorLog(e,new Object[]{company,priorityOrderCd});
             return ResultMaps.result(ResultEnum.FAILURE);
         }
 
