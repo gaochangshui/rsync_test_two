@@ -165,8 +165,10 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
             map.put("rank",i++);
         }
-        mapHeader.put("newGroup",ptsGroup);
-        mapHeader.put("oldGroup",new ArrayList<>());
+        mapHeader.put("newData",ptsGroup);
+
+
+        mapHeader.put("oldData",new ArrayList<>());
         return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
     }
 
