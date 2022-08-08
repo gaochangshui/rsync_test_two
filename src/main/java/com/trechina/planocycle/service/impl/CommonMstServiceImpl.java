@@ -352,6 +352,7 @@ public class CommonMstServiceImpl implements CommonMstService {
         double area = MapUtils.getDouble(relation, "area");
         double groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).setScale(3, RoundingMode.CEILING).doubleValue();
         Long usedArea = 0L;
+        int firstOut = 0;
 
         for (PriorityOrderResultDataDto jan : jans) {
             if(Objects.equals(jan.getAdoptFlag(), 1) || Objects.equals(jan.getCutFlag(), 1)){
@@ -418,7 +419,11 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
             }
 
-            if(janWidth*face + usedArea <= groupArea){
+            if(!Objects.equals(tanaWidthCheck, 1) && janWidth*face + usedArea > groupArea){
+                firstOut++;
+            }
+
+            if(firstOut==1 || janWidth*face + usedArea <= groupArea){
                 usedArea += janWidth*face + partitionVal;
                 newJanDto.setTaiCd(Integer.parseInt(taiCd));
                 newJanDto.setTanaCd(Integer.parseInt(tanaCd));
