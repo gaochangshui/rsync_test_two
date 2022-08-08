@@ -172,6 +172,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             logger.info("taiCd:{},tanaCd:{}, jans:{}", taiCd, tanaCd,jans);
             double areaWidth = 0;
             String lastKey = "";
+            int janCount = 0;
 
             //Traverse all groups. If it is different from the previous group, record it. If it is the same, the area will be accumulated
             List<Map<String, Object>> newJans = new ArrayList<>();
@@ -188,6 +189,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
                 if(lastKey.equals(key.toString()) && (i+1)==jans.size()){
                     areaWidth += width;
+                    janCount++;
                 }
 
                 if(!"".equals(lastKey) && (!lastKey.equals(key.toString()) || (i+1)==jans.size())){
@@ -197,24 +199,29 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                             new TypeToken<Map<String, Object>>(){}.getType());
                     map.put(MagicString.RESTRICT_CD, classify.get(lastKey).getRestrictCd());
                     map.put("area", percent);
+                    map.put("janCount", janCount);
                     map.put("priorityOrderCd", priorityOrderCd);
                     map.put("companyCd", companyCd);
                     map.put("authorCd", aud);
                     newJans.add(map);
                     areaWidth=width;
+                    janCount=1;
                 }else{
                     areaWidth += width;
+                    janCount++;
                 }
 
                 //If the last grouping is independent, it should be handled separately
                 if(!lastKey.equals(key.toString()) && (i+1)==jans.size()){
                     areaWidth = width;
+                    janCount = 1;
                     int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
                             .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
                     Map<String, Object> map = new GsonBuilder().create().fromJson(JSONObject.toJSONString(janMap),
                             new TypeToken<Map<String, Object>>(){}.getType());
                     map.put(MagicString.RESTRICT_CD, classify.get(key.toString()).getRestrictCd());
                     map.put("area", percent);
+                    map.put("janCount", janCount);
                     map.put("priorityOrderCd", priorityOrderCd);
                     map.put("companyCd", companyCd);
                     map.put("authorCd", aud);

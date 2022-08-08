@@ -350,8 +350,10 @@ public class CommonMstServiceImpl implements CommonMstService {
                           Map<String, Object> relation, Integer tanaWidth, Integer tanaHeight, String taiCd, String tanaCd){
         String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
         double area = MapUtils.getDouble(relation, "area");
+        int janCount = MapUtils.getInteger(relation, "janCount");
         double groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).setScale(3, RoundingMode.CEILING).doubleValue();
         Long usedArea = 0L;
+        int usedJanCount = 0;
 
         Short partitionValue = partitionVal;
         if(!Objects.equals(tanaWidthCheck, 1)){
@@ -390,11 +392,16 @@ public class CommonMstServiceImpl implements CommonMstService {
                     newJanDto.setRank(-1L);
                     newJanDto.setSkuRank(MapUtils.getLong(newJan, "sku_rank"));
                     newJanDto.setRestrictCd(MapUtils.getLong(newJan, MagicString.RESTRICT_CD));
-                    newJanDto.setWidth(MapUtils.getLong(newJan, MagicString.WIDTH_NAME));
+                    if (Objects.equals(tanaWidthCheck, 1)) {
+                        newJanDto.setWidth(MapUtils.getLong(newJan, MagicString.WIDTH_NAME));
+                    }else{
+                        newJanDto.setWidth(jan.getPlanoWidth());
+                    }
                     newJanDto.setHeight(MapUtils.getLong(newJan, MagicString.HEIGHT_NAME));
                     newJanDto.setIrisu(MapUtils.getString(newJan, MagicString.IRISU_NAME));
 
-                    if(!Objects.equals(tanaWidthCheck, 1)){
+                    if(Objects.equals(tanaWidthCheck, 1) && janWidth*face + usedArea + partitionValue <= groupArea) {
+                        //pre calculation used area
                         jan.setCutFlag(1);
                         newList.forEach(map -> {
                             if(MapUtils.getString(map,"jan").equals(MapUtils.getString(newJan,"jan"))
@@ -402,17 +409,6 @@ public class CommonMstServiceImpl implements CommonMstService {
                                 newJan.put("adoptFlag", "1");
                             }
                         });
-                    }else{
-                        if(janWidth*face + usedArea + partitionValue <= groupArea) {
-                            //pre calculation used area
-                            jan.setCutFlag(1);
-                            newList.forEach(map -> {
-                                if(MapUtils.getString(map,"jan").equals(MapUtils.getString(newJan,"jan"))
-                                        && MapUtils.getString(map,MagicString.RESTRICT_CD).equals(MapUtils.getString(newJan,MagicString.RESTRICT_CD))){
-                                    newJan.put("adoptFlag", "1");
-                                }
-                            });
-                        }
                     }
                 }
             }else{
@@ -433,12 +429,20 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
             }
 
-            if(janWidth*face + usedArea <= groupArea){
+            boolean condition = false;
+            if(Objects.equals(tanaWidthCheck, 1)){
+                condition = janWidth*face + usedArea <= groupArea;
+            }else{
+                condition = usedJanCount<=janCount;
+            }
+
+            if(condition){
                 usedArea += janWidth*face + partitionValue;
                 newJanDto.setTaiCd(Integer.parseInt(taiCd));
                 newJanDto.setTanaCd(Integer.parseInt(tanaCd));
                 adoptJan.add(newJanDto);
                 jan.setAdoptFlag(1);
+                usedJanCount++;
             }else{
                 if(tanaWidthCheck!=null && Objects.equals(tanaWidthCheck, 1)){
                     boolean setJanByCutFace = isSetJanByCutFace(adoptJan, groupArea, usedArea, partitionVal, minFace, newJanDto);
