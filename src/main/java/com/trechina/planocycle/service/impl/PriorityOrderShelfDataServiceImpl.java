@@ -135,33 +135,35 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
         List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        String commonPartsData = workPriorityOrderMst.getCommonPartsData();
-        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
-        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
-        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd,"planocycle.work_priority_order_pts_data_jandata");
-        ptsGroup= ptsGroup.stream().filter(map->map.get("restrictCd").toString().equals(priorityOrderRestDto.getRestrictCd()+""))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanaCd")))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd")))
-                .collect(Collectors.toList());
-        Map<String,Object> mapHeader = new HashMap<>();
-        String groupColumns = "taiCd,tanaCd,janCd,janName,plano_depth,plano_height,plano_width,rank,faceNum";
-        String groupHeader = "台番号,棚段番号,JAN,商品名,幅,高,奥行,RANK,フェース数";
-        mapHeader.put("groupColumns",groupColumns);
-        mapHeader.put("groupHeader",groupHeader);
-        for (Map<String, Object> map : ptsGroup) {
-            for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
-                for (Map<String, Object> objectMap : zokuseiCol) {
-                    if (("zokuseiName"+objectMap.get("zokusei_col")).equals(stringObjectEntry.getKey())){
-                       map.put("zokusei"+objectMap.get("zokusei_col"),stringObjectEntry.getValue());
+
+            String commonPartsData = workPriorityOrderMst.getCommonPartsData();
+            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+            List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+            List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd,"planocycle.work_priority_order_pts_data_jandata");
+            ptsGroup= ptsGroup.stream().filter(map->map.get("restrictCd").toString().equals(priorityOrderRestDto.getRestrictCd()+""))
+                    .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanaCd")))
+                    .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd")))
+                    .collect(Collectors.toList());
+            Map<String,Object> mapHeader = new HashMap<>();
+            String groupColumns = "taiCd,tanaCd,janCd,janName,plano_depth,plano_height,plano_width,rank,faceNum";
+            String groupHeader = "台番号,棚段番号,JAN,商品名,幅,高,奥行,RANK,フェース数";
+            mapHeader.put("groupColumns",groupColumns);
+            mapHeader.put("groupHeader",groupHeader);
+            for (Map<String, Object> map : ptsGroup) {
+                for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+                    for (Map<String, Object> objectMap : zokuseiCol) {
+                        if (("zokuseiName"+objectMap.get("zokusei_col")).equals(stringObjectEntry.getKey())){
+                           map.put("zokusei"+objectMap.get("zokusei_col"),stringObjectEntry.getValue());
+                        }
                     }
                 }
             }
-        }
-        int i = 1;
-        for (Map<String, Object> map : ptsGroup) {
+            int i = 1;
+            for (Map<String, Object> map : ptsGroup) {
 
-            map.put("rank",i++);
-        }
+                map.put("rank",i++);
+            }
+
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(workPriorityOrderMst.getShelfPatternCd().intValue());
         List<Map<String, Object>> ptsOldGroup = this.getOldPtsGroup(companyCd, priorityOrderCd, "planocycle.shelf_pts_data_jandata",ptsCd);
         Map<String, Object> groupOld = restrictResultMapper.getGroupOld(priorityOrderRestDto.getRestrictCd(), companyCd, priorityOrderCd, zokuseiCol);
