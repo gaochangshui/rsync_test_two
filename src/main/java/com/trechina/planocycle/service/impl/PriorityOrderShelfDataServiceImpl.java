@@ -165,7 +165,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
             map.put("rank",i++);
         }
-        mapHeader.put("group",ptsGroup);
+        mapHeader.put("newGroup",ptsGroup);
+        mapHeader.put("oldGroup",new ArrayList<>());
         return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
     }
 
@@ -197,8 +198,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         String groupColumns = "janCd,janName";
         String groupHeader = "JAN,商品名";
         for (Map<String, Object> map : attrCol) {
-            groupColumns += "zokusei"+map.get("zokusei_col");
-            groupHeader += map.get("zokusei_nm");
+            groupColumns += ",zokusei"+map.get("zokusei_col");
+            groupHeader += ","+map.get("zokusei_nm");
         }
         groupColumns += ",plano_depth,plano_height,plano_width,rank,faceNum";
         groupHeader += ",幅,高,奥行,RANK,フェース数";
@@ -215,6 +216,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             }
         }
         mapHeader.put("newData",ptsGroup);
+        mapHeader.put("oldData",new ArrayList<>());
         return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
     }
     /**
