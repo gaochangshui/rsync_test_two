@@ -242,6 +242,15 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                 map.get("tanaCd").toString().equals(priorityOrderPlatformShedDto.getTanaCd()+""))
                 .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank")))
                 .collect(Collectors.toList());
+        for (Map<String, Object> map : ptsOldGroup) {
+            for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+                for (Map<String, Object> objectMap : zokuseiCol) {
+                    if (("zokuseiName"+objectMap.get("zokusei_col")).equals(stringObjectEntry.getKey())){
+                        map.put("zokusei"+objectMap.get("zokusei_col"),stringObjectEntry.getValue());
+                    }
+                }
+            }
+        }
         mapHeader.put("oldData",ptsOldGroup);
         return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
     }
