@@ -440,11 +440,12 @@ public class CommonMstServiceImpl implements CommonMstService {
                 usedArea += janWidth*face + partitionValue;
                 newJanDto.setTaiCd(Integer.parseInt(taiCd));
                 newJanDto.setTanaCd(Integer.parseInt(tanaCd));
+                newJanDto.setFaceFact(face);
                 adoptJan.add(newJanDto);
                 jan.setAdoptFlag(1);
                 usedJanCount++;
             }else{
-                if(tanaWidthCheck!=null && Objects.equals(tanaWidthCheck, 1)){
+                if(tanaWidthCheck!=null && Objects.equals(tanaWidthCheck, 1) && usedJanCount<janCount){
                     boolean setJanByCutFace = isSetJanByCutFace(adoptJan, groupArea, usedArea, partitionVal, minFace, newJanDto);
                     if(setJanByCutFace){
                         newJanDto.setTaiCd(Integer.parseInt(taiCd));
@@ -454,6 +455,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                         usedArea+=Optional.ofNullable(newJanDto.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH)*newJanDto.getFaceFact()+partitionVal;
                     }
                 }
+
+                break;
             }
         }
 
