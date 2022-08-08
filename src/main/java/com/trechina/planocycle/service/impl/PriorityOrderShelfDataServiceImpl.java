@@ -69,14 +69,11 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Override
     public Map<String, Object> getRestrictData(String companyCd,Integer priorityOrderCd)  {
         String authorCd = session.getAttribute("aud").toString();
-        //List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
-        //List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
-        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd);
+        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd,"planocycle.work_priority_order_pts_data_jandata");
         logger.info("ptsGroup：{}",ptsGroup);
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         String commonPartsData = workPriorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
-        //List<Map<String, Object>> zokuseiNameList = zokuseiMstMapper.getzokuseiName(commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         Map<String, List<Map<String, Object>>> listMap = ptsGroup.stream().collect(Collectors.groupingBy(map -> {
             String attrKey = "";
@@ -141,7 +138,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         String commonPartsData = workPriorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
-        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd);
+        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd,"planocycle.work_priority_order_pts_data_jandata");
         ptsGroup= ptsGroup.stream().filter(map->map.get("restrictCd").toString().equals(priorityOrderRestDto.getRestrictCd()+""))
                 .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanaCd")))
                 .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd")))
@@ -165,10 +162,29 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
             map.put("rank",i++);
         }
+        Integer ptsCd = shelfPtsDataMapper.getPtsCd(workPriorityOrderMst.getShelfPatternCd().intValue());
+        List<Map<String, Object>> ptsOldGroup = this.getOldPtsGroup(companyCd, priorityOrderCd, "planocycle.shelf_pts_data_jandata",ptsCd);
+        Map<String, Object> groupOld = restrictResultMapper.getGroupOld(priorityOrderRestDto.getRestrictCd(), companyCd, priorityOrderCd, zokuseiCol);
+        ptsOldGroup = ptsOldGroup.stream().filter(map -> {
+            int a = 0;
+            for (Map.Entry<String, Object> stringObjectEntry : groupOld.entrySet()) {
+                if (map.get(stringObjectEntry.getKey()).equals(stringObjectEntry.getValue())) {
+                    a++;
+                }
+            }
+            return a == groupOld.size();
+        }).collect(Collectors.toList());
+        for (Map<String, Object> map : ptsOldGroup) {
+            for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+                for (Map<String, Object> objectMap : zokuseiCol) {
+                    if (("zokuseiName"+objectMap.get("zokusei_col")).equals(stringObjectEntry.getKey())){
+                        map.put("zokusei"+objectMap.get("zokusei_col"),stringObjectEntry.getValue());
+                    }
+                }
+            }
+        }
         mapHeader.put("newData",ptsGroup);
-
-
-        mapHeader.put("oldData",new ArrayList<>());
+        mapHeader.put("oldData",ptsOldGroup);
         return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
     }
 
@@ -190,7 +206,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         String commonPartsData = workPriorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
-        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd);
+        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd,"planocycle.work_priority_order_pts_data_jandata");
         ptsGroup= ptsGroup.stream().filter(map->map.get("taiCd").toString().equals(priorityOrderPlatformShedDto.getTaiCd()+"")&&
                 map.get("tanaCd").toString().equals(priorityOrderPlatformShedDto.getTanaCd()+""))
                 .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank")))
@@ -218,7 +234,13 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             }
         }
         mapHeader.put("newData",ptsGroup);
-        mapHeader.put("oldData",new ArrayList<>());
+        Integer ptsCd = shelfPtsDataMapper.getPtsCd(workPriorityOrderMst.getShelfPatternCd().intValue());
+        List<Map<String, Object>> ptsOldGroup = this.getOldPtsGroup(companyCd, priorityOrderCd, "planocycle.shelf_pts_data_jandata",ptsCd);
+        ptsOldGroup= ptsOldGroup.stream().filter(map->map.get("taiCd").toString().equals(priorityOrderPlatformShedDto.getTaiCd()+"")&&
+                map.get("tanaCd").toString().equals(priorityOrderPlatformShedDto.getTanaCd()+""))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank")))
+                .collect(Collectors.toList());
+        mapHeader.put("oldData",ptsOldGroup);
         return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
     }
     /**
@@ -236,7 +258,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     }
 
     @Override
-    public List<Map<String, Object>> getPtsGroup(String companyCd,Integer priorityOrderCd) {
+    public List<Map<String, Object>> getPtsGroup(String companyCd,Integer priorityOrderCd,String tableName) {
         String authorCd = session.getAttribute("aud").toString();
         List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
         List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
@@ -250,7 +272,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
         List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectNewJanZokusei(priorityOrderCd, id, zokuseiMsts, allCdList,
-                commonTableName.getProInfoTable(),zokuseiCol,janSizeCol);
+                commonTableName.getProInfoTable(),zokuseiCol,janSizeCol, tableName);
         for (int i = 0; i < zokuseiList.size(); i++) {
             Map<String, Object> zokusei = zokuseiList.get(i);
             for (Map<String, Object> restrict : restrictResult) {
@@ -320,4 +342,42 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     }
 
 
+    public List<Map<String, Object>> getOldPtsGroup(String companyCd,Integer priorityOrderCd,String tableName,Integer ptsCd) {
+        String authorCd = session.getAttribute("aud").toString();
+        List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
+        List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
+        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        String commonPartsData = workPriorityOrderMst.getCommonPartsData();
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
+        List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
+        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
+        List<Map<String, Object>> restrictResult = restrictResultMapper.selectByPrimaryKey(priorityOrderCd);
+        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectNewJanZokusei(priorityOrderCd,ptsCd , zokuseiMsts, allCdList,
+                commonTableName.getProInfoTable(),zokuseiCol,janSizeCol, tableName);
+
+        for (int i = 0; i < zokuseiList.size(); i++) {
+            Map<String, Object> zokusei = zokuseiList.get(i);
+            for (Map<String, Object> restrict : restrictResult) {
+                int equalsCount = 0;
+                for (Map<String,Object>  map : zokuseiCol) {
+                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + map.get("zokusei_id"));
+                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + map.get("zokusei_col"));
+
+                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
+                        equalsCount++;
+                    }
+                }
+
+                if(equalsCount == attrList.size()){
+                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
+                    zokusei.put("restrictCd", restrictCd);
+                }
+            }
+
+            zokuseiList.set(i, zokusei);
+        }
+        return zokuseiList;
+    }
 }
