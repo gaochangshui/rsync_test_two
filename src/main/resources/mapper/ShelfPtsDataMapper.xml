@@ -733,4 +733,7 @@
     where ptsData.priority_order_cd = #{priorityOrderCd}
     order by tai_cd,tana_cd,tanaposition_cd
   </select>
+  <select id="getJanDataAndId" resultType="java.util.LinkedHashMap">
+
+  </select>
 </mapper>

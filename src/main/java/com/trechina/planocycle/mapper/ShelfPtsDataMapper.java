@@ -203,4 +203,7 @@ public interface ShelfPtsDataMapper {
     List<ShelfPtsDataTaimst> selectShelfPtsTaiMst(Integer patternCd);
 
     List<ShelfPtsDataTanamst> selectShelfPtsTanaMst(Integer patternCd);
+
+    List<LinkedHashMap> getJanDataAndId(@Param("patternCd")Integer patternCd, @Param("attrList")List<Map<String,Object>> attrList
+            ,@Param("tableName")String tableName,@Param("janSizeCol")List<Map<String,Object>>janSizeCol);
 }

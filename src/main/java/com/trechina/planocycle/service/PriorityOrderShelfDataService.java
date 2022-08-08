@@ -41,7 +41,7 @@ public interface PriorityOrderShelfDataService {
     /**
      *
      */
-    List<Map<String ,Object>> getPtsGroup(String companyCd, Integer priorityOrderCd);
+    List<Map<String ,Object>> getPtsGroup(String companyCd, Integer priorityOrderCd,String tableName);
     /**
      * 新規では基本的なパター棚別の情報を取得
      * @param companyCd
