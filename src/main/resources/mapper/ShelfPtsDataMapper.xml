@@ -630,7 +630,7 @@
             t1.branch_num as branch_num,t1.branch_num as branch_num_upd,coalesce(t2.pos_store_item01,'0') as branch_amount_upd,0 as difference,0 as sale_forecast
             ,ROW_NUMBER () OVER (order by t1.branch_num desc , t2.pos_item01 desc) as rank,coalesce(t2.rank_result,99999998) as rank_prop,99999998 as rank_upd,coalesce(t2.rank_result,99999998) as goods_rank
     from(
-          select  jan,info."2",count(branch) as branch_num
+          select  jan,info."2",count(DISTINCT branch) as branch_num
           from
             planocycle.shelf_pts_data_jandata  jandata
               left join ${tableName} info

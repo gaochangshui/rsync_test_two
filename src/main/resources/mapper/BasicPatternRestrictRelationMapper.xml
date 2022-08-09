@@ -50,7 +50,7 @@
         tanamst.tana_cd,
         "areaPosition"
     </select>
-    <select id="getTanaAttrList" resultType="com.trechina.planocycle.entity.po.BasicPatternRestrictRelation">
+    <select id="getTanaAttrList" resultType="com.trechina.planocycle.entity.vo.BasicPatternRestrictRelationVo">
         select tai_cd,tana_cd,area_position,restrict_cd,area,priority_order_cd,company_cd,tana_position
         from planocycle.work_basic_pattern_restrict_relation
         where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd}  and priority_order_cd = #{item.priorityOrderCd}

@@ -11,6 +11,7 @@ import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
+import com.trechina.planocycle.entity.vo.BasicPatternRestrictRelationVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.BasicPatternMstService;
@@ -541,18 +542,18 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         restrictRelationMapper.deleteForTanaPosition(basicPatternRestrictRelation);
         restrictRelationMapper.update(basicPatternRestrictRelation,authorCd);
 
-            List<BasicPatternRestrictRelation> tanaAttrList = restrictRelationMapper.getTanaAttrList(basicPatternRestrictRelation);
+            List<BasicPatternRestrictRelationVo> tanaAttrList = restrictRelationMapper.getTanaAttrList(basicPatternRestrictRelation);
             tanaAttrList = tanaAttrList.stream().filter(item ->item.getRestrictCd()!=9999).collect(Collectors.toList());
-            LongSummaryStatistics collect = tanaAttrList.stream().collect(Collectors.summarizingLong(BasicPatternRestrictRelation::getArea));
-            Integer taiCd = Integer.valueOf(basicPatternRestrictRelation.getTaiCd().toString());
+        DoubleSummaryStatistics collect = tanaAttrList.stream().collect(Collectors.summarizingDouble(BasicPatternRestrictRelationVo::getArea));
+        Integer taiCd = Integer.valueOf(basicPatternRestrictRelation.getTaiCd().toString());
             Integer tanaCd = Integer.valueOf(basicPatternRestrictRelation.getTanaCd().toString());
             int i = 1;
-                for (BasicPatternRestrictRelation patternRestrictRelation : tanaAttrList) {
+                for (BasicPatternRestrictRelationVo patternRestrictRelation : tanaAttrList) {
                     patternRestrictRelation.setAreaPosition(i++);
                 }
                 if (collect.getSum() < 100L){
-                    BasicPatternRestrictRelation basicPatternRestrictRelation1 = new BasicPatternRestrictRelation();
-                    basicPatternRestrictRelation1.setArea(100-collect.getSum());
+                    BasicPatternRestrictRelationVo basicPatternRestrictRelation1 = new BasicPatternRestrictRelationVo();
+                    basicPatternRestrictRelation1.setArea( (100-collect.getSum()));
                     basicPatternRestrictRelation1.setTaiCd(taiCd);
                     basicPatternRestrictRelation1.setTanaCd(tanaCd);
                     basicPatternRestrictRelation1.setRestrictCd(9999L);

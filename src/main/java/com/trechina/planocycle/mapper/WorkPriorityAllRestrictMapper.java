@@ -20,7 +20,7 @@ public interface WorkPriorityAllRestrictMapper {
 
     Integer deleteBasicPatternResult(String companyCd,Integer priorityAllCd,String authorCd,Integer patternCd);
 
-    List<Map<String, Object>> selectByPriorityAllCd(Integer priorityAllCd, Integer patternCd);
+    List<Map<String, Object>> selectByPriorityAllCd(Integer priorityAllCd, Integer patternCd,String authorCd);
 
     List<Map<String, Object>> selectRestrictResult(Integer priorityAllCd, Integer patternCd,String authorCd);
 }

@@ -44,13 +44,13 @@
         insert into planocycle.work_all_pattern_restrict_relation
         ( priority_all_cd,company_cd,author_cd,shelf_pattern_cd
         ,tai_cd,tana_cd,tana_position
-        ,restrict_cd,area)
+        ,restrict_cd,area,jan_count)
         values
         <foreach collection="lists" item="item" separator=",">
             (#{item.priorityOrderCd,jdbcType=BIGINT},#{item.companyCd,jdbcType=VARCHAR},#{item.authorCd,jdbcType=VARCHAR}
             ,#{patternCd}
             ,#{item.taiCd,jdbcType=OTHER},#{item.tanaCd,jdbcType=OTHER},#{item.tanaPosition,jdbcType=SMALLINT}
-            ,#{item.restrictCd,jdbcType=BIGINT},#{item.area,jdbcType=BIGINT})
+            ,#{item.restrictCd,jdbcType=BIGINT},#{item.area,jdbcType=BIGINT},#{item.janCount})
         </foreach>
     </insert>
     <select id="selectRelation" resultType="map">
