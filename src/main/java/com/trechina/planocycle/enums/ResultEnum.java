@@ -3,7 +3,7 @@ package com.trechina.planocycle.enums;
 public enum ResultEnum {
     SUCCESS(101,"成功"),
     SUCCESS_BUT_NEW_JAN(102,"成功"),
-    FAILURE(202,"失敗"),
+    FAILURE(202,"エラー"),
     TIMEOUT(10001,"セッション切りました。"),
     NOTFOUNTCOOKIE(10002,"User情報が見つかりません。"),
     CGITIEMOUT(20002,"SmartDBと接続は切りました。"),

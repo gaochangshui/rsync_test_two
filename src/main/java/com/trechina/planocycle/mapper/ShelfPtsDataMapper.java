@@ -206,4 +206,6 @@ public interface ShelfPtsDataMapper {
 
     List<LinkedHashMap> getJanDataAndId(@Param("patternCd")Integer patternCd, @Param("attrList")List<Map<String,Object>> attrList
             ,@Param("tableName")String tableName,@Param("janSizeCol")List<Map<String,Object>>janSizeCol);
+
+    int selectJanCount(Integer priorityOrderCd, Integer taiCd, Integer tanaCd, Long restrictCd, Long id);
 }
