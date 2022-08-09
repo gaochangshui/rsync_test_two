@@ -15,14 +15,14 @@ public interface PriorityOrderShelfDataService {
      * @param companyCd
      * @return
      */
-    Map<String,Object> getRestrictData(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    Map<String,Object> getRestrictData(String companyCd,Integer priorityOrderCd);
 
     /**
      * 新規では基本パター制約別janの詳細情報を取得
      * @param
      * @return
      */
-    Map<String,Object> getRestrictJans( PriorityOrderRestDto priorityOrderRestDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    Map<String,Object> getRestrictJans( PriorityOrderRestDto priorityOrderRestDto);
 
 
     /**
@@ -30,7 +30,7 @@ public interface PriorityOrderShelfDataService {
      * @param priorityOrderPlatformShedDto
      * @return
      */
-    Map<String,Object> getPlatformShedJans( PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    Map<String,Object> getPlatformShedJans( PriorityOrderPlatformShedDto priorityOrderPlatformShedDto);
     /**
      * faceNumの保存
      * @param priorityOrderRestrictJanDto

@@ -15,6 +15,7 @@ import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import com.trechina.planocycle.utils.CommonUtil;
 import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,6 +214,11 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         List<Map<String,Object>> data = (List<Map<String,Object>>)map.get("data");
         String aud = session.getAttribute("aud").toString();
         //
+        for (Map<String, Object> datum : data) {
+            datum.putIfAbsent("rank",1);
+        }
+        data = data.stream().sorted(Comparator.comparing(map1 -> MapUtils.getString(map1,"janCd"),Comparator.nullsFirst(String::compareTo).reversed()))
+                .sorted(Comparator.comparing(map1 -> MapUtils.getInteger(map1,"rank"),Comparator.nullsFirst(Integer::compareTo))).collect(Collectors.toList());
         List<String> errorMsgJan = priorityOrderJanNewMapper.getErrorMsgJan(companyCd, priorityOrderCd);
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
