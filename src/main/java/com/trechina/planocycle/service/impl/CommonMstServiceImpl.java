@@ -247,10 +247,10 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
                 int equalsCount = 0;
                 for (Integer integer : attrList) {
-                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer);
-                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer);
+                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, "");
+                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, "");
 
-                    if(restrictKey.equals(zokuseiKey)){
+                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
                         equalsCount++;
                     }
                 }
