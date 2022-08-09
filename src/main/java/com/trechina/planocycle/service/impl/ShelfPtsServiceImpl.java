@@ -356,7 +356,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
 
         if (ptsDetailData != null){
-            String zokuseiNm = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "zokusei_nm")).collect(Collectors.toList()));
+            String zokuseiNm = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "zokusei_nm","")).collect(Collectors.toList()));
             String janHeader = ptsDetailData.getJanHeader()+",商品名,"+zokuseiNm+",幅,高,奥行";
             ptsDetailData.setJanHeader(janHeader);
             String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu" ;
@@ -685,6 +685,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             String authorCd = httpSession.getAttribute("aud").toString();
             Integer taiCd = ptsTanaVoList.get(0).getTaiCd();
             shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
+            Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+            WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd,authorCd, priorityOrderCd);
             for (PtsTanaVo ptsTanaVo : ptsTanaVoList) {
                 if (ptsTanaVo.getGroup().isEmpty()){
                     ArrayList<BasicPatternRestrictRelation> group = new ArrayList<>();
@@ -696,9 +698,14 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                     basicPatternRestrictRelation.setArea(100L);
                     group.add(basicPatternRestrictRelation);
                     ptsTanaVo.setGroup(group);
+                }else{
+                    ptsTanaVo.getGroup().forEach(group->{
+                        int janCount = shelfPtsDataMapper.selectJanCount(priorityOrderCd, (Integer) group.getTaiCd(), (Integer) group.getTanaCd(),
+                                group.getRestrictCd(), workPriorityOrderMst.getShelfPatternCd());
+                        group.setJanCount(janCount);
+                    });
                 }
             }
-            Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
             shelfPtsDataMapper.deleteTana(taiCd,id);
             shelfPtsDataMapper.updTanaSize(ptsTanaVoList,id,authorCd,companyCd);
             basicPatternRestrictRelationMapper.deleteTana(taiCd,companyCd,priorityOrderCd);
@@ -747,7 +754,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             ptsDetailData.setTanaHeader(ptsDetailData.getTanaHeader()+","+"備考");
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getNewTaiNum(priorityOrderCd));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getNewTanaNum(priorityOrderCd));
-            ptsDetailData.setFaceNum(shelfPtsDataMapper.getNewFaceNum(priorityOrderCd));
+            ptsDetailData.setFaceNum(shelfPtsDataMapper.getNewFaceNum(priorityOrderCd)==null?0:shelfPtsDataMapper.getNewFaceNum(priorityOrderCd));
             ptsDetailData.setSkuNum(shelfPtsDataMapper.getNewSkuNum(priorityOrderCd));
             //新台、棚、商品データ
             List<PtsTaiVo> newTaiData = shelfPtsDataMapper.getNewTaiData(priorityOrderCd);

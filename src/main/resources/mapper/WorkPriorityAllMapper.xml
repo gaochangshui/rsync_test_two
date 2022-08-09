@@ -63,8 +63,9 @@
         where  priority_all_cd = #{priorityAllCd} and author_cd = #{authorCd} and shelf_pattern_cd = #{patternCd}
     </delete>
     <select id="selectByPriorityAllCd" resultType="map">
-        select tai_cd "taiCd",tana_cd "tanaCd",tana_position "tanaPosition",restrict_cd "restrictCd",area "area"
-        from planocycle.work_all_pattern_restrict_relation relation where priority_all_cd=#{priorityAllCd} and shelf_pattern_cd=#{patternCd}
+        select tai_cd "taiCd",tana_cd "tanaCd",tana_position "tanaPosition",restrict_cd "restrictCd",area "area",jan_count "janCount"
+        from planocycle.work_all_pattern_restrict_relation relation
+        where priority_all_cd=#{priorityAllCd} and shelf_pattern_cd=#{patternCd} and author_cd = #{authorCd}
         order by tai_cd, tana_cd,tana_position
     </select>
     <select id="selectRestrictResult" resultType="java.util.Map">

@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -149,20 +148,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             String groupHeader = "台番号,棚段番号,JAN,商品名,幅,高,奥行,RANK,フェース数";
             mapHeader.put("groupColumns",groupColumns);
             mapHeader.put("groupHeader",groupHeader);
-            for (Map<String, Object> map : ptsGroup) {
-                for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
-                    for (Map<String, Object> objectMap : zokuseiCol) {
-                        if (("zokuseiName"+objectMap.get("zokusei_col")).equals(stringObjectEntry.getKey())){
-                           map.put("zokusei"+objectMap.get("zokusei_col"),stringObjectEntry.getValue());
-                        }
-                    }
-                }
-            }
-            int i = 1;
-            for (Map<String, Object> map : ptsGroup) {
-
-                map.put("rank",i++);
-            }
+        ptsGroup = this.ptsProcessing(ptsGroup,zokuseiCol);
 
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(workPriorityOrderMst.getShelfPatternCd().intValue());
         List<Map<String, Object>> ptsOldGroup = this.getOldPtsGroup(companyCd, priorityOrderCd, "planocycle.shelf_pts_data_jandata",ptsCd);
@@ -176,7 +162,14 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             }
             return a == groupOld.size();
         }).collect(Collectors.toList());
-        for (Map<String, Object> map : ptsOldGroup) {
+        ptsOldGroup = this.ptsProcessing(ptsOldGroup,zokuseiCol);
+        mapHeader.put("newData",ptsGroup);
+        mapHeader.put("oldData",ptsOldGroup);
+        return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
+    }
+
+    List<Map<String,Object>> ptsProcessing(List<Map<String,Object>> ptsMap,List<Map<String,Object>> zokuseiCol){
+        for (Map<String, Object> map : ptsMap) {
             for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
                 for (Map<String, Object> objectMap : zokuseiCol) {
                     if (("zokuseiName"+objectMap.get("zokusei_col")).equals(stringObjectEntry.getKey())){
@@ -185,9 +178,11 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                 }
             }
         }
-        mapHeader.put("newData",ptsGroup);
-        mapHeader.put("oldData",ptsOldGroup);
-        return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
+        int i = 1;
+        for (Map<String, Object> map : ptsMap) {
+            map.put("rank",i++);
+        }
+        return ptsMap;
     }
 
     /**
@@ -196,7 +191,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
      * @return
      */
     @Override
-    public Map<String, Object> getPlatformShedJans(PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Map<String, Object> getPlatformShedJans(PriorityOrderPlatformShedDto priorityOrderPlatformShedDto)  {
 
         Integer priorityOrderCd = priorityOrderPlatformShedDto.getPriorityOrderCd();
         String companyCd = priorityOrderPlatformShedDto.getCompanyCd();

@@ -630,7 +630,7 @@
             t1.branch_num as branch_num,t1.branch_num as branch_num_upd,coalesce(t2.pos_store_item01,'0') as branch_amount_upd,0 as difference,0 as sale_forecast
             ,ROW_NUMBER () OVER (order by t1.branch_num desc , t2.pos_item01 desc) as rank,coalesce(t2.rank_result,99999998) as rank_prop,99999998 as rank_upd,coalesce(t2.rank_result,99999998) as goods_rank
     from(
-          select  jan,info."2",count(branch) as branch_num
+          select  jan,info."2",count(DISTINCT branch) as branch_num
           from
             planocycle.shelf_pts_data_jandata  jandata
               left join ${tableName} info
@@ -735,5 +735,14 @@
   </select>
   <select id="getJanDataAndId" resultType="java.util.LinkedHashMap">
 
+  </select>
+  <select id="selectJanCount" resultType="int">
+    select count(resultdata.jan) from (select *,row_number() over (partition by jan,face) row_num
+    from planocycle.work_basic_pattern_restrict_result_data where priority_order_cd=#{priorityOrderCd} and  restrict_cd=#{restrictCd}) resultdata
+    inner join
+    (select *,row_number() over (partition by jan order by tai_cd, tana_cd,tanaposition_cd) row_num from planocycle.shelf_pts_data_jandata t1
+    inner join planocycle.shelf_pts_data ptsdata on ptsdata.id=t1.pts_cd
+     where ptsdata.shelf_pattern_cd=#{id} and tai_cd=#{taiCd} and tana_cd=#{tanaCd}) jandata
+    on jandata.jan = resultdata.jan and jandata.row_num = resultdata.row_num and jandata.face_count = resultdata.face
   </select>
 </mapper>

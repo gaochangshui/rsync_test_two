@@ -247,10 +247,10 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
                 int equalsCount = 0;
                 for (Integer integer : attrList) {
-                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer);
-                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer);
+                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, "");
+                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, "");
 
-                    if(restrictKey.equals(zokuseiKey)){
+                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
                         equalsCount++;
                     }
                 }
@@ -312,6 +312,17 @@ public class CommonMstServiceImpl implements CommonMstService {
             for (List<PriorityOrderResultDataDto> value : janResultByRestrictCd.values()) {
                 notAdoptJan.addAll(value.stream().filter(dto->!Objects.equals(dto.getAdoptFlag(), 1)).collect(Collectors.toList()));
             }
+//
+//            notAdoptJan.addAll(newList.stream().filter(map->!Objects.equals(MapUtils.getInteger(map, "adoptFlag"), 1))
+//                    .map(map->{
+//                        PriorityOrderResultDataDto dto = new PriorityOrderResultDataDto();
+//                        dto.setPlanoWidth(MapUtils.getLong(map, MagicString.WIDTH_NAME));
+//                        dto.setPlanoHeight(MapUtils.getLong(map, MagicString.HEIGHT_NAME));
+//                        dto.setJanCd(MapUtils.getString(map, MagicString.JAN_NEW));
+//                        dto.setFace(1L);
+//                        dto.setPlanoIrisu("1");
+//                        return dto;
+//                    }).collect(Collectors.toList()));
 
             if(!notAdoptJan.isEmpty()){
                 for (Map.Entry<String, List<Map<String, Object>>> entry : noRelationGroupTaiTana.entrySet()) {
@@ -350,7 +361,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                           Map<String, Object> relation, Integer tanaWidth, Integer tanaHeight, String taiCd, String tanaCd){
         String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
         double area = MapUtils.getDouble(relation, "area");
-        int janCount = MapUtils.getInteger(relation, "janCount");
+        Integer janCount = MapUtils.getInteger(relation, "janCount");
         double groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).setScale(3, RoundingMode.CEILING).doubleValue();
         Long usedArea = 0L;
         int usedJanCount = 0;
@@ -393,9 +404,10 @@ public class CommonMstServiceImpl implements CommonMstService {
                     newJanDto.setSkuRank(MapUtils.getLong(newJan, "sku_rank"));
                     newJanDto.setRestrictCd(MapUtils.getLong(newJan, MagicString.RESTRICT_CD));
                     if (Objects.equals(tanaWidthCheck, 1)) {
-                        newJanDto.setWidth(MapUtils.getLong(newJan, MagicString.WIDTH_NAME));
+                        newJanDto.setPlanoWidth(MapUtils.getLong(newJan, MagicString.WIDTH_NAME));
+                        janWidth = newJanDto.getPlanoWidth() + partitionValue;
                     }else{
-                        newJanDto.setWidth(jan.getPlanoWidth());
+                        newJanDto.setPlanoWidth(jan.getPlanoWidth());
                     }
                     newJanDto.setHeight(MapUtils.getLong(newJan, MagicString.HEIGHT_NAME));
                     newJanDto.setIrisu(MapUtils.getString(newJan, MagicString.IRISU_NAME));
@@ -410,6 +422,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                             }
                         });
                     }
+                    BeanUtils.copyProperties(newJanDto,jan);
                 }
             }else{
                 BeanUtils.copyProperties(jan, newJanDto);
@@ -429,11 +442,15 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
             }
 
+            width = Optional.ofNullable(jan.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH);
+            face = jan.getFace();
+            janWidth = width + partitionValue;
+
             boolean condition = false;
-            if(Objects.equals(tanaWidthCheck, 1)){
+            if(Objects.equals(tanaWidthCheck, 1) || (MagicString.NO_RESTRICT_CD+"").equals(restrictCd) || janCount==null){
                 condition = janWidth*face + usedArea <= groupArea;
             }else{
-                condition = usedJanCount<=janCount;
+                condition = usedJanCount<janCount;
             }
 
             if(condition){
@@ -570,12 +587,12 @@ public class CommonMstServiceImpl implements CommonMstService {
 
                 for (WorkPriorityOrderResultDataDto currentDataDto : resultDataByTanaCdList) {
                     currentDataDto.setTanaPositionCd(++tantaPositionCd);
-                    currentDataDto.setFaceMen(1);
-                    currentDataDto.setFaceKaiten(0);
-                    currentDataDto.setTumiagesu(1);
-                    currentDataDto.setFaceDisplayflg(0);
-                    currentDataDto.setFacePosition(1);
-                    currentDataDto.setDepthDisplayNum(1);
+                    currentDataDto.setFaceMen(Optional.ofNullable(currentDataDto.getFaceMen()).orElse(1));
+                    currentDataDto.setFaceKaiten(Optional.ofNullable(currentDataDto.getFaceKaiten()).orElse(0));
+                    currentDataDto.setTumiagesu(Optional.ofNullable(currentDataDto.getTumiagesu()).orElse(1));
+                    currentDataDto.setFaceDisplayflg(Optional.ofNullable(currentDataDto.getFaceDisplayflg()).orElse(0));
+                    currentDataDto.setFacePosition(Optional.ofNullable(currentDataDto.getFacePosition()).orElse(1));
+                    currentDataDto.setDepthDisplayNum(Optional.ofNullable(currentDataDto.getDepthDisplayNum()).orElse(1));
                     positionResultData.add(currentDataDto);
                 }
             }

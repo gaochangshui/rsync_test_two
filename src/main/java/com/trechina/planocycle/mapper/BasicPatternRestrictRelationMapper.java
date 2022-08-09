@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.po.BasicPatternRestrictRelation;
+import com.trechina.planocycle.entity.vo.BasicPatternRestrictRelationVo;
 import com.trechina.planocycle.entity.vo.PtsTanaVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -45,11 +46,11 @@ public interface BasicPatternRestrictRelationMapper {
 
     void setTaiInfo(List<PtsTanaVo> ptsTanaVoList,String companyCd, Integer priorityOrderCd,String authorCd);
 
-    List<BasicPatternRestrictRelation> getTanaAttrList(@Param("item") BasicPatternRestrictRelation basicPatternRestrictRelation);
+    List<BasicPatternRestrictRelationVo> getTanaAttrList(@Param("item") BasicPatternRestrictRelation basicPatternRestrictRelation);
 
     void deleteForTanaPosition(@Param("item") BasicPatternRestrictRelation basicPatternRestrictRelation);
 
-    void updateTanaPosition(@Param("list") List<BasicPatternRestrictRelation> tanaAttrList,@Param("authorCd")String authorCd);
+    void updateTanaPosition(@Param("list") List<BasicPatternRestrictRelationVo> tanaAttrList,@Param("authorCd")String authorCd);
 
     void setWorkForFinal(String companyCd, Integer priorityOrderCd);
 

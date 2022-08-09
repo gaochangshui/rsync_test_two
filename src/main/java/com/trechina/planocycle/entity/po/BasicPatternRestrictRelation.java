@@ -42,6 +42,7 @@ public class BasicPatternRestrictRelation implements Serializable {
      * 
      */
     private Long restrictCd;
+    private Integer janCount;
 
     /**
      * 
@@ -49,6 +50,14 @@ public class BasicPatternRestrictRelation implements Serializable {
     private Long area;
 
     private static final long serialVersionUID = 1L;
+
+    public Integer getJanCount() {
+        return janCount;
+    }
+
+    public void setJanCount(Integer janCount) {
+        this.janCount = janCount;
+    }
 
     /**
      * 
