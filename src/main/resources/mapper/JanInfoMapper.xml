@@ -22,7 +22,7 @@
                 </foreach>
             </if>
             <if test="cdList[cdList.size-1]&lt;item.zokuseiCol">
-                janinfo."${item.zokuseiCol}"
+                COALESCE(janinfo."${item.zokuseiCol}", '')
             </if>
             as "${item.zokuseiId}"
         </foreach>
