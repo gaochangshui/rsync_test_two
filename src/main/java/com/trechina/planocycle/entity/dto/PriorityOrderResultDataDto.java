@@ -44,7 +44,10 @@ public class PriorityOrderResultDataDto {
 
     private Long faceKeisan;
     private Double salesCnt;
-
+    private Integer tumiagesu;
+    private Integer zaikosu;
+    private Integer faceDisplayflg;
+    private Integer facePosition;
     private Long width;
     private Long planoWidth;
     private Long height;

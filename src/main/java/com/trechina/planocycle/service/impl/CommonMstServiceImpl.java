@@ -436,7 +436,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             janWidth = width + partitionValue;
 
             boolean condition = false;
-            if(Objects.equals(tanaWidthCheck, 1)){
+            if(Objects.equals(tanaWidthCheck, 1) || MagicString.NO_RESTRICT_CD.equals(restrictCd)){
                 condition = janWidth*face + usedArea <= groupArea;
             }else{
                 condition = usedJanCount<janCount;
@@ -576,12 +576,12 @@ public class CommonMstServiceImpl implements CommonMstService {
 
                 for (WorkPriorityOrderResultDataDto currentDataDto : resultDataByTanaCdList) {
                     currentDataDto.setTanaPositionCd(++tantaPositionCd);
-                    currentDataDto.setFaceMen(1);
-                    currentDataDto.setFaceKaiten(0);
-                    currentDataDto.setTumiagesu(1);
-                    currentDataDto.setFaceDisplayflg(0);
-                    currentDataDto.setFacePosition(1);
-                    currentDataDto.setDepthDisplayNum(1);
+                    currentDataDto.setFaceMen(Optional.ofNullable(currentDataDto.getFaceMen()).orElse(1));
+                    currentDataDto.setFaceKaiten(Optional.ofNullable(currentDataDto.getFaceKaiten()).orElse(0));
+                    currentDataDto.setTumiagesu(Optional.ofNullable(currentDataDto.getTumiagesu()).orElse(1));
+                    currentDataDto.setFaceDisplayflg(Optional.ofNullable(currentDataDto.getFaceDisplayflg()).orElse(0));
+                    currentDataDto.setFacePosition(Optional.ofNullable(currentDataDto.getFacePosition()).orElse(1));
+                    currentDataDto.setDepthDisplayNum(Optional.ofNullable(currentDataDto.getDepthDisplayNum()).orElse(1));
                     positionResultData.add(currentDataDto);
                 }
             }
