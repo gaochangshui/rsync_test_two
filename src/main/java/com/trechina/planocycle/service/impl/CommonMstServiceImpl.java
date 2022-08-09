@@ -393,9 +393,10 @@ public class CommonMstServiceImpl implements CommonMstService {
                     newJanDto.setSkuRank(MapUtils.getLong(newJan, "sku_rank"));
                     newJanDto.setRestrictCd(MapUtils.getLong(newJan, MagicString.RESTRICT_CD));
                     if (Objects.equals(tanaWidthCheck, 1)) {
-                        newJanDto.setWidth(MapUtils.getLong(newJan, MagicString.WIDTH_NAME));
+                        newJanDto.setPlanoWidth(MapUtils.getLong(newJan, MagicString.WIDTH_NAME));
+                        janWidth = newJanDto.getPlanoWidth() + partitionValue;
                     }else{
-                        newJanDto.setWidth(jan.getPlanoWidth());
+                        newJanDto.setPlanoWidth(jan.getPlanoWidth());
                     }
                     newJanDto.setHeight(MapUtils.getLong(newJan, MagicString.HEIGHT_NAME));
                     newJanDto.setIrisu(MapUtils.getString(newJan, MagicString.IRISU_NAME));
@@ -410,6 +411,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                             }
                         });
                     }
+                    BeanUtils.copyProperties(newJanDto,jan);
                 }
             }else{
                 BeanUtils.copyProperties(jan, newJanDto);
@@ -429,11 +431,15 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
             }
 
+            width = Optional.ofNullable(jan.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH);
+            face = jan.getFace();
+            janWidth = width + partitionValue;
+
             boolean condition = false;
             if(Objects.equals(tanaWidthCheck, 1)){
                 condition = janWidth*face + usedArea <= groupArea;
             }else{
-                condition = usedJanCount<=janCount;
+                condition = usedJanCount<janCount;
             }
 
             if(condition){
