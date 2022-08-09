@@ -685,6 +685,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             String authorCd = httpSession.getAttribute("aud").toString();
             Integer taiCd = ptsTanaVoList.get(0).getTaiCd();
             shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
+            Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+            WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd,authorCd, priorityOrderCd);
             for (PtsTanaVo ptsTanaVo : ptsTanaVoList) {
                 if (ptsTanaVo.getGroup().isEmpty()){
                     ArrayList<BasicPatternRestrictRelation> group = new ArrayList<>();
@@ -696,9 +698,14 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                     basicPatternRestrictRelation.setArea(100L);
                     group.add(basicPatternRestrictRelation);
                     ptsTanaVo.setGroup(group);
+                }else{
+                    ptsTanaVo.getGroup().forEach(group->{
+                        int janCount = shelfPtsDataMapper.selectJanCount(priorityOrderCd, (Integer) group.getTaiCd(), (Integer) group.getTanaCd(),
+                                group.getRestrictCd(), workPriorityOrderMst.getShelfPatternCd());
+                        group.setJanCount(janCount);
+                    });
                 }
             }
-            Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
             shelfPtsDataMapper.deleteTana(taiCd,id);
             shelfPtsDataMapper.updTanaSize(ptsTanaVoList,id,authorCd,companyCd);
             basicPatternRestrictRelationMapper.deleteTana(taiCd,companyCd,priorityOrderCd);
