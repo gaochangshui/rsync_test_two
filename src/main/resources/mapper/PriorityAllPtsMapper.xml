@@ -103,6 +103,7 @@
         <foreach collection="janSizeCol" item="item">
             ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
         </foreach>
+        ,janinfo."2" as "janName"
         from
         planocycle.work_priority_all_pts_jans janData
             left join ${tableName} janinfo
