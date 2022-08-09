@@ -312,6 +312,17 @@ public class CommonMstServiceImpl implements CommonMstService {
             for (List<PriorityOrderResultDataDto> value : janResultByRestrictCd.values()) {
                 notAdoptJan.addAll(value.stream().filter(dto->!Objects.equals(dto.getAdoptFlag(), 1)).collect(Collectors.toList()));
             }
+//
+//            notAdoptJan.addAll(newList.stream().filter(map->!Objects.equals(MapUtils.getInteger(map, "adoptFlag"), 1))
+//                    .map(map->{
+//                        PriorityOrderResultDataDto dto = new PriorityOrderResultDataDto();
+//                        dto.setPlanoWidth(MapUtils.getLong(map, MagicString.WIDTH_NAME));
+//                        dto.setPlanoHeight(MapUtils.getLong(map, MagicString.HEIGHT_NAME));
+//                        dto.setJanCd(MapUtils.getString(map, MagicString.JAN_NEW));
+//                        dto.setFace(1L);
+//                        dto.setPlanoIrisu("1");
+//                        return dto;
+//                    }).collect(Collectors.toList()));
 
             if(!notAdoptJan.isEmpty()){
                 for (Map.Entry<String, List<Map<String, Object>>> entry : noRelationGroupTaiTana.entrySet()) {
