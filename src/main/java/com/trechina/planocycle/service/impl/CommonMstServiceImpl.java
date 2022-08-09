@@ -350,7 +350,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                           Map<String, Object> relation, Integer tanaWidth, Integer tanaHeight, String taiCd, String tanaCd){
         String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
         double area = MapUtils.getDouble(relation, "area");
-        int janCount = MapUtils.getInteger(relation, "janCount");
+        Integer janCount = MapUtils.getInteger(relation, "janCount");
         double groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).setScale(3, RoundingMode.CEILING).doubleValue();
         Long usedArea = 0L;
         int usedJanCount = 0;
@@ -436,7 +436,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             janWidth = width + partitionValue;
 
             boolean condition = false;
-            if(Objects.equals(tanaWidthCheck, 1) || MagicString.NO_RESTRICT_CD.equals(restrictCd)){
+            if(Objects.equals(tanaWidthCheck, 1) || (MagicString.NO_RESTRICT_CD+"").equals(restrictCd) || janCount==null){
                 condition = janWidth*face + usedArea <= groupArea;
             }else{
                 condition = usedJanCount<janCount;
