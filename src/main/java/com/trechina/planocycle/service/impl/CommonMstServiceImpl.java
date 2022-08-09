@@ -433,7 +433,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             if(Objects.equals(tanaWidthCheck, 1)){
                 condition = janWidth*face + usedArea <= groupArea;
             }else{
-                condition = usedJanCount<=janCount;
+                condition = usedJanCount<janCount;
             }
 
             if(condition){
