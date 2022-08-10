@@ -357,8 +357,11 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 for (String zokuseiId : zokuseiList) {
                     if (itemMap.containsKey(zokuseiId)) {
                         String attrCd = MapUtils.getString(itemMap, zokuseiId);
-                        itemMap.put(zokuseiId.replace(MagicString.ZOKUSEI_PREFIX, "zokuseiName"), JSONObject.parseObject(itemMap.get("json").toString()).get(attrCd));
+                        itemMap.put(zokuseiId.replace(MagicString.ZOKUSEI_PREFIX, "zokuseiName")
+                                , JSON.parseObject(itemMap.get("json").toString()).get(attrCd)==null?"":JSON.parseObject(itemMap.get("json").toString()).get(attrCd));
                     }
+                    itemMap.putIfAbsent(zokuseiId.replace(MagicString.ZOKUSEI_PREFIX, "zokuseiName"), "");
+
                 }
                 itemMap.remove("json");
                 if (itemMap.containsKey(zokuseiList.get(0))) {

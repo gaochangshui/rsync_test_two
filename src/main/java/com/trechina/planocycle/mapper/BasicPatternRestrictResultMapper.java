@@ -27,6 +27,8 @@ public interface BasicPatternRestrictResultMapper {
 
     List<Map<String, Object>> selectByPrimaryKey(Integer priorityOrderCd);
 
+    List<Map<String, Object>> selectGroup(Integer priorityOrderCd,List<ZokuseiMst>zokuseiMsts);
+
     int updateByPrimaryKeySelective(BasicPatternRestrictResult record);
 
     int updateByPrimaryKey(BasicPatternRestrictResult record);

@@ -26,7 +26,7 @@ public class PriorityOrderShelfDataController {
      * @return
      */
     @GetMapping("getRestrictData")
-    public Map<String,Object> getRestrictData(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public Map<String,Object> getRestrictData(String companyCd,Integer priorityOrderCd)  {
         return  priorityOrderShelfDataService.getRestrictData(companyCd,priorityOrderCd);
     }
 

@@ -103,7 +103,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto) {
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
