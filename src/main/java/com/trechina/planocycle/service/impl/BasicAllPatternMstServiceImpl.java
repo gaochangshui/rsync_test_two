@@ -161,6 +161,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             } catch(Exception ex) {
                 logger.error("", ex);
                 vehicleNumCache.put("IO"+uuid,1);
+                vehicleNumCache.put("IOError"+uuid,JSON.toJSONString(ex));
                 logAspect.setTryErrorLog(ex,new Object[]{priorityAllSaveDto});
                 throw new BusinessException("自動計算失敗");
             }finally {
@@ -598,8 +599,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             for (Map<String, Object> restrict : restrictResult) {
                 int equalsCount = 0;
                 for (Integer integer : attrList) {
-                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer);
-                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer);
+                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, "");
+                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, "");
 
                     if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
                         equalsCount++;
