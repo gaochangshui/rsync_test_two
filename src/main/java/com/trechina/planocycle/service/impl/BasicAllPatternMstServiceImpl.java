@@ -176,7 +176,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
         //all pattern don't check 棚幅チェック and 高さスペース
         Integer tanaWidCheck = 0;
-        Short topPartitionVal = 0;
 
         Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
         Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
@@ -234,10 +233,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
     @Override
     public void autoDetect(String companyCd,Integer priorityAllCd,Integer shelfPatternCd,Integer priorityOrderCd,String aud) {
-
-
-
-        //shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrListFinal(companyCd, priorityOrderCd);
         PriorityOrderAttrDto priorityOrderAttrDto = priorityOrderMstMapper.getCommonPartsData(companyCd, priorityOrderCd);
         String commonPartsData = priorityOrderAttrDto.getCommonPartsData();
@@ -311,7 +306,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 }
 
                 if(!"".equals(lastKey) && (!lastKey.equals(key.toString()) || (i+1)==jans.size())){
-                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 5, RoundingMode.CEILING)
+                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, RoundingMode.CEILING)
                             .multiply(BigDecimal.valueOf(100)).doubleValue();
                     Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
                             new TypeToken<Map<String, Object>>(){}.getType());
