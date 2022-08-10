@@ -497,6 +497,7 @@
         <foreach collection="zokuseiMsts" separator="," item="item">
             coalesce ("zokusei${item.zokuseiId}",'') as "zokusei${item.zokuseiId}"
         </foreach>
+        ,restrict_cd
         from planocycle.work_basic_pattern_restrict_result
         where priority_order_cd=#{priorityOrderCd}
     </select>

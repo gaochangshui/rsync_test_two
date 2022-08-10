@@ -492,11 +492,32 @@ public class MstJanServiceImpl implements MstJanService {
                     }
                 }
 
-                jan.put("102",simpleDateFormat.format(date));
-                jan.put("103",session.getAttribute("aud").toString());
+                jan.remove("102");
+                jan.remove("103");
                 janData.add(jan);
             }
-            count = mstJanMapper.insertJanList(tableNameInfo, infoHeader, janData);
+            String dateStr = simpleDateFormat.format(date);
+            String authorCd = session.getAttribute("aud").toString();
+        LinkedHashMap<String, Object> stringObjectLinkedHashMap = janData.get(0);
+        List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, prodMstClass);
+        System.out.println(janHeader);
+        count = mstJanMapper.insertJanList(tableNameInfo,infoHeader,janData, dateStr,authorCd);
+            Set zokuseiList = new HashSet();
+            for (LinkedHashMap<String, Object> janDatum : janData) {
+                for (Map.Entry<String, Object> stringObjectEntry : janDatum.entrySet()) {
+                    for (Map<String, Object> map : zokuseiIdAndCol) {
+                        if (stringObjectEntry.getKey().equals(map.get("zokusei_col"))) {
+                            Map <String,Object> zokuseiMap = new HashMap<>();
+                            zokuseiMap.put("zokusei_id",map.get("zokusei_id"));
+                            zokuseiMap.put("zokusei_col",map.get("zokusei_col"));
+                            zokuseiMap.put("zokusei_nm",stringObjectEntry.getValue());
+                            zokuseiList.add(zokuseiMap);
+                        }
+                    }
+                }
+            }
+            zokuseiMstMapper.setValBatch(zokuseiList,companyCd,prodMstClass);
+            logger.info("");
         } catch (Exception e) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_ABNORMALITY_DATA);
         }

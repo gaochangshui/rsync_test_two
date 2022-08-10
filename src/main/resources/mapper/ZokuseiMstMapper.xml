@@ -68,6 +68,18 @@
     <update id="updateZokuseiName">
         update masterdb.planocycle_zokusei_mst set zokusei_nm = #{productItemVO.name} where company_cd = #{companyCd} and class_cd = #{classCd} and zokusei_col = #{zokuseiCol,jdbcType=INTEGER}
     </update>
+    <insert id="setValBatch">
+        insert into masterdb.planocycle_zokusei_mst_data(
+        val,zokusei_id,type,nm,company_cd,class_cd)
+        values
+        <foreach collection="maps" item="item" separator="," >
+            (#{item.zokusei_nm},#{item.zokusei_id},0,#{item.zokusei_nm},#{companyCd},#{classCd})
+        </foreach>
+
+        on conflict(zokusei_id,val,company_cd,class_cd)
+        do update set
+            val = EXCLUDED.val,zokusei_id = EXCLUDED.zokusei_id,type =EXCLUDED.type ,nm = EXCLUDED.nm,company_cd = EXCLUDED.company_cd,class_cd = EXCLUDED.class_cd
+    </insert>
     <insert id="setItem">
         insert into masterdb.planocycle_zokusei_mst (company_cd,class_cd,zokusei_id,zokusei_nm,zokusei_sort,type,zokusei_col)
 

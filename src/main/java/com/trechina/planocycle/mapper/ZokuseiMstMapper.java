@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Mapper
 public interface ZokuseiMstMapper {
@@ -57,4 +58,7 @@ public interface ZokuseiMstMapper {
     void setItem(String itemColName, Integer maxZokuseiId, String companyCd, String classCd, String name);
 
     void updateZokuseiName(ProductItemVO productItemVO,String companyCd, String classCd ,String zokuseiCol);
+
+    void setValBatch(Set<Map<String, Object>> maps, String companyCd, String classCd);
+
 }
