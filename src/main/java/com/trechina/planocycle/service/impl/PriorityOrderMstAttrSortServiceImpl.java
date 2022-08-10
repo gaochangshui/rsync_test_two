@@ -2,11 +2,9 @@ package com.trechina.planocycle.service.impl;
 
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderSpaceDto;
-import com.trechina.planocycle.entity.dto.ShelfPtsDataTanaCount;
-import com.trechina.planocycle.entity.po.*;
+import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictSet;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
-import com.trechina.planocycle.entity.vo.PriorityOrderAttrVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
@@ -19,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -137,8 +132,9 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             for (Map<String, Object> map : attrName) {
                 for (String s : attrList) {
                     if (objectMap.get("zokusei"+s).equals(map.get("val"))){
-                        objectMap.put("zokuseiName"+s,map.get("nm"));
+                        objectMap.put("zokuseiName"+s,map.getOrDefault("nm",""));
                     }
+                    objectMap.putIfAbsent("zokuseiName"+s,"");
                 }
             }
         }

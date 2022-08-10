@@ -4,7 +4,7 @@
     <select id="getAttrComposeList" resultType="java.util.Map">
         select
         <foreach collection="attrList" item="item" separator="," >
-            COALESCE(zokusei${item},'_') as "zokusei${item}"
+            COALESCE(zokusei${item},'') as "zokusei${item}"
         </foreach>
         ,color.value as color,
         restrict_cd as "restrictCd"

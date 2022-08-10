@@ -365,7 +365,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             }
             s+=",janName";
             for (Map<String, Object> map : attrCol) {
-                s=s+","+"zokusei"+map.get("zokusei_col");
+                s=s+","+map.get("zokusei_colname");
             }
             s = s + ",plano_width,plano_height,plano_depth";
             ptsDetailData.setJanColumns(s);
@@ -747,7 +747,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             }
             s+= ",janName";
             for (Map<String, Object> map : attrCol) {
-                s=s+","+"zokusei"+map.get("zokusei_col");
+                s=s+","+map.get("zokusei_colname");
             }
             s = s + ",plano_width,plano_height,plano_depth";
             ptsDetailData.setJanColumns(s);

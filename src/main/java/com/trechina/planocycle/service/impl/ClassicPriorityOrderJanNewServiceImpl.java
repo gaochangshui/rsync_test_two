@@ -14,6 +14,7 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanNewService;
 import com.trechina.planocycle.utils.ResultMaps;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,6 +211,11 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         String companyCd = map.get("companyCd").toString();
         Integer priorityOrderCd = Integer.valueOf(map.get("priorityOrderCd").toString());
         List<Map<String,Object>> data = (List<Map<String,Object>>)map.get("data");
+        for (Map<String, Object> datum : data) {
+            datum.putIfAbsent("rank",1);
+        }
+        data = data.stream().sorted(Comparator.comparing(map1 -> MapUtils.getString(map1,"janNew"),Comparator.nullsFirst(String::compareTo).reversed()))
+                .sorted(Comparator.comparing(map1 -> MapUtils.getInteger(map1,"rank"),Comparator.nullsFirst(Integer::compareTo))).collect(Collectors.toList());
         Set<Map<String,Object>> list = new HashSet<>();
         List<Map<String,Object>> errorMsgJan = priorityOrderJanNewMapper.getErrorMsgJan(companyCd, priorityOrderCd);
         for (Map<String, Object> map1 : data) {

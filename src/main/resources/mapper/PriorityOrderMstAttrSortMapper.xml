@@ -89,20 +89,20 @@
     </foreach>
   </select>
   <select id="getAttrDistinct" resultType="java.util.Map">
-    select DISTINCT result.zokusei${attr} as zokusei${attr},nm as "zokuseiName${attr}",
-                    round(sum(relation.area*tana_width)/${width}) as area,mst.zokusei_nm as "classifyName"
+    select DISTINCT coalesce (result.zokusei${attr},'') as zokusei${attr},coalesce ( nm, '' ) as "zokuseiName${attr}",
+                    round(sum(relation.area*tana_width)/${width}) as area,coalesce ( mst.zokusei_nm, '' ) as "classifyName"
     from planocycle.work_basic_pattern_restrict_result result
            inner join planocycle.work_basic_pattern_restrict_relation relation
                       on relation.restrict_cd = result.restrict_cd
                         and result.priority_order_cd = relation.priority_order_cd
            left join masterdb.planocycle_zokusei_mst_data mstdata
-        on zokusei${attr} = val and mstdata.class_cd = #{classCd} and mstdata.company_cd = #{companyCd}
+        on coalesce (zokusei${attr},'') = coalesce ( val, '' )  and mstdata.class_cd = #{classCd} and mstdata.company_cd = #{companyCd}
            inner join masterdb.planocycle_zokusei_mst mst on mstdata.zokusei_id = mst.zokusei_id and mst.class_cd = #{classCd}
       and mst.company_cd = #{companyCd} and mst.zokusei_id = #{attr} ::integer
            left join planocycle.work_priority_order_pts_data_tanamst tanamst
                      on tanamst.pts_cd =#{id} and tanamst.tai_cd = relation.tai_cd and tanamst.tana_cd = relation.tana_cd
         where result.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-        group by zokusei${attr},nm,mst.zokusei_nm
+        group by coalesce (result.zokusei${attr},''),coalesce ( nm, '' ),coalesce ( mst.zokusei_nm, '' )
   </select>
   <select id="getColNmforMst" resultType="java.lang.String">
     select (zokusei_col)::INTEGER as "attrSort"
@@ -134,12 +134,19 @@
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
   <select id="getAttrColForName" resultType="java.util.Map">
-    select value,zokusei_nm,case when "3" is null then zokusei_col :: integer else (zokusei_col :: INTEGER+1) end as zokusei_col
+
+    select value,zokusei_nm,
+           case when kaisou."3" is null then attr."1" else concat('zokuseiName',(zokusei_col :: INTEGER+1)) end as zokusei_colname
+            ,
+           case when kaisou."3" is null then attr."1" else concat('zokusei',(zokusei_col :: INTEGER+1)) end as zokusei_colcd
+            ,case when kaisou."3" is null then zokuseimst.zokusei_col :: integer else (zokusei_col :: INTEGER+1) end as zokusei_col
     from  planocycle.work_priority_order_mst_attrsort attrsort
     left join masterdb.planocycle_zokusei_mst zokuseimst
     on zokuseimst.zokusei_id = attrsort.value and zokuseimst.company_cd = #{company} and zokuseimst.class_cd = #{classCd}
     left join "${company}".prod_${classCd}_jan_kaisou_header_sys kaisou
     on kaisou."3" = trim(zokuseimst.zokusei_col :: VARCHAR)
+    left join "${company}".prod_${classCd}_jan_attr_header_sys attr
+    on attr."3" = trim(zokuseimst.zokusei_col :: VARCHAR)
     where attrsort.company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     order by sort
   </select>
