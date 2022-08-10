@@ -12,7 +12,7 @@
     </select>
     <select id="selectJanClassify" resultType="map">
         select tai_cd as "taiCd",tana_cd as "tanaCd", tanaposition_cd "tanaPositionCd",
-        sum(COALESCE(janinfo."${sizeAndIrisuMap.plano_width}",'67')::integer*jandata.face_count)  as "width"
+        sum(COALESCE(case janinfo."${sizeAndIrisuMap.plano_width}" when '' then null else janinfo."${sizeAndIrisuMap.plano_width}" end,'67')::integer*jandata.face_count)  as "width"
         <foreach collection="zokuseiList" item="item" open="," separator=",">
             <if test="cdList[cdList.size-1]>=item.zokuseiCol">
                 <foreach collection="cdList" item="item1" separator="|| '_' ||">
