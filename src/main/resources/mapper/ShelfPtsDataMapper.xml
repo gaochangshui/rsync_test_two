@@ -546,8 +546,8 @@
   </select>
   <select id="getNewFaceNum" resultType="java.lang.Integer">
     select sum(jandataMst.face_count) faceNum
-    from planocycle.work_priority_order_pts_data ptsData
-           left join planocycle.work_priority_order_pts_data_jandata jandataMst
+    from planocycle.priority_order_pts_data ptsData
+           left join planocycle.priority_order_pts_data_jandata jandataMst
                      on ptsData.id = jandataMst.pts_cd
     where ptsData.priority_order_cd=#{priorityOrderCd}
   </select>
@@ -555,8 +555,8 @@
     select count(jans.jan)
     from (
            select jandataMst.jan
-           from planocycle.work_priority_order_pts_data ptsData
-                  left join planocycle.work_priority_order_pts_data_jandata jandataMst
+           from planocycle.priority_order_pts_data ptsData
+                  left join planocycle.priority_order_pts_data_jandata jandataMst
                             on ptsData.id = jandataMst.pts_cd
            where ptsData.priority_order_cd=#{priorityOrderCd}
            group by jan) jans
@@ -667,15 +667,15 @@
   </select>
   <select id="getNewTaiNum" resultType="java.lang.Integer">
     select count(taiMst.tai_cd) taiNum
-    from planocycle.work_priority_order_pts_data ptsData
-           left join planocycle.work_priority_order_pts_data_taimst taiMst
+    from planocycle.priority_order_pts_data ptsData
+           left join planocycle.priority_order_pts_data_taimst taiMst
                      on ptsData.id = taiMst.pts_cd
     where ptsdata.priority_order_cd = #{priorityOrderCd}
   </select>
     <select id="getNewTanaNum" resultType="java.lang.Integer">
       select count(tanaMst.tana_cd) taiNum
-      from planocycle.work_priority_order_pts_data ptsData
-             left join planocycle.work_priority_order_pts_data_tanamst tanaMst
+      from planocycle.priority_order_pts_data ptsData
+             left join planocycle.priority_order_pts_data_tanamst tanaMst
                        on ptsData.id = tanaMst.pts_cd
       where ptsdata.priority_order_cd = #{priorityOrderCd}
     </select>
