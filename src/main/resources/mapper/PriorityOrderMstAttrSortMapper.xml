@@ -90,7 +90,7 @@
   </select>
   <select id="getAttrDistinct" resultType="java.util.Map">
     select DISTINCT coalesce (result.zokusei${attr},'') as zokusei${attr},coalesce ( nm, '' ) as "zokuseiName${attr}",
-                    round(sum(relation.area*tana_width)/${width}) as area,coalesce ( mst.zokusei_nm, '' ) as "classifyName"
+    ceil(sum(relation.area*tana_width)/${width}) as area,coalesce ( mst.zokusei_nm, '' ) as "classifyName"
     from planocycle.work_basic_pattern_restrict_result result
            inner join planocycle.work_basic_pattern_restrict_relation relation
                       on relation.restrict_cd = result.restrict_cd

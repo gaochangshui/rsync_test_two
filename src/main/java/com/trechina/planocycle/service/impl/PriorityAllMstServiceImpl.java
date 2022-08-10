@@ -443,7 +443,9 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         }
         if (vehicleNumCache.get("IO"+taskId)!=null){
             vehicleNumCache.remove("IO"+taskId);
-            return ResultMaps.result(ResultEnum.FAILURE);
+            String error = vehicleNumCache.get("IOError" + taskId).toString();
+            vehicleNumCache.remove("IOError"+taskId);
+            return ResultMaps.error(ResultEnum.FAILURE, error);
         }
        if (vehicleNumCache.get(taskId) != null){
             vehicleNumCache.remove(taskId);

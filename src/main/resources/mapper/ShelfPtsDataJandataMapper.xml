@@ -315,11 +315,13 @@
     <if test="isReOrder&lt;1">order by tai_cd, tana_cd, tanaposition_cd</if>
   </select>
   <select id="selectJanByPatternCdByAll" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
-    select jan "janCd", sku_rank,"restrictCd",face,tai_cd "taiCd", tana_cd "tanaCd", tanaposition_cd "tanapositionCd"
+    select jan "janCd", sku_rank,"restrictCd",face,tai_cd "taiCd", tana_cd "tanaCd", tanaposition_cd "tanapositionCd",
+    tumiagesu,zaikosu,face_displayflg,face_position
     <foreach collection="attrHeaderList" open="," item="item" separator=",">
       coalesce(janmst."${item.attrVal}", '0') as "${item.attr}"
     </foreach>
     from (select coalesce(jan_new, jandata.jan) jan, sku_rank, restrict_cd "restrictCd", face,tai_cd,tana_cd,tanaposition_cd,
+    tumiagesu,zaikosu,face_displayflg,face_position,
     ROW_NUMBER() over(PARTITION by jan_new,restrict_cd,tai_cd,tana_cd,tanaposition_cd) rowNum
     from(select *,ROW_NUMBER() over(PARTITION by jan) row_num from planocycle.shelf_pts_data ptsdata
     inner JOIN planocycle.shelf_pts_data_jandata jandata ON ptsdata.ID = jandata.pts_cd
@@ -333,7 +335,7 @@
     and janreplace.priority_order_cd=#{priorityOrderCd}
     where restrict_cd is not null) tmp left join ${tableName} janmst on janmst."1"=tmp.jan
     where rowNum=1
-    <if test="isReOrder>0">order by sku_rank</if>
+    <if test="isReOrder>0">order by tai_cd, tana_cd, sku_rank</if>
     <if test="isReOrder&lt;1">order by tai_cd, tana_cd, tanaposition_cd</if>
   </select>
 </mapper>
