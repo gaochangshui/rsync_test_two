@@ -202,7 +202,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
         return commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd, minFaceNum, zokuseiMsts, allCdList,
                 restrictResult, attrList, authorCd, commonTableName,
-                partitionVal, topPartitionVal, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder);
+                partitionVal, null, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder);
     }
 
     @Transactional(rollbackFor = Exception.class)
