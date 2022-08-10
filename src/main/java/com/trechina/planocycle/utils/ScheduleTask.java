@@ -1,5 +1,6 @@
 package com.trechina.planocycle.utils;
 
+import com.trechina.planocycle.mapper.LogMapper;
 import com.trechina.planocycle.service.TableTransferService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,11 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Component
 public class ScheduleTask {
     Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private TableTransferService tableTransferService;
+    @Autowired
+    private LogMapper logMapper;
+
     @Scheduled(cron = "0 0 6 * * ?")
     public void MasterInfoSync(){
         logger.info("定時調度任務--attr表同期開始");
@@ -25,5 +33,10 @@ public class ScheduleTask {
         //logger.info("定時調度任務--janInfo表同期開始");
         //tableTransferService.getJanInfoTransfer();
         tableTransferService.syncZokuseiMst();
+    }
+
+    @Scheduled(cron = "0 5 0 * * ?")
+    public void doDelLog(){
+        logMapper.deleteLog();
     }
 }

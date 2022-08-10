@@ -124,7 +124,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
     @Override
     public Map<String, Object> getPtsDetailData(Integer patternCd, String companyCd, Integer priorityAllCd) {
         String authorCd = session.getAttribute("aud").toString();
-        Integer priorityOrderCd = priorityAllMstMapper.getWorkPriorityOrderCd(authorCd, 0);
+        Integer priorityOrderCd = priorityAllMstMapper.getWorkPriorityOrderCd(authorCd, priorityAllCd, companyCd);
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
         List<Map<String,Object>> attrList = priorityOrderMstAttrSortMapper.getAttrCol(companyCd, priorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
@@ -146,7 +146,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             }
             s += ",janName";
             for (Map<String, Object> map : attrCol) {
-                s=s+","+"zokusei"+map.get("zokusei_col");
+                s=s+","+map.get("zokusei_colname");
             }
             s = s + ",plano_width,plano_height,plano_depth";
             ptsDetailData.setJanColumns(s);

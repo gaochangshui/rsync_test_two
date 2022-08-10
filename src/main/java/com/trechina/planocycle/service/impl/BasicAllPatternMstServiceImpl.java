@@ -103,7 +103,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto) {
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
@@ -162,6 +161,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             } catch(Exception ex) {
                 logger.error("", ex);
                 vehicleNumCache.put("IO"+uuid,1);
+                vehicleNumCache.put("IOError"+uuid,JSON.toJSONString(ex));
                 logAspect.setTryErrorLog(ex,new Object[]{priorityAllSaveDto});
                 throw new BusinessException("自動計算失敗");
             }finally {
@@ -176,7 +176,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
         //all pattern don't check 棚幅チェック and 高さスペース
         Integer tanaWidCheck = 0;
-        Short topPartitionVal = 0;
 
         Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
         Short partitionVal = Optional.ofNullable(priorityOrderMst.getPartitionVal()).orElse((short) 2);
@@ -203,7 +202,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
         return commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd, minFaceNum, zokuseiMsts, allCdList,
                 restrictResult, attrList, authorCd, commonTableName,
-                partitionVal, topPartitionVal, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder);
+                partitionVal, null, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -234,10 +233,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
     @Override
     public void autoDetect(String companyCd,Integer priorityAllCd,Integer shelfPatternCd,Integer priorityOrderCd,String aud) {
-
-
-
-        //shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrListFinal(companyCd, priorityOrderCd);
         PriorityOrderAttrDto priorityOrderAttrDto = priorityOrderMstMapper.getCommonPartsData(companyCd, priorityOrderCd);
         String commonPartsData = priorityOrderAttrDto.getCommonPartsData();
@@ -311,7 +306,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 }
 
                 if(!"".equals(lastKey) && (!lastKey.equals(key.toString()) || (i+1)==jans.size())){
-                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 5, RoundingMode.CEILING)
+                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, RoundingMode.CEILING)
                             .multiply(BigDecimal.valueOf(100)).doubleValue();
                     Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
                             new TypeToken<Map<String, Object>>(){}.getType());
@@ -599,8 +594,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             for (Map<String, Object> restrict : restrictResult) {
                 int equalsCount = 0;
                 for (Integer integer : attrList) {
-                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer);
-                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer);
+                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, "");
+                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, "");
 
                     if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
                         equalsCount++;

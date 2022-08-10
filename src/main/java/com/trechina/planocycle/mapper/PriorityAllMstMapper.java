@@ -129,5 +129,5 @@ public interface PriorityAllMstMapper {
 
     void setFinalTableRestrictResultData(String companyCd, Integer priorityAllCd, String authorCd);
 
-    Integer getWorkPriorityOrderCd(String authorCd, Integer priorityAllCd);
+    Integer getWorkPriorityOrderCd(String authorCd, Integer priorityAllCd, String companyCd);
 }

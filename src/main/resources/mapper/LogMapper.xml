@@ -7,4 +7,7 @@
                 #{controller},#{params},now(),#{msg}
                )
     </insert>
+    <delete id="deleteLog">
+        delete from "planocycle_log".log where create_time &lt; current_date::timestamp - INTERVAL '2 day'
+    </delete>
 </mapper>

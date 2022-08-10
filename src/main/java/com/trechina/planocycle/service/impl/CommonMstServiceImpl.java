@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.CommonPartsDto;
@@ -304,7 +305,8 @@ public class CommonMstServiceImpl implements CommonMstService {
         }
 
         Map<String, List<Map<String, Object>>> noRelationGroupTaiTana = relationMap.stream()
-                .filter(map->MapUtils.getString(map, MagicString.RESTRICT_CD).equals(MagicString.NO_RESTRICT_CD+""))
+                .filter(map->MapUtils.getString(map, MagicString.RESTRICT_CD).equals(MagicString.NO_RESTRICT_CD+"")
+                        || "0".equals(MapUtils.getString(map, "janCount")) || Strings.isNullOrEmpty(MapUtils.getString(map, "janCount")))
                 .collect(Collectors.groupingBy(map -> MapUtils.getInteger(map, MagicString.TAI_CD)+ "_" + MapUtils.getInteger(map, MagicString.TANA_CD),
                         LinkedHashMap::new, Collectors.toList()));
         if(!noRelationGroupTaiTana.isEmpty()){
@@ -312,17 +314,18 @@ public class CommonMstServiceImpl implements CommonMstService {
             for (List<PriorityOrderResultDataDto> value : janResultByRestrictCd.values()) {
                 notAdoptJan.addAll(value.stream().filter(dto->!Objects.equals(dto.getAdoptFlag(), 1)).collect(Collectors.toList()));
             }
-//
-//            notAdoptJan.addAll(newList.stream().filter(map->!Objects.equals(MapUtils.getInteger(map, "adoptFlag"), 1))
-//                    .map(map->{
-//                        PriorityOrderResultDataDto dto = new PriorityOrderResultDataDto();
-//                        dto.setPlanoWidth(MapUtils.getLong(map, MagicString.WIDTH_NAME));
-//                        dto.setPlanoHeight(MapUtils.getLong(map, MagicString.HEIGHT_NAME));
-//                        dto.setJanCd(MapUtils.getString(map, MagicString.JAN_NEW));
-//                        dto.setFace(1L);
-//                        dto.setPlanoIrisu("1");
-//                        return dto;
-//                    }).collect(Collectors.toList()));
+
+            notAdoptJan.addAll(newList.stream().filter(map->!Objects.equals(MapUtils.getInteger(map, "adoptFlag"), 1))
+                    .map(map->{
+                        PriorityOrderResultDataDto dto = new PriorityOrderResultDataDto();
+                        dto.setPlanoWidth(MapUtils.getLong(map, MagicString.WIDTH_NAME));
+                        dto.setPlanoHeight(MapUtils.getLong(map, MagicString.HEIGHT_NAME));
+                        dto.setJanCd(MapUtils.getString(map, MagicString.JAN));
+                        dto.setFace(1L);
+                        dto.setPlanoIrisu("1");
+                        dto.setSkuRank(MapUtils.getLong(map, "sku_rank"));
+                        return dto;
+                    }).collect(Collectors.toList()));
 
             if(!notAdoptJan.isEmpty()){
                 for (Map.Entry<String, List<Map<String, Object>>> entry : noRelationGroupTaiTana.entrySet()) {
@@ -447,7 +450,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             janWidth = width + partitionValue;
 
             boolean condition = false;
-            if(Objects.equals(tanaWidthCheck, 1) || (MagicString.NO_RESTRICT_CD+"").equals(restrictCd) || janCount==null){
+            if(Objects.equals(tanaWidthCheck, 1) || (MagicString.NO_RESTRICT_CD+"").equals(restrictCd) || janCount==null || janCount==0){
                 condition = janWidth*face + usedArea <= groupArea;
             }else{
                 condition = usedJanCount<janCount;
@@ -462,14 +465,19 @@ public class CommonMstServiceImpl implements CommonMstService {
                 jan.setAdoptFlag(1);
                 usedJanCount++;
             }else{
-                if(tanaWidthCheck!=null && Objects.equals(tanaWidthCheck, 1) && usedJanCount<janCount){
+                boolean checkCondition = Objects.equals(tanaWidthCheck, 1);
+                if(janCount!=null && janCount!=0){
+                    checkCondition = checkCondition && usedJanCount<janCount;
+                }
+
+                if(checkCondition){
                     boolean setJanByCutFace = isSetJanByCutFace(adoptJan, groupArea, usedArea, partitionVal, minFace, newJanDto);
                     if(setJanByCutFace){
                         newJanDto.setTaiCd(Integer.parseInt(taiCd));
                         newJanDto.setTanaCd(Integer.parseInt(tanaCd));
                         adoptJan.add(newJanDto);
                         jan.setAdoptFlag(1);
-                        usedArea+=Optional.ofNullable(newJanDto.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH)*newJanDto.getFaceFact()+partitionVal;
+//                        usedArea+=Optional.ofNullable(newJanDto.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH)*newJanDto.getFaceFact()+partitionVal;
                     }
                 }
 

@@ -173,7 +173,11 @@
     </update>
 
     <insert id="insertJanList">
-        insert into ${tableName}(${infoHeader})
+        insert into ${tableName}(
+                                 <foreach collection="janData[0]" index="index" separator=",">
+                                     "${index}"
+                                 </foreach>
+        )
         values
         <foreach collection="janData" item="items" separator=",">
             (

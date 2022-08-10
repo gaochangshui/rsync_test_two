@@ -32,6 +32,14 @@ public final class ResultMaps {
         return map;
     }
 
+    public final static Map<String,Object> error(ResultEnum resultEnum, String error){
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("code", resultEnum.getCode());
+        map.put("msg", resultEnum.getMsg());
+        map.put("error", error);
+        return map;
+    }
+
     public final static Map<String,Object> result(Integer code, String msg){
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("code", code);

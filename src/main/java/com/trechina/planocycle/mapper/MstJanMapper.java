@@ -88,10 +88,10 @@ public interface MstJanMapper {
      * batch更新JAN
      * @param tableName
      * @param janData
-     * @param infoHeader
+     * @param
      * @return
      */
-    int insertJanList(String tableName,String infoHeader, List<LinkedHashMap<String, Object>> janData);
+    int insertJanList(String tableName,String infoHeader, List<LinkedHashMap<String, Object>> janData,String date,String authorCd);
 
     String checkKaisou(String tableNameInfo, Map<String,Object>map,String colName);
 

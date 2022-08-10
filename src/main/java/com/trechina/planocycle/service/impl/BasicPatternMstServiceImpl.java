@@ -195,7 +195,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 }
 
                 if(!"".equals(lastKey) && (!lastKey.equals(key.toString()) || (i+1)==jans.size())){
-                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 5, RoundingMode.CEILING)
+                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, RoundingMode.CEILING)
                             .multiply(BigDecimal.valueOf(100)).doubleValue();
                     Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
                             new TypeToken<Map<String, Object>>(){}.getType());
@@ -357,8 +357,11 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 for (String zokuseiId : zokuseiList) {
                     if (itemMap.containsKey(zokuseiId)) {
                         String attrCd = MapUtils.getString(itemMap, zokuseiId);
-                        itemMap.put(zokuseiId.replace(MagicString.ZOKUSEI_PREFIX, "zokuseiName"), JSONObject.parseObject(itemMap.get("json").toString()).get(attrCd));
+                        itemMap.put(zokuseiId.replace(MagicString.ZOKUSEI_PREFIX, "zokuseiName")
+                                , JSON.parseObject(itemMap.get("json").toString()).get(attrCd)==null?"":JSON.parseObject(itemMap.get("json").toString()).get(attrCd));
                     }
+                    itemMap.putIfAbsent(zokuseiId.replace(MagicString.ZOKUSEI_PREFIX, "zokuseiName"), "");
+
                 }
                 itemMap.remove("json");
                 if (itemMap.containsKey(zokuseiList.get(0))) {
@@ -513,6 +516,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             }catch (Exception e){
                 logger.error("auto calculation is error", e);
                 vehicleNumCache.put(uuid,2);
+                vehicleNumCache.put(uuid+"-error",JSON.toJSONString(e));
             }
         });
 
@@ -579,7 +583,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         }
         if (vehicleNumCache.get("PatternCdNotExist"+taskId)!=null){
             vehicleNumCache.remove("PatternCdNotExist"+taskId);
-            return ResultMaps.result(ResultEnum.FAILURE);
+            return ResultMaps.error(ResultEnum.FAILURE, "PatternCdNotExist");
         }
 
         if (vehicleNumCache.get("setJanHeightError"+taskId)!=null){
@@ -591,7 +595,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         if (vehicleNumCache.get(taskId) != null){
             if(Objects.equals(vehicleNumCache.get(taskId), 2)){
                 vehicleNumCache.remove(taskId);
-                return ResultMaps.result(ResultEnum.FAILURE);
+                String error = vehicleNumCache.get(taskId + "-error").toString();
+                vehicleNumCache.remove(taskId+"-error");
+                return ResultMaps.error(ResultEnum.FAILURE, error);
             }
             vehicleNumCache.remove(taskId);
             return ResultMaps.result(ResultEnum.SUCCESS,"success");
