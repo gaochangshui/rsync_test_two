@@ -178,10 +178,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         }
         // 棚パターンのPTS基本情報をもらう
         Map<String, Object> ptsInfoTemp = new HashMap<>();
-        Integer newTaiNum = shelfPtsDataMapper.getNewTaiNum(priorityOrderCd);
-        Integer newFaceNum = shelfPtsDataMapper.getNewFaceNum(priorityOrderCd);
-        Integer newTanaNum = shelfPtsDataMapper.getNewTanaNum(priorityOrderCd);
-        Integer newSkuNum = shelfPtsDataMapper.getNewSkuNum(priorityOrderCd);
+        Integer newTaiNum = shelfPtsDataMapper.getNewTaiNumFinal(priorityOrderCd);
+        Integer newFaceNum = shelfPtsDataMapper.getNewFaceNumFinal(priorityOrderCd);
+        Integer newTanaNum = shelfPtsDataMapper.getNewTanaNumFinal(priorityOrderCd);
+        Integer newSkuNum = shelfPtsDataMapper.getNewSkuNumFinal(priorityOrderCd);
         PriorityOrderAttrDto priorityOrderAttrDto = priorityOrderMstMapper.getCommonPartsData(companyCd, priorityOrderCd);
         String commonPartsData = priorityOrderAttrDto.getCommonPartsData();
         ptsInfoTemp.put("taiNum",newTaiNum);

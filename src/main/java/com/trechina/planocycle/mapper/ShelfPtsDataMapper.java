@@ -64,20 +64,30 @@ public interface ShelfPtsDataMapper {
     Integer getTaiNum(@Param("patternCd")Integer patternCd);
     //新pts台数
     Integer getNewTaiNum(@Param("priorityOrderCd")Integer priorityOrderCd);
+    //final新pts台数
+    Integer getNewTaiNumFinal(@Param("priorityOrderCd")Integer priorityOrderCd);
     //pts総セグメント数
     Integer getTanaNum(@Param("patternCd")Integer patternCd);
 
     Integer getNewTanaNum(@Param("priorityOrderCd")Integer priorityOrderCd);
+
+    Integer getNewTanaNumFinal(@Param("priorityOrderCd")Integer priorityOrderCd);
     //pts幅と
     Map<String,Object> getNewTanaWidth(@Param("priorityOrderCd")Integer priorityOrderCd);
     //face数
     Integer getFaceNum(@Param("patternCd")Integer patternCd);
     //新しいface数
     Integer getNewFaceNum(@Param("priorityOrderCd")Integer priorityOrderCd);
+    //final新しいface数
+    Integer getNewFaceNumFinal(@Param("priorityOrderCd")Integer priorityOrderCd);
     //sku数
     Integer getSkuNum(@Param("patternCd")Integer patternCd);
     //新しいsku数
     Integer getNewSkuNum(@Param("priorityOrderCd")Integer priorityOrderCd);
+
+    //final新しいsku数
+    Integer getNewSkuNumFinal(@Param("priorityOrderCd")Integer priorityOrderCd);
+
     //ハウス名の取得
     String getPengName(@Param("patternCd")Integer patternCd);
     //棚pattern名の取得

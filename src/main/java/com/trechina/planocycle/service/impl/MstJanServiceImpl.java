@@ -498,7 +498,6 @@ public class MstJanServiceImpl implements MstJanService {
             }
             String dateStr = simpleDateFormat.format(date);
             String authorCd = session.getAttribute("aud").toString();
-        LinkedHashMap<String, Object> stringObjectLinkedHashMap = janData.get(0);
         List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, prodMstClass);
         count = mstJanMapper.insertJanList(tableNameInfo,infoHeader,janData, dateStr,authorCd);
             Set zokuseiList = new HashSet();

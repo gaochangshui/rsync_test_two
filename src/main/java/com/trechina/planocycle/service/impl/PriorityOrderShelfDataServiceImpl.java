@@ -87,10 +87,10 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         String janColumns = "";
         for (Map<String,Object> col : attrCol) {
             if (colHeader.equals("")) {
-                janColumns +=  col.get("zokusei_colname");
+                janColumns +=  col.get("zokusei_colcd");
                 colHeader +=col.get("zokusei_nm");
             }else {
-                janColumns += "," + col.get("zokusei_colname");
+                janColumns += "," + col.get("zokusei_colcd");
                 colHeader +=","+col.get("zokusei_nm");
             }
         }
@@ -103,7 +103,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : listMap.entrySet()) {
             Map<String,Object> map = new HashMap<>();
             for (Map<String,Object> col : attrCol) {
-                map.put("zokuseiName" + col.get("zokusei_col"),stringListEntry.getValue().get(0).get("zokuseiName"+col.get("zokusei_col")));
+                map.put( col.get("zokusei_colcd").toString(),stringListEntry.getValue().get(0).getOrDefault("zokuseiName"+col.get("zokusei_col"),""));
             }
 
             map.put("restrictCd",stringListEntry.getValue().get(0).get("restrictCd"));
@@ -213,7 +213,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         String groupColumns = "janCd,janName";
         String groupHeader = "JAN,商品名";
         for (Map<String, Object> map : attrCol) {
-            groupColumns += ","+map.get("zokusei_colname");
+            groupColumns += ","+map.get("zokusei_colcd");
             groupHeader += ","+map.get("zokusei_nm");
         }
         groupColumns += ",plano_width,plano_height,plano_depth,rank,faceNum";
@@ -225,7 +225,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
                 for (Map<String, Object> objectMap : attrCol) {
                     if (objectMap.get("zokusei_colname").equals(stringObjectEntry.getKey())){
-                        map.put(objectMap.get("zokusei_colname").toString(),stringObjectEntry.getValue());
+                        map.put(objectMap.get("zokusei_colcd").toString(),stringObjectEntry.getValue());
                     }
                 }
             }
