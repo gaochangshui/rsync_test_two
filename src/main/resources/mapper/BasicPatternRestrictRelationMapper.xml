@@ -24,7 +24,7 @@
     <select id="selectByPrimaryKey" resultType="map">
         select 	tanamst.tai_cd as "taiCd",tanamst.tana_cd as "tanaCd",json,
         row_number() over (partition by tanamst.tai_Cd, tanamst.tana_cd  order by area desc) as "areaPosition",
-        result.restrict_cd as "restrictCd", round(area,0) area,value color
+        result.restrict_cd as "restrictCd", ceil(area) area,value color
         <foreach collection="zokuseiList" open="," item="item" separator=",">${item}</foreach>
         from planocycle.work_priority_order_pts_data ptsdata
         left join
