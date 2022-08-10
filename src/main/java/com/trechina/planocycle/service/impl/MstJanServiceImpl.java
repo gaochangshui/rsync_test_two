@@ -500,7 +500,6 @@ public class MstJanServiceImpl implements MstJanService {
             String authorCd = session.getAttribute("aud").toString();
         LinkedHashMap<String, Object> stringObjectLinkedHashMap = janData.get(0);
         List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, prodMstClass);
-        System.out.println(janHeader);
         count = mstJanMapper.insertJanList(tableNameInfo,infoHeader,janData, dateStr,authorCd);
             Set zokuseiList = new HashSet();
             for (LinkedHashMap<String, Object> janDatum : janData) {
@@ -517,7 +516,7 @@ public class MstJanServiceImpl implements MstJanService {
                 }
             }
             zokuseiMstMapper.setValBatch(zokuseiList,companyCd,prodMstClass);
-            logger.info("");
+
         } catch (Exception e) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_ABNORMALITY_DATA);
         }
