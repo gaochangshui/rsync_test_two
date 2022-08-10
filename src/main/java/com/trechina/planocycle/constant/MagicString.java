@@ -91,6 +91,7 @@ public class MagicString {
     public static final String ATTR_LIST = "attr_list";
 
     public static final String RANK_UPD = "rank_upd";
+    public static final String RANK = "rank";
 
     public static final String COLUMN_INDEX_JANINFO_COLUMN = "3";
     public static final String COLUMN_INDEX_KAISOU_COLUMN = "4";
