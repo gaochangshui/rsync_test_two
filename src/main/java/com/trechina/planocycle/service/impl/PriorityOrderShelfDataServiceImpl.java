@@ -216,7 +216,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             groupColumns += ","+map.get("zokusei_colname");
             groupHeader += ","+map.get("zokusei_nm");
         }
-        groupColumns += ",plano_depth,plano_height,plano_width,rank,faceNum";
+        groupColumns += ",plano_width,plano_height,plano_depth,rank,faceNum";
         groupHeader += ",幅,高,奥行,RANK,フェース数";
 
         mapHeader.put("groupColumns",groupColumns);
