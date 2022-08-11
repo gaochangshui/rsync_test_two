@@ -30,6 +30,8 @@ import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
@@ -354,7 +356,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
             }
         }
-
+        System.out.println("end:"+System.currentTimeMillis());
         return ResultMaps.result(ResultEnum.SUCCESS, adoptJan);
     }
 
