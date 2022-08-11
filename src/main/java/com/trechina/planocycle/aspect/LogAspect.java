@@ -2,10 +2,17 @@ package com.trechina.planocycle.aspect;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.google.common.base.Strings;
+import com.trechina.planocycle.entity.po.SysConfig;
 import com.trechina.planocycle.mapper.LogMapper;
+import com.trechina.planocycle.mapper.SysConfigMapper;
+import com.trechina.planocycle.utils.VehicleNumCache;
+import jnr.ffi.Struct;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +20,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
+import javax.cache.Cache;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 /**
@@ -28,6 +38,10 @@ public class LogAspect {
     @Autowired
     private LogMapper logMapper;
     @Autowired
+    private SysConfigMapper sysConfigMapper;
+    @Autowired
+    private VehicleNumCache cache;
+    @Autowired
     private ThreadPoolTaskExecutor executor;
 
     //定義切入点
@@ -36,6 +50,61 @@ public class LogAspect {
     @Pointcut("execution(public * com.trechina.planocycle.service..*.*(..))")
     public void point(){
 
+    }
+
+    @Pointcut("execution(public * com.trechina.planocycle.mapper..*.*(..))")
+    public void mapperPoint(){
+
+    }
+
+    @Around("point()")
+    public Object doServiceTimeLog(ProceedingJoinPoint joinPoint) throws Throwable {
+        LocalDateTime start = LocalDateTime.now();
+        Object proceed = joinPoint.proceed();
+        LocalDateTime end = LocalDateTime.now();
+
+        executor.execute(()->{
+            if (cache.get("action_log")==null) {
+                String actionLog = sysConfigMapper.selectSycConfig("action_log");
+                cache.put("action_log", actionLog==null?"": actionLog);
+            }
+
+            if (Strings.isNullOrEmpty(String.valueOf(cache.get("action_log")))) {
+                return;
+            }
+            String methodName = joinPoint.getTarget().getClass().getName()+"#"+joinPoint.getSignature().getName();
+            long time = Duration.between(start, end).toMillis();
+            Object[] args = joinPoint.getArgs();
+            logMapper.addTimeLog(methodName, start, end, JSON.toJSONString(args), time);
+        });
+
+        return proceed;
+    }
+
+    @Around("mapperPoint()")
+    public Object doMapperTimeLog(ProceedingJoinPoint joinPoint) throws Throwable {
+        LocalDateTime start = LocalDateTime.now();
+        Object proceed = joinPoint.proceed();
+        LocalDateTime end = LocalDateTime.now();
+        String methodName = "mapper#"+joinPoint.getSignature().getName();
+        if(methodName.toLowerCase().contains("log")){
+            return proceed;
+        }
+        executor.execute(()->{
+            if (cache.get("action_log")==null) {
+                String actionLog = sysConfigMapper.selectSycConfig("action_log");
+                cache.put("action_log", actionLog==null?"": actionLog);
+            }
+
+            if (Strings.isNullOrEmpty(String.valueOf(cache.get("action_log")))) {
+                return;
+            }
+            long time = Duration.between(start, end).toMillis();
+            Object[] args = joinPoint.getArgs();
+            logMapper.addTimeLog(methodName, start, end, JSON.toJSONString(args), time);
+        });
+
+        return proceed;
     }
 
 

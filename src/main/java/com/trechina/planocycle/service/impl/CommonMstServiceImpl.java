@@ -30,6 +30,8 @@ import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
@@ -354,7 +356,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
             }
         }
-
+        System.out.println("end:"+System.currentTimeMillis());
         return ResultMaps.result(ResultEnum.SUCCESS, adoptJan);
     }
 
@@ -374,6 +376,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             partitionValue = 0;
         }
 
+        List<PriorityOrderResultDataDto> adoptJanByTaiTana = new ArrayList<>();
         for (PriorityOrderResultDataDto jan : jans) {
             if(Objects.equals(jan.getAdoptFlag(), 1) || Objects.equals(jan.getCutFlag(), 1)){
                 continue;
@@ -461,7 +464,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                 newJanDto.setTaiCd(Integer.parseInt(taiCd));
                 newJanDto.setTanaCd(Integer.parseInt(tanaCd));
                 newJanDto.setFaceFact(face);
-                adoptJan.add(newJanDto);
+                newJanDto.setAdoptFlag(1);
+                adoptJanByTaiTana.add(newJanDto);
                 jan.setAdoptFlag(1);
                 usedJanCount++;
             }else{
@@ -471,11 +475,12 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
 
                 if(checkCondition){
-                    boolean setJanByCutFace = isSetJanByCutFace(adoptJan, groupArea, usedArea, partitionVal, minFace, newJanDto);
+                    boolean setJanByCutFace = isSetJanByCutFace(adoptJanByTaiTana, groupArea, usedArea, partitionVal, minFace, newJanDto);
                     if(setJanByCutFace){
                         newJanDto.setTaiCd(Integer.parseInt(taiCd));
                         newJanDto.setTanaCd(Integer.parseInt(tanaCd));
-                        adoptJan.add(newJanDto);
+                        newJanDto.setAdoptFlag(1);
+                        adoptJanByTaiTana.add(newJanDto);
                         jan.setAdoptFlag(1);
 //                        usedArea+=Optional.ofNullable(newJanDto.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH)*newJanDto.getFaceFact()+partitionVal;
                     }
@@ -484,6 +489,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                 break;
             }
         }
+
+        adoptJan.addAll(adoptJanByTaiTana);
 
         return null;
     }
