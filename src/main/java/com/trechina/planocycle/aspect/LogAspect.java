@@ -3,11 +3,9 @@ package com.trechina.planocycle.aspect;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.base.Strings;
-import com.trechina.planocycle.entity.po.SysConfig;
 import com.trechina.planocycle.mapper.LogMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.utils.VehicleNumCache;
-import jnr.ffi.Struct;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -20,7 +18,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import javax.cache.Cache;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -125,7 +122,7 @@ public class LogAspect {
             //取得＃シュトク＃classオブジェクト象
             String s = JSON.toJSONString(ex);
             String params = jsonArray.toString();
-            //logMapper.saveErrorLog(targetName+"_"+methodName, params,s);
+            logMapper.saveErrorLog(targetName+"_"+methodName, params,s);
         });
     }
 

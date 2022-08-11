@@ -241,7 +241,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
                 for (Map<String, Object> objectMap : attrCol) {
                     if (objectMap.get("zokusei_colname").equals(stringObjectEntry.getKey())){
-                        map.put(objectMap.get("zokusei_colname").toString(),stringObjectEntry.getValue());
+                        map.put(objectMap.get("zokusei_colcd").toString(),stringObjectEntry.getValue());
                     }
                 }
             }
