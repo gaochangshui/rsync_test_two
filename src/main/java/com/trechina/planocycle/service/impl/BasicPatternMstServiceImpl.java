@@ -339,6 +339,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         GetCommonPartsDataDto commonTableName = getCommonTableName(priorityOrderMst.getCommonPartsData(), companyCd);
         List<Map<String, Object>> basicPatternRestrictRelationDto = restrictRelationMapper.selectByPrimaryKey(priorityOrderCd,
                 commonTableName.getProdIsCore(), zokuseiList,commonTableName.getProdMstClass());
+        logger.info("...{}",basicPatternRestrictRelationDto);
         Map<String, List<Map<String, Object>>> relationByTaiTana = basicPatternRestrictRelationDto.stream()
                 .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.TAI_CD) + "," + MapUtils.getString(map, MagicString.TANA_CD)));
 
