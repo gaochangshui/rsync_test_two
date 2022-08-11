@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
@@ -80,7 +81,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     @Autowired
     private BasicPatternRestrictResultMapper restrictResultMapper;
     @Autowired
-    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
+    private LogAspect logAspect;
     @Value("${skuPerPattan}")
     private Long skuCountPerPattan;
 
@@ -144,6 +145,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             }
             return ResultMaps.result(ResultEnum.SUCCESS, null);
         } catch (Exception ex) {
+            logAspect.setTryErrorLog(ex,new Object[]{});
             return ResultMaps.result(ResultEnum.FAILURE, "新規作成失敗しました。");
         }
     }
@@ -224,6 +226,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             priorityAllMstMapper.delWKTablePtsVersion(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
         } catch (Exception e) {
             logger.error("全patternの保存に失敗しました:{}",e.getMessage());
+            logAspect.setTryErrorLog(e,new Object[]{priorityAllSaveDto});
             return 1;
         }
         return 0;
