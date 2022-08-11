@@ -219,7 +219,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     janCount = 1;
                     int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
                             .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
-                    Map<String, Object> map = new GsonBuilder().create().fromJson(JSONObject.toJSONString(janMap),
+                    Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
                             new TypeToken<Map<String, Object>>(){}.getType());
                     map.put(MagicString.RESTRICT_CD, classify.get(key.toString()).getRestrictCd());
                     map.put("area", percent);
@@ -283,7 +283,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
     public GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd ) {
 
-        JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
+        JSONObject jsonObject = JSON.parseObject(commonPartsData);
 
         String coreCompany = sysConfigMapper.selectSycConfig("core_company");
         GetCommonPartsDataDto getCommonPartsDataDto = new GetCommonPartsDataDto();
@@ -339,6 +339,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         GetCommonPartsDataDto commonTableName = getCommonTableName(priorityOrderMst.getCommonPartsData(), companyCd);
         List<Map<String, Object>> basicPatternRestrictRelationDto = restrictRelationMapper.selectByPrimaryKey(priorityOrderCd,
                 commonTableName.getProdIsCore(), zokuseiList,commonTableName.getProdMstClass());
+        logger.info("...{}",basicPatternRestrictRelationDto);
         Map<String, List<Map<String, Object>>> relationByTaiTana = basicPatternRestrictRelationDto.stream()
                 .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.TAI_CD) + "," + MapUtils.getString(map, MagicString.TANA_CD)));
 
@@ -492,7 +493,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     topPartitionVal = finalHeightSpace.shortValue();
                 }
 
-                List<Map<String, Object>> relationMap = restrictRelationMapper.selectByPriorityOrderCd(priorityOrderCd);
+                List<Map<String, Object>> originRelationMap = restrictRelationMapper.selectByPriorityOrderCd(priorityOrderCd);
+                List<Map<String, Object>> relationMap = scaleTaiTanaWidth(originRelationMap, tanaWidthCheck);
+
                 List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
                 int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
 
@@ -531,6 +534,34 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             return ResultMaps.result(ResultEnum.SUCCESS, uuid);
         }
         return ResultMaps.result(ResultEnum.SUCCESS,uuid);
+    }
+
+    private List<Map<String, Object>> scaleTaiTanaWidth(List<Map<String, Object>> relationMap, Integer tanaWidthCheck){
+        List<Map<String, Object>> newRelationMap = new ArrayList<>();
+        Map<String, List<Map<String, Object>>> relationMapByTana = relationMap.stream().collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.TAI_CD) + "_" + MapUtils.getString(map, MagicString.TANA_CD)));
+        for (String taiTana : relationMapByTana.keySet()) {
+            double area = relationMapByTana.get(taiTana).stream().collect(Collectors.summarizingDouble(map -> MapUtils.getDouble(map, "area"))).getSum();
+            // <100%
+            List<Map<String, Object>> relationMapList = relationMapByTana.get(taiTana);
+
+            if(Double.compare(area, 100.0)<0 || (Objects.equals(tanaWidthCheck, 1) && Double.compare(area, 100.0)>0)){
+                relationMapList.forEach(r->{
+                    BigDecimal newAreaPercent = BigDecimal.valueOf(MapUtils.getDouble(r, "area")).divide(BigDecimal.valueOf(area), 4, RoundingMode.CEILING).multiply(BigDecimal.valueOf(100));
+                    r.put("area", newAreaPercent);
+                });
+            }
+
+            newRelationMap.addAll(relationMapList);
+        }
+        newRelationMap = newRelationMap.stream().sorted(Comparator.comparing(map->MapUtils.getInteger(map, "tanaPosition")))
+                .sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TANA_CD)))
+                .sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TAI_CD))).collect(Collectors.toList());
+        String s = JSON.toJSONString(relationMap);
+        String s1 = JSON.toJSONString(newRelationMap);
+
+        System.out.println("s:"+s+",s1:"+s1);
+
+        return newRelationMap;
     }
 
     @Override

@@ -10,4 +10,10 @@
     <delete id="deleteLog">
         delete from "planocycle_log".log where create_time &lt; current_date::timestamp - INTERVAL '2 day'
     </delete>
+    <insert id="addTimeLog">
+        insert into "planocycle_log".method_time_log(method_name,start_time,end_time,params,total_time)
+        values (
+        #{methodName},#{startTime},#{endTime},#{params},#{totalTime}
+        )
+    </insert>
 </mapper>

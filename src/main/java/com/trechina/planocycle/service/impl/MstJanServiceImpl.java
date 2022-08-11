@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
 import com.trechina.planocycle.entity.po.JanInfoList;
@@ -56,6 +57,8 @@ public class MstJanServiceImpl implements MstJanService {
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
     private ThreadPoolTaskExecutor executor;
+    @Autowired
+    private LogAspect logAspect;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -141,6 +144,7 @@ public class MstJanServiceImpl implements MstJanService {
                 outputStream.flush();
             } catch (IOException e) {
                 logger.error("商品明細ダウンロード", e);
+                logAspect.setTryErrorLog(e,new Object[]{downFlagVO});
             }
             return null;
         }
@@ -517,6 +521,7 @@ public class MstJanServiceImpl implements MstJanService {
             zokuseiMstMapper.setValBatch(zokuseiList,companyCd,prodMstClass);
 
         } catch (Exception e) {
+            logAspect.setTryErrorLog(e,new Object[]{commonPartsData,companyCd,classCd});
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_ABNORMALITY_DATA);
         }
         return ResultMaps.result(ResultEnum.SUCCESS.getCode(), count + MagicString.MSG_UPLOAD_SUCCESS);
