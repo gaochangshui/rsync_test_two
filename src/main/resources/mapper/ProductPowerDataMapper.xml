@@ -405,36 +405,27 @@
         where company_cd = #{companyCd} and product_power_cd = #{productPowerCd} and deleteflg=0
     </insert>
 
-    <insert id="selectWKSyokika">
-        insert into planocycle.work_product_power_syokika(company_cd,product_power_cd,jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
-                                                          pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,pos_store_item01,pos_store_item02,
-                                                          pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,pos_store_item08,
-                                                          pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
-                                                          pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
-                                                          pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,
-                                                          pos_compare_store_item06,pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,
-                                                          author_cd)
-        values
-        <foreach collection="list" separator="," item="item">
-            (#{companyCd},#{productPowerCd},#{item},1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,#{authorCd})
+
+    <update id="insertWkRank">
+        update planocycle.work_product_power_mst_data mstdata
+        set
+        <foreach collection="rankCalculate[0]" index="index" separator=",">
+            ${index} = tmp.${index}
         </foreach>
-    </insert>
-    <insert id="selectWKKokyaku" >
-        insert into planocycle.work_product_power_kokyaku(company_cd,product_power_cd,jan,customer_item01,customer_item02,customer_item03,customer_item04,
-            customer_item05,customer_item06,customer_item07,customer_item08,customer_item09,customer_item10,
-            customer_item11,customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,
-            customer_store_item05,customer_store_item06,customer_store_item07,customer_store_item08,customer_store_item09,
-            customer_store_item10,customer_compare_item01,customer_compare_item02,customer_compare_item03,customer_compare_item04,
-            customer_compare_item05,customer_compare_item06,customer_compare_item07,customer_compare_item08,customer_compare_item09,
-            customer_compare_item10,customer_compare_store_item01,customer_compare_store_item02,customer_compare_store_item03,
-            customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
-            customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10
-            ,author_cd)
-            values
-            <foreach collection="list" separator="," item="item">
-                (#{companyCd},#{productPowerCd},#{item},1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,#{authorCd})
+        from (
+        values
+        <foreach collection="rankCalculate" item="map" separator="," >
+            <foreach collection="map.entrySet()" item="value"  separator="," open="(" close=")">
+                #{value}
             </foreach>
-    </insert>
+        </foreach>
+        )as tmp(
+        <foreach collection="rankCalculate[0]" index="index" separator=",">
+            ${index}
+        </foreach>
+        )
+        where company_cd = #{companyCd} and product_power_cd = #{productPowerCd} and tmp.jan =mstdata.jan
+    </update>
     <select id="selectShowData" resultType="map">
         select
         syokika.jan jan
@@ -586,7 +577,7 @@
         select power_syokika.jan as jan,
         <foreach collection="classify" index="index" item="item" separator=",">
             <if test="item.sort != 1">
-                case  when jan_info."${item.sort}" is null then '' else jan_info."${item.sort}"  end  as ${item.attr}
+                 coalesce (jan_info."${item.sort}",'') as ${item.attr}
 
             </if>
 
@@ -637,7 +628,7 @@
                from
                (select s.jan,
         <foreach collection="map" index="index" separator="," item="item">
-                       DENSE_RANK() over(order by split_part(coalesce (${index},'0'), '.', 1) ::integer
+                       DENSE_RANK() over(order by split_part(coalesce (${index},'0'), '.', 1) ::bigint
             desc nulls last ) as "${index}_rank"
         </foreach>
 

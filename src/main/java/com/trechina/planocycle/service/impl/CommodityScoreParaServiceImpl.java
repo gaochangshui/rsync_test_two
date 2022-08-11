@@ -254,14 +254,29 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         map.remove("productPowerCd");
         List<Map<String, Object>> rankCalculate = productPowerDataMapper.getProductRankCalculate(map, companyCd, productPowerCd,authorCd);
 
+
         productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd);
-        Set<String> colNames = rankCalculate.get(0).keySet();
-        for (String colName : colNames) {
-            if (!colName.equals("jan")) {
-                productPowerDataMapper.setWkDataRank(rankCalculate, authorCd, companyCd, productPowerCd, colName);
+        if (map.entrySet().size()>4){
+            List list = new ArrayList();
+            for (int i = 0; i < rankCalculate.size(); i++) {
+                list.add(rankCalculate.get(i));
+                if (i != 0 && i % 1000 == 0){
+                    productPowerDataMapper.insertWkRank(list,authorCd,companyCd,productPowerCd);
+                    list.clear();
+                }
+
+            }
+            if (!list.isEmpty()) {
+                productPowerDataMapper.insertWkRank(list, authorCd, companyCd, productPowerCd);
+            }
+        }else {
+            Set<String> colNames = rankCalculate.get(0).keySet();
+            for (String colName : colNames) {
+                if (!colName.equals("jan")) {
+                    productPowerDataMapper.setWkDataRank(rankCalculate, authorCd, companyCd, productPowerCd, colName);
+                }
             }
         }
-
 
         return ResultMaps.result(ResultEnum.SUCCESS,rankCalculate);
     }

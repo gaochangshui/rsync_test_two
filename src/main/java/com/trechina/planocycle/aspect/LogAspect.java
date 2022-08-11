@@ -56,7 +56,7 @@ public class LogAspect {
             //取得＃シュトク＃classオブジェクト象
             String s = JSON.toJSONString(ex);
             String params = jsonArray.toString();
-            logMapper.saveErrorLog(targetName+"_"+methodName, params,s);
+            //logMapper.saveErrorLog(targetName+"_"+methodName, params,s);
         });
     }
 

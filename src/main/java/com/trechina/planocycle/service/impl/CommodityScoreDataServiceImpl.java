@@ -87,7 +87,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
        if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString())==null){
            return ResultMaps.result(ResultEnum.SUCCESS,"9");
        }
-
+       Date date = new Date();
        log.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()));
        vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
@@ -100,8 +100,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         } else {
             isCompanyCd = companyCd;
         }
-        Integer janName2colNum = Integer.valueOf(taskIdMap.get("janName2colNum").toString());
-        Integer colNum = 2;
+        int janName2colNum = Integer.parseInt(taskIdMap.get("janName2colNum").toString());
+        int colNum = 2;
         if (janName2colNum == 2){
              colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
         }
@@ -120,6 +120,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
         List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
         List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
+        Date date2 = new Date();
         List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
                 janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd,shelfPts,storeCd);
         List<Map<String, Object>> resultData = new ArrayList<>();
@@ -130,6 +131,13 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         resultData.addAll(allData);
 
         log.info("返回pos基本情報はい{}", resultData);
+        Date date1 = new Date();
+        String format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date);
+        String format1 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date1);
+        String format2 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date2);
+        log.info("开始时间{}",format);
+        log.info("抽出时间{}",format2);
+        log.info("结束时间{}",format1);
         return ResultMaps.result(ResultEnum.SUCCESS, resultData);
 
 
