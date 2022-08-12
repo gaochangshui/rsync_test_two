@@ -42,7 +42,8 @@ public class PriorityOrderResultDataDto {
 
     private Integer restrictType;
 
-    private Long faceKeisan;
+    private Long faceKeiten;
+    private Long faceMen;
     private Double salesCnt;
     private Integer tumiagesu;
     private Integer zaikosu;
@@ -52,6 +53,7 @@ public class PriorityOrderResultDataDto {
     private Long planoWidth;
     private Long height;
     private Long planoHeight;
+    private Long planoDepth;
     private String planoIrisu;
     private Integer newFlag = 0;
 

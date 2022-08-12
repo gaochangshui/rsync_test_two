@@ -98,7 +98,7 @@
         janData.tumiagesu as "tumiagesu",janData.zaikosu as "zaikosu",janData.face_displayflg as "faceDisplayflg"
              ,janData.face_position as "facePosition",janData.depth_display_num as "depthDisplayNum",'' as remarks
         <foreach collection="attrList"  item="item" index="index">
-            ,janinfo."${item.zokusei_col}" as "${item.zokusei_colname}"
+            ,janinfo."${item.zokusei_col}" as "${item.zokusei_colcd}"
         </foreach>
         <foreach collection="janSizeCol" item="item">
             ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"

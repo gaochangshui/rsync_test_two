@@ -490,7 +490,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             }
             s+=",janName";
             for (Map<String, Object> map1 : attrCol) {
-                s=s+","+"zokusei"+map1.get("zokusei_colcd");
+                s=s+","+map1.get("zokusei_colcd");
             }
             s = s + ",plano_width,plano_height,plano_depth";
             ptsDetailData.setJanColumns(s);

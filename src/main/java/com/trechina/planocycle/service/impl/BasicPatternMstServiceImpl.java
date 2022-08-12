@@ -99,6 +99,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     private PriorityOrderPtsDataMapper priorityOrderPtsDataMapper;
     @Autowired
     private PriorityOrderSortMapper priorityOrderSortMapper;
+    @Autowired
+    private BasicPatternJanPlacementMapper basicPatternJanPlacementMapper;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -195,7 +197,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 }
 
                 if(!"".equals(lastKey) && (!lastKey.equals(key.toString()) || (i+1)==jans.size())){
-                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, RoundingMode.CEILING)
+                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 5, RoundingMode.HALF_UP)
                             .multiply(BigDecimal.valueOf(100)).doubleValue();
                     Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
                             new TypeToken<Map<String, Object>>(){}.getType());
@@ -279,6 +281,35 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         });
 
         return classify;
+    }
+
+    @Override
+    public List<PriorityOrderResultDataDto> updateJanSize(List<PriorityOrderResultDataDto> priorityOrderResultDataDtoList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        long planoWidth = 0 ;
+        long planoHeight = 0 ;
+        long planoDepth = 0 ;
+        List<Map<String, Object>> janPlacementList = basicPatternJanPlacementMapper.getJanPlacementList();
+        Class<PriorityOrderResultDataDto> clazz = PriorityOrderResultDataDto.class;
+        for (PriorityOrderResultDataDto priorityOrderResultDataDto : priorityOrderResultDataDtoList) {
+            for (Map<String, Object> map : janPlacementList) {
+                if (priorityOrderResultDataDto.getFaceKeiten().intValue() == MapUtils.getInteger(map,"faceKaiten") &&
+                        priorityOrderResultDataDto.getFaceMen().intValue() == MapUtils.getInteger(map,"faceMen")
+                ){
+                    Method getPlanoWidth = clazz.getMethod("getPlano" + map.get("planoWidth").toString().substring(0, 1).toUpperCase() + map.get("planoWidth").toString().substring(1));
+                    Method getPlanoHeight = clazz.getMethod("getPlano" + map.get("planoHeight").toString().substring(0, 1).toUpperCase() + map.get("planoHeight").toString().substring(1));
+                    Method getPlanoDepth = clazz.getMethod("getPlano" + map.get("planoDepth").toString().substring(0, 1).toUpperCase() + map.get("planoDepth").toString().substring(1));
+                    planoWidth = (long)getPlanoWidth.invoke(priorityOrderResultDataDto);
+                    planoHeight = (long)getPlanoHeight.invoke(priorityOrderResultDataDto);
+                    planoDepth = (long)getPlanoDepth.invoke(priorityOrderResultDataDto);
+
+                    priorityOrderResultDataDto.setPlanoWidth(planoWidth);
+                    priorityOrderResultDataDto.setPlanoHeight(planoHeight);
+                    priorityOrderResultDataDto.setPlanoDepth(planoDepth);
+                }
+            }
+        }
+
+        return priorityOrderResultDataDtoList;
     }
 
     public GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd ) {
