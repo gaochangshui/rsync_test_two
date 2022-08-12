@@ -12,7 +12,7 @@ public class WorkPriorityOrderResultDataDto {
     private Long faceFact;
     private Integer taiCd;
     private Integer tanaCd;
-    private Integer tanaPositionCd;
+    private Integer tanapositionCd;
     private Integer faceMen;
     private Integer faceKaiten;
     private Integer tumiagesu;

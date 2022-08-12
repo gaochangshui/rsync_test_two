@@ -579,26 +579,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
 
-        List<WorkPriorityOrderResultDataDto> janNewList = resultData.stream().filter(dto -> dto.getRank()!=null && dto.getRank().equals(-1L)).collect(Collectors.toList());
-        List<WorkPriorityOrderResultDataDto> janList = resultData.stream().filter(dto -> dto.getRank()==null || !dto.getRank().equals(-1L))
-                .peek(dto->{
-                    if(dto.getRank()==null){
-                        dto.setRank(dto.getSkuRank());
-                    }
-                }).collect(Collectors.toList());
-        if(!janNewList.isEmpty() && isReOrder>0){
-            Gson gson = new GsonBuilder().setLongSerializationPolicy(LongSerializationPolicy.STRING).create();
-            List<Map<String, Object>> janNewMapList = new Gson().fromJson(gson.toJson(janNewList), new TypeToken<List<Map<String, Object>>>() {
-            }.getType());
-            List<Map<String, Object>> janMapList = new Gson().fromJson(new Gson().toJson(janList), new TypeToken<List<Map<String, Object>>>() {
-            }.getType());
-            List<Map<String, Object>> mapList = CommonUtil.janSort(janMapList, janNewMapList, "skuRank");
-            resultData = new Gson().fromJson(new Gson().toJson(mapList), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
-            }.getType());
-        }
-
         //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
-        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(resultData, isReOrder);
+        List<WorkPriorityOrderResultDataDto> positionResultData = resultData;
 
         //既存の新しいptsを検出し,削除してから保存する
         //新しいptsにデータがあるptsCd

@@ -379,7 +379,7 @@
     face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num,
     create_time,edit_time,author_cd,editer_cd, pts_cd) values
     <foreach collection="list" index="index" item="item" separator=",">
-      (#{companyCd},#{item.janCd},#{item.faceFact},#{item.taiCd},#{item.tanaCd},#{item.tanaPositionCd},
+      (#{companyCd},#{item.janCd},#{item.faceFact},#{item.taiCd},#{item.tanaCd},#{item.tanapositionCd},
       #{item.faceMen},#{item.faceKaiten},#{item.tumiagesu},#{item.zaikosu},#{item.faceDisplayflg},#{item.facePosition},
       #{item.depthDisplayNum},
       now(), now(),#{authorCd},#{authorCd},#{id})

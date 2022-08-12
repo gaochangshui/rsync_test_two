@@ -2,8 +2,6 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.CommonPartsDto;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
@@ -30,8 +28,7 @@ import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -238,12 +235,20 @@ public class CommonMstServiceImpl implements CommonMstService {
             currentTaiCd = taiCd;
         }
 
-        //jan group relation restrict_cd
-        //TODO
+        //jan group relation restrict_cd,convert map to PriorityOrderResultDataDto
         List<Map<String, Object>> newList = janNewMapper.selectJanNew(priorityOrderCd, allCdList, zokuseiMsts, commonTableName.getProInfoTable(),
                 sizeAndIrisu);
+        List<PriorityOrderResultDataDto> newJanDtoList = new ArrayList<>();
         for (int i = 0; i < newList.size(); i++) {
+            PriorityOrderResultDataDto dto = new PriorityOrderResultDataDto();
             Map<String, Object> zokusei = newList.get(i);
+
+            dto.setIrisu("1");
+            dto.setFace(MapUtils.getLong(zokusei, "face"));
+            dto.setSkuRank(MapUtils.getLong(zokusei, "jan_rank"));
+            dto.setJanCd(MapUtils.getString(zokusei, "jan"));
+            dto.setNewFlag(1);
+
             for (Map<String, Object> restrict : restrictResult) {
                 if (Objects.equals(MapUtils.getLong(restrict, "restrict_cd"), MagicString.NO_RESTRICT_CD)) {
                     continue;
@@ -260,116 +265,221 @@ public class CommonMstServiceImpl implements CommonMstService {
 
                 if(equalsCount == attrList.size()){
                     int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
-                    zokusei.put("restrictCd", restrictCd);
+                    dto.setRestrictCd((long)restrictCd);
                 }
             }
 
-            newList.set(i, zokusei);
+            newJanDtoList.add(dto);
         }
 
-        newList = newList.stream().filter(map->MapUtils.getInteger(map, MagicString.RESTRICT_CD)!=null).collect(Collectors.toList());
+        newJanDtoList = newJanDtoList.stream().filter(map->map.getRestrictCd()!=null).collect(Collectors.toList());
 
         Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd = janResult.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd, LinkedHashMap::new, Collectors.toList()));
-        Map<String, List<Map<String, Object>>> relationGroupTaiTana = relationMap.stream()
-                .filter(map->!MapUtils.getString(map, MagicString.RESTRICT_CD).equals(MagicString.NO_RESTRICT_CD+""))
-                .collect(Collectors.groupingBy(map -> MapUtils.getInteger(map, MagicString.TAI_CD)+ "_" + MapUtils.getInteger(map, MagicString.TANA_CD),
+        List<PriorityOrderResultDataDto> backupJans = this.getBackupJans(janResultByRestrictCd, newJanDtoList);
+        Map<Long, List<Map<String, Object>>> relationGroupRestrictCd = relationMap.stream()
+                .collect(Collectors.groupingBy(map -> MapUtils.getLong(map, MagicString.RESTRICT_CD),
                         LinkedHashMap::new, Collectors.toList()));
 
         List<PriorityOrderResultDataDto> adoptJan = new ArrayList<>();
+        List<PriorityOrderResultDataDto> finalAdoptJan = new ArrayList<>();
+        List<Map<String, Object>> outOfHeight = new ArrayList<>();
 
-        for (Map.Entry<String, List<Map<String, Object>>> entry : relationGroupTaiTana.entrySet()) {
-            String groupKey = entry.getKey();
-            String taiCd = groupKey.split("_")[0];
-            String tanaCd = groupKey.split("_")[1];
-
-            List<Map<String, Object>> tanaMst = tanaList.stream().filter(map -> MapUtils.getString(map, MagicString.TAI_CD).equals(taiCd) &&
-                    MapUtils.getString(map, MagicString.TANA_CD).equals(tanaCd)).collect(Collectors.toList());
-            if (tanaMst.isEmpty()) {
-                continue;
-            }
-
-            Map<String, Object> mst = tanaMst.get(0);
-            Integer tanaWidth = MapUtils.getInteger(mst, "tanaWidth");
-            Integer tanaHeight = MapUtils.getInteger(mst, "height");
+        for (Map.Entry<Long, List<Map<String, Object>>> entry : relationGroupRestrictCd.entrySet()) {
+            Long restrictCd = entry.getKey();
 
             List<Map<String, Object>> relationList = entry.getValue();
             for (Map<String, Object> relation : relationList) {
-                String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
-                List<PriorityOrderResultDataDto> jans = janResultByRestrictCd.get(Long.valueOf(restrictCd));
-                Map<String, Object> resultMap = null;
-                if(jans!=null){
-                    resultMap = this.doSetJan(cutList, newList, partitionVal, topPartitionVal, tanaWidthCheck, minFace, adoptJan, jans, relation, tanaWidth, tanaHeight, taiCd, tanaCd);
+                String taiCd = MapUtils.getString(relation, MagicString.TAI_CD);
+                String tanaCd = MapUtils.getString(relation, MagicString.TANA_CD);
+
+                List<Map<String, Object>> tanaMst = tanaList.stream().filter(map -> MapUtils.getString(map, MagicString.TAI_CD).equals(taiCd) &&
+                        MapUtils.getString(map, MagicString.TANA_CD).equals(tanaCd)).collect(Collectors.toList());
+                if (tanaMst.isEmpty()) {
+                    continue;
                 }
-                if(resultMap!=null){
-                    return resultMap;
+
+                Map<String, Object> mst = tanaMst.get(0);
+                Integer tanaWidth = MapUtils.getInteger(mst, "tanaWidth");
+                Integer tanaHeight = MapUtils.getInteger(mst, "height");
+
+                List<PriorityOrderResultDataDto> jans = janResultByRestrictCd.get(restrictCd);
+                if(jans!=null){
+                    List<Map<String, Object>> resultMap = this.doSetJan(partitionVal, topPartitionVal, tanaWidthCheck, adoptJan,
+                            jans, relation, tanaWidth, tanaHeight, taiCd, tanaCd, backupJans);
+                    outOfHeight.addAll(resultMap);
+                }
+            }
+
+            //----------
+            adoptJan = adoptJan.stream().filter(dto -> !Objects.equals(dto.getCutFlag(), 1)).collect(Collectors.toList());
+            Map<String, Integer> relationSumJanCount = relationList.stream().collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.TAI_CD) + "_" +
+                            MapUtils.getString(map, MagicString.TANA_CD) + "_" + MapUtils.getString(map, MagicString.RESTRICT_CD),
+                    Collectors.summingInt(map -> MapUtils.getInteger(map, "janCount"))));
+            for (Map<String, Object> relation : relationList) {
+                String taiCd = MapUtils.getString(relation, MagicString.TAI_CD);
+                String tanaCd = MapUtils.getString(relation, MagicString.TANA_CD);
+                Integer janCount = relationSumJanCount.get(taiCd+"_"+tanaCd+"_"+restrictCd);
+
+                List<Map<String, Object>> tanaMst = tanaList.stream().filter(map -> MapUtils.getString(map, MagicString.TAI_CD).equals(taiCd) &&
+                        MapUtils.getString(map, MagicString.TANA_CD).equals(tanaCd)).collect(Collectors.toList());
+                if (tanaMst.isEmpty()) {
+                    continue;
+                }
+
+                Map<String, Object> mst = tanaMst.get(0);
+                Integer tanaWidth = MapUtils.getInteger(mst, "tanaWidth");
+                double area = MapUtils.getDouble(relation, "area");
+                Integer areaFlag = MapUtils.getInteger(relation, "areaFlag", 0);
+                Map<Long, List<PriorityOrderResultDataDto>> backupJansByRestrictCd = backupJans.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd));
+                List<PriorityOrderResultDataDto> backupJansList = new ArrayList<>();
+                if(backupJansByRestrictCd.containsKey(restrictCd) ){
+                    backupJansList = backupJansByRestrictCd.get(restrictCd).stream()
+                                    .sorted(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
+                }
+
+                if(areaFlag==0){
+                    //jancount
+                    long usedCount = adoptJan.stream().filter(map -> taiCd.equals(map.getTaiCd()+"") &&
+                            tanaCd.equals(map.getTanaCd()+"") && restrictCd.equals(map.getRestrictCd())).count();
+                    if(usedCount<janCount){
+                        long sum = janCount - usedCount;
+                        final int[] i = {0};
+                        List<PriorityOrderResultDataDto> finalAdoptJanList = adoptJan;
+                        backupJansList.stream().filter(dto->!Objects.equals(dto.getAdoptFlag(), 1)).forEach(currentJan->{
+                            if(i[0] < sum){
+                                currentJan.setTaiCd(Integer.valueOf(taiCd));
+                                currentJan.setTanaCd(Integer.valueOf(tanaCd));
+                                finalAdoptJanList.add(currentJan);
+                                currentJan.setAdoptFlag(1);
+                            }
+                            i[0]++;
+                        });
+                    }
+                }
+
+                if(areaFlag==1){
+                    //area
+                    double groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).setScale(3, RoundingMode.CEILING).doubleValue();
+                    double usedArea = adoptJan.stream().filter(dto -> restrictCd.equals(dto.getRestrictCd()) &&
+                                    taiCd.equals(dto.getTaiCd() + "") && tanaCd.equals(dto.getTanaCd() + ""))
+                            .collect(Collectors.summarizingDouble(dto -> dto.getPlanoWidth() * dto.getFace())).getSum();
+
+                    List<PriorityOrderResultDataDto> finalAdoptJanList = adoptJan;
+                    backupJansList.stream().filter(dto->!Objects.equals(dto.getAdoptFlag(), 1)).forEach(currentJan->{
+                        long janWidth = currentJan.getPlanoWidth();
+                        long face = currentJan.getFace();
+
+                        if(janWidth * face + partitionVal + usedArea <= groupArea){
+                            currentJan.setTaiCd(Integer.valueOf(taiCd));
+                            currentJan.setTanaCd(Integer.valueOf(tanaCd));
+                            finalAdoptJanList.add(currentJan);
+                            currentJan.setAdoptFlag(1);
+                        }
+                    });
                 }
             }
         }
 
-        Map<String, List<Map<String, Object>>> noRelationGroupTaiTana = relationMap.stream()
-                .filter(map->MapUtils.getString(map, MagicString.RESTRICT_CD).equals(MagicString.NO_RESTRICT_CD+"")
-                        || "0".equals(MapUtils.getString(map, "janCount")) || Strings.isNullOrEmpty(MapUtils.getString(map, "janCount")))
-                .collect(Collectors.groupingBy(map -> MapUtils.getInteger(map, MagicString.TAI_CD)+ "_" + MapUtils.getInteger(map, MagicString.TANA_CD),
-                        LinkedHashMap::new, Collectors.toList()));
-        if(!noRelationGroupTaiTana.isEmpty()){
-            List<PriorityOrderResultDataDto> notAdoptJan = new ArrayList<>();
-            for (List<PriorityOrderResultDataDto> value : janResultByRestrictCd.values()) {
-                notAdoptJan.addAll(value.stream().filter(dto->!Objects.equals(dto.getAdoptFlag(), 1)).collect(Collectors.toList()));
-            }
+        Map<String, List<PriorityOrderResultDataDto>> adoptJanByTaiTana = adoptJan.stream().collect(Collectors.groupingBy(dto -> dto.getTaiCd() + "_" + dto.getTanaCd()));
+        for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : adoptJanByTaiTana.entrySet()) {
+            List<PriorityOrderResultDataDto> value = entry.getValue();
+            List<PriorityOrderResultDataDto> newJanList = value.stream().filter(dto -> dto.getTanapositionCd() == null
+                    || dto.getTanapositionCd().equals(0)).collect(Collectors.toList());
+            List<PriorityOrderResultDataDto> oldJanList = value.stream().filter(dto -> dto.getTanapositionCd() != null
+                    && !dto.getTanapositionCd().equals(0)).collect(Collectors.toList());
 
-            notAdoptJan.addAll(newList.stream().filter(map->!Objects.equals(MapUtils.getInteger(map, "adoptFlag"), 1))
-                    .map(map->{
-                        PriorityOrderResultDataDto dto = new PriorityOrderResultDataDto();
-                        dto.setPlanoWidth(MapUtils.getLong(map, MagicString.WIDTH_NAME));
-                        dto.setPlanoHeight(MapUtils.getLong(map, MagicString.HEIGHT_NAME));
-                        dto.setJanCd(MapUtils.getString(map, MagicString.JAN));
-                        dto.setFace(1L);
-                        dto.setPlanoIrisu("1");
-                        dto.setSkuRank(MapUtils.getLong(map, "sku_rank"));
-                        return dto;
-                    }).collect(Collectors.toList()));
-
-            if(!notAdoptJan.isEmpty()){
-                for (Map.Entry<String, List<Map<String, Object>>> entry : noRelationGroupTaiTana.entrySet()) {
-                    String groupKey = entry.getKey();
-                    String taiCd = groupKey.split("_")[0];
-                    String tanaCd = groupKey.split("_")[1];
-
-                    List<Map<String, Object>> tanaMst = tanaList.stream().filter(map -> MapUtils.getString(map, MagicString.TAI_CD).equals(taiCd) &&
-                            MapUtils.getString(map, MagicString.TANA_CD).equals(tanaCd)).collect(Collectors.toList());
-                    if (tanaMst.isEmpty()) {
-                        continue;
-                    }
-
-                    Map<String, Object> mst = tanaMst.get(0);
-                    Integer tanaWidth = MapUtils.getInteger(mst, "tanaWidth");
-                    Integer tanaHeight = MapUtils.getInteger(mst, "height");
-
-                    notAdoptJan = notAdoptJan.stream().sorted(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
-                    for (Map<String, Object> relation : entry.getValue()) {
-                        Map<String, Object> resultMap = this.doSetJan(cutList, newList, partitionVal, topPartitionVal, tanaWidthCheck,
-                                minFace, adoptJan, notAdoptJan, relation,tanaWidth, tanaHeight, taiCd, tanaCd);
-                        if(resultMap!=null){
-                            return resultMap;
+            if(!newJanList.isEmpty()){
+                AtomicInteger currentIndex = new AtomicInteger();
+                for (int i = 0; i < value.size(); i++) {
+                    int finalI = i;
+                    if (value.stream().noneMatch(dto->Objects.equals(finalI + 1, dto.getTanapositionCd()))) {
+                        if(currentIndex.get()<newJanList.size()){
+                            PriorityOrderResultDataDto dataDto = newJanList.get(currentIndex.get());
+                            dataDto.setTanapositionCd(finalI+1);
+                            oldJanList.add(i, dataDto);
+                            currentIndex.getAndIncrement();
                         }
                     }
                 }
+
+                if(currentIndex.get() < newJanList.size()){
+                    List<PriorityOrderResultDataDto> remainList = newJanList.subList(currentIndex.get(), newJanList.size());
+                    remainList.forEach(jan->jan.setTanapositionCd(currentIndex.getAndIncrement()));
+
+                    oldJanList.addAll(remainList);
+                }
             }
+
+            finalAdoptJan.addAll(oldJanList);
         }
         System.out.println("end:"+System.currentTimeMillis());
-        return ResultMaps.result(ResultEnum.SUCCESS, adoptJan);
+        return ResultMaps.result(ResultEnum.SUCCESS, finalAdoptJan);
     }
 
-    private Map<String, Object> doSetJan(List<Map<String, Object>> cutList, List<Map<String, Object>> newList, Short partitionVal,
-                                         Short topPartitionVal, Integer tanaWidthCheck,
-                          Integer minFace, List<PriorityOrderResultDataDto> adoptJan, List<PriorityOrderResultDataDto> jans,
-                          Map<String, Object> relation, Integer tanaWidth, Integer tanaHeight, String taiCd, String tanaCd){
+    /**
+     * return the map of the eliminated Jan and the new Jan
+     * @param janResultByRestrictCd
+     * @param newJanDtoList
+     * @return key:cut jan code,value: new jan code
+     */
+    private List<PriorityOrderResultDataDto> getBackupJans(Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd, List<PriorityOrderResultDataDto> newJanDtoList){
+        if(newJanDtoList.isEmpty()){
+            return new ArrayList<>();
+        }
+
+        List<PriorityOrderResultDataDto> backupJan = new ArrayList<>();
+        Map<Long, List<PriorityOrderResultDataDto>> newJanByRestrictCd = newJanDtoList.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd));
+        for (Map.Entry<Long, List<PriorityOrderResultDataDto>> entry : janResultByRestrictCd.entrySet()) {
+            Long restrictCd = entry.getKey();
+            List<PriorityOrderResultDataDto> value = entry.getValue();
+            int cutCount = 0;
+
+            if (newJanByRestrictCd.containsKey(restrictCd)) {
+                List<PriorityOrderResultDataDto> janNewList = newJanByRestrictCd.get(restrictCd);
+                for (int i = 0; i < janNewList.size(); i++) {
+                    int skuRank = janNewList.get(i).getSkuRank().intValue();
+                    PriorityOrderResultDataDto newJanDto = new PriorityOrderResultDataDto();
+                    BeanUtils.copyProperties(janNewList.get(i), newJanDto);
+
+                    Optional<PriorityOrderResultDataDto> max = value.stream().filter(dto -> dto.getSkuRank() < skuRank).max(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank));
+                    if (max.isPresent()) {
+                        newJanDto.setFace(max.get().getFace());
+                        newJanDto.setFaceFact(max.get().getFace());
+                    }else{
+                        Optional<PriorityOrderResultDataDto> min = value.stream().filter(dto -> dto.getSkuRank() >= skuRank).min(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank));
+                        if(min.isPresent()){
+                            newJanDto.setFace(min.get().getFace());
+                            newJanDto.setFaceFact(min.get().getFace());
+                        }
+                    }
+
+                    backupJan.add(newJanDto);
+                    if(skuRank<=value.size()){
+                        cutCount++;
+                    }
+                }
+
+                for (int i = 0; i < cutCount; i++) {
+                    PriorityOrderResultDataDto dataDto = value.get(value.size() - i - 1);
+                    backupJan.add(dataDto);
+                }
+            }
+        }
+
+        return backupJan;
+    }
+
+    private List<Map<String, Object>> doSetJan(Short partitionVal,Short topPartitionVal, Integer tanaWidthCheck,
+                                         List<PriorityOrderResultDataDto> adoptJan, List<PriorityOrderResultDataDto> jans,
+                                         Map<String, Object> relation, Integer tanaWidth, Integer tanaHeight, String taiCd, String tanaCd,
+                                         List<PriorityOrderResultDataDto> backupJans){
         String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
         double area = MapUtils.getDouble(relation, "area");
         Integer janCount = MapUtils.getInteger(relation, "janCount");
         double groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).setScale(3, RoundingMode.CEILING).doubleValue();
         Long usedArea = 0L;
         int usedJanCount = 0;
+        List<Map<String, Object>> resultHeightMap = new ArrayList<>();
 
         Short partitionValue = partitionVal;
         if(!Objects.equals(tanaWidthCheck, 1)){
@@ -382,57 +492,31 @@ public class CommonMstServiceImpl implements CommonMstService {
                 continue;
             }
             PriorityOrderResultDataDto newJanDto = new PriorityOrderResultDataDto();
-            List<Map<String, Object>> cutJan = cutList.stream().filter(map -> MapUtils.getString(map, "jan").equals(jan.getJanCd())).collect(Collectors.toList());
 
             Long width = Optional.ofNullable(jan.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH);
             Long face = jan.getFace();
             Long janWidth = width + partitionValue;
+            String janOld = jan.getJanCd();
 
-            if(!cutJan.isEmpty()){
-                //The new regulation takes precedence over cut
-                List<Map<String, Object>> newJanList = newList.stream().filter(map -> restrictCd.equals(MapUtils.getString(map, MagicString.RESTRICT_CD))
-                    && !"1".equals(MapUtils.getString(map, "adoptFlag"))).collect(Collectors.toList());
-                if(newJanList.isEmpty()){
-                    continue;
-                }
-                int count = Math.min(cutJan.size(), newJanList.size());
-                for (int i = 0; i < count; i++) {
-                    if(i >= newJanList.size()){
-                        continue;
-                    }
-                    Map<String, Object> newJan = newJanList.get(i);
-                    newJanDto.setJanCd(MapUtils.getString(newJan, "jan"));
-                    newJanDto.setFace(jan.getFace());
-                    newJanDto.setTaiCd(MapUtils.getInteger(newJan, "taiCd"));
-                    newJanDto.setTanaCd(MapUtils.getInteger(newJan, "tanaCd"));
-                    newJanDto.setFaceFact(jan.getFace());
-                    newJanDto.setRank(-1L);
-                    newJanDto.setSkuRank(MapUtils.getLong(newJan, "sku_rank"));
-                    newJanDto.setRestrictCd(MapUtils.getLong(newJan, MagicString.RESTRICT_CD));
-                    if (Objects.equals(tanaWidthCheck, 1)) {
-                        newJanDto.setPlanoWidth(MapUtils.getLong(newJan, MagicString.WIDTH_NAME));
-                        janWidth = newJanDto.getPlanoWidth() + partitionValue;
-                    }else{
-                        newJanDto.setPlanoWidth(jan.getPlanoWidth());
-                    }
-                    newJanDto.setHeight(MapUtils.getLong(newJan, MagicString.HEIGHT_NAME));
-                    newJanDto.setIrisu(MapUtils.getString(newJan, MagicString.IRISU_NAME));
-
-                    if(Objects.equals(tanaWidthCheck, 1) && janWidth*face + usedArea + partitionValue <= groupArea) {
-                        //pre calculation used area
-                        jan.setCutFlag(1);
-                        newList.forEach(map -> {
-                            if(MapUtils.getString(map,"jan").equals(MapUtils.getString(newJan,"jan"))
-                                    && MapUtils.getString(map,MagicString.RESTRICT_CD).equals(MapUtils.getString(newJan,MagicString.RESTRICT_CD))){
-                                newJan.put("adoptFlag", "1");
-                            }
-                        });
-                    }
-                    BeanUtils.copyProperties(newJanDto,jan);
-                }
-            }else{
+            relation.put("areaFlag", 0);
+            if (backupJans.stream().anyMatch(dto->janOld.equals(dto.getJanCd()))) {
                 BeanUtils.copyProperties(jan, newJanDto);
                 newJanDto.setFaceFact(jan.getFace());
+                newJanDto.setCutFlag(1);
+                if(janCount==null || janCount==0){
+                    //1:area change or restrictCd change --> width judge
+                    relation.put("areaFlag", 1);
+                }else{
+                    //jan_count judge
+                    relation.put("areaFlag", 0);
+                }
+            }else{
+                if(taiCd.equals(jan.getTaiCd()+"") && tanaCd.equals(jan.getTanaCd()+"")){
+                    BeanUtils.copyProperties(jan, newJanDto);
+                    newJanDto.setFaceFact(jan.getFace());
+                }else{
+                    continue;
+                }
             }
 
             if(topPartitionVal!=null){
@@ -444,7 +528,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     errInfo.put("janHeight", janHeight);
                     errInfo.put("jan", jan.getJanCd());
                     errInfo.put("restrictCd", jan.getRestrictCd());
-                    return ImmutableMap.of("code",ResultEnum.HEIGHT_NOT_ENOUGH.getCode(),"data", errInfo);
+                    resultHeightMap.add(errInfo);
                 }
             }
 
@@ -453,7 +537,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             janWidth = width + partitionValue;
 
             boolean condition = false;
-            if(Objects.equals(tanaWidthCheck, 1) || (MagicString.NO_RESTRICT_CD+"").equals(restrictCd) || janCount==null || janCount==0){
+            if((MagicString.NO_RESTRICT_CD+"").equals(restrictCd) || janCount==null || janCount==0){
                 condition = janWidth*face + usedArea <= groupArea;
             }else{
                 condition = usedJanCount<janCount;
@@ -468,31 +552,12 @@ public class CommonMstServiceImpl implements CommonMstService {
                 adoptJanByTaiTana.add(newJanDto);
                 jan.setAdoptFlag(1);
                 usedJanCount++;
-            }else{
-                boolean checkCondition = Objects.equals(tanaWidthCheck, 1);
-                if(janCount!=null && janCount!=0){
-                    checkCondition = checkCondition && usedJanCount<janCount;
-                }
-
-                if(checkCondition){
-                    boolean setJanByCutFace = isSetJanByCutFace(adoptJanByTaiTana, groupArea, usedArea, partitionVal, minFace, newJanDto);
-                    if(setJanByCutFace){
-                        newJanDto.setTaiCd(Integer.parseInt(taiCd));
-                        newJanDto.setTanaCd(Integer.parseInt(tanaCd));
-                        newJanDto.setAdoptFlag(1);
-                        adoptJanByTaiTana.add(newJanDto);
-                        jan.setAdoptFlag(1);
-//                        usedArea+=Optional.ofNullable(newJanDto.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH)*newJanDto.getFaceFact()+partitionVal;
-                    }
-                }
-
-                break;
             }
         }
 
         adoptJan.addAll(adoptJanByTaiTana);
 
-        return null;
+        return resultHeightMap;
     }
 
     /**
@@ -601,7 +666,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
 
                 for (WorkPriorityOrderResultDataDto currentDataDto : resultDataByTanaCdList) {
-                    currentDataDto.setTanaPositionCd(++tantaPositionCd);
+                    currentDataDto.setTanapositionCd(++tantaPositionCd);
                     currentDataDto.setFaceMen(Optional.ofNullable(currentDataDto.getFaceMen()).orElse(1));
                     currentDataDto.setFaceKaiten(Optional.ofNullable(currentDataDto.getFaceKaiten()).orElse(0));
                     currentDataDto.setTumiagesu(Optional.ofNullable(currentDataDto.getTumiagesu()).orElse(1));

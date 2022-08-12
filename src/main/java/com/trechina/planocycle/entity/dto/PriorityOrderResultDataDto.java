@@ -53,5 +53,6 @@ public class PriorityOrderResultDataDto {
     private Long height;
     private Long planoHeight;
     private String planoIrisu;
+    private Integer newFlag = 0;
 
 }
