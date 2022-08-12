@@ -6,7 +6,7 @@
         from planocycle.basic_pattern_jan_placement
     </select>
     <select id="getJanPlacementList" resultType="java.util.Map">
-        select face_men as faceMen,face_kaiten as "faceKaiten", width as "planoWidth",height as "planoHeight", depth as "planoDepth"
+        select face_men as "faceMen",face_kaiten as "faceKaiten", width as "planoWidth",height as "planoHeight", depth as "planoDepth"
         from planocycle.basic_pattern_jan_placement
     </select>
 </mapper>

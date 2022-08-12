@@ -6,6 +6,7 @@ import com.trechina.planocycle.entity.po.BasicPatternRestrictRelation;
 import com.trechina.planocycle.entity.po.BasicPatternRestrictResult;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -30,5 +31,5 @@ public interface BasicPatternMstService {
     /**
      * jan长宽高修改
      */
-    List<PriorityOrderResultDataDto> updateJanSize( List<PriorityOrderResultDataDto> priorityOrderResultDataDtoList);
+    List<PriorityOrderResultDataDto> updateJanSize( List<PriorityOrderResultDataDto> priorityOrderResultDataDtoList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 }
