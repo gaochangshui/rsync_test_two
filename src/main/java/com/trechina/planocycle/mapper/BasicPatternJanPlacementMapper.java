@@ -9,4 +9,6 @@ import java.util.Map;
 public interface BasicPatternJanPlacementMapper {
 
     List<Map<String,Object>> getJanPlacement();
+
+    List<Map<String,Object>> getJanPlacementList();
 }

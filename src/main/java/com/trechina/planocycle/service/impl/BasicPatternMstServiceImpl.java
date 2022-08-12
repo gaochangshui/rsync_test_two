@@ -281,6 +281,14 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         return classify;
     }
 
+    @Override
+    public List<PriorityOrderResultDataDto> updateJanSize(List<PriorityOrderResultDataDto> priorityOrderResultDataDtoList) {
+
+
+
+        return null;
+    }
+
     public GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd ) {
 
         JSONObject jsonObject = JSON.parseObject(commonPartsData);
