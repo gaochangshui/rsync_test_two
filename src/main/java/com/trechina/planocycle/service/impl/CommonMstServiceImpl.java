@@ -321,7 +321,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             adoptJan = adoptJan.stream().filter(dto -> !Objects.equals(dto.getCutFlag(), 1)).collect(Collectors.toList());
             Map<String, Integer> relationSumJanCount = relationList.stream().collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.TAI_CD) + "_" +
                             MapUtils.getString(map, MagicString.TANA_CD) + "_" + MapUtils.getString(map, MagicString.RESTRICT_CD),
-                    Collectors.summingInt(map -> MapUtils.getInteger(map, "janCount"))));
+                    Collectors.summingInt(map -> MapUtils.getInteger(map, "janCount", 0))));
             for (Map<String, Object> relation : relationList) {
                 String taiCd = MapUtils.getString(relation, MagicString.TAI_CD);
                 String tanaCd = MapUtils.getString(relation, MagicString.TANA_CD);
