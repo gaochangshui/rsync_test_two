@@ -9,6 +9,7 @@ import com.trechina.planocycle.entity.po.ZokuseiMst;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public interface CommonMstService {
                                            GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
                                            Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
                                            List<PriorityOrderResultDataDto> janResult, List<Map<String, Object>> sizeAndIrisu,
-                                           int isReOrder);
+                                           int isReOrder) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
 
     List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData, int isReOrder);
 

@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -172,7 +173,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     }
 
     private Map<String, Object> allPatternCommSetJan(Integer patternCd, String companyCd, Integer priorityOrderCd,Integer priorityAllCd,
-                                              String authorCd, Integer minFaceNum){
+                                              String authorCd, Integer minFaceNum) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
         //all pattern don't check 棚幅チェック and 高さスペース
         Integer tanaWidCheck = 0;

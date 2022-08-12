@@ -42,11 +42,11 @@ public class PriorityOrderResultDataDto {
 
     private Integer restrictType;
 
-    private Long faceKeiten;
-    private Long faceMen;
+    private Integer faceKaiten=0;
+    private Long faceMen=1L;
     private Double salesCnt;
-    private Integer tumiagesu;
-    private Integer zaikosu;
+    private Integer tumiagesu=1;
+    private Integer zaikosu=0;
     private Integer faceDisplayflg;
     private Integer facePosition;
     private Long width;

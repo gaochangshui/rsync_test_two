@@ -292,7 +292,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         Class<PriorityOrderResultDataDto> clazz = PriorityOrderResultDataDto.class;
         for (PriorityOrderResultDataDto priorityOrderResultDataDto : priorityOrderResultDataDtoList) {
             for (Map<String, Object> map : janPlacementList) {
-                if (priorityOrderResultDataDto.getFaceKeiten().intValue() == MapUtils.getInteger(map,"faceKaiten") &&
+                if (priorityOrderResultDataDto.getFaceKaiten().intValue() == MapUtils.getInteger(map,"faceKaiten") &&
                         priorityOrderResultDataDto.getFaceMen().intValue() == MapUtils.getInteger(map,"faceMen")
                 ){
                     Method getPlanoWidth = clazz.getMethod("getPlano" + map.get("planoWidth").toString().substring(0, 1).toUpperCase() + map.get("planoWidth").toString().substring(1));

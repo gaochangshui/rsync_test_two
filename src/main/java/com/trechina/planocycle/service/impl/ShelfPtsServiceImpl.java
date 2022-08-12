@@ -680,12 +680,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                     basicPatternRestrictRelation.setArea(100L);
                     group.add(basicPatternRestrictRelation);
                     ptsTanaVo.setGroup(group);
-                }else{
-                    ptsTanaVo.getGroup().forEach(group->{
-                        int janCount = shelfPtsDataMapper.selectJanCount(priorityOrderCd, (Integer) group.getTaiCd(), (Integer) group.getTanaCd(),
-                                group.getRestrictCd(), workPriorityOrderMst.getShelfPatternCd());
-                        group.setJanCount(janCount);
-                    });
                 }
             }
             shelfPtsDataMapper.deleteTana(taiCd,id);

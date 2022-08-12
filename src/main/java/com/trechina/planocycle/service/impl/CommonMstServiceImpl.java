@@ -13,6 +13,7 @@ import com.trechina.planocycle.entity.po.ZokuseiMst;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.CommonMstService;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -60,6 +62,8 @@ public class CommonMstServiceImpl implements CommonMstService {
     private PriorityOrderJanNewService priorityOrderJanNewService;
     @Autowired
     private JanClassifyMapper janClassifyMapper;
+    @Autowired
+    private BasicPatternMstService basicPatternMstService;
 
     //@Override
     //public Map<String, Object> getAreaInfo(String companyCd) {
@@ -211,9 +215,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                                                   GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
                                                   Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
                                                   List<PriorityOrderResultDataDto> janResult, List<Map<String, Object>> sizeAndIrisu,
-                                                  int isReOrder) {
-        List<Map<String, Object>> cutList = janCutMapper.selectJanCut(priorityOrderCd);
-
+                                                  int isReOrder) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Integer currentTaiCd=1;
         for (int i = 0; i < tanaList.size(); i++) {
             Map<String, Object> tana = tanaList.get(i);
@@ -243,11 +245,14 @@ public class CommonMstServiceImpl implements CommonMstService {
             PriorityOrderResultDataDto dto = new PriorityOrderResultDataDto();
             Map<String, Object> zokusei = newList.get(i);
 
-            dto.setIrisu("1");
             dto.setFace(MapUtils.getLong(zokusei, "face"));
             dto.setSkuRank(MapUtils.getLong(zokusei, "jan_rank"));
             dto.setJanCd(MapUtils.getString(zokusei, "jan"));
             dto.setNewFlag(1);
+            dto.setPlanoWidth(MapUtils.getLong(zokusei, MagicString.WIDTH_NAME));
+            dto.setPlanoHeight(MapUtils.getLong(zokusei, MagicString.HEIGHT_NAME));
+            dto.setPlanoDepth(MapUtils.getLong(zokusei, MagicString.DEPTH_NAME));
+            dto.setIrisu(MapUtils.getString(zokusei, MagicString.IRISU_NAME));
 
             for (Map<String, Object> restrict : restrictResult) {
                 if (Objects.equals(MapUtils.getLong(restrict, "restrict_cd"), MagicString.NO_RESTRICT_CD)) {
@@ -273,6 +278,8 @@ public class CommonMstServiceImpl implements CommonMstService {
         }
 
         newJanDtoList = newJanDtoList.stream().filter(map->map.getRestrictCd()!=null).collect(Collectors.toList());
+        newJanDtoList = basicPatternMstService.updateJanSize(newJanDtoList);
+        janResult = basicPatternMstService.updateJanSize(janResult);
 
         Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd = janResult.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd, LinkedHashMap::new, Collectors.toList()));
         List<PriorityOrderResultDataDto> backupJans = this.getBackupJans(janResultByRestrictCd, newJanDtoList);
