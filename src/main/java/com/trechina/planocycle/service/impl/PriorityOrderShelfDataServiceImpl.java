@@ -48,13 +48,9 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Autowired
     private BasicPatternRestrictResultMapper restrictResultMapper;
     @Autowired
-    private BasicPatternRestrictRelationMapper restrictRelationMapper;
-    @Autowired
     private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
     @Autowired
     private ShelfPtsDataMapper shelfPtsDataMapper;
-    @Autowired
-    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
@@ -144,7 +140,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                     .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd")))
                     .collect(Collectors.toList());
             Map<String,Object> mapHeader = new HashMap<>();
-            String groupColumns = "taiCd,tanaCd,janCd,janName,plano_depth,plano_height,plano_width,rank,faceNum";
+            String groupColumns = "taiCd,tanaCd,janCd,janName,plano_width,plano_height,plano_depth,rank,faceNum";
             String groupHeader = "台番号,棚段番号,JAN,商品名,幅,高,奥行,RANK,フェース数";
             mapHeader.put("groupColumns",groupColumns);
             mapHeader.put("groupHeader",groupHeader);
