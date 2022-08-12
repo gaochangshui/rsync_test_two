@@ -38,6 +38,12 @@ public class PriorityOrderResultDataDto {
 
     private Integer tanapositionCd;
 
+    private Integer oldTaiCd;
+
+    private Integer oldTanaCd;
+
+    private Integer oldTanapositionCd;
+
     private Integer tanaType;
 
     private Integer restrictType;
