@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.BasicPatternJanPlacementMapper">
+    <select id="getJanPlacement" resultType="map">
+        select face_men as faceMen,face_kaiten as faceKaiten,'plano_' || width as plano_width,'plano_' || height as plano_height, 'plano_' || depth as plano_depth
+
+        from planocycle.basic_pattern_jan_placement
+    </select>
+</mapper>

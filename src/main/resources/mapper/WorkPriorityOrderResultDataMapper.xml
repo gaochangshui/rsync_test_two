@@ -43,7 +43,7 @@
       and author_cd = #{authorCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd}
   </select>
-  <select id="getReorder" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
+    <select id="getReorder" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
     select  resultdata.jan as janCd,avgattr1,row_number() over(order by  avgattr1,attrmst."${sortName1}"
     <if test="sortName2 != null">
       ,avgattr2,attrmst."${sortName2}"
