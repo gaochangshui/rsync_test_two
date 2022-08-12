@@ -105,11 +105,13 @@
         group by coalesce (result.zokusei${attr},''),coalesce ( nm, '' ),coalesce ( mst.zokusei_nm, '' )
   </select>
   <select id="getColNmforMst" resultType="java.lang.String">
-    select (zokusei_col)::INTEGER as "attrSort"
+    select case when attrinfo."3" is null then (zokusei_col::INTEGER)+1 else zokusei_col ::INTEGER end  as "attrSort"
     from planocycle.work_priority_order_sort sort
            left join masterdb.planocycle_zokusei_mst mst
                      on mst.zokusei_id = sort.zokusei_id and mst.company_cd = #{commonTableName.prodIsCore}
                        and mst.class_cd = #{commonTableName.prodMstClass}
+            LEFT JOIN ${commonTableName.proAttrTable} attrinfo
+            on mst.zokusei_col = attrinfo."3"
     where sort.company_cd = #{companyCd} and  sort.author_cd = #{authorCd} and sort.priority_order_cd = #{priorityOrderCd}
   </select>
   <select id="getAttrCol" resultType="java.util.Map">

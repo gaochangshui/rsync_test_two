@@ -168,7 +168,7 @@ class PlanoCycleApiApplicationTests {
         List<PriorityOrderResultDataDto> priorityOrderResultDataDtoList = new ArrayList<>();
         PriorityOrderResultDataDto priorityOrderResultDataDtoList1 = new PriorityOrderResultDataDto();
         priorityOrderResultDataDtoList1.setFaceMen(1L);
-        priorityOrderResultDataDtoList1.setFaceKeiten(1L);
+        priorityOrderResultDataDtoList1.setFaceKaiten(1);
         priorityOrderResultDataDtoList1.setPlanoWidth(198L);
         priorityOrderResultDataDtoList1.setPlanoHeight(60L);
         priorityOrderResultDataDtoList1.setPlanoDepth(132L);
@@ -177,7 +177,7 @@ class PlanoCycleApiApplicationTests {
         Class clazz = PriorityOrderResultDataDto.class;
         for (PriorityOrderResultDataDto priorityOrderResultDataDto : priorityOrderResultDataDtoList) {
             for (Map<String, Object> map : janPlacementList) {
-                if (priorityOrderResultDataDto.getFaceKeiten().intValue() == MapUtils.getInteger(map,"faceKaiten") &&
+                if (priorityOrderResultDataDto.getFaceKaiten().intValue() == MapUtils.getInteger(map,"faceKaiten") &&
                         priorityOrderResultDataDto.getFaceMen().intValue() == MapUtils.getInteger(map,"faceMen")
                 ){
                     Method getPlanoWidth = clazz.getMethod("getPlano" + map.get("planoWidth").toString().substring(0, 1).toUpperCase() + map.get("planoWidth").toString().substring(1));
