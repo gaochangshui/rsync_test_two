@@ -21,6 +21,7 @@ public interface WorkPriorityOrderRestrictResultMapper {
     List<ProductPowerDataDto> getProductPowerData(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd
     ,@Param("productPowerCd")Integer productPowerCd,@Param("authorCd")String authorCd,@Param("patternCd")Integer patternCd);
 
-    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
+    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd
+    ,@Param("newPriorityOrderCd")Integer newPriorityOrderCd);
 
 }

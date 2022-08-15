@@ -1,7 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.trechina.planocycle.controller.IDGeneratorController;
+import com.trechina.planocycle.entity.po.ProductPowerNumGenerator;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerParamMst;
 import com.trechina.planocycle.entity.po.WorkProductPowerReserveData;
@@ -10,6 +10,7 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreMasterService;
 import com.trechina.planocycle.service.CommodityScoreParaService;
+import com.trechina.planocycle.service.IDGeneratorService;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
@@ -50,7 +51,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Autowired
     private ShelfPatternMstMapper shelfPatternMstMapper;
     @Autowired
-    private IDGeneratorController idGeneratorController;
+    private IDGeneratorService idGeneratorService;
     @Autowired
     private cgiUtils cgiUtil;
     ///**
@@ -106,7 +107,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      * @param
      * @return
      */
-    //@Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setCommodityScorePare(ProductPowerParam productPowerParam) {
         String authorCd = session.getAttribute("aud").toString();
@@ -120,30 +121,30 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         //テンポラリ・テーブルの最終テーブルへの保存
         //pos基本データ
             //物理削除挿入の保存の変更
-            productPowerDataMapper.phyDeleteSyokika(companyCd,productPowerCd,authorCd);
-            productPowerDataMapper.endSyokikaForWK(companyCd, productPowerCd, authorCd);
+            productPowerDataMapper.phyDeleteSyokika(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.endSyokikaForWK(companyCd, productPowerCd, authorCd,newProductPowerCd);
 
             //物理削除挿入の保存の変更
-            productPowerDataMapper.phyDeleteGroup(companyCd,productPowerCd,authorCd);
-            productPowerDataMapper.endGroupForWK(companyCd, productPowerCd, authorCd);
+            productPowerDataMapper.phyDeleteGroup(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.endGroupForWK(companyCd, productPowerCd, authorCd,newProductPowerCd);
 
             //物理削除挿入の保存の変更
-            productPowerDataMapper.phyDeleteYobiiitern(companyCd,productPowerCd,authorCd);
-            productPowerDataMapper.phyDeleteYobiiiternData(companyCd,productPowerCd,authorCd);
-            productPowerDataMapper.endYobiiiternForWk(companyCd,productPowerCd,authorCd);
-            productPowerDataMapper.endYobiiiternDataForWk(companyCd,productPowerCd,authorCd);
+            productPowerDataMapper.phyDeleteYobiiitern(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.phyDeleteYobiiiternData(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.endYobiiiternForWk(companyCd,productPowerCd,authorCd,newProductPowerCd);
+            productPowerDataMapper.endYobiiiternDataForWk(companyCd,productPowerCd,authorCd,newProductPowerCd);
             //物理削除挿入の保存の変更
-            productPowerDataMapper.phyDeleteIntage(companyCd,productPowerCd,authorCd);
-            productPowerDataMapper.endIntageForWK(companyCd,productPowerCd,authorCd);
+            productPowerDataMapper.phyDeleteIntage(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.endIntageForWK(companyCd,productPowerCd,authorCd,newProductPowerCd);
             //物理削除挿入の保存の変更
         
-            productPowerDataMapper.deleteData(companyCd,productPowerCd,authorCd);
-            productPowerDataMapper.setData(productPowerCd,authorCd,companyCd);
+            productPowerDataMapper.deleteData(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.setData(productPowerCd,authorCd,companyCd,newProductPowerCd);
             //期間パラメータ削除挿入{{きかんぱらめーた:さくじょそうにゅう}}
             String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
 
-        productPowerParamMstMapper.deleteParam(companyCd,productPowerCd);
-        productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd);
+        productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
+        productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd,newProductPowerCd);
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

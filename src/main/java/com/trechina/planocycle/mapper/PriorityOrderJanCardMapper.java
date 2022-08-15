@@ -17,7 +17,8 @@ public interface PriorityOrderJanCardMapper {
 
     int insert(@Param("lists") List<PriorityOrderJanCard> record,@Param("authorCd")String authorCd);
     //最終テーブルデータをテンポラリ・テーブルに移動
-    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
+    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd
+    ,@Param("newPriorityOrderCd")Integer newPriorityOrderCd);
 
     int deleteByAuthorCd(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("authorCd")String authorCd);
 

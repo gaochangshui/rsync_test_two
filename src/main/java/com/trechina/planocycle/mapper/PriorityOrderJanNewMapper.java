@@ -27,7 +27,8 @@ public interface PriorityOrderJanNewMapper {
             , List<Integer> allCdList, String proInfoTable, List<Map<String, Object>> attrName, Long shelfPatternCd
             , Integer productPowerCd);
 
-    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd") String authorCd);
+    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd") String authorCd
+    ,@Param("newPriorityOrderCd")Integer newPriorityOrderCd);
 
     int deleteByAuthorCd(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd") String authorCd);
 

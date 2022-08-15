@@ -21,5 +21,7 @@ public interface PriorityOrderShelfDataMapper {
 
     void updateFaceNum(@Param("item") PriorityOrderPtsDto shelfPtsDataJandata);
 
+    Integer selectRegclass();
+
     // List<>
 }

@@ -60,7 +60,8 @@ public interface WorkPriorityOrderResultDataMapper {
      */
     int updateTaiTanaBatch(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd") String authorCd, @Param("list") List<PriorityOrderResultDataDto> list);
 
-    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd")String authorCd);
+    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd")String authorCd
+    ,@Param("newPriorityOrderCd")Integer newPriorityOrderCd);
 
     //ユーザ編集faceNum
     int updateFaceNum(@Param("list") List<PriorityOrderRestrictJanDto> list,@Param("ptsCd")Integer ptsCd);

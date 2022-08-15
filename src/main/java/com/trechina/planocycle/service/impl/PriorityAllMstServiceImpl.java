@@ -98,6 +98,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             String authorCd = session.getAttribute("aud").toString();
             String companyCd = jsonObject.get("companyCd").toString();
             Integer priorityAllCd = (Integer) jsonObject.get("priorityAllCd");
+            //Integer isCover = (Integer) jsonObject.get("isCover");
+            //Integer newPriorityAllCd = priorityAllCd;
+
+
             //「companyCd、priorityAllCd、Author_cd」によりWKテーブルをクリア
             priorityAllMstMapper.deleteWKTableMst(companyCd, priorityAllCd, authorCd);
             priorityAllMstMapper.deleteWKTableShelfs(companyCd, priorityAllCd, authorCd);

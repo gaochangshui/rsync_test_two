@@ -17,7 +17,8 @@ public interface PriorityOrderJanReplaceMapper {
 
     List<PriorityOrderJanReplaceVO> selectJanInfo(String companyCd, Integer priorityOrderCd, GetCommonPartsDataDto commonTableName);
 
-    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd") String authorCd);
+    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd") String authorCd
+    ,@Param("newPriorityOrderCd")Integer newPriorityOrderCd);
 
     String selectJanDistinct();
 

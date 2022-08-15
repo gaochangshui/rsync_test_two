@@ -8,7 +8,7 @@
   </resultMap>
     <insert id="setWorkForFinal">
         insert into planocycle.work_priority_order_cut(priority_order_cd,company_cd,author_cd,jan_cd)
-        select priority_order_cd,company_cd,#{authorCd},jan_cd
+        select #{newPriorityOrderCd},company_cd,#{authorCd},jan_cd
         from planocycle.priority_order_jan_cut
         where company_cd = #{companyCd,jdbcType=VARCHAR}
             and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

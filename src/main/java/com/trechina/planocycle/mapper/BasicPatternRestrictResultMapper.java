@@ -45,7 +45,7 @@ public interface BasicPatternRestrictResultMapper {
     List<Map<String, Object>> selectAllPatternResultData(Integer ptsCd, List<ZokuseiMst> attrList
             , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName);
 
-    void setWorkForFinal(String companyCd, Integer priorityOrderCd);
+    void setWorkForFinal(String companyCd, Integer priorityOrderCd,Integer newPriorityOrderCd);
 
     List<Map<String, Object>> getPtsJanInfo(Integer priorityOrderCd, Integer ptsCd, List<ZokuseiMst> attrList
             , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName,String tableName,

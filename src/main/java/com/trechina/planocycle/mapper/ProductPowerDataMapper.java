@@ -105,15 +105,20 @@ public interface ProductPowerDataMapper {
     List<ProductPowerMstData> getProductPowerMstData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
     //テンポラリ・テーブルを最終テーブルに移動
-    int endSyokikaForWK(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
+    int endSyokikaForWK(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
+    ,@Param("newProductPowerCd")Integer newProductPowerCd);
 
-    int endGroupForWK(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
+    int endGroupForWK(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
+    ,@Param("newProductPowerCd")Integer newProductPowerCd);
 
-    int endYobiiiternForWk(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
+    int endYobiiiternForWk(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
+    ,@Param("newProductPowerCd")Integer newProductPowerCd);
 
-    int endYobiiiternDataForWk(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
+    int endYobiiiternDataForWk(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
+    ,@Param("newProductPowerCd")Integer newProductPowerCd);
 
-    int endIntageForWK(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
+    int endIntageForWK(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
+    ,@Param("newProductPowerCd")Integer newProductPowerCd);
 
     //クエリの最終テーブル数
     Integer syokikaPowerCdNum(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
@@ -134,7 +139,8 @@ public interface ProductPowerDataMapper {
 
     int deleteData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
-    int setData(@Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd, @Param("companyCd") String companyCd);
+    int setData(@Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd, @Param("companyCd") String companyCd
+    ,@Param("newProductPowerCd")Integer newProductPowerCd);
 
     List<LinkedHashMap<String,Object>> getAllDataAttr(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("list")List<String> list
             ,@Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify, @Param("tableName") String tableName
