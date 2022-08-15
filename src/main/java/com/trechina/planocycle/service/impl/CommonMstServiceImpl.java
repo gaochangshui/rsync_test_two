@@ -9,6 +9,7 @@ import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictRelation;
+import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
 import com.trechina.planocycle.entity.po.ZokuseiMst;
 import com.trechina.planocycle.entity.vo.PtsTaiVo;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -31,6 +32,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +46,8 @@ public class CommonMstServiceImpl implements CommonMstService {
     @Autowired
     private ProductPowerParamMstMapper productPowerParamMstMapper;
     @Autowired
+    private ProductPowerMstMapper productPowerMstMapper;
+    @Autowired
     private ClassicPriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
     private ShelfPtsDataJandataMapper jandataMapper;
@@ -56,6 +60,8 @@ public class CommonMstServiceImpl implements CommonMstService {
     private WorkPriorityOrderJanNewMapper janNewMapper;
     @Autowired
     private BasicPatternRestrictResultMapper basicRestrictResultMapper;
+    @Autowired
+    private WorkPriorityOrderResultDataMapper priorityOrderResultDataMapper;
     @Autowired
     private HttpSession session;
     @Autowired
@@ -215,7 +221,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                                                   GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
                                                   Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
                                                   List<PriorityOrderResultDataDto> janResult, List<Map<String, Object>> sizeAndIrisu,
-                                                  int isReOrder) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+                                                  int isReOrder, Integer productPowerCd,List<String> colNmforMst) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Integer currentTaiCd=1;
         for (int i = 0; i < tanaList.size(); i++) {
             Map<String, Object> tana = tanaList.get(i);
@@ -247,6 +253,7 @@ public class CommonMstServiceImpl implements CommonMstService {
 
             dto.setFace(MapUtils.getLong(zokusei, "face"));
             dto.setSkuRank(MapUtils.getLong(zokusei, "jan_rank"));
+            dto.setRank(MapUtils.getLong(zokusei, "jan_rank"));
             dto.setJanCd(MapUtils.getString(zokusei, "jan"));
             dto.setNewFlag(1);
             dto.setPlanoWidth(MapUtils.getLong(zokusei, MagicString.WIDTH_NAME));
@@ -283,6 +290,26 @@ public class CommonMstServiceImpl implements CommonMstService {
 
         Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd = janResult.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd, LinkedHashMap::new, Collectors.toList()));
         List<PriorityOrderResultDataDto> backupJans = this.getBackupJans(janResultByRestrictCd, newJanDtoList);
+
+        if(isReOrder>0){
+            List<WorkPriorityOrderResultData> reorderByJan = new ArrayList<>();
+            if (colNmforMst.size()>1) {
+                reorderByJan = priorityOrderResultDataMapper.getReorderByJan(companyCd, aud, productPowerCd,
+                        priorityOrderCd, commonTableName, colNmforMst.get(0), colNmforMst.get(1), backupJans);
+            }
+
+            if(colNmforMst.size()==1){
+                reorderByJan = priorityOrderResultDataMapper.getReorderByJan(companyCd, aud, productPowerCd,priorityOrderCd,
+                        commonTableName, colNmforMst.get(0), null, backupJans);
+            }
+
+            Map<String, Integer> skuRankMap = reorderByJan.stream().collect(Collectors.toMap(WorkPriorityOrderResultData::getJanCd, WorkPriorityOrderResultData::getResultRank));
+            backupJans.forEach(janItem->{
+                janItem.setSkuRank(MapUtils.getLong(skuRankMap, "sku_rank", 9999L));
+            });
+        }
+
+
         Map<Long, List<Map<String, Object>>> relationGroupRestrictCd = relationMap.stream()
                 .collect(Collectors.groupingBy(map -> MapUtils.getLong(map, MagicString.RESTRICT_CD),
                         LinkedHashMap::new, Collectors.toList()));
@@ -356,7 +383,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                             PriorityOrderResultDataDto currentJan = notAdoptBackupJansList.get(j);
                             if(i < sum){
                                 currentJan.setOldTaiCd(currentJan.getTaiCd());
-                                currentJan.setOldTanaCd(currentJan.getTaiCd());
+                                currentJan.setOldTanaCd(currentJan.getTanaCd());
                                 currentJan.setOldTanapositionCd(currentJan.getOldTanapositionCd());
 
                                 currentJan.setTaiCd(Integer.valueOf(taiCd));
@@ -494,7 +521,8 @@ public class CommonMstServiceImpl implements CommonMstService {
      * @param newJanDtoList
      * @return key:cut jan code,value: new jan code
      */
-    private List<PriorityOrderResultDataDto> getBackupJans(Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd, List<PriorityOrderResultDataDto> newJanDtoList){
+    private List<PriorityOrderResultDataDto> getBackupJans(Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd,
+                                                           List<PriorityOrderResultDataDto> newJanDtoList){
         if(newJanDtoList.isEmpty()){
             return new ArrayList<>();
         }
@@ -509,16 +537,16 @@ public class CommonMstServiceImpl implements CommonMstService {
             if (newJanByRestrictCd.containsKey(restrictCd)) {
                 List<PriorityOrderResultDataDto> janNewList = newJanByRestrictCd.get(restrictCd);
                 for (int i = 0; i < janNewList.size(); i++) {
-                    int skuRank = janNewList.get(i).getSkuRank().intValue();
+                    int rank = janNewList.get(i).getRank().intValue();
                     PriorityOrderResultDataDto newJanDto = new PriorityOrderResultDataDto();
                     BeanUtils.copyProperties(janNewList.get(i), newJanDto);
 
-                    Optional<PriorityOrderResultDataDto> max = value.stream().filter(dto -> dto.getSkuRank() < skuRank).max(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank));
+                    Optional<PriorityOrderResultDataDto> max = value.stream().filter(dto -> dto.getSkuRank() < rank).max(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank));
                     if (max.isPresent()) {
                         newJanDto.setFace(max.get().getFace());
                         newJanDto.setFaceFact(max.get().getFace());
                     }else{
-                        Optional<PriorityOrderResultDataDto> min = value.stream().filter(dto -> dto.getSkuRank() >= skuRank).min(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank));
+                        Optional<PriorityOrderResultDataDto> min = value.stream().filter(dto -> dto.getSkuRank() >= rank).min(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank));
                         if(min.isPresent()){
                             newJanDto.setFace(min.get().getFace());
                             newJanDto.setFaceFact(min.get().getFace());
@@ -527,7 +555,7 @@ public class CommonMstServiceImpl implements CommonMstService {
 
                     newJanDto.setNewFlag(1);
                     backupJan.add(newJanDto);
-                    if(skuRank<=value.size()){
+                    if(rank<=value.size()){
                         cutCount++;
                     }
                 }
@@ -662,6 +690,7 @@ public class CommonMstServiceImpl implements CommonMstService {
      * @param partitionVal スペーサ幅
      * @return true放す，false放さない
      */
+    @Deprecated
     private boolean isSetJanByCutFace(List<PriorityOrderResultDataDto> resultDataDtoList, double width, double usedWidth, long partitionVal,
                                       long minFace, PriorityOrderResultDataDto targetResultData){
         Long face = targetResultData.getFace();

@@ -531,6 +531,15 @@
             and deleteflg=0
     </select>
 
+    <select id="getPriorityOrderMst" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstDto">
+        select
+        shelf_pattern_cd,product_power_cd
+        from planocycle.priority_order_mst
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and priority_order_cd = #{priorityOrderCd}
+        and deleteflg=0
+    </select>
+
     <select id="getAllPatternData" resultType="com.trechina.planocycle.entity.vo.PriorityAllPatternListVO">
         select shelfnm.shelf_name,shelf.shelf_pattern_cd,shelf.shelf_pattern_name
             ,count(distinct tana.tai_cd) as tai_cnt,count(tana.tana_cd) as tana_cnt

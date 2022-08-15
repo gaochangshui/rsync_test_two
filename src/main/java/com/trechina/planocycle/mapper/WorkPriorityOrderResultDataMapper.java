@@ -41,6 +41,10 @@ public interface WorkPriorityOrderResultDataMapper {
                                                  @Param("priorityOrderCd")Integer priorityOrderCd, @Param("commonTableName")GetCommonPartsDataDto getCommonPartsDataDto
                                     , @Param("sortName1")String sortName1, @Param("sortName2")String sortName2);
 
+    List<WorkPriorityOrderResultData> getReorderByJan(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd, @Param("productPowerCd")Integer productPowerCd,
+                                                 @Param("priorityOrderCd")Integer priorityOrderCd, @Param("commonTableName")GetCommonPartsDataDto getCommonPartsDataDto
+            , @Param("sortName1")String sortName1, @Param("sortName2")String sortName2, List<PriorityOrderResultDataDto> backupJan);
+
     //属性ランキングの取得
     List<PriorityOrderJanNewDto> getAttrRank(@Param("companyCd")String companyCd, @Param("authorCd")String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd, @Param("sortName1")String sortName1,
                                              @Param("sortName2")String sortName2);

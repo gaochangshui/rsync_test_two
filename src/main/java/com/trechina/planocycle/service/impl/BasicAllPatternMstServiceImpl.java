@@ -124,7 +124,9 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
 
             try {
-                basicPatternCd = priorityAllMstMapper.getPatternCdBYPriorityCd(companyCd, priorityOrderCd);
+                PriorityOrderMstDto priorityOrderMst = priorityAllMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+                basicPatternCd = Integer.parseInt(priorityOrderMst.getShelfPatternCd());
+                Integer productPowerCd = priorityOrderMst.getProductPowerCd();
                 info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, basicPatternCd,authorCd);
                 // 全パターンのList
                 List<PriorityAllPatternListVO> checkedInfo = info.stream().filter(vo->vo.getCheckFlag()==1).collect(Collectors.toList());
@@ -145,7 +147,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                      * 商品を置く
                      */
                     Map<String, Object> setJanResultMap = this.allPatternCommSetJan(pattern.getShelfPatternCd(),
-                            companyCd, priorityOrderCd, priorityAllCd, authorCd, minFaceNum);
+                            companyCd, priorityOrderCd, priorityAllCd, authorCd, minFaceNum, productPowerCd);
 
                     if (setJanResultMap!=null && MapUtils.getInteger(setJanResultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
                         vehicleNumCache.put("setJanHeightError"+uuid,setJanResultMap.get("data"));
@@ -173,7 +175,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     }
 
     private Map<String, Object> allPatternCommSetJan(Integer patternCd, String companyCd, Integer priorityOrderCd,Integer priorityAllCd,
-                                              String authorCd, Integer minFaceNum) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+                                              String authorCd, Integer minFaceNum, Integer productPowerCd) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
         //all pattern don't check 棚幅チェック and 高さスペース
         Integer tanaWidCheck = 0;
@@ -203,7 +205,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
         return commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd, minFaceNum, zokuseiMsts, allCdList,
                 restrictResult, attrList, authorCd, commonTableName,
-                partitionVal, null, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder);
+                partitionVal, null, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder, productPowerCd, null);
     }
 
     @Transactional(rollbackFor = Exception.class)
