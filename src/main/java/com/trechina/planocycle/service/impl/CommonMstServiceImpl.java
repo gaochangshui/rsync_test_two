@@ -322,7 +322,6 @@ public class CommonMstServiceImpl implements CommonMstService {
             Map<String, Integer> relationSumJanCount = relationList.stream().collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.TAI_CD) + "_" +
                             MapUtils.getString(map, MagicString.TANA_CD) + "_" + MapUtils.getString(map, MagicString.RESTRICT_CD),
                     Collectors.summingInt(map -> MapUtils.getInteger(map, "janCount", 0))));
-            relationList = relationList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, "areaFlag", 0))).collect(Collectors.toList());
             for (Map<String, Object> relation : relationList) {
                 String taiCd = MapUtils.getString(relation, MagicString.TAI_CD);
                 String tanaCd = MapUtils.getString(relation, MagicString.TANA_CD);
@@ -337,7 +336,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 Map<String, Object> mst = tanaMst.get(0);
                 Integer tanaWidth = MapUtils.getInteger(mst, "tanaWidth");
                 double area = MapUtils.getDouble(relation, "area");
-                Integer areaFlag = MapUtils.getInteger(relation, "areaFlag", 0);
+                Integer areaFlag = janCount==0 ? 1:0;
                 Map<Long, List<PriorityOrderResultDataDto>> backupJansByRestrictCd = backupJans.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd));
                 List<PriorityOrderResultDataDto> backupJansList = new ArrayList<>();
                 if(backupJansByRestrictCd.containsKey(restrictCd) ){
@@ -362,6 +361,7 @@ public class CommonMstServiceImpl implements CommonMstService {
 
                                 currentJan.setTaiCd(Integer.valueOf(taiCd));
                                 currentJan.setTanaCd(Integer.valueOf(tanaCd));
+                                currentJan.setTanapositionCd(null);
 
                                 PriorityOrderResultDataDto copyCurrentJan = new PriorityOrderResultDataDto();
                                 BeanUtils.copyProperties(currentJan, copyCurrentJan);
@@ -390,11 +390,13 @@ public class CommonMstServiceImpl implements CommonMstService {
 
                         if(janWidth * face + partitionVal + usedArea <= groupArea){
                             currentJan.setOldTaiCd(currentJan.getTaiCd());
-                            currentJan.setOldTanaCd(currentJan.getTaiCd());
+                            currentJan.setOldTanaCd(currentJan.getTanaCd());
                             currentJan.setOldTanapositionCd(currentJan.getOldTanapositionCd());
 
                             currentJan.setTaiCd(Integer.valueOf(taiCd));
                             currentJan.setTanaCd(Integer.valueOf(tanaCd));
+                            currentJan.setTanapositionCd(null);
+
                             PriorityOrderResultDataDto copyCurrentJan = new PriorityOrderResultDataDto();
                             BeanUtils.copyProperties(currentJan, copyCurrentJan);
                             copyCurrentJan.setCutFlag(0);
@@ -447,13 +449,12 @@ public class CommonMstServiceImpl implements CommonMstService {
             Integer oldTanaCd = dataDto.getOldTanaCd();
             Integer oldTanaPositionCd = dataDto.getOldTanapositionCd();
 
-            if(dataDto.getOldTaiCd()!=null && (!Objects.equals(oldTaiCd, dataDto.getTaiCd())
-                    && !Objects.equals(oldTanaCd, dataDto.getTanaCd()))){
+            if(dataDto.getOldTaiCd()!=null && (!Objects.equals(oldTaiCd+"_"+oldTanaCd, dataDto.getTaiCd()+"_"+dataDto.getTanaCd()))){
                 int oldIndex = -1;
                 for (int j = 0; j < finalAdoptJan.size(); j++) {
                     PriorityOrderResultDataDto oldJan = finalAdoptJan.get(j);
                     if (oldJan.getTaiCd().equals(oldTaiCd) && oldJan.getTanaCd().equals(oldTanaCd) &&
-                            oldJan.getOldTanapositionCd().equals(oldJan.getTanapositionCd())) {
+                            oldJan.getTanapositionCd().equals(oldTanaPositionCd) && oldJan.getRestrictCd().equals(dataDto.getRestrictCd())) {
                         oldIndex = j;
                         break;
                     }
@@ -479,7 +480,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     dataDto.setTaiCd(oldTaiCd);
                     dataDto.setTanaCd(oldTanaCd);
                     dataDto.setTanapositionCd(oldTanaPositionCd);
-                    finalAdoptJan.add(i, dataDto);
+                    finalAdoptJan.set(i, dataDto);
                 }
             }
         }
@@ -623,6 +624,11 @@ public class CommonMstServiceImpl implements CommonMstService {
 
             if(condition){
                 usedArea += janWidth*face + partitionValue;
+
+                newJanDto.setOldTaiCd(newJanDto.getTaiCd());
+                newJanDto.setOldTanaCd(newJanDto.getTanaCd());
+                newJanDto.setOldTanapositionCd(newJanDto.getTanapositionCd());
+
                 newJanDto.setTaiCd(Integer.parseInt(taiCd));
                 newJanDto.setTanaCd(Integer.parseInt(tanaCd));
                 newJanDto.setFaceFact(face);

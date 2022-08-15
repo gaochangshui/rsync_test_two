@@ -62,5 +62,6 @@ public class PriorityOrderResultDataDto {
     private Long planoDepth;
     private String planoIrisu;
     private Integer newFlag = 0;
+    private Integer depthDisplayNum;
 
 }
