@@ -32,7 +32,7 @@ public interface CommonMstService {
                                            GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
                                            Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
                                            List<PriorityOrderResultDataDto> janResult, List<Map<String, Object>> sizeAndIrisu,
-                                           int isReOrder) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+                                           int isReOrder, Integer productPowerCd,List<String> colNmforMst) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
 
     List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData, int isReOrder);
 

@@ -528,14 +528,15 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 List<Map<String, Object>> relationMap = scaleTaiTanaWidth(originRelationMap, tanaWidthCheck);
 
                 List<Map<String, Object>> tanaList = priorityOrderPtsDataMapper.selectTanaMstByPatternCd(patternCd, priorityOrderCd);
-                int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
+                List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
+                int isReOrder = colNmforMst.size();
 
                 List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(commonTableName.getProAttrTable());
                 List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(authorCd, companyCd, patternCd, priorityOrderCd, sizeAndIrisu, isReOrder, commonTableName.getProInfoTable());
                 Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd,
                         minFaceNum, zokuseiMsts, allCdList,
                         restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck,
-                        tanaList, relationMap, janResult, sizeAndIrisu, isReOrder);
+                        tanaList, relationMap, janResult, sizeAndIrisu, isReOrder, productPowerCd, colNmforMst);
 
                 if (resultMap!=null && MapUtils.getInteger(resultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
                     vehicleNumCache.put("setJanHeightError"+uuid,resultMap.get("data"));

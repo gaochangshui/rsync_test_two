@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -19,6 +20,8 @@ public interface PriorityAllMstMapper {
      * @return
      */
     Integer getPatternCdBYPriorityCd(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
+    PriorityOrderMstDto getPriorityOrderMst(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     /**
      *
