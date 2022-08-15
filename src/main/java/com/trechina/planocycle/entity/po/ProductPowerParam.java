@@ -26,4 +26,5 @@ public class ProductPowerParam {
     private String shelfPatternCd;
     private Integer janName2colNum;
 
+
 }

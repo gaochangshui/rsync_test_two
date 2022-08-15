@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.PriorityOrderShelfDataMapper">
+    <update id="updateFaceNum">
+        update work_priority_order_pts_data_jandata set face_count = #{item.faceNum} ,tumiagesu = #{item.tumiagesu}
+        where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd} and tanaposition_cd = #{item.tanapositionCd}
+    </update>
     <select id="getPlatformShedData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto">
 
         select  relation.tai_cd,relation.tana_cd,relation.tana_type,

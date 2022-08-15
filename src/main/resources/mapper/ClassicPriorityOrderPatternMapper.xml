@@ -44,6 +44,7 @@
            inner join planocycle.shelf_name_mst namemst
                       on patternmst.shelf_name_cd = namemst.id
     where priority_order_cd = #{priorityOrderCd}
+    limit 1
   </select>
   <insert id="insertWork">
     insert into priority.work_priority_order_pattern (priority_order_cd, company_cd, shelf_pattern_cd

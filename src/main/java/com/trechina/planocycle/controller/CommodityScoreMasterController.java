@@ -41,8 +41,8 @@ public class CommodityScoreMasterController {
      */
 
     @GetMapping("getAllDataOrParam")
-    public Map<String,Object> getAllDataOrParam(String companyCd,Integer productPowerNo){
-        return commodityScoreMasterService.getAllDataOrParam(companyCd,productPowerNo);
+    public Map<String,Object> getAllDataOrParam(String companyCd,Integer productPowerNo,Integer isCover){
+        return commodityScoreMasterService.getAllDataOrParam(companyCd,productPowerNo,isCover);
     }
 
     /**

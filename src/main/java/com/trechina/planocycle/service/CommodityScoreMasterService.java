@@ -46,7 +46,7 @@ public interface CommodityScoreMasterService {
     /**
      * 編集，つかむ取商品里点数表参数
      */
-    public Map<String,Object> getAllDataOrParam(String companyCd,Integer productPowerNo);
+     Map<String,Object> getAllDataOrParam(String companyCd,Integer productPowerNo,Integer isCover);
 
 
     Map<String, Object> getPrefectureAndChanelInfo();
