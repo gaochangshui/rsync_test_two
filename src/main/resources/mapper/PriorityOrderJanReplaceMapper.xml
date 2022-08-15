@@ -9,7 +9,7 @@
   </resultMap>
   <insert id="setWorkForFinal">
     insert into planocycle.work_priority_order_jan_replace(priority_order_cd,company_cd,author_cd,jan_old,jan_new)
-    select priority_order_cd,company_cd,#{authorCd},jan_old,jan_new
+    select #{newPriorityOrderCd},company_cd,#{authorCd},jan_old,jan_new
     from planocycle.priority_order_jan_replace
     where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
 

@@ -246,7 +246,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public Map<String, Object> getAllDataOrParam(String companyCd, Integer productPowerNo,Integer isCover) {
         Integer newProductPowerCd = productPowerNo;
-        if (isCover == 0){
+        if (isCover == 1){
             Map<String, Object> productPowerID = idGeneratorService.productPowerNumGenerator();
             ProductPowerNumGenerator prod = (ProductPowerNumGenerator)productPowerID.get("data");
             newProductPowerCd = prod.getId();

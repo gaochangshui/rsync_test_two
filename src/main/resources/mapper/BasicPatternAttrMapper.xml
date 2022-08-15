@@ -8,8 +8,15 @@
           and company_cd=#{companyCd}
     </insert>
     <insert id="setWorkForFinal">
-        insert into planocycle.work_basic_pattern_attr_compose
-        select  * from  planocycle.basic_pattern_attr_compose
+        insert into planocycle.work_basic_pattern_attr_compose(priority_order_cd,company_cd,author_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5
+        ,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10,zokusei11,zokusei12,zokusei13,zokusei14,zokusei15,zokusei16,zokusei17,zokusei18,zokusei19,zokusei20
+        ,zokusei21,zokusei22,zokusei23,zokusei24,zokusei25,zokusei26,zokusei27,zokusei28,zokusei29,zokusei30,zokusei31,zokusei32,zokusei33,restrict_cd)
+        select  #{newPriorityOrderCd},company_cd,author_cd,zokusei1,zokusei2,zokusei3,zokusei4,zokusei5
+                                 ,zokusei6,zokusei7,zokusei8,zokusei9,zokusei10,zokusei11,zokusei12
+                                  ,zokusei13,zokusei14,zokusei15,zokusei16,zokusei17,zokusei18,zokusei19,zokusei20
+                                 ,zokusei21,zokusei22,zokusei23,zokusei24,zokusei25,zokusei26
+                                    ,zokusei27,zokusei28,zokusei29,zokusei30,zokusei31,zokusei32,zokusei33,restrict_cd
+        from  planocycle.basic_pattern_attr_compose
         where priority_order_cd=#{priorityOrderCd}
           and company_cd=#{companyCd}
     </insert>

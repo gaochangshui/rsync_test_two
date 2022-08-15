@@ -407,7 +407,7 @@
                                                            face, face_sku, irisu,
                                                            tai_cd, tana_cd, tana_type,
                                                            face_keisan,sales_cnt,face_fact,sort_rank)
-      select company_cd, #{authorCd}, priority_order_cd, jan_cd,
+      select company_cd, #{authorCd}, #{newPriorityOrderCd}, jan_cd,
                                                    restrict_cd, sku_rank, adopt_flag,
                                                    face, face_sku, irisu,
                                                    tai_cd, tana_cd, tana_type,

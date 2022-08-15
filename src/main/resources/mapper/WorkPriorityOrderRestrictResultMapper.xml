@@ -159,7 +159,7 @@
                                                                zokusei4, zokusei5, zokusei6,
                                                                zokusei7, zokusei8, zokusei9,
                                                                zokusei10, tana_cnt, sku_cnt)
-    select company_cd, #{authorCd}, priority_order_cd, restrict_cd,
+    select company_cd, #{authorCd}, #{newPriorityOrderCd}, restrict_cd,
            zokusei1, zokusei2, zokusei3,
            zokusei4, zokusei5, zokusei6,
            zokusei7, zokusei8, zokusei9,

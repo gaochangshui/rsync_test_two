@@ -77,4 +77,8 @@
         and datas.company_cd = #{item.companyCd} and datas.author_cd =#{authorCd} and datas.priority_order_cd = #{item.priorityOrderCd}
         order by sort_rank,newRank
     </select>
+    <select id="selectRegclass" resultType="java.lang.Integer">
+        select nextval('planocycle.priority_order_pts_data_id_seq'::regclass)
+
+    </select>
 </mapper>
