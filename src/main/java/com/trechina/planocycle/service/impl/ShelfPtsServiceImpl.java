@@ -529,58 +529,58 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      */
     @Override
     public void saveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, int isReOrder) {
-        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
-
-        //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
-        List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(workPriorityOrderResultData, isReOrder);
-
-        //既存の新しいptsを検出し,削除してから保存する
-        //新しいptsにデータがあるptsCd
-        ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectWorkPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
-        //テンポラリ・テーブルのptscd
-        Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
-
-        PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
-                .withPriorityOrderCd(priorityOrderCd)
-                .withOldPtsCd(ptsCd)
-                .withCompanyCd(companyCd)
-                .withAuthorCd(authorCd).build();
-
-        if(Optional.ofNullable(shelfPtsData).isPresent()){
-            Integer oldPtsCd = shelfPtsData.getId();
-            shelfPtsDataMapper.deletePtsData(oldPtsCd);
-            shelfPtsDataMapper.deletePtsTaimst(oldPtsCd);
-            shelfPtsDataMapper.deletePtsTanamst(oldPtsCd);
-            shelfPtsDataMapper.deletePtsVersion(oldPtsCd);
-            shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
-        }
-
-        ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
-        String modeName = shelfPtsDataVersion.getModename();
-        //modeNameはptsをダウンロードするファイル名として
-        priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
-        //既存のptsからデータをクエリーする
-        shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
-        Integer id = priorityOrderPtsDataDto.getId();
-        shelfPtsDataMapper.insertPtsTaimst(ptsCd, id, authorCd);
-        shelfPtsDataMapper.insertPtsTanamst(ptsCd, id, authorCd);
-        shelfPtsDataMapper.insertPtsVersion(ptsCd, id, authorCd);
-
-        if (!positionResultData.isEmpty()) {
-            shelfPtsDataMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
-        }
+//        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+//        Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
+//
+//        //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
+//        List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+//        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(workPriorityOrderResultData, isReOrder);
+//
+//        //既存の新しいptsを検出し,削除してから保存する
+//        //新しいptsにデータがあるptsCd
+//        ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectWorkPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
+//        //テンポラリ・テーブルのptscd
+//        Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
+//
+//        PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
+//                .withPriorityOrderCd(priorityOrderCd)
+//                .withOldPtsCd(ptsCd)
+//                .withCompanyCd(companyCd)
+//                .withAuthorCd(authorCd).build();
+//
+//        if(Optional.ofNullable(shelfPtsData).isPresent()){
+//            Integer oldPtsCd = shelfPtsData.getId();
+//            shelfPtsDataMapper.deletePtsData(oldPtsCd);
+//            shelfPtsDataMapper.deletePtsTaimst(oldPtsCd);
+//            shelfPtsDataMapper.deletePtsTanamst(oldPtsCd);
+//            shelfPtsDataMapper.deletePtsVersion(oldPtsCd);
+//            shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
+//        }
+//
+//        ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
+//        String modeName = shelfPtsDataVersion.getModename();
+//        //modeNameはptsをダウンロードするファイル名として
+//        priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
+//        //既存のptsからデータをクエリーする
+//        shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
+//        Integer id = priorityOrderPtsDataDto.getId();
+//        shelfPtsDataMapper.insertPtsTaimst(ptsCd, id, authorCd);
+//        shelfPtsDataMapper.insertPtsTanamst(ptsCd, id, authorCd);
+//        shelfPtsDataMapper.insertPtsVersion(ptsCd, id, authorCd);
+//
+//        if (!positionResultData.isEmpty()) {
+//            shelfPtsDataMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
+//        }
     }
 
     @Override
-    public void basicSaveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, List<WorkPriorityOrderResultDataDto> resultData,
+    public void basicSaveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, List<PriorityOrderResultDataDto> resultData,
                                      int isReOrder) {
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
 
         //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
-        List<WorkPriorityOrderResultDataDto> positionResultData = resultData;
+        List<PriorityOrderResultDataDto> positionResultData = resultData;
 
         //既存の新しいptsを検出し,削除してから保存する
         //新しいptsにデータがあるptsCd
@@ -590,6 +590,50 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             Integer oldPtsCd = shelfPtsData.getId();
             shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
             if (!positionResultData.isEmpty()) {
+                positionResultData = positionResultData.stream()
+                        .sorted(Comparator.comparing(PriorityOrderResultDataDto::getTanapositionCd))
+                        .sorted(Comparator.comparing(PriorityOrderResultDataDto::getTanaCd))
+                        .sorted(Comparator.comparing(PriorityOrderResultDataDto::getTaiCd)).collect(Collectors.toList());
+
+                List<PriorityOrderResultDataDto> finalPositionResultData = new ArrayList<>();
+                Map<String, List<PriorityOrderResultDataDto>> positionResultDataByTaiTana = positionResultData.stream().collect(Collectors.groupingBy(data -> data.getTaiCd() + "_" + data.getTanaCd()));
+                for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : positionResultDataByTaiTana.entrySet()) {
+                    List<PriorityOrderResultDataDto> value = entry.getValue();
+                    List<PriorityOrderResultDataDto> noChangeJanList = value.stream().filter(data ->
+                            Joiner.on("_").join(Lists.newArrayList(data.getOldTaiCd()+"", data.getOldTanaCd()+"", data.getOldTanapositionCd()+""))
+                                    .equals(Joiner.on("_").join(Lists.newArrayList(data.getTaiCd(), data.getTanaCd(), data.getTanapositionCd())))).collect(Collectors.toList());
+                    List<PriorityOrderResultDataDto> changeJanList = value.stream()
+                            .filter(data ->!Joiner.on("_").join(Lists.newArrayList(data.getOldTaiCd()+"", data.getOldTanaCd()+"", data.getOldTanapositionCd()+""))
+                                    .equals(Joiner.on("_").join(Lists.newArrayList(data.getTaiCd(), data.getTanaCd(), data.getTanapositionCd())))).collect(Collectors.toList());
+
+                    for (PriorityOrderResultDataDto dataDto : noChangeJanList) {
+                        Integer tanapositionCd = dataDto.getTanapositionCd();
+                        if (tanapositionCd<=changeJanList.size()) {
+                            changeJanList.add(tanapositionCd-1, dataDto);
+                        }else{
+                            changeJanList.add(dataDto);
+                        }
+                    }
+
+                    finalPositionResultData.addAll(changeJanList);
+                }
+
+                int currentTai=0, currentTana=0, currentTanaPosition=1;
+                for (int i = 0; i < finalPositionResultData.size(); i++) {
+                    PriorityOrderResultDataDto positionResultDatum = finalPositionResultData.get(i);
+
+                    if(!Objects.equals(currentTai, positionResultDatum.getTaiCd()) || !Objects.equals(currentTana, positionResultDatum.getTanaCd())){
+                        currentTanaPosition = 1;
+                    }
+
+                    positionResultDatum.setTanapositionCd(currentTanaPosition++);
+                    positionResultData.set(i, positionResultDatum);
+
+                    currentTai = positionResultDatum.getTaiCd();
+                    currentTana = positionResultDatum.getTanaCd();
+
+                }
+
                 shelfPtsDataMapper.insertPtsDataJandata(positionResultData, oldPtsCd, companyCd, authorCd);
             }
         }

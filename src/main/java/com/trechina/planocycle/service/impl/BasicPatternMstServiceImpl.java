@@ -542,7 +542,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 }else{
                     //ptsを一時テーブルに保存
                     Object tmpData = MapUtils.getObject(resultMap, "data");
-                    List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
+                    List<PriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<PriorityOrderResultDataDto>>() {
                     }.getType());
                     shelfPtsService.basicSaveWorkPtsData(companyCd, authorCd, priorityOrderCd, workData, isReOrder);
                     vehicleNumCache.put(uuid,1);
