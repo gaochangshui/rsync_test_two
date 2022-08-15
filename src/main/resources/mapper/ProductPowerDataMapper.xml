@@ -321,7 +321,7 @@
         insert into planocycle.work_product_power_intage(company_cd,product_power_cd,jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
                                                     intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
                                                     intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,author_cd)
-        select #{companyCd},#{productPowerCd},jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
+        select #{companyCd},#{newProductPowerCd},jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
                intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
                intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,#{authorCd}
         from planocycle.product_power_intage
@@ -340,22 +340,48 @@
         </foreach>
     </insert>
     <insert id="setWkDataForFinally">
-        insert into planocycle.work_product_power_mst_data
-        select  *
+        insert into planocycle.work_product_power_mst_data(company_cd,product_power_cd,author_cd,jan,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,
+                                                           pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,
+                                                           pos_store_item01,pos_store_item02,pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,
+                                                           pos_store_item08,pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
+                                                           pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
+                                                           pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,pos_compare_store_item06,
+                                                           pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,customer_compare_store_item01,customer_compare_store_item02,
+                                                           customer_compare_store_item03,customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
+                                                           customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10,customer_compare_item01,customer_compare_item02,customer_compare_item03,
+                                                           customer_compare_item04,customer_compare_item05,customer_compare_item06,customer_compare_item07,customer_compare_item08,customer_compare_item09,customer_compare_item10,
+                                                           customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,customer_store_item05,customer_store_item06,customer_store_item07,
+                                                           customer_store_item08,customer_store_item09,customer_store_item10,customer_item01,customer_item02,customer_item03,customer_item04,customer_item05,customer_item06,
+                                                           customer_item07,customer_item08,customer_item09,customer_item10,customer_item11,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,intage_item06,
+                                                           intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02 )
+        select   company_cd,#{newProductPowerCd},author_cd,jan,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,
+                 pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,
+                 pos_store_item01,pos_store_item02,pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,
+                 pos_store_item08,pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
+                 pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
+                 pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,pos_compare_store_item06,
+                 pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,customer_compare_store_item01,customer_compare_store_item02,
+                 customer_compare_store_item03,customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
+                 customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10,customer_compare_item01,customer_compare_item02,customer_compare_item03,
+                 customer_compare_item04,customer_compare_item05,customer_compare_item06,customer_compare_item07,customer_compare_item08,customer_compare_item09,customer_compare_item10,
+                 customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,customer_store_item05,customer_store_item06,customer_store_item07,
+                 customer_store_item08,customer_store_item09,customer_store_item10,customer_item01,customer_item02,customer_item03,customer_item04,customer_item05,customer_item06,
+                 customer_item07,customer_item08,customer_item09,customer_item10,customer_item11,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,intage_item06,
+                 intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02
         from planocycle.product_power_mst_data
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
     </insert>
     <insert id="setWkYobilitemDataForFinally">
         insert into planocycle.work_product_power_reserve_data(company_cd,author_cd,data_cd,jan,data_value,product_power_cd)
-        select company_cd,#{authorCd},data_cd,jan,data_value,product_power_cd
+        select company_cd,#{authorCd},data_cd,jan,data_value,#{newProductPowerCd}
         from planocycle.product_power_reserve_data
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
     </insert>
     <insert id="setWkYobilitemForFinally">
         insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort,product_power_cd)
-        select company_cd,#{authorCd},data_cd,data_name,data_sort,product_power_cd
+        select company_cd,#{authorCd},data_cd,data_name,data_sort,#{newProductPowerCd}
         from planocycle.product_power_reserve_mst
          where company_cd = #{companyCd,jdbcType=VARCHAR}
                  and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
@@ -370,7 +396,7 @@
                                                           customer_compare_item10,customer_compare_store_item01,customer_compare_store_item02,customer_compare_store_item03,
                                                           customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
                                                           customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10,author_cd)
-        select #{companyCd},#{productPowerCd},jan,customer_item01,customer_item02,customer_item03,customer_item04,
+        select #{companyCd},#{newProductPowerCd},jan,customer_item01,customer_item02,customer_item03,customer_item04,
                customer_item05,customer_item06,customer_item07,customer_item08,customer_item09,customer_item10,
                customer_item11,customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,
                customer_store_item05,customer_store_item06,customer_store_item07,customer_store_item08,customer_store_item09,
@@ -393,7 +419,7 @@
                                                           pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,
                                                           pos_compare_store_item06,pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,
                                                           author_cd)
-        select #{companyCd},#{productPowerCd},jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
+        select #{companyCd},#{newProductPowerCd},jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
                pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,pos_store_item01,pos_store_item02,
                pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,pos_store_item08,
                pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
@@ -628,7 +654,7 @@
                from
                (select s.jan,
         <foreach collection="map" index="index" separator="," item="item">
-                       DENSE_RANK() over(order by split_part(coalesce (${index},'0'), '.', 1) ::bigint
+                       DENSE_RANK() over(order by split_part(coalesce (${index} ::text,'0'), '.', 1) ::bigint
             desc nulls last ) as "${index}_rank"
         </foreach>
 

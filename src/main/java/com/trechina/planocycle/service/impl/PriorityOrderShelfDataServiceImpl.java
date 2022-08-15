@@ -2,10 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.google.common.base.Joiner;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderRestDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
 import com.trechina.planocycle.entity.po.ZokuseiMst;
@@ -342,6 +339,12 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         }
         zokuseiList.add(0,map);
         return ResultMaps.result(ResultEnum.SUCCESS,zokuseiList);
+    }
+
+    @Override
+    public Map<String, Object> setFaceNumAndPositionForData(PriorityOrderPtsDto shelfPtsDataJandata) {
+        priorityOrderShelfDataMapper.updateFaceNum(shelfPtsDataJandata);
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
 

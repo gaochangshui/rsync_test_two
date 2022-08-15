@@ -8,7 +8,6 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import com.trechina.planocycle.service.PriorityOrderMstService;
-import org.apache.commons.collections4.MapUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -173,28 +172,41 @@ class PlanoCycleApiApplicationTests {
         priorityOrderResultDataDtoList1.setPlanoHeight(60L);
         priorityOrderResultDataDtoList1.setPlanoDepth(132L);
         priorityOrderResultDataDtoList.add(priorityOrderResultDataDtoList1);
-        List<Map<String, Object>> janPlacementList = basicPatternJanPlacementMapper.getJanPlacementList();
-        Class clazz = PriorityOrderResultDataDto.class;
-        for (PriorityOrderResultDataDto priorityOrderResultDataDto : priorityOrderResultDataDtoList) {
-            for (Map<String, Object> map : janPlacementList) {
-                if (priorityOrderResultDataDto.getFaceKaiten().intValue() == MapUtils.getInteger(map,"faceKaiten") &&
-                        priorityOrderResultDataDto.getFaceMen().intValue() == MapUtils.getInteger(map,"faceMen")
-                ){
-                    Method getPlanoWidth = clazz.getMethod("getPlano" + map.get("planoWidth").toString().substring(0, 1).toUpperCase() + map.get("planoWidth").toString().substring(1));
-                    Method getPlanoHeight = clazz.getMethod("getPlano" + map.get("planoHeight").toString().substring(0, 1).toUpperCase() + map.get("planoHeight").toString().substring(1));
-                    Method getPlanoDepth = clazz.getMethod("getPlano" + map.get("planoDepth").toString().substring(0, 1).toUpperCase() + map.get("planoDepth").toString().substring(1));
-                     planoWidth = (long)getPlanoWidth.invoke(priorityOrderResultDataDto);
-                     planoHeight = (long)getPlanoHeight.invoke(priorityOrderResultDataDto);
-                     planoDepth = (long)getPlanoDepth.invoke(priorityOrderResultDataDto);
 
-                    priorityOrderResultDataDto.setPlanoWidth(planoWidth);
-                    priorityOrderResultDataDto.setPlanoHeight(planoHeight);
-                    priorityOrderResultDataDto.setPlanoDepth(planoDepth);
+        for (PriorityOrderResultDataDto priorityOrderResultDataDto : priorityOrderResultDataDtoList) {
+            for (PriorityOrderResultDataDto orderResultDataDto : priorityOrderResultDataDtoList) {
+                Long faceMen = priorityOrderResultDataDto.getFaceMen();
+                Integer faceKaiten = priorityOrderResultDataDto.getFaceKaiten();
+                if (orderResultDataDto.getFaceMen().equals(faceMen)){
+
+                }
+                if (orderResultDataDto.getFaceKaiten().equals(faceKaiten)){
+
                 }
             }
         }
-
-        logger.info("",priorityOrderResultDataDtoList);
+        //List<Map<String, Object>> janPlacementList = basicPatternJanPlacementMapper.getJanPlacementList();
+        //Class clazz = PriorityOrderResultDataDto.class;
+        //for (PriorityOrderResultDataDto priorityOrderResultDataDto : priorityOrderResultDataDtoList) {
+        //    for (Map<String, Object> map : janPlacementList) {
+        //        if (priorityOrderResultDataDto.getFaceKaiten().intValue() == MapUtils.getInteger(map,"faceKaiten") &&
+        //                priorityOrderResultDataDto.getFaceMen().intValue() == MapUtils.getInteger(map,"faceMen")
+        //        ){
+        //            Method getPlanoWidth = clazz.getMethod("getPlano" + map.get("planoWidth").toString().substring(0, 1).toUpperCase() + map.get("planoWidth").toString().substring(1));
+        //            Method getPlanoHeight = clazz.getMethod("getPlano" + map.get("planoHeight").toString().substring(0, 1).toUpperCase() + map.get("planoHeight").toString().substring(1));
+        //            Method getPlanoDepth = clazz.getMethod("getPlano" + map.get("planoDepth").toString().substring(0, 1).toUpperCase() + map.get("planoDepth").toString().substring(1));
+        //             planoWidth = (long)getPlanoWidth.invoke(priorityOrderResultDataDto);
+        //             planoHeight = (long)getPlanoHeight.invoke(priorityOrderResultDataDto);
+        //             planoDepth = (long)getPlanoDepth.invoke(priorityOrderResultDataDto);
+        //
+        //            priorityOrderResultDataDto.setPlanoWidth(planoWidth);
+        //            priorityOrderResultDataDto.setPlanoHeight(planoHeight);
+        //            priorityOrderResultDataDto.setPlanoDepth(planoDepth);
+        //        }
+        //    }
+        //}
+        //
+        //logger.info("",priorityOrderResultDataDtoList);
 
     }
 }

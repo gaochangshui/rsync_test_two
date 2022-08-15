@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderPtsDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -18,5 +19,7 @@ public interface PriorityOrderShelfDataMapper {
 
     List<PriorityOrderRestrictJanDto> getPlatformShedJans(@Param("item")PriorityOrderPlatformShedDto priorityOrderPlatformShedDto,@Param("authorCd")String authorCd);
 
-   // List<>
+    void updateFaceNum(@Param("item") PriorityOrderPtsDto shelfPtsDataJandata);
+
+    // List<>
 }
