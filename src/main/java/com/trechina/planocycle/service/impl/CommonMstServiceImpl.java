@@ -292,7 +292,7 @@ public class CommonMstServiceImpl implements CommonMstService {
         List<PriorityOrderResultDataDto> backupJans = (List<PriorityOrderResultDataDto>) returnResultMap.get("backupJan");
         Map<String, String> repeatJanMap = (Map<String, String>) returnResultMap.get("repeatJanMap");
 
-        if(isReOrder>0 && colNmforMst!=null){
+        if(isReOrder>0 && colNmforMst!=null && !backupJans.isEmpty()){
             List<WorkPriorityOrderResultData> reorderByJan = new ArrayList<>();
             if (colNmforMst.size()>1) {
                 reorderByJan = priorityOrderResultDataMapper.getReorderByJan(companyCd, aud, productPowerCd,
@@ -530,12 +530,15 @@ public class CommonMstServiceImpl implements CommonMstService {
     private Map<String, Object> getBackupJans(Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd,
                                                            List<PriorityOrderResultDataDto> newJanDtoList){
         Map<String, Object> resultMap = new HashMap<>();
+        Map<String, String> repeatJanMap = new HashMap<>();
+        List<PriorityOrderResultDataDto> backupJan = new ArrayList<>();
+
         if(newJanDtoList.isEmpty()){
+            resultMap.put("backupJan", backupJan);
+            resultMap.put("repeatJanMap", repeatJanMap);
             return resultMap;
         }
-        Map<String, String> repeatJanMap = new HashMap<>();
 
-        List<PriorityOrderResultDataDto> backupJan = new ArrayList<>();
         Map<Long, List<PriorityOrderResultDataDto>> newJanByRestrictCd = newJanDtoList.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd));
         for (Map.Entry<Long, List<PriorityOrderResultDataDto>> entry : janResultByRestrictCd.entrySet()) {
             Long restrictCd = entry.getKey();
@@ -626,14 +629,15 @@ public class CommonMstServiceImpl implements CommonMstService {
             Long janWidth = width + partitionValue;
             String janOld = jan.getJanCd();
 
+            jan.setOldTaiCd(jan.getTaiCd());
+            jan.setOldTanaCd(jan.getTanaCd());
+            jan.setOldTanapositionCd(jan.getTanapositionCd());
+
             relation.put("areaFlag", 0);
             if (backupJans.stream().anyMatch(dto->janOld.equals(dto.getJanCd()))) {
                 BeanUtils.copyProperties(jan, newJanDto);
                 newJanDto.setFaceFact(jan.getFace());
                 newJanDto.setCutFlag(1);
-                newJanDto.setOldTaiCd(newJanDto.getTaiCd());
-                newJanDto.setOldTanaCd(newJanDto.getTanaCd());
-                newJanDto.setOldTanapositionCd(newJanDto.getTanapositionCd());
 
                 jan.setCutFlag(1);
                 if(janCount==null || janCount==0){

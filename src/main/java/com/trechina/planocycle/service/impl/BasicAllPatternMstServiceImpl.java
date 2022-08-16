@@ -152,7 +152,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     }else{
                         //ptsを一時テーブルに保存
                         Object tmpData = MapUtils.getObject(setJanResultMap, "data");
-                        List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
+                        List<PriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<PriorityOrderResultDataDto>>() {
                         }.getType());
                         priorityAllPtsService.saveWorkPtsJanData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData, isReOrder);
                         vehicleNumCache.put(uuid,1);
@@ -253,6 +253,10 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd,
                 zokuseiMsts, cdList, sizeAndIrisuMap);
 
+        classifyList = basicPatternMstService.updateJanSizeByMap(classifyList);
+        classifyList.forEach(item->{
+            item.put("width", MapUtils.getInteger(item,"width")*MapUtils.getInteger(item, "faceCount"));
+        });
 
         Map<String, BasicPatternRestrictResult> classify = basicPatternMstService.getJanInfoClassify(classifyList, companyCd,
                 zokuseiIds, aud, (long) priorityAllCd);
