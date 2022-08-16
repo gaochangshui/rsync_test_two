@@ -510,4 +510,39 @@
         from planocycle.work_basic_pattern_restrict_result
         where priority_order_cd=#{priorityOrderCd}
     </select>
+    <select id="getPtsAllJan" resultType="java.util.Map">
+        select case  when jandata.jan is not null then face_count else resultdata.face end as "faceNum",
+        case  when jandata.jan is not null then face_men else 1 end as "faceMen",
+        case  when jandata.jan is not null then face_kaiten else 0 end as "faceKaiten",
+        case  when jandata.jan is not null then tumiagesu else 1 end as "tumiagesu",
+        <foreach collection="attrName" separator="," item="item" index="index">
+            coalesce ("${item.zokusei_col}",'') as "${item.zokusei_colname}"
+        </foreach>
+        <foreach collection="attrList" item="item1" open="," separator=",">
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'')</if>
+            <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
+                <foreach collection="allCdList" item="item2" separator="|| '_' ||">
+                    <if test="item2 &lt;= item1.zokuseiCol">
+                        coalesce ("${item2}",'')
+                    </if>
+                </foreach>
+            </if>
+            as "zokusei${item1.zokuseiSort}"
+        </foreach>
+        ,coalesce(jan_new, jan_cd) "janCd"
+        ,jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",jandata.tanaposition_cd as "tanapositionCd",coalesce (prodata.rank_result,9999)as rank,
+        "2" as "janName"
+        <foreach collection="janSizeCol" item="item">
+            ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
+        </foreach>
+        from planocycle.work_priority_order_result_data resultdata
+        left join planocycle.work_priority_order_pts_data_jandata jandata
+        on jandata.jan = resultdata.jan_cd and pts_cd=#{ptsCd}
+        left join planocycle.work_priority_order_jan_replace replace on replace.priority_order_cd=#{priorityOrderCd} and jan_new=resultdata.jan_cd
+        inner join ${proInfoTable} janinfo on  janinfo."1"=coalesce(jan_old, jan_cd)
+        left join planocycle.product_power_mst_data prodata
+        on prodata.jan = resultdata.jan_cd and prodata.product_power_cd = #{productPowerCd}
+        where resultdata.priority_order_cd = #{priorityOrderCd}
+    order by jandata.tai_cd ,jandata.tana_cd ,jandata.tanaposition_cd
+    </select>
 </mapper>

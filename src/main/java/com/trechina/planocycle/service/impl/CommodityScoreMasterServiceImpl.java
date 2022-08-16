@@ -263,7 +263,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.deleteWKYobiiiternData(aud,companyCd,newProductPowerCd);
         productPowerDataMapper.deleteWKData(companyCd,aud,newProductPowerCd);
         productPowerDataMapper.deleteWKIntage(companyCd,aud,newProductPowerCd);
-        productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
+        productPowerParamMstMapper.deleteWork(companyCd,newProductPowerCd);
 
         productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
          productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud,newProductPowerCd);

@@ -52,4 +52,7 @@ public interface PriorityOrderShelfDataService {
     Map<String, Object> getPtsJanInfo(String companyCd, Integer priorityOrderCd);
 
     Map<String, Object> setFaceNumAndPositionForData(PriorityOrderPtsDto shelfPtsDataJandata);
+
+    Map<String, Object> getPtsAll(String companyCd, Integer priorityOrderCd);
+
 }

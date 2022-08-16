@@ -243,13 +243,14 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
 
         List<WorkPriorityOrderResultData> reorder = null;
-        if (colNmforMst.isEmpty()) {
-            reorder = workPriorityOrderResultDataMapper.getProductReorder(companyCd,authorCd,workPriorityOrderMst.getProductPowerCd(),priorityOrderCd);
-        }else if (colNmforMst.size() == 1) {
-            reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), null);
-        } else if (colNmforMst.size() == 2){
-            reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), colNmforMst.get(1));
-        }
+        //if (colNmforMst.isEmpty()) {
+            reorder = workPriorityOrderResultDataMapper.getProductReorder(companyCd, authorCd, workPriorityOrderMst.getProductPowerCd(), priorityOrderCd);
+        //}
+        //}else if (colNmforMst.size() == 1) {
+        //    reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), null);
+        //} else if (colNmforMst.size() == 2){
+        //    reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), colNmforMst.get(1));
+        //}
 
         workPriorityOrderResultDataMapper.setSortRank(reorder, companyCd, authorCd, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
@@ -428,13 +429,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) {
+    public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd,Integer isCover) {
 
         Integer id = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);
         String aud = session.getAttribute("aud").toString();
-        Integer isCover = 1;
         Integer newPriorityOrderCd = priorityOrderCd;
         Integer newId = id;
+        if (isCover ==  null){
+            isCover =1;
+        }
         if (isCover == 0){
             newPriorityOrderCd = (int)idGeneratorService.priorityOrderNumGenerator().get("data");
              newId = priorityOrderShelfDataMapper.selectRegclass();
