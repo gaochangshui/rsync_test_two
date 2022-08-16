@@ -107,7 +107,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     public Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto) {
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
 
         executor.execute(()->{
             Integer basicPatternCd;
@@ -121,7 +120,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             // 全パターンの制約List
 
             // 全パターンのRelationList
-
 
             try {
                 PriorityOrderMstDto priorityOrderMst = priorityAllMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
@@ -154,7 +152,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     }else{
                         //ptsを一時テーブルに保存
                         Object tmpData = MapUtils.getObject(setJanResultMap, "data");
-                        List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
+                        List<PriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<PriorityOrderResultDataDto>>() {
                         }.getType());
                         priorityAllPtsService.saveWorkPtsJanData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData, isReOrder);
                         vehicleNumCache.put(uuid,1);
@@ -203,9 +201,11 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCdByAll(authorCd, companyCd, patternCd,
                 priorityAllCd,priorityOrderCd, sizeAndIrisu, isReOrder, commonTableName.getProInfoTable());
 
+        List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
+
         return commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd, minFaceNum, zokuseiMsts, allCdList,
                 restrictResult, attrList, authorCd, commonTableName,
-                partitionVal, null, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder, productPowerCd, null);
+                partitionVal, null, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder, productPowerCd, colNmforMst);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -253,6 +253,10 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd,
                 zokuseiMsts, cdList, sizeAndIrisuMap);
 
+        classifyList = basicPatternMstService.updateJanSizeByMap(classifyList);
+        classifyList.forEach(item->{
+            item.put("width", MapUtils.getInteger(item,"width")*MapUtils.getInteger(item, "faceCount"));
+        });
 
         Map<String, BasicPatternRestrictResult> classify = basicPatternMstService.getJanInfoClassify(classifyList, companyCd,
                 zokuseiIds, aud, (long) priorityAllCd);

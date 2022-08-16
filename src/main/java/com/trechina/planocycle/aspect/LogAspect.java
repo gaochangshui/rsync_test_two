@@ -49,62 +49,6 @@ public class LogAspect {
 
     }
 
-    @Pointcut("execution(public * com.trechina.planocycle.mapper..*.*(..))")
-    public void mapperPoint(){
-
-    }
-
-    @Around("point()")
-    public Object doServiceTimeLog(ProceedingJoinPoint joinPoint) throws Throwable {
-        LocalDateTime start = LocalDateTime.now();
-        Object proceed = joinPoint.proceed();
-        LocalDateTime end = LocalDateTime.now();
-
-        executor.execute(()->{
-            if (cache.get("action_log")==null) {
-                String actionLog = sysConfigMapper.selectSycConfig("action_log");
-                cache.put("action_log", actionLog==null?"": actionLog);
-            }
-
-            if (Strings.isNullOrEmpty(String.valueOf(cache.get("action_log")))) {
-                return;
-            }
-            String methodName = joinPoint.getTarget().getClass().getName()+"#"+joinPoint.getSignature().getName();
-            long time = Duration.between(start, end).toMillis();
-            Object[] args = joinPoint.getArgs();
-            logMapper.addTimeLog(methodName, start, end, JSON.toJSONString(args), time);
-        });
-
-        return proceed;
-    }
-
-    @Around("mapperPoint()")
-    public Object doMapperTimeLog(ProceedingJoinPoint joinPoint) throws Throwable {
-        LocalDateTime start = LocalDateTime.now();
-        Object proceed = joinPoint.proceed();
-        LocalDateTime end = LocalDateTime.now();
-        String methodName = "mapper#"+joinPoint.getSignature().getName();
-        if(methodName.toLowerCase().contains("log")){
-            return proceed;
-        }
-        executor.execute(()->{
-            if (cache.get("action_log")==null) {
-                String actionLog = sysConfigMapper.selectSycConfig("action_log");
-                cache.put("action_log", actionLog==null?"": actionLog);
-            }
-
-            if (Strings.isNullOrEmpty(String.valueOf(cache.get("action_log")))) {
-                return;
-            }
-            long time = Duration.between(start, end).toMillis();
-            Object[] args = joinPoint.getArgs();
-            logMapper.addTimeLog(methodName, start, end, JSON.toJSONString(args), time);
-        });
-
-        return proceed;
-    }
-
-
     //定義通知
     @AfterThrowing(pointcut = "point()",throwing = "ex")
     public  void serviceMonitor(JoinPoint joinPoint,Throwable ex) {

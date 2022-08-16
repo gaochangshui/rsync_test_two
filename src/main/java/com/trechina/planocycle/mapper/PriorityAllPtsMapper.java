@@ -1,6 +1,7 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.PriorityAllPtsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.PtsDetailDataVo;
@@ -36,7 +37,7 @@ public interface PriorityAllPtsMapper {
 
     void insertPtsVersion(Integer ptsCd, Integer id, String authorCd, Integer priorityAllCd, Integer patternCd);
 
-    void insertPtsDataJandata(@Param("list") List<WorkPriorityOrderResultDataDto> positionResultData,
+    void insertPtsDataJandata(@Param("list") List<PriorityOrderResultDataDto> positionResultData,
                               Integer id, String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd);
 
     List<PtsTaiVo> getTaiData(Integer id);

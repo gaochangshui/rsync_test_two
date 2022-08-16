@@ -3,10 +3,7 @@ package com.trechina.planocycle.service.impl;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
-import com.trechina.planocycle.entity.dto.PriorityAllPtsDataDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
-import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -35,10 +32,7 @@ import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -108,16 +102,64 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
 
     @Override
     public void saveWorkPtsJanData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd,
-                                   List<WorkPriorityOrderResultDataDto> priorityOrderResultData, int isReOrder) {
+                                   List<PriorityOrderResultDataDto> priorityOrderResultData, int isReOrder) {
         //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
-        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(priorityOrderResultData, isReOrder);
+        List<PriorityOrderResultDataDto> positionResultData = priorityOrderResultData;
         ShelfPtsData shelfPtsData = priorityAllPtsMapper.selectWorkPtsCdByAuthorCd(companyCd, authorCd, priorityAllCd, patternCd);
 
         //テンポラリ・テーブルのptscd
-        Integer ptsCd = shelfPtsData.getId();
+        if(Optional.ofNullable(shelfPtsData).isPresent()){
+            Integer oldPtsCd = shelfPtsData.getId();
+            shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
+            if (!positionResultData.isEmpty()) {
+                positionResultData = positionResultData.stream()
+                        .sorted(Comparator.comparing(PriorityOrderResultDataDto::getTanapositionCd))
+                        .sorted(Comparator.comparing(PriorityOrderResultDataDto::getTanaCd))
+                        .sorted(Comparator.comparing(PriorityOrderResultDataDto::getTaiCd)).collect(Collectors.toList());
 
-        if (!positionResultData.isEmpty()) {
-            priorityAllPtsMapper.insertPtsDataJandata(positionResultData, ptsCd, companyCd, authorCd, priorityAllCd, patternCd);
+                List<PriorityOrderResultDataDto> finalPositionResultData = new ArrayList<>();
+                Map<String, List<PriorityOrderResultDataDto>> positionResultDataByTaiTana = positionResultData.stream().collect(Collectors.groupingBy(data -> data.getTaiCd() + "_" + data.getTanaCd()));
+                for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : positionResultDataByTaiTana.entrySet()) {
+                    List<PriorityOrderResultDataDto> value = entry.getValue();
+                    List<PriorityOrderResultDataDto> noChangeJanList = value.stream().filter(data ->
+                            Joiner.on("_").join(Lists.newArrayList(data.getOldTaiCd()+"", data.getOldTanaCd()+"", data.getOldTanapositionCd()+""))
+                                    .equals(Joiner.on("_").join(Lists.newArrayList(data.getTaiCd(), data.getTanaCd(), data.getTanapositionCd())))).collect(Collectors.toList());
+                    List<PriorityOrderResultDataDto> changeJanList = value.stream()
+                            .filter(data ->!Joiner.on("_").join(Lists.newArrayList(data.getOldTaiCd()+"", data.getOldTanaCd()+"", data.getOldTanapositionCd()+""))
+                                    .equals(Joiner.on("_").join(Lists.newArrayList(data.getTaiCd(), data.getTanaCd(), data.getTanapositionCd())))).collect(Collectors.toList());
+
+                    for (PriorityOrderResultDataDto dataDto : noChangeJanList) {
+                        Integer tanapositionCd = dataDto.getTanapositionCd();
+                        if (tanapositionCd<=changeJanList.size()) {
+                            changeJanList.add(tanapositionCd-1, dataDto);
+                        }else{
+                            changeJanList.add(dataDto);
+                        }
+                    }
+
+                    finalPositionResultData.addAll(changeJanList);
+                }
+
+                int currentTai=0, currentTana=0, currentTanaPosition=1;
+                for (int i = 0; i < finalPositionResultData.size(); i++) {
+                    PriorityOrderResultDataDto positionResultDatum = finalPositionResultData.get(i);
+
+                    if(!Objects.equals(currentTai, positionResultDatum.getTaiCd()) || !Objects.equals(currentTana, positionResultDatum.getTanaCd())){
+                        currentTanaPosition = 1;
+                    }
+
+                    positionResultDatum.setTanapositionCd(currentTanaPosition++);
+                    positionResultData.set(i, positionResultDatum);
+
+                    currentTai = positionResultDatum.getTaiCd();
+                    currentTana = positionResultDatum.getTanaCd();
+
+                }
+
+                if (!positionResultData.isEmpty()) {
+                    priorityAllPtsMapper.insertPtsDataJandata(positionResultData, oldPtsCd, companyCd, authorCd, priorityAllCd, patternCd);
+                }
+            }
         }
     }
 
