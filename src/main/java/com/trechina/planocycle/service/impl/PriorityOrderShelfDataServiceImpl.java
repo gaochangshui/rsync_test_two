@@ -347,6 +347,44 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
+    @Override
+    public Map<String, Object> getPtsAll(String companyCd, Integer priorityOrderCd) {
+        String authorCd = session.getAttribute("aud").toString();
+        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        String commonPartsData = workPriorityOrderMst.getCommonPartsData();
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+        List<Map<String, Object>> newPtsGroup = this.getNewPtsGroup(companyCd, priorityOrderCd);
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+        Map<String,Object> mapHeader = new HashMap<>();
+        String groupColumns = "";
+        String groupHeader = "";
+        for (Map<String, Object> map : attrCol) {
+            if (groupColumns.equals("")){
+                groupColumns += map.get("zokusei_colcd");
+                groupHeader += map.get("zokusei_nm");
+            }else {
+                groupColumns += ","+map.get("zokusei_colcd");
+                groupHeader += ","+map.get("zokusei_nm");
+            }
+        }
+        groupColumns += ",janCd,janName,rank,taiCd,tanaCd,tanapositionCd,faceNum,faceMen,faceKaiten,tumiagesu,plano_width,plano_height,plano_depth";
+        groupHeader += ",JAN,商品名,RANK,台番号,棚段番号,棚位置,フェース数,フェース面,フェース回転,積上数,幅,高,奥行";
+
+        mapHeader.put("groupColumns",groupColumns);
+        mapHeader.put("groupHeader",groupHeader);
+        for (Map<String, Object> map : newPtsGroup) {
+            for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+                for (Map<String, Object> objectMap : attrCol) {
+                    if (objectMap.get("zokusei_colname").equals(stringObjectEntry.getKey())){
+                        map.put(objectMap.get("zokusei_colcd").toString(),stringObjectEntry.getValue());
+                    }
+                }
+            }
+        }
+        mapHeader.put("newData",newPtsGroup);
+        return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
+    }
+
 
     public List<Map<String, Object>> getOldPtsGroup(String companyCd,Integer priorityOrderCd,String tableName,Integer ptsCd) {
         String authorCd = session.getAttribute("aud").toString();
@@ -363,6 +401,48 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         List<Map<String, Object>> restrictResult = restrictResultMapper.selectByPrimaryKey(priorityOrderCd);
         List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectNewJanZokusei(priorityOrderCd,ptsCd , zokuseiMsts, allCdList,
                 commonTableName.getProInfoTable(),attrCol,janSizeCol, tableName);
+
+        for (int i = 0; i < zokuseiList.size(); i++) {
+            Map<String, Object> zokusei = zokuseiList.get(i);
+            for (Map<String, Object> restrict : restrictResult) {
+                int equalsCount = 0;
+                for (Map<String,Object>  map : zokuseiCol) {
+                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + map.get("zokusei_id"));
+                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + map.get("zokusei_col"));
+
+                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
+                        equalsCount++;
+                    }
+                }
+
+                if(equalsCount == attrList.size()){
+                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
+                    zokusei.put("restrictCd", restrictCd);
+                }
+            }
+
+            zokuseiList.set(i, zokusei);
+        }
+        return zokuseiList;
+    }
+
+
+    public List<Map<String, Object>> getNewPtsGroup(String companyCd,Integer priorityOrderCd) {
+        String authorCd = session.getAttribute("aud").toString();
+        List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
+        List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
+        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        String commonPartsData = workPriorityOrderMst.getCommonPartsData();
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
+        List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
+        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
+        List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
+        List<Map<String, Object>> restrictResult = restrictResultMapper.selectByPrimaryKey(priorityOrderCd);
+        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.getPtsAllJan(priorityOrderCd,id , zokuseiMsts, allCdList,
+                commonTableName.getProInfoTable(),attrCol,janSizeCol, workPriorityOrderMst.getProductPowerCd());
 
         for (int i = 0; i < zokuseiList.size(); i++) {
             Map<String, Object> zokusei = zokuseiList.get(i);
