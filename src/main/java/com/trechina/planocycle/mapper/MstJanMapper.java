@@ -93,7 +93,7 @@ public interface MstJanMapper {
      */
     int insertJanList(String tableName,String infoHeader, List<LinkedHashMap<String, Object>> janData,String date,String authorCd);
 
-    String checkKaisou(String tableNameInfo, Map<String,Object>map,String colName);
+    String checkKaisou(String tableNameInfo, Map<String,Object>map);
 
     Integer getKaiSouLength(String tableNameInfo);
 
