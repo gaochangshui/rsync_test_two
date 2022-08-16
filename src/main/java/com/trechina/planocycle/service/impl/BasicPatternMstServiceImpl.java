@@ -137,6 +137,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         Map<String, String> sizeAndIrisuMap = sizeAndIrisu.stream().collect(Collectors.toMap(map -> MapUtils.getString(map, "attr"), map -> MapUtils.getString(map, "attrVal")));
         List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd,
                 zokuseiMsts, cdList, sizeAndIrisuMap);
+        classifyList = this.updateJanSizeByMap(classifyList);
+        classifyList.forEach(item->{
+            item.put("width", MapUtils.getInteger(item,"width")*MapUtils.getInteger(item, "faceCount"));
+        });
 
         basicMapperMapper.delete(priorityOrderCd, companyCd);
 
@@ -308,6 +312,28 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 }
             }
         }
+
+        return priorityOrderResultDataDtoList;
+    }
+
+    @Override
+    public List<Map<String, Object>> updateJanSizeByMap(List<Map<String, Object>> priorityOrderResultDataDtoList) {
+        List<Map<String, Object>> janPlacementList = basicPatternJanPlacementMapper.getJanPlacementList();
+
+        priorityOrderResultDataDtoList.forEach(priorityOrderResultDataDto->{
+            for (Map<String, Object> map : janPlacementList) {
+                if (Objects.equals(MapUtils.getInteger(priorityOrderResultDataDto, "faceKaiten", 0), MapUtils.getInteger(map,"faceKaiten")) &&
+                        Objects.equals(MapUtils.getInteger(priorityOrderResultDataDto, "faceMen", 1), MapUtils.getInteger(map,"faceMen"))
+                ){
+                    priorityOrderResultDataDto.put("width", priorityOrderResultDataDto.get("plano"+
+                            map.getOrDefault("planoWidth", "width").toString().substring(0,1).toUpperCase()+map.getOrDefault("planoWidth", "width").toString().substring(1)));
+                    priorityOrderResultDataDto.put("height", priorityOrderResultDataDto.get("plano"+
+                            map.getOrDefault("planoHeight", "height").toString().substring(0,1).toUpperCase()+map.getOrDefault("planoHeight", "height").toString().substring(1)));
+                    priorityOrderResultDataDto.put("depth", priorityOrderResultDataDto.get("plano"+
+                            map.getOrDefault("planoDepth", "depth").toString().substring(0,1).toUpperCase()+map.getOrDefault("planoDepth", "depth").toString().substring(1)));
+                }
+            }
+        });
 
         return priorityOrderResultDataDtoList;
     }
