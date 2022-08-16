@@ -98,19 +98,24 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             String authorCd = session.getAttribute("aud").toString();
             String companyCd = jsonObject.get("companyCd").toString();
             Integer priorityAllCd = (Integer) jsonObject.get("priorityAllCd");
-            //Integer isCover = (Integer) jsonObject.get("isCover");
-            //Integer newPriorityAllCd = priorityAllCd;
-
-
+            Integer isCover = (Integer) jsonObject.get("isCover");
+            Integer newPriorityAllCd = priorityAllCd;
+            if (isCover == 1){
+                ProductPowerNumGenerator p = new ProductPowerNumGenerator();
+                p.setUsercd(session.getAttribute("aud").toString());
+                priorityAllNumGeneratorMapper.insert(p);
+                logger.info("全pattern表自動取号:{}",p.getId());
+                newPriorityAllCd = p.getId();
+            }
             //「companyCd、priorityAllCd、Author_cd」によりWKテーブルをクリア
-            priorityAllMstMapper.deleteWKTableMst(companyCd, priorityAllCd, authorCd);
-            priorityAllMstMapper.deleteWKTableShelfs(companyCd, priorityAllCd, authorCd);
-            priorityAllMstMapper.deleteWKTableRestrict(companyCd, priorityAllCd, authorCd);
-            workPriorityAllRestrictRelationMapper.deleteWKTableRelation(companyCd, priorityAllCd, authorCd);
-            priorityAllMstMapper.deleteWKTableResult(companyCd, priorityAllCd, authorCd);
-            priorityAllMstMapper.deleteWKTablePtsRelation(companyCd, priorityAllCd, authorCd);
+            priorityAllMstMapper.deleteWKTableMst(companyCd, newPriorityAllCd, authorCd);
+            priorityAllMstMapper.deleteWKTableShelfs(companyCd, newPriorityAllCd, authorCd);
+            priorityAllMstMapper.deleteWKTableRestrict(companyCd, newPriorityAllCd, authorCd);
+            workPriorityAllRestrictRelationMapper.deleteWKTableRelation(companyCd, newPriorityAllCd, authorCd);
+            priorityAllMstMapper.deleteWKTableResult(companyCd, newPriorityAllCd, authorCd);
+            priorityAllMstMapper.deleteWKTablePtsRelation(companyCd, newPriorityAllCd, authorCd);
            if (priorityAllCd != 0) {
-               String ptsCd = priorityAllMstMapper.getPtsCd(companyCd, priorityAllCd, authorCd);
+               String ptsCd = priorityAllMstMapper.getPtsCd(companyCd, newPriorityAllCd, authorCd);
 
                String[] split = ptsCd.split(",");
                int[] array = Arrays.asList(split).stream().mapToInt(Integer::parseInt).toArray();
@@ -120,11 +125,11 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                priorityAllMstMapper.deleteWKTablePtsData(companyCd, array, authorCd);
                priorityAllMstMapper.deleteWKTablePtsVersion(companyCd, array, authorCd);
            }
-               priorityAllMstMapper.delWKTablePtsTai(companyCd, priorityAllCd, authorCd);
-               priorityAllMstMapper.delWKTablePtsTana(companyCd, priorityAllCd, authorCd);
-               priorityAllMstMapper.delWKTablePtsJans(companyCd, priorityAllCd, authorCd);
-               priorityAllMstMapper.delWKTablePtsData(companyCd, priorityAllCd, authorCd);
-               priorityAllMstMapper.delWKTablePtsVersion(companyCd, priorityAllCd, authorCd);
+               priorityAllMstMapper.delWKTablePtsTai(companyCd, newPriorityAllCd, authorCd);
+               priorityAllMstMapper.delWKTablePtsTana(companyCd, newPriorityAllCd, authorCd);
+               priorityAllMstMapper.delWKTablePtsJans(companyCd, newPriorityAllCd, authorCd);
+               priorityAllMstMapper.delWKTablePtsData(companyCd, newPriorityAllCd, authorCd);
+               priorityAllMstMapper.delWKTablePtsVersion(companyCd, newPriorityAllCd, authorCd);
 
 
             if (priorityAllCd != 0) {

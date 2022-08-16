@@ -246,11 +246,15 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public Map<String, Object> getAllDataOrParam(String companyCd, Integer productPowerNo,Integer isCover) {
         Integer newProductPowerCd = productPowerNo;
+        isCover =0;
         if (isCover == 1){
             Map<String, Object> productPowerID = idGeneratorService.productPowerNumGenerator();
             ProductPowerNumGenerator prod = (ProductPowerNumGenerator)productPowerID.get("data");
             newProductPowerCd = prod.getId();
         }
+
+        List<String> dataCol = productPowerDataMapper.getDataCol();
+        dataCol.remove("product_power_cd");
         String aud = session.getAttribute("aud").toString();
         productPowerMstMapper.deleteWork(companyCd,newProductPowerCd);
         productPowerDataMapper.deleteWKSyokika(companyCd,aud,newProductPowerCd);
@@ -259,13 +263,15 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.deleteWKYobiiiternData(aud,companyCd,newProductPowerCd);
         productPowerDataMapper.deleteWKData(companyCd,aud,newProductPowerCd);
         productPowerDataMapper.deleteWKIntage(companyCd,aud,newProductPowerCd);
+        productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
 
         productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
          productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
          productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
         productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
-        productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
+        productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud,newProductPowerCd,dataCol);
         productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
+        productPowerParamMstMapper.setWorkForFinal(companyCd,productPowerNo,newProductPowerCd);
 
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
         List<String> cdList = new ArrayList<>();

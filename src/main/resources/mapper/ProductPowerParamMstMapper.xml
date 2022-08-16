@@ -89,7 +89,18 @@
     where company_cd = #{conpanyCd,jdbcType=VARCHAR}
       and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
   </update>
-    <insert id="setWork">
+  <insert id="setWorkForFinal">
+    insert into planocycle.work_product_power_param_mst(company_cd,product_power_cd,customer_condition,prd_cd,rank_weight,recently_end_time,
+                                                        recently_flag,recently_st_time,season_end_time,season_flag,season_st_time,store_cd,year_flag,author_cd,create_time,common_parts_data,
+                                                        place_nm,channel_nm,project,shelf_pattern_cd,jan_name2col_num)
+      select company_cd,#{newProductPowerCd},customer_condition,prd_cd,rank_weight,recently_end_time,
+             recently_flag,recently_st_time,season_end_time,season_flag,season_st_time,store_cd,year_flag,author_cd,create_time,common_parts_data,
+             place_nm,channel_nm,project,shelf_pattern_cd,jan_name2col_num
+    from planocycle.work_product_power_param_mst
+    where company_cd = #{companyCd,jdbcType=VARCHAR}
+      and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
+  </insert>
+  <insert id="setWork">
       insert into planocycle.work_product_power_param_mst (company_cd,product_power_cd,customer_condition,prd_cd,recently_end_time,
          recently_flag,recently_st_time,season_end_time,season_flag,season_st_time,store_cd,year_flag,author_cd,create_time,common_parts_data,
          place_nm,channel_nm,project,shelf_pattern_cd,jan_name2col_num)

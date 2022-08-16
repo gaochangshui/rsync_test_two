@@ -1,7 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.trechina.planocycle.entity.po.ProductPowerNumGenerator;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerParamMst;
 import com.trechina.planocycle.entity.po.WorkProductPowerReserveData;
@@ -25,7 +24,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Service
 public class CommodityScoreParaServiceImpl implements CommodityScoreParaService {
@@ -263,7 +261,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
 
         productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd);
-        if (map.entrySet().size()>4){
             List list = new ArrayList();
             for (int i = 0; i < rankCalculate.size(); i++) {
                 list.add(rankCalculate.get(i));
@@ -276,14 +273,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             if (!list.isEmpty()) {
                 productPowerDataMapper.insertWkRank(list, authorCd, companyCd, productPowerCd);
             }
-        }else {
-            Set<String> colNames = rankCalculate.get(0).keySet();
-            for (String colName : colNames) {
-                if (!colName.equals("jan")) {
-                    productPowerDataMapper.setWkDataRank(rankCalculate, authorCd, companyCd, productPowerCd, colName);
-                }
-            }
-        }
 
         return ResultMaps.result(ResultEnum.SUCCESS,rankCalculate);
     }

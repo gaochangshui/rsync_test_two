@@ -71,7 +71,7 @@ public interface ProductPowerDataMapper {
         ,@Param("newProductPowerCd")Integer newProductPowerCd);
 
     int setWkDataForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
-    ,@Param("newProductPowerCd")Integer newProductPowerCd);
+    ,@Param("newProductPowerCd")Integer newProductPowerCd,@Param("dataCol")List<String> dataCol);
 
     int setWKIntageForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
             ,@Param("newProductPowerCd")Integer newProductPowerCd);
@@ -191,4 +191,7 @@ public interface ProductPowerDataMapper {
 
 
     void insertWkRank(List<Map<String, Object>> rankCalculate, String authorCd, String companyCd, Integer productPowerCd);
+
+
+    List<String> getDataCol();
 }
