@@ -93,12 +93,15 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> addPriorityAllData(JSONObject jsonObject) {
-        try{
+        //try{
 
             String authorCd = session.getAttribute("aud").toString();
             String companyCd = jsonObject.get("companyCd").toString();
             Integer priorityAllCd = (Integer) jsonObject.get("priorityAllCd");
             Integer isCover = (Integer) jsonObject.get("isCover");
+            if (isCover == null){
+                isCover = 0;
+            }
             Integer newPriorityAllCd = priorityAllCd;
             if (isCover == 1){
                 ProductPowerNumGenerator p = new ProductPowerNumGenerator();
@@ -116,14 +119,15 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             priorityAllMstMapper.deleteWKTablePtsRelation(companyCd, newPriorityAllCd, authorCd);
            if (priorityAllCd != 0) {
                String ptsCd = priorityAllMstMapper.getPtsCd(companyCd, newPriorityAllCd, authorCd);
-
-               String[] split = ptsCd.split(",");
-               int[] array = Arrays.asList(split).stream().mapToInt(Integer::parseInt).toArray();
-               priorityAllMstMapper.deleteWKTablePtsTai(companyCd, array, authorCd);
-               priorityAllMstMapper.deleteWKTablePtsTana(companyCd, array, authorCd);
-               priorityAllMstMapper.deleteWKTablePtsJans(companyCd, array, authorCd);
-               priorityAllMstMapper.deleteWKTablePtsData(companyCd, array, authorCd);
-               priorityAllMstMapper.deleteWKTablePtsVersion(companyCd, array, authorCd);
+                if (ptsCd != null) {
+                    String[] split = ptsCd.split(",");
+                    int[] array = Arrays.asList(split).stream().mapToInt(Integer::parseInt).toArray();
+                    priorityAllMstMapper.deleteWKTablePtsTai(companyCd, array, authorCd);
+                    priorityAllMstMapper.deleteWKTablePtsTana(companyCd, array, authorCd);
+                    priorityAllMstMapper.deleteWKTablePtsJans(companyCd, array, authorCd);
+                    priorityAllMstMapper.deleteWKTablePtsData(companyCd, array, authorCd);
+                    priorityAllMstMapper.deleteWKTablePtsVersion(companyCd, array, authorCd);
+                }
            }
                priorityAllMstMapper.delWKTablePtsTai(companyCd, newPriorityAllCd, authorCd);
                priorityAllMstMapper.delWKTablePtsTana(companyCd, newPriorityAllCd, authorCd);
@@ -153,10 +157,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 return ResultMaps.result(ResultEnum.SUCCESS,map);
             }
             return ResultMaps.result(ResultEnum.SUCCESS, null);
-        } catch (Exception ex) {
-            logAspect.setTryErrorLog(ex,new Object[]{});
-            return ResultMaps.result(ResultEnum.FAILURE, "新規作成失敗しました。");
-        }
+        //} catch (Exception ex) {
+        //    logAspect.setTryErrorLog(ex,new Object[]{});
+        //    return ResultMaps.result(ResultEnum.FAILURE, "新規作成失敗しました。");
+        //}
     }
 
     /**

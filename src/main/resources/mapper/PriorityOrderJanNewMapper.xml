@@ -136,7 +136,7 @@
               <foreach collection="mapAttr" separator=" and " item="item" index="index" >
                   mst.${index} = #{item}
               </foreach>
-    order by  prodata.rank_result asc nulls last,jandata.jan
+    order by  rank,"janCd"
     </select>
     <select id="getJanNewInfo" resultType="com.trechina.planocycle.entity.vo.JanMstPlanocycleVo">
         select jan_cd as janCd,jan_nm as janName,tanka,tanni,width,height,depth,scatnm,scat1cd as zokusei1,scat2cd as zokusei2,scat3cd as zokusei3
