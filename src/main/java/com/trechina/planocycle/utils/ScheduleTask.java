@@ -1,6 +1,7 @@
 package com.trechina.planocycle.utils;
 
 import com.trechina.planocycle.mapper.LogMapper;
+import com.trechina.planocycle.mapper.ProductPowerDataMapper;
 import com.trechina.planocycle.service.TableTransferService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Component
 public class ScheduleTask {
@@ -19,6 +18,8 @@ public class ScheduleTask {
     private TableTransferService tableTransferService;
     @Autowired
     private LogMapper logMapper;
+    @Autowired
+    private ProductPowerDataMapper productPowerDataMapper;
 
     @Scheduled(cron = "0 0 6 * * ?")
     public void MasterInfoSync(){
@@ -38,5 +39,10 @@ public class ScheduleTask {
     @Scheduled(cron = "0 5 0 * * ?")
     public void doDelLog(){
         logMapper.deleteLog();
+        List<String> workTableName = productPowerDataMapper.getWorkTableName();
+        for (String s : workTableName) {
+            productPowerDataMapper.delWork(s);
+        }
+
     }
 }

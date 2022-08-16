@@ -2,7 +2,10 @@ package com.trechina.planocycle.service.impl;
 
 import com.google.common.base.Joiner;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.*;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderRestDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
 import com.trechina.planocycle.entity.po.ZokuseiMst;
@@ -342,8 +345,15 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     }
 
     @Override
-    public Map<String, Object> setFaceNumAndPositionForData(PriorityOrderPtsDto shelfPtsDataJandata) {
-        priorityOrderShelfDataMapper.updateFaceNum(shelfPtsDataJandata);
+    public Map<String, Object> setFaceNumAndPositionForData(Map<String,Object> map) {
+        Integer id = shelfPtsDataMapper.getId(map.get("companyCd").toString(), Integer.parseInt(map.get("priorityOrderCd").toString()));
+        if (Integer.parseInt(map.get("delFlag").toString()) == 0){
+            priorityOrderShelfDataMapper.updateFaceNum(map,id);
+        }else {
+            priorityOrderShelfDataMapper.delJan(map,id);
+            List<Map<String, Object>> alikeTana = priorityOrderShelfDataMapper.getAlikeTana(map, id);
+            priorityOrderShelfDataMapper.updatePositionCd(alikeTana,id);
+        }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

@@ -281,6 +281,9 @@
     <delete id="deleteWKIntage">
         delete from planocycle.work_product_power_intage where company_cd=#{companyCd} and author_cd=#{authorCd} and product_power_cd = #{productPowerCd}
     </delete>
+    <delete id="delWork">
+        delete from ${tableName}
+    </delete>
 
     <update id="deleteRankData">
         update planocycle.product_power_mst_data set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
@@ -794,5 +797,8 @@
     </select>
     <select id="getDataCol" resultType="java.lang.String">
         select column_name from information_schema.columns where table_name='work_product_power_mst_data'and table_schema = 'planocycle'
+    </select>
+    <select id="getWorkTableName" resultType="java.lang.String">
+        select DISTINCT concat(table_schema,'.',"table_name") from information_schema.columns where table_name like 'work_%' and table_schema in ('planocycle','priority')
     </select>
 </mapper>
