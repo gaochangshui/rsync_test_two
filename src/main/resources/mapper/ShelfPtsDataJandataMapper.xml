@@ -291,8 +291,8 @@
     order by tai_cd,tana_cd,tanaposition_cd
   </select>
   <select id="selectJanByPatternCd" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
-    select jan "janCd", sku_rank,"restrictCd",face,tai_cd "taiCd", tana_cd "tanaCd", tanaposition_cd "tanapositionCd",
-    tumiagesu,zaikosu,face_displayflg,face_position
+    select jan "janCd", row_number() over (partition by "restrictCd" order by sku_rank) sku_rank,"restrictCd",face,tai_cd "taiCd",
+    tana_cd "tanaCd", tanaposition_cd "tanapositionCd",tumiagesu,zaikosu,face_displayflg,face_position
     <foreach collection="attrHeaderList" open="," item="item" separator=",">
       coalesce(janmst."${item.attrVal}", '0') as "${item.attr}"
     </foreach>
@@ -310,9 +310,8 @@
     and resultdata.priority_order_cd=janreplace.priority_order_cd
      where restrict_cd is not null
     ) tmp left join ${tableName} janmst on janmst."1"=tmp.jan
-    where rowNum=1
-    <if test="isReOrder>0">order by tai_cd, tana_cd,sku_rank</if>
-    <if test="isReOrder&lt;1">order by tai_cd, tana_cd, tanaposition_cd</if>
+    where rowNum=1 and not exists(select * from planocycle.work_priority_order_cut jancut where jan_cd=tmp.jan and priority_order_cd = #{priorityOrderCd} )
+    order by tai_cd, tana_cd,sku_rank
   </select>
   <select id="selectJanByPatternCdByAll" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
     select jan "janCd", sku_rank,"restrictCd",face,tai_cd "taiCd", tana_cd "tanaCd", tanaposition_cd "tanapositionCd",

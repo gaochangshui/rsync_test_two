@@ -2,6 +2,7 @@ package com.trechina.planocycle.controller;
 
 
 import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderPtsDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
 import com.trechina.planocycle.service.PriorityOrderShelfDataService;
@@ -80,4 +81,11 @@ public class PriorityOrderShelfDataController {
         return  priorityOrderShelfDataService.getPtsJanInfo(companyCd,priorityOrderCd);
     }
 
+    /**
+     * faceNum,修改
+     */
+    @PostMapping("setFaceNumAndPositionForData")
+    public Map<String,Object> setFaceNumAndPositionForData(@RequestBody PriorityOrderPtsDto shelfPtsDataJandata) {
+        return  priorityOrderShelfDataService.setFaceNumAndPositionForData(shelfPtsDataJandata);
+    }
 }

@@ -1,9 +1,6 @@
 package com.trechina.planocycle.mapper;
 
-import com.trechina.planocycle.entity.dto.PriorityOrderPtsDataDto;
-import com.trechina.planocycle.entity.dto.ShelfPtsHeaderDto;
-import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
-import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.ShelfPtsData;
 import com.trechina.planocycle.entity.po.ShelfPtsDataTaimst;
 import com.trechina.planocycle.entity.po.ShelfPtsDataTanamst;
@@ -138,7 +135,7 @@ public interface ShelfPtsDataMapper {
 
     int insertPtsVersion(@Param("ptsCd") Integer ptsCd, @Param("id") Integer id, @Param("authorCd") String authorCd);
 
-    int insertPtsDataJandata(@Param("list")List<WorkPriorityOrderResultDataDto> positionResultData,
+    int insertPtsDataJandata(@Param("list")List<PriorityOrderResultDataDto> positionResultData,
                              @Param("id") Integer id, @Param("companyCd") String companyCd, @Param("authorCd") String authorCd);
 
     int deletePtsTaimst(@Param("ptsCd")Integer ptsCd);
@@ -185,11 +182,16 @@ public interface ShelfPtsDataMapper {
     int deleteFinalPtsDataJandata(@Param("ptsCd")Integer ptsCd);
 
     //从最終表移動一時表
-    int insertWorkPtsData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd);
-    int insertWorkPtsTaiData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
-    int insertWorkPtsTanaData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
-    int insertWorkPtsVersionData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
-    int insertWorkPtsJanData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd);
+    int insertWorkPtsData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("priorityOrderCd")Integer priorityOrderCd
+    ,@Param("newPriorityOrderCd")Integer newPriorityOrderCd,@Param("newId")Integer newId);
+    int insertWorkPtsTaiData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd
+            ,@Param("newId")Integer newId);
+    int insertWorkPtsTanaData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd
+            ,@Param("newId")Integer newId);
+    int insertWorkPtsVersionData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd
+            ,@Param("newId")Integer newId);
+    int insertWorkPtsJanData(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd,@Param("ptsCd")Integer ptsCd
+            ,@Param("newId")Integer newId);
 
     ShelfPtsData selectPtsCdByPatternCd(@Param("companyCd") String companyCd, @Param("patternCd") Long shelfPatternCd);
 

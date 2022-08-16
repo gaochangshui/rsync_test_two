@@ -3,10 +3,7 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
-import com.trechina.planocycle.entity.po.ProductPowerMst;
-import com.trechina.planocycle.entity.po.ProductPowerParam;
-import com.trechina.planocycle.entity.po.ProductPowerParamMst;
-import com.trechina.planocycle.entity.po.ProductPowerParamVo;
+import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO;
 import com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO;
@@ -14,6 +11,7 @@ import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreMasterService;
+import com.trechina.planocycle.service.IDGeneratorService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
 import org.slf4j.Logger;
@@ -62,6 +60,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     private SysConfigMapper sysConfigMapper;
     @Autowired
     private ShelfPatternMstMapper shelfPatternMstMapper;
+    @Autowired
+    private IDGeneratorService idGeneratorService;
     @Autowired
     private cgiUtils cgiUtil;
 
@@ -244,21 +244,34 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     }
 
     @Override
-    public Map<String, Object> getAllDataOrParam(String companyCd, Integer productPowerNo) {
-        String aud = session.getAttribute("aud").toString();
-        productPowerDataMapper.deleteWKSyokika(companyCd,aud,productPowerNo);
-        productPowerDataMapper.deleteWKKokyaku(companyCd,aud,productPowerNo);
-        productPowerDataMapper.deleteWKYobiiitern(aud,companyCd,productPowerNo);
-        productPowerDataMapper.deleteWKYobiiiternData(aud,companyCd,productPowerNo);
-        productPowerDataMapper.deleteWKData(companyCd,aud,productPowerNo);
-        productPowerDataMapper.deleteWKIntage(companyCd,aud,productPowerNo);
+    public Map<String, Object> getAllDataOrParam(String companyCd, Integer productPowerNo,Integer isCover) {
+        Integer newProductPowerCd = productPowerNo;
+        isCover =0;
+        if (isCover == 1){
+            Map<String, Object> productPowerID = idGeneratorService.productPowerNumGenerator();
+            ProductPowerNumGenerator prod = (ProductPowerNumGenerator)productPowerID.get("data");
+            newProductPowerCd = prod.getId();
+        }
 
-        productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud);
-         productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud);
-         productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud);
-        productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud);
-        productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud);
-        productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud);
+        List<String> dataCol = productPowerDataMapper.getDataCol();
+        dataCol.remove("product_power_cd");
+        String aud = session.getAttribute("aud").toString();
+        productPowerMstMapper.deleteWork(companyCd,newProductPowerCd);
+        productPowerDataMapper.deleteWKSyokika(companyCd,aud,newProductPowerCd);
+        productPowerDataMapper.deleteWKKokyaku(companyCd,aud,newProductPowerCd);
+        productPowerDataMapper.deleteWKYobiiitern(aud,companyCd,newProductPowerCd);
+        productPowerDataMapper.deleteWKYobiiiternData(aud,companyCd,newProductPowerCd);
+        productPowerDataMapper.deleteWKData(companyCd,aud,newProductPowerCd);
+        productPowerDataMapper.deleteWKIntage(companyCd,aud,newProductPowerCd);
+        productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
+
+        productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
+         productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
+         productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
+        productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
+        productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud,newProductPowerCd,dataCol);
+        productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
+        productPowerParamMstMapper.setWorkForFinal(companyCd,productPowerNo,newProductPowerCd);
 
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
         List<String> cdList = new ArrayList<>();
@@ -281,7 +294,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
             colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
         }
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
         List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
         for (Map<String, Object> map : janClassifyList) {
@@ -333,6 +345,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setChannelNm(param.getChannelNm());
         powerParam.setShelfPatternCd(param.getShelfPatternCd());
         powerParam.setJanName2colNum(param.getJanName2colNum());
+        powerParam.setProductPowerNo(newProductPowerCd);
+        powerParam.setCompany(companyCd);
         List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(productPowerNo, companyCd);
         List<Object> dataAll = new ArrayList();
         dataAll.add(returnDataAttr);

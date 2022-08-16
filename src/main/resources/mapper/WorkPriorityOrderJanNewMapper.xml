@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.WorkPriorityOrderJanNewMapper">
     <select id="selectJanNew" resultType="map">
-        select jan_new as jan,face,sku_rank,jan_rank
+        select jan_new as jan,jan_rank
         <foreach collection="attrList" item="item1" open="," separator=",">
             <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">janinfo."${item1.zokuseiCol}"</if>
             <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
@@ -18,9 +18,10 @@
             coalesce(janinfo."${item.attrVal}", '0') as "${item.attr}"
         </foreach>
         from planocycle.work_priority_order_jan_new new
-        inner join planocycle.work_priority_order_result_data resultdata
-            on new.priority_order_cd= resultdata.priority_order_cd and new.jan_new = resultdata.jan_cd
         inner join ${proInfoTable} janinfo on  janinfo."1"=new.jan_new
-        where resultdata.priority_order_cd=#{priorityOrderCd} order by sku_rank,jan_rank
+        where new.priority_order_cd=#{priorityOrderCd} and not exists(
+            select * from planocycle.work_basic_pattern_restrict_result_data where priority_order_cd=new.priority_order_cd
+            and jan= new.jan_new
+        ) order by jan_rank
     </select>
 </mapper>

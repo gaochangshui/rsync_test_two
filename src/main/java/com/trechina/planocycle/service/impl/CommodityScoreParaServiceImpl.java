@@ -9,6 +9,7 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreMasterService;
 import com.trechina.planocycle.service.CommodityScoreParaService;
+import com.trechina.planocycle.service.IDGeneratorService;
 import com.trechina.planocycle.service.PriorityOrderMstService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
@@ -20,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class CommodityScoreParaServiceImpl implements CommodityScoreParaService {
@@ -45,6 +48,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     private ProductPowerDataMapper productPowerDataMapper;
     @Autowired
     private ShelfPatternMstMapper shelfPatternMstMapper;
+    @Autowired
+    private IDGeneratorService idGeneratorService;
     @Autowired
     private cgiUtils cgiUtil;
     ///**
@@ -100,45 +105,45 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      * @param
      * @return
      */
-    //@Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setCommodityScorePare(ProductPowerParam productPowerParam) {
         String authorCd = session.getAttribute("aud").toString();
 
         logger.info("保存期間、表示プロジェクト、weight所有参数:{}",productPowerParam);
 
-        String conpanyCd = productPowerParam.getCompany();
+        String companyCd = productPowerParam.getCompany();
         Integer productPowerCd = productPowerParam.getProductPowerNo();
+        Integer newProductPowerCd = productPowerCd;
 
         //テンポラリ・テーブルの最終テーブルへの保存
         //pos基本データ
             //物理削除挿入の保存の変更
-            productPowerDataMapper.phyDeleteSyokika(conpanyCd,productPowerCd,authorCd);
-            productPowerDataMapper.endSyokikaForWK(conpanyCd, productPowerCd, authorCd);
+            productPowerDataMapper.phyDeleteSyokika(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.endSyokikaForWK(companyCd, productPowerCd, authorCd,newProductPowerCd);
 
             //物理削除挿入の保存の変更
-            productPowerDataMapper.phyDeleteGroup(conpanyCd,productPowerCd,authorCd);
-            productPowerDataMapper.endGroupForWK(conpanyCd, productPowerCd, authorCd);
+            productPowerDataMapper.phyDeleteGroup(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.endGroupForWK(companyCd, productPowerCd, authorCd,newProductPowerCd);
 
             //物理削除挿入の保存の変更
-            productPowerDataMapper.phyDeleteYobiiitern(conpanyCd,productPowerCd,authorCd);
-            productPowerDataMapper.phyDeleteYobiiiternData(conpanyCd,productPowerCd,authorCd);
-            productPowerDataMapper.endYobiiiternForWk(conpanyCd,productPowerCd,authorCd);
-            productPowerDataMapper.endYobiiiternDataForWk(conpanyCd,productPowerCd,authorCd);
+            productPowerDataMapper.phyDeleteYobiiitern(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.phyDeleteYobiiiternData(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.endYobiiiternForWk(companyCd,productPowerCd,authorCd,newProductPowerCd);
+            productPowerDataMapper.endYobiiiternDataForWk(companyCd,productPowerCd,authorCd,newProductPowerCd);
             //物理削除挿入の保存の変更
-            productPowerDataMapper.phyDeleteIntage(conpanyCd,productPowerCd,authorCd);
-            productPowerDataMapper.endIntageForWK(conpanyCd,productPowerCd,authorCd);
+            productPowerDataMapper.phyDeleteIntage(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.endIntageForWK(companyCd,productPowerCd,authorCd,newProductPowerCd);
             //物理削除挿入の保存の変更
         
-            productPowerDataMapper.deleteData(conpanyCd,productPowerCd,authorCd);
-            productPowerDataMapper.setData(productPowerCd,authorCd,conpanyCd);
+            productPowerDataMapper.deleteData(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.setData(productPowerCd,authorCd,companyCd,newProductPowerCd);
             //期間パラメータ削除挿入{{きかんぱらめーた:さくじょそうにゅう}}
             String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
 
-        productPowerParamMstMapper.deleteParam(conpanyCd,productPowerCd);
-        productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd);
+        productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
+        productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd,newProductPowerCd);
 
-        List<Map<String, Object>> resultData = new ArrayList<>();
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -256,7 +261,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
 
         productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd);
-        if (map.entrySet().size()>4){
             List list = new ArrayList();
             for (int i = 0; i < rankCalculate.size(); i++) {
                 list.add(rankCalculate.get(i));
@@ -269,14 +273,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             if (!list.isEmpty()) {
                 productPowerDataMapper.insertWkRank(list, authorCd, companyCd, productPowerCd);
             }
-        }else {
-            Set<String> colNames = rankCalculate.get(0).keySet();
-            for (String colName : colNames) {
-                if (!colName.equals("jan")) {
-                    productPowerDataMapper.setWkDataRank(rankCalculate, authorCd, companyCd, productPowerCd, colName);
-                }
-            }
-        }
 
         return ResultMaps.result(ResultEnum.SUCCESS,rankCalculate);
     }

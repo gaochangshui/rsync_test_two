@@ -2,6 +2,7 @@ package com.trechina.planocycle.constant;
 
 public class MagicString {
     public static final String HEIGHT_NAME = "plano_height";
+    public static final String DEPTH_NAME = "plano_depth";
     public static final String IRISU_NAME = "plano_irisu";
 
     private MagicString() {

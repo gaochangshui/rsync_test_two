@@ -126,6 +126,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
     private BasicPatternMstService basicPatternMstService;
+    @Autowired
+    private IDGeneratorService idGeneratorService;
 
     /**
      * 優先順位テーブルリストの取得
@@ -426,33 +428,38 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) {
+
         Integer id = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);
         String aud = session.getAttribute("aud").toString();
-        priorityOrderMstService.deleteWorkTable(companyCd, priorityOrderCd);
+        Integer isCover = 1;
+        Integer newPriorityOrderCd = priorityOrderCd;
+        Integer newId = id;
+        if (isCover == 0){
+            newPriorityOrderCd = (int)idGeneratorService.priorityOrderNumGenerator().get("data");
+             newId = priorityOrderShelfDataMapper.selectRegclass();
 
-        priorityOrderJanCardMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
-        priorityOrderJanReplaceMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
-        priorityOrderJanNewMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
-        workPriorityOrderMstMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
-        workPriorityOrderRestrictRelationMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
-        workPriorityOrderRestrictResultMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
-        workPriorityOrderRestrictSetMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
-        workPriorityOrderResultDataMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
-        workPriorityOrderSortMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
-        workPriorityOrderSpaceMapper.setWorkForFinal(companyCd, priorityOrderCd, aud);
-        priorityOrderMstAttrSortMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        basicPatternAttrMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        basicPatternRestrictRelationMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        basicPatternRestrictResultMapper.setWorkForFinal(companyCd,priorityOrderCd);
-        basicPatternRestrictResultDataMapper.setWorkForFinal(companyCd,priorityOrderCd);
+        }
+        priorityOrderMstService.deleteWorkTable(companyCd, newPriorityOrderCd);
+
+        priorityOrderJanCardMapper.setWorkForFinal(companyCd, priorityOrderCd, aud,newPriorityOrderCd);
+        priorityOrderJanReplaceMapper.setWorkForFinal(companyCd, priorityOrderCd, aud,newPriorityOrderCd);
+        priorityOrderJanNewMapper.setWorkForFinal(companyCd, priorityOrderCd, aud,newPriorityOrderCd);
+        workPriorityOrderMstMapper.setWorkForFinal(companyCd, priorityOrderCd, aud,newPriorityOrderCd);
+        workPriorityOrderResultDataMapper.setWorkForFinal(companyCd, priorityOrderCd, aud,newPriorityOrderCd);
+        workPriorityOrderSortMapper.setWorkForFinal(companyCd, priorityOrderCd, aud,newPriorityOrderCd);
+        priorityOrderMstAttrSortMapper.setWorkForFinal(companyCd,priorityOrderCd,newPriorityOrderCd);
+        basicPatternAttrMapper.setWorkForFinal(companyCd,priorityOrderCd,newPriorityOrderCd);
+        basicPatternRestrictRelationMapper.setWorkForFinal(companyCd,priorityOrderCd,newPriorityOrderCd);
+        basicPatternRestrictResultMapper.setWorkForFinal(companyCd,priorityOrderCd,newPriorityOrderCd);
+        basicPatternRestrictResultDataMapper.setWorkForFinal(companyCd,priorityOrderCd,newPriorityOrderCd);
 
         //ptsIdの取得
-        shelfPtsDataMapper.insertWorkPtsData(companyCd, aud, priorityOrderCd);
-        shelfPtsDataMapper.insertWorkPtsTaiData(companyCd, aud, id);
-        shelfPtsDataMapper.insertWorkPtsTanaData(companyCd, aud, id);
-        shelfPtsDataMapper.insertWorkPtsVersionData(companyCd, aud, id);
-        shelfPtsDataMapper.insertWorkPtsJanData(companyCd, aud, id);
+        shelfPtsDataMapper.insertWorkPtsData(companyCd, aud, priorityOrderCd,newPriorityOrderCd,newId);
+        shelfPtsDataMapper.insertWorkPtsTaiData(companyCd, aud, id,newId);
+        shelfPtsDataMapper.insertWorkPtsTanaData(companyCd, aud, id,newId);
+        shelfPtsDataMapper.insertWorkPtsVersionData(companyCd, aud, id,newId);
+        shelfPtsDataMapper.insertWorkPtsJanData(companyCd, aud, id,newId);
         Map<String, Object> map = new HashMap<>();
         //プライマリ・テーブル情報
         WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd, aud);
@@ -475,9 +482,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue());
 
 
-        PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         List<Map<String,Object>> attrList1 = priorityOrderMstAttrSortMapper.getAttrCol(companyCd, priorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
-        List<Integer> value = attrList1.stream().map(map2-> MapUtils.getInteger(map2, "value")).collect(Collectors.toList());
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
         if (ptsDetailData != null){
@@ -490,7 +495,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             }
             s+=",janName";
             for (Map<String, Object> map1 : attrCol) {
-                s=s+","+"zokusei"+map1.get("zokusei_colcd");
+                s=s+","+map1.get("zokusei_colcd");
             }
             s = s + ",plano_width,plano_height,plano_depth";
             ptsDetailData.setJanColumns(s);
@@ -564,6 +569,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         map.put("ptsNewDetailData",ptsDetailDataVo);
         map.put("attrDisplay",attrDisplay.get("data"));
         map.put("ptsInfoTemp",ptsInfoTemp.get("data"));
+        map.put("priorityOrderCd",newPriorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 

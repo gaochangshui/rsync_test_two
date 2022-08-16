@@ -1,10 +1,12 @@
 package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.BasicPatternRestrictRelation;
 import com.trechina.planocycle.entity.po.BasicPatternRestrictResult;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -25,4 +27,9 @@ public interface BasicPatternMstService {
 
     Map<String, BasicPatternRestrictResult> getJanInfoClassify(List<Map<String, Object>> classifyList,
                                                                String companyCd, String zokuseiIds, String authorCd, Long priorityOrderCd);
+
+    /**
+     * jan长宽高修改
+     */
+    List<PriorityOrderResultDataDto> updateJanSize( List<PriorityOrderResultDataDto> priorityOrderResultDataDtoList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 }

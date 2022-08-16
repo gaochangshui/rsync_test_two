@@ -26,7 +26,8 @@ public interface ProductPowerParamMstMapper {
 
     int deleteParam(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
-    int insertParam(@Param("item") ProductPowerParam productPowerParam, @Param("customerCondition") String customerCondition, @Param("authorCd") String authorCd);
+    int insertParam(@Param("item") ProductPowerParam productPowerParam, @Param("customerCondition") String customerCondition, @Param("authorCd") String authorCd
+    ,@Param("newProductPowerCd")Integer newProductPowerCd);
 
     ProductPowerParam getParam(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
@@ -35,4 +36,6 @@ public interface ProductPowerParamMstMapper {
     void deleteWork(String companyCd, Integer productPowerCd);
 
     ProductPowerParam getWorkParam(String companyCd, Integer productPowerCd);
+
+    void setWorkForFinal(@Param("companyCd")String companyCd, @Param("productPowerCd") Integer productPowerCd,@Param("newProductPowerCd")Integer newProductPowerCd);
 }

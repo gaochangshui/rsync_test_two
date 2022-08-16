@@ -419,7 +419,8 @@
 
     <insert id="copyWKTableMst">
         insert into planocycle.work_priority_all_mst
-        select priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd from planocycle.priority_all_mst
+        select priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd
+        from planocycle.priority_all_mst
         where priority_all_cd = #{priorityAllCd}
         and company_cd = #{companyCd,jdbcType=VARCHAR}
         and author_cd = #{authorCd,jdbcType=VARCHAR}
@@ -529,6 +530,15 @@
         where company_cd = #{companyCd,jdbcType=VARCHAR}
             and priority_order_cd = #{priorityOrderCd}
             and deleteflg=0
+    </select>
+
+    <select id="getPriorityOrderMst" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstDto">
+        select
+        shelf_pattern_cd,product_power_cd
+        from planocycle.priority_order_mst
+        where company_cd = #{companyCd,jdbcType=VARCHAR}
+        and priority_order_cd = #{priorityOrderCd}
+        and deleteflg=0
     </select>
 
     <select id="getAllPatternData" resultType="com.trechina.planocycle.entity.vo.PriorityAllPatternListVO">

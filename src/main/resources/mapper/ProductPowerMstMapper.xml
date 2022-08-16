@@ -134,4 +134,12 @@
     select shelf_pattern_cd as shelfPatternCd,shelf_name_cd as shelfNameCd from planocycle.product_power_param_mst
     where product_power_cd = #{productPowerCd}
   </select>
+  <select id="selectSkuRank" resultType="map">
+    select jan,ROW_NUMBER() OVER(order by rank_result) sku_rank from planocycle.product_power_mst_data where product_power_cd=#{productPowerCd}
+    and jan in(
+      <foreach collection="backupJan" item="item" separator=",">
+        #{item.janCd}
+      </foreach>
+    )
+  </select>
 </mapper>

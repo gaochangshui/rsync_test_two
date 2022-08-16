@@ -64,7 +64,7 @@ public class PriorityOrderMstController {
 
 
     /**
-     * 編集時にptsの名前が存在するかどうかを確認
+     * にptsの名前が存在するかどうかを確認
      * @return
      */
     @PostMapping("/checkOrderName")

@@ -146,7 +146,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             }
             s += ",janName";
             for (Map<String, Object> map : attrCol) {
-                s=s+","+map.get("zokusei_colname");
+                s=s+","+map.get("zokusei_colcd");
             }
             s = s + ",plano_width,plano_height,plano_depth";
             ptsDetailData.setJanColumns(s);

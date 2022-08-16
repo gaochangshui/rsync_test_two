@@ -2,10 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.google.common.base.Joiner;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderRestDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
+import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
 import com.trechina.planocycle.entity.po.ZokuseiMst;
@@ -48,13 +45,9 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Autowired
     private BasicPatternRestrictResultMapper restrictResultMapper;
     @Autowired
-    private BasicPatternRestrictRelationMapper restrictRelationMapper;
-    @Autowired
     private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
     @Autowired
     private ShelfPtsDataMapper shelfPtsDataMapper;
-    @Autowired
-    private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
@@ -144,7 +137,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                     .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd")))
                     .collect(Collectors.toList());
             Map<String,Object> mapHeader = new HashMap<>();
-            String groupColumns = "taiCd,tanaCd,janCd,janName,plano_depth,plano_height,plano_width,rank,faceNum";
+            String groupColumns = "taiCd,tanaCd,janCd,janName,plano_width,plano_height,plano_depth,rank,faceNum";
             String groupHeader = "台番号,棚段番号,JAN,商品名,幅,高,奥行,RANK,フェース数";
             mapHeader.put("groupColumns",groupColumns);
             mapHeader.put("groupHeader",groupHeader);
@@ -241,7 +234,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
                 for (Map<String, Object> objectMap : attrCol) {
                     if (objectMap.get("zokusei_colname").equals(stringObjectEntry.getKey())){
-                        map.put(objectMap.get("zokusei_colname").toString(),stringObjectEntry.getValue());
+                        map.put(objectMap.get("zokusei_colcd").toString(),stringObjectEntry.getValue());
                     }
                 }
             }
@@ -346,6 +339,12 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         }
         zokuseiList.add(0,map);
         return ResultMaps.result(ResultEnum.SUCCESS,zokuseiList);
+    }
+
+    @Override
+    public Map<String, Object> setFaceNumAndPositionForData(PriorityOrderPtsDto shelfPtsDataJandata) {
+        priorityOrderShelfDataMapper.updateFaceNum(shelfPtsDataJandata);
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
 

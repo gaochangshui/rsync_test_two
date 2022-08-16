@@ -31,5 +31,5 @@ public interface BasicPatternRestrictResultDataMapper {
 
     void setFinalForWork(String companyCd, String authorCd, Integer priorityOrderCd);
 
-    void setWorkForFinal(String companyCd, Integer priorityOrderCd);
+    void setWorkForFinal(String companyCd, Integer priorityOrderCd,Integer newPriorityOrderCd);
 }

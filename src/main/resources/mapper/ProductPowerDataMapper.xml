@@ -92,7 +92,7 @@
                                                      pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,
                                                      pos_compare_store_item06,pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,
                                                      author_cd,create_time)
-            select #{companyCd},#{productPowerCd},jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
+            select #{companyCd},#{newProductPowerCd},jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
                    pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,pos_store_item01,pos_store_item02,
                    pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,pos_store_item08,
                    pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
@@ -128,13 +128,13 @@
     </insert>
     <insert id="endYobiiiternForWk">
         insert into planocycle.product_power_reserve_mst(company_cd,product_power_cd,data_cd,data_name,author_cd,create_time,data_sort)
-        select company_cd,#{productPowerCd},data_cd,data_name,#{authorCd},now(),data_sort
+        select company_cd,#{newProductPowerCd},data_cd,data_name,#{authorCd},now(),data_sort
         from planocycle.work_product_power_reserve_mst
         where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
     </insert>
     <insert id="endYobiiiternDataForWk">
         insert into planocycle.product_power_reserve_data(company_cd,product_power_cd,data_cd,jan,data_value,author_cd,create_time)
-        select company_cd,#{productPowerCd},data_cd,jan,data_value,#{authorCd},now()
+        select company_cd,#{newProductPowerCd},data_cd,jan,data_value,#{authorCd},now()
         from planocycle.work_product_power_reserve_data
         where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
     </insert>
@@ -142,7 +142,7 @@
         insert into planocycle.product_power_intage(company_cd,product_power_cd,jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
                                                     intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
                                                     intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,author_cd,create_time)
-        select #{companyCd},#{productPowerCd},jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
+        select #{companyCd},#{newProductPowerCd},jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
                intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
                intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,#{authorCd},now()
         from planocycle.work_product_power_intage
@@ -287,22 +287,9 @@
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER}
     </update>
-    <update id="setPowerMstData">
-        insert into planocycle.work_product_power_mst_data(company_cd,jan,sku_name,classify_big,classify_middle,classify_small,classify_fine,pd_pos_amount,
-                                                           pd_pos_num,pd_branch_amount,pd_branch_num,pd_compare_amount,pd_compare_num,pd_branch_compare_amount,pd_branch_compare_num,gd_pos_amount,gd_pos_num,gd_branch_amount,
-                                                           gd_branch_num,gd_compare_amount,gd_compare_num,gd_branch_compare_amount,gd_branch_compare_num
-        )
-        select s.company_cd,s.jan,s.sku_name,s.classify_big,s.classify_middle,s.classify_small,s.classify_fine,s.pos_amount,s.pos_num,s.branch_amount,s.branch_num,
-               s.compare_amount,s.compare_num,s.branch_compare_amount,s.branch_compare_num,kk.pos_amount,kk.pos_num,kk.branch_amount,kk.branch_num,kk.compare_amount,
-               kk.compare_num,kk.branch_compare_amount,kk.branch_compare_num
-
-        from planocycle.work_product_power_syokika s, planocycle.work_product_power_kokyaku kk
-
-    </update>
     <update id="setData">
         insert into planocycle.product_power_mst_data
-        select *
-        from planocycle.work_product_power_mst_data
+        select * from planocycle.work_product_power_mst_data
         where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
 
     </update>
@@ -321,7 +308,7 @@
         insert into planocycle.work_product_power_intage(company_cd,product_power_cd,jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
                                                     intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
                                                     intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,author_cd)
-        select #{companyCd},#{productPowerCd},jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
+        select #{companyCd},#{newProductPowerCd},jan,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,
                intage_item06,intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,
                intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,#{authorCd}
         from planocycle.product_power_intage
@@ -340,22 +327,31 @@
         </foreach>
     </insert>
     <insert id="setWkDataForFinally">
-        insert into planocycle.work_product_power_mst_data
-        select  *
+        insert into planocycle.work_product_power_mst_data(
+                            <foreach collection="dataCol" item="item" separator="," >
+                                ${item}
+                            </foreach>
+                            ,product_power_cd
+        )
+        select
+        <foreach collection="dataCol" item="item" separator="," >
+            ${item}
+        </foreach>
+        ,#{newProductPowerCd}
         from planocycle.product_power_mst_data
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
     </insert>
     <insert id="setWkYobilitemDataForFinally">
         insert into planocycle.work_product_power_reserve_data(company_cd,author_cd,data_cd,jan,data_value,product_power_cd)
-        select company_cd,#{authorCd},data_cd,jan,data_value,product_power_cd
+        select company_cd,#{authorCd},data_cd,jan,data_value,#{newProductPowerCd}
         from planocycle.product_power_reserve_data
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
     </insert>
     <insert id="setWkYobilitemForFinally">
         insert into planocycle.work_product_power_reserve_mst(company_cd,author_cd,data_cd,data_name,data_sort,product_power_cd)
-        select company_cd,#{authorCd},data_cd,data_name,data_sort,product_power_cd
+        select company_cd,#{authorCd},data_cd,data_name,data_sort,#{newProductPowerCd}
         from planocycle.product_power_reserve_mst
          where company_cd = #{companyCd,jdbcType=VARCHAR}
                  and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
@@ -370,7 +366,7 @@
                                                           customer_compare_item10,customer_compare_store_item01,customer_compare_store_item02,customer_compare_store_item03,
                                                           customer_compare_store_item04,customer_compare_store_item05,customer_compare_store_item06,customer_compare_store_item07,
                                                           customer_compare_store_item08,customer_compare_store_item09,customer_compare_store_item10,author_cd)
-        select #{companyCd},#{productPowerCd},jan,customer_item01,customer_item02,customer_item03,customer_item04,
+        select #{companyCd},#{newProductPowerCd},jan,customer_item01,customer_item02,customer_item03,customer_item04,
                customer_item05,customer_item06,customer_item07,customer_item08,customer_item09,customer_item10,
                customer_item11,customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,
                customer_store_item05,customer_store_item06,customer_store_item07,customer_store_item08,customer_store_item09,
@@ -393,7 +389,7 @@
                                                           pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,
                                                           pos_compare_store_item06,pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,
                                                           author_cd)
-        select #{companyCd},#{productPowerCd},jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
+        select #{companyCd},#{newProductPowerCd},jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
                pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,pos_store_item01,pos_store_item02,
                pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,pos_store_item08,
                pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
@@ -628,7 +624,7 @@
                from
                (select s.jan,
         <foreach collection="map" index="index" separator="," item="item">
-                       DENSE_RANK() over(order by split_part(coalesce (${index},'0'), '.', 1) ::bigint
+                       DENSE_RANK() over(order by split_part(coalesce (${index} ::text,'0'), '.', 1) ::bigint
             desc nulls last ) as "${index}_rank"
         </foreach>
 
@@ -795,5 +791,8 @@
         <foreach  collection="branchList" separator="," open="(" close=")" item="item">
             #{item}
         </foreach>
+    </select>
+    <select id="getDataCol" resultType="java.lang.String">
+        select column_name from information_schema.columns where table_name='work_product_power_mst_data'and table_schema = 'planocycle'
     </select>
 </mapper>
