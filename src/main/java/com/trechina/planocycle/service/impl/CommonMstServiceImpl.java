@@ -382,10 +382,10 @@ public class CommonMstServiceImpl implements CommonMstService {
                         PriorityOrderResultDataDto jan = adoptJan.get(i);
                         if(tanaCd.equals(jan.getTanaCd()+"") && taiCd.equals(jan.getTaiCd()+"")
                                 && restrictCd.equals(jan.getRestrictCd()) && Objects.equals(1, jan.getCutFlag())){
-                            PriorityOrderResultDataDto currentJan = notAdoptBackupJansList.get(usedIndex++);
+                            PriorityOrderResultDataDto currentJan = notAdoptBackupJansList.get(usedIndex);
 
-                            if(repeatJanMap.containsKey(currentJan.getJanCd())){
-                                currentJan.setJanCd(repeatJanMap.get(currentJan.getJanCd()));
+                            if(repeatJanMap.containsKey(jan.getJanCd())){
+                                currentJan.setJanCd(repeatJanMap.get(jan.getJanCd()));
                             }
 
                             currentJan.setOldTaiCd(currentJan.getTaiCd());
@@ -401,7 +401,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                             copyCurrentJan.setCutFlag(0);
                             currentJan.setAdoptFlag(1);
 
-                            notAdoptBackupJansList.set(usedIndex, currentJan);
+                            notAdoptBackupJansList.set(usedIndex++, currentJan);
                             adoptJan.set(i, copyCurrentJan);
                         }
                     }
@@ -577,7 +577,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     dataDto.setFaceFact(dataDto.getFace());
                     Long janSum = janCdCount.get(dataDto.getJanCd());
                     if(janSum>1){
-                        repeatJanMap.put(janNewList.get(cutCount-i-1).getJanCd(),dataDto.getJanCd());
+                        repeatJanMap.put(dataDto.getJanCd(), janNewList.get(cutCount-i-1).getJanCd());
                     }
                     backupJanByRestrictCd.add(dataDto);
                 }
