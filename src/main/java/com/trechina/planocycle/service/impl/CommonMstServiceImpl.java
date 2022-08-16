@@ -293,20 +293,22 @@ public class CommonMstServiceImpl implements CommonMstService {
 
         if(isReOrder>0){
             List<WorkPriorityOrderResultData> reorderByJan = new ArrayList<>();
-            if (colNmforMst.size()>1) {
-                reorderByJan = priorityOrderResultDataMapper.getReorderByJan(companyCd, aud, productPowerCd,
-                        priorityOrderCd, commonTableName, colNmforMst.get(0), colNmforMst.get(1), backupJans);
-            }
+            if(colNmforMst!=null){
+                if (colNmforMst.size()>1) {
+                    reorderByJan = priorityOrderResultDataMapper.getReorderByJan(companyCd, aud, productPowerCd,
+                            priorityOrderCd, commonTableName, colNmforMst.get(0), colNmforMst.get(1), backupJans);
+                }
 
-            if(colNmforMst.size()==1){
-                reorderByJan = priorityOrderResultDataMapper.getReorderByJan(companyCd, aud, productPowerCd,priorityOrderCd,
-                        commonTableName, colNmforMst.get(0), null, backupJans);
-            }
+                if(colNmforMst.size()==1){
+                    reorderByJan = priorityOrderResultDataMapper.getReorderByJan(companyCd, aud, productPowerCd,priorityOrderCd,
+                            commonTableName, colNmforMst.get(0), null, backupJans);
+                }
 
-            Map<String, Integer> skuRankMap = reorderByJan.stream().collect(Collectors.toMap(WorkPriorityOrderResultData::getJanCd, WorkPriorityOrderResultData::getResultRank));
-            backupJans.forEach(janItem->{
-                janItem.setSkuRank(MapUtils.getLong(skuRankMap, "sku_rank", 9999L));
-            });
+                Map<String, Integer> skuRankMap = reorderByJan.stream().collect(Collectors.toMap(WorkPriorityOrderResultData::getJanCd, WorkPriorityOrderResultData::getResultRank));
+                backupJans.forEach(janItem->{
+                    janItem.setSkuRank(MapUtils.getLong(skuRankMap, "sku_rank", 9999L));
+                });
+            }
         }else{
             backupJans = backupJans.stream().sorted(Comparator.comparing(PriorityOrderResultDataDto::getRank, Comparator.nullsLast(Long::compareTo))
                     .thenComparing(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank, Comparator.nullsLast(Long::compareTo)))).collect(Collectors.toList());

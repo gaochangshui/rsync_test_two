@@ -69,7 +69,7 @@
         face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num,shelf_patten_cd,
         author_cd, pts_cd) values
         <foreach collection="list" index="index" item="item" separator=",">
-            (#{companyCd},#{priorityAllCd},#{item.janCd},#{item.faceFact},#{item.taiCd},#{item.tanaCd},#{item.tanaPositionCd},
+            (#{companyCd},#{priorityAllCd},#{item.janCd},#{item.faceFact},#{item.taiCd},#{item.tanaCd},#{item.tanapositionCd},
             #{item.faceMen},#{item.faceKaiten},#{item.tumiagesu},#{item.zaikosu},#{item.faceDisplayflg},#{item.facePosition},
             #{item.depthDisplayNum},#{patternCd},#{authorCd},#{id})
         </foreach>
