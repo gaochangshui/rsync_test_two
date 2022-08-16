@@ -576,6 +576,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                         PriorityOrderResultDataDto dataDto1 = janNewList.get(cutCount-i-1);
                         PriorityOrderResultDataDto copy = new PriorityOrderResultDataDto();
                         BeanUtils.copyProperties(dataDto1, copy);
+                        copy.setFaceFact(copy.getFace());
                         backupJanByRestrictCd.add(copy);
                     }
                 }
