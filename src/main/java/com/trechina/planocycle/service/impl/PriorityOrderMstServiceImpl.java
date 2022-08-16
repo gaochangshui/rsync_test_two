@@ -429,13 +429,15 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd) {
+    public Map<String, Object> getPriorityOrderAll(String companyCd, Integer priorityOrderCd,Integer isCover) {
 
         Integer id = shelfPtsDataMapper.getNewId(companyCd, priorityOrderCd);
         String aud = session.getAttribute("aud").toString();
-        Integer isCover = 1;
         Integer newPriorityOrderCd = priorityOrderCd;
         Integer newId = id;
+        if (isCover ==  null){
+            isCover =1;
+        }
         if (isCover == 0){
             newPriorityOrderCd = (int)idGeneratorService.priorityOrderNumGenerator().get("data");
              newId = priorityOrderShelfDataMapper.selectRegclass();
