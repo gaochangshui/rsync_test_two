@@ -306,8 +306,11 @@ public class CommonMstServiceImpl implements CommonMstService {
 
             Map<String, Integer> skuRankMap = reorderByJan.stream().collect(Collectors.toMap(WorkPriorityOrderResultData::getJanCd, WorkPriorityOrderResultData::getResultRank));
             backupJans.forEach(janItem->{
-                janItem.setSkuRank(MapUtils.getLong(skuRankMap, "sku_rank", 9999L));
+                janItem.setSkuRank(MapUtils.getLong(skuRankMap, janItem.getJanCd(), 9999L));
             });
+            backupJans = backupJans.stream().sorted(Comparator.comparing(PriorityOrderResultDataDto::getNewFlag).reversed()
+                    .thenComparing(PriorityOrderResultDataDto::getSkuRank)
+                    .thenComparing(PriorityOrderResultDataDto::getJanCd)).collect(Collectors.toList());
         }else{
             backupJans = backupJans.stream().sorted(Comparator.comparing(PriorityOrderResultDataDto::getRank, Comparator.nullsLast(Long::compareTo))
                     .thenComparing(PriorityOrderResultDataDto::getSkuRank, Comparator.nullsLast(Long::compareTo))).collect(Collectors.toList());
