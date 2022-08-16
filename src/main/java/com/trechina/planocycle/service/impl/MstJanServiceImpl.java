@@ -427,6 +427,7 @@ public class MstJanServiceImpl implements MstJanService {
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd, prodMstClass);
         String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", companyCd, prodMstClass);
         String tableNameInfo = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd, prodMstClass);
+        String tableNameKaisouData = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou", companyCd, prodMstClass);
         String[] header = excelData.get(0);
         Optional<String> optional = Stream.of(header).filter(MagicString.JAN::equalsIgnoreCase).findAny();
         if (!optional.isPresent()) {
@@ -449,7 +450,7 @@ public class MstJanServiceImpl implements MstJanService {
         List<LinkedHashMap<String, Object>> janData = new ArrayList<>();
         LinkedHashMap<String, Object> jan;
         List<LinkedHashMap<String, Object>> janKaisouList = mstJanMapper.getJanKaisouList(tableNameKaisou);
-        Integer kaiSouLength = mstJanMapper.getKaiSouLength(tableNameInfo);
+        Integer kaiSouLength = mstJanMapper.getKaiSouLength(tableNameKaisouData);
         List<JanHeaderAttr> planoType = mstJanMapper.getPlanoType(tableNameAttr);
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:sss");
@@ -459,7 +460,7 @@ public class MstJanServiceImpl implements MstJanService {
                 jan = new LinkedHashMap<>();
                 Map<String,Object> map = new HashMap<>();
 
-                for (int j = 0; j < row.length; j++) {
+                for (int j = 0; j < header.length; j++) {
                     for (JanHeaderAttr janHeaderAttr : planoType) {
                         if (janHeaderAttr.getSort().equals(headerNameIndex.get(header[j]))&& !numberPattern.matcher(row[j]).matches()) {
                             row[j] = "0";
@@ -476,8 +477,8 @@ public class MstJanServiceImpl implements MstJanService {
                                 branchStr.append("0");
                             }
                             row[j] = branchStr + row[j];
-                            map.put(headerNameIndex.get(header[j]),row[j]);
-                            String s = mstJanMapper.checkKaisou(tableNameInfo, map, janKaisouList.get(k).get("3").toString());
+                            map.put(String.valueOf(Integer.valueOf(janKaisouList.get(k).get("4").toString())-1),row[j]);
+                            String s = mstJanMapper.checkKaisou(tableNameKaisouData, map);
                             if (s != null){
                                 jan.put(headerNameIndex.get(header[j]), row[j]);
                                 jan.put(String.valueOf(Integer.parseInt(headerNameIndex.get(header[j]))+1), s);

@@ -62,7 +62,7 @@
     select "1","2","3","4","11","13" from ${tableName} where "1" not in ('jan_name','jan_cd')   order by "4"
     </select>
     <select id="getJanKaisouList" resultType="java.util.LinkedHashMap">
-        select "1","2","3" from ${tableName} where "4" is not null and "1" like '%_name' order by "4"
+        select "1","2","3","4" from ${tableName} where "4" is not null and "1" like '%_name' and "1" not in ('jan_name') order by "4"
     </select>
 
     <!--"{0}".prod_{1}_jan_info  -->
@@ -146,7 +146,7 @@
         select "1" from ${tableName} where "2" = #{name}
     </select>
     <select id="checkKaisou" resultType="java.lang.String">
-        select distinct "${colName}" from ${tableNameInfo} where
+        select count(1) from ${tableNameInfo} where
         <foreach collection="map" item="item" index="index" separator="and" >
             "${index}" = #{item}
         </foreach>
