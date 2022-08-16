@@ -1,13 +1,13 @@
 package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderPtsDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface PriorityOrderShelfDataMapper {
@@ -19,9 +19,15 @@ public interface PriorityOrderShelfDataMapper {
 
     List<PriorityOrderRestrictJanDto> getPlatformShedJans(@Param("item")PriorityOrderPlatformShedDto priorityOrderPlatformShedDto,@Param("authorCd")String authorCd);
 
-    void updateFaceNum(@Param("item") PriorityOrderPtsDto shelfPtsDataJandata);
+    void updateFaceNum(@Param("item")  Map<String,Object> map,@Param("id")Integer id);
 
     Integer selectRegclass();
+
+    void delJan(@Param("item") Map<String, Object> map,@Param("id")Integer id);
+
+    List<Map<String,Object>> getAlikeTana(@Param("item") Map<String, Object> map,@Param("id")Integer id);
+
+    void updatePositionCd(@Param("list") List<Map<String, Object>> alikeTana,@Param("id") Integer id);
 
     // List<>
 }

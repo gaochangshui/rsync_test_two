@@ -194,4 +194,8 @@ public interface ProductPowerDataMapper {
 
 
     List<String> getDataCol();
+
+    List<String> getWorkTableName();
+
+    void delWork(String tableName);
 }

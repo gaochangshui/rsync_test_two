@@ -1,7 +1,6 @@
 package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderPtsDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
 
@@ -51,7 +50,7 @@ public interface PriorityOrderShelfDataService {
 
     Map<String, Object> getPtsJanInfo(String companyCd, Integer priorityOrderCd);
 
-    Map<String, Object> setFaceNumAndPositionForData(PriorityOrderPtsDto shelfPtsDataJandata);
+    Map<String, Object> setFaceNumAndPositionForData(Map<String,Object> map);
 
     Map<String, Object> getPtsAll(String companyCd, Integer priorityOrderCd);
 
