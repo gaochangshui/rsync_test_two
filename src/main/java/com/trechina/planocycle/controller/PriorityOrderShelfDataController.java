@@ -88,4 +88,15 @@ public class PriorityOrderShelfDataController {
     public Map<String,Object> setFaceNumAndPositionForData(@RequestBody PriorityOrderPtsDto shelfPtsDataJandata) {
         return  priorityOrderShelfDataService.setFaceNumAndPositionForData(shelfPtsDataJandata);
     }
+
+
+    /**
+     * 全体jansの詳細情報を入手
+     * @param
+     * @return
+     */
+    @GetMapping("getPtsAll")
+    public Map<String,Object> getPtsAll(String companyCd,Integer priorityOrderCd) {
+        return  priorityOrderShelfDataService.getPtsAll(companyCd,priorityOrderCd);
+    }
 }

@@ -419,7 +419,8 @@
 
     <insert id="copyWKTableMst">
         insert into planocycle.work_priority_all_mst
-        select priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd from planocycle.priority_all_mst
+        select priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd
+        from planocycle.priority_all_mst
         where priority_all_cd = #{priorityAllCd}
         and company_cd = #{companyCd,jdbcType=VARCHAR}
         and author_cd = #{authorCd,jdbcType=VARCHAR}
@@ -518,7 +519,6 @@
         from planocycle.priority_all_mst
         where company_cd = #{companyCd,jdbcType=VARCHAR}
             and deleteflg=0
-            and author_cd = #{authorCd,jdbcType=VARCHAR}
         order by priority_all_cd desc
     </select>
 

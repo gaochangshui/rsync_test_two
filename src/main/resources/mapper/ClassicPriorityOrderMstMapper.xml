@@ -72,7 +72,7 @@
       union all
       (select priority_order_cd as id,priority_order_name as fileName,author_cd as authorName,create_time as createTime, false as flag
       from priority.priority_order_mst
-      where company_cd = #{companyCd} and author_cd = #{authorCd} and deleteflg = 0
+      where company_cd = #{companyCd} and deleteflg = 0
 
         order by priority_order_cd desc)
     </select>

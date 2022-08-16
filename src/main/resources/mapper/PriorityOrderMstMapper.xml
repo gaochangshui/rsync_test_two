@@ -31,7 +31,6 @@
     from planocycle.priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR}
     and deleteflg=0
-    and author_cd = #{authorCd,jdbcType=VARCHAR}
     order by priority_order_cd desc
   </select>
 

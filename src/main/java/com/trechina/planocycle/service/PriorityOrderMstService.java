@@ -3,8 +3,6 @@ package com.trechina.planocycle.service;
 import com.trechina.planocycle.entity.vo.PriorityOrderMstVO;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
@@ -78,7 +76,7 @@ public interface PriorityOrderMstService {
      * @param priorityOrderCd
      * @return
      */
-    Map<String,Object> getPriorityOrderAll(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    Map<String,Object> getPriorityOrderAll(String companyCd,Integer priorityOrderCd,Integer isCover) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
     /**
      * 編集時にptsの名前が存在するかどうかを確認
