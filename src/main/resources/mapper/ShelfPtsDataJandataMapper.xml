@@ -291,7 +291,7 @@
     order by tai_cd,tana_cd,tanaposition_cd
   </select>
   <select id="selectJanByPatternCd" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
-    select jan "janCd", row_number() over (partition by "restrictCd" order by sku_rank) sku_rank,"restrictCd",face,tai_cd "taiCd",
+    select jan "janCd", dense_rank() over (partition by "restrictCd" order by sku_rank) sku_rank,"restrictCd",face,tai_cd "taiCd",
     tana_cd "tanaCd", tanaposition_cd "tanapositionCd",tumiagesu,zaikosu,face_displayflg,face_position
     <foreach collection="attrHeaderList" open="," item="item" separator=",">
       coalesce(janmst."${item.attrVal}", '0') as "${item.attr}"
