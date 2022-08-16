@@ -107,7 +107,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     public Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto) {
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
 
         executor.execute(()->{
             Integer basicPatternCd;
@@ -121,7 +120,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             // 全パターンの制約List
 
             // 全パターンのRelationList
-
 
             try {
                 PriorityOrderMstDto priorityOrderMst = priorityAllMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
@@ -203,9 +201,11 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCdByAll(authorCd, companyCd, patternCd,
                 priorityAllCd,priorityOrderCd, sizeAndIrisu, isReOrder, commonTableName.getProInfoTable());
 
+        List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
+
         return commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd, minFaceNum, zokuseiMsts, allCdList,
                 restrictResult, attrList, authorCd, commonTableName,
-                partitionVal, null, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder, productPowerCd, null);
+                partitionVal, null, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder, productPowerCd, colNmforMst);
     }
 
     @Transactional(rollbackFor = Exception.class)
