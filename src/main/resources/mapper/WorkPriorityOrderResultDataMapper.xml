@@ -461,7 +461,7 @@
   </select>
     <select id="getProductReorder" resultType="com.trechina.planocycle.entity.po.WorkPriorityOrderResultData">
       select
-        resultdata.jan as janCd, coalesce (rank_result,9999)  as resultRank
+        resultdata.jan as janCd,row_number() over(order by rank_result nulls last ,resultdata.jan)  as resultRank
       from
         planocycle.work_basic_pattern_restrict_result_data resultdata
           left join planocycle.product_power_mst_data mstdata
