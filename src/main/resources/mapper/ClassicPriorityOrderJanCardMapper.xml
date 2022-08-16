@@ -15,7 +15,7 @@
     </insert>
     <insert id="setWorkForFinal">
         insert into priority.work_priority_order_jan_card
-        select company_cd,priority_order_cd,jan_old
+        select company_cd,#{newPriorityOrderCd},jan_old
         from priority.priority_order_jan_card
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

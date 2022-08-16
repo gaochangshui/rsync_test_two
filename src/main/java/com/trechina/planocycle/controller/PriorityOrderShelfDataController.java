@@ -8,7 +8,6 @@ import com.trechina.planocycle.service.PriorityOrderShelfDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +35,7 @@ public class PriorityOrderShelfDataController {
      * @return
      */
     @PostMapping("getRestrictJans")
-    public Map<String,Object> getRestrictJans(@RequestBody PriorityOrderRestDto priorityOrderRestDto) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public Map<String,Object> getRestrictJans(@RequestBody PriorityOrderRestDto priorityOrderRestDto) {
         return priorityOrderShelfDataService.getRestrictJans(priorityOrderRestDto);
 
     }
@@ -56,7 +55,7 @@ public class PriorityOrderShelfDataController {
      * @return
      */
     @PostMapping("getPlatformShedJans")
-    public Map<String,Object> getPlatformShedJans(@RequestBody PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public Map<String,Object> getPlatformShedJans(@RequestBody PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) {
         return  priorityOrderShelfDataService.getPlatformShedJans(priorityOrderPlatformShedDto);
     }
 

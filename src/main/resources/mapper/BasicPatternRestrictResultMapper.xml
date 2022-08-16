@@ -443,7 +443,7 @@
             as "zokusei${item1.zokuseiSort}"
         </foreach>
 
-        ,tai_cd as "taiCd",tana_cd as "tanaCd",tanaposition_cd as rank,
+        ,tai_cd as "taiCd",tana_cd as "tanaCd",tanaposition_cd as rank,tanaposition_cd as "tanapositionCd",
         "2" as "janName"
         <foreach collection="janSizeCol" item="item">
             ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
@@ -530,7 +530,12 @@
             as "zokusei${item1.zokuseiSort}"
         </foreach>
         ,coalesce(jan_new, jan_cd) "janCd"
-        ,jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",jandata.tanaposition_cd as "tanapositionCd",coalesce (prodata.rank_result,9999)as rank,
+        ,jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",jandata.tanaposition_cd as "tanapositionCd"
+        ,row_number() over (partition by
+            <foreach collection="attrName" separator="," item="item" index="index">
+                "${item.zokusei_col}"
+            </foreach>
+            order by prodata.rank_result nulls last ,resultdata)as rank,
         "2" as "janName"
         <foreach collection="janSizeCol" item="item">
             ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
@@ -543,6 +548,10 @@
         left join planocycle.product_power_mst_data prodata
         on prodata.jan = resultdata.jan_cd and prodata.product_power_cd = #{productPowerCd}
         where resultdata.priority_order_cd = #{priorityOrderCd}
-    order by jandata.tai_cd ,jandata.tana_cd ,jandata.tanaposition_cd
+    order by
+    <foreach collection="attrName" separator="," item="item" index="index">
+         "${item.zokusei_col}"
+    </foreach>
+    ,coalesce (prodata.rank_result,9999)as rank
     </select>
 </mapper>

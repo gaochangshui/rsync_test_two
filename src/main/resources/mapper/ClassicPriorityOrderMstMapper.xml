@@ -19,7 +19,7 @@
   <insert id="setWorkForFinal">
     insert  into priority.work_priority_order_mst(company_cd, priority_order_cd,priority_order_name,attr_option,
       product_power_cd,author_cd,create_time,editer_cd,edit_time,shelf_pattern_cd)
-    select company_cd, priority_order_cd,concat('一時保存データ',#{date}),attr_option,
+    select company_cd, #{newPriorityOrderCd},concat('一時保存データ',#{date}),attr_option,
       product_power_cd,author_cd,now(),editer_cd,now(),shelf_pattern_cd
     from priority.priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd =#{priorityOrderCd,jdbcType=INTEGER}

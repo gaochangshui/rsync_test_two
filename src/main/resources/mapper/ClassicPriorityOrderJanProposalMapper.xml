@@ -90,7 +90,7 @@
   </insert>
   <insert id="setWorkForFinal">
     insert into priority.work_priority_order_jan_proposal(company_cd,priority_order_cd,jan_old,jan_new,flag)
-    select company_cd,priority_order_cd,jan_old,jan_new,flag
+    select company_cd,#{newPriorityOrderCd},jan_old,jan_new,flag
     from priority.priority_order_jan_proposal
     where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
   </insert>

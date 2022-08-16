@@ -47,8 +47,8 @@
         where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     </update>
     <insert id="setWorkForFinal">
-        insert into priority.work_priority_order_jan_new
-        select company_cd,priority_order_cd,jan_new,rank,branch_num,branch_account,name_new
+        insert into priority.work_priority_order_jan_new(company_cd,priority_order_cd,jan_new,rank,branch_num,branch_account,name_new)
+        select company_cd,#{newPriorityOrderCd},jan_new,rank,branch_num,branch_account,name_new
         from priority.priority_order_jan_new
         where company_cd = #{companyCd,jdbcType=VARCHAR}
           and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

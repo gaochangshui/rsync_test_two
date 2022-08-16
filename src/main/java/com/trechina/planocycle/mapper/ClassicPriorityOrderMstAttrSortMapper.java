@@ -25,8 +25,8 @@ public interface ClassicPriorityOrderMstAttrSortMapper {
     int deleteAttrSortWK(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
     int insertAttrSortWk(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("attrList")List<String> attrList);
 
-    int insertAttrForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
-    int insertAttrSortForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+    int insertAttrForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("newPriorityOrderCd")Integer newPriorityOrderCd);
+    int insertAttrSortForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("newPriorityOrderCd")Integer newPriorityOrderCd);
 
     List<String> getAttrSortList(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 

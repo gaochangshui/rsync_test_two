@@ -436,9 +436,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         Integer newPriorityOrderCd = priorityOrderCd;
         Integer newId = id;
         if (isCover ==  null){
-            isCover =1;
+            isCover =0;
         }
-        if (isCover == 0){
+        if (isCover == 1){
             newPriorityOrderCd = (int)idGeneratorService.priorityOrderNumGenerator().get("data");
              newId = priorityOrderShelfDataMapper.selectRegclass();
 

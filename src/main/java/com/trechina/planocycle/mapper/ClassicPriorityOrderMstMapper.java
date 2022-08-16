@@ -39,7 +39,7 @@ public interface ClassicPriorityOrderMstMapper {
 
     void setWork(@Param("list") PriorityOrderDataDto priorityOrderDataDto, @Param("authorCd") String authorCd,@Param("date")String date);
 
-    void setWorkForFinal(String companyCd, Integer priorityOrderCd,String date);
+    void setWorkForFinal(String companyCd, Integer priorityOrderCd,String date,Integer newPriorityOrderCd);
 
     PriorityOrderMstDto getPriorityOrderMst(String companyCd, Integer priorityOrderCd);
 

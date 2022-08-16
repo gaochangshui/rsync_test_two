@@ -36,7 +36,7 @@ public interface ClassicPriorityOrderJanNewMapper {
     //最終テーブルデータの削除
     int deleteFinal(String companyCd, Integer priorityOrderCd);
     //最終表をテンポラリ・テーブルに戻す
-    int setWorkForFinal(String companyCd, Integer priorityOrderCd);
+    int setWorkForFinal(String companyCd, Integer priorityOrderCd,Integer newPriorityOrderCd);
 
     List<String> selectExistJanNew(String companyCd, Integer priorityOrderCd, List<DownloadDto> newJanList);
 

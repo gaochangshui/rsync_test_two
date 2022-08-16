@@ -558,8 +558,13 @@
         </foreach>
     </insert>
     <insert id="insertWorkDataForFinal">
-        insert into priority.work_priority_order_result_data
-            select * from
+        insert into priority.work_priority_order_result_data(priority_order_cd,author_cd,company_cd,jan_new,jan_old,pos_amount,branch_amount
+        ,unit_price,sku,attr1,attr2,attr3,attr4,attr5,attr6,attr7,attr8,attr9,attr10,rank,rank_prop,goods_rank,rank_upd,branch_num,branch_num_upd
+        ,difference,sale_forecast,branch_amount_upd)
+            select #{newPriorityOrderCd},author_cd,company_cd,jan_new,jan_old,pos_amount,branch_amount
+                                    ,unit_price,sku,attr1,attr2,attr3,attr4,attr5,attr6,attr7,attr8,attr9,attr10,rank,rank_prop,goods_rank,rank_upd,branch_num,branch_num_upd
+                                    ,difference,sale_forecast,branch_amount_upd
+        from
             priority.priority_order_result_data
             where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </insert>

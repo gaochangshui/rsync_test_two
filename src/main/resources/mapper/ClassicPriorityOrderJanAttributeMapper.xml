@@ -13,13 +13,15 @@
   </sql>
   <insert id="setFinalForWork">
     insert into priority.priority_order_jan_attribute
-    select * from priority.work_priority_order_jan_attribute
+    select *
+    from priority.work_priority_order_jan_attribute
       where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </insert>
   <insert id="setWorkForFinal">
-    insert into priority.work_priority_order_jan_attribute
-    select * from priority.priority_order_jan_attribute
+    insert into priority.work_priority_order_jan_attribute(company_cd,priority_order_cd,jan_new,attr_cd,attr_value)
+    select company_cd,#{newPriorityOrderCd},jan_new,attr_cd,attr_value
+    from priority.priority_order_jan_attribute
       where company_cd = #{companyCd,jdbcType=VARCHAR}
       and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </insert>

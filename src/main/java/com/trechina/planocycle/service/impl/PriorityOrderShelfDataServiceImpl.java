@@ -140,8 +140,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                     .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd")))
                     .collect(Collectors.toList());
             Map<String,Object> mapHeader = new HashMap<>();
-            String groupColumns = "taiCd,tanaCd,janCd,janName,plano_width,plano_height,plano_depth,rank,faceNum";
-            String groupHeader = "台番号,棚段番号,JAN,商品名,幅,高,奥行,RANK,フェース数";
+            String groupColumns = "taiCd,tanaCd,tanapositionCd,janCd,janName,plano_width,plano_height,plano_depth,rank,faceNum";
+            String groupHeader = "台番号,棚段番号,棚位置,JAN,商品名,幅,高,奥行,RANK,フェース数";
             mapHeader.put("groupColumns",groupColumns);
             mapHeader.put("groupHeader",groupHeader);
         ptsGroup = this.ptsProcessing(ptsGroup,zokuseiCol);
