@@ -519,7 +519,6 @@
         from planocycle.priority_all_mst
         where company_cd = #{companyCd,jdbcType=VARCHAR}
             and deleteflg=0
-            and author_cd = #{authorCd,jdbcType=VARCHAR}
         order by priority_all_cd desc
     </select>
 
