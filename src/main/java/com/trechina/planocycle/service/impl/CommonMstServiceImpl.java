@@ -401,7 +401,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                             copyCurrentJan.setCutFlag(0);
                             currentJan.setAdoptFlag(1);
 
-                            notAdoptBackupJansList.set(i, currentJan);
+                            notAdoptBackupJansList.set(usedIndex, currentJan);
                             adoptJan.set(i, copyCurrentJan);
                         }
                     }
