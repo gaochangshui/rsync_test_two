@@ -194,9 +194,6 @@
              left join planocycle.work_priority_order_jan_replace replaces
                        on replaces.jan_old = mstData.jan  and replaces.company_cd = #{companyCd} and  replaces.priority_order_cd = #{priorityOrderCd}
          where ptsdata.shelf_pattern_cd = #{patternCd}
-
-           and not EXISTS(select * from  planocycle.work_priority_order_cut card where jandata.jan = card.jan_cd  and card.company_cd = #{companyCd}
-              and card.priority_order_cd = #{priorityOrderCd})
            and not exists (select jan_new from planocycle.work_priority_order_jan_new janNews where jandata.jan = janNews.jan_new and  janNews.priority_order_cd = #{priorityOrderCd}
                 and janNews.company_cd =#{companyCd})
          union
