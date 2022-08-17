@@ -48,6 +48,8 @@ public class PriorityOrderResultDataDto {
 
     private Integer restrictType;
 
+    private Integer useNewFlag=0;
+
     private Integer faceKaiten=0;
     private Long faceMen=1L;
     private Double salesCnt;
