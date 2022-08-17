@@ -254,9 +254,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 zokuseiMsts, cdList, sizeAndIrisuMap);
 
         classifyList = basicPatternMstService.updateJanSizeByMap(classifyList);
-        classifyList.forEach(item->{
-            item.put("width", MapUtils.getInteger(item,"width")*MapUtils.getInteger(item, "faceCount"));
-        });
+        classifyList.forEach(item-> item.put("width", MapUtils.getInteger(item,"width")*MapUtils.getInteger(item, "faceCount")));
 
         Map<String, BasicPatternRestrictResult> classify = basicPatternMstService.getJanInfoClassify(classifyList, companyCd,
                 zokuseiIds, aud, (long) priorityAllCd);
@@ -341,7 +339,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     map.put(MagicString.RESTRICT_CD, classify.get(key.toString()).getRestrictCd());
                     map.put("area", percent);
                     map.put("janCount", janCount);
-                    map.put("priorityOrderCd", priorityOrderCd);
+                    map.put("priorityOrderCd", priorityAllCd);
                     map.put("companyCd", companyCd);
                     map.put("authorCd", aud);
                     newJans.add(map);
@@ -350,7 +348,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 lastKey = key.toString();
             }
 
-            newJans.stream().forEach(map->{
+            newJans.forEach(map->{
                 map.put("tanaPosition", index[0]);
                 index[0]++;
             });

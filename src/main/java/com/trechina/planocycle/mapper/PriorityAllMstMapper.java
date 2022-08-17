@@ -33,7 +33,7 @@ public interface PriorityAllMstMapper {
      */
     List<PriorityAllPatternListVO> getAllPatternData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("patternCd") Integer patternCd);
 
-     String getPtsCd(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
+     String getPtsCd(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd);
 
     void deleteWKTableMst(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
     void deleteWKTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
@@ -56,11 +56,16 @@ public interface PriorityAllMstMapper {
     void copyWKTableRestrict(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("newPriorityAllCd") Integer newPriorityAllCd);
     void copyWKTableRelation(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("newPriorityAllCd") Integer newPriorityAllCd);
     void copyWKTableResult(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("newPriorityAllCd") Integer newPriorityAllCd);
-    void copyWKTablePtsTai(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("newPriorityAllCd") Integer newPriorityAllCd);
-    void copyWKTablePtsTana(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("newPriorityAllCd") Integer newPriorityAllCd);
-    void copyWKTablePtsJans(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("newPriorityAllCd") Integer newPriorityAllCd);
-    void copyWKTablePtsData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("newPriorityAllCd") Integer newPriorityAllCd);
-    void copyWKTablePtsVersion(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("newPriorityAllCd") Integer newPriorityAllCd);
+    void copyWKTablePtsTai(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd
+            , @Param("newPriorityAllCd") Integer newPriorityAllCd,@Param("id")Integer id,@Param("newId")Integer newId);
+    void copyWKTablePtsTana(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd
+            , @Param("newPriorityAllCd") Integer newPriorityAllCd,@Param("id")Integer id,@Param("newId")Integer newId);
+    void copyWKTablePtsJans(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd
+            , @Param("newPriorityAllCd") Integer newPriorityAllCd,@Param("id")Integer id,@Param("newId")Integer newId);
+    void copyWKTablePtsData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd
+            , @Param("newPriorityAllCd") Integer newPriorityAllCd,@Param("id")Integer id,@Param("newId")Integer newId);
+    void copyWKTablePtsVersion(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd
+            , @Param("newPriorityAllCd") Integer newPriorityAllCd,@Param("id")Integer id,@Param("newId")Integer newId);
 
     void insertWKTableMst(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd") Integer priorityOrderCd);
     void insertWKTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd, @Param("patterns") List<Integer> patterns);

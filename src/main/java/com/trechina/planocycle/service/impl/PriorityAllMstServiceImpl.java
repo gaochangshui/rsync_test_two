@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +90,8 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     @Autowired
     private IDGeneratorService idGeneratorService;
     @Autowired
+    private PriorityAllPtsMapper priorityAllPtsMapper;
+    @Autowired
     private LogAspect logAspect;
     @Value("${skuPerPattan}")
     private Long skuCountPerPattan;
@@ -125,6 +128,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 priorityAllNumGeneratorMapper.insert(p);
                 logger.info("全pattern表自動取号:{}",p.getId());
                 newPriorityAllCd = p.getId();
+
             }
             //「companyCd、priorityAllCd、Author_cd」によりWKテーブルをクリア
             priorityAllMstMapper.deleteWKTableMst(companyCd, newPriorityAllCd, authorCd);
@@ -134,16 +138,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             priorityAllMstMapper.deleteWKTableResult(companyCd, newPriorityAllCd, authorCd);
             priorityAllMstMapper.deleteWKTablePtsRelation(companyCd, newPriorityAllCd, authorCd);
 
-               //String ptsCd = priorityAllMstMapper.getPtsCd(companyCd, newPriorityAllCd, authorCd);
-                //if (ptsCd != null) {
-                //    String[] split = ptsCd.split(",");
-                //    int[] array = Arrays.stream(split).mapToInt(Integer::parseInt).toArray();
-                //    priorityAllMstMapper.deleteWKTablePtsTai(companyCd, array, authorCd);
-                //    priorityAllMstMapper.deleteWKTablePtsTana(companyCd, array, authorCd);
-                //    priorityAllMstMapper.deleteWKTablePtsJans(companyCd, array, authorCd);
-                //    priorityAllMstMapper.deleteWKTablePtsData(companyCd, array, authorCd);
-                //    priorityAllMstMapper.deleteWKTablePtsVersion(companyCd, array, authorCd);
-                //}
 
                priorityAllMstMapper.delWKTablePtsTai(companyCd, newPriorityAllCd, authorCd);
                priorityAllMstMapper.delWKTablePtsTana(companyCd, newPriorityAllCd, authorCd);
@@ -156,19 +150,26 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 // データコピー
                 priorityAllMstMapper.copyWKTableMst(companyCd, priorityAllCd, newPriorityAllCd);
                 priorityAllMstMapper.copyWKTableShelfs(companyCd, priorityAllCd, newPriorityAllCd);
-                //priorityAllMstMapper.copyWKTableRestrict(companyCd, priorityAllCd, newPriorityAllCd);
-                //priorityAllMstMapper.copyWKTableRelation(companyCd, priorityAllCd, newPriorityAllCd);
-                //priorityAllMstMapper.copyWKTableResult(companyCd, priorityAllCd, newPriorityAllCd);
-                priorityAllMstMapper.copyWKTablePtsTai(companyCd, priorityAllCd, newPriorityAllCd);
-                priorityAllMstMapper.copyWKTablePtsTana(companyCd, priorityAllCd, newPriorityAllCd);
-                priorityAllMstMapper.copyWKTablePtsJans(companyCd, priorityAllCd, newPriorityAllCd);
-                priorityAllMstMapper.copyWKTablePtsData(companyCd, priorityAllCd, newPriorityAllCd);
-                priorityAllMstMapper.copyWKTablePtsVersion(companyCd, priorityAllCd, newPriorityAllCd);
+
+                String ptsCd = priorityAllMstMapper.getPtsCd(companyCd, priorityAllCd);
+                List<String> list = Arrays.asList((ptsCd.split(",")));
+                for (String id : list) {
+                    Integer newId = Integer.parseInt(id);
+                    if (isCover == 1){
+                        newId = priorityAllPtsMapper.getPtsCd();
+                    }
+                    priorityAllMstMapper.copyWKTablePtsTai(companyCd, priorityAllCd, newPriorityAllCd,Integer.parseInt(id),newId);
+                    priorityAllMstMapper.copyWKTablePtsTana(companyCd, priorityAllCd, newPriorityAllCd,Integer.parseInt(id),newId);
+                    priorityAllMstMapper.copyWKTablePtsJans(companyCd, priorityAllCd, newPriorityAllCd,Integer.parseInt(id),newId);
+                    priorityAllMstMapper.copyWKTablePtsData(companyCd, priorityAllCd, newPriorityAllCd,Integer.parseInt(id),newId);
+                    priorityAllMstMapper.copyWKTablePtsVersion(companyCd, priorityAllCd, newPriorityAllCd,Integer.parseInt(id),newId);
+                }
+
 
                 Integer priorityOrderCd = priorityAllMstMapper.getPriorityOrderCd(priorityAllCd, companyCd);
                 Map<String, Object> allPatternData = getAllPatternData(companyCd, priorityAllCd, priorityOrderCd);
                 Map <String ,Object> map = new HashMap<>();
-                map.put("priorityAllCd",priorityAllCd);
+                map.put("priorityAllCd",newPriorityAllCd);
                 map.put("priorityOrderCd",priorityOrderCd);
                 map.put("allPatternData",allPatternData.get("data"));
                 return ResultMaps.result(ResultEnum.SUCCESS,map);
