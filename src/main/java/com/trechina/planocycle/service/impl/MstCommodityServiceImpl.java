@@ -57,4 +57,26 @@ public class MstCommodityServiceImpl implements MstCommodityService {
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
+
+    /**
+     * マスタ同期
+     * @param companyCd
+     * @return
+     */
+    @Override
+    public int syncCommodityMaster(String companyCd) {
+        String tableName = MessageFormat.format(MagicString.MASTER_SYOHIN, companyCd);
+        String tableNameWK = MessageFormat.format(MagicString.WK_MASTER_SYOHIN, companyCd);
+        return mstCommodityMapper.syncCommodityMaster(tableName, tableNameWK);
+    }
+
+    /**
+     * 商品マスタを検索
+     * @return
+     */
+    @Override
+    public List<CommoditySyncSet> getCommodityList(String companyCd) {
+        String tableNameCommodity = MessageFormat.format(MagicString.MASTER_SYOHIN, companyCd);
+        return mstCommodityMapper.getCommodityList(tableNameCommodity);
+    }
 }
