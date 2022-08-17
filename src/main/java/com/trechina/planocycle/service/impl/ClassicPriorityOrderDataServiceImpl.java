@@ -426,7 +426,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 priorityOrderDataDto.setFlag(1);
             }
             if (priorityOrderDataDto.getIsCover() == null){
-                priorityOrderDataDto.setIsCover(1);
+                priorityOrderDataDto.setIsCover(0);
             }
             Integer newPriorityOrderCd = priorityOrderCd;
             if (priorityOrderDataDto.getIsCover()  == 1){
@@ -494,12 +494,12 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         for (Map<String, Object> stringObjectMap : allAttrList) {
             map.put(stringObjectMap.get("sort").toString(),stringObjectMap.get("name"));
         }
-        List<String> attrValueList = classicPriorityOrderMstAttrSortMapper.attrValueList(companyCd, priorityOrderCd);
-        PriorityOrderMstDto patternOrProduct = priorityOrderMstMapper.getPatternOrProduct(companyCd, priorityOrderCd);
+        List<String> attrValueList = classicPriorityOrderMstAttrSortMapper.attrValueList(companyCd, newPriorityOrderCd);
+        PriorityOrderMstDto patternOrProduct = priorityOrderMstMapper.getPatternOrProduct(companyCd, newPriorityOrderCd);
         patternOrProduct.setPriorityOrderCd(newPriorityOrderCd);
         List<Map<String, Object>> workData = new ArrayList<>();
                 workData.add(map);
-                workData.addAll(priorityOrderDataMapper.getWorkData(companyCd, priorityOrderCd, attrList));
+                workData.addAll(priorityOrderDataMapper.getWorkData(companyCd, newPriorityOrderCd, attrList));
         list.add(attrSortList);
         list.add(patternOrProduct);
         list.add(workData);

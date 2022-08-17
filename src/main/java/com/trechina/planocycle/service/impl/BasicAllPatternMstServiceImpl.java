@@ -125,7 +125,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 PriorityOrderMstDto priorityOrderMst = priorityAllMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
                 basicPatternCd = Integer.parseInt(priorityOrderMst.getShelfPatternCd());
                 Integer productPowerCd = priorityOrderMst.getProductPowerCd();
-                info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, basicPatternCd,authorCd);
+                info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, basicPatternCd);
                 // 全パターンのList
                 List<PriorityAllPatternListVO> checkedInfo = info.stream().filter(vo->vo.getCheckFlag()==1).collect(Collectors.toList());
                 int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);

@@ -166,7 +166,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
     @Override
     public Map<String, Object> getPtsDetailData(Integer patternCd, String companyCd, Integer priorityAllCd) {
         String authorCd = session.getAttribute("aud").toString();
-        Integer priorityOrderCd = priorityAllMstMapper.getWorkPriorityOrderCd(authorCd, priorityAllCd, companyCd);
+        Integer priorityOrderCd = priorityAllMstMapper.getWorkPriorityOrderCd( priorityAllCd, companyCd);
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
         List<Map<String,Object>> attrList = priorityOrderMstAttrSortMapper.getAttrCol(companyCd, priorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());

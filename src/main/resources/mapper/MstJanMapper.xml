@@ -192,4 +192,48 @@
             ${item} = EXCLUDED.${item}
         </foreach>
     </insert>
+
+    <update id="syncJanHeader">
+        insert into ${tableName}
+        select *
+        from
+            ${tableNameWK}
+            on
+            conflict("1") do
+        update
+        set
+            "2" = excluded."2",
+            "3" = excluded."3",
+            "4" = excluded."4",
+            "5" = excluded."5",
+            "6" = excluded."6",
+            "7" = excluded."7",
+            "8" = excluded."8",
+            "9" = excluded."9",
+            "10" = excluded."10"
+    </update>
+
+    <update id="syncJanData">
+        insert into ${tableName}
+        select *
+        from
+            ${tableNameWK}
+            on
+            conflict("1") do
+        update
+        set
+        "2" = excluded."2",
+        <foreach collection="column.split(',')" item="item" separator=",">
+            "${item}" = EXCLUDED."${item}"
+        </foreach>
+    </update>
+
+    <delete id="deleteKaisou">
+        delete from ${tableName}
+    </delete>
+    <insert id="insertKaisou">
+        insert into ${tableName}
+        select * from  ${tableNameWK}
+      </insert>
+
 </mapper>

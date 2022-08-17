@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.entity.po.CommoditySyncSet;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
 import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.*;
@@ -11,6 +12,7 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.MstJanMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.mapper.ZokuseiMstMapper;
+import com.trechina.planocycle.service.MstCommodityService;
 import com.trechina.planocycle.service.MstJanService;
 import com.trechina.planocycle.service.ZokuseiMstDataService;
 import com.trechina.planocycle.utils.CacheUtil;
@@ -24,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
@@ -59,6 +62,8 @@ public class MstJanServiceImpl implements MstJanService {
     private ThreadPoolTaskExecutor executor;
     @Autowired
     private LogAspect logAspect;
+    @Autowired
+    private MstCommodityService mstCommodityService;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -526,5 +531,59 @@ public class MstJanServiceImpl implements MstJanService {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_ABNORMALITY_DATA);
         }
         return ResultMaps.result(ResultEnum.SUCCESS.getCode(), count + MagicString.MSG_UPLOAD_SUCCESS);
+    }
+
+    /**
+     * JANデータ同期
+     *
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Object> syncJanData() {
+        String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
+        String[] companyList = syncCompanyList.split(",");
+        List<CommoditySyncSet> commoditySyncSetList;
+        String prodMstClass;
+        String tableNameHeader;
+        String tableNameInfo;
+        String tableNameHeaderWK;
+        String tableNameInfoWK;
+        List<LinkedHashMap<String,Object>> janAttrList;
+        String column;
+        for (String companyCd : companyList) {
+            mstCommodityService.syncCommodityMaster(companyCd);
+            commoditySyncSetList = mstCommodityService.getCommodityList(companyCd);
+            for (CommoditySyncSet commoditySyncSet : commoditySyncSetList) {
+                prodMstClass = commoditySyncSet.getProdMstClass();
+                syncJanKaisou(companyCd,prodMstClass);
+                tableNameHeader = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
+                tableNameInfo = MessageFormat.format(MagicString.PROD_JAN_INFO, companyCd, prodMstClass);
+                tableNameHeaderWK = MessageFormat.format(MagicString.WK_PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
+                tableNameInfoWK = MessageFormat.format(MagicString.WK_PROD_JAN_INFO, companyCd, prodMstClass);
+                mstJanMapper.syncJanHeader(tableNameHeader,tableNameHeaderWK);
+                janAttrList = mstJanMapper.getJanAttrList(tableNameHeader);
+                column =janAttrList.stream()
+                        .filter(e->"3".equals(e.get("11"))).map(e->e.get("3").toString()).collect(Collectors.joining(","));
+                mstJanMapper.syncJanHeader(tableNameHeader,tableNameHeaderWK);
+                mstJanMapper.syncJanData(tableNameInfo, tableNameInfoWK, column);
+            }
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS.getCode(),"同期完了しました");
+    }
+
+    /**
+     * JAN階層同期
+     *
+     * @return
+     */
+    public void syncJanKaisou(String companyCd, String prodMstClass) {
+        String tableNameHeader = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS, companyCd, prodMstClass);
+        String tableNameKaisou = MessageFormat.format(MagicString.PROD_JAN_KAISOU, companyCd, prodMstClass);
+        String tableNameHeaderWK = MessageFormat.format(MagicString.WK_PROD_JAN_KAISOU_HEADER_SYS, companyCd, prodMstClass);
+        String tableNameKaisouWK = MessageFormat.format(MagicString.WK_PROD_JAN_KAISOU, companyCd, prodMstClass);
+        mstJanMapper.deleteKaisou(tableNameHeader);
+        mstJanMapper.insertKaisou(tableNameHeader, tableNameHeaderWK);
+        mstJanMapper.deleteKaisou(tableNameKaisou);
+        mstJanMapper.insertKaisou(tableNameKaisou, tableNameKaisouWK);
     }
 }
