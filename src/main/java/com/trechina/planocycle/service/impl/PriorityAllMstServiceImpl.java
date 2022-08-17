@@ -81,6 +81,8 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     @Autowired
     private BasicPatternRestrictResultMapper restrictResultMapper;
     @Autowired
+    private IDGeneratorService idGeneratorService;
+    @Autowired
     private LogAspect logAspect;
     @Value("${skuPerPattan}")
     private Long skuCountPerPattan;
@@ -99,6 +101,14 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             String companyCd = jsonObject.get("companyCd").toString();
             Integer priorityAllCd = (Integer) jsonObject.get("priorityAllCd");
             Integer isCover = (Integer) jsonObject.get("isCover");
+            if (priorityAllCd == 0){
+                priorityAllCd = (Integer) idGeneratorService.priorityAllID().get("data");
+                Map <String ,Object> map = new HashMap<>();
+                map.put("priorityAllCd",priorityAllCd);
+                map.put("priorityOrderCd",null);
+                map.put("allPatternData",null);
+                return ResultMaps.result(ResultEnum.SUCCESS,map);
+            }
             if (isCover == null){
                 isCover = 0;
             }
@@ -117,18 +127,18 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             workPriorityAllRestrictRelationMapper.deleteWKTableRelation(companyCd, newPriorityAllCd, authorCd);
             priorityAllMstMapper.deleteWKTableResult(companyCd, newPriorityAllCd, authorCd);
             priorityAllMstMapper.deleteWKTablePtsRelation(companyCd, newPriorityAllCd, authorCd);
-           if (priorityAllCd != 0) {
-               String ptsCd = priorityAllMstMapper.getPtsCd(companyCd, newPriorityAllCd, authorCd);
-                if (ptsCd != null) {
-                    String[] split = ptsCd.split(",");
-                    int[] array = Arrays.asList(split).stream().mapToInt(Integer::parseInt).toArray();
-                    priorityAllMstMapper.deleteWKTablePtsTai(companyCd, array, authorCd);
-                    priorityAllMstMapper.deleteWKTablePtsTana(companyCd, array, authorCd);
-                    priorityAllMstMapper.deleteWKTablePtsJans(companyCd, array, authorCd);
-                    priorityAllMstMapper.deleteWKTablePtsData(companyCd, array, authorCd);
-                    priorityAllMstMapper.deleteWKTablePtsVersion(companyCd, array, authorCd);
-                }
-           }
+
+               //String ptsCd = priorityAllMstMapper.getPtsCd(companyCd, newPriorityAllCd, authorCd);
+                //if (ptsCd != null) {
+                //    String[] split = ptsCd.split(",");
+                //    int[] array = Arrays.stream(split).mapToInt(Integer::parseInt).toArray();
+                //    priorityAllMstMapper.deleteWKTablePtsTai(companyCd, array, authorCd);
+                //    priorityAllMstMapper.deleteWKTablePtsTana(companyCd, array, authorCd);
+                //    priorityAllMstMapper.deleteWKTablePtsJans(companyCd, array, authorCd);
+                //    priorityAllMstMapper.deleteWKTablePtsData(companyCd, array, authorCd);
+                //    priorityAllMstMapper.deleteWKTablePtsVersion(companyCd, array, authorCd);
+                //}
+
                priorityAllMstMapper.delWKTablePtsTai(companyCd, newPriorityAllCd, authorCd);
                priorityAllMstMapper.delWKTablePtsTana(companyCd, newPriorityAllCd, authorCd);
                priorityAllMstMapper.delWKTablePtsJans(companyCd, newPriorityAllCd, authorCd);
@@ -136,7 +146,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                priorityAllMstMapper.delWKTablePtsVersion(companyCd, newPriorityAllCd, authorCd);
 
 
-            if (priorityAllCd != 0) {
+
                 // データコピー
                 priorityAllMstMapper.copyWKTableMst(companyCd, priorityAllCd, authorCd);
                 priorityAllMstMapper.copyWKTableShelfs(companyCd, priorityAllCd, authorCd);
@@ -155,8 +165,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 map.put("priorityOrderCd",priorityOrderCd);
                 map.put("allPatternData",allPatternData.get("data"));
                 return ResultMaps.result(ResultEnum.SUCCESS,map);
-            }
-            return ResultMaps.result(ResultEnum.SUCCESS, null);
+
         //} catch (Exception ex) {
         //    logAspect.setTryErrorLog(ex,new Object[]{});
         //    return ResultMaps.result(ResultEnum.FAILURE, "新規作成失敗しました。");

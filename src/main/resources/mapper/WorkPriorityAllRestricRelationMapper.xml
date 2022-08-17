@@ -18,7 +18,6 @@
         delete from planocycle.work_priority_all_restrict_relation
         where priority_all_cd = #{priorityAllCd}
         and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteFinalTableRelation">
         delete from planocycle.priority_all_restrict_relation
