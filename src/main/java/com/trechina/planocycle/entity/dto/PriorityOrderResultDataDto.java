@@ -10,6 +10,8 @@ public class PriorityOrderResultDataDto {
 
     private String janCd;
 
+    private String janOld;
+
     private Long restrictCd;
 
     private Long skuRank;

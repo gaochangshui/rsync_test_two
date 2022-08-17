@@ -292,7 +292,8 @@
   </select>
   <select id="selectJanByPatternCd" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
     select jan "janCd", dense_rank() over (partition by "restrictCd" order by sku_rank) sku_rank,"restrictCd",face,tai_cd "taiCd",
-    tana_cd "tanaCd", tanaposition_cd "tanapositionCd",tumiagesu,zaikosu,face_displayflg,face_position
+    tana_cd "tanaCd", tanaposition_cd "tanapositionCd",tumiagesu,zaikosu,face_displayflg,face_position,
+    case when jancut.jan_cd is null then 0 else 1 end as cutFlag
     <foreach collection="attrHeaderList" open="," item="item" separator=",">
       coalesce(janmst."${item.attrVal}", '0') as "${item.attr}"
     </foreach>
@@ -310,7 +311,8 @@
     and resultdata.priority_order_cd=janreplace.priority_order_cd
      where restrict_cd is not null
     ) tmp left join ${tableName} janmst on janmst."1"=tmp.jan
-    where rowNum=1 and not exists(select * from planocycle.work_priority_order_cut jancut where jan_cd=tmp.jan and priority_order_cd = #{priorityOrderCd} )
+    left join planocycle.work_priority_order_cut jancut on jancut.jan_cd=tmp.jan and priority_order_cd= #{priorityOrderCd}
+    where rowNum=1
     order by tai_cd, tana_cd,sku_rank
   </select>
   <select id="selectJanByPatternCdByAll" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
