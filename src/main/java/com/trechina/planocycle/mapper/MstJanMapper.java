@@ -99,4 +99,28 @@ public interface MstJanMapper {
 
     List<JanHeaderAttr> getPlanoType(String tableName);
 
+    /**
+     * Jan Header同期
+     * @return
+     */
+    int syncJanHeader(String tableName,String tableNameWK);
+
+    /**
+     * Janデータ同期
+     * @return
+     */
+    int syncJanData(String tableName,String tableNameWK,String column);
+
+    /**
+     * 階層Masterを削除
+     * @return
+     */
+    int deleteKaisou(String tableName);
+
+    /**
+     * 階層Masterを保存
+     * @return
+     */
+    int insertKaisou(String tableName,String tableNameWK);
+
 }
