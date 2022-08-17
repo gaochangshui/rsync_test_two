@@ -168,6 +168,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 Integer priorityOrderCd = priorityAllMstMapper.getPriorityOrderCd(priorityAllCd, companyCd);
                 Map<String, Object> allPatternData = getAllPatternData(companyCd, priorityAllCd, priorityOrderCd);
                 Map <String ,Object> map = new HashMap<>();
+                map.put("priorityAllCd",priorityAllCd);
                 map.put("priorityOrderCd",priorityOrderCd);
                 map.put("allPatternData",allPatternData.get("data"));
                 return ResultMaps.result(ResultEnum.SUCCESS,map);
