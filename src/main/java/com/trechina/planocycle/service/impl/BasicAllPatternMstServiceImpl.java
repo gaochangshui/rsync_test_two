@@ -313,7 +313,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 }
 
                 if(!"".equals(lastKey) && (!lastKey.equals(key.toString()) || (i+1)==jans.size())){
-                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, RoundingMode.CEILING)
+                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 5, RoundingMode.CEILING)
                             .multiply(BigDecimal.valueOf(100)).doubleValue();
                     Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
                             new TypeToken<Map<String, Object>>(){}.getType());
@@ -341,7 +341,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     map.put(MagicString.RESTRICT_CD, classify.get(key.toString()).getRestrictCd());
                     map.put("area", percent);
                     map.put("janCount", janCount);
-                    map.put("priorityOrderCd", priorityOrderCd);
+                    map.put("priorityOrderCd", priorityAllCd);
                     map.put("companyCd", companyCd);
                     map.put("authorCd", aud);
                     newJans.add(map);
