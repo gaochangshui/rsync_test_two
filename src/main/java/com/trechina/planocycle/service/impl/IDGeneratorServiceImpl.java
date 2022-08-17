@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.po.PriorityOrderNumGenerator;
 import com.trechina.planocycle.entity.po.ProductPowerNumGenerator;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.BasicPatternNumGeneratorMapper;
+import com.trechina.planocycle.mapper.PriorityAllNumGeneratorMapper;
 import com.trechina.planocycle.mapper.PriorityOrderNumGeneratorMapper;
 import com.trechina.planocycle.mapper.ProductPowerNumGeneratorMapper;
 import com.trechina.planocycle.service.IDGeneratorService;
@@ -27,6 +28,8 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
     private ProductPowerNumGeneratorMapper productPowerNumGeneratorMapper;
     @Autowired
     private BasicPatternNumGeneratorMapper basicPatternNumGeneratorMapper;
+    @Autowired
+    private PriorityAllNumGeneratorMapper priorityAllNumGeneratorMapper;
     /**
      * 自動採番、および戻る
      *
@@ -58,7 +61,11 @@ public class IDGeneratorServiceImpl implements IDGeneratorService {
      */
     @Override
     public Map<String, Object> priorityAllID() {
-        return ResultMaps.result(ResultEnum.SUCCESS);
+        ProductPowerNumGenerator productPowerNumGenerator = new ProductPowerNumGenerator();
+        productPowerNumGenerator.setUsercd(session.getAttribute("aud").toString());
+        priorityAllNumGeneratorMapper.insert(productPowerNumGenerator);
+        logger.info("商品力点数表取号：{}",productPowerNumGenerator.getId());
+        return ResultMaps.result(ResultEnum.SUCCESS,productPowerNumGenerator.getId());
     }
     /**
      * ゆうせんじゅんいひょう自動番号付け

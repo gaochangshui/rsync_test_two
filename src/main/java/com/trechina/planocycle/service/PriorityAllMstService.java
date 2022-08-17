@@ -29,19 +29,13 @@ public interface PriorityAllMstService {
      */
     Map<String ,Object> getAllPatternData(String companyCd, Integer priorityAllCd, Integer priorityOrderCd);
 
-    /**
-     * 自動計算する前にデータを一時テーブルに保存
-     *
-     * @param priorityAllSaveDto@return
-     */
-    Integer saveWKAllPatternData(PriorityAllSaveDto priorityAllSaveDto);
+    ///**
+    // * 自動計算する前にデータを一時テーブルに保存
+    // *
+    // * @param priorityAllSaveDto@return
+    // */
+    //Integer saveWKAllPatternData(PriorityAllSaveDto priorityAllSaveDto);
 
-    /**
-     * 自動計算Main api③
-     * @param priorityAllSaveDto
-     * @return
-     */
-    Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto);
 
     /**
      *
