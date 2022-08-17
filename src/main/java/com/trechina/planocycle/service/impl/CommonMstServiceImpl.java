@@ -376,7 +376,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
 
                 List<PriorityOrderResultDataDto> notAdoptBackupJansList = backupJansList;
-                if(areaFlag==0 && !notAdoptBackupJansList.isEmpty()){
+                /*if(areaFlag==0 && !notAdoptBackupJansList.isEmpty()){
                     //jancount
                     notAdoptBackupJansList = backupJansList.stream().filter(dto -> !Objects.equals(dto.getAdoptFlag(), 1)).collect(Collectors.toList());
                     int usedIndex = 0;
@@ -410,7 +410,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                             adoptJan.set(i, copyCurrentJan);
                         }
                     }
-                }
+                }*/
 
                 if(areaFlag==1 && !notAdoptBackupJansList.isEmpty()){
                     //area
