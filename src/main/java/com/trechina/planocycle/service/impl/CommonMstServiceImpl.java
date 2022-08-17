@@ -576,6 +576,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     }
 
                     newJanDto.setNewFlag(1);
+                    newJanDto.setZaikosu(1);
 
                     if(rank<=uniqueValue.size()){
                         cutCount++;
