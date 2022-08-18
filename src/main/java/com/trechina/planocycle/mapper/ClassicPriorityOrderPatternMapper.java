@@ -13,7 +13,7 @@ public interface ClassicPriorityOrderPatternMapper {
 
     int insert(@Param("lists") List<PriorityOrderPattern> record);
 
-    int selectByPriorityOrderName(String companyCd,String priorityOrderName,Integer priorityOrderCd,String authorCd);
+    int selectByPriorityOrderName(String companyCd,String priorityOrderName,Integer priorityOrderCd);
 
     int deleteforid(Integer priorityOrderCd);
 

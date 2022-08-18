@@ -58,4 +58,8 @@ public interface BasicPatternRestrictResultMapper {
 
     List<Map<String, Object>> getPtsAllJan(Integer priorityOrderCd, Integer ptsCd, List<ZokuseiMst> attrList
             , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName,List<Map<String, Object>> janSizeCol,Integer productPowerCd);
+
+    List<Map<String, Object>> selectOldJanZokusei(Integer priorityOrderCd, Integer ptsCd, List<ZokuseiMst> attrList
+            , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName,List<Map<String, Object>> janSizeCol
+            ,String tableName,Integer productPowerCd);
 }

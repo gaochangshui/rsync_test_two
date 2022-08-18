@@ -152,6 +152,14 @@
     where attrsort.company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     order by sort
   </select>
+  <select id="getAttrColForFinal" resultType="java.util.Map">
+    select value,zokusei_nm,zokusei_col
+    from  planocycle.priority_order_mst_attrsort attrsort
+            left join masterdb.planocycle_zokusei_mst zokuseimst
+                      on zokuseimst.zokusei_id = attrsort.value and zokuseimst.company_cd = #{company} and zokuseimst.class_cd = #{classCd}
+    where attrsort.company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    order by sort
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority.priority_order_mst_attrsort
     where company_cd = #{companyCd,jdbcType=VARCHAR}

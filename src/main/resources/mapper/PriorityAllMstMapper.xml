@@ -544,7 +544,7 @@
         select priority_order_cd from  planocycle.priority_all_mst where priority_all_cd = #{priorityAllCd} and company_cd = #{companyCd}
     </select>
     <select id="selectPriorityAllName" resultType="java.lang.Integer">
-        select priority_all_cd from planocycle.priority_all_mst where company_cd = #{companyCd} and priority_all_name = #{priorityAllName} and author_cd = #{authorCd} and deleteflg = 0
+        select priority_all_cd from planocycle.priority_all_mst where company_cd = #{companyCd} and priority_all_name = #{priorityAllName} and deleteflg = 0
     </select>
     <select id="getPtsCd" resultType="java.lang.String">
        select  array_to_string(array_agg(DISTINCT id),',')

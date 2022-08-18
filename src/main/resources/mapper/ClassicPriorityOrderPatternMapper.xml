@@ -17,7 +17,6 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
     and priority_order_name = #{priorityOrderName,jdbcType=VARCHAR}
     and priority_order_cd != #{priorityOrderCd,jdbcType=INTEGER}
-    and author_cd = #{authorCd,jdbcType=VARCHAR}
   </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderPattern">
     insert into priority.priority_order_pattern (priority_order_cd, company_cd, shelf_pattern_cd

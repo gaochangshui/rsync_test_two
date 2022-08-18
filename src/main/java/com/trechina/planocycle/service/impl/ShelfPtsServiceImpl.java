@@ -3,10 +3,6 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.LongSerializationPolicy;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
@@ -14,7 +10,6 @@ import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
-import com.trechina.planocycle.utils.CommonUtil;
 import com.trechina.planocycle.utils.ResultMaps;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import org.apache.commons.collections4.MapUtils;
@@ -349,7 +344,16 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         }
 
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(patternCd);
-        PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
+        PriorityOrderAttrDto attrDto =null;
+        if (flag != null){
+             attrDto = priorityOrderMstMapper.getCommonPartsData(companyCd, priorityOrderCd);
+             workPriorityOrderMstMapper.deleteByAuthorCd(companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderMstMapper.setWorkForFinal(companyCd, priorityOrderCd, authorCd,priorityOrderCd);
+
+        }else {
+             attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
+        }
+
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(attrDto.getCommonPartsData(),companyCd);
         List<Map<String,Object>> attrList = priorityOrderMstAttrSortMapper.getAttrCol(companyCd, priorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());

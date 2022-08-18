@@ -346,46 +346,52 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Override
     public Map<String, Object> getCommodityScoreDataFromDB(Integer productPowerCd, String companyCd, String[] posCd,
                                                            String[] prepareCd, String[] intageCd, String[] customerCd) {
-        List<String> cdList = new ArrayList<>();
+        try {
+            List<String> cdList = new ArrayList<>();
 
-        if(posCd.length>0){
-            cdList.addAll(Arrays.asList(posCd));
+            if(posCd.length>0){
+                cdList.addAll(Arrays.asList(posCd));
+            }
+            if(prepareCd.length>0){
+                cdList.addAll(Arrays.asList(prepareCd));
+            }
+            if(intageCd.length>0){
+                cdList.addAll(Arrays.asList(intageCd));
+            }
+            if(customerCd.length>0){
+                cdList.addAll(Arrays.asList(customerCd));
+            }
+
+            List<ParamConfigVO> paramConfigVOS = null;
+            if(cdList.isEmpty()){
+                paramConfigVOS = new ArrayList<>();
+            }else{
+                paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
+            }
+
+            List<Map<String, Object>> reserveMst = productPowerReserveMstMapper.selectAllPrepared(productPowerCd);
+            reserveMst = reserveMst.stream()
+                    .peek(map->map.put("data_cd", "item"+map.get("data_cd")))
+                    .filter(map->Arrays.asList(prepareCd).contains(map.get("data_cd").toString())).collect(Collectors.toList());
+
+            List<Map<String, String>> productPowerMstData = productPowerDataMapper.selectShowData(productPowerCd, paramConfigVOS,reserveMst,
+                    customerCd, Arrays.asList(prepareCd), intageCd);
+            List<Map<String, String>> returnData = new ArrayList<>();
+            Map<String, String> colName = paramConfigVOS.stream()
+                    .collect(Collectors.toMap(ParamConfigVO::getItemCd, ParamConfigVO::getItemName, (key1, key2) -> key1, LinkedHashMap::new));
+
+            Map<String, String> preparedColName = reserveMst.stream().collect(Collectors.toMap(map -> map.get("data_cd").toString(),
+                    map -> map.get("data_name").toString(), (key1, key2) -> key1, LinkedHashMap::new));
+            colName.putAll(preparedColName);
+            returnData.add(colName);
+            returnData.addAll(productPowerMstData);
+
+            return ResultMaps.result(ResultEnum.SUCCESS, returnData);
+        } catch (Exception e) {
+            return ResultMaps.result(ResultEnum.FAILURE);
+
         }
-        if(prepareCd.length>0){
-            cdList.addAll(Arrays.asList(prepareCd));
-        }
-        if(intageCd.length>0){
-            cdList.addAll(Arrays.asList(intageCd));
-        }
-        if(customerCd.length>0){
-            cdList.addAll(Arrays.asList(customerCd));
-        }
 
-        List<ParamConfigVO> paramConfigVOS = null;
-        if(cdList.isEmpty()){
-            paramConfigVOS = new ArrayList<>();
-        }else{
-            paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
-        }
-
-        List<Map<String, Object>> reserveMst = productPowerReserveMstMapper.selectAllPrepared(productPowerCd);
-        reserveMst = reserveMst.stream()
-                .peek(map->map.put("data_cd", "item"+map.get("data_cd")))
-                .filter(map->Arrays.asList(prepareCd).contains(map.get("data_cd").toString())).collect(Collectors.toList());
-
-        List<Map<String, String>> productPowerMstData = productPowerDataMapper.selectShowData(productPowerCd, paramConfigVOS,reserveMst,
-                customerCd, Arrays.asList(prepareCd), intageCd);
-        List<Map<String, String>> returnData = new ArrayList<>();
-        Map<String, String> colName = paramConfigVOS.stream()
-                .collect(Collectors.toMap(ParamConfigVO::getItemCd, ParamConfigVO::getItemName, (key1, key2) -> key1, LinkedHashMap::new));
-
-        Map<String, String> preparedColName = reserveMst.stream().collect(Collectors.toMap(map -> map.get("data_cd").toString(),
-                map -> map.get("data_name").toString(), (key1, key2) -> key1, LinkedHashMap::new));
-        colName.putAll(preparedColName);
-        returnData.add(colName);
-        returnData.addAll(productPowerMstData);
-
-        return ResultMaps.result(ResultEnum.SUCCESS, returnData);
     }
 
 

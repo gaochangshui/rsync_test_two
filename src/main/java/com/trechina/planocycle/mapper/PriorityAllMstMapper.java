@@ -120,7 +120,7 @@ public interface PriorityAllMstMapper {
     int deletePtsVersion(@Param("companyCd")String companyCd,@Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
 
     //チェック名
-    Integer selectPriorityAllName(@Param("priorityAllName")String priorityAllName,@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
+    Integer selectPriorityAllName(@Param("priorityAllName")String priorityAllName,@Param("companyCd")String companyCd);
 
     int deleteFinalTableRestrictResult(String companyCd, Integer priorityAllCd, String authorCd);
 

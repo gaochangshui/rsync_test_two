@@ -560,4 +560,37 @@
     </foreach>
     ,resultdata.sort_rank nulls last
     </select>
+    <select id="selectOldJanZokusei" resultType="java.util.Map">
+        select face_count as "faceNum",coalesce(jan_new, jandata.jan) "janCd"
+        ,
+        <foreach collection="attrName" separator="," item="item" index="index">
+            coalesce ("${item.zokusei_col}",'') as "${item.zokusei_colname}"
+        </foreach>
+        <foreach collection="attrList" item="item1" open="," separator=",">
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'')</if>
+            <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
+                <foreach collection="allCdList" item="item2" separator="|| '_' ||">
+                    <if test="item2 &lt;= item1.zokuseiCol">
+                        coalesce ("${item2}",'')
+                    </if>
+                </foreach>
+            </if>
+            as "zokusei${item1.zokuseiSort}"
+        </foreach>
+
+        ,jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",tanaposition_cd as rank,tanaposition_cd as "tanapositionCd",
+        "2" as "janName"
+        <foreach collection="janSizeCol" item="item">
+            ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
+        </foreach>
+        from ${tableName} jandata
+        left join planocycle.work_priority_order_jan_replace replace
+        on replace.priority_order_cd=#{priorityOrderCd} and jan_new=jandata.jan
+        left join planocycle.work_priority_order_result_data resultdata
+        on resultdata.priority_order_cd=#{priorityOrderCd} and jandata.jan =resultdata.jan_cd
+        inner join ${proInfoTable} janinfo on  janinfo."1"=coalesce(jan_old, jandata.jan)
+        left join planocycle.product_power_mst_data prodata
+        on prodata.jan = coalesce(jan_old, jandata.jan) and prodata.product_power_cd = #{productPowerCd}
+        where pts_cd=#{ptsCd}
+    </select>
 </mapper>
