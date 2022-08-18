@@ -8,12 +8,14 @@ import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderJanCgiDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMst;
+import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
+import com.trechina.planocycle.entity.po.ZokuseiMst;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
+import com.trechina.planocycle.utils.CommonUtil;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
 import com.trechina.planocycle.utils.cgiUtils;
@@ -128,6 +130,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private BasicPatternMstService basicPatternMstService;
     @Autowired
     private IDGeneratorService idGeneratorService;
+    @Autowired
+    private ZokuseiMapper zokuseiMapper;
 
     /**
      * 優先順位テーブルリストの取得
@@ -238,21 +242,48 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         String commonPartsData = workPriorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+        String tableName = commonTableName.getProInfoTable();
+        List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
+        List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
+        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
+        List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+        List<Map<String,Object>> reorder = workPriorityOrderResultDataMapper.getProductReorder(companyCd, authorCd,
+                workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,tableName,zokuseiMsts,allCdList);
 
-        List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
+        List<Map<String,Object>> newJanReorder = workPriorityOrderResultDataMapper.getNewJanProductReorder(companyCd, authorCd,
+                workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,tableName,zokuseiMsts,allCdList);
+        Map<String, List<Map<String, Object>>> ptsJan = reorder.stream().collect(Collectors.groupingBy(map -> {
+            String attrKey = "";
+            for (Map<String, Object> col : attrCol) {
+                attrKey += map.get("zokusei" + col.get("zokusei_col"));
+            }
 
+            return attrKey;
+        }));
+        Map<String, List<Map<String, Object>>> newJan = newJanReorder.stream().collect(Collectors.groupingBy(map -> {
+            String attrKey = "";
+            for (Map<String, Object> col : attrCol) {
+                attrKey += map.get("zokusei" + col.get("zokusei_col"));
+            }
 
-        List<WorkPriorityOrderResultData> reorder = null;
-        //if (colNmforMst.isEmpty()) {
-            reorder = workPriorityOrderResultDataMapper.getProductReorder(companyCd, authorCd, workPriorityOrderMst.getProductPowerCd(), priorityOrderCd);
-        //}
-        //}else if (colNmforMst.size() == 1) {
-        //    reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), null);
-        //} else if (colNmforMst.size() == 2){
-        //    reorder = workPriorityOrderResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,commonTableName, colNmforMst.get(0), colNmforMst.get(1));
-        //}
-
-        workPriorityOrderResultDataMapper.setSortRank(reorder, companyCd, authorCd, priorityOrderCd);
+            return attrKey;
+        }));
+        Set set = new HashSet();
+        for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : ptsJan.entrySet()) {
+            for (Map.Entry<String, List<Map<String, Object>>> listEntry : newJan.entrySet()) {
+                if (stringListEntry.getKey().equals(listEntry.getKey())){
+                    List<Map<String, Object>> list1 = CommonUtil.janSort(stringListEntry.getValue(), listEntry.getValue(), "resultRank");
+                    stringListEntry.setValue(list1);
+                }
+            }
+        }
+        for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : ptsJan.entrySet()) {
+            set.addAll(stringListEntry.getValue());
+        }
+        set.addAll(newJanReorder);
+        workPriorityOrderResultDataMapper.setRank(set,companyCd,authorCd,priorityOrderCd);
+            workPriorityOrderResultDataMapper.setSortRank(reorder, companyCd, authorCd, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
     /**
@@ -436,9 +467,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         Integer newPriorityOrderCd = priorityOrderCd;
         Integer newId = id;
         if (isCover ==  null){
-            isCover =1;
+            isCover =0;
         }
-        if (isCover == 0){
+        if (isCover == 1){
             newPriorityOrderCd = (int)idGeneratorService.priorityOrderNumGenerator().get("data");
              newId = priorityOrderShelfDataMapper.selectRegclass();
 

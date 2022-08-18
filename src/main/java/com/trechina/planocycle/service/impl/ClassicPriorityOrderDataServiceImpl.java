@@ -18,6 +18,7 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderAttributeClassifyService;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanCardService;
+import com.trechina.planocycle.service.IDGeneratorService;
 import com.trechina.planocycle.utils.CacheUtil;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
@@ -118,6 +119,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     private ClassicPriorityOrderPatternMapper priorityOrderPatternMapper;
     @Autowired
     private LogAspect logAspect;
+    @Autowired
+    private IDGeneratorService idGeneratorService;
 
     /**
      * 初期取得優先順位テーブルデータ
@@ -422,45 +425,52 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             if (priorityOrderDataDto.getFlag()==null){
                 priorityOrderDataDto.setFlag(1);
             }
+            if (priorityOrderDataDto.getIsCover() == null){
+                priorityOrderDataDto.setIsCover(0);
+            }
+            Integer newPriorityOrderCd = priorityOrderCd;
+            if (priorityOrderDataDto.getIsCover()  == 1){
+                newPriorityOrderCd = (Integer) idGeneratorService.classPriorityOrderNumGenerator().get("data");
+            }
         if (priorityOrderDataDto.getFlag()==0) {
             //最終表をテンポラリ・テーブルに戻す
             Date date = new Date();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
-            classicPriorityOrderMstMapper.deleteWork(priorityOrderCd);
-            classicPriorityOrderMstMapper.setWorkForFinal(companyCd, priorityOrderCd,simpleDateFormat.format(date));
+            classicPriorityOrderMstMapper.deleteWork(newPriorityOrderCd);
+            classicPriorityOrderMstMapper.setWorkForFinal(companyCd, priorityOrderCd,simpleDateFormat.format(date),newPriorityOrderCd);
 
-            priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
-            priorityOrderJanCardMapper.setWorkForFinal(companyCd, priorityOrderCd);
+            priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd, newPriorityOrderCd);
+            priorityOrderJanCardMapper.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
 
-            priorityOrderJanNewMapper.delete(companyCd, priorityOrderCd);
-            priorityOrderJanNewMapper.setWorkForFinal(companyCd, priorityOrderCd);
+            priorityOrderJanNewMapper.delete(companyCd, newPriorityOrderCd);
+            priorityOrderJanNewMapper.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
 
-            priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
-            priorityOrderJanAttributeMapper.setWorkForFinal(companyCd, priorityOrderCd);
+            priorityOrderJanAttributeMapper.deleteByPrimaryKey(companyCd, newPriorityOrderCd);
+            priorityOrderJanAttributeMapper.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
 
-            priorityOrderJanProposalMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
-            priorityOrderJanProposalMapper.setWorkForFinal(companyCd, priorityOrderCd);
+            priorityOrderJanProposalMapper.deleteByPrimaryKey(companyCd, newPriorityOrderCd);
+            priorityOrderJanProposalMapper.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
 
-            priorityOrderCatepakMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
-            priorityOrderCatepakMapper.setWorkForFinal(companyCd, priorityOrderCd);
+            priorityOrderCatepakMapper.deleteByPrimaryKey(companyCd, newPriorityOrderCd);
+            priorityOrderCatepakMapper.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
 
-            priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
-            priorityOrderCatepakAttributeMapper.setWorkForFinal(companyCd, priorityOrderCd);
+            priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd, newPriorityOrderCd);
+            priorityOrderCatepakAttributeMapper.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
 
-            priorityOrderMapper.delete(priorityOrderCd);
-            priorityOrderMapper.insertWork(companyCd, priorityOrderCd);
+            priorityOrderMapper.delete(newPriorityOrderCd);
+            priorityOrderMapper.insertWork(companyCd, priorityOrderCd,newPriorityOrderCd);
 
-            priorityOrderDataMapper.deleteWorkData(companyCd, priorityOrderCd);
-            priorityOrderDataMapper.insertWorkDataForFinal(companyCd, priorityOrderCd);
+            priorityOrderDataMapper.deleteWorkData(companyCd, newPriorityOrderCd);
+            priorityOrderDataMapper.insertWorkDataForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
 
-            workPriorityOrderPtsClassify.deleteWork(companyCd, priorityOrderCd);
-            workPriorityOrderPtsClassify.setWorkForFinal(companyCd, priorityOrderCd);
+            workPriorityOrderPtsClassify.deleteWork(companyCd, newPriorityOrderCd);
+            workPriorityOrderPtsClassify.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
 
-            classicPriorityOrderMstAttrSortMapper.deleteAttrWk(companyCd, priorityOrderCd);
-            classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd, priorityOrderCd);
+            classicPriorityOrderMstAttrSortMapper.deleteAttrWk(companyCd, newPriorityOrderCd);
+            classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd, newPriorityOrderCd);
 
-            classicPriorityOrderMstAttrSortMapper.insertAttrForFinal(companyCd, priorityOrderCd);
-            classicPriorityOrderMstAttrSortMapper.insertAttrSortForFinal(companyCd, priorityOrderCd);
+            classicPriorityOrderMstAttrSortMapper.insertAttrForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
+            classicPriorityOrderMstAttrSortMapper.insertAttrSortForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
         }
         List list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
@@ -484,11 +494,12 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         for (Map<String, Object> stringObjectMap : allAttrList) {
             map.put(stringObjectMap.get("sort").toString(),stringObjectMap.get("name"));
         }
-        List<String> attrValueList = classicPriorityOrderMstAttrSortMapper.attrValueList(companyCd, priorityOrderCd);
-        PriorityOrderMstDto patternOrProduct = priorityOrderMstMapper.getPatternOrProduct(companyCd, priorityOrderCd);
+        List<String> attrValueList = classicPriorityOrderMstAttrSortMapper.attrValueList(companyCd, newPriorityOrderCd);
+        PriorityOrderMstDto patternOrProduct = priorityOrderMstMapper.getPatternOrProduct(companyCd, newPriorityOrderCd);
+        patternOrProduct.setPriorityOrderCd(newPriorityOrderCd);
         List<Map<String, Object>> workData = new ArrayList<>();
                 workData.add(map);
-                workData.addAll(priorityOrderDataMapper.getWorkData(companyCd, priorityOrderCd, attrList));
+                workData.addAll(priorityOrderDataMapper.getWorkData(companyCd, newPriorityOrderCd, attrList));
         list.add(attrSortList);
         list.add(patternOrProduct);
         list.add(workData);

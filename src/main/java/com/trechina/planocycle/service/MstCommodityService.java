@@ -21,4 +21,16 @@ public interface MstCommodityService {
      * @return
      */
     Map<String,Object> setSyncSet(CommoditySyncSetVO commoditySyncSetVO);
+
+    /**
+     * 商品マスタ同期
+     * @return
+     */
+    int syncCommodityMaster(String companyCd);
+
+    /**
+     * 商品マスタを検索
+     * @return
+     */
+    List<CommoditySyncSet> getCommodityList(String companyCd);
 }

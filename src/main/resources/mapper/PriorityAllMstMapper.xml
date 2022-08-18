@@ -14,14 +14,12 @@
         select priority_all_cd,company_cd,author_cd,#{priorityAllName},priority_order_cd,now() from planocycle.work_priority_all_mst
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="setFinalTableShelfs">
         insert into planocycle.priority_all_shelfs
         select priority_all_cd,company_cd,author_cd,shelf_patten_cd from planocycle.work_priority_all_shelfs
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="setFinalTableRestrict">
         insert into planocycle.priority_all_restrict
@@ -30,14 +28,12 @@
         from planocycle.work_priority_all_restrict
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="setFinalTableRelation">
         insert into planocycle.priority_all_restrict_relation
         select priority_all_cd,company_cd,author_cd,shelf_pattern_cd,tai_cd,tana_cd,tana_type,restrict_cd from planocycle.work_priority_all_restrict_relation
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="setFinalTableResult">
         insert into planocycle.priority_all_result_data(priority_all_cd,company_cd,author_cd,shelf_patten_cd,restrict_cd,jan_cd,sku_rank,adopt_flag,face,face_sku,irisu,tai_cd
@@ -47,17 +43,16 @@
         from planocycle.work_priority_all_result_data
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="copyWKTablePtsData">
         insert into planocycle.work_priority_all_pts_data( priority_all_cd,company_cd,author_cd,file_name,create_time,shelf_pattern_cd,valid_flg,start_day,edit_time,
                                                          editer_cd,deleteflg,id)
-        select priority_all_cd,company_cd,author_cd,file_name,create_time,shelf_pattern_cd,valid_flg,start_day,edit_time,
-               editer_cd,deleteflg,id
+        select #{newPriorityAllCd},company_cd,author_cd,file_name,create_time,shelf_pattern_cd,valid_flg,start_day,edit_time,
+               editer_cd,deleteflg,#{newId}
                from planocycle.priority_all_pts_data
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
+            and id = #{id}
     </insert>
     <insert id="copyWKTablePtsRelation">
         insert into planocycle.work_priority_all_restrict_relation(priority_all_cd,company_cd,author_cd,shelf_pattern_cd,tai_cd,tana_cd,tana_type,restrict_cd)
@@ -72,7 +67,6 @@
         select priority_all_cd,company_cd,author_cd,shelf_patten_cd,tai_cd,tai_height,tai_width,tai_depth,tai_nm,pts_cd from planocycle.work_priority_all_pts_tai
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="setFinalTablePtsTana">
         insert into planocycle.priority_all_pts_tana
@@ -81,7 +75,6 @@
         from planocycle.work_priority_all_pts_tana
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="setFinalTablePtsJans">
         insert into planocycle.priority_all_pts_jans
@@ -90,7 +83,6 @@
         from planocycle.work_priority_all_pts_jans
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="setFinalTablePtsData">
         insert into planocycle.priority_all_pts_data( priority_all_cd,company_cd,author_cd,file_name,create_time,shelf_pattern_cd,valid_flg,start_day,edit_time,
@@ -100,7 +92,6 @@
         from planocycle.work_priority_all_pts_data
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="setFinalTablePtsVersion">
         insert into planocycle.priority_all_pts_data_version(priority_all_cd,company_cd,author_cd,pts_cd,commoninfo,versioninfo,outflg,modename,tai_header,tana_header
@@ -110,7 +101,6 @@
         from planocycle.work_priority_all_pts_data_version
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="setNewFinalTableMst">
         insert into planocycle.priority_all_mst(priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd,create_time)
@@ -205,25 +195,21 @@
         delete from planocycle.work_priority_all_mst
         where priority_all_cd = #{priorityAllCd}
             and company_cd = #{companyCd,jdbcType=VARCHAR}
-            and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteWKTableShelfs">
         delete from planocycle.work_priority_all_shelfs
         where priority_all_cd = #{priorityAllCd}
         and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteWKTableRestrict">
         delete from planocycle.work_priority_all_restrict
         where priority_all_cd = #{priorityAllCd}
         and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteWKTableResult">
         delete from planocycle.work_priority_all_result_data
         where priority_all_cd = #{priorityAllCd}
         and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteWKTablePtsTai">
         delete from planocycle.work_priority_all_pts_tai
@@ -232,7 +218,6 @@
             #{item}
         </foreach>
         and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteWKTablePtsTana">
         delete from planocycle.work_priority_all_pts_tana
@@ -241,7 +226,6 @@
         #{item}
         </foreach>
         and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteWKTablePtsJans">
         delete from planocycle.work_priority_all_pts_jans
@@ -250,55 +234,46 @@
             #{item}
         </foreach>
         and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteFinalTableMst">
         delete from planocycle.priority_all_mst
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteFinalTableShelfs">
         delete from planocycle.priority_all_shelfs
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteFinalTableRestrict">
         delete from planocycle.priority_all_restrict
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteFinalTableResult">
         delete from planocycle.priority_all_result_data
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteFinalTablePtsTai">
         delete from planocycle.priority_all_pts_tai
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteFinalTablePtsTana">
         delete from planocycle.priority_all_pts_tana
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteFinalTablePtsJans">
         delete from planocycle.priority_all_pts_jans
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteFinalTablePtsData">
         delete from planocycle.priority_all_pts_data
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteFinalTablePtsRelation">
         delete from planocycle.priority_all_restrict_relation
@@ -310,7 +285,6 @@
         delete from planocycle.priority_all_pts_data_version
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteWKTablePtsData">
         delete from planocycle.work_priority_all_pts_data
@@ -319,13 +293,11 @@
             #{item}
         </foreach>
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteWKTablePtsRelation">
         delete from planocycle.work_priority_all_restrict_relation
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteWKTablePtsVersion">
         delete from planocycle.work_priority_all_pts_data_version
@@ -334,7 +306,6 @@
             #{item}
         </foreach>
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="delWKTablePtsTai">
         delete from planocycle.work_priority_all_pts_tai
@@ -419,18 +390,17 @@
 
     <insert id="copyWKTableMst">
         insert into planocycle.work_priority_all_mst
-        select priority_all_cd,company_cd,author_cd,priority_all_name,priority_order_cd
+        select #{newPriorityAllCd},company_cd,author_cd,priority_all_name,priority_order_cd
         from planocycle.priority_all_mst
         where priority_all_cd = #{priorityAllCd}
         and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="copyWKTableShelfs">
-        insert into planocycle.work_priority_all_shelfs
-        select priority_all_cd,company_cd,author_cd,shelf_patten_cd from planocycle.priority_all_shelfs
+        insert into planocycle.work_priority_all_shelfs(priority_all_cd,company_cd,author_cd,shelf_patten_cd)
+        select #{newPriorityAllCd},company_cd,author_cd,shelf_patten_cd
+        from planocycle.priority_all_shelfs
         where priority_all_cd = #{priorityAllCd}
         and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="copyWKTableRestrict">
         insert into planocycle.work_priority_all_restrict
@@ -461,28 +431,29 @@
     </insert>
     <insert id="copyWKTablePtsTai">
         insert into planocycle.work_priority_all_pts_tai
-        select priority_all_cd,company_cd,author_cd,shelf_patten_cd,tai_cd,tai_height,tai_width,tai_depth,tai_nm,pts_cd from planocycle.priority_all_pts_tai
+        select #{newPriorityAllCd},company_cd,author_cd,shelf_patten_cd,tai_cd,tai_height,tai_width,tai_depth,tai_nm,#{newId}
+        from planocycle.priority_all_pts_tai
         where priority_all_cd = #{priorityAllCd}
         and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
+        and pts_cd = #{id}
     </insert>
     <insert id="copyWKTablePtsTana">
         insert into planocycle.work_priority_all_pts_tana
-        select priority_all_cd,company_cd,author_cd,shelf_patten_cd,tai_cd,tana_cd,tana_height,tana_width,tana_depth,tana_thickness
-            ,tana_type,tana_nm,pts_cd
+        select #{newPriorityAllCd},company_cd,author_cd,shelf_patten_cd,tai_cd,tana_cd,tana_height,tana_width,tana_depth,tana_thickness
+            ,tana_type,tana_nm,#{newId}
         from planocycle.priority_all_pts_tana
         where priority_all_cd = #{priorityAllCd}
         and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
+        and pts_cd = #{id}
     </insert>
     <insert id="copyWKTablePtsJans">
         insert into planocycle.work_priority_all_pts_jans
-        select priority_all_cd,company_cd,author_cd,shelf_patten_cd,tai_cd,tana_cd,tanaposition_cd,jan_cd,face_count,face_men,
-               face_kaiten,tumiagesu,zaikosu,face_displayflg,face_position,depth_display_num,pts_cd
+        select #{newPriorityAllCd},company_cd,author_cd,shelf_patten_cd,tai_cd,tana_cd,tanaposition_cd,jan_cd,face_count,face_men,
+               face_kaiten,tumiagesu,zaikosu,face_displayflg,face_position,depth_display_num,#{newId}
                from planocycle.priority_all_pts_jans
         where priority_all_cd = #{priorityAllCd}
         and company_cd = #{companyCd,jdbcType=VARCHAR}
-        and author_cd = #{authorCd,jdbcType=VARCHAR}
+        and pts_cd = #{id}
     </insert>
 
 
@@ -504,12 +475,12 @@
     <insert id="copyWKTablePtsVersion">
         insert into planocycle.work_priority_all_pts_data_version(priority_all_cd,company_cd,author_cd,pts_cd,commoninfo,versioninfo,outflg,modename,tai_header,tana_header
                                                                  ,jan_header,deleteflg,shelf_pattern_cd)
-        select priority_all_cd,company_cd,author_cd,pts_cd,commoninfo,versioninfo,outflg,modename,tai_header,tana_header
+        select #{newPriorityAllCd},company_cd,author_cd,#{newId},commoninfo,versioninfo,outflg,modename,tai_header,tana_header
             ,jan_header,deleteflg,shelf_pattern_cd
         from planocycle.priority_all_pts_data_version
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
+            and pts_cd = #{id}
     </insert>
 
 
@@ -518,7 +489,7 @@
             priority_all_cd, priority_all_name,create_time,author_cd
         from planocycle.priority_all_mst
         where company_cd = #{companyCd,jdbcType=VARCHAR}
-            and deleteflg=0 and author_cd = #{authorCd}
+            and deleteflg=0
         order by priority_all_cd desc
     </select>
 
@@ -549,7 +520,6 @@
             on allshelf.priority_all_cd = #{priorityAllCd}
             and allshelf.company_cd = shelf.company_cd
             and allshelf.shelf_patten_cd = shelf.shelf_pattern_cd
-            and allshelf.author_cd = #{authorCd}
         inner join planocycle.shelf_name_mst shelfnm
             on shelf.shelf_name_cd = shelfnm.id
         inner join planocycle.shelf_pts_data pts
@@ -570,7 +540,7 @@
         order by shelf.shelf_pattern_cd
     </select>
     <select id="getPriorityOrderCd" resultType="java.lang.Integer">
-        select priority_order_cd from  planocycle.priority_all_mst where priority_all_cd = #{priorityAllCd} and company_cd = #{companyCd} and author_cd = #{authorCd}
+        select priority_order_cd from  planocycle.priority_all_mst where priority_all_cd = #{priorityAllCd} and company_cd = #{companyCd}
     </select>
     <select id="selectPriorityAllName" resultType="java.lang.Integer">
         select priority_all_cd from planocycle.priority_all_mst where company_cd = #{companyCd} and priority_all_name = #{priorityAllName} and author_cd = #{authorCd} and deleteflg = 0
@@ -578,29 +548,26 @@
     <select id="getPtsCd" resultType="java.lang.String">
        select  array_to_string(array_agg(DISTINCT id),',')
         from planocycle.priority_all_pts_data
-        where company_cd = #{companyCd} and priority_all_cd = #{priorityAllCd} and  author_cd = #{authorCd} and deleteflg = 0
+        where company_cd = #{companyCd} and priority_all_cd = #{priorityAllCd} and deleteflg = 0
     </select>
     <select id="getWorkPriorityOrderCd" resultType="java.lang.Integer">
-        select priority_order_cd from  planocycle.work_priority_all_mst where priority_all_cd = #{priorityAllCd} and author_cd = #{authorCd}
+        select priority_order_cd from  planocycle.work_priority_all_mst where priority_all_cd = #{priorityAllCd}
         and company_cd=#{companyCd}
     </select>
     <delete id="deleteFinalTableRestrictRelation">
         delete from planocycle.all_pattern_restrict_relation
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteFinalTableRestrictResult">
         delete from planocycle.all_pattern_restrict_result
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <delete id="deleteFinalTableRestrictResultData">
         delete from planocycle.all_pattern_restrict_result_data
         where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </delete>
     <insert id="setFinalTableRestrictResult">
         insert into planocycle.all_pattern_restrict_result(shelf_pattern_cd,company_cd,
@@ -616,9 +583,8 @@
             zokusei24,zokusei25,zokusei26,zokusei27,zokusei28,zokusei29, zokusei30,zokusei31, zokusei32,zokusei33,
                #{priorityAllCd}
         from planocycle.work_all_pattern_restrict_result
-        where priority_all_cd = 0
+        where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="setFinalTableRestrictRelation">
         insert into planocycle.all_pattern_restrict_relation(shelf_pattern_cd,company_cd,author_cd,tai_cd,tana_cd,
@@ -626,17 +592,15 @@
         select shelf_pattern_cd,company_cd,author_cd,tai_cd,tana_cd,
             tana_position,restrict_cd,area,area_position,#{priorityAllCd}
         from planocycle.work_all_pattern_restrict_relation
-        where priority_all_cd = 0
+        where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
     <insert id="setFinalTableRestrictResultData">
         insert into planocycle.all_pattern_restrict_result_data(shelf_pattern_cd,company_cd,author_cd, restrict_cd,face,
             face_fact,jan,sku_rank,priority_all_cd)
         select shelf_pattern_cd,company_cd,author_cd, restrict_cd,face,face_fact,jan,sku_rank,#{priorityAllCd}
         from planocycle.work_all_pattern_restrict_result_data
-        where priority_all_cd = 0
+        where priority_all_cd = #{priorityAllCd}
           and company_cd = #{companyCd,jdbcType=VARCHAR}
-          and author_cd = #{authorCd,jdbcType=VARCHAR}
     </insert>
 </mapper>

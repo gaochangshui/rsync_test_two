@@ -14,4 +14,24 @@
         where "1" = #{commoditySyncSet.prodMstClass}
     </update>
 
+    <update id="syncCommodityMaster">
+        insert
+            into
+            ${tableName}
+            select
+            *
+        from
+            ${tableNameWK}
+            on
+            conflict("1") do
+        update
+        set
+            "2" = excluded."2"
+    </update>
+
+    <select id="getCommodityList" resultType="com.trechina.planocycle.entity.po.CommoditySyncSet">
+        select "1" "prodMstClass", "2" "prodMstName" from ${tableName}
+        where "3" = true
+        order by "1";
+    </select>
 </mapper>

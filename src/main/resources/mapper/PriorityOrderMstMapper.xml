@@ -30,7 +30,7 @@
     priority_order_cd , priority_order_name,create_time,author_cd
     from planocycle.priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR}
-    and deleteflg=0 and author_cd = #{authorCd}
+    and deleteflg=0
     order by priority_order_cd desc
   </select>
 

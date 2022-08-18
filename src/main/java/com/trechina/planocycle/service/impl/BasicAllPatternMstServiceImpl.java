@@ -107,7 +107,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     public Map<String, Object> autoCalculation(PriorityAllSaveDto priorityAllSaveDto) {
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
 
         executor.execute(()->{
             Integer basicPatternCd;
@@ -122,12 +121,11 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
             // 全パターンのRelationList
 
-
             try {
                 PriorityOrderMstDto priorityOrderMst = priorityAllMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
                 basicPatternCd = Integer.parseInt(priorityOrderMst.getShelfPatternCd());
                 Integer productPowerCd = priorityOrderMst.getProductPowerCd();
-                info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, basicPatternCd,authorCd);
+                info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, basicPatternCd);
                 // 全パターンのList
                 List<PriorityAllPatternListVO> checkedInfo = info.stream().filter(vo->vo.getCheckFlag()==1).collect(Collectors.toList());
                 int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
@@ -154,7 +152,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     }else{
                         //ptsを一時テーブルに保存
                         Object tmpData = MapUtils.getObject(setJanResultMap, "data");
-                        List<WorkPriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<WorkPriorityOrderResultDataDto>>() {
+                        List<PriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<PriorityOrderResultDataDto>>() {
                         }.getType());
                         priorityAllPtsService.saveWorkPtsJanData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData, isReOrder);
                         vehicleNumCache.put(uuid,1);
@@ -203,9 +201,11 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCdByAll(authorCd, companyCd, patternCd,
                 priorityAllCd,priorityOrderCd, sizeAndIrisu, isReOrder, commonTableName.getProInfoTable());
 
+        List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
+
         return commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd, minFaceNum, zokuseiMsts, allCdList,
                 restrictResult, attrList, authorCd, commonTableName,
-                partitionVal, null, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder, productPowerCd, null);
+                partitionVal, null, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder, productPowerCd, colNmforMst);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -253,6 +253,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd,
                 zokuseiMsts, cdList, sizeAndIrisuMap);
 
+        classifyList = basicPatternMstService.updateJanSizeByMap(classifyList);
+        classifyList.forEach(item-> item.put("width", MapUtils.getInteger(item,"width")*MapUtils.getInteger(item, "faceCount")));
 
         Map<String, BasicPatternRestrictResult> classify = basicPatternMstService.getJanInfoClassify(classifyList, companyCd,
                 zokuseiIds, aud, (long) priorityAllCd);
@@ -309,7 +311,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 }
 
                 if(!"".equals(lastKey) && (!lastKey.equals(key.toString()) || (i+1)==jans.size())){
-                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, RoundingMode.CEILING)
+                    double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 5, RoundingMode.CEILING)
                             .multiply(BigDecimal.valueOf(100)).doubleValue();
                     Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
                             new TypeToken<Map<String, Object>>(){}.getType());
@@ -337,7 +339,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     map.put(MagicString.RESTRICT_CD, classify.get(key.toString()).getRestrictCd());
                     map.put("area", percent);
                     map.put("janCount", janCount);
-                    map.put("priorityOrderCd", priorityOrderCd);
+                    map.put("priorityOrderCd", priorityAllCd);
                     map.put("companyCd", companyCd);
                     map.put("authorCd", aud);
                     newJans.add(map);
@@ -346,7 +348,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 lastKey = key.toString();
             }
 
-            newJans.stream().forEach(map->{
+            newJans.forEach(map->{
                 map.put("tanaPosition", index[0]);
                 index[0]++;
             });

@@ -120,13 +120,15 @@
     </foreach>
   </insert>
   <insert id="insertAttrForFinal">
-    insert into priority.work_priority_order_mst_attr
-    select  * from priority.priority_order_mst_attr
+    insert into priority.work_priority_order_mst_attr(company_cd,priority_order_cd,value,sort,name)
+    select  company_cd,#{newPriorityOrderCd},value,sort,name
+    from priority.priority_order_mst_attr
     where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
   </insert>
   <insert id="insertAttrSortForFinal">
-    insert into priority.work_priority_order_mst_attrsort
-    select  * from priority.priority_order_mst_attrsort
+    insert into priority.work_priority_order_mst_attrsort(company_cd,priority_order_cd,value,sort)
+    select  company_cd,#{newPriorityOrderCd},value,sort
+    from priority.priority_order_mst_attrsort
     where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
   </insert>
   <select id="selectWKRankSort" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto">

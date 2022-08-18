@@ -10,6 +10,8 @@ public class PriorityOrderResultDataDto {
 
     private String janCd;
 
+    private String janOld;
+
     private Long restrictCd;
 
     private Long skuRank;
@@ -47,6 +49,8 @@ public class PriorityOrderResultDataDto {
     private Integer tanaType;
 
     private Integer restrictType;
+
+    private Integer useNewFlag=0;
 
     private Integer faceKaiten=0;
     private Long faceMen=1L;

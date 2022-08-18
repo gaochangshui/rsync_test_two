@@ -2,14 +2,12 @@ package com.trechina.planocycle.controller;
 
 
 import com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderPtsDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderRestrictJanDto;
 import com.trechina.planocycle.service.PriorityOrderShelfDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +35,7 @@ public class PriorityOrderShelfDataController {
      * @return
      */
     @PostMapping("getRestrictJans")
-    public Map<String,Object> getRestrictJans(@RequestBody PriorityOrderRestDto priorityOrderRestDto) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public Map<String,Object> getRestrictJans(@RequestBody PriorityOrderRestDto priorityOrderRestDto) {
         return priorityOrderShelfDataService.getRestrictJans(priorityOrderRestDto);
 
     }
@@ -57,7 +55,7 @@ public class PriorityOrderShelfDataController {
      * @return
      */
     @PostMapping("getPlatformShedJans")
-    public Map<String,Object> getPlatformShedJans(@RequestBody PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public Map<String,Object> getPlatformShedJans(@RequestBody PriorityOrderPlatformShedDto priorityOrderPlatformShedDto) {
         return  priorityOrderShelfDataService.getPlatformShedJans(priorityOrderPlatformShedDto);
     }
 
@@ -82,11 +80,11 @@ public class PriorityOrderShelfDataController {
     }
 
     /**
-     * faceNum,修改
+     * faceNum,修改/删除
      */
     @PostMapping("setFaceNumAndPositionForData")
-    public Map<String,Object> setFaceNumAndPositionForData(@RequestBody PriorityOrderPtsDto shelfPtsDataJandata) {
-        return  priorityOrderShelfDataService.setFaceNumAndPositionForData(shelfPtsDataJandata);
+    public Map<String,Object> setFaceNumAndPositionForData(@RequestBody Map<String,Object> map) {
+        return  priorityOrderShelfDataService.setFaceNumAndPositionForData(map);
     }
 
 

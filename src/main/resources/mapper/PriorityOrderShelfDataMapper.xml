@@ -2,9 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.PriorityOrderShelfDataMapper">
     <update id="updateFaceNum">
-        update work_priority_order_pts_data_jandata set face_count = #{item.faceNum} ,tumiagesu = #{item.tumiagesu}
-        where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd} and tanaposition_cd = #{item.tanapositionCd}
+        update planocycle.work_priority_order_pts_data_jandata set face_count = #{item.faceCount} ,tumiagesu = #{item.tumiagesu},
+                                                                   face_men = #{item.faceMen},face_kaiten = #{item.faceKaiten}
+        where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd} and tanaposition_cd = #{item.tanapositionCd} and pts_cd = #{id}
     </update>
+    <update id="updatePositionCd">
+        update planocycle.work_priority_order_pts_data_jandata
+        set tanaposition_cd =
+        case concat(tai_cd,tana_cd,tanaposition_cd)
+        <foreach collection="list" item="item" >
+            when concat(#{item.tai_cd},#{item.tana_cd},#{item.tanaposition_cd}) then #{item.newPos}
+        </foreach>
+        else tanaposition_cd end
+        where pts_cd = #{id}
+    </update>
+    <delete id="delJan">
+        delete from planocycle.work_priority_order_pts_data_jandata where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd} and tanaposition_cd = #{item.tanapositionCd} and pts_cd = #{id}
+    </delete>
     <select id="getPlatformShedData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto">
 
         select  relation.tai_cd,relation.tana_cd,relation.tana_type,
@@ -80,5 +94,10 @@
     <select id="selectRegclass" resultType="java.lang.Integer">
         select nextval('planocycle.priority_order_pts_data_id_seq'::regclass)
 
+    </select>
+    <select id="getAlikeTana" resultType="map">
+        select tai_cd ,tana_cd,tanaposition_cd,row_number() over(order by tai_cd,tana_cd,tanaposition_cd) "newPos"
+               from  planocycle.work_priority_order_pts_data_jandata
+        where pts_cd = #{id} and tai_cd = #{item.taiCd} and tana_Cd = #{item.tanaCd}
     </select>
 </mapper>

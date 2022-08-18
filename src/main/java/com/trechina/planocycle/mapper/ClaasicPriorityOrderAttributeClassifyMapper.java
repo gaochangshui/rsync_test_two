@@ -26,6 +26,6 @@ public interface ClaasicPriorityOrderAttributeClassifyMapper {
 
     int insertFinal (@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
-    int insertWork (@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    int insertWork (@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd,@Param("newPriorityOrderCd")Integer newPriorityOrderCd);
 
 }

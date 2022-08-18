@@ -22,4 +22,17 @@ public interface MstCommodityMapper {
      */
     int setSyncSet(String tableName, CommoditySyncSet commoditySyncSet);
 
+
+    /**
+     * マスタ同期
+     * @return
+     */
+    int syncCommodityMaster(String tableName,String tableNameWK);
+
+    /**
+     * マスタデータを検索
+     * @return
+     */
+    List<CommoditySyncSet> getCommodityList(String tableName);
+
 }

@@ -2,10 +2,13 @@ package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderResultData;
+import com.trechina.planocycle.entity.po.ZokuseiMst;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Mapper
 public interface WorkPriorityOrderResultDataMapper {
@@ -51,7 +54,7 @@ public interface WorkPriorityOrderResultDataMapper {
 
     List<PriorityOrderResultDataDto>  getResultJans(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
     //最終rankの一括更新
-     int  setSortRank(@Param("list")List<WorkPriorityOrderResultData> list,@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
+     int  setSortRank(@Param("list")List<Map<String,Object>> list,@Param("companyCd") String companyCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 
     /**
      * janの配置位置情報を一括更新
@@ -66,7 +69,14 @@ public interface WorkPriorityOrderResultDataMapper {
     //ユーザ編集faceNum
     int updateFaceNum(@Param("list") List<PriorityOrderRestrictJanDto> list,@Param("ptsCd")Integer ptsCd);
 
-    List<WorkPriorityOrderResultData> getProductReorder(String companyCd, String authorCd, Integer productPowerCd, Integer priorityOrderCd);
+    List<Map<String,Object>> getProductReorder(String companyCd, String authorCd, Integer productPowerCd
+            , Integer priorityOrderCd,String tableName, List<ZokuseiMst> attrList
+            , List<Integer> allCdList);
 
     Integer getPtsCd(Integer priorityOrderCd);
+
+    List<Map<String, Object>> getNewJanProductReorder(String companyCd, String authorCd
+            , Integer productPowerCd, Integer priorityOrderCd, String tableName, List<ZokuseiMst> attrList, List<Integer> allCdList);
+
+    void setRank(Set list, String companyCd, String authorCd, Integer priorityOrderCd);
 }

@@ -11,4 +11,6 @@ public interface LogMapper {
     int deleteLog();
 
     void addTimeLog(String methodName, LocalDateTime startTime, LocalDateTime endTime, String params, Long totalTime);
+
+
 }

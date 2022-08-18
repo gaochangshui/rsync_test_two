@@ -13,5 +13,6 @@ public class PriorityOrderDataDto {
     private Integer priorityOrderCd;
     private String attrOption;
     private  Integer flag;
+    private Integer isCover;
 
 }

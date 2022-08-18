@@ -25,7 +25,7 @@ public interface ClassicPriorityOrderJanCardMapper {
 
     int deleteFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
-    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("newPriorityOrderCd")Integer newPriorityOrderCd);
 
     List<String> selectExistJanCut(String companyCd, Integer priorityOrderCd, List<DownloadDto> cutJanList);
 

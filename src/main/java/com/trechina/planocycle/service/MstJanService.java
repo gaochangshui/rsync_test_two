@@ -56,4 +56,12 @@ public interface MstJanService {
      */
     Map<String, Object> uploadJanData(MultipartFile file, String fileName, String classCd,
                                       String commonPartsData, String companyCd);
+
+    /**
+     * JANデータ同期
+     *
+     * @return
+     */
+    Map<String, Object> syncJanData();
+
 }

@@ -31,9 +31,9 @@ public interface PriorityAllMstMapper {
      * @param patternCd
      * @return
      */
-    List<PriorityAllPatternListVO> getAllPatternData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("patternCd") Integer patternCd,@Param("authorCd")String aud);
+    List<PriorityAllPatternListVO> getAllPatternData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("patternCd") Integer patternCd);
 
-     String getPtsCd(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
+     String getPtsCd(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd);
 
     void deleteWKTableMst(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
     void deleteWKTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
@@ -51,16 +51,21 @@ public interface PriorityAllMstMapper {
     void deleteWKTablePtsData(@Param("companyCd") String companyCd, @Param("ptsCd") int[] ptsCd, @Param("authorCd") String authorCd);
     void deleteWKTablePtsVersion(@Param("companyCd") String companyCd, @Param("ptsCd") int[] ptsCd, @Param("authorCd") String authorCd);
 
-    void copyWKTableMst(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void copyWKTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void copyWKTableRestrict(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void copyWKTableRelation(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void copyWKTableResult(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void copyWKTablePtsTai(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void copyWKTablePtsTana(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void copyWKTablePtsJans(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void copyWKTablePtsData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void copyWKTablePtsVersion(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
+    void copyWKTableMst(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("newPriorityAllCd") Integer newPriorityAllCd);
+    void copyWKTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("newPriorityAllCd") Integer newPriorityAllCd);
+    void copyWKTableRestrict(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("newPriorityAllCd") Integer newPriorityAllCd);
+    void copyWKTableRelation(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("newPriorityAllCd") Integer newPriorityAllCd);
+    void copyWKTableResult(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("newPriorityAllCd") Integer newPriorityAllCd);
+    void copyWKTablePtsTai(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd
+            , @Param("newPriorityAllCd") Integer newPriorityAllCd,@Param("id")Integer id,@Param("newId")Integer newId);
+    void copyWKTablePtsTana(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd
+            , @Param("newPriorityAllCd") Integer newPriorityAllCd,@Param("id")Integer id,@Param("newId")Integer newId);
+    void copyWKTablePtsJans(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd
+            , @Param("newPriorityAllCd") Integer newPriorityAllCd,@Param("id")Integer id,@Param("newId")Integer newId);
+    void copyWKTablePtsData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd
+            , @Param("newPriorityAllCd") Integer newPriorityAllCd,@Param("id")Integer id,@Param("newId")Integer newId);
+    void copyWKTablePtsVersion(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd
+            , @Param("newPriorityAllCd") Integer newPriorityAllCd,@Param("id")Integer id,@Param("newId")Integer newId);
 
     void insertWKTableMst(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd, @Param("priorityOrderCd") Integer priorityOrderCd);
     void insertWKTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd, @Param("patterns") List<Integer> patterns);
@@ -68,29 +73,26 @@ public interface PriorityAllMstMapper {
 
     void deleteFinalTableMst(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
     void deleteFinalTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void deleteFinalTableRestrict(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void deleteFinalTableResult(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
     void deleteFinalTablePtsTai(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
     void deleteFinalTablePtsTana(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
     void deleteFinalTablePtsJans(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
     void deleteFinalTablePtsData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void deleteFinalTablePtsRelation(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
     void deleteFinalTablePtsVersion(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
 
     //テンポラリ・テーブルの変更
-    void setFinalTableMst(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd,@Param("priorityAllName")String priorityAllName);
-    void setFinalTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void setFinalTableRestrict(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void setFinalTableRelation(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void setFinalTableResult(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void setFinalTablePtsTai(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void setFinalTablePtsTana(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void setFinalTablePtsJans(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void setFinalTablePtsData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
-    void setFinalTablePtsVersion(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd);
+    void setFinalTableMst(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("priorityAllName")String priorityAllName);
+    void setFinalTableShelfs(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd);
+    void setFinalTableRestrict(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd);
+    void setFinalTableRelation(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd);
+    void setFinalTableResult(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd);
+    void setFinalTablePtsTai(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd);
+    void setFinalTablePtsTana(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd);
+    void setFinalTablePtsJans(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd);
+    void setFinalTablePtsData(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd);
+    void setFinalTablePtsVersion(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd);
 
 
-    Integer getPriorityOrderCd(@Param("priorityAllCd")Integer priorityAllCd,@Param("companyCd") String companyCd,@Param("authorCd") String authorCd);
+    Integer getPriorityOrderCd(@Param("priorityAllCd")Integer priorityAllCd,@Param("companyCd") String companyCd);
 
 
     void setNewFinalTableMst(@Param("companyCd") String companyCd, @Param("priorityAllCd") Integer priorityAllCd, @Param("authorCd") String authorCd,@Param("priorityAllName")String priorityAllName);
@@ -126,11 +128,11 @@ public interface PriorityAllMstMapper {
 
     int deleteFinalTableRestrictResultData(String companyCd, Integer priorityAllCd, String authorCd);
 
-    void setFinalTableRestrictResult(String companyCd, Integer priorityAllCd, String authorCd);
+    void setFinalTableRestrictResult(String companyCd, Integer priorityAllCd);
 
-    void setFinalTableRestrictRelation(String companyCd, Integer priorityAllCd, String authorCd);
+    void setFinalTableRestrictRelation(String companyCd, Integer priorityAllCd);
 
-    void setFinalTableRestrictResultData(String companyCd, Integer priorityAllCd, String authorCd);
+    void setFinalTableRestrictResultData(String companyCd, Integer priorityAllCd);
 
-    Integer getWorkPriorityOrderCd(String authorCd, Integer priorityAllCd, String companyCd);
+    Integer getWorkPriorityOrderCd(Integer priorityAllCd, String companyCd);
 }

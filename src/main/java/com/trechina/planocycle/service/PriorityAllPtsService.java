@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service;
 
+import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.vo.PriorityAllVO;
 
@@ -13,7 +14,7 @@ public interface PriorityAllPtsService {
     void saveWorkPtsData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd);
 
     void saveWorkPtsJanData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd,
-                            List<WorkPriorityOrderResultDataDto> priorityOrderResultData, int isReOrder);
+                            List<PriorityOrderResultDataDto> priorityOrderResultData, int isReOrder);
 
     Map<String, Object> getPtsDetailData(Integer patternCd, String companyCd, Integer priorityAllCd);
 

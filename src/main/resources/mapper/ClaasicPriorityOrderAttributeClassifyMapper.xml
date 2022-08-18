@@ -14,8 +14,9 @@
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </insert>
     <insert id="insertWork">
-        insert into priority.work_priority_order_attribute_classify
-        select * from priority.priority_order_attribute_classify
+        insert into priority.work_priority_order_attribute_classify(tai_cd,attr1,tana_cd,attr2,company_cd,priority_order_cd)
+        select tai_cd,attr1,tana_cd,attr2,company_cd,#{newPriorityOrderCd}
+        from priority.priority_order_attribute_classify
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </insert>
     <delete id="delete">

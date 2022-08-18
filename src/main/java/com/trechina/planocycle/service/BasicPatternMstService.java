@@ -32,4 +32,5 @@ public interface BasicPatternMstService {
      * jan长宽高修改
      */
     List<PriorityOrderResultDataDto> updateJanSize( List<PriorityOrderResultDataDto> priorityOrderResultDataDtoList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    List<Map<String, Object>> updateJanSizeByMap( List<Map<String, Object>> priorityOrderResultDataDtoList);
 }

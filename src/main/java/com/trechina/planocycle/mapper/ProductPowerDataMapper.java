@@ -139,7 +139,7 @@ public interface ProductPowerDataMapper {
 
     int deleteData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
-    int setData(@Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd, @Param("companyCd") String companyCd
+    int setData(@Param("productPowerCd") Integer productPowerCd, @Param("companyCd") String companyCd
     ,@Param("newProductPowerCd")Integer newProductPowerCd);
 
     List<LinkedHashMap<String,Object>> getAllDataAttr(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("list")List<String> list
@@ -194,4 +194,8 @@ public interface ProductPowerDataMapper {
 
 
     List<String> getDataCol();
+
+    List<String> getWorkTableName();
+
+    void delWork(String tableName);
 }

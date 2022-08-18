@@ -23,7 +23,7 @@ public interface ClassicPriorityOrderJanAttributeMapper {
 
     int deleteFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
-    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("newPriorityOrderCd")Integer newPriorityOrderCd);
 
     void deleteByJan(String company, Integer priorityOrderCd, List<DownloadDto> lists);
 

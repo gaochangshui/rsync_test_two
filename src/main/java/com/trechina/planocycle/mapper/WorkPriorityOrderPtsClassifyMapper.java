@@ -36,6 +36,6 @@ public interface WorkPriorityOrderPtsClassifyMapper {
 
     List<Map<String,Object>> getAttrInfo(String companyCd, Integer priorityOrderCd);
 
-    void setWorkForFinal(String companyCd, Integer priorityOrderCd);
+    void setWorkForFinal(String companyCd, Integer priorityOrderCd,Integer newPriorityOrderCd);
 
 }

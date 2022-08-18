@@ -426,7 +426,7 @@
         where pts_cd=#{ptsCd}
     </select>
     <select id="selectNewJanZokusei" resultType="java.util.Map">
-        select face_count as "faceNum",coalesce(jan_new, jan) "janCd"
+        select face_count as "faceNum",coalesce(jan_new, jandata.jan) "janCd"
         ,
         <foreach collection="attrName" separator="," item="item" index="index">
             coalesce ("${item.zokusei_col}",'') as "${item.zokusei_colname}"
@@ -443,14 +443,19 @@
             as "zokusei${item1.zokuseiSort}"
         </foreach>
 
-        ,tai_cd as "taiCd",tana_cd as "tanaCd",tanaposition_cd as rank,
+        ,jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",resultdata.sort_rank as rank,tanaposition_cd as "tanapositionCd",
         "2" as "janName"
         <foreach collection="janSizeCol" item="item">
             ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
         </foreach>
         from ${tableName} jandata
-        left join planocycle.work_priority_order_jan_replace replace on replace.priority_order_cd=#{priorityOrderCd} and jan_new=jandata.jan
-        inner join ${proInfoTable} janinfo on  janinfo."1"=coalesce(jan_old, jan)
+        left join planocycle.work_priority_order_jan_replace replace
+        on replace.priority_order_cd=#{priorityOrderCd} and jan_new=jandata.jan
+        left join planocycle.work_priority_order_result_data resultdata
+            on resultdata.priority_order_cd=#{priorityOrderCd} and jandata.jan =resultdata.jan_cd
+        inner join ${proInfoTable} janinfo on  janinfo."1"=coalesce(jan_old, jandata.jan)
+        left join planocycle.product_power_mst_data prodata
+        on prodata.jan = coalesce(jan_old, jandata.jan) and prodata.product_power_cd = #{productPowerCd}
         where pts_cd=#{ptsCd}
     </select>
     <select id="selectAllPatternResultData" resultType="java.util.Map">
@@ -529,20 +534,30 @@
             </if>
             as "zokusei${item1.zokuseiSort}"
         </foreach>
-        ,coalesce(jan_new, jan_cd) "janCd"
-        ,jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",jandata.tanaposition_cd as "tanapositionCd",coalesce (prodata.rank_result,9999)as rank,
+        ,coalesce(replace.jan_new, resultdata.jan_cd) "janCd"
+        ,jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",jandata.tanaposition_cd as "tanapositionCd"
+        ,resultdata.sort_rank as rank,
         "2" as "janName"
         <foreach collection="janSizeCol" item="item">
             ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
         </foreach>
+        ,case when replace.jan_new is not null then 'JAN変リスト'
+            when jannew.jan_new is not null then '新規'
+            when cut.jan_cd is not null then 'カット' else '' end as "janFlag"
         from planocycle.work_priority_order_result_data resultdata
         left join planocycle.work_priority_order_pts_data_jandata jandata
         on jandata.jan = resultdata.jan_cd and pts_cd=#{ptsCd}
-        left join planocycle.work_priority_order_jan_replace replace on replace.priority_order_cd=#{priorityOrderCd} and jan_new=resultdata.jan_cd
-        inner join ${proInfoTable} janinfo on  janinfo."1"=coalesce(jan_old, jan_cd)
-        left join planocycle.product_power_mst_data prodata
-        on prodata.jan = resultdata.jan_cd and prodata.product_power_cd = #{productPowerCd}
+        left join planocycle.work_priority_order_jan_replace replace on replace.priority_order_cd=#{priorityOrderCd} and replace.jan_new=resultdata.jan_cd
+        left join planocycle.work_priority_order_jan_new jannew
+            on jannew.jan_new = resultdata.jan_cd and jannew.priority_order_cd=#{priorityOrderCd}
+        left join planocycle.work_priority_order_cut cut
+            on cut.jan_cd = resultdata.jan_cd and cut.priority_order_cd=#{priorityOrderCd}
+        inner join ${proInfoTable} janinfo on  janinfo."1"=coalesce(replace.jan_old, resultdata.jan_cd)
         where resultdata.priority_order_cd = #{priorityOrderCd}
-    order by jandata.tai_cd ,jandata.tana_cd ,jandata.tanaposition_cd
+    order by
+    <foreach collection="attrName" separator="," item="item" index="index">
+         "${item.zokusei_col}"
+    </foreach>
+    ,resultdata.sort_rank nulls last
     </select>
 </mapper>
