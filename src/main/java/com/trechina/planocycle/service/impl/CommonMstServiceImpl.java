@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -222,6 +223,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                                                   Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
                                                   List<PriorityOrderResultDataDto> janResult, List<Map<String, Object>> sizeAndIrisu,
                                                   int isReOrder, Integer productPowerCd,List<String> colNmforMst) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        logger.info("start set jan:{}", LocalDateTime.now());
         Integer currentTaiCd=1;
         for (int i = 0; i < tanaList.size(); i++) {
             Map<String, Object> tana = tanaList.get(i);
@@ -523,6 +525,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             }
         }
 
+        logger.info("end set jan:{}", LocalDateTime.now());
         return ResultMaps.result(ResultEnum.SUCCESS, finalAdoptJan);
     }
 
@@ -747,6 +750,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                 adoptJanByTaiTana.add(newJanDto);
                 jan.setAdoptFlag(1);
                 usedJanCount++;
+            }else{
+                break;
             }
         }
 
