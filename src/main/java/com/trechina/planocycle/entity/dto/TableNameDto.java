@@ -18,4 +18,6 @@ public class TableNameDto {
 
     private Boolean flag;
 
+    private Boolean allowEdit;
+
 }

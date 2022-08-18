@@ -51,4 +51,6 @@ public class BasicPatternRestrictRelationVo {
 
     private static final long serialVersionUID = 1L;
 
+    private Integer janCount;
+
 }

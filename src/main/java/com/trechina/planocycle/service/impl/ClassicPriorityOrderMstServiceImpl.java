@@ -161,7 +161,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         // チェック優先順位テーブル名
         Integer count = priorityOrderPatternMapper.selectByPriorityOrderName(priorityOrderMstDto.getCompanyCd(),
                                                             priorityOrderMstDto.getPriorityOrderName(),
-                                                            priorityOrderMstDto.getPriorityOrderCd(),authorCd);
+                                                            priorityOrderMstDto.getPriorityOrderCd());
         if (count >0) {
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }

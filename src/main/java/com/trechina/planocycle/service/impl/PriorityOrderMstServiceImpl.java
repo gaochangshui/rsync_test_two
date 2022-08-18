@@ -496,7 +496,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         shelfPtsDataMapper.insertWorkPtsJanData(companyCd, aud, id,newId);
         Map<String, Object> map = new HashMap<>();
         //プライマリ・テーブル情報
-        WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, priorityOrderCd, aud);
+        WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getWorkPriorityOrderMst(companyCd, newPriorityOrderCd, aud);
         Integer shelfCd = workPriorityOrderMstMapper.getShelfName(workPriorityOrderMst.getShelfPatternCd().intValue());
         workPriorityOrderMst.setShelfCd(shelfCd);
         //group保存
@@ -507,17 +507,17 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
         //商品力点数表情報
         //sort情報
-        List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
+        List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(companyCd, newPriorityOrderCd);
         //陳列順情報の取得
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(workPriorityOrderMst.getCommonPartsData(), companyCd);
-        List<WorkPriorityOrderSortVo> workPriorityOrderSort = shelfPtsDataMapper.getDisplays(companyCd, aud, priorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+        List<WorkPriorityOrderSortVo> workPriorityOrderSort = shelfPtsDataMapper.getDisplays(companyCd, aud, newPriorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
 
         //pts詳細の取得
         PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue());
 
 
-        List<Map<String,Object>> attrList1 = priorityOrderMstAttrSortMapper.getAttrCol(companyCd, priorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
-        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+        List<Map<String,Object>> attrList1 = priorityOrderMstAttrSortMapper.getAttrCol(companyCd, newPriorityOrderCd,commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, newPriorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
         if (ptsDetailData != null){
             String zokuseiNm = Joiner.on(",").join(attrList1.stream().map(map3 -> MapUtils.getString(map3, "zokusei_nm")).collect(Collectors.toList()));
@@ -546,7 +546,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             ptsDetailData.setPtsJanDataList(janData);
         }
 
-        Map<String, Object> ptsNewDetailData = shelfPtsService.getNewPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue(),companyCd, priorityOrderCd);
+        Map<String, Object> ptsNewDetailData = shelfPtsService.getNewPtsDetailData(workPriorityOrderMst.getShelfPatternCd().intValue(),companyCd, newPriorityOrderCd);
         String data = new Gson().toJson(ptsNewDetailData.get("data"));
         PtsDetailDataVo ptsDetailDataVo = new Gson().fromJson(data, new TypeToken<PtsDetailDataVo>(){}.getType());
         Map<String, Object> ptsInfoTemp = shelfPtsService.getTaiNumTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue(),priorityOrderCd);
@@ -556,7 +556,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         productPowerInfo.setSku(skuNum);
 
         Map<String, Object> ptsInfoTemps =(Map<String, Object>)ptsInfoTemp.get("data");
-        Map<String, Object> attrDisplay = basicPatternMstService.getAttrDisplay(companyCd, priorityOrderCd);
+        Map<String, Object> attrDisplay = basicPatternMstService.getAttrDisplay(companyCd, newPriorityOrderCd);
         Map<String,Object> sortSettings = new HashMap<>();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
         String format = simpleDateFormat.format(productPowerInfo.getRegistered());

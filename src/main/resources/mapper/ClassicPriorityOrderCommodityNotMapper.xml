@@ -68,7 +68,10 @@
            left join ${janInfoTable} jans on nots.jan_new = jans."1"
           <if test="table1 != ''">
             left join ${table1} branchs
-            on  nots.branch = split_part(branchs."1", '_', 2) and branchs."1" like #{companyCd} ||'_%'
+            on  nots.branch = split_part(branchs."1", '_', 2) and split_part(branchs."1", '_', 1) in
+            <foreach collection="groupCompany" item="item" separator="," open="(" close=")">
+              #{item}
+            </foreach>
           </if>
           <if test="table2 != ''">
             left join ${table2} company_branchs
@@ -132,7 +135,10 @@
     from priority.work_priority_order_commodity_not nots
         <if test="table1 != ''">
           left join ${table1} branchs
-          on  nots.branch = split_part(branchs."1", '_', 2) and branchs."1" like #{companyCd} ||'_%'
+          on  nots.branch = split_part(branchs."1", '_', 2) and split_part(branchs."1", '_', 1) in
+          <foreach collection="groupCompany" item="item" separator="," open="(" close=")">
+            #{item}
+          </foreach>
         </if>
         <if test="table2 != ''">
           left join ${table2} company_branchs
@@ -163,7 +169,10 @@
                on patternmst.shelf_pattern_cd=nots.shelf_pattern_cd
           <if test="table1 != ''">
             left join ${table1} branchs
-            on  nots.branch = split_part(branchs."1", '_', 2) and branchs."1" like #{companyCd} ||'_%'
+            on  nots.branch = split_part(branchs."1", '_', 2) and split_part(branchs."1", '_', 1) in
+            <foreach collection="groupCompany" item="item" separator="," open="(" close=")">
+              #{item}
+            </foreach>
           </if>
           <if test="table2 != ''">
             left join ${table2} company_branchs

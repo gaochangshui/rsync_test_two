@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -222,6 +223,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                                                   Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
                                                   List<PriorityOrderResultDataDto> janResult, List<Map<String, Object>> sizeAndIrisu,
                                                   int isReOrder, Integer productPowerCd,List<String> colNmforMst) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        logger.info("start set jan:{}", LocalDateTime.now());
         Integer currentTaiCd=1;
         for (int i = 0; i < tanaList.size(); i++) {
             Map<String, Object> tana = tanaList.get(i);
@@ -291,7 +293,7 @@ public class CommonMstServiceImpl implements CommonMstService {
         Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd = janResult.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd, LinkedHashMap::new, Collectors.toList()));
         Map<String, Object> returnResultMap = this.getBackupJans(janResultByRestrictCd, newJanDtoList);
         List<PriorityOrderResultDataDto> backupJans = (List<PriorityOrderResultDataDto>) returnResultMap.get("backupJan");
-        Map<String, String> repeatJanMap = (Map<String, String>) returnResultMap.get("repeatJanMap");
+        Map<String, PriorityOrderResultDataDto> repeatJanMap = (Map<String, PriorityOrderResultDataDto>) returnResultMap.get("repeatJanMap");
 
         if(isReOrder>0 && colNmforMst!=null && !backupJans.isEmpty()){
             List<WorkPriorityOrderResultData> reorderByJan = new ArrayList<>();
@@ -343,7 +345,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 List<PriorityOrderResultDataDto> backupJanList = backupJansByRestrict.getOrDefault(restrictCd, Lists.newArrayList());
                 if(jans!=null){
                     List<Map<String, Object>> resultMap = this.doSetJan(partitionVal, topPartitionVal, tanaWidthCheck, adoptJan,
-                            jans, relation, tanaWidth, tanaHeight, taiCd, tanaCd, backupJanList);
+                            jans, relation, tanaWidth, tanaHeight, taiCd, tanaCd, backupJanList, repeatJanMap);
                     backupJansByRestrict.put(restrictCd, backupJanList);
                     outOfHeight.addAll(resultMap);
                 }
@@ -523,6 +525,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             }
         }
 
+        logger.info("end set jan:{}", LocalDateTime.now());
         return ResultMaps.result(ResultEnum.SUCCESS, finalAdoptJan);
     }
 
@@ -534,7 +537,7 @@ public class CommonMstServiceImpl implements CommonMstService {
     private Map<String, Object> getBackupJans(Map<Long, List<PriorityOrderResultDataDto>> janResultByRestrictCd,
                                                            List<PriorityOrderResultDataDto> newJanDtoList){
         Map<String, Object> resultMap = new HashMap<>();
-        Map<String, String> repeatJanMap = new HashMap<>();
+        Map<String, PriorityOrderResultDataDto> repeatJanMap = new HashMap<>();
         List<PriorityOrderResultDataDto> backupJan = new ArrayList<>();
 
         if(newJanDtoList.isEmpty()){
@@ -598,7 +601,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     dataDto.setFaceFact(dataDto.getFace());
                     Long janSum = janCdCount.get(dataDto.getJanCd());
                     if(janSum>1){
-                        repeatJanMap.put(dataDto.getJanCd(), janNewList.get(cutCount-i-1).getJanCd());
+                        repeatJanMap.put(dataDto.getJanCd(), janNewList.get(cutCount-i-1));
                     }
                     PriorityOrderResultDataDto copyDataDto = new PriorityOrderResultDataDto();
                     BeanUtils.copyProperties(dataDto,copyDataDto);
@@ -616,7 +619,7 @@ public class CommonMstServiceImpl implements CommonMstService {
     private List<Map<String, Object>> doSetJan(Short partitionVal,Short topPartitionVal, Integer tanaWidthCheck,
                                          List<PriorityOrderResultDataDto> adoptJan, List<PriorityOrderResultDataDto> jans,
                                          Map<String, Object> relation, Integer tanaWidth, Integer tanaHeight, String taiCd, String tanaCd,
-                                         List<PriorityOrderResultDataDto> backupJans){
+                                         List<PriorityOrderResultDataDto> backupJans, Map<String, PriorityOrderResultDataDto> repeatMap){
         String restrictCd = MapUtils.getString(relation, MagicString.RESTRICT_CD);
         double area = MapUtils.getDouble(relation, "area");
         Integer janCount = MapUtils.getInteger(relation, "janCount");
@@ -656,11 +659,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                 newJanDto.setFaceFact(jan.getFace());
                 newJanDto.setJanOld(janOld);
 
-                for (int i = usedBackupIndex; i < backupJans.size(); i++) {
-                    PriorityOrderResultDataDto backupJanNew = backupJans.get(usedBackupIndex);
-                    if(Objects.equals(backupJanNew.getAdoptFlag(), 1)){
-                        continue;
-                    }
+                if(repeatMap.containsKey(janOld)){
+                    PriorityOrderResultDataDto backupJanNew = repeatMap.get(janOld);
                     newJanDto.setJanCd(backupJanNew.getJanCd());
                     newJanDto.setFace(backupJanNew.getFace());
                     newJanDto.setFaceFact(backupJanNew.getFace());
@@ -668,9 +668,28 @@ public class CommonMstServiceImpl implements CommonMstService {
                     newJanDto.setCutFlag(0);
                     newJanDto.setAdoptFlag(1);
 
-                    backupJanNew.setAdoptFlag(1);
-                    backupJans.set(usedBackupIndex++, backupJanNew);
-                    break;
+                    backupJans.forEach(janItem->{
+                        if (janItem.getJanCd().equals(backupJanNew.getJanCd())) {
+                            janItem.setAdoptFlag(1);
+                        }
+                    });
+                }else{
+                    for (int i = usedBackupIndex; i < backupJans.size(); i++) {
+                        PriorityOrderResultDataDto backupJanNew = backupJans.get(i);
+                        if(Objects.equals(backupJanNew.getAdoptFlag(), 1)){
+                            continue;
+                        }
+                        newJanDto.setJanCd(backupJanNew.getJanCd());
+                        newJanDto.setFace(backupJanNew.getFace());
+                        newJanDto.setFaceFact(backupJanNew.getFace());
+                        newJanDto.setZaikosu(0);
+                        newJanDto.setCutFlag(0);
+                        newJanDto.setAdoptFlag(1);
+
+                        backupJanNew.setAdoptFlag(1);
+                        backupJans.set(usedBackupIndex++, backupJanNew);
+                        break;
+                    }
                 }
 
                 jan.setCutFlag(1);
@@ -731,6 +750,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                 adoptJanByTaiTana.add(newJanDto);
                 jan.setAdoptFlag(1);
                 usedJanCount++;
+            }else{
+                break;
             }
         }
 

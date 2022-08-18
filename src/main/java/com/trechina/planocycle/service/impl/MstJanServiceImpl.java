@@ -458,7 +458,7 @@ public class MstJanServiceImpl implements MstJanService {
         Integer kaiSouLength = mstJanMapper.getKaiSouLength(tableNameKaisouData);
         List<JanHeaderAttr> planoType = mstJanMapper.getPlanoType(tableNameAttr);
         Date date = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:sss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         try {
             for (int i = 1; i < excelData.size(); i++) {
                 String[] row = excelData.get(i);
@@ -508,8 +508,8 @@ public class MstJanServiceImpl implements MstJanService {
             }
             String dateStr = simpleDateFormat.format(date);
             String authorCd = session.getAttribute("aud").toString();
-        List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, prodMstClass);
-        count = mstJanMapper.insertJanList(tableNameInfo,infoHeader,janData, dateStr,authorCd);
+            List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, prodMstClass);
+            count = mstJanMapper.insertJanList(tableNameInfo,infoHeader,janData, dateStr,authorCd);
             Set zokuseiList = new HashSet();
             for (LinkedHashMap<String, Object> janDatum : janData) {
                 for (Map.Entry<String, Object> stringObjectEntry : janDatum.entrySet()) {

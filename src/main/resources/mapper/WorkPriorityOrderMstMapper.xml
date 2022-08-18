@@ -110,7 +110,7 @@
          ,partition_flag as partitionFlag,partition_val as partitionVal,top_partition_val,top_partition_flag,
            tana_wid_check
     from planocycle.work_priority_order_mst
-    where priority_order_cd = #{priorityOrderCd} and company_cd = #{companyCd} and author_cd = #{authorCd}
+    where priority_order_cd = #{priorityOrderCd} and company_cd = #{companyCd}
   </select>
     <select id="getShelfName" resultType="java.lang.Integer">
       select shelf_name_cd

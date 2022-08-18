@@ -174,9 +174,10 @@
 
     <insert id="insertJanList">
         insert into ${tableName}(
-                                 <foreach collection="janData[0]" index="index" separator=",">
-                                     "${index}"
-                                 </foreach>
+         <foreach collection="janData[0]" index="index" separator=",">
+             "${index}"
+         </foreach>
+         ,"102","103"
         )
         values
         <foreach collection="janData" item="items" separator=",">
@@ -184,6 +185,7 @@
             <foreach collection="items.entrySet()" item="value" separator=",">
                 #{value}
             </foreach>
+            ,#{authorCd}, #{date}
             )
         </foreach>
         on conflict("1")
@@ -191,6 +193,8 @@
         <foreach collection="infoHeader.split(',')" item="item" separator=",">
             ${item} = EXCLUDED.${item}
         </foreach>
+        ,"102" = #{authorCd}
+        ,"103" = #{date}
     </insert>
 
     <update id="syncJanHeader">

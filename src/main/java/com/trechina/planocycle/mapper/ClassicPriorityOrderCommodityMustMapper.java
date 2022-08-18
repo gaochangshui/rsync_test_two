@@ -18,7 +18,7 @@ public interface ClassicPriorityOrderCommodityMustMapper {
 
     int insert(@Param("lists") List<PriorityOrderCommodityMust> record);
 
-    List<PriorityOrderCommodityVO> selectMystInfo(String companyCd, Integer priorityOrderCd,String table1,String table2,String janInfoTable);
+    List<PriorityOrderCommodityVO> selectMystInfo(String companyCd, Integer priorityOrderCd,String table1,String table2,String janInfoTable,List<String> groupCompany);
 
     void insertPriorityBranchNum(@Param("lists") JSONArray jsonArray,@Param("companyCd")String companyCd, @Param("priorityOrderCd")Integer priorityOrderCd);
 
@@ -40,9 +40,9 @@ public interface ClassicPriorityOrderCommodityMustMapper {
 
     List<Map<String,Object>> getPriorityOrderMustList(String companyCd, Integer priorityOrderCd, List<String> attrList);
 
-    List<PriorityOrderBranchNumDto> getBranchAndPattern(String janNew, Integer priorityOrderCd);
+    List<PriorityOrderBranchNumDto> getBranchAndPattern(String janNew, Integer priorityOrderCd,String table1,String table2,List<String> groupCompany);
 
-    List<CommodityBranchVO> getExistCommodityMustBranchList(String companyCd,Integer priorityOrderCd, String jan,String table1,String table2);
+    List<CommodityBranchVO> getExistCommodityMustBranchList(String companyCd,Integer priorityOrderCd, String jan,String table1,String table2,List<String> groupCompany);
 
     void insertCommodityBranchList(String companyCd, Integer priorityOrderCd, String jan,String tableName,String table1,String table2);
 
@@ -52,4 +52,5 @@ public interface ClassicPriorityOrderCommodityMustMapper {
 
     void insertSurplusCommodityBranch(String companyCd, Integer priorityOrderCd, String jan, String tableName, List<CommodityBranchVO> existCommodityBranchList,String table1,String table2);
 
+    List<String> getGroupCompany(String companyCd);
 }

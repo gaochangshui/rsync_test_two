@@ -148,6 +148,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(workPriorityOrderMst.getShelfPatternCd().intValue());
         List<Map<String, Object>> ptsOldGroup = this.getOldPtsGroup(companyCd, priorityOrderCd, "planocycle.shelf_pts_data_jandata",ptsCd);
+
         Map<String, Object> groupOld = restrictResultMapper.getGroupOld(priorityOrderRestDto.getRestrictCd(), companyCd, priorityOrderCd, zokuseiCol);
         ptsOldGroup = ptsOldGroup.stream().filter(map -> {
             int a = 0;
@@ -188,17 +189,14 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         Integer priorityOrderCd = priorityOrderPlatformShedDto.getPriorityOrderCd();
         String companyCd = priorityOrderPlatformShedDto.getCompanyCd();
         String authorCd = session.getAttribute("aud").toString();
-        List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
 
-        List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         String commonPartsData = workPriorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
-        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
         List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd,"planocycle.work_priority_order_pts_data_jandata");
         ptsGroup= ptsGroup.stream().filter(map->map.get("taiCd").toString().equals(priorityOrderPlatformShedDto.getTaiCd()+"")&&
                 map.get("tanaCd").toString().equals(priorityOrderPlatformShedDto.getTanaCd()+""))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank")))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank",0)))
                 .collect(Collectors.toList());
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         Map<String,Object> mapHeader = new HashMap<>();
@@ -227,7 +225,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         List<Map<String, Object>> ptsOldGroup = this.getOldPtsGroup(companyCd, priorityOrderCd, "planocycle.shelf_pts_data_jandata",ptsCd);
         ptsOldGroup= ptsOldGroup.stream().filter(map->map.get("taiCd").toString().equals(priorityOrderPlatformShedDto.getTaiCd()+"")&&
                 map.get("tanaCd").toString().equals(priorityOrderPlatformShedDto.getTanaCd()+""))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank")))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank",0)))
                 .collect(Collectors.toList());
         for (Map<String, Object> map : ptsOldGroup) {
             for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
@@ -405,7 +403,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
         List<Map<String, Object>> restrictResult = restrictResultMapper.selectByPrimaryKey(priorityOrderCd);
-        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectNewJanZokusei(priorityOrderCd,ptsCd , zokuseiMsts, allCdList,
+        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectOldJanZokusei(priorityOrderCd,ptsCd , zokuseiMsts, allCdList,
                 commonTableName.getProInfoTable(),attrCol,janSizeCol, tableName,workPriorityOrderMst.getProductPowerCd());
 
         for (int i = 0; i < zokuseiList.size(); i++) {

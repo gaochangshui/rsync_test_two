@@ -13,7 +13,7 @@ public interface ClassicPriorityOrderPatternMapper {
 
     int insert(@Param("lists") List<PriorityOrderPattern> record);
 
-    int selectByPriorityOrderName(String companyCd,String priorityOrderName,Integer priorityOrderCd,String authorCd);
+    int selectByPriorityOrderName(String companyCd,String priorityOrderName,Integer priorityOrderCd);
 
     int deleteforid(Integer priorityOrderCd);
 
@@ -24,4 +24,6 @@ public interface ClassicPriorityOrderPatternMapper {
     int deleteWork(Integer priorityOrderCd);
 
     int insertWork(@Param("lists") List<PriorityOrderPattern> record);
+
+    void insertWorkForFinal(String companyCd, Integer priorityOrderCd, Integer newPriorityOrderCd);
 }

@@ -27,7 +27,8 @@
   </sql>
   <select id="getTableNameByCompanyCd" resultMap="tableNameList">
     select
-    priority_order_cd , priority_order_name,create_time,author_cd
+    priority_order_cd , priority_order_name,create_time,author_cd,
+    case when author_cd = '${authorCd}' then false else true end "allowEdit"
     from planocycle.priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR}
     and deleteflg=0
@@ -83,7 +84,7 @@
   </insert>
   <select id="selectByOrderName" resultType="int">
       select count(*) from planocycle.priority_order_mst where priority_order_name=#{priorityOrderName} and deleteflg=0
-    and author_cd=#{authorCd} and company_cd=#{companyCd}
+     and company_cd=#{companyCd}
   </select>
   <select id="selectByPriorityOrderCd" resultType="int">
     select count(*) from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and deleteflg=0

@@ -69,7 +69,10 @@
                        on musts.jan_new = jans."1"
           <if test="table1 != ''">
             left join ${table1} branchs
-            on  musts.branch = split_part(branchs."1", '_', 2) and branchs."1" like #{companyCd} ||'_%'
+            on  musts.branch = split_part(branchs."1", '_', 2) and split_part(branchs."1", '_', 1) in
+            <foreach collection="groupCompany" item="item" separator="," open="(" close=")">
+              #{item}
+            </foreach>
           </if>
             <if test="table2 != ''">
               left join ${table2} company_branchs
@@ -178,11 +181,29 @@
     where must.priority_order_cd = #{priorityOrderCd}
   </select>
   <select id="getBranchAndPattern" resultType="com.trechina.planocycle.entity.dto.PriorityOrderBranchNumDto">
-    select must.branch,must.shelf_pattern_cd,shelf_pattern_name,concat(must.branch,'_',branchs.branch_name) as branchName,
-           case when nots.branch is not null then 'すでに不可商品として入力済みです' ELSE '' end as errMsg
+    select must.branch,must.shelf_pattern_cd,shelf_pattern_name
+    <if test="table1 != '' and table2 != ''">
+      ,concat(coalesce (branchs."1",company_branchs."1"), '_', coalesce (branchs."2",company_branchs."2")) as branchName
+    </if>
+    <if test="table1 != ''">
+      ,concat(branchs."1", '_', branchs."2") as branchName
+    </if>
+    <if test="table2 != ''">
+      ,concat(company_branchs."1", '_', company_branchs."2") as branchName
+    </if>
+           ,case when nots.branch is not null then 'すでに不可商品として入力済みです' ELSE '' end as errMsg
     from priority.work_priority_order_commodity_must must
-           left join masterdb.branchs branchs
-                     on branchs.branch_cd = must.branch and branchs.company_cd = must.company_cd
+        <if test="table1 != ''">
+          left join ${table1} branchs
+          on  must.branch = split_part(branchs."1", '_', 2) and split_part(branchs."1", '_', 1) in
+          <foreach collection="groupCompany" item="item" separator="," open="(" close=")">
+            #{item}
+          </foreach>
+        </if>
+        <if test="table2 != ''">
+          left join ${table2} company_branchs
+          on  must.branch = company_branchs."1"
+        </if>
            left join planocycle.shelf_pattern_mst patternmst
                      on patternmst.shelf_pattern_cd = must.shelf_pattern_cd
            left join priority.work_priority_order_commodity_not nots
@@ -212,12 +233,18 @@
                on patternmst.shelf_pattern_cd=must.shelf_pattern_cd
           <if test="table1 != ''">
             left join ${table1} branchs
-            on  must.branch = split_part(branchs."1", '_', 2) and branchs."1" like #{companyCd} ||'_%'
+            on  must.branch = split_part(branchs."1", '_', 2) and split_part(branchs."1", '_', 1) in
+            <foreach collection="groupCompany" item="item" separator="," open="(" close=")">
+              #{item}
+            </foreach>
           </if>
           <if test="table2 != ''">
             left join ${table2} company_branchs
             on  must.branch = company_branchs."1"
           </if>
     where priority_order_cd=#{priorityOrderCd} and jan_new=#{jan} order by must.shelf_pattern_cd, branchs."1";
+  </select>
+  <select id="getGroupCompany" resultType="java.lang.String">
+    select company_cd from  masterdb.group_company where group_cd = #{companyCd}
   </select>
 </mapper>
