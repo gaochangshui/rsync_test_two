@@ -293,8 +293,7 @@
     <update id="setData">
         insert into planocycle.product_power_mst_data
         select * from planocycle.work_product_power_mst_data
-        where company_cd = #{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
-
+        where company_cd = #{companyCd} and product_power_cd = #{productPowerCd}
     </update>
     <update id="setWkDataRank">
         update planocycle.work_product_power_mst_data

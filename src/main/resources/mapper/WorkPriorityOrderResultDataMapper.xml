@@ -443,7 +443,7 @@
     set sort_rank =
     case  jan_cd
     <foreach collection="list" item="item">
-      when #{item.jan} then #{item.rankResult} ::integer
+      when #{item.jan} then #{item.resultRank} ::integer
     </foreach>
     else sort_rank end
     where company_cd=#{companyCd}  and priority_order_cd = #{priorityOrderCd}
