@@ -104,7 +104,7 @@ public class ExcelUtils {
                             Matcher isNum = numberPattern.matcher(String.valueOf(value));
                             if (!columnName.equals("jan") && isNum.matches()){
                                 janCell.setCellType(CellType.NUMERIC);
-                                janCell.setCellValue(Math.round(Double.parseDouble(String.valueOf(value))));
+                                janCell.setCellValue(Math.floor(Double.parseDouble(String.valueOf(value))));
                             }else{
                                 String valStr = value==null?"":String.valueOf(value);
                                 if(columnName.startsWith("intage") && Strings.isNullOrEmpty(valStr)){
