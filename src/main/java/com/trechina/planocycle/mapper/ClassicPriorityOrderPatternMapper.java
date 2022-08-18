@@ -24,4 +24,6 @@ public interface ClassicPriorityOrderPatternMapper {
     int deleteWork(Integer priorityOrderCd);
 
     int insertWork(@Param("lists") List<PriorityOrderPattern> record);
+
+    void insertWorkForFinal(String companyCd, Integer priorityOrderCd, Integer newPriorityOrderCd);
 }

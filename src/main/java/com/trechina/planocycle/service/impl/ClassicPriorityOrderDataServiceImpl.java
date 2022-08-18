@@ -439,6 +439,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             classicPriorityOrderMstMapper.deleteWork(newPriorityOrderCd);
             classicPriorityOrderMstMapper.setWorkForFinal(companyCd, priorityOrderCd,simpleDateFormat.format(date),newPriorityOrderCd);
 
+            priorityOrderPatternMapper.deleteWork(newPriorityOrderCd);
+            priorityOrderPatternMapper.insertWorkForFinal(companyCd,priorityOrderCd,newPriorityOrderCd);
+
             priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd, newPriorityOrderCd);
             priorityOrderJanCardMapper.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
 
