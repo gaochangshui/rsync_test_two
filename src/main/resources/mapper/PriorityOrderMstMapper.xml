@@ -27,7 +27,8 @@
   </sql>
   <select id="getTableNameByCompanyCd" resultMap="tableNameList">
     select
-    priority_order_cd , priority_order_name,create_time,author_cd
+    priority_order_cd , priority_order_name,create_time,author_cd,
+    case when author_cd = '${authorCd}' then false else true end "allowEdit"
     from planocycle.priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR}
     and deleteflg=0
