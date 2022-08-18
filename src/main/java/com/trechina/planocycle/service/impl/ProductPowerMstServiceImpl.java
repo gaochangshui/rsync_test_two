@@ -71,7 +71,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     @Override
     public Map<String, Object> getTableName(String companyCd) {
 
-        Map<String,Object> tableNameMap =  new HashMap<>();;
+        Map<String,Object> tableNameMap =  new HashMap<>();
         try {
             String aud = session.getAttribute("aud").toString();
             List<TableNameDto> commodityData = productPowerMstMapper.getTableNameByCompanyCd(companyCd,aud);

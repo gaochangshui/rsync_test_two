@@ -41,6 +41,7 @@ public class CommodityScoreDataServiceTest {
 
     @Test
     void getAttrFileSaveForCgi() {
+
 //        String companyCd="87c6f4";
 //        String filename="test";
 //        String datacd="1";

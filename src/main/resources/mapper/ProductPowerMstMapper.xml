@@ -81,7 +81,8 @@
   </select>
   <select id="getTableNameByCompanyCd" resultMap="tableNameList">
     select distinct
-      product_power_cd ,product_power_name ,registered ,author_name
+      product_power_cd ,product_power_name ,registered ,author_name,
+                    case when author_name = '${authorCd}' then false else true end "allowEdit"
     from planocycle.product_power_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR} and deleteflg=0
     order by product_power_cd desc
