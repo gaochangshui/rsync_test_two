@@ -1,6 +1,8 @@
 package com.trechina.planocycle.utils;
 
 
+import com.google.common.base.Strings;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -19,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExcelUtils {
     private ExcelUtils(){}
@@ -30,6 +34,7 @@ public class ExcelUtils {
                                          OutputStream outputStream) {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
             XSSFSheet sheet = workbook.createSheet();
+            Pattern numberPattern = Pattern.compile("-?[0-9]+(\\.[0-9]+)?%?");
 
             //最初の行の索引
             int colIndex=0;
@@ -96,8 +101,20 @@ public class ExcelUtils {
                             janCell.setCellType(CellType.NUMERIC);
                             janCell.setCellValue((Integer)value);
                         }else{
-                            janCell.setCellType(CellType.STRING);
-                            janCell.setCellValue(Objects.nonNull(value)?String.valueOf(value):"");
+                            Matcher isNum = numberPattern.matcher(String.valueOf(value));
+                            if (!columnName.equals("jan") && isNum.matches()){
+                                janCell.setCellType(CellType.NUMERIC);
+                                janCell.setCellValue(Math.floor(Double.parseDouble(String.valueOf(value))));
+                            }else{
+                                String valStr = value==null?"":String.valueOf(value);
+                                if(columnName.startsWith("intage") && Strings.isNullOrEmpty(valStr)){
+                                    janCell.setCellType(CellType.NUMERIC);
+                                    janCell.setCellValue(0);
+                                }else{
+                                    janCell.setCellType(CellType.STRING);
+                                    janCell.setCellValue(Objects.nonNull(value)?String.valueOf(value):"");
+                                }
+                            }
                         }
 
                         columnIndex++;

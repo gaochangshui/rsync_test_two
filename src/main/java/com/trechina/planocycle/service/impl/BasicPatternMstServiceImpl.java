@@ -139,7 +139,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 zokuseiMsts, cdList, sizeAndIrisuMap);
         classifyList = this.updateJanSizeByMap(classifyList);
         classifyList.forEach(item->{
-            item.put("width", MapUtils.getInteger(item,"width", 67)*MapUtils.getInteger(item, "faceCount", 1));
+            item.put("width", MapUtils.getLong(item,"width", MagicString.DEFAULT_WIDTH)*MapUtils.getInteger(item, "faceCount", 1));
         });
 
         basicMapperMapper.delete(priorityOrderCd, companyCd);
