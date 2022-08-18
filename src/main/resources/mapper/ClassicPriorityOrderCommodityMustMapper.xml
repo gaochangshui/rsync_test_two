@@ -212,7 +212,7 @@
                on patternmst.shelf_pattern_cd=must.shelf_pattern_cd
           <if test="table1 != ''">
             left join ${table1} branchs
-            on  must.branch = split_part(branchs."1", '_', 2) and branchs."1" like #{companyCd} ||'_%'
+            on  must.branch = split_part(branchs."1", '_', 2) or branchs."1" like #{companyCd} ||'_%'
           </if>
           <if test="table2 != ''">
             left join ${table2} company_branchs
