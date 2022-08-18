@@ -264,6 +264,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.deleteWKIntage(companyCd,aud,newProductPowerCd);
         productPowerParamMstMapper.deleteWork(companyCd,newProductPowerCd);
 
+
         productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
          productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
          productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
@@ -304,7 +305,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
         List<LinkedHashMap<String, Object>> returnDataAttr = new ArrayList<>();
-        ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerNo);
+        ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, newProductPowerCd);
         List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
         List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
         List<LinkedHashMap<String, Object>> allDataAttr = productPowerDataMapper.getAllDataAttr(companyCd, productPowerNo

@@ -268,7 +268,6 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         List<Map<String, Object>> restrictResult = restrictResultMapper.selectGroup(priorityOrderCd,zokuseiMsts);
         Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
-        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
         List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectNewJanZokusei(priorityOrderCd, id, zokuseiMsts, allCdList,
                 commonTableName.getProInfoTable(),attrCol,janSizeCol, tableName,workPriorityOrderMst.getProductPowerCd());
@@ -290,10 +289,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                     zokusei.put("restrictCd", restrictCd);
                 }
             }
-
             zokuseiList.set(i, zokusei);
         }
-
         return zokuseiList;
     }
 
@@ -350,7 +347,10 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             List<Map<String, Object>> alikeTana = priorityOrderShelfDataMapper.getAlikeTana(map, id);
             priorityOrderShelfDataMapper.updatePositionCd(alikeTana,id);
         }
-        return ResultMaps.result(ResultEnum.SUCCESS);
+        Map<String,Object> map1 = new HashMap<>();
+        map1.put("faceNum",shelfPtsDataMapper.getNewFaceNum(Integer.parseInt(map.get("priorityOrderCd").toString())));
+        map1.put("skuNum",shelfPtsDataMapper.getNewSkuNum(Integer.parseInt(map.get("priorityOrderCd").toString())));
+        return ResultMaps.result(ResultEnum.SUCCESS,map1);
     }
 
     @Override
@@ -373,8 +373,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                 groupHeader += ","+map.get("zokusei_nm");
             }
         }
-        groupColumns += ",janCd,janName,rank,taiCd,tanaCd,tanapositionCd,faceNum,faceMen,faceKaiten,tumiagesu,plano_width,plano_height,plano_depth";
-        groupHeader += ",JAN,商品名,RANK,台番号,棚段番号,棚位置,フェース数,フェース面,フェース回転,積上数,幅,高,奥行";
+        groupColumns += ",janCd,janName,janFlag,rank,taiCd,tanaCd,tanapositionCd,faceNum,faceMen,faceKaiten,tumiagesu,plano_width,plano_height,plano_depth";
+        groupHeader += ",JAN,商品名,区分,RANK,台番号,棚段番号,棚位置,フェース数,フェース面,フェース回転,積上数,幅,高,奥行";
 
         mapHeader.put("groupColumns",groupColumns);
         mapHeader.put("groupHeader",groupHeader);
