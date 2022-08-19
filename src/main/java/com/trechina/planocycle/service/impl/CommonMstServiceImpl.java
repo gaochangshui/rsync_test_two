@@ -665,7 +665,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     newJanDto.setJanCd(backupJanNew.getJanCd());
                     newJanDto.setFace(backupJanNew.getFace());
                     newJanDto.setFaceFact(backupJanNew.getFace());
-                    newJanDto.setZaikosu(0);
+                    newJanDto.setZaikosu(1);
                     newJanDto.setCutFlag(0);
                     newJanDto.setAdoptFlag(1);
 
@@ -683,7 +683,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                         newJanDto.setJanCd(backupJanNew.getJanCd());
                         newJanDto.setFace(backupJanNew.getFace());
                         newJanDto.setFaceFact(backupJanNew.getFace());
-                        newJanDto.setZaikosu(0);
+                        newJanDto.setZaikosu(1);
                         newJanDto.setCutFlag(0);
                         newJanDto.setAdoptFlag(1);
 
