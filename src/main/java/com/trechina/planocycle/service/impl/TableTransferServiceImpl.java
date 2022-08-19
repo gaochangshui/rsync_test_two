@@ -1,19 +1,14 @@
 package com.trechina.planocycle.service.impl;
 
-import com.trechina.planocycle.entity.po.Zokusei;
 import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.TableTransferService;
 import com.trechina.planocycle.service.ZokuseiMstDataService;
-import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class TableTransferServiceImpl implements TableTransferService {
