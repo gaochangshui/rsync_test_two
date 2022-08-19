@@ -549,11 +549,12 @@ public class CommonMstServiceImpl implements CommonMstService {
         Map<Long, List<PriorityOrderResultDataDto>> newJanByRestrictCd = newJanDtoList.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd));
         for (Map.Entry<Long, List<PriorityOrderResultDataDto>> entry : janResultByRestrictCd.entrySet()) {
             Long restrictCd = entry.getKey();
-            List<PriorityOrderResultDataDto> value = entry.getValue().stream().sorted(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
+            List<PriorityOrderResultDataDto> value = entry.getValue();
             Map<String, Long> janCdCount = value.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getJanCd, Collectors.counting()));
 
             List<PriorityOrderResultDataDto> uniqueValue = value.stream().collect(Collectors.collectingAndThen(
-                    Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(PriorityOrderResultDataDto::getJanCd))), ArrayList::new)
+                    Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank)
+                            .thenComparing(PriorityOrderResultDataDto::getJanCd))), ArrayList::new)
             );
 
             int cutCount = 0;
