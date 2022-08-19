@@ -118,6 +118,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Autowired
     private ClassicPriorityOrderPatternMapper priorityOrderPatternMapper;
     @Autowired
+    private ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
     private LogAspect logAspect;
     @Autowired
     private IDGeneratorService idGeneratorService;
@@ -210,8 +212,15 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             mapColHeader.put("rank_upd","Rank");
             List<Map<String, Object>> initialExtraction = new ArrayList<>();
             initialExtraction.add(mapColHeader);
+        ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderDataDto.getProductPowerCd());
+        String colName = "";
+        if (param.getJanName2colNum() == 1){
+            colName = "jan";
+        }else {
+            colName = "2";
+        }
         List<Map<String, Object>> datas = shelfPtsDataMapper.getInitialExtraction(shelfPtsData, tableName
-                , priorityOrderDataDto.getProductPowerCd(), listTableName, listAttr);
+                , priorityOrderDataDto.getProductPowerCd(), listTableName, listAttr,colName);
         if (datas.isEmpty()){
             return ResultMaps.result(ResultEnum.SIZEISZERO);
         }

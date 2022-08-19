@@ -644,7 +644,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 for (BasicPatternRestrictRelationVo patternRestrictRelation : tanaAttrList) {
                     patternRestrictRelation.setAreaPosition(i++);
                 }
-                if (collect.getSum() < 100L){
+                if (collect.getSum() < 99L){
                     BasicPatternRestrictRelationVo basicPatternRestrictRelation1 = new BasicPatternRestrictRelationVo();
                     basicPatternRestrictRelation1.setArea( (100-collect.getSum()));
                     basicPatternRestrictRelation1.setTaiCd(taiCd);
