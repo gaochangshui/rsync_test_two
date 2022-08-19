@@ -279,6 +279,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         
         if (!productPowerData.isEmpty()) {
             productPowerData = CommonUtil.janSort(productPowerData, data, "rank");
+        }else {
+            productPowerData.addAll(data);
         }
         List list1 = new ArrayList();
         list1.add(data);
