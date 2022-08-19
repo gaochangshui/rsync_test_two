@@ -651,7 +651,7 @@
                        on datas.jan = info."1"
          where datas.product_power_cd =#{productPowerCd}
         ) t2
-        on t1."2" = t2."2"
+        on t1."${colName}" = t2."${colName}"
         <foreach collection="attrTableName" item="item" index="index">
           left join ${item} as ${index}
         on ${index}."1" = t1.jan

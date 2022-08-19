@@ -547,9 +547,11 @@
         from planocycle.work_priority_order_result_data resultdata
         left join planocycle.work_priority_order_pts_data_jandata jandata
         on jandata.jan = resultdata.jan_cd and pts_cd=#{ptsCd}
-        left join planocycle.work_priority_order_jan_replace replace on replace.priority_order_cd=#{priorityOrderCd} and replace.jan_new=resultdata.jan_cd
+        left join planocycle.work_priority_order_jan_replace replace on replace.priority_order_cd=#{priorityOrderCd} and replace.jan_old=resultdata.jan_cd
         left join planocycle.work_priority_order_jan_new jannew
             on jannew.jan_new = resultdata.jan_cd and jannew.priority_order_cd=#{priorityOrderCd}
+        and not EXISTS (SELECT jan from planocycle.work_basic_pattern_restrict_result_data where priority_order_cd = jannew.priority_order_cd and jannew.jan_new = jan)
+        and not EXISTS (SELECT jan_new from planocycle.work_priority_order_jan_replace where priority_order_cd = jannew.priority_order_cd and jannew.jan_new = jan_new)
         left join planocycle.work_priority_order_cut cut
             on cut.jan_cd = resultdata.jan_cd and cut.priority_order_cd=#{priorityOrderCd}
         inner join ${proInfoTable} janinfo on  janinfo."1"=coalesce(replace.jan_old, resultdata.jan_cd)

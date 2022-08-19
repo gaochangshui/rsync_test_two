@@ -470,7 +470,7 @@
   </select>
     <select id="getProductReorder" resultType="map">
       select
-        resultdata.jan as "janCd",coalesce(jan_old,resultdata.jan) as "jan",row_number() over(partition by restrict_cd order by rank_result nulls last ,resultdata.jan)  as "resultRank"
+        resultdata.jan as "janCd",coalesce(jan_old,resultdata.jan) as "jan",dense_rank() over(partition by restrict_cd order by rank_result nulls last ,resultdata.jan)  as "resultRank"
       <foreach collection="attrList" item="item1" open="," separator=",">
         <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'')</if>
         <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
@@ -497,7 +497,7 @@
   </select>
   <select id="getNewJanProductReorder" resultType="java.util.Map">
     select
-    resultdata.jan_new as "janCd",jan_rank as "resultRank"
+    resultdata.jan_new as "janCd", resultdata.jan_new as "jan",jan_rank as "resultRank"
     <foreach collection="attrList" item="item1" open="," separator=",">
       <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'')</if>
       <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
@@ -514,6 +514,7 @@
     planocycle.work_priority_order_jan_new resultdata
     left join ${tableName} info
     on resultdata.jan_new = info."1"
-    where priority_order_cd = #{priorityOrderCd}
+    where priority_order_cd = #{priorityOrderCd}  and not EXISTS (SELECT jan from planocycle.work_basic_pattern_restrict_result_data where priority_order_cd = resultdata.priority_order_cd and resultdata.jan_new = jan)
+    and not EXISTS (SELECT jan_new from planocycle.work_priority_order_jan_replace where priority_order_cd = resultdata.priority_order_cd and resultdata.jan_new = jan_new)
   </select>
 </mapper>

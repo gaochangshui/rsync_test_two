@@ -21,7 +21,8 @@
         inner join ${proInfoTable} janinfo on  janinfo."1"=new.jan_new
         where new.priority_order_cd=#{priorityOrderCd} and not exists(
             select * from planocycle.work_basic_pattern_restrict_result_data where priority_order_cd=new.priority_order_cd
-            and jan= new.jan_new
-        ) order by jan_rank
+            and jan= new.jan_new) and not exists(
+        select * from planocycle.work_priority_order_jan_replace where priority_order_cd=new.priority_order_cd
+        and jan_new= new.jan_new) order by jan_rank
     </select>
 </mapper>

@@ -449,7 +449,8 @@ public class CommonMstServiceImpl implements CommonMstService {
             }
         }
 
-        Map<String, List<PriorityOrderResultDataDto>> adoptJanByTaiTana = adoptJan.stream().collect(Collectors.groupingBy(dto -> dto.getTaiCd() + "_" + dto.getTanaCd()));
+        Map<String, List<PriorityOrderResultDataDto>> adoptJanByTaiTana = adoptJan.stream()
+                .filter(dto->!Objects.equals(dto.getCutFlag(),1)).collect(Collectors.groupingBy(dto -> dto.getTaiCd() + "_" + dto.getTanaCd()));
         for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : adoptJanByTaiTana.entrySet()) {
             List<PriorityOrderResultDataDto> value = entry.getValue();
             List<PriorityOrderResultDataDto> newJanList = value.stream().filter(dto -> dto.getTanapositionCd() == null
@@ -549,11 +550,12 @@ public class CommonMstServiceImpl implements CommonMstService {
         Map<Long, List<PriorityOrderResultDataDto>> newJanByRestrictCd = newJanDtoList.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd));
         for (Map.Entry<Long, List<PriorityOrderResultDataDto>> entry : janResultByRestrictCd.entrySet()) {
             Long restrictCd = entry.getKey();
-            List<PriorityOrderResultDataDto> value = entry.getValue().stream().sorted(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank)).collect(Collectors.toList());
+            List<PriorityOrderResultDataDto> value = entry.getValue();
             Map<String, Long> janCdCount = value.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getJanCd, Collectors.counting()));
 
             List<PriorityOrderResultDataDto> uniqueValue = value.stream().collect(Collectors.collectingAndThen(
-                    Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(PriorityOrderResultDataDto::getJanCd))), ArrayList::new)
+                    Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(PriorityOrderResultDataDto::getSkuRank)
+                            .thenComparing(PriorityOrderResultDataDto::getJanCd))), ArrayList::new)
             );
 
             int cutCount = 0;
@@ -664,7 +666,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     newJanDto.setJanCd(backupJanNew.getJanCd());
                     newJanDto.setFace(backupJanNew.getFace());
                     newJanDto.setFaceFact(backupJanNew.getFace());
-                    newJanDto.setZaikosu(0);
+                    newJanDto.setZaikosu(1);
                     newJanDto.setCutFlag(0);
                     newJanDto.setAdoptFlag(1);
 
@@ -674,6 +676,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                         }
                     });
                 }else{
+                    boolean isCut = true;
                     for (int i = usedBackupIndex; i < backupJans.size(); i++) {
                         PriorityOrderResultDataDto backupJanNew = backupJans.get(i);
                         if(Objects.equals(backupJanNew.getAdoptFlag(), 1)){
@@ -682,13 +685,18 @@ public class CommonMstServiceImpl implements CommonMstService {
                         newJanDto.setJanCd(backupJanNew.getJanCd());
                         newJanDto.setFace(backupJanNew.getFace());
                         newJanDto.setFaceFact(backupJanNew.getFace());
-                        newJanDto.setZaikosu(0);
+                        newJanDto.setZaikosu(1);
                         newJanDto.setCutFlag(0);
                         newJanDto.setAdoptFlag(1);
 
                         backupJanNew.setAdoptFlag(1);
                         backupJans.set(usedBackupIndex++, backupJanNew);
+                        isCut = false;
                         break;
+                    }
+
+                    if(isCut){
+                        newJanDto.setCutFlag(1);
                     }
                 }
 

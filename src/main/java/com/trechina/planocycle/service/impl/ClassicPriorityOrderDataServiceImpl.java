@@ -118,6 +118,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Autowired
     private ClassicPriorityOrderPatternMapper priorityOrderPatternMapper;
     @Autowired
+    private ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
     private LogAspect logAspect;
     @Autowired
     private IDGeneratorService idGeneratorService;
@@ -135,7 +137,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         String authorCd = session.getAttribute("aud").toString();
 
         Date date = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         classicPriorityOrderMstMapper.deleteWork(priorityOrderDataDto.getPriorityOrderCd());
         classicPriorityOrderMstMapper.setWork(priorityOrderDataDto,authorCd,simpleDateFormat.format(date));
 
@@ -210,8 +212,15 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             mapColHeader.put("rank_upd","Rank");
             List<Map<String, Object>> initialExtraction = new ArrayList<>();
             initialExtraction.add(mapColHeader);
+        ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderDataDto.getProductPowerCd());
+        String colName = "";
+        if (param.getJanName2colNum() == 1){
+            colName = "jan";
+        }else {
+            colName = "2";
+        }
         List<Map<String, Object>> datas = shelfPtsDataMapper.getInitialExtraction(shelfPtsData, tableName
-                , priorityOrderDataDto.getProductPowerCd(), listTableName, listAttr);
+                , priorityOrderDataDto.getProductPowerCd(), listTableName, listAttr,colName);
         if (datas.isEmpty()){
             return ResultMaps.result(ResultEnum.SIZEISZERO);
         }
@@ -435,7 +444,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         if (priorityOrderDataDto.getFlag()==0) {
             //最終表をテンポラリ・テーブルに戻す
             Date date = new Date();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             classicPriorityOrderMstMapper.deleteWork(newPriorityOrderCd);
             classicPriorityOrderMstMapper.setWorkForFinal(companyCd, priorityOrderCd,simpleDateFormat.format(date),newPriorityOrderCd);
 

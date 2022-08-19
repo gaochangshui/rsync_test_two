@@ -198,7 +198,7 @@ public interface ShelfPtsDataMapper {
     List<ShelfPtsData> getPtsCdByPatternCd(@Param("companyCd") String companyCd, @Param("patternCd") String shelfPatternCd);
 
     List<Map<String,Object>> getInitialExtraction(List<ShelfPtsData> shelfPtsData, String tableName, Integer productPowerCd
-            , Map<String,Object> attrTableName, List<Map<String,Object>> listAttr);
+            , Map<String,Object> attrTableName, List<Map<String,Object>> listAttr,String colName);
 
     List<LinkedHashMap<String, Object>> getColHeader(Map<String, Object> listTableName, List<Map<String, Object>> listAttr);
 
