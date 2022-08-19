@@ -516,10 +516,10 @@
         where priority_order_cd=#{priorityOrderCd}
     </select>
     <select id="getPtsAllJan" resultType="java.util.Map">
-        select case  when jandata.jan is not null then face_count else resultdata.face end as "faceNum",
-        case  when jandata.jan is not null then face_men else 1 end as "faceMen",
-        case  when jandata.jan is not null then face_kaiten else 0 end as "faceKaiten",
-        case  when jandata.jan is not null then tumiagesu else 1 end as "tumiagesu",
+        select  face_count as "faceNum",
+        face_men  as "faceMen",
+         face_kaiten  as "faceKaiten",
+          tumiagesu  as "tumiagesu",
         <foreach collection="attrName" separator="," item="item" index="index">
             coalesce ("${item.zokusei_col}",'') as "${item.zokusei_colname}"
         </foreach>
