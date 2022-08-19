@@ -40,8 +40,6 @@ public class JanAttrServiceImpl implements JanAttrService {
             companyCd = productItemVO.getCompanyCd();
         }
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd, classCd);
-        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", companyCd, classCd);
-        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,classCd);
         String nameExist = mstJanMapper.getNameExist(productItemVO.getName(), tableNameAttr);
         if (nameExist!= null){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
@@ -71,7 +69,7 @@ public class JanAttrServiceImpl implements JanAttrService {
         prodKaisouHeaderMapper.setItem(map,tableNameAttr);
         Integer maxZokuseiId = zokuseiMstMapper.getMaxZokuseiId(companyCd, classCd);
         zokuseiMstMapper.setItem(itemColName,maxZokuseiId+1,companyCd,classCd,productItemVO.getName());
-        return ResultMaps.result(ResultEnum.SUCCESS);
+        return ResultMaps.result(ResultEnum.SUCCESS,map.get("1"));
     }
 
     @Override

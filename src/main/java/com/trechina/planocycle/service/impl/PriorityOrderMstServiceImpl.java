@@ -269,7 +269,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
             return attrKey;
         }));
-        Set set = new HashSet();
+        Set<Map<String,Object>> set = new HashSet();
         for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : ptsJan.entrySet()) {
             for (Map.Entry<String, List<Map<String, Object>>> listEntry : newJan.entrySet()) {
                 if (stringListEntry.getKey().equals(listEntry.getKey())){

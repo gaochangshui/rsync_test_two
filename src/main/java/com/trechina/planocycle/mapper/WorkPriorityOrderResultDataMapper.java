@@ -78,5 +78,5 @@ public interface WorkPriorityOrderResultDataMapper {
     List<Map<String, Object>> getNewJanProductReorder(String companyCd, String authorCd
             , Integer productPowerCd, Integer priorityOrderCd, String tableName, List<ZokuseiMst> attrList, List<Integer> allCdList);
 
-    void setRank(Set list, String companyCd, String authorCd, Integer priorityOrderCd);
+    void setRank(Set<Map<String,Object>> list, String companyCd, String authorCd, Integer priorityOrderCd);
 }
