@@ -183,7 +183,7 @@
 
     select jan_new as janNew,"row_number"() over(order by rank_result,jan_new) as rankResult from (
                                                                             select
-           COALESCE(replaces.jan_new,jandata.jan) as jan_new, case when rank_result is null then 9999 else rank_result end rank_result
+           jandata.jan as jan_new, case when rank_result is null then 9999 else rank_result end rank_result
          from
            planocycle.shelf_pts_data  ptsdata
              left join

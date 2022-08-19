@@ -515,5 +515,6 @@
     left join ${tableName} info
     on resultdata.jan_new = info."1"
     where priority_order_cd = #{priorityOrderCd}  and not EXISTS (SELECT jan from planocycle.work_basic_pattern_restrict_result_data where priority_order_cd = resultdata.priority_order_cd and resultdata.jan_new = jan)
+    and not EXISTS (SELECT jan_new from planocycle.work_priority_order_jan_replace where priority_order_cd = resultdata.priority_order_cd and resultdata.jan_new = jan_new)
   </select>
 </mapper>
