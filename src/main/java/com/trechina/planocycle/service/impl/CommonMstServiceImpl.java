@@ -449,7 +449,8 @@ public class CommonMstServiceImpl implements CommonMstService {
             }
         }
 
-        Map<String, List<PriorityOrderResultDataDto>> adoptJanByTaiTana = adoptJan.stream().collect(Collectors.groupingBy(dto -> dto.getTaiCd() + "_" + dto.getTanaCd()));
+        Map<String, List<PriorityOrderResultDataDto>> adoptJanByTaiTana = adoptJan.stream()
+                .filter(dto->!Objects.equals(dto.getCutFlag(),1)).collect(Collectors.groupingBy(dto -> dto.getTaiCd() + "_" + dto.getTanaCd()));
         for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : adoptJanByTaiTana.entrySet()) {
             List<PriorityOrderResultDataDto> value = entry.getValue();
             List<PriorityOrderResultDataDto> newJanList = value.stream().filter(dto -> dto.getTanapositionCd() == null
@@ -675,6 +676,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                         }
                     });
                 }else{
+                    boolean isCut = true;
                     for (int i = usedBackupIndex; i < backupJans.size(); i++) {
                         PriorityOrderResultDataDto backupJanNew = backupJans.get(i);
                         if(Objects.equals(backupJanNew.getAdoptFlag(), 1)){
@@ -689,7 +691,12 @@ public class CommonMstServiceImpl implements CommonMstService {
 
                         backupJanNew.setAdoptFlag(1);
                         backupJans.set(usedBackupIndex++, backupJanNew);
+                        isCut = false;
                         break;
+                    }
+
+                    if(isCut){
+                        newJanDto.setCutFlag(1);
                     }
                 }
 
