@@ -23,7 +23,11 @@ public class MstBranchController {
        return mstBranchService.getBranchInfo(branchList);
     }
 
-
+    /**
+     *
+     * @param branchList
+     * @return
+     */
     @PostMapping("setBranchInfo")
     public Map<String,Object> setBranchInfo(@RequestBody BranchList branchList){
         return mstBranchService.setBranchInfo(branchList);
