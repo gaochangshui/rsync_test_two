@@ -62,4 +62,23 @@
     <select id="getBranchExist" resultType="java.lang.Integer">
         select count(1) from ${branchInfoTableName} where "1" = #{branchStr}
     </select>
+    <insert id="syncTenData">
+        insert into ${tableName}
+        select *,0
+        from
+        ${tableNameWK}
+        on
+        conflict("1") do
+        update
+        set
+        <foreach collection="column.split(',')" item="item" separator=",">
+            "${item}" = EXCLUDED."${item}"
+        </foreach>
+    </insert>
+    <select id="getTenHeader" resultType="java.util.LinkedHashMap">
+        select "1","2","3" from ${tableName} where "1" not in ('jan_name','jan_cd')   order by "3"
+    </select>
+    <select id="getMasterTenClass" resultType="string">
+        select "1" from ${tableName}
+    </select>
 </mapper>

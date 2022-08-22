@@ -36,4 +36,9 @@ public class MstBranchController {
     public Map<String,Object> setBranchInfo(@RequestBody List<BranchList> branchList){
         return mstBranchService.setBranchInfo(branchList);
     }
+
+    @GetMapping("syncTenInfo")
+    public Map<String,Object> syncTenInfo(){
+        return mstBranchService.syncTenData();
+    }
 }

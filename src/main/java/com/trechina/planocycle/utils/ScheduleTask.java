@@ -1,9 +1,12 @@
 package com.trechina.planocycle.utils;
 
 import com.trechina.planocycle.mapper.LogMapper;
+import com.trechina.planocycle.mapper.MstBranchMapper;
 import com.trechina.planocycle.mapper.ProductPowerDataMapper;
+import com.trechina.planocycle.service.MstBranchService;
 import com.trechina.planocycle.service.MstJanService;
 import com.trechina.planocycle.service.TableTransferService;
+import com.trechina.planocycle.service.impl.MstBranchServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,8 @@ public class ScheduleTask {
     @Autowired
     private MstJanService mstJanService;
     @Autowired
+    private MstBranchService mstBranchService;
+    @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
 
     @Scheduled(cron = "0 0 7 * * ?")
@@ -37,6 +42,7 @@ public class ScheduleTask {
         //logger.info("定時調度任務--janInfo表同期開始");
         //tableTransferService.getJanInfoTransfer();
         mstJanService.syncJanData();
+        mstBranchService.syncTenData();
         tableTransferService.syncZokuseiMst();
     }
 

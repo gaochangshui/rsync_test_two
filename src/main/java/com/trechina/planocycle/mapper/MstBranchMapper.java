@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.po.BranchList;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,13 @@ public interface MstBranchMapper {
 
     Integer getBranchExist(String branchInfoTableName, List<String> branchCdList);
 
+    void setBranchInfo(@Param("item") BranchList branchList, @Param("branchInfoTableName") String branchInfoTableName);
+
+    void syncTenData(@Param("tableName") String tableNameInfo, @Param("tableNameWK") String tableNameInfoWK, String column);
+
+    List<LinkedHashMap<String, Object>> getTenHeader(String tableNameHeaderInfo);
+
+    List<String> getMasterTenClass(String tableName);
     void setBranchInfo(@Param("list") List<BranchList> branchList, @Param("branchInfoTableName") String branchInfoTableName);
 
     void deleteBranch(String branchInfoTableName);
