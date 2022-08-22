@@ -10,4 +10,5 @@ public class BranchList {
     private String branchCd;
     private String branchName;
     private String areaName;
+    private String groupCd;
 }

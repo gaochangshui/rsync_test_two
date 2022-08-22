@@ -27,5 +27,5 @@ public interface MstBranchMapper {
     List<String> getMasterTenClass(String tableName);
     void setBranchInfo(@Param("list") List<BranchList> branchList, @Param("branchInfoTableName") String branchInfoTableName);
 
-    void deleteBranch(String branchInfoTableName);
+    void deleteBranch(String branchInfoTableName,String groupCd);
 }

@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import com.google.api.client.util.Strings;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.BranchList;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -53,15 +54,16 @@ public class MstBranchServiceImpl implements MstBranchService {
     @Override
     public Map<String, Object> setBranchInfo(List<BranchList> branchList) {
         String companyCd = "1000";
-
+        String groupCd = "";
         if ("0".equals(branchList.get(0).getCommonPartsData().getStoreIsCore())) {
             companyCd = branchList.get(0).getCompanyCd();
         }else {
-            branchList.forEach(map-> map.setBranchCd(map.getCompanyCd()+"_"+map.getBranchCd()));
+               branchList.stream().filter(map-> Strings.isNullOrEmpty(map.getBranchCd())).forEach(map -> map.setBranchCd(map.getCompanyCd() + "_" + map.getBranchCd()));
+            groupCd = branchList.get(0).getGroupCd();
         }
         String branchInfoTableName = MessageFormat.format("\"{0}\".ten_{1}_ten_info", companyCd,
                 branchList.get(0).getCommonPartsData().getStoreMstClass());
-        mstBranchMapper.deleteBranch(branchInfoTableName);
+        mstBranchMapper.deleteBranch(branchInfoTableName,groupCd);
         mstBranchMapper.setBranchInfo(branchList,branchInfoTableName);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
