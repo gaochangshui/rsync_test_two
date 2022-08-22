@@ -135,7 +135,8 @@ public interface ProductPowerDataMapper {
     int deleteWKData(@Param("companyCd") String companyCd, @Param("authorCd") String authorCd,@Param("productPowerCd") Integer productPowerCd);
 
 
-    int setWKData(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd,@Param("productPowerCd")Integer productPowerCd);
+    int setWKData(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd,@Param("productPowerCd")Integer productPowerCd
+            ,@Param("ptsCd")List<Integer> ptsCd,@Param("storeCd") List<String> storeCd);
 
     int deleteData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
 
@@ -143,8 +144,7 @@ public interface ProductPowerDataMapper {
     ,@Param("newProductPowerCd")Integer newProductPowerCd);
 
     List<LinkedHashMap<String,Object>> getAllDataAttr(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("list")List<String> list
-            ,@Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify, @Param("tableName") String tableName
-            ,@Param("ptsCd")List<Integer> ptsCd,@Param("storeCd")List<String> storeCd);
+            ,@Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify, @Param("tableName") String tableName);
 
 
     List<LinkedHashMap<String,Object>> getAllDataItem(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("list")List<String> list
@@ -198,4 +198,5 @@ public interface ProductPowerDataMapper {
     List<String> getWorkTableName();
 
     void delWork(String tableName);
+
 }

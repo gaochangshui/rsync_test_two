@@ -19,7 +19,6 @@ public interface MstBranchMapper {
 
     Integer getBranchExist(String branchInfoTableName, List<String> branchCdList);
 
-    void setBranchInfo(@Param("item") BranchList branchList, @Param("branchInfoTableName") String branchInfoTableName);
 
     void syncTenData(@Param("tableName") String tableNameInfo, @Param("tableNameWK") String tableNameInfoWK, String column);
 
