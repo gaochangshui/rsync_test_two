@@ -25,7 +25,7 @@ public class MstBranchController {
     }
 
     /**
-     *
+     *店舗詳細保存
      * @param branchList
      * @return
      */

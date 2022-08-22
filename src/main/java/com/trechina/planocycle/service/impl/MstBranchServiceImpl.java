@@ -56,24 +56,28 @@ public class MstBranchServiceImpl implements MstBranchService {
 
         if ("0".equals(branchList.get(0).getCommonPartsData().getStoreIsCore())) {
             companyCd = branchList.get(0).getCompanyCd();
+        }else {
+            branchList.forEach(map-> map.setBranchCd(branchList.get(0).getCompanyCd()+"_"+map.getBranchCd()));
         }
         String branchInfoTableName = MessageFormat.format("\"{0}\".ten_{1}_ten_info", companyCd,
                 branchList.get(0).getCommonPartsData().getStoreMstClass());
         mstBranchMapper.deleteBranch(branchInfoTableName);
-        Integer branchSize = mstBranchMapper.getBranchSize(branchInfoTableName, companyCd);
-        int diff = branchSize - branchList.get(0).getBranchCd().length();
-        for (BranchList list : branchList) {
-            StringBuilder branchStr = new StringBuilder();
-            if (companyCd.equals("1000")){
-                branchStr.append(branchList.get(0).getCompanyCd()+"_");
-            }
-            for (int l = 0; l < diff; l++) {
-                branchStr.append("0");
+        //Integer branchSize = mstBranchMapper.getBranchSize(branchInfoTableName, companyCd);
+        //int diff = branchSize - branchList.get(0).getBranchCd().length();
+        //for (BranchList list : branchList) {
+        //    StringBuilder branchStr = new StringBuilder();
+        //    if (companyCd.equals("1000")){
+        //        branchStr.append(branchList.get(0).getCompanyCd()+"_");
+        //    }
+        //    for (int l = 0; l < diff; l++) {
+        //        branchStr.append("0");
+        //
+        //    }
+        //    branchStr.append(list.getBranchCd());
+        //    list.setBranchCd(branchStr.toString());
+        //}
 
-            }
-            branchStr.append(list.getBranchCd());
-            list.setBranchCd(branchStr.toString());
-        }
+
         mstBranchMapper.setBranchInfo(branchList,branchInfoTableName);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
