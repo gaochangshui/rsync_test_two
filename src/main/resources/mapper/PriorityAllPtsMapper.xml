@@ -12,7 +12,7 @@
     <select id="selectWorkPtsCdByAuthorCd" resultType="com.trechina.planocycle.entity.po.ShelfPtsData">
         select id,file_name from planocycle.work_priority_all_pts_data where company_cd=#{companyCd}
         and priority_all_cd=#{priorityAllCd}
-        and author_cd=#{authorCd} and shelf_pattern_cd=#{patternCd} and deleteflg=0
+        and shelf_pattern_cd=#{patternCd} and deleteflg=0
     </select>
     <delete id="deletePtsTaimst">
         delete from planocycle.work_priority_all_pts_tai where pts_cd=#{ptsCd}

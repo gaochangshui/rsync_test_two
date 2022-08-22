@@ -90,7 +90,9 @@
     select count(*) from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and deleteflg=0
   </select>
   <select id="selectOrderMstByPriorityOrderCd" resultMap="BaseResultMap">
-    select <include refid="Base_Column_List"/> from planocycle.priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and deleteflg=0
+    select <include refid="Base_Column_List"/>
+    from planocycle.priority_order_mst
+    where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and deleteflg=0
   </select>
   <select id="getPatternOrProduct" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstDto">
     SELECT mst.product_power_cd,mst.shelf_pattern_cd as shelfPatternCd,mst.attr_option

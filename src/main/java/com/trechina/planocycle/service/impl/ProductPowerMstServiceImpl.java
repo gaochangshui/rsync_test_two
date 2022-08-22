@@ -150,6 +150,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
         if (!Strings.isNullOrEmpty(rankWeight)) {
             JSONArray weightArray = JSON.parseArray(rankWeight);
+            weightArray = weightArray.stream().filter(json->!((JSONObject)json).getString("weight").equals("0")).collect(Collectors.toCollection(JSONArray::new));
             Set<String> finalWeightKeys = weightKeys;
             weightArray.stream().forEach(o->{
                 JSONObject jsonObj = (JSONObject) o;

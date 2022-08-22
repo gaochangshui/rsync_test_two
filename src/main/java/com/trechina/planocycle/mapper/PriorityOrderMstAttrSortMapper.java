@@ -17,6 +17,7 @@ public interface PriorityOrderMstAttrSortMapper {
 
 
     List<PriorityOrderMstAttrSort> selectByPrimaryKey(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+    List<PriorityOrderMstAttrSort> selectByPrimaryKeyForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
     List<Map<String,Object>> selectZokuseiCol(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 

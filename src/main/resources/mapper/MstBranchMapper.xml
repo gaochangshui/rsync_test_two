@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.MstBranchMapper">
+    <insert id="setBranchInfo">
+        insert into ${branchInfoTableName}("1","2","3","4","5","6","7")
+        values
+        (#{item.branchCd},#{item.branchName},null,null,null,#{item.areaName},'1')
+    </insert>
+    <select id="getCommuneBranchInfo" resultType="java.util.Map">
+        select
+            split_part( teninfo."1", '_', 1 ) "companyCd",
+            COALESCE ( groupcompany.company_name, kigyouname."2" ) "companyName",
+            teninfo."6" "areaName",
+            split_part( teninfo."1", '_', 2 ) "branchCd",
+            teninfo."2" "branchName",
+            case when teninfo."7" ='1' then 'PlanoCycle専用' else '' end "typeName"
+        from
+            ${branchInfoTableName} teninfo
+                left join masterdb.group_company groupcompany on company_cd = split_part( teninfo."1", '_', 1 )
+                left join masterdb.kigyou_name kigyouname on kigyouname."1" = split_part( teninfo."1", '_', 1 )
+        where split_part( teninfo."1", '_', 1 ) in
+            <foreach collection="groupCompany" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            and teninfo."7" = '1'
+    </select>
+    <select id="getCompanyBranchInfo" resultType="java.util.Map">
+        select
+        ${companyCd} as  "companyCd",
+        COALESCE ( groupcompany.company_name, kigyouname."2" ) "companyName",
+        teninfo."6" "areaName",
+         teninfo."1" "branchCd",
+        teninfo."2" "branchName",
+        case when teninfo."7" ='1' then 'PlanoCycle専用' else '' end "typeName"
+        from
+        ${branchInfoTableName} teninfo
+        left join masterdb.group_company groupcompany on company_cd =  #{companyCd}
+        left join masterdb.kigyou_name kigyouname on kigyouname."1" =  #{companyCd}
+        where teninfo."7" = '1'
+    </select>
+    <select id="getBranchSize" resultType="java.lang.Integer">
+        select
+              <choose>
+                  <when test=" companyCd == '1000' ">
+                      length(split_part("1", '_', 2))
+                  </when>
+                    <otherwise>
+                        length("1")
+                    </otherwise>
+              </choose>
+
+        from ${branchInfoTableName}
+                 limit 1
+    </select>
+    <select id="getBranchExist" resultType="java.lang.Integer">
+        select count(1) from ${branchInfoTableName} where "1" = #{branchStr}
+    </select>
+</mapper>
