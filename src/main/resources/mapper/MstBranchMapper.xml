@@ -13,7 +13,7 @@
             teninfo."6" "areaName",
             split_part( teninfo."1", '_', 2 ) "branchCd",
             teninfo."2" "branchName",
-            case when teninfo."100" ='1' then 'PlanoCycle専用' else '' end "typeName"
+            case when teninfo."100" ='1' then '棚割専用' else '' end "typeName"
         from
             ${branchInfoTableName} teninfo
                 left join masterdb.group_company groupcompany on company_cd = split_part( teninfo."1", '_', 1 )
@@ -26,12 +26,12 @@
     </select>
     <select id="getCompanyBranchInfo" resultType="java.util.Map">
         select
-        ${companyCd} as  "companyCd",
+        #{companyCd} as  "companyCd",
         COALESCE ( groupcompany.company_name, kigyouname."2" ) "companyName",
         teninfo."6" "areaName",
          teninfo."1" "branchCd",
         teninfo."2" "branchName",
-        case when teninfo."100" ='1' then 'PlanoCycle専用' else '' end "typeName"
+        case when teninfo."100" ='1' then '棚割専用' else '' end "typeName"
         from
         ${branchInfoTableName} teninfo
         left join masterdb.group_company groupcompany on company_cd =  #{companyCd}

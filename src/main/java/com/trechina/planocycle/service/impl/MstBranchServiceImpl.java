@@ -23,11 +23,11 @@ public class MstBranchServiceImpl implements MstBranchService {
     public Map<String, Object> getBranchInfo(BranchList branchList) {
         String companyCd = "1000";
 
-        if ("0".equals(branchList.getCommonPartsData().getProdIsCore())) {
+        if ("0".equals(branchList.getCommonPartsData().getStoreIsCore())) {
             companyCd = branchList.getCompanyCd();
         }
         String branchInfoTableName = MessageFormat.format("\"{0}\".ten_{1}_ten_info", companyCd,
-                branchList.getCommonPartsData().getProdMstClass());
+                branchList.getCommonPartsData().getStoreMstClass());
         List<String> groupCompany = classicPriorityOrderCommodityMustMapper.getGroupCompany(branchList.getCompanyCd());
         groupCompany.add(branchList.getCompanyCd());
         List<Map<String, Object>> companyBranchInfo;
@@ -43,11 +43,11 @@ public class MstBranchServiceImpl implements MstBranchService {
     public Map<String, Object> setBranchInfo(BranchList branchList) {
         String companyCd = "1000";
 
-        if ("0".equals(branchList.getCommonPartsData().getProdIsCore())) {
+        if ("0".equals(branchList.getCommonPartsData().getStoreIsCore())) {
             companyCd = branchList.getCompanyCd();
         }
         String branchInfoTableName = MessageFormat.format("\"{0}\".ten_{1}_ten_info", companyCd,
-                branchList.getCommonPartsData().getProdMstClass());
+                branchList.getCommonPartsData().getStoreMstClass());
         Integer branchSize = mstBranchMapper.getBranchSize(branchInfoTableName, companyCd);
         int diff = branchSize - branchList.getBranchCd().length();
         StringBuilder branchStr = new StringBuilder();
