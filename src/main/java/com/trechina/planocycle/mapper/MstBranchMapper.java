@@ -16,7 +16,9 @@ public interface MstBranchMapper {
 
     Integer getBranchSize(String branchInfoTableName,String companyCd);
 
-    Integer getBranchExist(String branchInfoTableName, String branchStr);
+    Integer getBranchExist(String branchInfoTableName, List<String> branchCdList);
 
-    void setBranchInfo(@Param("item") BranchList branchList, @Param("branchInfoTableName") String branchInfoTableName);
+    void setBranchInfo(@Param("list") List<BranchList> branchList, @Param("branchInfoTableName") String branchInfoTableName);
+
+    void deleteBranch(String branchInfoTableName);
 }

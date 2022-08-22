@@ -40,30 +40,29 @@ public class MstBranchServiceImpl implements MstBranchService {
     }
 
     @Override
-    public Map<String, Object> setBranchInfo(BranchList branchList) {
+    public Map<String, Object> setBranchInfo(List<BranchList> branchList) {
         String companyCd = "1000";
 
-        if ("0".equals(branchList.getCommonPartsData().getStoreIsCore())) {
-            companyCd = branchList.getCompanyCd();
+        if ("0".equals(branchList.get(0).getCommonPartsData().getStoreIsCore())) {
+            companyCd = branchList.get(0).getCompanyCd();
         }
         String branchInfoTableName = MessageFormat.format("\"{0}\".ten_{1}_ten_info", companyCd,
-                branchList.getCommonPartsData().getStoreMstClass());
+                branchList.get(0).getCommonPartsData().getStoreMstClass());
+        mstBranchMapper.deleteBranch(branchInfoTableName);
         Integer branchSize = mstBranchMapper.getBranchSize(branchInfoTableName, companyCd);
-        int diff = branchSize - branchList.getBranchCd().length();
-        StringBuilder branchStr = new StringBuilder();
-        if (companyCd.equals("1000")){
-            branchStr.append(branchList.getCompanyCd()+"_");
-        }
-        for (int l = 0; l < diff; l++) {
-            branchStr.append("0");
+        int diff = branchSize - branchList.get(0).getBranchCd().length();
+        for (BranchList list : branchList) {
+            StringBuilder branchStr = new StringBuilder();
+            if (companyCd.equals("1000")){
+                branchStr.append(branchList.get(0).getCompanyCd()+"_");
+            }
+            for (int l = 0; l < diff; l++) {
+                branchStr.append("0");
 
+            }
+            branchStr.append(list.getBranchCd());
+            list.setBranchCd(branchStr.toString());
         }
-        branchStr.append(branchList.getBranchCd());
-        Integer branchExist = mstBranchMapper.getBranchExist(branchInfoTableName, branchStr.toString());
-        if (branchExist>0){
-            return ResultMaps.result(ResultEnum.BRANCH_IS_EXIST);
-        }
-        branchList.setBranchCd(branchStr.toString());
         mstBranchMapper.setBranchInfo(branchList,branchInfoTableName);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
