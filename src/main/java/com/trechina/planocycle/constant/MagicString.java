@@ -67,6 +67,8 @@ public class MagicString {
      */
     public static final String MSG_FACE_CHANGE = "フェース変更 元：";
 
+    public static final String FACE_COUNT = "faceCount";
+
     public static final String ATTR_SMALL = "attrSmall";
 
     public static final String ATTR_BIG = "attrBig";
