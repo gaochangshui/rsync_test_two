@@ -13,7 +13,7 @@
   </sql>
   <select id="selectByPrimaryKey" parameterType="map" resultType="com.trechina.planocycle.entity.vo.PriorityOrderJanProposalVO">
     select
-      pro.jan_old as janOld, pro.jan_new as janNew, jans.janname as janName, flag
+      pro.jan_old as janOld, pro.jan_new as janNew, jans."2" as janName, flag
     ,case when rep.jan_old is not null then 'すでにJAN変商品として入力済みです。'
      when rep1.jan_old is not null then 'すでにJAN変商品として入力済みです。'
      when rep2.jan_old is not null then 'すでにJAN変商品として入力済みです。' end as errMsg
@@ -27,8 +27,8 @@
     left join priority.priority_order_jan_replace as rep2
               on pro.company_cd = rep2.company_cd
                 and pro.jan_new = rep2.jan_old and pro.flag=1
-    left join masterdb.jans jans
-    on pro.jan_new = jans.jan
+    left join "1000".prod_0000_jan_info jans
+    on pro.jan_new = jans."1"
     where pro.company_cd = #{companyCd,jdbcType=VARCHAR}
       and pro.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>

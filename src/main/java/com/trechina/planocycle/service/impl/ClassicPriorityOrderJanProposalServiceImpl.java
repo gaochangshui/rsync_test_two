@@ -70,23 +70,18 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
     @Override
     public Map<String, Object> getPriorityOrderJanProposal(String companyCd, Integer priorityOrderCd,Integer productPowerNo,String shelfPatternNo) {
         logger.info("jan変提案listのパラメータを取得する:{},{}",companyCd,priorityOrderCd);
+        PriorityOrderMstDto priorityOrderMst = priorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+        ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
         List<PriorityOrderJanProposalVO> priorityOrderJanProposals = priorityOrderJanProposalMapper.selectByPrimaryKey(companyCd,
                 priorityOrderCd);
         logger.info("jan変提案listの戻り値を取得する：{}",priorityOrderJanProposals);
         if(priorityOrderJanProposals.isEmpty()){
-
-//            try {
-//                janProposalData(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd);
             String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
-                janProposalDataFromDB(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd, coreCompany);
-//                priorityOrderJanProposals = priorityOrderJanProposalMapper.selectByPrimaryKey(companyCd,priorityOrderCd);
+                janProposalDataFromDB(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd, commonTableName);
                 String tableName = String.format("\"%s\".prod_0000_jan_info", coreCompany);
                 priorityOrderJanProposals = priorityOrderJanProposalMapper.selectJanInfoByPrimaryKey(companyCd,priorityOrderCd,
                         tableName,"1", "2");
-
-//            } catch (IOException e) {
-//                logger.info("報錯:"+e);
-//            }
         }
         logger.info("jan変提案listの戻り値を取得する：{}",priorityOrderJanProposals);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanProposals);
@@ -130,10 +125,7 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
      * @param shelfPatternNo
      * @param priorityOrderCd
      */
-    public void janProposalDataFromDB(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd, String coreCompany) {
-        PriorityOrderMstDto priorityOrderMst = priorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
-        ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
-        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+    public void janProposalDataFromDB(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd, GetCommonPartsDataDto commonTableName) {
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, shelfPatternNo);
         //only 品名2
         List<Map<String, Object>> classify = janClassifyMapper.selectJanClassify(commonTableName.getProAttrTable());
