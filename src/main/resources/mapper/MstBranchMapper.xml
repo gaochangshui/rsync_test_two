@@ -74,7 +74,8 @@
         conflict("1") do
         update
         set
-        <foreach collection="column.split(',')" item="item" separator=",">
+        "100"=0
+        <foreach collection="column.split(',')" open="," item="item" separator=",">
             "${item}" = EXCLUDED."${item}"
         </foreach>
     </insert>
