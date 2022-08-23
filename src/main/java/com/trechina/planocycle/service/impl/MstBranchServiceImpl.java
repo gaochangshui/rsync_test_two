@@ -58,7 +58,8 @@ public class MstBranchServiceImpl implements MstBranchService {
         if ("0".equals(branchList.get(0).getCommonPartsData().getStoreIsCore())) {
             companyCd = branchList.get(0).getCompanyCd();
         }else {
-               branchList.stream().filter(map-> Strings.isNullOrEmpty(map.getBranchCd())).forEach(map -> map.setBranchCd(map.getCompanyCd() + "_" + map.getBranchCd()));
+            branchList = branchList.stream().filter(map-> Strings.isNullOrEmpty(map.getBranchCd())).collect(Collectors.toList());
+               branchList.forEach(map -> map.setBranchCd(map.getCompanyCd() + "_" + map.getBranchCd()));
             groupCd = branchList.get(0).getGroupCd();
         }
         String branchInfoTableName = MessageFormat.format("\"{0}\".ten_{1}_ten_info", companyCd,

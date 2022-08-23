@@ -12,8 +12,8 @@
     </insert>
     <delete id="deleteBranch">
         delete from ${branchInfoTableName} where "100" = '1'
-        <if test="groupCd != ''">
-            and split_part( teninfo."1", '_', 1 ) = #{groupCd}
+        <if test="groupCd != '' and groupCd != null">
+            and split_part( "1", '_', 1 ) = #{groupCd}
         </if>
     </delete>
     <select id="getCommuneBranchInfo" resultType="java.util.Map">
