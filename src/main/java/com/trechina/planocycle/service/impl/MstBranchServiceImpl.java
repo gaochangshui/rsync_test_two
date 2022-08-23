@@ -55,10 +55,10 @@ public class MstBranchServiceImpl implements MstBranchService {
     public Map<String, Object> setBranchInfo(List<BranchList> branchList) {
         String companyCd = "1000";
         String groupCd = "";
+        branchList = branchList.stream().filter(map-> Strings.isNullOrEmpty(map.getBranchCd())).collect(Collectors.toList());
         if ("0".equals(branchList.get(0).getCommonPartsData().getStoreIsCore())) {
             companyCd = branchList.get(0).getCompanyCd();
         }else {
-            branchList = branchList.stream().filter(map-> Strings.isNullOrEmpty(map.getBranchCd())).collect(Collectors.toList());
                branchList.forEach(map -> map.setBranchCd(map.getCompanyCd() + "_" + map.getBranchCd()));
             groupCd = branchList.get(0).getGroupCd();
         }
