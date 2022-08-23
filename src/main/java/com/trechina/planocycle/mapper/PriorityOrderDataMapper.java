@@ -41,5 +41,4 @@ public interface PriorityOrderDataMapper {
 
     String selectPriorityAttrValue(String company, Integer priorityNO);
 
-    String selectJanName(String janNew);
 }

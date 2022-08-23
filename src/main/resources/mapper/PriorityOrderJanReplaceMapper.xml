@@ -30,9 +30,6 @@
     where jan.company_cd = #{companyCd,jdbcType=VARCHAR} and jan.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     order by jan_old
   </select>
-  <select id="selectJanDistinct" resultType="java.lang.String">
-    select array_to_string(array_agg(jan),',') from masterdb.jans
-  </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanReplace">
     insert into planocycle.work_priority_order_jan_replace (company_cd, priority_order_cd, jan_old,
       jan_new,author_cd)

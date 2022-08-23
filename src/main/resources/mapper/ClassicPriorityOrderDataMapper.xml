@@ -286,11 +286,6 @@
         where orders.priority_order_cd =#{priorityNO,jdbcType=INTEGER}
           and orders.company_cd = #{company,jdbcType=VARCHAR}
     </select>
-    <select id="selectJanName" resultType="java.lang.String">
-        select janname from masterdb.jans
-        where jan = #{janNew}
-    </select>
-
     <select id="selectJanNameFromJanNew" resultType="java.lang.String">
         select name_new from priority.work_priority_order_jan_new
         where jan_new = #{janNew} and company_cd=#{company} and priority_order_cd=#{priorityOrderCd}

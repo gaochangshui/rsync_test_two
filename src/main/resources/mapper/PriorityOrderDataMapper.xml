@@ -187,11 +187,6 @@
         where orders.priority_order_cd =#{priorityNO,jdbcType=INTEGER}
           and orders.company_cd = #{company,jdbcType=VARCHAR}
     </select>
-    <select id="selectJanName" resultType="java.lang.String">
-        select janname from masterdb.jans
-        where jan = #{janNew}
-    </select>
-
     <insert id="insert" >
     insert into ${tablename} (
             <foreach collection="keyNameList" separator="," item="key">
