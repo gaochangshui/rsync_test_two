@@ -22,10 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CommodityScoreParaServiceImpl implements CommodityScoreParaService {
@@ -264,7 +261,16 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         List<Map<String, Object>> rankCalculate = productPowerDataMapper.getProductRankCalculate(map, companyCd, productPowerCd,authorCd);
         logger.info("rank计算开始：{}",format);
         logger.info("rank计算结束：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-        productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd);
+        ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
+        List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
+        if (storeCd.isEmpty()){
+            storeCd.add("");
+        }
+        List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
+        if (shelfPts.isEmpty()){
+            shelfPts.add(0);
+        }
+        productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd,shelfPts,storeCd);
             List list = new ArrayList();
             for (int i = 0; i < rankCalculate.size(); i++) {
                 list.add(rankCalculate.get(i));

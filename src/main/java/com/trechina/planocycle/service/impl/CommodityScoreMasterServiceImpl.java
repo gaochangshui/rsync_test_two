@@ -306,10 +306,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
 
         List<LinkedHashMap<String, Object>> returnDataAttr = new ArrayList<>();
         ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, newProductPowerCd);
-        List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
-        List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
+        //List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
+        //List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
         List<LinkedHashMap<String, Object>> allDataAttr = productPowerDataMapper.getAllDataAttr(companyCd, productPowerNo
-                , cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName,shelfPts,storeCd);
+                , cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName);
         colMap.put("branchNum","定番店舗数");
         returnDataAttr.add(colMap);
         returnDataAttr.addAll(allDataAttr);

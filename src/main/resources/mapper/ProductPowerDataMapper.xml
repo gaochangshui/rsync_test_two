@@ -162,7 +162,7 @@
                                                            customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,customer_store_item05,customer_store_item06,customer_store_item07,
                                                            customer_store_item08,customer_store_item09,customer_store_item10,customer_item01,customer_item02,customer_item03,customer_item04,customer_item05,customer_item06,
                                                            customer_item07,customer_item08,customer_item09,customer_item10,customer_item11,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,intage_item06,
-                                                           intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02 )
+                                                           intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,branch_num )
         select #{companyCd},#{productPowerCd},#{authorCd},s.jan,yobi.item1,yobi.item2,yobi.item3,yobi.item4,yobi.item5,yobi.item6,yobi.item7,yobi.item8,yobi.item9,yobi.item10,
                pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,
                pos_store_item01,pos_store_item02,pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,
@@ -176,7 +176,7 @@
                customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,customer_store_item05,customer_store_item06,customer_store_item07,
                customer_store_item08,customer_store_item09,customer_store_item10,customer_item01,customer_item02,customer_item03,customer_item04,customer_item05,customer_item06,
                customer_item07,customer_item08,customer_item09,customer_item10,customer_item11,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,intage_item06,
-               intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02
+               intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,coalesce (branchs."branchCount",0)
         from  planocycle.work_product_power_syokika s
             left join planocycle.work_product_power_kokyaku k
                     on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd and s.product_power_cd = k.product_power_cd
@@ -207,8 +207,25 @@
                          dd.jan
         )as yobi
             on yobi.jan = s.jan
+        left join (
 
-        where  s.author_cd=#{authorCd} and s.company_cd = #{companyCd} and s.product_power_cd = #{productPowerCd}
+        select jan,count(DISTINCT branch) "branchCount" from planocycle.shelf_pts_data_jandata  jandata
+        left join planocycle.shelf_pts_data ptsdata on ptsdata.id = jandata.pts_cd
+        inner join planocycle.shelf_pattern_branch branchs on ptsdata.shelf_pattern_cd = branchs.shelf_pattern_cd
+
+        and branch in
+        <foreach collection="storeCd" separator="," item="item" open="(" close=")" >
+            #{item}
+        </foreach>
+
+        where jandata.pts_cd in
+        <foreach collection="ptsCd" separator="," item="item" open="(" close=")" >
+            #{item}
+        </foreach>
+        GROUP BY jan
+        ) branchs
+        on branchs.jan = s.jan
+        where  s.company_cd = #{companyCd} and s.product_power_cd = #{productPowerCd}
         order by s.jan;
 
     </insert>
@@ -550,7 +567,7 @@
         <foreach collection="projects" index="index" item="item" open="," separator=",">
             power_mst."${item}", power_mst."${item}_rank"
         </foreach>
-        ,rank_result,jan_info."${janNameColIndex}" jan_name
+        ,rank_result,jan_info."${janNameColIndex}" jan_name,power_mst.branch_num as "branchNum"
         from planocycle.product_power_mst_data power_mst
         left join ${tableName} jan_info on power_mst.jan=jan_info.${janCdColName}
         where power_mst.company_cd=#{companyCd} and power_mst.product_power_cd=#{productPowerCd}
@@ -686,27 +703,9 @@
                 case  when jan_info."${item.sort}" is null then '' else jan_info."${item.sort}"  end  as ${item.attr}
             </if>
         </foreach>
-        ,coalesce (branchs."branchCount",0) as "branchNum"
+        ,datas.branch_num as "branchNum"
         from planocycle.product_power_mst_data datas
         left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
-        left join (
-
-        select jan,count(DISTINCT branch) "branchCount" from planocycle.shelf_pts_data_jandata  jandata
-        left join planocycle.shelf_pts_data ptsdata on ptsdata.id = jandata.pts_cd
-        inner join planocycle.shelf_pattern_branch branchs on ptsdata.shelf_pattern_cd = branchs.shelf_pattern_cd
-
-        and branch in
-        <foreach collection="storeCd" separator="," item="item" open="(" close=")" >
-            #{item},#{companyCd} ||'_'||#{item}
-        </foreach>
-
-        where jandata.pts_cd in
-        <foreach collection="ptsCd" separator="," item="item" open="(" close=")" >
-            #{item}
-        </foreach>
-        GROUP BY jan
-        ) branchs
-        on branchs.jan = datas.jan
         where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
         order by rank_result ,datas.jan
     </select>
@@ -799,5 +798,38 @@
     </select>
     <select id="getWorkTableName" resultType="java.lang.String">
         select DISTINCT concat(table_schema,'.',"table_name") from information_schema.columns where table_name like 'work_%' and table_schema in ('planocycle','priority')
+    </select>
+    <select id="getBranchNum">
+
+        select power_syokika.jan as jan
+        <if test="ptsCd != null and ptsCd.size > 0">
+            ,coalesce (branchs."branchCount",0)as "branchNum"
+        </if>
+        <if test="ptsCd == null || ptsCd.size == 0">
+            ,0 as "branchNum"
+        </if>
+        from planocycle.work_product_power_syokika power_syokika
+        <if test="ptsCd != null  and ptsCd.size > 0">
+            left join (
+
+            select jan,count(DISTINCT branch) "branchCount" from planocycle.shelf_pts_data_jandata  jandata
+            left join planocycle.shelf_pts_data ptsdata on ptsdata.id = jandata.pts_cd
+            inner join planocycle.shelf_pattern_branch branchs on ptsdata.shelf_pattern_cd = branchs.shelf_pattern_cd
+
+            and branch in
+            <foreach collection="storeCd" separator="," item="item" open="(" close=")" >
+                #{item}
+            </foreach>
+
+            where jandata.pts_cd in
+            <foreach collection="ptsCd" separator="," item="item" open="(" close=")" >
+                #{item}
+            </foreach>
+            GROUP BY jan
+            ) branchs
+            on branchs.jan = power_syokika.jan
+        </if>
+
+        where power_syokika.company_cd = #{companyCd} and power_syokika.product_power_cd = #{productPowerCd}
     </select>
 </mapper>

@@ -21,6 +21,7 @@ public enum ResultEnum {
     VERSION_ERROR(40005,"version error"),
     JANCDINEXISTENCE(50004,"該当商品がありません。"),
     HEIGHT_NOT_ENOUGH(60001,"棚の高さチェックで、入れない商品がありました。修正してから再度自動計算してください。"),
+    BRANCH_IS_EXIST(60002,"店舗番号は既に存在しますので、再入力してください"),
     UPDATE_RANK(40015,"変更後Rankで取込してください。");
 
 

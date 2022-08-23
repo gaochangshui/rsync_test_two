@@ -172,9 +172,9 @@
 
     </select>
     <select id="getJanNewMst" resultType="com.trechina.planocycle.entity.po.Jans">
-        select jan , janname
-        from masterdb.jans
-        where jan in
+        select "1"as jan ,"2"as  janname
+        from "1000".prod_0000_jan_info janinfo
+        where "1" in
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>

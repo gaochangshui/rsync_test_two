@@ -21,7 +21,7 @@ public interface PriorityOrderJanReplaceService {
      */
     Map<String,Object> setPriorityOrderJanInfo(List<PriorityOrderJanReplace> priorityOrderJanReplace);
 
-    String getJanInfo();
+
 
 
 }

@@ -558,9 +558,9 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
      * @return
      */
     public Map<String, Object> getNewReorder(String companyCd, Integer priorityOrderCd, String authorCd,Integer priorityAllCd,Integer patternCd) {
-        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
 
-        String commonPartsData = workPriorityOrderMst.getCommonPartsData();
+        String commonPartsData = priorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
 
         List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
@@ -570,9 +570,9 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         }
         List<WorkPriorityOrderResultData> reorder = null;
         if (colNmforMst.size() == 1) {
-            reorder = workPriorityAllResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityAllCd,commonTableName, colNmforMst.get(0), patternCd,null);
+            reorder = workPriorityAllResultDataMapper.getReorder(companyCd, authorCd,priorityOrderMst.getProductPowerCd(), priorityAllCd,commonTableName, colNmforMst.get(0), patternCd,null);
         } else if (colNmforMst.size() == 2){
-            reorder = workPriorityAllResultDataMapper.getReorder(companyCd, authorCd,workPriorityOrderMst.getProductPowerCd(), priorityAllCd,commonTableName, colNmforMst.get(0),patternCd, colNmforMst.get(1));
+            reorder = workPriorityAllResultDataMapper.getReorder(companyCd, authorCd,priorityOrderMst.getProductPowerCd(), priorityAllCd,commonTableName, colNmforMst.get(0),patternCd, colNmforMst.get(1));
         }
 
         workPriorityAllResultDataMapper.setSortRank(reorder, companyCd, authorCd, priorityOrderCd,priorityAllCd,patternCd);
@@ -583,10 +583,11 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
     public List<Map<String, Object>> getPtsGroup(String companyCd,Integer priorityOrderCd,Integer ptsCd,String authorCd,Integer priorityAllCd,Integer patternCd) {
 
-        List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
+        List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKeyForFinal(companyCd, priorityOrderCd);
         List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
-        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        String commonPartsData = workPriorityOrderMst.getCommonPartsData();
+        //WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
+        PriorityOrderMst priorityOrderMst = priorityOrderMstMapper.selectOrderMstByPriorityOrderCd(priorityOrderCd);
+        String commonPartsData = priorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
         List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());

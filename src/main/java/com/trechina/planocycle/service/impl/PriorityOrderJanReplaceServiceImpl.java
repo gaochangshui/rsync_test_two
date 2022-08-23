@@ -77,9 +77,5 @@ public class PriorityOrderJanReplaceServiceImpl implements PriorityOrderJanRepla
 
     }
 
-    @Override
-    public String getJanInfo() {
-        return priorityOrderJanReplaceMapper.selectJanDistinct();
-    }
 
 }

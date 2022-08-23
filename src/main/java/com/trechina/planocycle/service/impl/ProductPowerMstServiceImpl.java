@@ -150,6 +150,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
         if (!Strings.isNullOrEmpty(rankWeight)) {
             JSONArray weightArray = JSON.parseArray(rankWeight);
+            weightArray = weightArray.stream().filter(json->!((JSONObject)json).getString("weight").equals("0")).collect(Collectors.toCollection(JSONArray::new));
             Set<String> finalWeightKeys = weightKeys;
             weightArray.stream().forEach(o->{
                 JSONObject jsonObj = (JSONObject) o;
@@ -206,9 +207,11 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
         //表示するカラムに対応するフィールド名
         List<String> attr = classify.stream().map(map -> map.get("attr").toString()).collect(Collectors.toList());
+        attr.add("branchNum");
         Map<String, List<String>> columnsByClassify = this.initColumnClassify(attr);
         //表示する列に対応するヘッダー
         List<String> attrName = classify.stream().map(map -> map.get("attr_val").toString()).collect(Collectors.toList());
+        attrName.add("定番店鋪数");
         Map<String, List<String>> headersByClassify = this.initHeaderClassify(attrName);
 
         this.fillParamData(ProductPowerHeaderEnum.POS.getName(),
