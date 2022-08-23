@@ -61,7 +61,7 @@ public class MagicString {
     /**
      * 商品変更：位置変更
      */
-    public static final String MSG_TANA_POSITION_CHANGE = "位置変更 元：{tai}-{tana}-{position}";
+    public static final String MSG_TANA_POSITION_CHANGE = "位置変更";
     /**
      * 商品変更：フェース変更
      */

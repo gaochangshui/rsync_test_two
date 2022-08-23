@@ -792,7 +792,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(patternCd,attrCol,commonTableName.getProInfoTable(),janSizeCol);
             //棚、商品の変更チェック
             //棚変更：高さ変更
-            logger.info("start,{}",System.currentTimeMillis());
             newTanaData.stream()
                     .filter(map -> tanaData.stream().anyMatch(map1 -> map1.getTaiCd().equals(map.getTaiCd())
                             && map1.getTanaCd().equals(map.getTanaCd())
@@ -813,26 +812,31 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                     .forEach(map -> map.put("remarks",MagicString.MSG_NEW_JAN));
             //商品変更：位置変更
             newJanData.stream()
-                    .filter(map -> janData.stream().anyMatch(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))
-                            && (!MapUtils.getInteger(map1,"taiCd").equals(MapUtils.getInteger(map,"taiCd"))
-                            || !MapUtils.getInteger(map1,"tanaCd").equals(MapUtils.getInteger(map,"tanaCd"))
-                            || !MapUtils.getInteger(map1,"tanapositionCd").equals(MapUtils.getInteger(map,"tanapositionCd")))
-                    ))
+                    .filter(map -> janData.stream().noneMatch(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))
+                            && MapUtils.getInteger(map1,"taiCd").equals(MapUtils.getInteger(map,"taiCd"))
+                            && MapUtils.getInteger(map1,"tanaCd").equals(MapUtils.getInteger(map,"tanaCd"))
+                            && MapUtils.getInteger(map1,"tanapositionCd").equals(MapUtils.getInteger(map,"tanapositionCd")))
+                    )
                     .forEach(map -> {
-                        LinkedHashMap oldPtsJanDataVo = janData.stream().filter(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))).findFirst().get();
-                        map.put("remarks",MagicString.MSG_TANA_POSITION_CHANGE.replace("{tai}", String.valueOf(MapUtils.getInteger(oldPtsJanDataVo,"taiCd")))
-                                .replace("{tana}", String.valueOf(MapUtils.getInteger(oldPtsJanDataVo,"tanaCd")))
-                                .replace("{position}", String.valueOf(MapUtils.getInteger(oldPtsJanDataVo,"tanapositionCd"))));
+                        if(!MagicString.MSG_NEW_JAN.equals(map.get("remarks"))){
+                            map.put("remarks",MagicString.MSG_TANA_POSITION_CHANGE);
+                        }
                     });
             //商品変更：フェース変更
             newJanData.stream()
                     .filter(map -> janData.stream().anyMatch(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))
+                            && MapUtils.getInteger(map1,"taiCd").equals(MapUtils.getInteger(map,"taiCd"))
+                            && MapUtils.getInteger(map1,"tanaCd").equals(MapUtils.getInteger(map,"tanaCd"))
+                            && MapUtils.getInteger(map1,"tanapositionCd").equals(MapUtils.getInteger(map,"tanapositionCd"))
                             && !MapUtils.getInteger(map1,"faceCount").equals(MapUtils.getInteger(map,"faceCount"))
                     ))
                     .forEach(map -> map.put("remarks",(StringUtils.hasLength(map.get("remarks").toString()) ? map.get("remarks").toString() + "," : "")
                             + MagicString.MSG_FACE_CHANGE
-                            + janData.stream().filter(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))).findFirst().get().get("faceCount")));
-            logger.info("end,{}", System.currentTimeMillis());
+                            + janData.stream().filter(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))
+                                    && MapUtils.getInteger(map1,"taiCd").equals(MapUtils.getInteger(map,"taiCd"))
+                                    && MapUtils.getInteger(map1,"tanaCd").equals(MapUtils.getInteger(map,"tanaCd"))
+                                    && MapUtils.getInteger(map1,"tanapositionCd").equals(MapUtils.getInteger(map,"tanapositionCd"))
+                            ).findFirst().get().get("faceCount")));
             ptsDetailData.setPtsTaiList(newTaiData);
             ptsDetailData.setPtsTanaVoList(newTanaData);
             ptsDetailData.setPtsJanDataList(newJanData);
