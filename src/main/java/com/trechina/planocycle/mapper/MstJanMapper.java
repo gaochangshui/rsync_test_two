@@ -55,7 +55,8 @@ public interface MstJanMapper {
     List<JanAttrName> getAttrName(String authorCd,
                                   String tableName,
                                   String tableNamePreset,
-                                  String tableNameKaisou);
+                                  String tableNameKaisou,
+                                  String tableNamePlanoCycle);
 
     /**
      * ユーザー表示項目設定を削除

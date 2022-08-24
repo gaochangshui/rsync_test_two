@@ -304,10 +304,11 @@ public class MstJanServiceImpl implements MstJanService {
         } else {
             isCompanyCd = companyCd;
         }
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
-        String tableNamePreset = MessageFormat.format("\"{0}\".prod_{1}_jan_preset_param", isCompanyCd, prodMstClass);
-        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
-        return ResultMaps.result(ResultEnum.SUCCESS, mstJanMapper.getAttrName(aud, tableNameAttr, tableNamePreset, tableNameKaisou));
+        String tableNameAttr = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, isCompanyCd, prodMstClass);
+        String tableNamePreset = MessageFormat.format(MagicString.PROD_JAN_PRESET_PARAM, isCompanyCd, prodMstClass);
+        String tableNameKaisou = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS, isCompanyCd, prodMstClass);
+        String tableNamePlanoCycle = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS,MagicString.PLANO_CYCLE_COMPANY_CD,MagicString.FIRST_CLASS_CD);
+        return ResultMaps.result(ResultEnum.SUCCESS, mstJanMapper.getAttrName(aud, tableNameAttr, tableNamePreset, tableNameKaisou,tableNamePlanoCycle));
     }
 
     /**
@@ -329,7 +330,7 @@ public class MstJanServiceImpl implements MstJanService {
         } else {
             isCompanyCd = companyCd;
         }
-        String tableNamePreset = MessageFormat.format("\"{0}\".prod_{1}_jan_preset_param", isCompanyCd, prodMstClass);
+        String tableNamePreset = MessageFormat.format(MagicString.PROD_JAN_PRESET_PARAM, isCompanyCd, prodMstClass);
         mstJanMapper.deleteByAuthorCd(aud, tableNamePreset);
         mstJanMapper.insertPresetAttribute(aud, janPresetAttribute.getClassCd().split(","), tableNamePreset);
         return ResultMaps.result(ResultEnum.SUCCESS);
