@@ -5,8 +5,8 @@
         select item_value from planocycle.sys_config
         where item_name=#{targetColumn}
     </select>
-    <select id="selectByPrefix" resultType="string">
-        select item_value from planocycle.sys_config
+    <select id="selectByPrefix" resultType="map">
+        select item_name,item_value from planocycle.sys_config
         where item_name like concat(#{targetColumnPre}, '%')
     </select>
 </mapper>

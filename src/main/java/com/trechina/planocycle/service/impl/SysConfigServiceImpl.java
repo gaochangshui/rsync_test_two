@@ -8,6 +8,7 @@ import com.trechina.planocycle.mapper.SkuNameConfigMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.SysConfigService;
 import com.trechina.planocycle.utils.ResultMaps;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,9 +40,15 @@ public class SysConfigServiceImpl implements SysConfigService {
         }
         Integer colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd,prodMstClass);
         if (colNum != null){
-            List<String> janUnit = sysConfigMapper.selectByPrefix("jan_unit_");
+            List<Map<String, String>> janUnit = sysConfigMapper.selectByPrefix("jan_unit_");
+            Map<Integer, String> janUnitMap = new HashMap<>();
+            for (Map<String, String> s : janUnit) {
+                String itemName = MapUtils.getString(s, "item_name");
+                String[] sArray = itemName.split("_");
+                janUnitMap.put(Integer.parseInt(sArray[sArray.length-1]), MapUtils.getString(s, "item_value"));
+            }
             resultMap.put("showJanSkuFlag", 1);
-            resultMap.put("janUnitList", janUnit);
+            resultMap.put("janUnit", janUnitMap);
         }else {
             resultMap.put("showJanSkuFlag", 0);
         }
