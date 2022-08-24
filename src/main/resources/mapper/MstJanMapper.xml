@@ -56,7 +56,9 @@
         order by "1"
     </select>
     <select id="getJanInfoList" resultType="java.util.LinkedHashMap">
-        select * from ${tableName} where "1" = #{jan}
+        select * from
+        ${tableName}
+        where "1" = #{jan}
     </select>
     <select id="getJanAttrList" resultType="java.util.LinkedHashMap">
     select "1","2","3","4","11","13" from ${tableName} where "1" not in ('jan_name','jan_cd')   order by "4"
