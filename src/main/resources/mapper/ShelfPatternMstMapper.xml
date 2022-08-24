@@ -44,15 +44,11 @@
     where shelf_pattern_cd =#{id,jdbcType=INTEGER}
   </update>
 
-  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="map" resultType="com.trechina.planocycle.entity.po.ShelfPatternMst">
     select
-    <include refid="branch_column_list" />
+      shelf.company_cd,shelf.shelf_name_cd,shelf.ptskey, name.shelf_name as shelfName, shelf.shelf_pattern_cd, shelf.shelf_pattern_name, shelf.create_time, shelf.author_cd,
+      shelf.registered, shelf.maintainer_cd, shelf.modified,shelf.modified,string_agg(branch.branch, ',') as storeCdStr,shelf.common_parts_data
     from planocycle.shelf_pattern_mst shelf
-<!--     left join planocycle.shelf_pattern_area pattarea-->
-<!--     on shelf.company_cd = pattarea.company_cd and pattarea.deleteflg=0-->
-<!--     and shelf.shelf_pattern_cd = pattarea.shelf_pattern_cd-->
-<!--     left join masterdb.areas areas-->
-<!--     on pattarea.areacd = areas.areacd-->
     left join planocycle.shelf_name_mst name
     on shelf.shelf_name_cd = name.id and name.deleteflg=0
     left join planocycle.shelf_pattern_branch branch
@@ -67,16 +63,6 @@
     where company_cd = #{conpanyCd,jdbcType=VARCHAR} and deleteflg=0
     order by shelf_pattern_cd desc
   </select>
-<!--  <select id="selectPatternNameBranch" resultMap="patternName">-->
-<!--    select distinct mst.shelf_pattern_cd,mst.shelf_pattern_name-->
-<!--    from planocycle.shelf_pattern_mst mst-->
-<!--    inner join planocycle.shelf_pattern_branch branch-->
-<!--    on mst.shelf_pattern_cd = branch.shelf_pattern_cd-->
-<!--    inner join planocycle.shelf_pts_data pts-->
-<!--    on mst.shelf_pattern_cd = pts.shelf_pattern_cd-->
-<!--    where mst.company_cd = #{conpanyCd,jdbcType=VARCHAR}-->
-<!--    and pts.valid_flg =1-->
-<!--  </select>-->
   <select id="selectPatternNameBranch" resultType="com.trechina.planocycle.entity.vo.ShelfPatternTreeVO">
     SELECT id+1000000 as id,0 as pId,cast(id as text)||'_0' as value,shelf_name as title
     FROM planocycle.shelf_name_mst as name
@@ -252,5 +238,11 @@
             #{item},#{companyCd} || '_'|| #{item}
           </foreach>
         ) and pmst.deleteflg = 0
+    </select>
+    <select id="getExistSpecialUse" resultType="java.lang.Integer">
+        select count(1) from ${tableName} where "100" ='1' and "1" in
+        <foreach collection="branchList" open="(" separator="," item="item" close=")">
+            #{item}
+        </foreach>
     </select>
 </mapper>

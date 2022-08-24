@@ -54,4 +54,7 @@ public interface ShelfPatternMstMapper {
     List<String> isCompany(List<String> shelfPatternList);
 
     List<Integer> getShelfPts(List<String> storeCd, String companyCd);
+
+
+    Integer getExistSpecialUse(String tableName, List<String> branchList);
 }

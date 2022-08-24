@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.ShelfPatternBranchDto;
 import com.trechina.planocycle.entity.dto.ShelfPatternDto;
 import com.trechina.planocycle.entity.po.ShelfPatternBranch;
@@ -12,6 +13,7 @@ import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.ShelfNameMstMapper;
 import com.trechina.planocycle.mapper.ShelfPatternBranchMapper;
 import com.trechina.planocycle.mapper.ShelfPatternMstMapper;
+import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.ShelfPatternAreaService;
 import com.trechina.planocycle.service.ShelfPatternService;
 import com.trechina.planocycle.utils.ListDisparityUtils;
@@ -30,10 +32,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,7 +48,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     private ShelfPatternAreaService shelfPatternAreaService;
     @Autowired
     private ShelfNameMstMapper shelfNameMstMapper;
-
+    @Autowired
+    private BasicPatternMstService basicPatternMstService;
 
     /**
      * 棚pattern情報の取得
@@ -63,10 +63,16 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         resultInfo = resultInfo.stream().peek(result -> {
             if (result.getStoreCdStr()==null) {
                 result.setStoreCd(new String[]{});
+                result.setBranchNum(0);
+                result.setSpecialFlag(0);
             }else{
                 String storeCdStr = result.getStoreCdStr();
                 String[] storeCdStrList = storeCdStr.split(",");
                 result.setStoreCd(storeCdStrList);
+                result.setBranchNum(storeCdStrList.length);
+                GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(result.getCommonPartsData(), companyCd);
+                Integer existSpecialUse = shelfPatternMstMapper.getExistSpecialUse(commonTableName.getStoreInfoTable(), Arrays.asList(storeCdStrList));
+                result.setSpecialFlag(existSpecialUse == 0 ? 0 : 1);
             }
         }).collect(Collectors.toList());
         logger.info("棚pattern情報の戻り値の取得：{}",resultInfo);
