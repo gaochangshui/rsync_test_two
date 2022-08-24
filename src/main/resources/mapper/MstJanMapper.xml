@@ -56,12 +56,27 @@
         order by "1"
     </select>
     <select id="getJanInfoList" resultType="java.util.LinkedHashMap">
-        select * from
-        ${tableName}
-        where "1" = #{jan}
+        select
+            a."1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"
+               , "100", "101", "102", "103", b."104","105","106","107","108","109","110"
+             , "201", "202", "203", "204", "205", "206",
+            "207", "208", "209", "210", "211", "212", "213", "214", "215", "216", "217", "218", "219"
+               , "220", "221", "222", "223", "224", "225", "226", "227", "228", "229", "230"
+        from
+        ${tableName} a
+        left join "9999".prod_0000_jan_info b
+        on a."1" = b."1"
+        where a."1" = #{jan}
     </select>
     <select id="getJanAttrList" resultType="java.util.LinkedHashMap">
-    select "1","2","3","4","11","13" from ${tableName} where "1" not in ('jan_name','jan_cd')   order by "4"
+    select "1","2","3","4","11","13"
+    from ${tableName}
+    where "1" not in ('jan_name','jan_cd')
+    union
+    select "1","2","3","4","11","13"
+    from "9999".prod_0000_jan_attr_header_sys
+    where "1" not in ('jan_name','jan_cd')
+    order by "4"
     </select>
     <select id="getJanKaisouList" resultType="java.util.LinkedHashMap">
         select "1","2","3","4" from ${tableName} where "4" is not null and "1" like '%_name' and "1" not in ('jan_name') order by "4"
@@ -159,6 +174,9 @@
     <select id="getPlanoType" resultType="com.trechina.planocycle.entity.po.JanHeaderAttr">
         select "1" as "attr","2" as "attrVal","3" as "sort","13" as "type" from ${tableName} where "1" like 'plano%' and "13" = '0'
     </select>
+    <select id="getJanInfoCol" resultType="java.lang.String">
+        select "3" from "9999".prod_0000_jan_attr_header_sys
+    </select>
 
     <insert id="insertPresetAttribute">
         insert into ${tableName}
@@ -231,6 +249,23 @@
         "2" = excluded."2",
         <foreach collection="column.split(',')" item="item" separator=",">
             "${item}" = EXCLUDED."${item}"
+        </foreach>
+    </update>
+    <update id="setJanSpecial">
+        insert into "9999".prod_0000_jan_info("1"
+        <foreach collection="list" item="item" index="index">
+            ,"${index}"
+        </foreach>
+        )
+        values (#{jan}
+        <foreach collection="list" item="item">
+            ,#{item}
+        </foreach>
+        )
+        on conflict("1")
+        do update set
+        <foreach collection="list" item="item" index="index" separator=",">
+            "${index}" = #{item}
         </foreach>
     </update>
 

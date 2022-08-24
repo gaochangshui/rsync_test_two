@@ -64,7 +64,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             if (result.getStoreCdStr()==null) {
                 result.setStoreCd(new String[]{});
                 result.setBranchNum(0);
-                result.setSpecialFlag(0);
+                result.setSpecialFlag("×");
             }else{
                 String storeCdStr = result.getStoreCdStr();
                 String[] storeCdStrList = storeCdStr.split(",");
@@ -72,7 +72,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 result.setBranchNum(storeCdStrList.length);
                 GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(result.getCommonPartsData(), companyCd);
                 Integer existSpecialUse = shelfPatternMstMapper.getExistSpecialUse(commonTableName.getStoreInfoTable(), Arrays.asList(storeCdStrList));
-                result.setSpecialFlag(existSpecialUse == 0 ? 0 : 1);
+                result.setSpecialFlag(existSpecialUse == 0 ? "◯" : "×");
             }
         }).collect(Collectors.toList());
         logger.info("棚pattern情報の戻り値の取得：{}",resultInfo);

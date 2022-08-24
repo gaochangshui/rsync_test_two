@@ -170,8 +170,9 @@ public class MstJanServiceImpl implements MstJanService {
                 janInfoList.getCommonPartsData().getProdMstClass());
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,
                 janInfoList.getCommonPartsData().getProdMstClass());
-        LinkedHashMap<String, Object> janInfoList1 = mstJanMapper.getJanInfoList(janInfoTableName, janInfoList.getJan());
+
         List<LinkedHashMap<String,Object>> janAttrList = mstJanMapper.getJanAttrList(tableNameAttr);
+        LinkedHashMap<String, Object> janInfoList1 = mstJanMapper.getJanInfoList(janInfoTableName, janInfoList.getJan());
         List<LinkedHashMap<String,Object>> update = janAttrList.stream().filter(map->map.get("11").equals("4")).collect(Collectors.toList());
 
         List<LinkedHashMap<String,Object>> janKaisouList = mstJanMapper.getJanKaisouList(tableNameKaisou);
@@ -392,7 +393,12 @@ public class MstJanServiceImpl implements MstJanService {
         }
         setInfoMap.put("2", map.get(MagicString.JAN_NAME).toString());
         setInfoMap.putAll(kaiSouName);
-        mstJanMapper.setJanInfo(setInfoMap,jan,janInfoTableName);
+        List<String> janInfoCol = mstJanMapper.getJanInfoCol();
+        LinkedHashMap<String,Object> janInfoData= setInfoMap.entrySet().stream().filter(infoMap->!janInfoCol.contains(infoMap.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,(k1,k2)->k1,LinkedHashMap ::new));
+        LinkedHashMap<String,Object> janSpecialData= setInfoMap.entrySet().stream().filter(Special->janInfoCol.contains(Special.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,(k1,k2)->k1,LinkedHashMap ::new));
+        mstJanMapper.setJanInfo(janInfoData,jan,janInfoTableName);
+        mstJanMapper.setJanSpecial(janSpecialData,jan);
+
         List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, commonPartsDto.get(MagicString.PROD_MST_CLASS).toString());
         LinkedHashMap<String,Object> maps = new LinkedHashMap<>();
         for (Map<String, Object> objectMap : zokuseiIdAndCol) {

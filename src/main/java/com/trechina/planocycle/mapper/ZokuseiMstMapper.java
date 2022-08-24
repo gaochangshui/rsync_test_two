@@ -43,9 +43,9 @@ public interface ZokuseiMstMapper {
 
     Integer getZokuseiIdForCol(String colName, String companyCd, String classCd);
 
-    void delZokuseiMstForId(String classCd, String companyCd, Integer zokuseiId);
+    void delZokuseiMstForId( Integer zokuseiId);
 
-    void delZokuseiMstDataForId(String classCd, String companyCd, Integer zokuseiId);
+    void delZokuseiMstDataForId( Integer zokuseiId);
 
     List<Map<String,Object>> getZokuseiIdAndCol(String companyCd, String classCd);
 
@@ -55,9 +55,9 @@ public interface ZokuseiMstMapper {
 
     Integer getMaxZokuseiId(String companyCd, String classCd);
 
-    void setItem(String itemColName, Integer maxZokuseiId, String companyCd, String classCd, String name);
+    void setItem(String itemColName, Integer maxZokuseiId, String name);
 
-    void updateZokuseiName(ProductItemVO productItemVO,String companyCd, String classCd ,String zokuseiCol);
+    void updateZokuseiName(ProductItemVO productItemVO,String zokuseiCol);
 
     void setValBatch(Set<Map<String, Object>> maps, String companyCd, String classCd);
 

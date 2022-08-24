@@ -123,4 +123,8 @@ public interface MstJanMapper {
      */
     int insertKaisou(String tableName,String tableNameWK);
 
+
+    List<String> getJanInfoCol();
+
+    void setJanSpecial(@Param("list") LinkedHashMap<String, Object> janSpecialData, @Param("jan") String jan);
 }
