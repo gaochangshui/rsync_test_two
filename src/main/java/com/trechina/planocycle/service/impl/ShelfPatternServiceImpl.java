@@ -72,7 +72,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 result.setBranchNum(storeCdStrList.length);
                 GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(result.getCommonPartsData(), companyCd);
                 Integer existSpecialUse = shelfPatternMstMapper.getExistSpecialUse(commonTableName.getStoreInfoTable(), Arrays.asList(storeCdStrList));
-                result.setSpecialFlag(existSpecialUse == 0 ? "◯" : "×");
+                result.setSpecialFlag(existSpecialUse == 0 ? "×" : "◯");
             }
         }).collect(Collectors.toList());
         logger.info("棚pattern情報の戻り値の取得：{}",resultInfo);
