@@ -229,8 +229,8 @@
         </foreach>
         on conflict("1")
         do update set
-        <foreach collection="infoHeader.split(',')" item="item" separator=",">
-            ${item} = EXCLUDED.${item}
+        <foreach collection="janData[0]" index="index" separator=",">
+            "${index}" = EXCLUDED."${index}"
         </foreach>
         ,"102" = #{authorCd}
         ,"103" = #{date}
@@ -295,5 +295,26 @@
         insert into ${tableName}
         select * from  ${tableNameWK}
       </insert>
+    <insert id="insertJanSpecialList">
+        insert into "9999".prod_0000_jan_info(
+        <foreach collection="janData[0]" index="index" separator=",">
+            "${index}"
+        </foreach>
+
+        )
+        values
+        <foreach collection="janData" item="items" separator=",">
+            (
+            <foreach collection="items.entrySet()" item="value" separator=",">
+                #{value}
+            </foreach>
+            )
+        </foreach>
+        on conflict("1")
+        do update set
+        <foreach collection="janData[0]" index="index" separator=",">
+            "${index}" = EXCLUDED."${index}"
+        </foreach>
+    </insert>
 
 </mapper>

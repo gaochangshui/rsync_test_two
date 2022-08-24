@@ -92,7 +92,7 @@ public interface MstJanMapper {
      * @param
      * @return
      */
-    int insertJanList(String tableName,String infoHeader, List<LinkedHashMap<String, Object>> janData,String date,String authorCd);
+    int insertJanList(String tableName, List<LinkedHashMap<String, Object>> janData,String date,String authorCd);
 
     String checkKaisou(String tableNameInfo, Map<String,Object>map);
 
@@ -128,4 +128,6 @@ public interface MstJanMapper {
     List<String> getJanInfoCol();
 
     void setJanSpecial(@Param("list") LinkedHashMap<String, Object> janSpecialData, @Param("jan") String jan);
+
+    int insertJanSpecialList(List<LinkedHashMap<String, Object>> janData);
 }

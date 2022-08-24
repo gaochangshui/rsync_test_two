@@ -45,7 +45,7 @@ public class MstJanController {
 
     /**
      * janデータの取得
-     * @param janInfoList 検索条件
+     * @param janInfoList
      * @return
      */
     @PostMapping("/getJanListInfo")

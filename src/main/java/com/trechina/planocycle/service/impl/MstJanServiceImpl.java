@@ -489,7 +489,7 @@ public class MstJanServiceImpl implements MstJanService {
                                 branchStr.append("0");
                             }
                             row[j] = branchStr + row[j];
-                            map.put(String.valueOf(Integer.valueOf(janKaisouList.get(k).get("4").toString())-1),row[j]);
+                            map.put(String.valueOf(Integer.parseInt(janKaisouList.get(k).get("4").toString())-1),row[j]);
                             String s = mstJanMapper.checkKaisou(tableNameKaisouData, map);
                             if (s != null){
                                 jan.put(headerNameIndex.get(header[j]), row[j]);
@@ -516,7 +516,20 @@ public class MstJanServiceImpl implements MstJanService {
             String dateStr = simpleDateFormat.format(date);
             String authorCd = session.getAttribute("aud").toString();
             List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, prodMstClass);
-            count = mstJanMapper.insertJanList(tableNameInfo,infoHeader,janData, dateStr,authorCd);
+            List<String> janInfoCol = mstJanMapper.getJanInfoCol();
+
+            List<LinkedHashMap<String, Object>> janInfoData = janData.stream()
+                    .map(map -> map.entrySet().stream().filter(infoMap -> !janInfoCol.contains(infoMap.getKey()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new)))
+                    .collect(Collectors.toList());
+
+            List<LinkedHashMap<String, Object>> janSpecialData = janData.stream()
+                    .map(map -> map.entrySet().stream().filter(infoMap -> janInfoCol.contains(infoMap.getKey()) || "1".equals(infoMap.getKey()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new)))
+                    .collect(Collectors.toList());
+                count = mstJanMapper.insertJanList(tableNameInfo, janInfoData, dateStr, authorCd);
+                count = mstJanMapper.insertJanSpecialList(janSpecialData);
+
             Set zokuseiList = new HashSet();
             for (LinkedHashMap<String, Object> janDatum : janData) {
                 for (Map.Entry<String, Object> stringObjectEntry : janDatum.entrySet()) {

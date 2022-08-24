@@ -64,7 +64,11 @@ public class MstBranchServiceImpl implements MstBranchService {
         }
         String branchInfoTableName = MessageFormat.format("\"{0}\".ten_{1}_ten_info", companyCd,
                 branchList.get(0).getCommonPartsData().getStoreMstClass());
-        mstBranchMapper.deleteBranch(branchInfoTableName,groupCd);
+        List<String> groupCompany = classicPriorityOrderCommodityMustMapper.getGroupCompany(groupCd);
+        if (groupCompany.isEmpty()) {
+            groupCompany.add("0");
+        }
+        mstBranchMapper.deleteBranch(branchInfoTableName,groupCompany);
         mstBranchMapper.setBranchInfo(branchList,branchInfoTableName);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

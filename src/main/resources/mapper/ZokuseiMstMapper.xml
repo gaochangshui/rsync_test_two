@@ -145,7 +145,7 @@
         order by zokusei_id
     </select>
     <select id="getZokuseiIdAndCol" resultType="java.util.Map">
-        select  zokusei_col ,zokusei_nm,zokusei_id from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
+        select  zokusei_col ,zokusei_nm,zokusei_id from masterdb.planocycle_zokusei_mst where (company_cd = #{companyCd} and class_cd = #{classCd}) or(company_cd = '9999' and class_cd = '0000')
     </select>
     <select id="getJanSizeCol" resultType="java.util.Map">
         select "1" as "colCd","2" as "colName","3" as "infoCol" from ${proAttrTable} where "1" in ('plano_width','plano_height','plano_depth')
