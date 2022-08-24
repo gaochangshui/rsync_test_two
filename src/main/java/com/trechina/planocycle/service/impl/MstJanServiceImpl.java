@@ -170,15 +170,16 @@ public class MstJanServiceImpl implements MstJanService {
                 janInfoList.getCommonPartsData().getProdMstClass());
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,
                 janInfoList.getCommonPartsData().getProdMstClass());
-        LinkedHashMap<String, Object> janInfoList1 = mstJanMapper.getJanInfoList(janInfoTableName, janInfoList.getJan());
+
         List<LinkedHashMap<String,Object>> janAttrList = mstJanMapper.getJanAttrList(tableNameAttr);
+        LinkedHashMap<String, Object> janInfoList1 = mstJanMapper.getJanInfoList(janInfoTableName, janInfoList.getJan());
         List<LinkedHashMap<String,Object>> update = janAttrList.stream().filter(map->map.get("11").equals("4")).collect(Collectors.toList());
 
         List<LinkedHashMap<String,Object>> janKaisouList = mstJanMapper.getJanKaisouList(tableNameKaisou);
         List<LinkedHashMap<String,Object>> janAttrGroup1 = janAttrList.stream().filter(map->map.get("11").equals("1") || map.get("11").equals("3"))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
         List<LinkedHashMap<String,Object>> janAttrGroup3 = janAttrList.stream().filter(map->map.get("11").equals("6") )
-                .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
+                .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"4"))).collect(Collectors.toList());
         List<LinkedHashMap<String,Object>> janAttrGroup2 = janAttrList.stream().filter(map->map.get("11").equals("5"))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
         if (janInfoList1 == null && !"".equals(janInfoList.getJan())){
@@ -304,10 +305,11 @@ public class MstJanServiceImpl implements MstJanService {
         } else {
             isCompanyCd = companyCd;
         }
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
-        String tableNamePreset = MessageFormat.format("\"{0}\".prod_{1}_jan_preset_param", isCompanyCd, prodMstClass);
-        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
-        return ResultMaps.result(ResultEnum.SUCCESS, mstJanMapper.getAttrName(aud, tableNameAttr, tableNamePreset, tableNameKaisou));
+        String tableNameAttr = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, isCompanyCd, prodMstClass);
+        String tableNamePreset = MessageFormat.format(MagicString.PROD_JAN_PRESET_PARAM, isCompanyCd, prodMstClass);
+        String tableNameKaisou = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS, isCompanyCd, prodMstClass);
+        String tableNamePlanoCycle = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS,MagicString.PLANO_CYCLE_COMPANY_CD,MagicString.FIRST_CLASS_CD);
+        return ResultMaps.result(ResultEnum.SUCCESS, mstJanMapper.getAttrName(aud, tableNameAttr, tableNamePreset, tableNameKaisou,tableNamePlanoCycle));
     }
 
     /**
@@ -329,7 +331,7 @@ public class MstJanServiceImpl implements MstJanService {
         } else {
             isCompanyCd = companyCd;
         }
-        String tableNamePreset = MessageFormat.format("\"{0}\".prod_{1}_jan_preset_param", isCompanyCd, prodMstClass);
+        String tableNamePreset = MessageFormat.format(MagicString.PROD_JAN_PRESET_PARAM, isCompanyCd, prodMstClass);
         mstJanMapper.deleteByAuthorCd(aud, tableNamePreset);
         mstJanMapper.insertPresetAttribute(aud, janPresetAttribute.getClassCd().split(","), tableNamePreset);
         return ResultMaps.result(ResultEnum.SUCCESS);
@@ -392,7 +394,12 @@ public class MstJanServiceImpl implements MstJanService {
         }
         setInfoMap.put("2", map.get(MagicString.JAN_NAME).toString());
         setInfoMap.putAll(kaiSouName);
-        mstJanMapper.setJanInfo(setInfoMap,jan,janInfoTableName);
+        List<String> janInfoCol = mstJanMapper.getJanInfoCol();
+        LinkedHashMap<String,Object> janInfoData= setInfoMap.entrySet().stream().filter(infoMap->!janInfoCol.contains(infoMap.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,(k1,k2)->k1,LinkedHashMap ::new));
+        LinkedHashMap<String,Object> janSpecialData= setInfoMap.entrySet().stream().filter(Special->janInfoCol.contains(Special.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,(k1,k2)->k1,LinkedHashMap ::new));
+        mstJanMapper.setJanInfo(janInfoData,jan,janInfoTableName);
+        mstJanMapper.setJanSpecial(janSpecialData,jan);
+
         List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, commonPartsDto.get(MagicString.PROD_MST_CLASS).toString());
         LinkedHashMap<String,Object> maps = new LinkedHashMap<>();
         for (Map<String, Object> objectMap : zokuseiIdAndCol) {
@@ -482,7 +489,7 @@ public class MstJanServiceImpl implements MstJanService {
                                 branchStr.append("0");
                             }
                             row[j] = branchStr + row[j];
-                            map.put(String.valueOf(Integer.valueOf(janKaisouList.get(k).get("4").toString())-1),row[j]);
+                            map.put(String.valueOf(Integer.parseInt(janKaisouList.get(k).get("4").toString())-1),row[j]);
                             String s = mstJanMapper.checkKaisou(tableNameKaisouData, map);
                             if (s != null){
                                 jan.put(headerNameIndex.get(header[j]), row[j]);
@@ -509,7 +516,20 @@ public class MstJanServiceImpl implements MstJanService {
             String dateStr = simpleDateFormat.format(date);
             String authorCd = session.getAttribute("aud").toString();
             List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, prodMstClass);
-            count = mstJanMapper.insertJanList(tableNameInfo,infoHeader,janData, dateStr,authorCd);
+            List<String> janInfoCol = mstJanMapper.getJanInfoCol();
+
+            List<LinkedHashMap<String, Object>> janInfoData = janData.stream()
+                    .map(map -> map.entrySet().stream().filter(infoMap -> !janInfoCol.contains(infoMap.getKey()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new)))
+                    .collect(Collectors.toList());
+
+            List<LinkedHashMap<String, Object>> janSpecialData = janData.stream()
+                    .map(map -> map.entrySet().stream().filter(infoMap -> janInfoCol.contains(infoMap.getKey()) || "1".equals(infoMap.getKey()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new)))
+                    .collect(Collectors.toList());
+                count = mstJanMapper.insertJanList(tableNameInfo, janInfoData, dateStr, authorCd);
+                count = mstJanMapper.insertJanSpecialList(janSpecialData);
+
             Set zokuseiList = new HashSet();
             for (LinkedHashMap<String, Object> janDatum : janData) {
                 for (Map.Entry<String, Object> stringObjectEntry : janDatum.entrySet()) {

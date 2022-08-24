@@ -32,6 +32,6 @@ public class ShelfPatternMst {
     @JsonIgnore
     private String storeCdStr;
     private Integer branchNum;
-    private Integer specialFlag;
+    private String specialFlag;
 
 }

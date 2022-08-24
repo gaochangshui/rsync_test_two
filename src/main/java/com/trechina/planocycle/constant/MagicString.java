@@ -76,6 +76,10 @@ public class MagicString {
 
     public static final String SELF_SERVICE = "1000";
 
+    /**
+     * Plano-Cycle専用cd
+     */
+    public static final String PLANO_CYCLE_COMPANY_CD = "9999";
 
 
     /**
@@ -134,6 +138,7 @@ public class MagicString {
     public static final String PROD_JAN_INFO ="\"{0}\".prod_{1}_jan_info";
     public static final String PROD_JAN_KAISOU_HEADER_SYS = "\"{0}\".prod_{1}_jan_kaisou_header_sys";
     public static final String PROD_JAN_KAISOU = "\"{0}\".prod_{1}_jan_kaisou";
+    public static final String PROD_JAN_PRESET_PARAM = "\"{0}\".prod_{1}_jan_preset_param";
 
     public static final String PROD_TEN_INFO = "\"{0}\".ten_{1}_ten_info";
 

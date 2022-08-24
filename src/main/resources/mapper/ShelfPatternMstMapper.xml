@@ -239,10 +239,11 @@
           </foreach>
         ) and pmst.deleteflg = 0
     </select>
-    <select id="getExistSpecialUse" resultType="java.lang.Integer">
-        select count(1) from ${tableName} where "100" ='1' and "1" in
-        <foreach collection="branchList" open="(" separator="," item="item" close=")">
-            #{item}
-        </foreach>
+    <select id="getExistSpecialUse" resultType="java.lang.String">
+
+            <foreach collection="list" separator="union" item="item" >
+                select "1"
+                from ${item} where "100" ='1'
+            </foreach>
     </select>
 </mapper>

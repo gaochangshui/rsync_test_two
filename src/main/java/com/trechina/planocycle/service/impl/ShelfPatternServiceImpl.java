@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Sets;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.ShelfPatternBranchDto;
 import com.trechina.planocycle.entity.dto.ShelfPatternDto;
@@ -60,19 +61,25 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     public Map<String, Object> getShelfPatternInfo(String companyCd) {
         logger.info("棚pattern情報のパラメータの取得：{}",companyCd);
         List<ShelfPatternMst> resultInfo = shelfPatternMstMapper.selectByPrimaryKey(companyCd);
+        List<String> commonPartsDataList = resultInfo.stream().distinct().map(map -> map.getCommonPartsData()).collect(Collectors.toList());
+        List<String> list = new ArrayList<>();
+        for (String s : commonPartsDataList) {
+            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(s, companyCd);
+            list.add(commonTableName.getStoreInfoTable());
+        }
+        Set<String> existSpecialUse = shelfPatternMstMapper.getExistSpecialUse(list);
         resultInfo = resultInfo.stream().peek(result -> {
             if (result.getStoreCdStr()==null) {
                 result.setStoreCd(new String[]{});
                 result.setBranchNum(0);
-                result.setSpecialFlag(0);
+                result.setSpecialFlag("×");
             }else{
                 String storeCdStr = result.getStoreCdStr();
                 String[] storeCdStrList = storeCdStr.split(",");
+                long count = Sets.intersection(existSpecialUse, Arrays.stream(storeCdStrList).collect(Collectors.toSet())).stream().count();
                 result.setStoreCd(storeCdStrList);
                 result.setBranchNum(storeCdStrList.length);
-                GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(result.getCommonPartsData(), companyCd);
-                Integer existSpecialUse = shelfPatternMstMapper.getExistSpecialUse(commonTableName.getStoreInfoTable(), Arrays.asList(storeCdStrList));
-                result.setSpecialFlag(existSpecialUse == 0 ? 0 : 1);
+                result.setSpecialFlag(count == 0 ? "×" : "◯");
             }
         }).collect(Collectors.toList());
         logger.info("棚pattern情報の戻り値の取得：{}",resultInfo);

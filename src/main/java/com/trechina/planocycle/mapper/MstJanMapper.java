@@ -55,7 +55,8 @@ public interface MstJanMapper {
     List<JanAttrName> getAttrName(String authorCd,
                                   String tableName,
                                   String tableNamePreset,
-                                  String tableNameKaisou);
+                                  String tableNameKaisou,
+                                  String tableNamePlanoCycle);
 
     /**
      * ユーザー表示項目設定を削除
@@ -91,7 +92,7 @@ public interface MstJanMapper {
      * @param
      * @return
      */
-    int insertJanList(String tableName,String infoHeader, List<LinkedHashMap<String, Object>> janData,String date,String authorCd);
+    int insertJanList(String tableName, List<LinkedHashMap<String, Object>> janData,String date,String authorCd);
 
     String checkKaisou(String tableNameInfo, Map<String,Object>map);
 
@@ -123,4 +124,10 @@ public interface MstJanMapper {
      */
     int insertKaisou(String tableName,String tableNameWK);
 
+
+    List<String> getJanInfoCol();
+
+    void setJanSpecial(@Param("list") LinkedHashMap<String, Object> janSpecialData, @Param("jan") String jan);
+
+    int insertJanSpecialList(List<LinkedHashMap<String, Object>> janData);
 }
