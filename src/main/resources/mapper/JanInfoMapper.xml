@@ -12,8 +12,8 @@
     </select>
     <select id="selectJanClassify" resultType="map">
         select tai_cd as "taiCd",tana_cd as "tanaCd", tanaposition_cd "tanaPositionCd",jandata.jan jan,face_count "faceCount",
-        face_kaiten "faceKaiten", face_men "faceMen", janProMst."${sizeAndIrisuMap.plano_width}" "planoWidth",
-        janProMst."${sizeAndIrisuMap.plano_height}" "planoHeight",janProMst."${sizeAndIrisuMap.plano_depth}" "planoDepth"
+        face_kaiten "faceKaiten", face_men "faceMen", janpromst."${sizeAndIrisuMap.plano_width}" "planoWidth",
+        janpromst."${sizeAndIrisuMap.plano_height}" "planoHeight",janpromst."${sizeAndIrisuMap.plano_depth}" "planoDepth"
 <!--        sum(COALESCE(case janinfo."${sizeAndIrisuMap.plano_width}" when '' then null else janinfo."${sizeAndIrisuMap.plano_width}" end,'67')::integer*jandata.face_count)  as "width"-->
         <foreach collection="zokuseiList" item="item" open="," separator=",">
             <if test="cdList[cdList.size-1]>=item.zokuseiCol">
@@ -24,14 +24,19 @@
                 </foreach>
             </if>
             <if test="cdList[cdList.size-1]&lt;item.zokuseiCol">
-                COALESCE(janinfo."${item.zokuseiCol}", '')
+                <if test="item.zokuseiCol > 103">
+                    COALESCE(janpromst."${item.zokuseiCol}", '')
+                </if>
+                <if test="item.zokuseiCol &lt; 103">
+                    COALESCE(janinfo."${item.zokuseiCol}", '')
+                </if>
             </if>
             as "${item.zokuseiId}"
         </foreach>
         from planocycle.shelf_pts_data ptsdata
         inner join planocycle.shelf_pts_data_jandata jandata on jandata.pts_cd=ptsdata.id
         inner join ${janInfoTb} janinfo on jandata.jan = janinfo."1"
-        left join ${proMstTb} janProMst on janProMst."1" = janinfo."1"
+        left join ${proMstTb} janpromst on janpromst."1" = janinfo."1"
         where shelf_pattern_cd=#{shelfPatternCd}
 <!--        group by "taiCd", "tanaCd","tanaPositionCd"-->
 <!--        <foreach collection="zokuseiList" item="item" open="," separator=",">-->

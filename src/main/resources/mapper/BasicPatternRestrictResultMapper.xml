@@ -411,7 +411,14 @@
     <select id="selectJanZokusei" resultType="map">
         select face_count as "faceCount",jan
             <foreach collection="attrList" item="item1" open="," separator=",">
-                <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">"${item1.zokuseiCol}"</if>
+                <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">
+                    <if test="item1.zokuseiCol>103">
+                        janproinfo."${item1.zokuseiCol}"
+                    </if>
+                    <if test="item1.zokuseiCol&lt;=103">
+                        janinfo."${item1.zokuseiCol}"
+                    </if>
+                </if>
                 <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
                     <foreach collection="allCdList" item="item2" separator="|| '_' ||">
                         <if test="item2 &lt;= item1.zokuseiCol">
@@ -423,6 +430,7 @@
             </foreach>
         from planocycle.shelf_pts_data_jandata jandata
         inner join ${proInfoTable} janinfo on  janinfo."1"=jandata.jan
+        left join ${proMstInfo} janproinfo on janinfo."1"=janproinfo."1"
         where pts_cd=#{ptsCd}
     </select>
     <select id="selectNewJanZokusei" resultType="java.util.Map">
@@ -461,7 +469,14 @@
     <select id="selectAllPatternResultData" resultType="java.util.Map">
         select face_count as "faceNum", jan "janCd"
         <foreach collection="attrList" item="item1" open="," separator=",">
-            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">"${item1.zokuseiCol}"</if>
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">
+                <if test="item1.zokuseiCol>103">
+                    janproinfo."${item1.zokuseiCol}"
+                </if>
+                <if test="item1.zokuseiCol&lt;=103">
+                    janinfo."${item1.zokuseiCol}"
+                </if>
+            </if>
             <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
                 <foreach collection="allCdList" item="item2" separator="|| '_' ||">
                     <if test="item2 &lt;= item1.zokuseiCol">
@@ -479,6 +494,7 @@
         "2" as "janName"
         from planocycle.shelf_pts_data_jandata jandata
         inner join ${proInfoTable} janinfo on  janinfo."1"=jandata.jan
+        left join ${proMstInfo} janproinfo on janinfo."1"=janproinfo."1"
         where pts_cd=#{ptsCd}
     </select>
     <select id="getPtsJanInfo" resultType="java.util.Map">

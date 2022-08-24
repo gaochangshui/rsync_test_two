@@ -4,7 +4,14 @@
     <select id="selectJanNew" resultType="map">
         select jan_new as jan,jan_rank
         <foreach collection="attrList" item="item1" open="," separator=",">
-            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">janinfo."${item1.zokuseiCol}"</if>
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">
+                <if test="item1.zokuseiCol>103">
+                    janproinfo."${item1.zokuseiCol}"
+                </if>
+                <if test="item1.zokuseiCol&lt;=103">
+                    janinfo."${item1.zokuseiCol}"
+                </if>
+            </if>
             <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
                 <foreach collection="allCdList" item="item2" separator="|| '_' ||">
                     <if test="item2 &lt;= item1.zokuseiCol">
@@ -15,10 +22,11 @@
             as "zokusei${item1.zokuseiId}"
         </foreach>
         <foreach collection="attrHeaderList" open="," item="item" separator=",">
-            coalesce(janinfo."${item.attrVal}", '0') as "${item.attr}"
+            coalesce(janproinfo."${item.attrVal}", '0') as "${item.attr}"
         </foreach>
         from planocycle.work_priority_order_jan_new new
         inner join ${proInfoTable} janinfo on  janinfo."1"=new.jan_new
+        left join ${proMstInfoTable} janproinfo on  janinfo."1"=janproinfo."1"
         where new.priority_order_cd=#{priorityOrderCd} and not exists(
             select * from planocycle.work_basic_pattern_restrict_result_data where priority_order_cd=new.priority_order_cd
             and jan= new.jan_new) and not exists(
