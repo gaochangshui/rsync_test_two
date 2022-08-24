@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Mapper
 public interface ShelfPatternMstMapper {
@@ -56,5 +57,5 @@ public interface ShelfPatternMstMapper {
     List<Integer> getShelfPts(List<String> storeCd, String companyCd);
 
 
-    Integer getExistSpecialUse(String tableName, List<String> branchList);
+    Set<String> getExistSpecialUse(List<String> list);
 }
