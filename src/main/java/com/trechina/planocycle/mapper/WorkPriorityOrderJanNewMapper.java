@@ -9,5 +9,5 @@ import java.util.Map;
 @Mapper
 public interface WorkPriorityOrderJanNewMapper {
     List<Map<String, Object>> selectJanNew(Integer priorityOrderCd, List<Integer> allCdList, List<ZokuseiMst> attrList, String proInfoTable,
-                                           List<Map<String, Object>> attrHeaderList);
+                                           List<Map<String, Object>> attrHeaderList, String proMstInfoTable);
 }

@@ -85,13 +85,16 @@ public class MstJanServiceImpl implements MstJanService {
         if("1".equals(janParamVO.getCommonPartsData().getProdIsCore())){
             janParamVO.setCompanyCd(sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY));
         }
-        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", janParamVO.getCompanyCd(),
+        String janInfoTable = MessageFormat.format(MagicString.PROD_JAN_INFO, janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
-        checkVO.setTotal(mstJanMapper.getJanCount(janParamVO, janInfoTableName, "count(\"1\")"));
+        String janInfoTablePlanoCycle = MessageFormat.format(MagicString.PROD_JAN_INFO,
+                MagicString.PLANO_CYCLE_COMPANY_CD,MagicString.FIRST_CLASS_CD);
+        checkVO.setTotal(mstJanMapper.getJanCount(janParamVO, janInfoTable, janInfoTablePlanoCycle, "count(a.\"1\")"));
         String taskId = UUID.randomUUID().toString();
         JSONObject json = new JSONObject();
         json.put("janParamVO",janParamVO);
-        json.put("janInfoTableName",janInfoTableName);
+        json.put("janInfoTable",janInfoTable);
+        json.put("janInfoTablePlanoCycle",janInfoTablePlanoCycle);
         json.put("janColumn",janParamVO.getClassCd());
         cacheUtil.put(taskId, json);
         checkVO.setTaskID(taskId);
@@ -111,13 +114,16 @@ public class MstJanServiceImpl implements MstJanService {
         }
         JSONObject json =JSON.parseObject(cacheUtil.get(downFlagVO.getTaskID()).toString());
         JanParamVO janParamVO = JSON.parseObject(json.getString("janParamVO"),JanParamVO.class);
-        String janInfoTableName = json.getString("janInfoTableName");
+        String janInfoTable = json.getString("janInfoTable");
+        String janInfoTablePlanoCycle = json.getString("janInfoTablePlanoCycle");
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
         String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
+        String tableNamePlanoCycle = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS,
+                MagicString.PLANO_CYCLE_COMPANY_CD,MagicString.FIRST_CLASS_CD);
         String janColumn = json.getString("janColumn");
-        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr, tableNameKaisou, janColumn);
+        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr, tableNameKaisou,tableNamePlanoCycle, janColumn);
         List<JanHeaderAttr> janHeaderSort = new ArrayList<>();
         for (String column : janColumn.split(",")) {
             Optional<JanHeaderAttr> optional = janHeader.stream().filter(e->column.equals(e.getAttr())).findFirst();
@@ -126,10 +132,11 @@ public class MstJanServiceImpl implements MstJanService {
             }
         }
         janHeader = janHeaderSort;
-        //SQL文の列： "\"1\" \"jan_cd\",\"2\" \"jan_name\",\"21\" \"kikaku\",\"22\" \"maker\",\"23\"
-        String column = janHeader.stream().map(map -> "COALESCE(\"" + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
+        //SQL文の列： a."1" "jan_cd",a."2" "jan_name",a."21" "kikaku",b."104" "planoWidth"
+        String column = janHeader.stream().map(map -> "COALESCE(" + ("5".equals(map.getType()) ? "b" : "a") + ".\""
+                + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
                 .collect(Collectors.joining(","));
-        janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTableName, column));
+        janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTable, janInfoTablePlanoCycle, column));
         janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
                 .collect(Collectors.joining(",")));
         janInfoVO.setJanColumn(dataConverUtils.camelize(janColumn));

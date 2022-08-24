@@ -29,8 +29,8 @@ public interface ShelfPtsDataJandataMapper {
     List<ShelfPtsDataJandata> selectNewByPtsCd(String companyCd, Integer ptsCd);
 
     List<PriorityOrderResultDataDto> selectJanByPatternCd(String authorCd, String companyCd, Integer patternCd, Integer priorityOrderCd,
-                                                          List<Map<String, Object>> attrHeaderList, int isReOrder,String tableName);
+                                                          List<Map<String, Object>> attrHeaderList, int isReOrder,String tableName, String proTableName);
 
     List<PriorityOrderResultDataDto> selectJanByPatternCdByAll(String authorCd, String companyCd, Integer patternCd, Integer priorityAllCd,Integer priorityOrderCd,
-                                                          List<Map<String, Object>> attrHeaderList, int isReOrder,String tableName);
+                                                          List<Map<String, Object>> attrHeaderList, int isReOrder,String tableName, String proTableName);
 }

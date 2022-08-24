@@ -25,7 +25,7 @@
         select 	tanamst.tai_cd as "taiCd",tanamst.tana_cd as "tanaCd",json,
         row_number() over (partition by tanamst.tai_Cd, tanamst.tana_cd  order by area desc) as "areaPosition",
         result.restrict_cd as "restrictCd", round(area,0) area,value color
-        <foreach collection="zokuseiList" open="," item="item" separator=","> ${item}</foreach>
+        <foreach collection="zokuseiList" open="," item="item" separator=",">  "zokusei${item.sort+1}" as "zokusei${item.value}"</foreach>
         from planocycle.work_priority_order_pts_data ptsdata
         left join
         planocycle.work_priority_order_pts_data_tanamst tanamst
@@ -34,13 +34,13 @@
         where priority_order_cd=#{priorityOrderCd} and restrict_cd!=9999
         group by tai_cd, tana_cd, restrict_cd) relation on tanamst.tai_cd = relation.tai_cd and tanamst.tana_cd = relation.tana_cd
         left join
-             (select restrict_cd<foreach collection="zokuseiList" open="," close="," item="item" separator=",">${item}</foreach>
+             (select restrict_cd<foreach collection="zokuseiList" open="," close="," item="item" separator=",">"zokusei${item.sort+1}"</foreach>
                json_object_agg ( val, nm ) json from planocycle.work_basic_pattern_restrict_result result
         INNER JOIN masterdb.planocycle_zokusei_mst_data zokuseidata ON zokuseidata.class_cd = #{classCd}
         AND zokuseidata.company_cd = #{companyCd}
-        <foreach collection="zokuseiList" item="item" open="and (" separator="or" close=")" > val=${item}</foreach>
+        <foreach collection="zokuseiList" item="item" open="and (" separator="or" close=")" > val=result."zokusei${item.sort+1}"</foreach>
         where priority_order_cd = #{priorityOrderCd}  group by restrict_cd
-        <foreach collection="zokuseiList" item="item" open="," separator="," >${item}</foreach>
+        <foreach collection="zokuseiList" item="item" open="," separator="," >"zokusei${item.sort+1}"</foreach>
         ) result
         on result.restrict_cd=relation.restrict_cd
         left join planocycle.priority_order_color color on color.id=relation.restrict_cd

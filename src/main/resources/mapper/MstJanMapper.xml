@@ -20,13 +20,19 @@
     </update>
     <!--"{0}".prod_{1}_jan_attr_header_sys  -->
     <select id="getJanHeader" resultType="com.trechina.planocycle.entity.po.JanHeaderAttr">
-        select "1" "attr","2" "attrVal","3" "sort", "4" "colSort" from ${tableName}
+        select "1" "attr","2" "attrVal","3" "sort", "4" "colSort", "11" "type" from ${tableName}
         where "1" in (
         <foreach collection="janColumn.split(',')" item="item" index="idx" separator=",">
             #{item,jdbcType=VARCHAR}
         </foreach>)
         union
-        select "1" "attr","2" "attrVal","3" "sort", "4" "colSort" from ${tableNameKaisou}
+        select "1" "attr","2" "attrVal","3" "sort", "4" "colSort", '2' "type" from ${tableNameKaisou}
+        where "1" in (
+        <foreach collection="janColumn.split(',')" item="item" index="idx" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>)
+        union
+        select "1" "attr","2" "attrVal","3" "sort", "4" "colSort", "11" "type" from ${tableNamePlanoCycle}
         where "1" in (
         <foreach collection="janColumn.split(',')" item="item" index="idx" separator=",">
             #{item,jdbcType=VARCHAR}
@@ -53,7 +59,7 @@
 
     <select id="getJanList" resultType="java.util.LinkedHashMap">
         <include refid="Base_Jan_List" />
-        order by "1"
+        order by a."1"
     </select>
     <select id="getJanInfoList" resultType="java.util.LinkedHashMap">
         select
@@ -84,17 +90,18 @@
 
     <!--"{0}".prod_{1}_jan_info  -->
     <sql id="Base_Jan_List">
-        select ${column} from ${tableName}
+        select ${column} from ${tableName} a
+        left join ${janInfoTablePlanoCycle} b on a."1" =b."1"
         where "2" like concat(concat('%', #{janParamVO.fuzzyQuery}), '%')
         <if test="janParamVO.janContain != null and janParamVO.janContain != ''">
-            and "1" in(
+            and a."1" in(
             <foreach collection="janParamVO.janContain.split(',')" item="items" separator=",">
                 #{items}
             </foreach>
             )
         </if>
         <if test="janParamVO.janKato != null and janParamVO.janKato != ''">
-            and "1" not in(
+            and a."1" not in(
             <foreach collection="janParamVO.janKato.split(',')" item="items" separator=",">
                 #{items}
             </foreach>)
