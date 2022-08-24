@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -38,7 +39,9 @@ public class SysConfigServiceImpl implements SysConfigService {
         }
         Integer colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd,prodMstClass);
         if (colNum != null){
+            List<String> janUnit = sysConfigMapper.selectByPrefix("jan_unit_");
             resultMap.put("showJanSkuFlag", 1);
+            resultMap.put("janUnitList", janUnit);
         }else {
             resultMap.put("showJanSkuFlag", 0);
         }
