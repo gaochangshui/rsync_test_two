@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -197,9 +198,11 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         List<Map<String, Object>> restrictResult = restrictRelationMapper.selectRelation(priorityAllCd, patternCd);
         int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
         List<Integer> attrList = priorityOrderMstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
-        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(commonTableName.getProAttrTable());
+
+        String proMstTb = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
+        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(proMstTb);
         List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCdByAll(authorCd, companyCd, patternCd,
-                priorityAllCd,priorityOrderCd, sizeAndIrisu, isReOrder, commonTableName.getProInfoTable());
+                priorityAllCd,priorityOrderCd, sizeAndIrisu, isReOrder, commonTableName.getProInfoTable(), proMstTb);
 
         List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
 
@@ -248,10 +251,13 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
         List<ShelfPtsDataTanamst> tanamsts = shelfPtsDataTanamst.selectByPatternCd((long) shelfPatternCd);
 
-        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(commonTableName.getProAttrTable());
+        String proMstTb = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
+        String proInfoTb = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
+
+        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(proMstTb);
         Map<String, String> sizeAndIrisuMap = sizeAndIrisu.stream().collect(Collectors.toMap(map -> MapUtils.getString(map, "attr"), map -> MapUtils.getString(map, "attrVal")));
         List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd,
-                zokuseiMsts, cdList, sizeAndIrisuMap);
+                zokuseiMsts, cdList, sizeAndIrisuMap, proInfoTb);
 
         classifyList = basicPatternMstService.updateJanSizeByMap(classifyList);
         classifyList.forEach(item-> item.put("width", MapUtils.getInteger(item,"width")*MapUtils.getInteger(item, "faceCount")));

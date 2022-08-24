@@ -133,10 +133,13 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         priorityOrderMstAttrSortMapper.setAttrList(companyCd,priorityOrderCd,list);
         List<ShelfPtsDataTanamst> tanamsts = shelfPtsDataTanamst.selectByPatternCd((long) shelfPatternCd);
 
-        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(commonTableName.getProAttrTable());
+        String proHeaderTb = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
+        String proInfoTb = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
+
+        List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(proHeaderTb);
         Map<String, String> sizeAndIrisuMap = sizeAndIrisu.stream().collect(Collectors.toMap(map -> MapUtils.getString(map, "attr"), map -> MapUtils.getString(map, "attrVal")));
         List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd,
-                zokuseiMsts, cdList, sizeAndIrisuMap);
+                zokuseiMsts, cdList, sizeAndIrisuMap, proInfoTb);
         classifyList = this.updateJanSizeByMap(classifyList);
         classifyList.forEach(item->{
             item.put("width", MapUtils.getLong(item,"width", MagicString.DEFAULT_WIDTH)*MapUtils.getInteger(item, "faceCount", 1));
@@ -557,8 +560,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
                 int isReOrder = colNmforMst.size();
 
-                List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(commonTableName.getProAttrTable());
-                List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(authorCd, companyCd, patternCd, priorityOrderCd, sizeAndIrisu, isReOrder, commonTableName.getProInfoTable());
+                String proMstTb = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
+                List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(proMstTb);
+                List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(authorCd, companyCd, patternCd, priorityOrderCd,
+                        sizeAndIrisu, isReOrder, commonTableName.getProInfoTable(), proMstTb);
                 Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd,
                         minFaceNum, zokuseiMsts, allCdList,
                         restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck,

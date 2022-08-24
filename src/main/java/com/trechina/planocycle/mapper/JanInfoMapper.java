@@ -17,5 +17,5 @@ public interface JanInfoMapper {
     void dropFinal(@Param("tableName") String tableName);
 
     List<Map<String, Object>> selectJanClassify(String janInfoTb, Integer shelfPatternCd, List<ZokuseiMst> zokuseiList, List<Integer> cdList,
-                                                Map<String, String> sizeAndIrisuMap);
+                                                Map<String, String> sizeAndIrisuMap, String proMstTb);
 }

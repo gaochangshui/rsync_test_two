@@ -11,6 +11,7 @@ public class MagicString {
     public static final String CORE_COMPANY = "core_company";
 
     public static final String FIRST_CLASS_CD = "0000";
+    public static final String SPECIAL_SCHEMA_CD = "9999";
 
     public static final String JAN_HEADER_JAN_CD_COL = "jan_cd";
     public static final String JAN_HEADER_JAN_NAME_COL = "jan_name";
