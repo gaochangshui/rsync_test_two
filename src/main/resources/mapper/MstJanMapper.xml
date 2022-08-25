@@ -51,6 +51,12 @@
         <foreach collection="headerName.split(',')" item="item" index="idx" separator=",">
             #{item,jdbcType=VARCHAR}
         </foreach>)
+        union
+        select "1" "attr","2" "attrVal","3" "sort",'1' as type from "9999".prod_0000_jan_attr_header_sys
+        where "2" in (
+        <foreach collection="headerName.split(',')" item="item" index="idx" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>)
     </select>
 
     <select id="getJanCount" resultType="long">
@@ -64,10 +70,10 @@
     <select id="getJanInfoList" resultType="java.util.LinkedHashMap">
         select
             a."1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"
-               , "100", "101", "102", "103", b."104","105","106","107","108","109","110"
-             , "201", "202", "203", "204", "205", "206",
-            "207", "208", "209", "210", "211", "212", "213", "214", "215", "216", "217", "218", "219"
-               , "220", "221", "222", "223", "224", "225", "226", "227", "228", "229", "230"
+               , "100", "101", "102", "103", b."104",b."105",b."106",b."107",b."108",b."109",b."110"
+             , b."201", b."202", b."203", b."204", b."205", b."206",
+            b."207", b."208", b."209", b."210", b."211", b."212", b."213", b."214", b."215", b."216", b."217", b."218", b."219"
+               , b."220", b."221", b."222", b."223", b."224", b."225", b."226", b."227", b."228", b."229", b."230"
         from
         ${tableName} a
         left join "9999".prod_0000_jan_info b

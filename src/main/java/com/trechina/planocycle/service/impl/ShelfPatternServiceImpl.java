@@ -411,7 +411,14 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
 
     @Override
     public Map<String, Object> getPatternForStorel(String companyCd, String storeIsCore) {
-        List<ShelfPatternNameVO> patternForStorel = shelfPatternMstMapper.getPatternForStorel(storeIsCore, companyCd);
+        List<String> commonPartsData = shelfPatternMstMapper.getCommonPartsData(companyCd);
+        Map<String,Object> map = new HashMap<>();
+        for (int i = 0; i < commonPartsData.size(); i++) {
+            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData.get(i), companyCd);
+            map.put("a"+i,commonTableName.getStoreInfoTable());
+        }
+
+        List<ShelfPatternNameVO> patternForStorel = shelfPatternMstMapper.getPatternForStorel(storeIsCore, companyCd,map);
         for (ShelfPatternNameVO shelfPatternNameVO : patternForStorel) {
             String prodIsCore = shelfPatternNameVO.getStoreIsCore();
             JSONObject jsonObject = JSON.parseObject(prodIsCore);

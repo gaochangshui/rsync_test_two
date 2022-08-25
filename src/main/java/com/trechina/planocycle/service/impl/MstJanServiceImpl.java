@@ -133,7 +133,7 @@ public class MstJanServiceImpl implements MstJanService {
         }
         janHeader = janHeaderSort;
         //SQL文の列： a."1" "jan_cd",a."2" "jan_name",a."21" "kikaku",b."104" "planoWidth"
-        String column = janHeader.stream().map(map -> "COALESCE(" + ("5".equals(map.getType()) ? "b" : "a") + ".\""
+        String column = janHeader.stream().map(map -> "COALESCE(" + ("5".equals(map.getType()) ||"6".equals(map.getType()) ? "b" : "a") + ".\""
                 + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
                 .collect(Collectors.joining(","));
         janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTable, janInfoTablePlanoCycle, column));

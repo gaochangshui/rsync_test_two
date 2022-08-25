@@ -4,7 +4,7 @@
     <insert id="insertBatch">
         insert into masterdb.planocycle_zokusei_mst values
         <foreach collection="lists" item="item" separator=",">
-            (#{companyCd}, #{classCd}, #{item.zokuseiId}, #{item.zokuseiNm}, #{item.zokuseiSort}, #{item.type},
+            (#{companyCd}, #{classCd}, #{item.zokuseiCol}, #{item.zokuseiNm}, #{item.zokuseiSort}, #{item.type},
             #{item.sortType}, #{item.zokuseiCol})
         </foreach>
     </insert>
@@ -148,7 +148,7 @@
         select  zokusei_col ,zokusei_nm,zokusei_id from masterdb.planocycle_zokusei_mst where (company_cd = #{companyCd} and class_cd = #{classCd}) or(company_cd = '9999' and class_cd = '0000')
     </select>
     <select id="getJanSizeCol" resultType="java.util.Map">
-        select "1" as "colCd","2" as "colName","3" as "infoCol" from ${proAttrTable} where "1" in ('plano_width','plano_height','plano_depth')
+        select "1" as "colCd","2" as "colName","3" as "infoCol" from "9999".prod_0000_jan_attr_header_sys where "1" in ('plano_width','plano_height','plano_depth')
     </select>
     <select id="getMaxZokuseiId" resultType="java.lang.Integer">
         SELECT MAX(zokusei_id) FROM masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
