@@ -71,7 +71,7 @@
 
   <select id="getAttribute" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
     select zokusei_id as attrCd,zokusei_nm as attrName
-    from masterdb.planocycle_zokusei_mst where company_cd = #{companyCd} and class_cd = #{classCd}
+    from masterdb.planocycle_zokusei_mst where company_cd in (#{companyCd}, '9999') and class_cd in(#{classCd}, '0000')
     order by attrCd
   </select>
 
