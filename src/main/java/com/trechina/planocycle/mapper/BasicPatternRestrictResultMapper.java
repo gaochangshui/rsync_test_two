@@ -27,7 +27,7 @@ public interface BasicPatternRestrictResultMapper {
 
     List<Map<String, Object>> selectByPrimaryKey(Integer priorityOrderCd);
 
-    List<Map<String, Object>> selectGroup(Integer priorityOrderCd,List<ZokuseiMst>zokuseiMsts);
+    List<Map<String, Object>> selectGroup(Integer priorityOrderCd,List<Map<String,Object>>list);
 
     int updateByPrimaryKeySelective(BasicPatternRestrictResult record);
 
@@ -63,4 +63,6 @@ public interface BasicPatternRestrictResultMapper {
     List<Map<String, Object>> selectOldJanZokusei(Integer priorityOrderCd, Integer ptsCd, List<ZokuseiMst> attrList
             , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName,List<Map<String, Object>> janSizeCol
             ,String tableName,Integer productPowerCd);
+
+    List<Map<String,Object>> selectSortValue(Integer priorityOrderCd,String tableName);
 }
