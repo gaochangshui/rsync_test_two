@@ -135,6 +135,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         for (Map<String, Object> objectMap : restrictList) {
             Map<String, Object> newObjectMap = new HashMap<>();
             newObjectMap.put("color", objectMap.getOrDefault("color", "#ffffff"));
+            newObjectMap.put("restrictCd", objectMap.get("restrictCd"));
             for (Map<String, Object> map : attrName) {
                 for (int i = 0; i < attrList.size(); i++) {
                     String s = attrList.get(i);
