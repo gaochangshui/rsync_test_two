@@ -145,7 +145,6 @@
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
   <select id="getAttrColForName" resultType="java.util.Map">
-
     select value,zokusei_nm,
            case when kaisou."3" is null then COALESCE(attr."1", proattr."1") else concat('zokuseiName',(zokusei_col :: INTEGER+1)) end as zokusei_colname
             ,

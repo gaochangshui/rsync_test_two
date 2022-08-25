@@ -295,7 +295,7 @@
     tana_cd "tanaCd", tanaposition_cd "tanapositionCd",tumiagesu,zaikosu,face_displayflg,face_position,
     case when jancut.jan_cd is null then 0 else 1 end as cutFlag
     <foreach collection="attrHeaderList" open="," item="item" separator=",">
-      coalesce(janpromst."${item.attrVal}", '0') as "${item.attr}"
+      coalesce(janpromst."${item.attrVal}", '67') as "${item.attr}"
     </foreach>
     from (select coalesce(jan_new, jandata.jan) jan, sku_rank, restrict_cd "restrictCd", face,tai_cd,tana_cd,tanaposition_cd,
     tumiagesu,zaikosu,face_displayflg,face_position,

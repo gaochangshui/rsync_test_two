@@ -36,8 +36,8 @@
         left join
              (select restrict_cd<foreach collection="zokuseiList" open="," close="," item="item" separator=",">"zokusei${item.sort+1}"</foreach>
                json_object_agg ( val, nm ) json from planocycle.work_basic_pattern_restrict_result result
-        INNER JOIN masterdb.planocycle_zokusei_mst_data zokuseidata ON zokuseidata.class_cd = #{classCd}
-        AND zokuseidata.company_cd = #{companyCd}
+        INNER JOIN masterdb.planocycle_zokusei_mst_data zokuseidata ON concat(zokuseidata.company_cd, '_',zokuseidata.class_cd)
+        in( concat(#{companyCd}, '_',#{classCd}), '9999_0000')
         <foreach collection="zokuseiList" item="item" open="and (" separator="or" close=")" > val=result."zokusei${item.sort+1}"</foreach>
         where priority_order_cd = #{priorityOrderCd}  group by restrict_cd
         <foreach collection="zokuseiList" item="item" open="," separator="," >"zokusei${item.sort+1}"</foreach>

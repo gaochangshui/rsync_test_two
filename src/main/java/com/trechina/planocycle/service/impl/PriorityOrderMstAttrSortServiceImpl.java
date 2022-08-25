@@ -144,8 +144,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                     String sort = attrSortList.get(i);
                     if (objectMap.getOrDefault("zokusei"+sort, "").equals(map.get("val"))){
                         newObjectMap.put("zokuseiName"+s,map.getOrDefault("nm",""));
-                        newObjectMap.put("zokusei"+s, objectMap.get("zokusei"+sort));
                     }
+                    newObjectMap.put("zokusei"+s, objectMap.get("zokusei"+sort));
                     newObjectMap.putIfAbsent("zokuseiName"+s,"");
                 }
             }
