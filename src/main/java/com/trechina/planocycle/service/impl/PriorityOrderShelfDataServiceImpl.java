@@ -83,10 +83,10 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         String janColumns = "";
         for (Map<String,Object> col : attrCol) {
             if (colHeader.equals("")) {
-                janColumns +=  col.get("zokusei_colcd");
+                janColumns +=  "zokuseiName"+col.get("value");
                 colHeader +=col.get("zokusei_nm");
             }else {
-                janColumns += "," + col.get("zokusei_colcd");
+                janColumns += ",zokuseiName" + col.get("value");
                 colHeader +=","+col.get("zokusei_nm");
             }
         }
@@ -99,7 +99,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : listMap.entrySet()) {
             Map<String,Object> map = new HashMap<>();
             for (Map<String,Object> col : attrCol) {
-                map.put( col.get("zokusei_colcd").toString(),stringListEntry.getValue().get(0).getOrDefault(col.get("zokusei_colname"),""));
+                map.put( "zokuseiName"+col.get("value").toString(),stringListEntry.getValue().get(0).getOrDefault(col.get("zokusei_colname"),""));
+                map.put( "zokusei"+col.get("value").toString(),stringListEntry.getValue().get(0).getOrDefault(col.get("zokusei_colcd"),""));
             }
 
             map.put("restrictCd",stringListEntry.getValue().get(0).get("restrictCd"));

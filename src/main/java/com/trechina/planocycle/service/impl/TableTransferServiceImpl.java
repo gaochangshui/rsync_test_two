@@ -88,6 +88,7 @@ public class TableTransferServiceImpl implements TableTransferService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @PostConstruct
     public void syncZokuseiMst() {
         String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
         String[] companyList = syncCompanyList.split(",");
