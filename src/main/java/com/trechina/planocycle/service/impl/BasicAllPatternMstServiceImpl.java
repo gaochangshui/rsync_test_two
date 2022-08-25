@@ -198,12 +198,12 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         List<Map<String, Object>> restrictResult = restrictRelationMapper.selectRelation(priorityAllCd, patternCd);
         //zokuseiId convert to work_basic_pattern_restrict_result's zokuseiId
         for (PriorityOrderMstAttrSort mstAttrSort : priorityOrderMstAttrSorts) {
-            restrictResult.stream().peek(map->{
+            restrictResult.forEach(map->{
                 String beforeZokuseiId = "zokusei" + (mstAttrSort.getSort() + 1);
                 String val = MapUtils.getString(map, beforeZokuseiId);
                 map.remove(beforeZokuseiId);
                 map.put("zokusei" + (mstAttrSort.getValue()), val);
-            }).collect(Collectors.toList());
+            });
         }
         int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
         List<Integer> attrList = priorityOrderMstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
@@ -613,12 +613,12 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         //zokuseiId convert to work_basic_pattern_restrict_result's zokuseiId
         //1,3,5->1,2,3
         for (PriorityOrderMstAttrSort mstAttrSort : mstAttrSorts) {
-            restrictResult.stream().peek(map->{
+            restrictResult.stream().forEach(map->{
                 String beforeZokuseiId = "zokusei" + (mstAttrSort.getSort() + 1);
                 String val = MapUtils.getString(map, beforeZokuseiId);
                 map.remove(beforeZokuseiId);
                 map.put("zokusei" + (mstAttrSort.getValue()), val);
-            }).collect(Collectors.toList());
+            });
         }
 
         String proMstInfo = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);

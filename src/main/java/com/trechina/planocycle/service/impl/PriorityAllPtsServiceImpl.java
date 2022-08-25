@@ -201,7 +201,8 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             //既存台、棚、商品データ
             List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
-            List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(patternCd,attrCol,commonTableName.getProInfoTable(),janSizeCol);
+            String proTableName = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
+            List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(patternCd,attrCol,commonTableName.getProInfoTable(),janSizeCol, proTableName);
             //棚、商品の変更チェック
             //棚変更：高さ変更
             logger.info("start,{}",System.currentTimeMillis());
