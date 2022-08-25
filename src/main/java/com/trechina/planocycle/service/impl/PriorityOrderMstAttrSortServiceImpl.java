@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -96,15 +97,17 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     @Override
     public Map<String, Object> getAttributeList(PriorityOrderAttrDto priorityOrderAttrDto) {
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
+        List<String> attrSortList = priorityOrderMstAttrSortMapper.getAttrSortList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
         List<String> mainColor = priorityOrderColorMapper.getMainColor();
         Map<String, Object> newTanaWidth = shelfPtsDataMapper.getNewTanaWidth(priorityOrderAttrDto.getPriorityOrderCd());
         Integer id = Integer.parseInt(newTanaWidth.get("id").toString());
         Integer width = Integer.parseInt(newTanaWidth.get("width").toString());
         List list = new ArrayList();
-        for (String s : attrList) {
+        for (int j = 0; j  < attrList.size(); j++) {
+            String s = attrList.get(j);
             List<Map<String, Object>> attrDistinct = priorityOrderMstAttrSortMapper.getAttrDistinct(commonTableName.getProdMstClass()
-                    , commonTableName.getProdIsCore(),priorityOrderAttrDto.getPriorityOrderCd(), s,id,width);
+                    , commonTableName.getProdIsCore(),priorityOrderAttrDto.getPriorityOrderCd(), s,id,width, attrSortList.get(j));
             for (int i = 0; i < attrDistinct.size(); i++) {
                 attrDistinct.get(i).put("color",mainColor.get(i));
             }
@@ -122,23 +125,30 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     public Map<String, Object> getAttrGroup(PriorityOrderAttrDto priorityOrderAttrDto) {
 
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
+        List<String> attrSortList = priorityOrderMstAttrSortMapper.getAttrSortList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
         List<Integer> attrs = attrList.stream().map(Integer::parseInt).collect(Collectors.toList());
         List<Map<String, Object>> attrName = priorityOrderMstAttrSortMapper.getAttrName(commonTableName.getProdMstClass(), commonTableName.getProdIsCore(), attrs);
         List<Map<String, Object>> restrictList = basicPatternResultMapper.getAttrComposeList(priorityOrderAttrDto.getCompanyCd()
-                , priorityOrderAttrDto.getPriorityOrderCd(), attrList,commonTableName.getProdMstClass(),commonTableName.getProdIsCore());
+                , priorityOrderAttrDto.getPriorityOrderCd(), attrSortList,commonTableName.getProdMstClass(),commonTableName.getProdIsCore());
+        List<Map<String, Object>> newRestrictList = new ArrayList<>();
         for (Map<String, Object> objectMap : restrictList) {
-
+            Map<String, Object> newObjectMap = new HashMap<>();
+            newObjectMap.put("color", objectMap.getOrDefault("color", "#ffffff"));
             for (Map<String, Object> map : attrName) {
-                for (String s : attrList) {
-                    if (objectMap.get("zokusei"+s).equals(map.get("val"))){
-                        objectMap.put("zokuseiName"+s,map.getOrDefault("nm",""));
+                for (int i = 0; i < attrList.size(); i++) {
+                    String s = attrList.get(i);
+                    String sort = attrSortList.get(i);
+                    if (objectMap.getOrDefault("zokusei"+sort, "").equals(map.get("val"))){
+                        newObjectMap.put("zokuseiName"+s,map.getOrDefault("nm",""));
+                        newObjectMap.put("zokusei"+s, objectMap.get("zokusei"+sort));
                     }
-                    objectMap.putIfAbsent("zokuseiName"+s,"");
+                    newObjectMap.putIfAbsent("zokuseiName"+s,"");
                 }
             }
+            newRestrictList.add(newObjectMap);
         }
-        return ResultMaps.result(ResultEnum.SUCCESS, restrictList);
+        return ResultMaps.result(ResultEnum.SUCCESS, newRestrictList);
     }
 
 
