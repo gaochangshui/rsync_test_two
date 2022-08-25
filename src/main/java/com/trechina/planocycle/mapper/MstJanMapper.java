@@ -17,7 +17,7 @@ public interface MstJanMapper {
      * janHeaderの取得
      * @return
      */
-    List<JanHeaderAttr> getJanHeader(String tableName, String tableNameKaisou, String janColumn);
+    List<JanHeaderAttr> getJanHeader(String tableName, String tableNameKaisou, String tableNamePlanoCycle, String janColumn);
 
     /**
      * 名前でjanHeaderを取得
@@ -32,6 +32,7 @@ public interface MstJanMapper {
      */
     long getJanCount(@Param("janParamVO") JanParamVO janParamVO,
                      @Param("tableName") String tableName,
+                     @Param("janInfoTablePlanoCycle") String janInfoTablePlanoCycle,
                      @Param("column") String column);
     /**
      * janデータの取得
@@ -40,6 +41,7 @@ public interface MstJanMapper {
      */
     List<LinkedHashMap<String, Object>> getJanList(@Param("janParamVO") JanParamVO janParamVO,
                                                    @Param("tableName") String tableName,
+                                                   @Param("janInfoTablePlanoCycle") String janInfoTablePlanoCycle,
                                                    @Param("column") String column);
 
     LinkedHashMap<String,Object> getJanInfoList(@Param("tableName")String janInfoTableName, @Param("jan") String jan);
