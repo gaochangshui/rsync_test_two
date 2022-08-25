@@ -318,7 +318,7 @@
       </if>
     </foreach>
     <foreach collection="janSizeCol" item="item">
-      ,coalesce (janproinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
+      ,coalesce (janproinfo."${item.infoCol}",'') as "${item.colCd}"
     </foreach>
     ,janinfo."2" as "janName"
     from
