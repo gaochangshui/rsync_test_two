@@ -51,6 +51,12 @@
         <foreach collection="headerName.split(',')" item="item" index="idx" separator=",">
             #{item,jdbcType=VARCHAR}
         </foreach>)
+        union
+        select "1" "attr","2" "attrVal","3" "sort",'1' as type from "9999".prod_0000_jan_attr_header_sys
+        where "2" in (
+        <foreach collection="headerName.split(',')" item="item" index="idx" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>)
     </select>
 
     <select id="getJanCount" resultType="long">

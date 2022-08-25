@@ -106,8 +106,10 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         List list = new ArrayList();
         for (int j = 0; j  < attrList.size(); j++) {
             String s = attrList.get(j);
-            List<Map<String, Object>> attrDistinct = priorityOrderMstAttrSortMapper.getAttrDistinct(commonTableName.getProdMstClass()
-                    , commonTableName.getProdIsCore(),priorityOrderAttrDto.getPriorityOrderCd(), s,id,width, attrSortList.get(j));
+            String prodMstClass = commonTableName.getProdMstClass();
+            String prodIsCore = commonTableName.getProdIsCore();
+            List<Map<String, Object>> attrDistinct = priorityOrderMstAttrSortMapper.getAttrDistinct(Integer.parseInt(s)<104?prodMstClass:"0000"
+                    ,Integer.parseInt(s)<104? prodIsCore :"9999",priorityOrderAttrDto.getPriorityOrderCd(), s,id,width, attrSortList.get(j));
             for (int i = 0; i < attrDistinct.size(); i++) {
                 attrDistinct.get(i).put("color",mainColor.get(i));
             }

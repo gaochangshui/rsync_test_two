@@ -4,7 +4,7 @@
     <insert id="insertBatch">
         insert into masterdb.planocycle_zokusei_mst values
         <foreach collection="lists" item="item" separator=",">
-            (#{companyCd}, #{classCd}, #{item.zokuseiId}, #{item.zokuseiNm}, #{item.zokuseiSort}, #{item.type},
+            (#{companyCd}, #{classCd}, #{item.zokuseiCol}, #{item.zokuseiNm}, #{item.zokuseiSort}, #{item.type},
             #{item.sortType}, #{item.zokuseiCol})
         </foreach>
     </insert>
