@@ -71,7 +71,7 @@
 
   <select id="getAttribute" resultType="com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo">
     select zokusei_id as attrCd,zokusei_nm as attrName
-    from masterdb.planocycle_zokusei_mst where company_cd in (#{companyCd}, '9999') and class_cd in(#{classCd}, '0000')
+    from masterdb.planocycle_zokusei_mst where concat(company_cd, '_', class_cd) in (concat(#{companyCd}, '_', #{classCd}), '9999_0000')
     order by attrCd
   </select>
 
@@ -123,7 +123,8 @@
     select value,zokusei_nm,zokusei_col
     from  planocycle.work_priority_order_mst_attrsort attrsort
       left join masterdb.planocycle_zokusei_mst zokuseimst
-     on zokuseimst.zokusei_id = attrsort.value and zokuseimst.company_cd in( #{company}, '9999') and zokuseimst.class_cd in( #{classCd}, '0000')
+     on zokuseimst.zokusei_id = attrsort.value and
+    concat(zokuseimst.company_cd, '_', zokuseimst.class_cd) in (concat(#{companyCd}, '_', #{classCd}), '9999_0000')
     where attrsort.company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     order by sort
   </select>
@@ -149,7 +150,8 @@
             ,case when kaisou."3" is null then zokuseimst.zokusei_col :: integer else (zokusei_col :: INTEGER+1) end as zokusei_col
     from  planocycle.work_priority_order_mst_attrsort attrsort
     left join masterdb.planocycle_zokusei_mst zokuseimst
-    on zokuseimst.zokusei_id = attrsort.value and zokuseimst.company_cd in( #{company}, '9999') and zokuseimst.class_cd in( #{classCd}, '0000')
+    on zokuseimst.zokusei_id = attrsort.value and
+    concat(zokuseimst.company_cd, '_', zokuseimst.class_cd) in (concat(#{companyCd}, '_', #{classCd}), '9999_0000')
     left join "${company}".prod_${classCd}_jan_kaisou_header_sys kaisou
     on kaisou."3" = trim(zokuseimst.zokusei_col :: VARCHAR)
     left join "${company}".prod_${classCd}_jan_attr_header_sys attr
