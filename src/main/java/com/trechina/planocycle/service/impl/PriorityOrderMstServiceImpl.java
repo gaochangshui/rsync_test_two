@@ -250,11 +250,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
         List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+        String proTableName = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
         List<Map<String,Object>> reorder = workPriorityOrderResultDataMapper.getProductReorder(companyCd, authorCd,
-                workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,tableName,zokuseiMsts,allCdList);
+                workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,tableName,zokuseiMsts,allCdList, proTableName);
 
         List<Map<String,Object>> newJanReorder = workPriorityOrderResultDataMapper.getNewJanProductReorder(companyCd, authorCd,
-                workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,tableName,zokuseiMsts,allCdList);
+                workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,tableName,proTableName,zokuseiMsts,allCdList);
         Map<String, List<Map<String, Object>>> ptsJan = reorder.stream().collect(Collectors.groupingBy(map -> {
             String attrKey = "";
             for (Map<String, Object> col : attrCol) {

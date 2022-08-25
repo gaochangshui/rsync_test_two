@@ -712,7 +712,7 @@
     order by tai_cd
   </select>
   <select id="selectShelfPtsTanaMst" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataTanamst">
-    select tai_cd,tana_cd,tana_height,tana_width,tana_depth,tana_thickness from planocycle.shelf_pts_data_tanamst where pts_cd=#{ptsCd}
+    select tai_cd,tana_cd,tana_height,tana_width,tana_depth,tana_thickness,tana_type from planocycle.shelf_pts_data_tanamst where pts_cd=#{ptsCd}
     order by tai_cd, tana_cd
   </select>
   <select id="getNewJanDataTypeMap" resultType="java.util.LinkedHashMap">

@@ -462,17 +462,23 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
                 List<Map<String, Object>> restrictResult = restrictResultMapper.selectByPrimaryKey(priorityOrderCd);
                 //zokuseiId convert to work_basic_pattern_restrict_result's zokuseiId
-                for (PriorityOrderMstAttrSort mstAttrSort : mstAttrSorts) {
-                    restrictResult.stream().peek(map->{
+                List<Map<String, Object>> newRestrictResult = new ArrayList<>();
+                for (Map<String, Object> map : restrictResult) {
+                    Map<String, Object> newMap = new HashMap<>();
+                    newMap.put("restrict_cd", MapUtils.getLong(map,"restrict_cd"));
+                    newMap.put("author_cd", MapUtils.getString(map,"author_cd"));
+                    newMap.put("priority_order_cd", MapUtils.getInteger(map,"priority_order_cd"));
+                    
+                    for (PriorityOrderMstAttrSort mstAttrSort : mstAttrSorts) {
                         String beforeZokuseiId = "zokusei" + (mstAttrSort.getSort() + 1);
-                        String val = MapUtils.getString(map, beforeZokuseiId);
-                        map.remove(beforeZokuseiId);
-                        map.put("zokusei" + (mstAttrSort.getValue()), val);
-                    }).collect(Collectors.toList());
+                        String val = MapUtils.getString(map, beforeZokuseiId, "");
+                        newMap.put("zokusei" + (mstAttrSort.getValue()), val);
+                    }
+                    newRestrictResult.add(newMap);
                 }
 
                 this.setPtsJandataByRestrictCd(priorityOrderCd, patternCd,companyCd, authorCd, attrList, zokuseiMsts,
-                        commonTableName, allCdList,restrictResult);
+                        commonTableName, allCdList,newRestrictResult);
                 Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, authorCd, priorityOrderCd);
 
                 Integer minFaceNum = 1;
@@ -579,7 +585,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                         sizeAndIrisu, isReOrder, commonTableName.getProInfoTable(), proMstTb);
                 Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd,
                         minFaceNum, zokuseiMsts, allCdList,
-                        restrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck,
+                        newRestrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck,
                         tanaList, relationMap, janResult, sizeAndIrisu, isReOrder, productPowerCd, colNmforMst);
 
                 if (resultMap!=null && MapUtils.getInteger(resultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {

@@ -472,7 +472,14 @@
       select
         resultdata.jan as "janCd",coalesce(jan_old,resultdata.jan) as "jan",dense_rank() over(partition by restrict_cd order by rank_result nulls last ,resultdata.jan)  as "resultRank"
       <foreach collection="attrList" item="item1" open="," separator=",">
-        <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'')</if>
+        <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">
+          <if test="item1.zokuseiCol>103">
+            coalesce (proinfo."${item1.zokuseiCol}",'')
+          </if>
+          <if test="item1.zokuseiCol&lt;=103">
+            coalesce (info."${item1.zokuseiCol}",'')
+          </if>
+        </if>
         <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
           <foreach collection="allCdList" item="item2" separator="|| '_' ||">
             <if test="item2 &lt;= item1.zokuseiCol">
@@ -487,8 +494,8 @@
         planocycle.work_basic_pattern_restrict_result_data resultdata
           left join planocycle.product_power_mst_data mstdata
                     on resultdata.jan = mstdata.jan and mstdata.product_power_cd =#{productPowerCd}
-            left join ${tableName} info
-            on resultdata.jan = info."1"
+            left join ${tableName} info on resultdata.jan = info."1"
+            left join ${proTableName} proinfo on proinfo."1" = info."1"
          left join planocycle.work_priority_order_jan_replace replace on replace.priority_order_cd=#{priorityOrderCd} and jan_old=resultdata.jan
       where resultdata.priority_order_cd = #{priorityOrderCd}
     </select>
@@ -499,7 +506,14 @@
     select
     resultdata.jan_new as "janCd", resultdata.jan_new as "jan",jan_rank as "resultRank"
     <foreach collection="attrList" item="item1" open="," separator=",">
-      <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'')</if>
+      <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">
+        <if test="item1.zokuseiCol>103">
+          coalesce (proinfo."${item1.zokuseiCol}",'')
+        </if>
+        <if test="item1.zokuseiCol&lt;=103">
+          coalesce (info."${item1.zokuseiCol}",'')
+        </if>
+      </if>
       <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
         <foreach collection="allCdList" item="item2" separator="|| '_' ||">
           <if test="item2 &lt;= item1.zokuseiCol">
@@ -512,9 +526,10 @@
     ,1 as flag
     from
     planocycle.work_priority_order_jan_new resultdata
-    left join ${tableName} info
-    on resultdata.jan_new = info."1"
-    where priority_order_cd = #{priorityOrderCd}  and not EXISTS (SELECT jan from planocycle.work_basic_pattern_restrict_result_data where priority_order_cd = resultdata.priority_order_cd and resultdata.jan_new = jan)
+    left join ${tableName} info on resultdata.jan_new = info."1"
+    left join ${proTableName} proinfo on proinfo."1" = info."1"
+    where priority_order_cd = #{priorityOrderCd}
+    and not EXISTS (SELECT jan from planocycle.work_basic_pattern_restrict_result_data where priority_order_cd = resultdata.priority_order_cd and resultdata.jan_new = jan)
     and not EXISTS (SELECT jan_new from planocycle.work_priority_order_jan_replace where priority_order_cd = resultdata.priority_order_cd and resultdata.jan_new = jan_new)
   </select>
 </mapper>

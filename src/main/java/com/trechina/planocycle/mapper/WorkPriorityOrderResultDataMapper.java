@@ -71,12 +71,12 @@ public interface WorkPriorityOrderResultDataMapper {
 
     List<Map<String,Object>> getProductReorder(String companyCd, String authorCd, Integer productPowerCd
             , Integer priorityOrderCd,String tableName, List<ZokuseiMst> attrList
-            , List<Integer> allCdList);
+            , List<Integer> allCdList, String proTableName);
 
     Integer getPtsCd(Integer priorityOrderCd);
 
     List<Map<String, Object>> getNewJanProductReorder(String companyCd, String authorCd
-            , Integer productPowerCd, Integer priorityOrderCd, String tableName, List<ZokuseiMst> attrList, List<Integer> allCdList);
+            , Integer productPowerCd, Integer priorityOrderCd, String tableName, String proTableName, List<ZokuseiMst> attrList, List<Integer> allCdList);
 
     void setRank(Set<Map<String,Object>> list, String companyCd, String authorCd, Integer priorityOrderCd);
 }
