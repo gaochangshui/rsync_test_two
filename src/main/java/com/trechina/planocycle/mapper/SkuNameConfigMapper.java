@@ -6,4 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface SkuNameConfigMapper {
 
     Integer getJanName2colNum(String companyCd,String paragraph);
+
+    Integer getJanItem2colNum(String companyCd,String paragraph);
 }

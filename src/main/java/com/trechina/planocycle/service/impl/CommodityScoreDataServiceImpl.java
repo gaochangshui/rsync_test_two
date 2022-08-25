@@ -104,7 +104,10 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         int colNum = 2;
         if (janName2colNum == 2){
              colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+        }else if(janName2colNum==3){
+            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
         }
+
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
         List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
@@ -220,6 +223,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         Integer janName2colNum = Integer.valueOf(map.get("janName2colNum").toString());
         if (janName2colNum == 2){
             Integer prodMstClass = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+            map.put("janName2colNum",prodMstClass);
+        }else if(janName2colNum == 3){
+            Integer prodMstClass = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
             map.put("janName2colNum",prodMstClass);
         }else {
             map.put("janName2colNum","_");
