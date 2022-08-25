@@ -151,6 +151,7 @@
             ,
            case when kaisou."3" is null then COALESCE(attr."1", proattr."1") else concat('zokusei',(zokusei_col :: INTEGER+1)) end as zokusei_colcd
             ,case when kaisou."3" is null then zokuseimst.zokusei_col :: integer else (zokusei_col :: INTEGER+1) end as zokusei_col
+            ,sort+1 as sort
     from  planocycle.work_priority_order_mst_attrsort attrsort
     left join masterdb.planocycle_zokusei_mst zokuseimst
     on zokuseimst.zokusei_id = attrsort.value and
