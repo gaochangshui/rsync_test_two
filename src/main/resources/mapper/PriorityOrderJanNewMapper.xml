@@ -93,6 +93,8 @@
         from planocycle.work_priority_order_jan_new news
         left join  ${proInfoTable} jans
         on news.jan_new = jans."1"
+        left join "9999".prod_0000_jan_info janinfo
+        on news.jan_new = janinfo."1"
         left join planocycle.work_priority_order_jan_replace rep
         on news.company_cd = rep.company_cd
         and news.jan_new = rep.jan_new
@@ -233,6 +235,8 @@
         on prodata.jan = jandata.jan and prodata.product_power_cd = #{productPowerCd}
         left join ${proInfoTable} janinfo
         on janinfo."1" = jandata.jan
+        left join "9999".prod_0000_jan_info janinfo1
+        on janinfo1."1" = jandata.jan
         where ptsdata.shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}
     </select>
     <delete id="deleteByAuthorCd">
