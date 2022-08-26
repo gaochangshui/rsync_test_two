@@ -148,7 +148,7 @@
         order by jan_cd
     </select>
     <select id="getDynamicJanNameClassify" resultType="map">
-        select "1" as "janCd","2" as "janName"
+        select info."1" as "janCd","2" as "janName"
         <foreach collection="attrList" item="item1" open="," separator=",">
             <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">"${item1.zokuseiCol}"</if>
             <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
@@ -180,6 +180,8 @@
         left join planocycle.work_priority_order_jan_replace rep
         on  info."1" = rep.jan_new
         and  rep.priority_order_cd = #{priorityOrderCd}
+            left join "9999".prod_0000_jan_info janinfo1
+            on  info."1" = janinfo1."1"
         left join planocycle.work_priority_order_jan_replace repold
         on  info."1" = repold.jan_old
         and  repold.priority_order_cd = #{priorityOrderCd}
@@ -195,7 +197,7 @@
             on  info."1" = news.jan_new
             and  news.priority_order_cd = #{priorityOrderCd}
         </if>
-        where "1" in
+        where info."1" in
         <foreach collection="janCd" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>
