@@ -3,13 +3,14 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.*;
+import com.trechina.planocycle.entity.dto.FaceNumDataDto;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 import com.trechina.planocycle.entity.vo.BasicPatternRestrictRelationVo;
@@ -31,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import javax.sound.midi.MetaMessage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -400,8 +400,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         String aud = session.getAttribute("aud").toString();
         WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, aud,priorityOrderCd);
         GetCommonPartsDataDto commonTableName = getCommonTableName(priorityOrderMst.getCommonPartsData(), companyCd);
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+
         List<Map<String, Object>> basicPatternRestrictRelationDto = restrictRelationMapper.selectByPrimaryKey(priorityOrderCd,
-                commonTableName.getProdIsCore(), priorityOrderMstAttrSorts,commonTableName.getProdMstClass());
+                commonTableName.getProdIsCore(), attrCol,commonTableName.getProdMstClass());
         logger.info("...{}",basicPatternRestrictRelationDto);
         Map<String, List<Map<String, Object>>> relationByTaiTana = basicPatternRestrictRelationDto.stream()
                 .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.TAI_CD) + "," + MapUtils.getString(map, MagicString.TANA_CD)));
@@ -418,19 +420,19 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             List<Map<String, Object>> groups = new ArrayList<>();
 
             for (Map<String, Object> itemMap : entry.getValue()) {
-                for (String zokuseiId : zokuseiList) {
-                    if (itemMap.containsKey(zokuseiId)) {
-                        String attrCd = MapUtils.getString(itemMap, zokuseiId);
-                        itemMap.put(zokuseiId.replace(MagicString.ZOKUSEI_PREFIX, "zokuseiName")
+                for (Map<String,Object> zokuseiId : attrCol) {
+                    if (itemMap.containsKey(zokuseiId.get("zokusei_colcd"))) {
+                        String attrCd = MapUtils.getString(itemMap, zokuseiId.get("zokusei_colcd").toString());
+                        itemMap.put(zokuseiId.get("zokusei_colname").toString()
                                 , JSON.parseObject(itemMap.get("json").toString()).get(attrCd)==null?"":JSON.parseObject(itemMap.get("json").toString()).get(attrCd));
                     }
-                    itemMap.putIfAbsent(zokuseiId.replace(MagicString.ZOKUSEI_PREFIX, "zokuseiName"), "");
+                    itemMap.putIfAbsent(zokuseiId.get("zokusei_colname").toString(), "");
 
                 }
                 itemMap.remove("json");
-                if (itemMap.containsKey(zokuseiList.get(0))) {
+
                     groups.add(itemMap);
-                }
+
                 itemMap.put("tanaPosition", MapUtils.getString(itemMap, "areaPosition"));
                 resultMap.put("groups", groups);
             }

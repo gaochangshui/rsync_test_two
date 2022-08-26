@@ -47,6 +47,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     private BasicPatternResultMapper basicPatternResultMapper;
     @Autowired
     private PriorityOrderColorMapper priorityOrderColorMapper;
+    @Autowired
+    private PriorityOrderMstAttrSortMapper attrSortMapper;
 
 
 
@@ -96,6 +98,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
      */
     @Override
     public Map<String, Object> getAttributeList(PriorityOrderAttrDto priorityOrderAttrDto) {
+        String companyCd = priorityOrderAttrDto.getCompanyCd();
+        Integer priorityOrderCd = priorityOrderAttrDto.getPriorityOrderCd();
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
         List<String> attrSortList = priorityOrderMstAttrSortMapper.getAttrSortList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
@@ -103,13 +107,16 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         Map<String, Object> newTanaWidth = shelfPtsDataMapper.getNewTanaWidth(priorityOrderAttrDto.getPriorityOrderCd());
         Integer id = Integer.parseInt(newTanaWidth.get("id").toString());
         Integer width = Integer.parseInt(newTanaWidth.get("width").toString());
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List list = new ArrayList();
-        for (int j = 0; j  < attrList.size(); j++) {
-            String s = attrList.get(j);
+        for (int j = 0; j  < attrCol.size(); j++) {
             String prodMstClass = commonTableName.getProdMstClass();
             String prodIsCore = commonTableName.getProdIsCore();
-            List<Map<String, Object>> attrDistinct = priorityOrderMstAttrSortMapper.getAttrDistinct(Integer.parseInt(s)<104?prodMstClass:"0000"
-                    ,Integer.parseInt(s)<104? prodIsCore :"9999",priorityOrderAttrDto.getPriorityOrderCd(), s,id,width, attrSortList.get(j));
+
+
+            List<Map<String, Object>> attrDistinct = priorityOrderMstAttrSortMapper.getAttrDistinct(Integer.parseInt(attrCol.get(j).get("value").toString())<104?prodMstClass:"0000"
+                    ,Integer.parseInt(attrCol.get(j).get("value").toString())<104? prodIsCore :"9999",priorityOrderAttrDto.getPriorityOrderCd(),attrCol.get(j).get("value").toString() ,id,width, attrSortList.get(j)
+                    ,attrCol.get(j).get("zokusei_colname").toString());
             for (int i = 0; i < attrDistinct.size(); i++) {
                 attrDistinct.get(i).put("color",mainColor.get(i));
             }
@@ -125,11 +132,13 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
     @Override
     public Map<String, Object> getAttrGroup(PriorityOrderAttrDto priorityOrderAttrDto) {
-
+        String companyCd = priorityOrderAttrDto.getCompanyCd();
+        Integer priorityOrderCd = priorityOrderAttrDto.getPriorityOrderCd();
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
         List<String> attrSortList = priorityOrderMstAttrSortMapper.getAttrSortList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
         List<Integer> attrs = attrList.stream().map(Integer::parseInt).collect(Collectors.toList());
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Map<String, Object>> attrName = priorityOrderMstAttrSortMapper.getAttrName(commonTableName.getProdMstClass(), commonTableName.getProdIsCore(), attrs);
         List<Map<String, Object>> restrictList = basicPatternResultMapper.getAttrComposeList(priorityOrderAttrDto.getCompanyCd()
                 , priorityOrderAttrDto.getPriorityOrderCd(), attrSortList,commonTableName.getProdMstClass(),commonTableName.getProdIsCore());
@@ -139,14 +148,14 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             newObjectMap.put("color", objectMap.getOrDefault("color", "#ffffff"));
             newObjectMap.put("restrictCd", objectMap.get("restrictCd"));
             for (Map<String, Object> map : attrName) {
-                for (int i = 0; i < attrList.size(); i++) {
-                    String s = attrList.get(i);
+                for (int i = 0; i < attrCol.size(); i++) {
+
                     String sort = attrSortList.get(i);
                     if (objectMap.getOrDefault("zokusei"+sort, "").equals(map.get("val"))){
-                        newObjectMap.put("zokuseiName"+s,map.getOrDefault("nm",""));
+                        newObjectMap.put(attrCol.get(i).get("zokusei_colname").toString(),map.getOrDefault("nm",""));
                     }
-                    newObjectMap.put("zokusei"+s, objectMap.get("zokusei"+sort));
-                    newObjectMap.putIfAbsent("zokuseiName"+s,"");
+                    newObjectMap.put(attrCol.get(i).get("zokusei_colcd").toString(), objectMap.get("zokusei"+sort));
+                    newObjectMap.putIfAbsent(attrCol.get(i).get("zokusei_colname").toString(),"");
                 }
             }
             newRestrictList.add(newObjectMap);
