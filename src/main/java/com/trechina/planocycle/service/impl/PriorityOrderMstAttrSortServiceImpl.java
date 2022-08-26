@@ -9,6 +9,7 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import com.trechina.planocycle.utils.ResultMaps;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -17,9 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -46,6 +45,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     private BasicPatternResultMapper basicPatternResultMapper;
     @Autowired
     private PriorityOrderColorMapper priorityOrderColorMapper;
+    @Autowired
+    private PriorityOrderMstAttrSortMapper attrSortMapper;
 
 
 
@@ -95,16 +96,25 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
      */
     @Override
     public Map<String, Object> getAttributeList(PriorityOrderAttrDto priorityOrderAttrDto) {
+        String companyCd = priorityOrderAttrDto.getCompanyCd();
+        Integer priorityOrderCd = priorityOrderAttrDto.getPriorityOrderCd();
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
+        List<String> attrSortList = priorityOrderMstAttrSortMapper.getAttrSortList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
         List<String> mainColor = priorityOrderColorMapper.getMainColor();
         Map<String, Object> newTanaWidth = shelfPtsDataMapper.getNewTanaWidth(priorityOrderAttrDto.getPriorityOrderCd());
         Integer id = Integer.parseInt(newTanaWidth.get("id").toString());
         Integer width = Integer.parseInt(newTanaWidth.get("width").toString());
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List list = new ArrayList();
-        for (String s : attrList) {
-            List<Map<String, Object>> attrDistinct = priorityOrderMstAttrSortMapper.getAttrDistinct(commonTableName.getProdMstClass()
-                    , commonTableName.getProdIsCore(),priorityOrderAttrDto.getPriorityOrderCd(), s,id,width);
+        for (int j = 0; j  < attrCol.size(); j++) {
+            String prodMstClass = commonTableName.getProdMstClass();
+            String prodIsCore = commonTableName.getProdIsCore();
+
+
+            List<Map<String, Object>> attrDistinct = priorityOrderMstAttrSortMapper.getAttrDistinct(Integer.parseInt(attrCol.get(j).get("value").toString())<104?prodMstClass:"0000"
+                    ,Integer.parseInt(attrCol.get(j).get("value").toString())<104? prodIsCore :"9999",priorityOrderAttrDto.getPriorityOrderCd(),attrCol.get(j).get("value").toString() ,id,width, attrSortList.get(j)
+                    ,attrCol.get(j).get("zokusei_colname").toString(),attrCol.get(j).get("zokusei_colcd").toString());
             for (int i = 0; i < attrDistinct.size(); i++) {
                 attrDistinct.get(i).put("color",mainColor.get(i));
             }
@@ -120,25 +130,51 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
     @Override
     public Map<String, Object> getAttrGroup(PriorityOrderAttrDto priorityOrderAttrDto) {
-
+        String companyCd = priorityOrderAttrDto.getCompanyCd();
+        Integer priorityOrderCd = priorityOrderAttrDto.getPriorityOrderCd();
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
+        List<String> attrSortList = priorityOrderMstAttrSortMapper.getAttrSortList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
         List<Integer> attrs = attrList.stream().map(Integer::parseInt).collect(Collectors.toList());
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Map<String, Object>> attrName = priorityOrderMstAttrSortMapper.getAttrName(commonTableName.getProdMstClass(), commonTableName.getProdIsCore(), attrs);
         List<Map<String, Object>> restrictList = basicPatternResultMapper.getAttrComposeList(priorityOrderAttrDto.getCompanyCd()
-                , priorityOrderAttrDto.getPriorityOrderCd(), attrList,commonTableName.getProdMstClass(),commonTableName.getProdIsCore());
+                , priorityOrderAttrDto.getPriorityOrderCd(), attrSortList,commonTableName.getProdMstClass(),commonTableName.getProdIsCore());
+        List<Map<String, Object>> newRestrictList = new ArrayList<>();
         for (Map<String, Object> objectMap : restrictList) {
-
+            Map<String, Object> newObjectMap = new HashMap<>();
+            newObjectMap.put("color", objectMap.getOrDefault("color", "#ffffff"));
+            newObjectMap.put("restrictCd", objectMap.get("restrictCd"));
             for (Map<String, Object> map : attrName) {
-                for (String s : attrList) {
-                    if (objectMap.get("zokusei"+s).equals(map.get("val"))){
-                        objectMap.put("zokuseiName"+s,map.getOrDefault("nm",""));
+                for (int i = 0; i < attrCol.size(); i++) {
+
+                    String sort = attrSortList.get(i);
+                    if (objectMap.getOrDefault("zokusei"+sort, "未登録").equals(map.get("val"))){
+                        newObjectMap.put(attrCol.get(i).get("zokusei_colname").toString(),map.getOrDefault("nm","未登録"));
                     }
-                    objectMap.putIfAbsent("zokuseiName"+s,"");
+                    newObjectMap.put(attrCol.get(i).get("zokusei_colcd").toString(), objectMap.get("zokusei"+sort));
+                    newObjectMap.putIfAbsent(attrCol.get(i).get("zokusei_colname").toString(),"未登録");
                 }
             }
+            newRestrictList.add(newObjectMap);
         }
-        return ResultMaps.result(ResultEnum.SUCCESS, restrictList);
+        attrCol = attrCol.stream().sorted(Comparator.comparing(map-> MapUtils.getInteger(map,"sort"))).collect(Collectors.toList());
+        String groupHeader = "";
+        String groupColumns = "";
+        for (Map<String, Object> map : attrCol) {
+            if (groupHeader.equals("")){
+                groupHeader += map.get("zokusei_nm");
+                groupColumns += map.get("zokusei_colname");
+            }else {
+                groupHeader += ","+map.get("zokusei_nm");
+                groupColumns += ","+map.get("zokusei_colname");
+            }
+        }
+        Map<String,Object> map = new HashMap<>();
+        map.put("groupHeader",groupHeader);
+        map.put("groupColumns",groupColumns);
+        map.put("data",newRestrictList);
+        return ResultMaps.result(ResultEnum.SUCCESS, map);
     }
 
 

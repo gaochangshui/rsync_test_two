@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Mapper
 public interface ShelfPatternMstMapper {
@@ -47,11 +48,16 @@ public interface ShelfPatternMstMapper {
 
     List<Map<String, Object>> selectPatternCommonPartsData(Integer priorityOrderCd);
 
-    List<ShelfPatternNameVO> getPatternForStorel(String storeIsCore,String companyCd);
+    List<ShelfPatternNameVO> getPatternForStorel(String storeIsCore,String companyCd,Map<String,Object> map);
 
     List<Integer> getpatternIdOfFilename(String fileName, String companyCd);
 
     List<String> isCompany(List<String> shelfPatternList);
 
     List<Integer> getShelfPts(List<String> storeCd, String companyCd);
+
+
+    Set<String> getExistSpecialUse(List<String> list);
+
+    List<String> getCommonPartsData(String companyCd);
 }

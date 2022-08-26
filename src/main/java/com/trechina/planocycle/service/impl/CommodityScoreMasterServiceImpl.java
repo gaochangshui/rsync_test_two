@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
-import com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO;
 import com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO;
 import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -37,12 +36,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Autowired
     private ProductPowerParamAttributeMapper productPowerParamAttributeMapper;
     @Autowired
-    private ProductPowerShowMstMapper productPowerShowMstMapper;
-    @Autowired
-    private ProductPowerWeightMapper productPowerWeightMapper;
-    @Autowired
-    private ProductPowerReserveMstMapper productPowerReserveMstMapper;
-    @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
     @Autowired
     private ChannelListMapper channelListMapper;
@@ -58,8 +51,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     private  SkuNameConfigMapper skuNameConfigMapper;
     @Autowired
     private SysConfigMapper sysConfigMapper;
-    @Autowired
-    private ShelfPatternMstMapper shelfPatternMstMapper;
     @Autowired
     private IDGeneratorService idGeneratorService;
     @Autowired
@@ -84,51 +75,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
 
-    ///**
-    // * 企業cd関連商品力点数リスト取得
-    // * @param conpanyCd
-    // * @return
-    // */
-    //@Override
-    //public Map<String, Object> getCommodityListInfo(String conpanyCd) {
-    //    List<CommodityListInfoVO> resultInfo = productPowerMstMapper.selectCommodityList(conpanyCd);
-    //    logger.info("つかむ取企業cd関連付け的商品力点数List：{}",resultInfo);
-    //    return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
-    //}
 
-    ///**
-    // * 商品力点数のパラメータを取得する
-    // * @param conpanyCd
-    // * @param productPowerCd
-    // * @return
-    // */
-    //@Override
-    //public Map<String, Object> getCommodityParam(String conpanyCd, Integer productPowerCd) {
-    //    JSONArray jsonArray = new JSONArray();
-    //    Map<String, Object> result = new HashMap<>();
-    //    ProductPowerParamMst resultInfo = productPowerParamMstMapper.selectCommodityParam(conpanyCd,productPowerCd);
-    //    logger.info("つかむ取商品力点数参数返回値：{}",resultInfo);
-    //    productPowerParamAttr(conpanyCd, productPowerCd, result);
-    //
-    //    jsonArray.add(resultInfo);
-    //    jsonArray.add(result);
-    //    return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
-    //}
-
-    @Override
-    public void productPowerParamAttr(String conpanyCd, Integer productPowerCd, Map<String, Object> result) {
-        ProductOrderParamAttrVO productOrderParamAttrVO = productPowerParamAttributeMapper.selectByPrimaryKey(conpanyCd, productPowerCd);
-        logger.info("つかむ取動態列返回値：{}",productOrderParamAttrVO);
-        //動的列の遍歴
-        if (productOrderParamAttrVO !=null && !productOrderParamAttrVO.getAttr().equals("")){
-            String[] attrList = productOrderParamAttrVO.getAttr().split(",");
-            String[] attrKey;
-            for (String s : attrList) {
-                attrKey = s.split(":");
-                result.put("attr" + attrKey[0], attrKey[1]);
-            }
-        }
-    }
 
     @Override
     public void productPowerParamAttrName(String conpanyCd, Integer productPowerCd, Map<String, Object> result) {
@@ -149,17 +96,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
                 }
             }
         }
-    }
-
-    /**
-     * 商品力点数表の属性と品目情報を取得し、優先順位表に使用する
-     *
-     * @param productOrderCd
-     * @return
-     */
-    @Override
-    public ProductOrderAttrAndItemVO getAttrAndItmemInfo(String companyCd,Integer productOrderCd) {
-        return productPowerParamMstMapper.selectAttrAndItem(companyCd,productOrderCd);
     }
 
 

@@ -310,10 +310,15 @@
     janData.tumiagesu as "tumiagesu",janData.zaikosu as "zaikosu",janData.face_displayflg as "faceDisplayflg"
     ,janData.face_position as "facePosition",janData.depth_display_num as "depthDisplayNum"
     <foreach collection="attrList"  item="item" index="index">
-      ,COALESCE (janinfo."${item.zokusei_col}",'') as "${item.zokusei_colcd}"
+      <if test="item.zokusei_col>103">
+        ,COALESCE (janproinfo."${item.zokusei_col}",'') as "${item.zokusei_colcd}"
+      </if>
+      <if test="item.zokusei_col&lt;=103">
+        ,COALESCE (janinfo."${item.zokusei_col}",'') as "${item.zokusei_colcd}"
+      </if>
     </foreach>
     <foreach collection="janSizeCol" item="item">
-      ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
+      ,coalesce (janproinfo."${item.infoCol}",'') as "${item.colCd}"
     </foreach>
     ,janinfo."2" as "janName"
     from
@@ -321,8 +326,8 @@
         left join
       planocycle.shelf_pts_data_jandata janData
       on ptsData."id" =  janData.pts_cd
-    left join ${tableName} janinfo
-    on janData.jan = janinfo."1"
+    left join ${tableName} janinfo on janData.jan = janinfo."1"
+    left join ${proTableName} janproinfo on janproinfo."1" = janinfo."1"
     where ptsData.shelf_pattern_cd = #{patternCd}
     order by janData.tai_cd,janData.tana_cd,janData.tanaposition_cd
   </select>
@@ -707,7 +712,7 @@
     order by tai_cd
   </select>
   <select id="selectShelfPtsTanaMst" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataTanamst">
-    select tai_cd,tana_cd,tana_height,tana_width,tana_depth,tana_thickness from planocycle.shelf_pts_data_tanamst where pts_cd=#{ptsCd}
+    select tai_cd,tana_cd,tana_height,tana_width,tana_depth,tana_thickness,tana_type from planocycle.shelf_pts_data_tanamst where pts_cd=#{ptsCd}
     order by tai_cd, tana_cd
   </select>
   <select id="getNewJanDataTypeMap" resultType="java.util.LinkedHashMap">
@@ -717,10 +722,15 @@
       janData.tumiagesu as "tumiagesu",coalesce (janData.zaikosu,0) as "zaikosu",janData.face_displayflg as "faceDisplayflg"
          ,janData.face_position as "facePosition" ,janData.depth_display_num as "depthDisplayNum",'' as remarks
         <foreach collection="attrList"  item="item" index="index">
-          ,COALESCE (janinfo."${item.zokusei_col}",'') as "${item.zokusei_colcd}"
+          <if test="item.zokusei_col>103">
+            ,COALESCE (janproinfo."${item.zokusei_col}",'') as "${item.zokusei_colcd}"
+          </if>
+          <if test="item.zokusei_col&lt;=103">
+            ,COALESCE (janinfo."${item.zokusei_col}",'') as "${item.zokusei_colcd}"
+          </if>
         </foreach>
     <foreach collection="janSizeCol" item="item">
-      ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
+      ,coalesce (janproinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
     </foreach>
     ,janinfo."2" as "janName"
     from
@@ -728,8 +738,8 @@
         inner join
       planocycle.work_priority_order_pts_data_jandata janData
       on ptsData."id" =  janData.pts_cd
-        left join ${tableName} janinfo
-    on janData.jan = janinfo."1"
+        left join ${tableName} janinfo on janData.jan = janinfo."1"
+    left join ${proTableName} janproinfo on janproinfo."1" = janinfo."1"
     where ptsData.priority_order_cd = #{priorityOrderCd}
     order by tai_cd,tana_cd,tanaposition_cd
   </select>

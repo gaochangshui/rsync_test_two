@@ -17,7 +17,7 @@ public interface MstJanMapper {
      * janHeaderの取得
      * @return
      */
-    List<JanHeaderAttr> getJanHeader(String tableName, String tableNameKaisou, String janColumn);
+    List<JanHeaderAttr> getJanHeader(String tableName, String tableNameKaisou, String tableNamePlanoCycle, String janColumn);
 
     /**
      * 名前でjanHeaderを取得
@@ -32,6 +32,7 @@ public interface MstJanMapper {
      */
     long getJanCount(@Param("janParamVO") JanParamVO janParamVO,
                      @Param("tableName") String tableName,
+                     @Param("janInfoTablePlanoCycle") String janInfoTablePlanoCycle,
                      @Param("column") String column);
     /**
      * janデータの取得
@@ -40,6 +41,7 @@ public interface MstJanMapper {
      */
     List<LinkedHashMap<String, Object>> getJanList(@Param("janParamVO") JanParamVO janParamVO,
                                                    @Param("tableName") String tableName,
+                                                   @Param("janInfoTablePlanoCycle") String janInfoTablePlanoCycle,
                                                    @Param("column") String column);
 
     LinkedHashMap<String,Object> getJanInfoList(@Param("tableName")String janInfoTableName, @Param("jan") String jan);
@@ -55,7 +57,8 @@ public interface MstJanMapper {
     List<JanAttrName> getAttrName(String authorCd,
                                   String tableName,
                                   String tableNamePreset,
-                                  String tableNameKaisou);
+                                  String tableNameKaisou,
+                                  String tableNamePlanoCycle);
 
     /**
      * ユーザー表示項目設定を削除
@@ -91,7 +94,7 @@ public interface MstJanMapper {
      * @param
      * @return
      */
-    int insertJanList(String tableName,String infoHeader, List<LinkedHashMap<String, Object>> janData,String date,String authorCd);
+    int insertJanList(String tableName, List<LinkedHashMap<String, Object>> janData,String date,String authorCd);
 
     String checkKaisou(String tableNameInfo, Map<String,Object>map);
 
@@ -123,4 +126,33 @@ public interface MstJanMapper {
      */
     int insertKaisou(String tableName,String tableNameWK);
 
+
+    List<String> getJanInfoCol();
+
+    void setJanSpecial(@Param("list") LinkedHashMap<String, Object> janSpecialData, @Param("jan") String jan);
+
+    int insertJanSpecialList(List<LinkedHashMap<String, Object>> janData);
+
+    /**
+     * 同期Janコラムを取得
+     * @return
+     */
+    List<String> getJanAttrColWK(String tableName);
+
+    /**
+     * 重複Janを削除
+     * @return
+     */
+    int deleteMultipleJan(List<String> janKaisouCol, String tableNameInfoWK);
+
+
+    List<String> getAttrValueList(String colName,String company,String classCd);
+
+    String getAttrNameForId(String colName, String company, String classCd);
+
+    /**
+     * Jan階層コラムを取得
+     * @return
+     */
+    List<String>  getJanKaisouColWK(String tableName);
 }

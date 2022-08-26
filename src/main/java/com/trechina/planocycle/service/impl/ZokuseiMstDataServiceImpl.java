@@ -77,7 +77,7 @@ public class ZokuseiMstDataServiceImpl implements ZokuseiMstDataService {
                 zokusei.setZokuseiCol(colI);
 
                 attrZokuseiList.add(zokusei);
-                this.setZokuseiData(companyCd, syncClassCd, zokusei.getZokuseiId(), colI, attrHeaderMap);
+                this.setZokuseiData(companyCd, syncClassCd, zokusei.getZokuseiCol(), colI, attrHeaderMap);
                 colIndex++;
             }
             zokuseiMstMapper.insertBatch(companyCd, syncClassCd, attrZokuseiList);
@@ -90,9 +90,9 @@ public class ZokuseiMstDataServiceImpl implements ZokuseiMstDataService {
 
 
         if(cdList.isEmpty()){
-            zokuseiMstMapper.insertZokuseiData1(company, classCd, zokuseiId, col);
+            zokuseiMstMapper.insertZokuseiData1(company, classCd, col, col);
         }else {
-            zokuseiMstMapper.insertZokuseiData(company, classCd, zokuseiId, col, cdList);
+            zokuseiMstMapper.insertZokuseiData(company, classCd, col, col, cdList);
         }
     }
 }

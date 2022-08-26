@@ -1,5 +1,6 @@
 package com.trechina.planocycle.mapper;
 
+import com.trechina.planocycle.entity.po.PresetAttribute;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -11,4 +12,10 @@ public interface PresetParamMapper {
     int deleteByAuthorCd(String authorCd);
 
     List<String> getPresetParam(String authorCd);
+
+    void insertProductPresetParam(String authorCd, PresetAttribute presetAttribute);
+
+    PresetAttribute getProductPresetParam(String authorCd);
+
+    void deleteProductPresetParam(String authorCd);
 }

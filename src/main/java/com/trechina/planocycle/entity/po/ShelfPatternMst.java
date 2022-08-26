@@ -31,5 +31,7 @@ public class ShelfPatternMst {
     private String commonPartsData;
     @JsonIgnore
     private String storeCdStr;
+    private Integer branchNum;
+    private String specialFlag;
 
 }

@@ -12,9 +12,14 @@
     </insert>
     <delete id="deleteBranch">
         delete from ${branchInfoTableName} where "100" = '1'
-        <if test="groupCd != '' and groupCd != null">
-            and split_part( "1", '_', 1 ) = #{groupCd}
-        </if>
+        and split_part( "1", '_', 1 ) in
+        <foreach collection="groupCd" item="item" separator="," close=")" open="(" >
+            #{item}
+        </foreach>
+
+    </delete>
+    <delete id="deleteBranch1">
+        delete from ${branchInfoTableName} where "100" = '1'
     </delete>
     <select id="getCommuneBranchInfo" resultType="java.util.Map">
         select
@@ -22,8 +27,7 @@
             COALESCE ( groupcompany.company_name, kigyouname."2" ) "companyName",
             teninfo."6" "areaName",
             split_part( teninfo."1", '_', 2 ) "branchCd",
-            teninfo."2" "branchName",
-            case when teninfo."100" ='1' then '棚割専用' else '' end "typeName"
+            teninfo."2" "branchName"
         from
             ${branchInfoTableName} teninfo
                 left join masterdb.group_company groupcompany on company_cd = split_part( teninfo."1", '_', 1 )
@@ -33,6 +37,7 @@
                 #{item}
             </foreach>
             and teninfo."100" = '1'
+            order by split_part( teninfo."1", '_', 2 ) :: integer
     </select>
     <select id="getCompanyBranchInfo" resultType="java.util.Map">
         select
@@ -40,13 +45,13 @@
         COALESCE ( groupcompany.company_name, kigyouname."2" ) "companyName",
         teninfo."6" "areaName",
          teninfo."1" "branchCd",
-        teninfo."2" "branchName",
-        case when teninfo."100" ='1' then '棚割専用' else '' end "typeName"
+        teninfo."2" "branchName"
         from
         ${branchInfoTableName} teninfo
         left join masterdb.group_company groupcompany on company_cd =  #{companyCd}
         left join masterdb.kigyou_name kigyouname on kigyouname."1" =  #{companyCd}
         where teninfo."100" = '1'
+        order by teninfo."1" ::integer
     </select>
     <select id="getBranchSize" resultType="java.lang.Integer">
         select

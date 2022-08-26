@@ -2,7 +2,6 @@ package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.po.ProductPowerParamMst;
-import com.trechina.planocycle.entity.vo.ProductOrderAttrAndItemVO;
 
 import java.util.Map;
 
@@ -24,16 +23,9 @@ public interface CommodityScoreMasterService {
 
 
 
-    void productPowerParamAttr(String conpanyCd, Integer productPowerCd, Map<String, Object> result);
+
 
     void productPowerParamAttrName(String conpanyCd, Integer productPowerCd, Map<String, Object> result);
-
-    /**
-     * つかむ取商品力点数表的属性和品目情報，用于優先順位表
-     * @param productOrderCd
-     * @return
-     */
-    ProductOrderAttrAndItemVO getAttrAndItmemInfo(String companyCd, Integer productOrderCd);
 
     /**
      * 削除商品力点数表情報

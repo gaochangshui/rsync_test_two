@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -245,9 +246,10 @@ public class CommonMstServiceImpl implements CommonMstService {
             currentTaiCd = taiCd;
         }
 
+        String proMstTb = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
         //jan group relation restrict_cd,convert map to PriorityOrderResultDataDto
         List<Map<String, Object>> newList = janNewMapper.selectJanNew(priorityOrderCd, allCdList, zokuseiMsts, commonTableName.getProInfoTable(),
-                sizeAndIrisu);
+                sizeAndIrisu, proMstTb);
         List<PriorityOrderResultDataDto> newJanDtoList = new ArrayList<>();
         for (int i = 0; i < newList.size(); i++) {
             PriorityOrderResultDataDto dto = new PriorityOrderResultDataDto();
@@ -269,8 +271,8 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
                 int equalsCount = 0;
                 for (Integer integer : attrList) {
-                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, "");
-                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, "");
+                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
+                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
 
                     if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
                         equalsCount++;

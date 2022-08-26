@@ -385,43 +385,4 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         return 1;
     }
 
-
-
-
-    public List<Map<String, Object>> getPtsGroup(String companyCd,Integer priorityOrderCd,Integer ptsCd,String authorCd) {
-
-        List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
-        List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
-        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-        String commonPartsData = workPriorityOrderMst.getCommonPartsData();
-        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
-        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
-        List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
-        List<Map<String, Object>> restrictResult = restrictResultMapper.selectByPrimaryKey(priorityOrderCd);
-        Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
-        List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
-        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectAllPatternResultData(ptsCd, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol);
-        for (int i = 0; i < zokuseiList.size(); i++) {
-            Map<String, Object> zokusei = zokuseiList.get(i);
-            for (Map<String, Object> restrict : restrictResult) {
-                int equalsCount = 0;
-                for (Integer integer : attrList) {
-                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer);
-                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer);
-
-                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
-                        equalsCount++;
-                    }
-                }
-
-                if(equalsCount == attrList.size()){
-                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
-                    zokusei.put("restrictCd", restrictCd);
-                }
-            }
-
-            zokuseiList.set(i, zokusei);
-        }
-        return zokuseiList;
-    }
 }

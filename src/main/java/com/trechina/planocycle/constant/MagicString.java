@@ -11,6 +11,7 @@ public class MagicString {
     public static final String CORE_COMPANY = "core_company";
 
     public static final String FIRST_CLASS_CD = "0000";
+    public static final String SPECIAL_SCHEMA_CD = "9999";
 
     public static final String JAN_HEADER_JAN_CD_COL = "jan_cd";
     public static final String JAN_HEADER_JAN_NAME_COL = "jan_name";
@@ -75,6 +76,10 @@ public class MagicString {
 
     public static final String SELF_SERVICE = "1000";
 
+    /**
+     * Plano-Cycle専用cd
+     */
+    public static final String PLANO_CYCLE_COMPANY_CD = "9999";
 
 
     /**
@@ -133,6 +138,7 @@ public class MagicString {
     public static final String PROD_JAN_INFO ="\"{0}\".prod_{1}_jan_info";
     public static final String PROD_JAN_KAISOU_HEADER_SYS = "\"{0}\".prod_{1}_jan_kaisou_header_sys";
     public static final String PROD_JAN_KAISOU = "\"{0}\".prod_{1}_jan_kaisou";
+    public static final String PROD_JAN_PRESET_PARAM = "\"{0}\".prod_{1}_jan_preset_param";
 
     public static final String PROD_TEN_INFO = "\"{0}\".ten_{1}_ten_info";
 
@@ -175,4 +181,6 @@ public class MagicString {
     public static final String MSG_UNIDENTIFIED_COLUMN="識別されていない列があります、修正してください。";
     public static final String MSG_ABNORMALITY_DATA="データ異常がありますので、ご確認ください。\n❊列数が合わない、空行、文字数制限";
     public static final String MSG_UPLOAD_SUCCESS="件のデータを取込成功しました。";
+
+    public static final String DEFAULT_VALUE = "未登録";
 }

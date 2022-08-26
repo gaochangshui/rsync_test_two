@@ -85,13 +85,16 @@ public class MstJanServiceImpl implements MstJanService {
         if("1".equals(janParamVO.getCommonPartsData().getProdIsCore())){
             janParamVO.setCompanyCd(sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY));
         }
-        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", janParamVO.getCompanyCd(),
+        String janInfoTable = MessageFormat.format(MagicString.PROD_JAN_INFO, janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
-        checkVO.setTotal(mstJanMapper.getJanCount(janParamVO, janInfoTableName, "count(\"1\")"));
+        String janInfoTablePlanoCycle = MessageFormat.format(MagicString.PROD_JAN_INFO,
+                MagicString.PLANO_CYCLE_COMPANY_CD,MagicString.FIRST_CLASS_CD);
+        checkVO.setTotal(mstJanMapper.getJanCount(janParamVO, janInfoTable, janInfoTablePlanoCycle, "count(a.\"1\")"));
         String taskId = UUID.randomUUID().toString();
         JSONObject json = new JSONObject();
         json.put("janParamVO",janParamVO);
-        json.put("janInfoTableName",janInfoTableName);
+        json.put("janInfoTable",janInfoTable);
+        json.put("janInfoTablePlanoCycle",janInfoTablePlanoCycle);
         json.put("janColumn",janParamVO.getClassCd());
         cacheUtil.put(taskId, json);
         checkVO.setTaskID(taskId);
@@ -111,13 +114,16 @@ public class MstJanServiceImpl implements MstJanService {
         }
         JSONObject json =JSON.parseObject(cacheUtil.get(downFlagVO.getTaskID()).toString());
         JanParamVO janParamVO = JSON.parseObject(json.getString("janParamVO"),JanParamVO.class);
-        String janInfoTableName = json.getString("janInfoTableName");
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", janParamVO.getCompanyCd(),
+        String janInfoTable = json.getString("janInfoTable");
+        String janInfoTablePlanoCycle = json.getString("janInfoTablePlanoCycle");
+        String tableNameAttr = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
-        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", janParamVO.getCompanyCd(),
+        String tableNameKaisou = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS, janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
+        String tableNamePlanoCycle = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS,
+                MagicString.PLANO_CYCLE_COMPANY_CD,MagicString.FIRST_CLASS_CD);
         String janColumn = json.getString("janColumn");
-        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr, tableNameKaisou, janColumn);
+        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr, tableNameKaisou,tableNamePlanoCycle, janColumn);
         List<JanHeaderAttr> janHeaderSort = new ArrayList<>();
         for (String column : janColumn.split(",")) {
             Optional<JanHeaderAttr> optional = janHeader.stream().filter(e->column.equals(e.getAttr())).findFirst();
@@ -126,10 +132,11 @@ public class MstJanServiceImpl implements MstJanService {
             }
         }
         janHeader = janHeaderSort;
-        //SQL文の列： "\"1\" \"jan_cd\",\"2\" \"jan_name\",\"21\" \"kikaku\",\"22\" \"maker\",\"23\"
-        String column = janHeader.stream().map(map -> "COALESCE(\"" + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
+        //SQL文の列： a."1" "jan_cd",a."2" "jan_name",a."21" "kikaku",b."104" "planoWidth"
+        String column = janHeader.stream().map(map -> "COALESCE(" + ("5".equals(map.getType()) ||"6".equals(map.getType()) ? "b" : "a") + ".\""
+                + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
                 .collect(Collectors.joining(","));
-        janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTableName, column));
+        janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTable, janInfoTablePlanoCycle, column));
         janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
                 .collect(Collectors.joining(",")));
         janInfoVO.setJanColumn(dataConverUtils.camelize(janColumn));
@@ -170,15 +177,16 @@ public class MstJanServiceImpl implements MstJanService {
                 janInfoList.getCommonPartsData().getProdMstClass());
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,
                 janInfoList.getCommonPartsData().getProdMstClass());
-        LinkedHashMap<String, Object> janInfoList1 = mstJanMapper.getJanInfoList(janInfoTableName, janInfoList.getJan());
+
         List<LinkedHashMap<String,Object>> janAttrList = mstJanMapper.getJanAttrList(tableNameAttr);
+        LinkedHashMap<String, Object> janInfoList1 = mstJanMapper.getJanInfoList(janInfoTableName, janInfoList.getJan());
         List<LinkedHashMap<String,Object>> update = janAttrList.stream().filter(map->map.get("11").equals("4")).collect(Collectors.toList());
 
         List<LinkedHashMap<String,Object>> janKaisouList = mstJanMapper.getJanKaisouList(tableNameKaisou);
         List<LinkedHashMap<String,Object>> janAttrGroup1 = janAttrList.stream().filter(map->map.get("11").equals("1") || map.get("11").equals("3"))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
         List<LinkedHashMap<String,Object>> janAttrGroup3 = janAttrList.stream().filter(map->map.get("11").equals("6") )
-                .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
+                .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"4"))).collect(Collectors.toList());
         List<LinkedHashMap<String,Object>> janAttrGroup2 = janAttrList.stream().filter(map->map.get("11").equals("5"))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map,"3"))).collect(Collectors.toList());
         if (janInfoList1 == null && !"".equals(janInfoList.getJan())){
@@ -304,10 +312,11 @@ public class MstJanServiceImpl implements MstJanService {
         } else {
             isCompanyCd = companyCd;
         }
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
-        String tableNamePreset = MessageFormat.format("\"{0}\".prod_{1}_jan_preset_param", isCompanyCd, prodMstClass);
-        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
-        return ResultMaps.result(ResultEnum.SUCCESS, mstJanMapper.getAttrName(aud, tableNameAttr, tableNamePreset, tableNameKaisou));
+        String tableNameAttr = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, isCompanyCd, prodMstClass);
+        String tableNamePreset = MessageFormat.format(MagicString.PROD_JAN_PRESET_PARAM, isCompanyCd, prodMstClass);
+        String tableNameKaisou = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS, isCompanyCd, prodMstClass);
+        String tableNamePlanoCycle = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS,MagicString.PLANO_CYCLE_COMPANY_CD,MagicString.FIRST_CLASS_CD);
+        return ResultMaps.result(ResultEnum.SUCCESS, mstJanMapper.getAttrName(aud, tableNameAttr, tableNamePreset, tableNameKaisou,tableNamePlanoCycle));
     }
 
     /**
@@ -329,7 +338,7 @@ public class MstJanServiceImpl implements MstJanService {
         } else {
             isCompanyCd = companyCd;
         }
-        String tableNamePreset = MessageFormat.format("\"{0}\".prod_{1}_jan_preset_param", isCompanyCd, prodMstClass);
+        String tableNamePreset = MessageFormat.format(MagicString.PROD_JAN_PRESET_PARAM, isCompanyCd, prodMstClass);
         mstJanMapper.deleteByAuthorCd(aud, tableNamePreset);
         mstJanMapper.insertPresetAttribute(aud, janPresetAttribute.getClassCd().split(","), tableNamePreset);
         return ResultMaps.result(ResultEnum.SUCCESS);
@@ -337,6 +346,7 @@ public class MstJanServiceImpl implements MstJanService {
 
     @Override
     public Map<String, Object> setJanListInfo(Map<String, Object> map) {
+       map=  map.entrySet().stream().filter(newMap->!"".equals(newMap.getValue())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         Map<String,Object> commonPartsDto = (Map<String,Object>) map.get(MagicString.COMMON_PARTS_DATA);
 
         String companyCd = "1000";
@@ -392,7 +402,17 @@ public class MstJanServiceImpl implements MstJanService {
         }
         setInfoMap.put("2", map.get(MagicString.JAN_NAME).toString());
         setInfoMap.putAll(kaiSouName);
-        mstJanMapper.setJanInfo(setInfoMap,jan,janInfoTableName);
+        List<String> janInfoCol = mstJanMapper.getJanInfoCol();
+        LinkedHashMap<String,Object> janInfoData= setInfoMap.entrySet().stream().filter(infoMap->!janInfoCol.contains(infoMap.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,(k1,k2)->k1,LinkedHashMap ::new));
+        LinkedHashMap<String,Object> janSpecialData= setInfoMap.entrySet().stream().filter(Special->janInfoCol.contains(Special.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,(k1,k2)->k1,LinkedHashMap ::new));
+        if (!janInfoData.isEmpty()) {
+            mstJanMapper.setJanInfo(janInfoData, jan, janInfoTableName);
+        }
+
+        if (!janSpecialData.isEmpty()) {
+            mstJanMapper.setJanSpecial(janSpecialData, jan);
+        }
+
         List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, commonPartsDto.get(MagicString.PROD_MST_CLASS).toString());
         LinkedHashMap<String,Object> maps = new LinkedHashMap<>();
         for (Map<String, Object> objectMap : zokuseiIdAndCol) {
@@ -482,7 +502,7 @@ public class MstJanServiceImpl implements MstJanService {
                                 branchStr.append("0");
                             }
                             row[j] = branchStr + row[j];
-                            map.put(String.valueOf(Integer.valueOf(janKaisouList.get(k).get("4").toString())-1),row[j]);
+                            map.put(String.valueOf(Integer.parseInt(janKaisouList.get(k).get("4").toString())-1),row[j]);
                             String s = mstJanMapper.checkKaisou(tableNameKaisouData, map);
                             if (s != null){
                                 jan.put(headerNameIndex.get(header[j]), row[j]);
@@ -509,7 +529,20 @@ public class MstJanServiceImpl implements MstJanService {
             String dateStr = simpleDateFormat.format(date);
             String authorCd = session.getAttribute("aud").toString();
             List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, prodMstClass);
-            count = mstJanMapper.insertJanList(tableNameInfo,infoHeader,janData, dateStr,authorCd);
+            List<String> janInfoCol = mstJanMapper.getJanInfoCol();
+
+            List<LinkedHashMap<String, Object>> janInfoData = janData.stream()
+                    .map(map -> map.entrySet().stream().filter(infoMap -> !janInfoCol.contains(infoMap.getKey()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new)))
+                    .collect(Collectors.toList());
+
+            List<LinkedHashMap<String, Object>> janSpecialData = janData.stream()
+                    .map(map -> map.entrySet().stream().filter(infoMap -> janInfoCol.contains(infoMap.getKey()) || "1".equals(infoMap.getKey()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new)))
+                    .collect(Collectors.toList());
+                count = mstJanMapper.insertJanList(tableNameInfo, janInfoData, dateStr, authorCd);
+                count = mstJanMapper.insertJanSpecialList(janSpecialData);
+
             Set zokuseiList = new HashSet();
             for (LinkedHashMap<String, Object> janDatum : janData) {
                 for (Map.Entry<String, Object> stringObjectEntry : janDatum.entrySet()) {
@@ -548,23 +581,22 @@ public class MstJanServiceImpl implements MstJanService {
         String tableNameInfo;
         String tableNameHeaderWK;
         String tableNameInfoWK;
-        List<LinkedHashMap<String,Object>> janAttrList;
+        List<String> janAttrList;
         String column;
         for (String companyCd : companyList) {
             mstCommodityService.syncCommodityMaster(companyCd);
             commoditySyncSetList = mstCommodityService.getCommodityList(companyCd);
             for (CommoditySyncSet commoditySyncSet : commoditySyncSetList) {
                 prodMstClass = commoditySyncSet.getProdMstClass();
-                syncJanKaisou(companyCd,prodMstClass);
+                syncJanKaisou(companyCd, prodMstClass);
                 tableNameHeader = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
                 tableNameInfo = MessageFormat.format(MagicString.PROD_JAN_INFO, companyCd, prodMstClass);
                 tableNameHeaderWK = MessageFormat.format(MagicString.WK_PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
                 tableNameInfoWK = MessageFormat.format(MagicString.WK_PROD_JAN_INFO, companyCd, prodMstClass);
                 mstJanMapper.syncJanHeader(tableNameHeader,tableNameHeaderWK);
-                janAttrList = mstJanMapper.getJanAttrList(tableNameHeader);
-                column =janAttrList.stream()
-                        .filter(e->"3".equals(e.get("11"))).map(e->e.get("3").toString()).collect(Collectors.joining(","));
-                mstJanMapper.syncJanHeader(tableNameHeader,tableNameHeaderWK);
+                janAttrList = mstJanMapper.getJanAttrColWK(tableNameHeaderWK);
+                column =janAttrList.stream().collect(Collectors.joining(","));
+                deleteMultipleJan(companyCd, prodMstClass, tableNameInfoWK);
                 mstJanMapper.syncJanData(tableNameInfo, tableNameInfoWK, column);
             }
         }
@@ -585,5 +617,16 @@ public class MstJanServiceImpl implements MstJanService {
         mstJanMapper.insertKaisou(tableNameHeader, tableNameHeaderWK);
         mstJanMapper.deleteKaisou(tableNameKaisou);
         mstJanMapper.insertKaisou(tableNameKaisou, tableNameKaisouWK);
+    }
+
+    /**
+     * 重複Janを削除
+     *
+     * @return
+     */
+    public void deleteMultipleJan(String companyCd, String prodMstClass, String tableNameInfoWK) {
+        String tableNameHeaderWK = MessageFormat.format(MagicString.WK_PROD_JAN_KAISOU_HEADER_SYS, companyCd, prodMstClass);
+        List<String> janKaisouCol = mstJanMapper.getJanKaisouColWK(tableNameHeaderWK);
+        mstJanMapper.deleteMultipleJan(janKaisouCol, tableNameInfoWK);
     }
 }

@@ -1204,15 +1204,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
             for (Map<String, Object> ptsDataJandata : newPtsJanList) {
                 List<String> janData = Lists.newArrayList(MapUtils.getInteger(ptsDataJandata, MagicString.TAI_CD) + "",
-                        MapUtils.getInteger(ptsDataJandata,MagicString.TANA_CD) + "", MapUtils.getInteger(ptsDataJandata,MagicString.TANA_POSITION_CD) + "", ptsDataJandata.get("jan") + "",
-                        Optional.ofNullable(MapUtils.getInteger(ptsDataJandata,"face_count")).orElse(0) + "",
-                        Optional.ofNullable(MapUtils.getInteger(ptsDataJandata,"face_men")).orElse(0) + "",
-                        Optional.ofNullable(MapUtils.getInteger(ptsDataJandata,"face_kaiten")).orElse(0) + "",
-                        Optional.ofNullable(MapUtils.getInteger(ptsDataJandata,"tumiagesu")).orElse(0) + "",
-                        Optional.ofNullable(MapUtils.getInteger(ptsDataJandata,"zaikosu")).orElse(0) + "",
-                        Optional.ofNullable(MapUtils.getInteger(ptsDataJandata,"face_displayflg")).orElse(0) + "",
-                        Optional.ofNullable(MapUtils.getInteger(ptsDataJandata,"face_position")).orElse(0) + "",
-                        Optional.ofNullable(MapUtils.getInteger(ptsDataJandata,"depth_display_num")).orElse(0) + "");
+                        MapUtils.getInteger(ptsDataJandata,"tana_cd") + "", MapUtils.getInteger(ptsDataJandata,MagicString.TANAPOSITION_CD) + "", ptsDataJandata.get("jan") + "",
+                        MapUtils.getInteger(ptsDataJandata,"face_count",1)+ "",
+                        MapUtils.getInteger(ptsDataJandata,"face_men", 1)+ "",
+                        MapUtils.getInteger(ptsDataJandata,"face_kaiten", 0) + "",
+                        MapUtils.getInteger(ptsDataJandata,"tumiagesu", 1)+ "",
+                        MapUtils.getInteger(ptsDataJandata,"zaikosu") + "",
+                        Strings.isNullOrEmpty(MapUtils.getString(ptsDataJandata,"face_displayflg"))?"":MapUtils.getInteger(ptsDataJandata,"face_displayflg")+"",
+                        Strings.isNullOrEmpty(MapUtils.getString(ptsDataJandata,"face_position"))?"":MapUtils.getInteger(ptsDataJandata,"face_position")+"",
+                        Strings.isNullOrEmpty(MapUtils.getString(ptsDataJandata,"depth_display_num"))?"":MapUtils.getInteger(ptsDataJandata,"depth_display_num")+"");
                 csvWriter.writeRow(janData.subList(0, janHeaders.length));
             }
 

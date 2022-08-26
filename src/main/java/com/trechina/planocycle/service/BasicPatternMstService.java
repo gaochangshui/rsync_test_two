@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.BasicPatternRestrictRelation;
 import com.trechina.planocycle.entity.po.BasicPatternRestrictResult;
+import com.trechina.planocycle.entity.po.ZokuseiMst;
 import com.trechina.planocycle.entity.vo.BasicPatternAutoDetectVO;
 
 import java.lang.reflect.InvocationTargetException;
@@ -26,7 +27,7 @@ public interface BasicPatternMstService {
     Map<String, Object> preCalculation(String companyCd, Long patternCd, Integer priorityOrderCd);
 
     Map<String, BasicPatternRestrictResult> getJanInfoClassify(List<Map<String, Object>> classifyList,
-                                                               String companyCd, String zokuseiIds, String authorCd, Long priorityOrderCd);
+                                                               String companyCd, List<ZokuseiMst> zokuseiMst, String authorCd, Long priorityOrderCd);
 
     /**
      * jan长宽高修改

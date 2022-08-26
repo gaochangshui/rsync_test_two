@@ -24,7 +24,7 @@ public interface BasicPatternRestrictRelationMapper {
     int insertSelective(BasicPatternRestrictRelation record);
 
     List<Map<String, Object>> selectByPrimaryKey(Integer priorityOrderCd, String companyCd,
-                                                 List<String> zokuseiList, String classCd);
+                                                 List<Map<String,Object>> attrCol, String classCd);
 
     List<Map<String, Object>> selectByPriorityOrderCd(Integer priorityOrderCd);
     int updateByPrimaryKeySelective(BasicPatternRestrictRelation record);

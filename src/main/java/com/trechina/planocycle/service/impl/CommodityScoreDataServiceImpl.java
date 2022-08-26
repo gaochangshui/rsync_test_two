@@ -59,6 +59,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Autowired
     private ShelfPatternMstMapper shelfPatternMstMapper;
     @Autowired
+    private MstJanMapper mstJanMapper;
+    @Autowired
     private cgiUtils cgiUtil;
 
     @Value("${smartUrlPath}")
@@ -104,7 +106,10 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         int colNum = 2;
         if (janName2colNum == 2){
              colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+        }else if(janName2colNum==3){
+            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
         }
+
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
         List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
@@ -220,6 +225,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         Integer janName2colNum = Integer.valueOf(map.get("janName2colNum").toString());
         if (janName2colNum == 2){
             Integer prodMstClass = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+            map.put("janName2colNum",prodMstClass);
+        }else if(janName2colNum == 3){
+            Integer prodMstClass = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
             map.put("janName2colNum",prodMstClass);
         }else {
             map.put("janName2colNum","_");
@@ -392,6 +400,28 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         }
 
+    }
+
+    @Override
+    public Map<String, Object> getJanAttrValueList(String attrList) {
+       List<String> attrLists= Arrays.asList( attrList.split(","));
+       String company = attrLists.get(0).split("_")[0];
+       String classCd = attrLists.get(0).split("_")[1];
+
+        List<Map<String,Object>> lists = new ArrayList<>();
+        for (String list : attrLists) {
+            Map<String,Object> map = new HashMap<>();
+            String attrNameForId = mstJanMapper.getAttrNameForId(list.split("_")[2], company, classCd);
+            map.put("title",attrNameForId);
+            map.put("id",list);
+            map.put("select","");
+            map.put("value",new Object[]{});
+            map.put("flag",false);
+            List<String> attrValueList = mstJanMapper.getAttrValueList(list.split("_")[2], company, classCd);
+            map.put("option",attrValueList);
+            lists.add(map);
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS,lists);
     }
 
 

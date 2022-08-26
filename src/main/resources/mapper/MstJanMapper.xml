@@ -20,13 +20,19 @@
     </update>
     <!--"{0}".prod_{1}_jan_attr_header_sys  -->
     <select id="getJanHeader" resultType="com.trechina.planocycle.entity.po.JanHeaderAttr">
-        select "1" "attr","2" "attrVal","3" "sort", "4" "colSort" from ${tableName}
+        select "1" "attr","2" "attrVal","3" "sort", "4" "colSort", "11" "type" from ${tableName}
         where "1" in (
         <foreach collection="janColumn.split(',')" item="item" index="idx" separator=",">
             #{item,jdbcType=VARCHAR}
         </foreach>)
         union
-        select "1" "attr","2" "attrVal","3" "sort", "4" "colSort" from ${tableNameKaisou}
+        select "1" "attr","2" "attrVal","3" "sort", "4" "colSort", '2' "type" from ${tableNameKaisou}
+        where "1" in (
+        <foreach collection="janColumn.split(',')" item="item" index="idx" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>)
+        union
+        select "1" "attr","2" "attrVal","3" "sort", "4" "colSort", "11" "type" from ${tableNamePlanoCycle}
         where "1" in (
         <foreach collection="janColumn.split(',')" item="item" index="idx" separator=",">
             #{item,jdbcType=VARCHAR}
@@ -45,6 +51,12 @@
         <foreach collection="headerName.split(',')" item="item" index="idx" separator=",">
             #{item,jdbcType=VARCHAR}
         </foreach>)
+        union
+        select "1" "attr","2" "attrVal","3" "sort",'1' as type from "9999".prod_0000_jan_attr_header_sys
+        where "2" in (
+        <foreach collection="headerName.split(',')" item="item" index="idx" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>)
     </select>
 
     <select id="getJanCount" resultType="long">
@@ -53,13 +65,30 @@
 
     <select id="getJanList" resultType="java.util.LinkedHashMap">
         <include refid="Base_Jan_List" />
-        order by "1"
+        order by a."1"
     </select>
     <select id="getJanInfoList" resultType="java.util.LinkedHashMap">
-        select * from ${tableName} where "1" = #{jan}
+        select
+            a."1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"
+               , "100", "101", "102", "103", b."104",b."105",b."106",b."107",b."108",b."109",b."110"
+             , b."201", b."202", b."203", b."204", b."205", b."206",
+            b."207", b."208", b."209", b."210", b."211", b."212", b."213", b."214", b."215", b."216", b."217", b."218", b."219"
+               , b."220", b."221", b."222", b."223", b."224", b."225", b."226", b."227", b."228", b."229", b."230"
+        from
+        ${tableName} a
+        left join "9999".prod_0000_jan_info b
+        on a."1" = b."1"
+        where a."1" = #{jan}
     </select>
     <select id="getJanAttrList" resultType="java.util.LinkedHashMap">
-    select "1","2","3","4","11","13" from ${tableName} where "1" not in ('jan_name','jan_cd')   order by "4"
+    select "1","2","3","4","11","13"
+    from ${tableName}
+    where "1" not in ('jan_name','jan_cd')
+    union
+    select "1","2","3","4","11","13"
+    from "9999".prod_0000_jan_attr_header_sys
+    where "1" not in ('jan_name','jan_cd')
+    order by "4"
     </select>
     <select id="getJanKaisouList" resultType="java.util.LinkedHashMap">
         select "1","2","3","4" from ${tableName} where "4" is not null and "1" like '%_name' and "1" not in ('jan_name') order by "4"
@@ -67,17 +96,18 @@
 
     <!--"{0}".prod_{1}_jan_info  -->
     <sql id="Base_Jan_List">
-        select ${column} from ${tableName}
+        select ${column} from ${tableName} a
+        left join ${janInfoTablePlanoCycle} b on a."1" =b."1"
         where "2" like concat(concat('%', #{janParamVO.fuzzyQuery}), '%')
         <if test="janParamVO.janContain != null and janParamVO.janContain != ''">
-            and "1" in(
+            and a."1" in(
             <foreach collection="janParamVO.janContain.split(',')" item="items" separator=",">
                 #{items}
             </foreach>
             )
         </if>
         <if test="janParamVO.janKato != null and janParamVO.janKato != ''">
-            and "1" not in(
+            and a."1" not in(
             <foreach collection="janParamVO.janKato.split(',')" item="items" separator=",">
                 #{items}
             </foreach>)
@@ -126,7 +156,26 @@
         else false end as "flag",'2' as "11",t1."3"::integer
         from ${tableNameKaisou} t1
         left join ${tableNamePreset} t2 on t1."1" =t2.item_cd and t2.author_cd = #{authorCd}
-        where "1" not in('jan_cd','jan_name')) a
+        where "1" not in('jan_cd','jan_name')
+        union all
+        select "1" "value", "2" "label", 'Plano-Cycle専用' "attrType",
+		case
+			"12" when '1' then true
+			else false
+		end as "mandatory",
+		case
+			when "12" = '1' then true
+			when t2.item_cd is not null then true
+			else false
+		end as "flag",
+		t1."11",
+		t1."3"::integer
+	from
+		${tableNamePlanoCycle} t1
+	left join ${tableNamePreset} t2 on
+		t1."1" = t2.item_cd
+		and t2.author_cd =  #{authorCd}
+        ) a
         order by "11","3"
     </select>
     <select id="getKaiSouName" resultType="java.util.Map">
@@ -156,6 +205,14 @@
     </select>
     <select id="getPlanoType" resultType="com.trechina.planocycle.entity.po.JanHeaderAttr">
         select "1" as "attr","2" as "attrVal","3" as "sort","13" as "type" from ${tableName} where "1" like 'plano%' and "13" = '0'
+    </select>
+    <select id="getJanInfoCol" resultType="java.lang.String">
+        select "3" from "9999".prod_0000_jan_attr_header_sys
+    </select>
+    <select id="getAttrValueList" resultType="java.lang.String">
+        select distinct "${colName}"
+        from "${company}".prod_${classCd}_jan_info where  "${colName}" != ''
+        order by "${colName}"
     </select>
 
     <insert id="insertPresetAttribute">
@@ -190,8 +247,8 @@
         </foreach>
         on conflict("1")
         do update set
-        <foreach collection="infoHeader.split(',')" item="item" separator=",">
-            ${item} = EXCLUDED.${item}
+        <foreach collection="janData[0]" index="index" separator=",">
+            "${index}" = EXCLUDED."${index}"
         </foreach>
         ,"102" = #{authorCd}
         ,"103" = #{date}
@@ -226,9 +283,25 @@
             conflict("1") do
         update
         set
-        "2" = excluded."2",
         <foreach collection="column.split(',')" item="item" separator=",">
             "${item}" = EXCLUDED."${item}"
+        </foreach>
+    </update>
+    <update id="setJanSpecial">
+        insert into "9999".prod_0000_jan_info("1"
+        <foreach collection="list" item="item" index="index">
+            ,"${index}"
+        </foreach>
+        )
+        values (#{jan}
+        <foreach collection="list" item="item">
+           "${item}"
+        </foreach>
+        )
+        on conflict("1")
+        do update set
+        <foreach collection="list" item="item" index="index" separator=",">
+            "${index}" = #{item}
         </foreach>
     </update>
 
@@ -239,5 +312,58 @@
         insert into ${tableName}
         select * from  ${tableNameWK}
       </insert>
+    <insert id="insertJanSpecialList">
+        insert into "9999".prod_0000_jan_info(
+        <foreach collection="janData[0]" index="index" separator=",">
+            "${index}"
+        </foreach>
+
+        )
+        values
+        <foreach collection="janData" item="items" separator=",">
+            (
+            <foreach collection="items.entrySet()" item="value" separator=",">
+                #{value}
+            </foreach>
+            )
+        </foreach>
+        on conflict("1")
+        do update set
+        <foreach collection="janData[0]" index="index" separator=",">
+            "${index}" = EXCLUDED."${index}"
+        </foreach>
+    </insert>
+
+    <select id="getJanAttrColWK" resultType="java.lang.String">
+        select "3" from ${tableName}
+    </select>
+    <select id="getAttrNameForId" resultType="java.lang.String">
+        select distinct "2"
+        from "${company}".prod_${classCd}_jan_attr_header_sys where "3" = '${colName}'
+    </select>
+
+    <delete id="deleteMultipleJan">
+        delete from ${tableNameInfoWK} a
+        where (
+        <foreach collection="janKaisouCol" item="item" separator="," >
+            "${item}"
+        </foreach>
+        ) in (
+        select
+        <foreach collection="janKaisouCol" item="item" separator=",">
+            "${item}"
+        </foreach>
+        from (
+        select
+        <foreach collection="janKaisouCol" item="item" separator=",">
+            "${item}"
+        </foreach>
+        ,ROW_NUMBER() over (partition by "1") as num from ${tableNameInfoWK})b where
+        b.num>1)
+    </delete>
+
+    <select id="getJanKaisouColWK" resultType="java.lang.String">
+        select "3" from ${tableName} where "1" like '%_cd' order by "3"
+    </select>
 
 </mapper>

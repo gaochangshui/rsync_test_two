@@ -3,10 +3,7 @@ package com.trechina.planocycle.controller;
 import com.trechina.planocycle.entity.vo.ShowDataVO;
 import com.trechina.planocycle.service.CommodityScoreDataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -51,5 +48,13 @@ public class CommodityScoreDataController {
                 showDataVO.getPosCd(), showDataVO.getPrepareCd(), showDataVO.getIntageCd(), showDataVO.getCustomerCd());
     }
 
+
+    /**
+     * 商品属性value
+     */
+    @GetMapping("/getJanAttrValueList")
+    public Map<String, Object> getJanAttrValueList(String attrList) {
+        return commodityScoreDataService.getJanAttrValueList(attrList);
+    }
 
 }

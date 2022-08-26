@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderJanCgiDto;
@@ -30,6 +31,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -248,11 +250,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
         List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+        String proTableName = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
         List<Map<String,Object>> reorder = workPriorityOrderResultDataMapper.getProductReorder(companyCd, authorCd,
-                workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,tableName,zokuseiMsts,allCdList);
+                workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,tableName,zokuseiMsts,allCdList, proTableName);
 
         List<Map<String,Object>> newJanReorder = workPriorityOrderResultDataMapper.getNewJanProductReorder(companyCd, authorCd,
-                workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,tableName,zokuseiMsts,allCdList);
+                workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,tableName,proTableName,zokuseiMsts,allCdList);
         Map<String, List<Map<String, Object>>> ptsJan = reorder.stream().collect(Collectors.groupingBy(map -> {
             String attrKey = "";
             for (Map<String, Object> col : attrCol) {
@@ -540,7 +543,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
             List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(workPriorityOrderMst.getShelfPatternCd().intValue());
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(workPriorityOrderMst.getShelfPatternCd().intValue());
-            List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(workPriorityOrderMst.getShelfPatternCd().intValue(),attrCol,commonTableName.getProInfoTable(),janSizeCol);
+            String proTableName = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
+            List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(workPriorityOrderMst.getShelfPatternCd().intValue(),attrCol,
+                    commonTableName.getProInfoTable(),janSizeCol, proTableName);
             ptsDetailData.setPtsTaiList(taiData);
             ptsDetailData.setPtsTanaVoList(tanaData);
             ptsDetailData.setPtsJanDataList(janData);

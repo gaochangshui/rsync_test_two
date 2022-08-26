@@ -2,6 +2,8 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Sets;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.ShelfPatternBranchDto;
 import com.trechina.planocycle.entity.dto.ShelfPatternDto;
 import com.trechina.planocycle.entity.po.ShelfPatternBranch;
@@ -12,6 +14,7 @@ import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.ShelfNameMstMapper;
 import com.trechina.planocycle.mapper.ShelfPatternBranchMapper;
 import com.trechina.planocycle.mapper.ShelfPatternMstMapper;
+import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.ShelfPatternAreaService;
 import com.trechina.planocycle.service.ShelfPatternService;
 import com.trechina.planocycle.utils.ListDisparityUtils;
@@ -30,10 +33,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,7 +49,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     private ShelfPatternAreaService shelfPatternAreaService;
     @Autowired
     private ShelfNameMstMapper shelfNameMstMapper;
-
+    @Autowired
+    private BasicPatternMstService basicPatternMstService;
 
     /**
      * 棚pattern情報の取得
@@ -60,13 +61,25 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     public Map<String, Object> getShelfPatternInfo(String companyCd) {
         logger.info("棚pattern情報のパラメータの取得：{}",companyCd);
         List<ShelfPatternMst> resultInfo = shelfPatternMstMapper.selectByPrimaryKey(companyCd);
+        List<String> commonPartsDataList = resultInfo.stream().distinct().map(map -> map.getCommonPartsData()).collect(Collectors.toList());
+        List<String> list = new ArrayList<>();
+        for (String s : commonPartsDataList) {
+            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(s, companyCd);
+            list.add(commonTableName.getStoreInfoTable());
+        }
+        Set<String> existSpecialUse = shelfPatternMstMapper.getExistSpecialUse(list);
         resultInfo = resultInfo.stream().peek(result -> {
             if (result.getStoreCdStr()==null) {
                 result.setStoreCd(new String[]{});
+                result.setBranchNum(0);
+                result.setSpecialFlag("×");
             }else{
                 String storeCdStr = result.getStoreCdStr();
                 String[] storeCdStrList = storeCdStr.split(",");
+                long count = Sets.intersection(existSpecialUse, Arrays.stream(storeCdStrList).collect(Collectors.toSet())).stream().count();
                 result.setStoreCd(storeCdStrList);
+                result.setBranchNum(storeCdStrList.length);
+                result.setSpecialFlag(count == 0 ? "×" : "◯");
             }
         }).collect(Collectors.toList());
         logger.info("棚pattern情報の戻り値の取得：{}",resultInfo);
@@ -398,7 +411,14 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
 
     @Override
     public Map<String, Object> getPatternForStorel(String companyCd, String storeIsCore) {
-        List<ShelfPatternNameVO> patternForStorel = shelfPatternMstMapper.getPatternForStorel(storeIsCore, companyCd);
+        List<String> commonPartsData = shelfPatternMstMapper.getCommonPartsData(companyCd);
+        Map<String,Object> map = new HashMap<>();
+        for (int i = 0; i < commonPartsData.size(); i++) {
+            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData.get(i), companyCd);
+            map.put("a"+i,commonTableName.getStoreInfoTable());
+        }
+
+        List<ShelfPatternNameVO> patternForStorel = shelfPatternMstMapper.getPatternForStorel(storeIsCore, companyCd,map);
         for (ShelfPatternNameVO shelfPatternNameVO : patternForStorel) {
             String prodIsCore = shelfPatternNameVO.getStoreIsCore();
             JSONObject jsonObject = JSON.parseObject(prodIsCore);

@@ -5,7 +5,6 @@ import com.trechina.planocycle.entity.vo.ProductItemVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.MstJanMapper;
 import com.trechina.planocycle.mapper.ProdKaisouHeaderMapper;
-import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.mapper.ZokuseiMstMapper;
 import com.trechina.planocycle.service.JanAttrService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -24,8 +23,6 @@ public class JanAttrServiceImpl implements JanAttrService {
     @Autowired
     private ProdKaisouHeaderMapper prodKaisouHeaderMapper;
     @Autowired
-    private SysConfigMapper sysConfigMapper;
-    @Autowired
     private MstJanMapper mstJanMapper;
     @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
@@ -33,13 +30,7 @@ public class JanAttrServiceImpl implements JanAttrService {
     @Override
     public Map<String, Object> saveProductItem(ProductItemVO productItemVO){
 
-
-        String companyCd = "1000";
-        String classCd = productItemVO.getCommonPartsData().getProdMstClass();
-        if ("0".equals(productItemVO.getCommonPartsData().getProdIsCore())) {
-            companyCd = productItemVO.getCompanyCd();
-        }
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd, classCd);
+        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", "9999", "0000");
         String nameExist = mstJanMapper.getNameExist(productItemVO.getName(), tableNameAttr);
         if (nameExist!= null){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
@@ -67,43 +58,28 @@ public class JanAttrServiceImpl implements JanAttrService {
             map.put("13","1");
         }
         prodKaisouHeaderMapper.setItem(map,tableNameAttr);
-        Integer maxZokuseiId = zokuseiMstMapper.getMaxZokuseiId(companyCd, classCd);
-        zokuseiMstMapper.setItem(itemColName,maxZokuseiId+1,companyCd,classCd,productItemVO.getName());
+        zokuseiMstMapper.setItem(itemColName,Integer.valueOf(itemColName),productItemVO.getName());
         return ResultMaps.result(ResultEnum.SUCCESS,map.get("1"));
     }
 
     @Override
     public Map<String, Object> delProductItem(ProductItemVO productItemVO) {
-        String companyCd = MagicString.SELF_SERVICE;
-        String classCd = productItemVO.getCommonPartsData().getProdMstClass();
-        if ("0".equals(productItemVO.getCommonPartsData().getProdIsCore())) {
-            companyCd = productItemVO.getCompanyCd();
-        }
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd, classCd);
-        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,classCd);
+        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", "9999", "0000");
+        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", "9999", "0000");
         String colName = prodKaisouHeaderMapper.getItem(productItemVO.getValue(), tableNameAttr);
         prodKaisouHeaderMapper.delItem(productItemVO.getValue(),tableNameAttr);
         if (colName != null) {
             mstJanMapper.clearCol(colName, janInfoTableName);
         }
 
-        Integer zokuseiIdForCol = zokuseiMstMapper.getZokuseiIdForCol(colName, companyCd, classCd);
-        zokuseiMstMapper.delZokuseiMstForId(classCd, companyCd,zokuseiIdForCol);
-        zokuseiMstMapper.delZokuseiMstDataForId(classCd, companyCd,zokuseiIdForCol);
-        List<Map<String, Object>> zokuseiId = prodKaisouHeaderMapper.getZokuseiId(companyCd,classCd);
-        zokuseiMstMapper.updateZokuseiMstData(zokuseiId,companyCd,classCd);
-        zokuseiMstMapper.updateZokuseiMst(zokuseiId,companyCd,classCd);
+        zokuseiMstMapper.delZokuseiMstForId(Integer.valueOf(colName));
+        zokuseiMstMapper.delZokuseiMstDataForId(Integer.valueOf(colName));
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     @Override
     public Map<String, Object> updateAttrInfo(ProductItemVO productItemVO) {
-        String companyCd = MagicString.SELF_SERVICE;
-        String classCd = productItemVO.getCommonPartsData().getProdMstClass();
-        if ("0".equals(productItemVO.getCommonPartsData().getProdIsCore())) {
-            companyCd = productItemVO.getCompanyCd();
-        }
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd, classCd);
+        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", "9999", "0000");
         String nameExist = mstJanMapper.getNameExist(productItemVO.getName(), tableNameAttr);
         if (nameExist != null && !nameExist.equals(productItemVO.getValue())){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
@@ -116,7 +92,7 @@ public class JanAttrServiceImpl implements JanAttrService {
         }
         prodKaisouHeaderMapper.updateName(productItemVO,tableNameAttr,type);
         String zokuseiCol = prodKaisouHeaderMapper.getItem(productItemVO.getValue(), tableNameAttr);
-        zokuseiMstMapper.updateZokuseiName(productItemVO,companyCd,classCd,zokuseiCol);
+        zokuseiMstMapper.updateZokuseiName(productItemVO,zokuseiCol);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
