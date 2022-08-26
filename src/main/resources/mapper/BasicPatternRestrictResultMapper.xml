@@ -437,14 +437,14 @@
         select face_count as "faceNum",coalesce(jan_new, jandata.jan) "janCd"
         ,
         <foreach collection="attrName" separator="," item="item" index="index">
-            coalesce ("${item.zokusei_col}",'') as "${item.zokusei_colname}"
+            coalesce ("${item.zokusei_col}",'未登録') as "${item.zokusei_colname}"
         </foreach>
         <foreach collection="attrList" item="item1" open="," separator=",">
-            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'')</if>
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'未登録')</if>
             <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
                 <foreach collection="allCdList" item="item2" separator="|| '_' ||">
                     <if test="item2 &lt;= item1.zokuseiCol">
-                       coalesce ("${item2}",'')
+                       coalesce ("${item2}",'未登録')
                     </if>
                 </foreach>
             </if>
@@ -538,14 +538,14 @@
          face_kaiten  as "faceKaiten",
           tumiagesu  as "tumiagesu",
         <foreach collection="attrName" separator="," item="item" index="index">
-            coalesce ("${item.zokusei_col}",'') as "${item.zokusei_colname}"
+            coalesce ("${item.zokusei_col}",'未登録') as "${item.zokusei_colname}"
         </foreach>
         <foreach collection="attrList" item="item1" open="," separator=",">
-            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'')</if>
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'未登録')</if>
             <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
                 <foreach collection="allCdList" item="item2" separator="|| '_' ||">
                     <if test="item2 &lt;= item1.zokuseiCol">
-                        coalesce ("${item2}",'')
+                        coalesce ("${item2}",'未登録')
                     </if>
                 </foreach>
             </if>
@@ -585,14 +585,14 @@
         select face_count as "faceNum",coalesce(jan_new, jandata.jan) "janCd"
         ,
         <foreach collection="attrName" separator="," item="item" index="index">
-            coalesce ("${item.zokusei_col}",'') as "${item.zokusei_colname}"
+            coalesce ("${item.zokusei_col}",'未登録') as "${item.zokusei_colname}"
         </foreach>
         <foreach collection="attrList" item="item1" open="," separator=",">
-            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'')</if>
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'未登録')</if>
             <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
                 <foreach collection="allCdList" item="item2" separator="|| '_' ||">
                     <if test="item2 &lt;= item1.zokuseiCol">
-                        coalesce ("${item2}",'')
+                        coalesce ("${item2}",'未登録')
                     </if>
                 </foreach>
             </if>

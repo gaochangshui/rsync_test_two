@@ -123,7 +123,7 @@
         </foreach>
         ,
         <foreach collection="attrName" separator="," item="item" index="index">
-            "${item.zokusei_col}" as "zokuseiName${item.zokusei_id}"
+            coalesce ("${item.zokusei_col}",'未登録') as "zokuseiName${item.zokusei_id}"
         </foreach>
         ,coalesce (prodata.rank_result,9999) as rank
         from planocycle.shelf_pts_data ptsdata
