@@ -18,6 +18,9 @@
         </foreach>
 
     </delete>
+    <delete id="deleteBranch1">
+        delete from ${branchInfoTableName} where "100" = '1'
+    </delete>
     <select id="getCommuneBranchInfo" resultType="java.util.Map">
         select
             split_part( teninfo."1", '_', 1 ) "companyCd",
@@ -34,6 +37,7 @@
                 #{item}
             </foreach>
             and teninfo."100" = '1'
+            order by split_part( teninfo."1", '_', 2 ) :: integer
     </select>
     <select id="getCompanyBranchInfo" resultType="java.util.Map">
         select
@@ -47,6 +51,7 @@
         left join masterdb.group_company groupcompany on company_cd =  #{companyCd}
         left join masterdb.kigyou_name kigyouname on kigyouname."1" =  #{companyCd}
         where teninfo."100" = '1'
+        order by teninfo."1" ::integer
     </select>
     <select id="getBranchSize" resultType="java.lang.Integer">
         select

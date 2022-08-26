@@ -59,6 +59,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Autowired
     private ShelfPatternMstMapper shelfPatternMstMapper;
     @Autowired
+    private MstJanMapper mstJanMapper;
+    @Autowired
     private cgiUtils cgiUtil;
 
     @Value("${smartUrlPath}")
@@ -398,6 +400,19 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         }
 
+    }
+
+    @Override
+    public Map<String, Object> getJanAttrValueList(String attrList) {
+       List<String> attrLists= Arrays.asList( attrList.split(","));
+       String company = attrLists.get(0).split("_")[0];
+       String classCd = attrLists.get(0).split("_")[1];
+       Map<String,Object> map = new HashMap<>();
+        for (String list : attrLists) {
+            List<String> attrValueList = mstJanMapper.getAttrValueList(list.split("_")[2], company, classCd);
+            map.put(list.split("_")[2],attrValueList);
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
 

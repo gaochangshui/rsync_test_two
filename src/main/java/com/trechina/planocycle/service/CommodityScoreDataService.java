@@ -32,4 +32,6 @@ public interface CommodityScoreDataService {
      */
     Map<String, Object> getCommodityScoreDataFromDB(Integer productPowerCd, String companyCd, String[] posCd, String[] prepareCd, String[] intageCd,
                                                     String[] customerCd);
+
+    Map<String, Object> getJanAttrValueList(String attrList);
 }

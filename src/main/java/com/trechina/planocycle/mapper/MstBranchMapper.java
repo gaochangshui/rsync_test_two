@@ -28,4 +28,5 @@ public interface MstBranchMapper {
     void setBranchInfo(@Param("list") List<BranchList> branchList, @Param("branchInfoTableName") String branchInfoTableName);
 
     void deleteBranch(String branchInfoTableName,List<String> groupCd);
+    void deleteBranch1(String branchInfoTableName);
 }

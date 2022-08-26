@@ -132,4 +132,6 @@ public interface MstJanMapper {
     void setJanSpecial(@Param("list") LinkedHashMap<String, Object> janSpecialData, @Param("jan") String jan);
 
     int insertJanSpecialList(List<LinkedHashMap<String, Object>> janData);
+
+    List<String> getAttrValueList(String colName,String company,String classCd);
 }

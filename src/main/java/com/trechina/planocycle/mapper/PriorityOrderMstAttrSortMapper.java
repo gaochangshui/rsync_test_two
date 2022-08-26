@@ -51,7 +51,8 @@ public interface PriorityOrderMstAttrSortMapper {
 
     List<Map<String, Object>> getAttrName(String classCd, String companyCd, List<Integer> attrs);
 
-    List<Map<String, Object>> getAttrDistinct(String classCd, String companyCd, Integer priorityOrderCd, String attr, Integer id, Integer width,String zokuseiSortCd,String colName);
+    List<Map<String, Object>> getAttrDistinct(String classCd, String companyCd, Integer priorityOrderCd
+            , String attr, Integer id, Integer width,String zokuseiSortCd,String colName,String colCd);
 
     void deletFinal(String companyCd, Integer priorityOrderCd);
 

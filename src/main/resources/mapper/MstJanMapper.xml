@@ -209,6 +209,11 @@
     <select id="getJanInfoCol" resultType="java.lang.String">
         select "3" from "9999".prod_0000_jan_attr_header_sys
     </select>
+    <select id="getAttrValueList" resultType="java.lang.String">
+        select distinct "${colName}"
+        from "${company}".prod_${classCd}_jan_info and "${colName}" != ''
+        order by "${colName}"
+    </select>
 
     <insert id="insertPresetAttribute">
         insert into ${tableName}

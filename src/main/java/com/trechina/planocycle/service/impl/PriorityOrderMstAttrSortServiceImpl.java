@@ -9,6 +9,7 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.PriorityOrderMstAttrSortService;
 import com.trechina.planocycle.utils.ResultMaps;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -17,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -116,7 +114,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
 
             List<Map<String, Object>> attrDistinct = priorityOrderMstAttrSortMapper.getAttrDistinct(Integer.parseInt(attrCol.get(j).get("value").toString())<104?prodMstClass:"0000"
                     ,Integer.parseInt(attrCol.get(j).get("value").toString())<104? prodIsCore :"9999",priorityOrderAttrDto.getPriorityOrderCd(),attrCol.get(j).get("value").toString() ,id,width, attrSortList.get(j)
-                    ,attrCol.get(j).get("zokusei_colname").toString());
+                    ,attrCol.get(j).get("zokusei_colname").toString(),attrCol.get(j).get("zokusei_colcd").toString());
             for (int i = 0; i < attrDistinct.size(); i++) {
                 attrDistinct.get(i).put("color",mainColor.get(i));
             }
@@ -160,7 +158,23 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             }
             newRestrictList.add(newObjectMap);
         }
-        return ResultMaps.result(ResultEnum.SUCCESS, newRestrictList);
+        attrCol = attrCol.stream().sorted(Comparator.comparing(map-> MapUtils.getInteger(map,"sort"))).collect(Collectors.toList());
+        String groupHeader = "";
+        String groupColumns = "";
+        for (Map<String, Object> map : attrCol) {
+            if (groupHeader.equals("")){
+                groupHeader += map.get("zokusei_nm");
+                groupColumns += map.get("zokusei_colname");
+            }else {
+                groupHeader += ","+map.get("zokusei_nm");
+                groupColumns += ","+map.get("zokusei_colname");
+            }
+        }
+        Map<String,Object> map = new HashMap<>();
+        map.put("groupHeader",groupHeader);
+        map.put("groupColumns",groupColumns);
+        map.put("data",newRestrictList);
+        return ResultMaps.result(ResultEnum.SUCCESS, map);
     }
 
 

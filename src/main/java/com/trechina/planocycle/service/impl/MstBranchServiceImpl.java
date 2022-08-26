@@ -61,14 +61,20 @@ public class MstBranchServiceImpl implements MstBranchService {
         }else {
                branchList.forEach(map -> map.setBranchCd(map.getCompanyCd() + "_" + map.getBranchCd()));
             groupCd = branchList.get(0).getGroupCd();
+
         }
         String branchInfoTableName = MessageFormat.format("\"{0}\".ten_{1}_ten_info", companyCd,
                 branchList.get(0).getCommonPartsData().getStoreMstClass());
         List<String> groupCompany = classicPriorityOrderCommodityMustMapper.getGroupCompany(groupCd);
         if (groupCompany.isEmpty()) {
-            groupCompany.add("0");
+            groupCompany.add(groupCd);
         }
-        mstBranchMapper.deleteBranch(branchInfoTableName,groupCompany);
+        if (companyCd.equals("1000")){
+            mstBranchMapper.deleteBranch(branchInfoTableName,groupCompany);
+        }else {
+            mstBranchMapper.deleteBranch1(branchInfoTableName);
+        }
+
         mstBranchMapper.setBranchInfo(branchList,branchInfoTableName);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
