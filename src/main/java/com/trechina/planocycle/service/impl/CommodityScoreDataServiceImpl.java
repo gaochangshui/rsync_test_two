@@ -407,12 +407,21 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
        List<String> attrLists= Arrays.asList( attrList.split(","));
        String company = attrLists.get(0).split("_")[0];
        String classCd = attrLists.get(0).split("_")[1];
-       Map<String,Object> map = new HashMap<>();
+
+        List<Map<String,Object>> lists = new ArrayList<>();
         for (String list : attrLists) {
+            Map<String,Object> map = new HashMap<>();
+            String attrNameForId = mstJanMapper.getAttrNameForId(list.split("_")[2], company, classCd);
+            map.put("title",attrNameForId);
+            map.put("id",list);
+            map.put("select","");
+            map.put("value",new Object[]{});
+            map.put("flag",false);
             List<String> attrValueList = mstJanMapper.getAttrValueList(list.split("_")[2], company, classCd);
-            map.put(list.split("_")[2],attrValueList);
+            map.put("option",attrValueList);
+            lists.add(map);
         }
-        return ResultMaps.result(ResultEnum.SUCCESS,map);
+        return ResultMaps.result(ResultEnum.SUCCESS,lists);
     }
 
 

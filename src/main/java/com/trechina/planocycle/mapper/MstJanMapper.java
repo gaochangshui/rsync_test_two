@@ -147,4 +147,6 @@ public interface MstJanMapper {
 
 
     List<String> getAttrValueList(String colName,String company,String classCd);
+
+    String getAttrNameForId(String colName, String company, String classCd);
 }

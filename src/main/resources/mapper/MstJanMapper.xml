@@ -211,7 +211,7 @@
     </select>
     <select id="getAttrValueList" resultType="java.lang.String">
         select distinct "${colName}"
-        from "${company}".prod_${classCd}_jan_info and "${colName}" != ''
+        from "${company}".prod_${classCd}_jan_info where  "${colName}" != ''
         order by "${colName}"
     </select>
 
@@ -336,6 +336,10 @@
 
     <select id="getJanAttrColWK" resultType="java.lang.String">
         select "3" from ${tableName}
+    </select>
+    <select id="getAttrNameForId" resultType="java.lang.String">
+        select distinct "2"
+        from "${company}".prod_${classCd}_jan_attr_header_sys where "3" = '${colName}'
     </select>
 
     <delete id="deleteMultipleJan">
