@@ -12,6 +12,6 @@ public interface PresetParamService {
 
     Map<String, Object> setPresetParamForProduct(PresetAttribute presetAttribute);
 
-    Map<String, Object> getPresetParamForProduct();
+    Map<String, Object> getPresetParamForProduct(PresetAttribute presetAttribute);
 
 }
