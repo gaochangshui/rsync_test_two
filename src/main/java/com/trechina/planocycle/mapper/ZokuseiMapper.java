@@ -11,5 +11,7 @@ public interface ZokuseiMapper {
 
     List<ZokuseiMst> selectZokuseiByCd(String companyCd, String classCd, String zokuseiIds, Integer priorityOrderCd);
 
+    List<ZokuseiMst> selectFinalZokuseiByCd(String companyCd, String classCd, String zokuseiIds, Integer priorityOrderCd);
+
     List<Integer> selectCdHeader(String tableName);
 }
