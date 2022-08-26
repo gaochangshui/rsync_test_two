@@ -10,10 +10,7 @@
   </insert>
   <insert id="insertProductPresetParam">
     insert into planocycle.product_preset_param
-    values
-    <foreach collection="presetParam" separator="," item="item">
-      (#{authorCd},#{item})
-    </foreach>
+    values(#{authorCd},#{presetAttribute.attrData}::json,#{presetAttribute.commonPartsData}::json)
   </insert>
   <delete id="deleteByAuthorCd">
     delete from planocycle.preset_param where author_cd=#{authorCd}
@@ -25,8 +22,8 @@
     select item_cd from planocycle.preset_param
     where author_cd=#{authorCd}
   </select>
-  <select id="getProductPresetParam" resultType="java.lang.String">
-    select item_cd from planocycle.product_preset_param
+  <select id="getProductPresetParam" resultType="com.trechina.planocycle.entity.po.PresetAttribute">
+    select attr_data, common_parts_data from priority.preset_attribute attribute
     where author_cd=#{authorCd}
   </select>
 </mapper>

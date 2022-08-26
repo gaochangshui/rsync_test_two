@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import com.trechina.planocycle.entity.po.PresetAttribute;
 import com.trechina.planocycle.entity.po.PresetParam;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.PresetParamMapper;
@@ -36,18 +37,19 @@ public class PresetParamServiceImpl implements PresetParamService {
     }
 
     @Override
-    public Map<String, Object> setPresetParamForProduct(PresetParam presetParam) {
+    public Map<String, Object> setPresetParamForProduct(PresetAttribute presetAttribute) {
         String authorCd = session.getAttribute("aud").toString();
+
+        String aud = session.getAttribute("aud").toString();
         presetParamMapper.deleteProductPresetParam(authorCd);
-        String presetParams = presetParam.getPresetParam();
-        presetParamMapper.insertProductPresetParam(authorCd, presetParams.split(","));
+        presetParamMapper.insertProductPresetParam(aud, presetAttribute);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     @Override
     public Map<String, Object> getPresetParamForProduct() {
         String authorCd = session.getAttribute("aud").toString();
-        List<String> presetParam = presetParamMapper.getProductPresetParam(authorCd);
-        return ResultMaps.result(ResultEnum.SUCCESS, presetParam.stream().collect(Collectors.joining(",")));
+        PresetAttribute presetParam = presetParamMapper.getProductPresetParam(authorCd);
+        return ResultMaps.result(ResultEnum.SUCCESS,presetParam);
     }
 }
