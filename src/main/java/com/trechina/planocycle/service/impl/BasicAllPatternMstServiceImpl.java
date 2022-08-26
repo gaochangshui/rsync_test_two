@@ -257,7 +257,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         String zokuseiIds = Joiner.on(",").join(attrList);
 
         List<Integer> cdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
-        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokuseiByCd(commonTableName.getProdIsCore(),
+        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectFinalZokuseiByCd(commonTableName.getProdIsCore(),
                 commonTableName.getProdMstClass(), zokuseiIds, priorityOrderCd);
 
         List<ShelfPtsDataTanamst> tanamsts = shelfPtsDataTanamst.selectByPatternCd((long) shelfPatternCd);
