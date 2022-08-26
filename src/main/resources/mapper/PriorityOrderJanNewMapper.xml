@@ -133,6 +133,8 @@
         on prodata.jan = jandata.jan and prodata.product_power_cd = #{productPowerCd}
         left join ${proInfoTable} janinfo
         on janinfo."1" = jandata.jan
+        left join "9999".prod_0000_jan_info janinfo1
+        on janinfo1."1" = jandata.jan
         where ptsdata.shelf_pattern_cd = #{shelfPatternCd,jdbcType=INTEGER}) mst
         where
               <foreach collection="mapAttr" separator=" and " item="item" index="index" >
