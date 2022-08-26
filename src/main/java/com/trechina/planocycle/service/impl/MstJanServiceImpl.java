@@ -116,9 +116,9 @@ public class MstJanServiceImpl implements MstJanService {
         JanParamVO janParamVO = JSON.parseObject(json.getString("janParamVO"),JanParamVO.class);
         String janInfoTable = json.getString("janInfoTable");
         String janInfoTablePlanoCycle = json.getString("janInfoTablePlanoCycle");
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", janParamVO.getCompanyCd(),
+        String tableNameAttr = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
-        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", janParamVO.getCompanyCd(),
+        String tableNameKaisou = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS, janParamVO.getCompanyCd(),
                 janParamVO.getCommonPartsData().getProdMstClass());
         String tableNamePlanoCycle = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS,
                 MagicString.PLANO_CYCLE_COMPANY_CD,MagicString.FIRST_CLASS_CD);
@@ -582,7 +582,7 @@ public class MstJanServiceImpl implements MstJanService {
             commoditySyncSetList = mstCommodityService.getCommodityList(companyCd);
             for (CommoditySyncSet commoditySyncSet : commoditySyncSetList) {
                 prodMstClass = commoditySyncSet.getProdMstClass();
-                syncJanKaisou(companyCd,prodMstClass);
+                syncJanKaisou(companyCd, prodMstClass);
                 tableNameHeader = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
                 tableNameInfo = MessageFormat.format(MagicString.PROD_JAN_INFO, companyCd, prodMstClass);
                 tableNameHeaderWK = MessageFormat.format(MagicString.WK_PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
@@ -590,7 +590,7 @@ public class MstJanServiceImpl implements MstJanService {
                 mstJanMapper.syncJanHeader(tableNameHeader,tableNameHeaderWK);
                 janAttrList = mstJanMapper.getJanAttrColWK(tableNameHeaderWK);
                 column =janAttrList.stream().collect(Collectors.joining(","));
-                deleteMultipleJan(tableNameInfoWK);
+                deleteMultipleJan(companyCd, prodMstClass, tableNameInfoWK);
                 mstJanMapper.syncJanData(tableNameInfo, tableNameInfoWK, column);
             }
         }
@@ -618,7 +618,9 @@ public class MstJanServiceImpl implements MstJanService {
      *
      * @return
      */
-    public void deleteMultipleJan(String tableNameInfoWK) {
-        mstJanMapper.deleteMultipleJan(tableNameInfoWK);
+    public void deleteMultipleJan(String companyCd, String prodMstClass, String tableNameInfoWK) {
+        String tableNameHeaderWK = MessageFormat.format(MagicString.WK_PROD_JAN_KAISOU_HEADER_SYS, companyCd, prodMstClass);
+        List<String> janKaisouCol = mstJanMapper.getJanKaisouColWK(tableNameHeaderWK);
+        mstJanMapper.deleteMultipleJan(janKaisouCol, tableNameInfoWK);
     }
 }
