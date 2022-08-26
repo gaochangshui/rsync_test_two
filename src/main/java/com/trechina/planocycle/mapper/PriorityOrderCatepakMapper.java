@@ -22,7 +22,9 @@ public interface PriorityOrderCatepakMapper {
 
     int insertFinalData(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
-    int setWorkForFinal(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("newPriorityOrderCd")Integer newPriorityOrderCd);
+    int setWorkForFinal(Integer id,@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd,@Param("newPriorityOrderCd")Integer newPriorityOrderCd);
 
     List<Map<String, Object>> getCatePakSimilarity(Integer priorityOrderCd, Map<String, Object> maps);
+
+    Integer getWorkCatepakId();
 }

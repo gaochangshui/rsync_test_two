@@ -85,8 +85,11 @@
   </insert>
   <insert id="setWorkForFinal">
     insert into priority.work_priority_order_catepak(id,company_cd,priority_order_cd,rank,branch_num)
-    select id,company_cd,#{newPriorityOrderCd},rank,branch_num
+    select #{id},company_cd,#{newPriorityOrderCd},rank,branch_num
     from priority.priority_order_catepak
     where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
   </insert>
+  <select id="getWorkCatepakId" resultType="java.lang.Integer">
+    select nextval('priority.priority_order_catepak_id_seq'::regclass)
+  </select>
 </mapper>
