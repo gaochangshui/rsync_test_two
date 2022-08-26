@@ -420,6 +420,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             List<Map<String, Object>> groups = new ArrayList<>();
 
             for (Map<String, Object> itemMap : entry.getValue()) {
+                String groupCd = "";
+                String groupName = "";
                 for (Map<String,Object> zokuseiId : attrCol) {
                     if (itemMap.containsKey(zokuseiId.get("zokusei_colcd"))) {
                         String attrCd = MapUtils.getString(itemMap, zokuseiId.get("zokusei_colcd").toString());
@@ -427,8 +429,17 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                                 , JSON.parseObject(itemMap.get("json").toString()).get(attrCd)==null?"":JSON.parseObject(itemMap.get("json").toString()).get(attrCd));
                     }
                     itemMap.putIfAbsent(zokuseiId.get("zokusei_colname").toString(), "");
+                    if (groupCd.equals("")){
+                        groupCd += itemMap.get(zokuseiId.get("zokusei_colcd").toString());
+                        groupName += itemMap.get(zokuseiId.get("zokusei_colname").toString());
+                    }else {
+                        groupCd +="->"+ itemMap.get(zokuseiId.get("zokusei_colcd").toString());
+                        groupName += "->" + itemMap.get(zokuseiId.get("zokusei_colname").toString());
+                    }
 
                 }
+                itemMap.put("groupCd",groupCd);
+                itemMap.put("groupName",groupName);
                 itemMap.remove("json");
 
                     groups.add(itemMap);
