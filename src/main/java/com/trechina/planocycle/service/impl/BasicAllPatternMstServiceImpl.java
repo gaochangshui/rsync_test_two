@@ -609,16 +609,25 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
         List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
         List<Map<String, Object>> restrictResult = priorityAllRestrictMapper.selectRestrictResult(priorityAllCd, patternCd, authorCd);
-
+        List<Map<String, Object>> newRestrictResult = new ArrayList<>();
         //zokuseiId convert to work_basic_pattern_restrict_result's zokuseiId
         //1,3,5->1,2,3
-        for (PriorityOrderMstAttrSort mstAttrSort : mstAttrSorts) {
-            restrictResult.stream().forEach(map->{
+
+        for (Map<String, Object> map : restrictResult) {
+            Map<String, Object> newHashMap = new HashMap<>();
+            newHashMap.put("shelf_pattern_cd", map.get("shelf_pattern_cd"));
+            newHashMap.put("restrict_cd", map.get("restrict_cd"));
+            newHashMap.put("author_cd", map.get("author_cd"));
+            newHashMap.put("priority_all_cd", map.get("priority_all_cd"));
+            newHashMap.put("company_cd", map.get("company_cd"));
+
+            for (PriorityOrderMstAttrSort mstAttrSort : mstAttrSorts) {
                 String beforeZokuseiId = "zokusei" + (mstAttrSort.getSort() + 1);
                 String val = MapUtils.getString(map, beforeZokuseiId);
-                map.remove(beforeZokuseiId);
-                map.put("zokusei" + (mstAttrSort.getValue()), val);
-            });
+                newHashMap.put("zokusei" + (mstAttrSort.getValue()), val);
+            }
+
+            newRestrictResult.add(newHashMap);
         }
 
         String proMstInfo = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
@@ -627,7 +636,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 commonTableName.getProInfoTable(),zokuseiCol, proMstInfo);
         for (int i = 0; i < zokuseiList.size(); i++) {
             Map<String, Object> zokusei = zokuseiList.get(i);
-            for (Map<String, Object> restrict : restrictResult) {
+            for (Map<String, Object> restrict : newRestrictResult) {
                 int equalsCount = 0;
                 for (Integer integer : attrList) {
                     String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, "");
