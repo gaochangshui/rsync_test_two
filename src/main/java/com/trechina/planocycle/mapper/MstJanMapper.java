@@ -133,5 +133,18 @@ public interface MstJanMapper {
 
     int insertJanSpecialList(List<LinkedHashMap<String, Object>> janData);
 
+    /**
+     * 同期Janコラムを取得
+     * @return
+     */
+    List<String> getJanAttrColWK(String tableName);
+
+    /**
+     * 重複Janを削除
+     * @return
+     */
+    int deleteMultipleJan(String tableName);
+
+
     List<String> getAttrValueList(String colName,String company,String classCd);
 }

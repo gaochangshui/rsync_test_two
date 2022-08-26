@@ -575,7 +575,7 @@ public class MstJanServiceImpl implements MstJanService {
         String tableNameInfo;
         String tableNameHeaderWK;
         String tableNameInfoWK;
-        List<LinkedHashMap<String,Object>> janAttrList;
+        List<String> janAttrList;
         String column;
         for (String companyCd : companyList) {
             mstCommodityService.syncCommodityMaster(companyCd);
@@ -588,10 +588,9 @@ public class MstJanServiceImpl implements MstJanService {
                 tableNameHeaderWK = MessageFormat.format(MagicString.WK_PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
                 tableNameInfoWK = MessageFormat.format(MagicString.WK_PROD_JAN_INFO, companyCd, prodMstClass);
                 mstJanMapper.syncJanHeader(tableNameHeader,tableNameHeaderWK);
-                janAttrList = mstJanMapper.getJanAttrList(tableNameHeader);
-                column =janAttrList.stream()
-                        .filter(e->"3".equals(e.get("11"))).map(e->e.get("3").toString()).collect(Collectors.joining(","));
-                mstJanMapper.syncJanHeader(tableNameHeader,tableNameHeaderWK);
+                janAttrList = mstJanMapper.getJanAttrColWK(tableNameHeaderWK);
+                column =janAttrList.stream().collect(Collectors.joining(","));
+                deleteMultipleJan(tableNameInfoWK);
                 mstJanMapper.syncJanData(tableNameInfo, tableNameInfoWK, column);
             }
         }
@@ -612,5 +611,14 @@ public class MstJanServiceImpl implements MstJanService {
         mstJanMapper.insertKaisou(tableNameHeader, tableNameHeaderWK);
         mstJanMapper.deleteKaisou(tableNameKaisou);
         mstJanMapper.insertKaisou(tableNameKaisou, tableNameKaisouWK);
+    }
+
+    /**
+     * 重複Janを削除
+     *
+     * @return
+     */
+    public void deleteMultipleJan(String tableNameInfoWK) {
+        mstJanMapper.deleteMultipleJan(tableNameInfoWK);
     }
 }
