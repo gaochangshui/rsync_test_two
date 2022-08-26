@@ -130,7 +130,7 @@
                 #{item}
             </foreach>
 
-         and company_cd=#{companyCd} and class_cd=#{classCd}
+         and ((company_cd=#{companyCd} and class_cd=#{classCd}) or (company_cd='9999' and class_cd='0000'))
 
     </select>
     <select id="getzokuseiName" resultType="java.util.Map">

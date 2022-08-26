@@ -143,10 +143,16 @@ public interface MstJanMapper {
      * 重複Janを削除
      * @return
      */
-    int deleteMultipleJan(String tableName);
+    int deleteMultipleJan(List<String> janKaisouCol, String tableNameInfoWK);
 
 
     List<String> getAttrValueList(String colName,String company,String classCd);
 
     String getAttrNameForId(String colName, String company, String classCd);
+
+    /**
+     * Jan階層コラムを取得
+     * @return
+     */
+    List<String>  getJanKaisouColWK(String tableName);
 }

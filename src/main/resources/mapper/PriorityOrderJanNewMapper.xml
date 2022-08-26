@@ -85,7 +85,7 @@
         </foreach>
         ,
         <foreach collection="attrName" separator="," item="item" index="index">
-            "${item.zokusei_col}" as "zokuseiName${item.zokusei_id}"
+            coalesce ("${item.zokusei_col}",'未登録') as "zokuseiName${item.zokusei_id}"
         </foreach>
         ,case when rep.jan_new is not null then 'すでにJAN変商品として入力済みです。'
         when repold.jan_old is not null then 'すでにJAN変商品として入力済みです。'
