@@ -346,6 +346,7 @@ public class MstJanServiceImpl implements MstJanService {
 
     @Override
     public Map<String, Object> setJanListInfo(Map<String, Object> map) {
+       map=  map.entrySet().stream().filter(newMap->!"".equals(newMap.getValue())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         Map<String,Object> commonPartsDto = (Map<String,Object>) map.get(MagicString.COMMON_PARTS_DATA);
 
         String companyCd = "1000";
@@ -404,8 +405,13 @@ public class MstJanServiceImpl implements MstJanService {
         List<String> janInfoCol = mstJanMapper.getJanInfoCol();
         LinkedHashMap<String,Object> janInfoData= setInfoMap.entrySet().stream().filter(infoMap->!janInfoCol.contains(infoMap.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,(k1,k2)->k1,LinkedHashMap ::new));
         LinkedHashMap<String,Object> janSpecialData= setInfoMap.entrySet().stream().filter(Special->janInfoCol.contains(Special.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,(k1,k2)->k1,LinkedHashMap ::new));
-        mstJanMapper.setJanInfo(janInfoData,jan,janInfoTableName);
-        mstJanMapper.setJanSpecial(janSpecialData,jan);
+        if (!janInfoData.isEmpty()) {
+            mstJanMapper.setJanInfo(janInfoData, jan, janInfoTableName);
+        }
+
+        if (!janSpecialData.isEmpty()) {
+            mstJanMapper.setJanSpecial(janSpecialData, jan);
+        }
 
         List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, commonPartsDto.get(MagicString.PROD_MST_CLASS).toString());
         LinkedHashMap<String,Object> maps = new LinkedHashMap<>();

@@ -15,7 +15,7 @@ public interface PresetParamMapper {
 
     void insertProductPresetParam(String authorCd, PresetAttribute presetAttribute);
 
-    PresetAttribute getProductPresetParam(String authorCd);
+    PresetAttribute getProductPresetParam(String authorCd,PresetAttribute presetAttribute);
 
-    void deleteProductPresetParam(String authorCd);
+    void deleteProductPresetParam(String authorCd,PresetAttribute presetAttribute);
 }

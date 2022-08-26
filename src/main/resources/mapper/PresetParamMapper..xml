@@ -16,14 +16,14 @@
     delete from planocycle.preset_param where author_cd=#{authorCd}
   </delete>
   <delete id="deleteProductPresetParam">
-    delete from planocycle.product_preset_param where author_cd=#{authorCd}
+    delete from planocycle.product_preset_param where author_cd=#{authorCd} and jsonb_eq(common_parts_data ::jsonb, '${presetAttribute.commonPartsData}' ::jsonb)
   </delete>
   <select id="getPresetParam" resultType="string">
     select item_cd from planocycle.preset_param
     where author_cd=#{authorCd}
   </select>
   <select id="getProductPresetParam" resultType="com.trechina.planocycle.entity.po.PresetAttribute">
-    select attr_data, common_parts_data from priority.preset_attribute attribute
-    where author_cd=#{authorCd}
+    select attr_data, common_parts_data from planocycle.product_preset_param attribute
+    where author_cd=#{authorCd} and jsonb_eq(common_parts_data ::jsonb, '${presetAttribute.commonPartsData}' ::jsonb)
   </select>
 </mapper>

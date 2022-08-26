@@ -41,15 +41,15 @@ public class PresetParamServiceImpl implements PresetParamService {
         String authorCd = session.getAttribute("aud").toString();
 
         String aud = session.getAttribute("aud").toString();
-        presetParamMapper.deleteProductPresetParam(authorCd);
+        presetParamMapper.deleteProductPresetParam(authorCd,presetAttribute);
         presetParamMapper.insertProductPresetParam(aud, presetAttribute);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     @Override
-    public Map<String, Object> getPresetParamForProduct() {
+    public Map<String, Object> getPresetParamForProduct(PresetAttribute presetAttribute) {
         String authorCd = session.getAttribute("aud").toString();
-        PresetAttribute presetParam = presetParamMapper.getProductPresetParam(authorCd);
+        PresetAttribute presetParam = presetParamMapper.getProductPresetParam(authorCd,presetAttribute);
         return ResultMaps.result(ResultEnum.SUCCESS,presetParam);
     }
 }
