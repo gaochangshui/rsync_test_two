@@ -295,7 +295,7 @@
         )
         values (#{jan}
         <foreach collection="list" item="item">
-            ,#{item}
+           "${item}"
         </foreach>
         )
         on conflict("1")
