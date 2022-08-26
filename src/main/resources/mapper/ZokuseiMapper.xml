@@ -19,12 +19,11 @@
   </sql>
 
   <select id="selectZokusei" resultType="com.trechina.planocycle.entity.po.ZokuseiMst">
-    select zokusei_id,zokusei_col, case when "3" is null then zokusei_col :: integer else (zokusei_col :: INTEGER+1) end as zokuseiSort
+    select zokusei_id,zokusei_col, case when COALESCE(kaisou."3",attr."3") is null then zokusei_col :: integer else (zokusei_col :: INTEGER+1) end as zokuseiSort
            from masterdb.planocycle_zokusei_mst zokuseimst
-                  left join "${companyCd}".prod_${classCd}_jan_kaisou_header_sys kaisou
-                            on kaisou."3" = trim(zokuseimst.zokusei_col :: VARCHAR)
-    where
-    company_cd=#{companyCd} and class_cd=#{classCd} and zokusei_id::varchar=any(string_to_array(#{zokuseiIds}, ','))
+                  left join "${companyCd}".prod_${classCd}_jan_kaisou_header_sys kaisou on kaisou."3" = trim(zokuseimst.zokusei_col :: VARCHAR)
+                left join "9999".prod_0000_jan_attr_header_sys attr on attr."3" = trim(zokuseimst.zokusei_col :: VARCHAR)
+    where concat(company_cd, '_', class_cd) in (concat(#{companyCd}, '_', #{classCd}), '9999_0000') and zokusei_id::varchar=any(string_to_array(#{zokuseiIds}, ','))
   </select>
   <select id="selectZokuseiByCd" resultType="com.trechina.planocycle.entity.po.ZokuseiMst">
     select (attrsort.sort+1) as zokusei_id,zokusei_col, case when COALESCE(kaisou."3",attr."3") is null then zokusei_col :: integer else (zokusei_col :: INTEGER+1) end as zokuseiSort

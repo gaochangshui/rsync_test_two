@@ -193,15 +193,17 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             s = s + ",plano_width,plano_height,plano_depth";
             ptsDetailData.setJanColumns(s);
             ptsDetailData.setTanaHeader(ptsDetailData.getTanaHeader()+","+"備考");
+
+            String proTableName = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
+
             List<PtsTaiVo> newTaiData = priorityAllPtsMapper.getTaiData(id);
             List<PtsTanaVo> newTanaData = priorityAllPtsMapper.getTanaData(id);
-            List<LinkedHashMap> newJanData = priorityAllPtsMapper.getJanData(id,attrCol,commonTableName.getProInfoTable(),janSizeCol);
+            List<LinkedHashMap> newJanData = priorityAllPtsMapper.getJanData(id,attrCol,commonTableName.getProInfoTable(),janSizeCol, proTableName);
 
 
             //既存台、棚、商品データ
             List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(patternCd);
             List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(patternCd);
-            String proTableName = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
             List<LinkedHashMap> janData = shelfPtsDataMapper.getJanData(patternCd,attrCol,commonTableName.getProInfoTable(),janSizeCol, proTableName);
             //棚、商品の変更チェック
             //棚変更：高さ変更
