@@ -12,6 +12,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,14 +42,18 @@ public class SysConfigServiceImpl implements SysConfigService {
         Integer colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd,prodMstClass);
         if (colNum != null){
             List<Map<String, String>> janUnit = sysConfigMapper.selectByPrefix("jan_unit_");
-            Map<Integer, String> janUnitMap = new HashMap<>();
+            List<Map<String, Object>> janUnitList = new ArrayList<>();
+            Map<String, Object> itemJanUnit = null;
             for (Map<String, String> s : janUnit) {
+                itemJanUnit = new HashMap<>();
                 String itemName = MapUtils.getString(s, "item_name");
                 String[] sArray = itemName.split("_");
-                janUnitMap.put(Integer.parseInt(sArray[sArray.length-1]), MapUtils.getString(s, "item_value"));
+                itemJanUnit.put("label", MapUtils.getString(s, "item_value"));
+                itemJanUnit.put("value", Integer.parseInt(sArray[sArray.length-1]));
+                janUnitList.add(itemJanUnit);
             }
             resultMap.put("showJanSkuFlag", 1);
-            resultMap.put("janUnit", janUnitMap);
+            resultMap.put("janUnit", janUnitList);
         }else {
             resultMap.put("showJanSkuFlag", 0);
         }
