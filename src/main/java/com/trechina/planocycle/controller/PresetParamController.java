@@ -21,4 +21,17 @@ public class PresetParamController {
     public Map<String, Object> getPresetParam(){
         return presetParamService.getPresetParam();
     }
+
+
+    @PostMapping("/setPresetParamForProduct")
+    public Map<String, Object> setPresetParamForProduct(@RequestBody PresetParam presetParam){
+        return presetParamService.setPresetParamForProduct(presetParam);
+    }
+
+
+    @GetMapping("/getPresetParamForProduct")
+    public Map<String, Object> getPresetParamForProduct(){
+        return presetParamService.getPresetParamForProduct();
+    }
+
 }

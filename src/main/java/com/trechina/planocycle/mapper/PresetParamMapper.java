@@ -11,4 +11,10 @@ public interface PresetParamMapper {
     int deleteByAuthorCd(String authorCd);
 
     List<String> getPresetParam(String authorCd);
+
+    void insertProductPresetParam(String authorCd, String[] presetParam);
+
+    List<String> getProductPresetParam(String authorCd);
+
+    void deleteProductPresetParam(String authorCd);
 }

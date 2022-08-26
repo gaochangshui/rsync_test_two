@@ -95,7 +95,7 @@
     </foreach>
   </select>
   <select id="getAttrDistinct" resultType="java.util.Map">
-    select DISTINCT coalesce (result.zokusei${zokuseiSortCd},'') as "${colCd}",coalesce ( nm, '未登録' ) as "${colName}",
+    select DISTINCT coalesce (result.zokusei${zokuseiSortCd},'') as "${colCd}",coalesce ( nm, '未登録' ) as "zokuseiName${attr}",
     round(sum(relation.area*tana_width)/${width},2) as area,coalesce ( mst.zokusei_nm, '' ) as "classifyName"
     from planocycle.work_basic_pattern_restrict_result result
            inner join planocycle.work_basic_pattern_restrict_relation relation

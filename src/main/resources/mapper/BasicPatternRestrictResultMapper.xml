@@ -437,7 +437,7 @@
         select face_count as "faceNum",coalesce(jan_new, jandata.jan) "janCd"
         ,
         <foreach collection="attrName" separator="," item="item" index="index">
-            coalesce ("${item.zokusei_col}",'未登録') as "${item.zokusei_colname}"
+           case when coalesce ("${item.zokusei_col}",'未登録') = '' then '未登録' else coalesce ("${item.zokusei_col}",'未登録') end as "${item.zokusei_colname}"
         </foreach>
         <foreach collection="attrList" item="item1" open="," separator=",">
             <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'未登録')</if>
@@ -518,7 +518,7 @@
     <select id="getGroupOld" resultType="java.util.Map">
         select
         <foreach collection="attrList" item="item" separator=",">
-            coalesce ("zokusei${item.sort}",'') as "${item.zokusei_colcd}"
+            coalesce ("zokusei${item.sort}",'未登録') as "${item.zokusei_colcd}"
         </foreach>
         from planocycle.work_basic_pattern_restrict_result
         where priority_order_cd = #{priorityOrderCd} and restrict_cd = #{restrictCd}
@@ -526,7 +526,7 @@
     <select id="selectGroup" resultType="map">
         select
         <foreach collection="list" separator="," item="item">
-            coalesce ("zokusei${item.sort}",'') as "${item.zokusei_colcd}"
+            case when coalesce ("zokusei${item.sort}",'未登録') = '' then '未登録' else coalesce ("zokusei${item.sort}",'未登録') end  as "${item.zokusei_colcd}"
         </foreach>
         ,restrict_cd
         from planocycle.work_basic_pattern_restrict_result
@@ -538,7 +538,7 @@
          face_kaiten  as "faceKaiten",
           tumiagesu  as "tumiagesu",
         <foreach collection="attrName" separator="," item="item" index="index">
-            coalesce ("${item.zokusei_col}",'未登録') as "${item.zokusei_colname}"
+           case  when coalesce ("${item.zokusei_col}",'未登録') = '' then '未登録' else coalesce ("${item.zokusei_col}",'未登録') end as "${item.zokusei_colname}"
         </foreach>
         <foreach collection="attrList" item="item1" open="," separator=",">
             <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'未登録')</if>
@@ -585,7 +585,7 @@
         select face_count as "faceNum",coalesce(jan_new, jandata.jan) "janCd"
         ,
         <foreach collection="attrName" separator="," item="item" index="index">
-            coalesce ("${item.zokusei_col}",'未登録') as "${item.zokusei_colname}"
+            case when coalesce ("${item.zokusei_col}",'未登録') = '' then '未登録' else coalesce ("${item.zokusei_col}",'未登録') end as "${item.zokusei_colname}"
         </foreach>
         <foreach collection="attrList" item="item1" open="," separator=",">
             <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'未登録')</if>

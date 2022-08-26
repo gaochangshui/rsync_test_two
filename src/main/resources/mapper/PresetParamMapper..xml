@@ -8,11 +8,25 @@
       (#{authorCd},#{item})
     </foreach>
   </insert>
+  <insert id="insertProductPresetParam">
+    insert into planocycle.product_preset_param
+    values
+    <foreach collection="presetParam" separator="," item="item">
+      (#{authorCd},#{item})
+    </foreach>
+  </insert>
   <delete id="deleteByAuthorCd">
     delete from planocycle.preset_param where author_cd=#{authorCd}
   </delete>
+  <delete id="deleteProductPresetParam">
+    delete from planocycle.product_preset_param where author_cd=#{authorCd}
+  </delete>
   <select id="getPresetParam" resultType="string">
     select item_cd from planocycle.preset_param
+    where author_cd=#{authorCd}
+  </select>
+  <select id="getProductPresetParam" resultType="java.lang.String">
+    select item_cd from planocycle.product_preset_param
     where author_cd=#{authorCd}
   </select>
 </mapper>

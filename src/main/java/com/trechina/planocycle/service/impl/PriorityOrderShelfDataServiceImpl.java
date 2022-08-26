@@ -112,7 +112,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             map.put("skuNum",sku);
             list.add(map);
         }
-        list= list.stream().sorted(Comparator.comparing(map7->MapUtils.getInteger(map7,"restrictCd"))).collect(Collectors.toList());
+        list= list.stream().sorted(Comparator.comparing(map7->MapUtils.getInteger(map7,"restrictCd",99))).collect(Collectors.toList());
         mapHeader.put("group",list);
         return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
     }

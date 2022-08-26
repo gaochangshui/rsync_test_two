@@ -34,4 +34,20 @@ public class PresetParamServiceImpl implements PresetParamService {
         List<String> presetParam = presetParamMapper.getPresetParam(authorCd);
         return ResultMaps.result(ResultEnum.SUCCESS, presetParam.stream().collect(Collectors.joining(",")));
     }
+
+    @Override
+    public Map<String, Object> setPresetParamForProduct(PresetParam presetParam) {
+        String authorCd = session.getAttribute("aud").toString();
+        presetParamMapper.deleteProductPresetParam(authorCd);
+        String presetParams = presetParam.getPresetParam();
+        presetParamMapper.insertProductPresetParam(authorCd, presetParams.split(","));
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public Map<String, Object> getPresetParamForProduct() {
+        String authorCd = session.getAttribute("aud").toString();
+        List<String> presetParam = presetParamMapper.getProductPresetParam(authorCd);
+        return ResultMaps.result(ResultEnum.SUCCESS, presetParam.stream().collect(Collectors.joining(",")));
+    }
 }
