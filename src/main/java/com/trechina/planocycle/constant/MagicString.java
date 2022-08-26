@@ -181,4 +181,6 @@ public class MagicString {
     public static final String MSG_UNIDENTIFIED_COLUMN="識別されていない列があります、修正してください。";
     public static final String MSG_ABNORMALITY_DATA="データ異常がありますので、ご確認ください。\n❊列数が合わない、空行、文字数制限";
     public static final String MSG_UPLOAD_SUCCESS="件のデータを取込成功しました。";
+
+    public static final String DEFAULT_VALUE = "未登録";
 }

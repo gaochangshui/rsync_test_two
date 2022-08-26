@@ -25,10 +25,10 @@
             </if>
             <if test="cdList[cdList.size-1]&lt;item.zokuseiCol">
                 <if test="item.zokuseiCol > 103">
-                    COALESCE(janpromst."${item.zokuseiCol}", '')
+                    COALESCE(janpromst."${item.zokuseiCol}", '未登録')
                 </if>
                 <if test="item.zokuseiCol &lt; 103">
-                    COALESCE(janinfo."${item.zokuseiCol}", '')
+                    COALESCE(janinfo."${item.zokuseiCol}", '未登録')
                 </if>
             </if>
             as "${item.zokuseiId}"
