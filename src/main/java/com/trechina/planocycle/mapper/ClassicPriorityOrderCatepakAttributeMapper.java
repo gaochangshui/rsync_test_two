@@ -19,7 +19,7 @@ public interface ClassicPriorityOrderCatepakAttributeMapper {
 
     int insertFinalData(String companyCd, Integer priorityOrderCd);
 
-    int setWorkForFinal(String companyCd, Integer priorityOrderCd,Integer newPriorityOrderCd);
+    int setWorkForFinal(String companyCd, Integer priorityOrderCd,Integer newPriorityOrderCd, Integer workCatepakId);
 
     List<PriorityOrderCatePakVO> selectFinalByPrimaryKey(List<Integer> rankAttrList, String companyCd, Integer priorityOrderCd);
 }

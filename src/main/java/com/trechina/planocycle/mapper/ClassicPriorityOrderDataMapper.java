@@ -46,6 +46,7 @@ public interface ClassicPriorityOrderDataMapper {
     String selectPriorityAttrCd(String company, Integer priorityNO);
 
     List<Map<String, Object>> selectPriorityAttrName(String tableNameAttr,String isCompanyCd,String prodIsCore);
+    List<Map<String, Object>> selectSpecialName(String tableNameAttr,String isCompanyCd,String prodIsCore);
 
     String selectPriorityAttrValue(String company, Integer priorityNO);
 
