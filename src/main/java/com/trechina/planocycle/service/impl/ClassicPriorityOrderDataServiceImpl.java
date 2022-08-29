@@ -500,9 +500,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         map.put("rank","Rank");
         map.put("rank_prop","Rank");
         map.put("rank_upd","Rank");
-        List<String> attrSortList = classicPriorityOrderMstAttrSortMapper.getAttrSortList(companyCd, priorityOrderCd);
-        List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, priorityOrderCd);
-        List<Map<String,Object>> allAttrList = classicPriorityOrderMstAttrSortMapper.getAllAttrList(companyCd, priorityOrderCd);
+        List<String> attrSortList = classicPriorityOrderMstAttrSortMapper.getAttrSortList(companyCd, newPriorityOrderCd);
+        List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, newPriorityOrderCd);
+        List<Map<String,Object>> allAttrList = classicPriorityOrderMstAttrSortMapper.getAllAttrList(companyCd, newPriorityOrderCd);
         for (Map<String, Object> stringObjectMap : allAttrList) {
             map.put(stringObjectMap.get("sort").toString(),stringObjectMap.get("name"));
         }

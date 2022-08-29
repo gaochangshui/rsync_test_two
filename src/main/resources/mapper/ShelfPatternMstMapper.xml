@@ -46,7 +46,8 @@
 
   <select id="selectByPrimaryKey" parameterType="map" resultType="com.trechina.planocycle.entity.po.ShelfPatternMst">
     select
-      shelf.company_cd,shelf.shelf_name_cd,shelf.ptskey, name.shelf_name as shelfName, shelf.shelf_pattern_cd, shelf.shelf_pattern_name, shelf.create_time, shelf.author_cd,
+      shelf.company_cd,shelf.shelf_name_cd,shelf.ptskey as "ptsRelationID", name.shelf_name as shelfName, shelf.shelf_pattern_cd
+           , shelf.shelf_pattern_name, shelf.create_time, shelf.author_cd,
       shelf.registered, shelf.maintainer_cd, shelf.modified,shelf.modified,string_agg(branch.branch, ',') as storeCdStr,shelf.common_parts_data
     from planocycle.shelf_pattern_mst shelf
     left join planocycle.shelf_name_mst name

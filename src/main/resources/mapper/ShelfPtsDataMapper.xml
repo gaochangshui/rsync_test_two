@@ -318,7 +318,12 @@
       </if>
     </foreach>
     <foreach collection="janSizeCol" item="item">
-      ,coalesce (janproinfo."${item.infoCol}",'') as "${item.colCd}"
+      <if test="item.colCd == 'plano_height'">
+        ,coalesce (janproinfo."${item.infoCol}" ::integer,240) as "${item.colCd}"
+      </if>
+      <if test="item.colCd != 'plano_height'">
+        ,coalesce (janproinfo."${item.infoCol}" ::integer,67) as "${item.colCd}"
+      </if>
     </foreach>
     ,janinfo."2" as "janName"
     from
@@ -730,7 +735,12 @@
           </if>
         </foreach>
     <foreach collection="janSizeCol" item="item">
-      ,coalesce (janproinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
+      <if test="item.colCd == 'plano_height'">
+        ,coalesce (janproinfo."${item.infoCol}" ::integer,240) as "${item.colCd}"
+      </if>
+      <if test="item.colCd != 'plano_height'">
+        ,coalesce (janproinfo."${item.infoCol}" ::integer,67) as "${item.colCd}"
+      </if>
     </foreach>
     ,janinfo."2" as "janName"
     from

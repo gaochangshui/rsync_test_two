@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Joiner;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
@@ -185,8 +186,10 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             map.put("seasonStTime","_");
         }
         String uuid1 = UUID.randomUUID().toString();
-
+        String attrCondition =  this.attrList(map);
+        map.put("attrCondition",attrCondition);
         String company_kokigyou = planocycleKigyoListMapper.getGroupInfo(companyCd);
+
         //グループ企業かどうかを判断する
         if (company_kokigyou!=null){
             map.put("company_kokigyou",company_kokigyou);
@@ -339,6 +342,38 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         logger.info("taskId返回：{}", result);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
+    }
+
+    private String attrList(Map<String,Object> map) {
+        String finalValue = "";
+        String tableNameAttr;
+        List list = (ArrayList) map.get("prodAttrData");
+
+        if (!list.isEmpty()){
+            for (Object o : list) {
+                Map<String,Object> proMap = (Map<String, Object>) o;
+                List value = (List)proMap.get("value");
+                if (!value.isEmpty()){
+                    String id = proMap.get("id").toString().split("_")[2];
+                    String join = Joiner.on("|").join(value);
+                    Boolean flag = (Boolean) proMap.get("flag");
+                    String eq = flag ? "!~":"~";
+                    if (finalValue.equals("")){
+                        finalValue += "$"+id+eq+"/"+join+"/ ";
+                    }else {
+                        finalValue +="&& $"+id+eq+"/"+join+"/ ";
+                    }
+
+                }
+            }
+        }
+        if (finalValue.equals("")){
+            tableNameAttr = "false";
+        }else {
+            tableNameAttr = MessageFormat.format("awk {0}","'"+finalValue+"'");
+
+        }
+        return tableNameAttr;
     }
 
     /**
