@@ -197,7 +197,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     if(key.length()>0){
                         key.append(",");
                     }
-                    key.append(MapUtils.getString(janMap, zokusei+""));
+                    key.append(MapUtils.getString(janMap, zokusei+"", MagicString.DEFAULT_VALUE));
                 }
 
                 if(lastKey.equals(key.toString()) && (i+1)==jans.size()){
@@ -268,7 +268,11 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 if(classifyId.length()>0){
                     classifyId.append(",");
                 }
-                classifyId.append(MapUtils.getString(map, id+""));
+                if(MapUtils.getString(map, "mstExist").equals("0")){
+                    classifyId.append("_");
+                }else{
+                    classifyId.append(MapUtils.getString(map, id+"", MagicString.DEFAULT_VALUE));
+                }
             }
 
             if (!classify.containsKey(classifyId.toString())) {
@@ -277,7 +281,11 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     Method method = null;
                     try {
                         method = result.getClass().getMethod("setZokusei" + zokusei, String.class);
-                        method.invoke(result, MapUtils.getString(map, zokusei+""));
+                        if(MapUtils.getString(map, "mstExist").equals("0")){
+                            method.invoke(result, "_");
+                        }else{
+                            method.invoke(result, MapUtils.getString(map, zokusei+"", MagicString.DEFAULT_VALUE));
+                        }
                     } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
@@ -425,8 +433,12 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 for (Map<String,Object> zokuseiId : attrCol) {
                     if (itemMap.containsKey(zokuseiId.get("zokusei_colcd"))) {
                         String attrCd = MapUtils.getString(itemMap, zokuseiId.get("zokusei_colcd").toString());
-                        itemMap.put(zokuseiId.get("zokusei_colname").toString()
-                                , JSON.parseObject(itemMap.get("json").toString()).get(attrCd)==null?"":JSON.parseObject(itemMap.get("json").toString()).get(attrCd));
+                        if(itemMap.containsKey("json") && itemMap.get("json")!=null){
+                            itemMap.put(zokuseiId.get("zokusei_colname").toString()
+                                    , JSON.parseObject(itemMap.get("json").toString()).get(attrCd)==null?"":JSON.parseObject(itemMap.get("json").toString()).get(attrCd));
+                        }else{
+                            itemMap.put(zokuseiId.get("zokusei_colname").toString(), "_");
+                        }
                     }
                     itemMap.putIfAbsent(zokuseiId.get("zokusei_colname").toString(), "");
                     if (groupCd.equals("")){
@@ -441,10 +453,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 itemMap.put("groupCd",groupCd);
                 itemMap.put("groupName",groupName);
                 itemMap.remove("json");
-
-                    groups.add(itemMap);
-
                 itemMap.put("tanaPosition", MapUtils.getString(itemMap, "areaPosition"));
+                groups.add(itemMap);
                 resultMap.put("groups", groups);
             }
 
