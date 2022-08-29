@@ -69,8 +69,11 @@
     </select>
     <select id="getJanInfoList" resultType="java.util.LinkedHashMap">
         select
-            a."1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"
-               , "100", "101", "102", "103", b."104",b."105",b."106",b."107",b."108",b."109",b."110"
+            a."1", a."2",
+               <foreach collection="janInfoHeader" item="item">
+                   "${item}",
+               </foreach>
+               b."104",b."105",b."106",b."107",b."108",b."109",b."110"
              , b."201", b."202", b."203", b."204", b."205", b."206",
             b."207", b."208", b."209", b."210", b."211", b."212", b."213", b."214", b."215", b."216", b."217", b."218", b."219"
                , b."220", b."221", b."222", b."223", b."224", b."225", b."226", b."227", b."228", b."229", b."230"
@@ -91,7 +94,7 @@
     order by "4"
     </select>
     <select id="getJanKaisouList" resultType="java.util.LinkedHashMap">
-        select "1","2","3","4" from ${tableName} where "4" is not null and "1" like '%_name' and "1" not in ('jan_name') order by "4"
+        select "1","2","3","4" from ${tableName} where "4" is not null and "1" like '%_name' and "1" not in ('jan_name') order by "4" :: integer
     </select>
 
     <!--"{0}".prod_{1}_jan_info  -->
@@ -293,9 +296,9 @@
             ,"${index}"
         </foreach>
         )
-        values (#{jan}
-        <foreach collection="list" item="item">
-           "${item}"
+        values (#{jan},
+        <foreach collection="list" item="item" separator=",">
+           #{item}
         </foreach>
         )
         on conflict("1")
@@ -364,6 +367,11 @@
 
     <select id="getJanKaisouColWK" resultType="java.lang.String">
         select "3" from ${tableName} where "1" like '%_cd' order by "3"
+    </select>
+    <select id="getJanInfoHeader" resultType="java.lang.String">
+        select "3" from ${tableNameAttr} where "3" not in ('1','2')
+        union
+        select "3" from ${tableNameKaisou} where "3" not in ('1','2')
     </select>
 
 </mapper>

@@ -44,7 +44,7 @@ public interface MstJanMapper {
                                                    @Param("janInfoTablePlanoCycle") String janInfoTablePlanoCycle,
                                                    @Param("column") String column);
 
-    LinkedHashMap<String,Object> getJanInfoList(@Param("tableName")String janInfoTableName, @Param("jan") String jan);
+    LinkedHashMap<String,Object> getJanInfoList(@Param("tableName")String janInfoTableName, @Param("jan") String jan,@Param("janInfoHeader")List<String> janInfoHeader);
 
     List<LinkedHashMap<String,Object>> getJanAttrList(@Param("tableName")String tableNameAttr);
 
@@ -155,4 +155,6 @@ public interface MstJanMapper {
      * @return
      */
     List<String>  getJanKaisouColWK(String tableName);
+
+    List<String> getJanInfoHeader(String tableNameAttr, String tableNameKaisou);
 }

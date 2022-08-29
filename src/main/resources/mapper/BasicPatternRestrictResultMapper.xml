@@ -454,12 +454,7 @@
         ,jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",resultdata.sort_rank as rank,tanaposition_cd as "tanapositionCd",
         "2" as "janName"
         <foreach collection="janSizeCol" item="item">
-            <if test="item.colCd == 'plano_height'">
-                ,coalesce (janinfo1."${item.infoCol}" ::integer,240) as "${item.colCd}"
-            </if>
-            <if test="item.colCd != 'plano_height'">
-                ,coalesce (janinfo1."${item.infoCol}" ::integer,67) as "${item.colCd}"
-            </if>
+                ,coalesce (janinfo1."${item.infoCol}" ::integer,0) as "${item.colCd}"
         </foreach>
         from ${tableName} jandata
         left join planocycle.work_priority_order_jan_replace replace
@@ -561,12 +556,7 @@
         ,resultdata.sort_rank as rank,
         "2" as "janName"
         <foreach collection="janSizeCol" item="item">
-            <if test="item.colCd == 'plano_height'">
-                ,coalesce (janinfo1."${item.infoCol}" ::integer,240) as "${item.colCd}"
-            </if>
-            <if test="item.colCd != 'plano_height'">
-                ,coalesce (janinfo1."${item.infoCol}" ::integer,67) as "${item.colCd}"
-            </if>
+                ,coalesce (janinfo1."${item.infoCol}" ::integer,0) as "${item.colCd}"
         </foreach>
         ,case when replace.jan_new is not null then '新規(JAN変)'
             when jannew.jan_new is not null then '新規'
@@ -612,12 +602,7 @@
         ,jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",'' as rank,tanaposition_cd as "tanapositionCd",
         "2" as "janName"
         <foreach collection="janSizeCol" item="item">
-            <if test="item.colCd == 'plano_height'">
-                ,coalesce (janinfo1."${item.infoCol}" ::integer,240) as "${item.colCd}"
-            </if>
-            <if test="item.colCd != 'plano_height'">
-                ,coalesce (janinfo1."${item.infoCol}" ::integer,67) as "${item.colCd}"
-            </if>
+                ,coalesce (janinfo1."${item.infoCol}" ::integer,0) as "${item.colCd}"
         </foreach>
         from ${tableName} jandata
         left join planocycle.work_priority_order_jan_replace replace
