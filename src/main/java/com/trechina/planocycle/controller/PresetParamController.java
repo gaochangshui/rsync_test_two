@@ -30,9 +30,9 @@ public class PresetParamController {
     }
 
 
-    @GetMapping("/getPresetParamForProduct")
-    public Map<String, Object> getPresetParamForProduct(){
-        return presetParamService.getPresetParamForProduct();
+    @PostMapping("/getPresetParamForProduct")
+    public Map<String, Object> getPresetParamForProduct(@RequestBody PresetAttribute presetAttribute){
+        return presetParamService.getPresetParamForProduct(presetAttribute);
     }
 
 }

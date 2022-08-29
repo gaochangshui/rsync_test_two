@@ -279,9 +279,23 @@ public class MstJanServiceImpl implements MstJanService {
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup2) {
             Map<String,Object> janAttrInfo = new HashMap<>();
             janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
-            janAttrInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
-            janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("value",stringObjectLinkedHashMap.get("1"));
+            switch (stringObjectLinkedHashMap.get("1").toString()){
+                case "plano_height":
+                    janAttrInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),"240"):"240");
+                    janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),"240"):"240");
+                    break;
+                case "plano_irisu":
+                    janAttrInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),"1"):"1");
+                    janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),"1"):"1");
+                    break;
+                case "plano_width":
+                case "plano_depth":
+                    janAttrInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),"67"):"67");
+                    janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),"67"):"67");
+                    break;
+            }
+
             if (stringObjectLinkedHashMap.get("13").equals("0")) {
                 janAttrInfo.put("type","number");
             }else {

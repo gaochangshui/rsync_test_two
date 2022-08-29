@@ -1,3 +1,9 @@
-20220826 13:37:21.731  [http-nio-8383-exec-4] INFO  org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/].log():173 - Initializing Spring DispatcherServlet 'dispatcherServlet'
-20220826 13:37:21.734  [http-nio-8383-exec-4] INFO  org.springframework.web.servlet.DispatcherServlet.initServletBean():525 - Initializing Servlet 'dispatcherServlet'
-20220826 13:37:21.736  [http-nio-8383-exec-4] INFO  org.springframework.web.servlet.DispatcherServlet.initServletBean():547 - Completed initialization in 1 ms
+20220829 10:52:04.438  [http-nio-8383-exec-3] INFO  org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/].log():173 - Initializing Spring DispatcherServlet 'dispatcherServlet'
+20220829 10:52:04.442  [http-nio-8383-exec-3] INFO  org.springframework.web.servlet.DispatcherServlet.initServletBean():525 - Initializing Servlet 'dispatcherServlet'
+20220829 10:52:04.444  [http-nio-8383-exec-3] INFO  org.springframework.web.servlet.DispatcherServlet.initServletBean():547 - Completed initialization in 2 ms
+20220829 10:52:04.507  [http-nio-8383-exec-3] INFO  com.zaxxer.hikari.HikariDataSource.getConnection():110 - DatebookHikariCP - Starting...
+20220829 10:52:04.674  [http-nio-8383-exec-2] INFO  com.trechina.planocycle.service.impl.UserServiceImpl.getUserCd():22 - 登録した社員番号：10215814
+20220829 10:52:05.213  [http-nio-8383-exec-3] INFO  com.zaxxer.hikari.HikariDataSource.getConnection():123 - DatebookHikariCP - Start completed.
+20220829 10:52:05.408  [http-nio-8383-exec-1] INFO  com.trechina.planocycle.service.impl.CommodityScoreMasterServiceImpl.getEnterpriseInfo():73 - つかむ取企業信息：[{F1=0001, F2=トライアル, F3=0001, F4=トライアル, F5=1}, {F1=gpt111, F2=ライフグループ, F3=0002, F4=ライフ関東, F5=0}, {F1=gpt111, F2=ライフグループ, F3=0003, F4=ライフ関西, F5=0}]
+20220829 10:52:29.972  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
+20220829 10:52:29.978  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.
