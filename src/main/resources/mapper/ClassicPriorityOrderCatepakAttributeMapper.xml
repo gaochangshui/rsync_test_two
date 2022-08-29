@@ -50,7 +50,7 @@
   </insert>
   <insert id="setWorkForFinal">
     insert into priority.work_priority_order_catepak_attribute(company_cd,priority_order_cd,attr_cd,attr_value,flg,catepak_cd)
-    select company_cd,#{newPriorityOrderCd},attr_cd,attr_value,flg,catepak_cd
+    select company_cd,#{newPriorityOrderCd},attr_cd,attr_value,flg,#{workCatepakId}
     from priority.priority_order_catepak_attribute
     where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
   </insert>

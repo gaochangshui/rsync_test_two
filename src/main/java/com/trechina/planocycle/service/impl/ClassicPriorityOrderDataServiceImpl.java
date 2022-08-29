@@ -467,7 +467,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             priorityOrderCatepakMapper.setWorkForFinal(workCatepakId, companyCd, priorityOrderCd,newPriorityOrderCd);
 
             priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd, newPriorityOrderCd);
-            priorityOrderCatepakAttributeMapper.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
+            priorityOrderCatepakAttributeMapper.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd, workCatepakId);
 
             priorityOrderMapper.delete(newPriorityOrderCd);
             priorityOrderMapper.insertWork(companyCd, priorityOrderCd,newPriorityOrderCd);
