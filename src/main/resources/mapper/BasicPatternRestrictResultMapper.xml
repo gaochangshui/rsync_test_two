@@ -65,7 +65,7 @@
         select
         <include refid="Base_Column_List" />
         from planocycle.work_basic_pattern_restrict_result
-        where priority_order_cd=#{priorityOrderCd}
+        where priority_order_cd=#{priorityOrderCd} and restrict_cd!=9999
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
