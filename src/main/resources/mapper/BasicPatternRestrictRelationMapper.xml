@@ -35,8 +35,8 @@
         group by tai_cd, tana_cd, restrict_cd) relation on tanamst.tai_cd = relation.tai_cd and tanamst.tana_cd = relation.tana_cd
         left join
              (select restrict_cd<foreach collection="attrCol" open="," close="," item="item" separator=",">"zokusei${item.sort}"</foreach>
-               json_object_agg ( val, nm ) json from planocycle.work_basic_pattern_restrict_result result
-        INNER JOIN masterdb.planocycle_zokusei_mst_data zokuseidata ON concat(zokuseidata.company_cd, '_',zokuseidata.class_cd)
+               json_object_agg (COALESCE(val, '_'), COALESCE(nm, '_')) json from planocycle.work_basic_pattern_restrict_result result
+        left JOIN masterdb.planocycle_zokusei_mst_data zokuseidata ON concat(zokuseidata.company_cd, '_',zokuseidata.class_cd)
         in( concat(#{companyCd}, '_',#{classCd}), '9999_0000')
         <foreach collection="attrCol" item="item" open="and (" separator="or" close=")" > val=result."zokusei${item.sort}"</foreach>
         where priority_order_cd = #{priorityOrderCd}  group by restrict_cd

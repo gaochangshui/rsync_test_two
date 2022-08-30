@@ -413,23 +413,24 @@
             <foreach collection="attrList" item="item1" open="," separator=",">
                 <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">
                     <if test="item1.zokuseiCol>103">
-                        janproinfo."${item1.zokuseiCol}"
+                        case when janinfo."1" is not null then janproinfo."${item1.zokuseiCol}" else '_' end
                     </if>
                     <if test="item1.zokuseiCol&lt;=103">
-                        janinfo."${item1.zokuseiCol}"
+                        case when janinfo."1" is not null then janinfo."${item1.zokuseiCol}" else '_' end
                     </if>
                 </if>
                 <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
+                    case when janinfo."1" is not null then
                     <foreach collection="allCdList" item="item2" separator="|| '_' ||">
                         <if test="item2 &lt;= item1.zokuseiCol">
-                            "${item2}"
+                             "${item2}"
                         </if>
-                    </foreach>
+                    </foreach> else '_' end
                 </if>
                 as "zokusei${item1.zokuseiId}"
             </foreach>
         from planocycle.shelf_pts_data_jandata jandata
-        inner join ${proInfoTable} janinfo on  janinfo."1"=jandata.jan
+        left join ${proInfoTable} janinfo on  janinfo."1"=jandata.jan
         left join ${proMstInfo} janproinfo on janinfo."1"=janproinfo."1"
         where pts_cd=#{ptsCd}
     </select>
