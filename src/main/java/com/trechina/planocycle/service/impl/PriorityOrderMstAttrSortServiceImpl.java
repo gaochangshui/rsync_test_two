@@ -107,6 +107,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         Integer width = Integer.parseInt(newTanaWidth.get("width").toString());
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         logger.info("开始：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+        Map<String,Object> map = new HashMap<>();
         List list = new ArrayList();
         for (int j = 0; j  < attrCol.size(); j++) {
             String prodMstClass = commonTableName.getProdMstClass();
@@ -120,8 +121,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             }
             list.add(attrDistinct);
         }
+        List<String> attrName = attrCol.stream().map(attrMap -> MapUtils.getString(attrMap,"zokusei_colname")).collect(Collectors.toList());
+        map.put("data",list);
+        map.put("attrName",attrName);
         logger.info("结束：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-        return ResultMaps.result(ResultEnum.SUCCESS,list);
+        return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
 
@@ -150,11 +154,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                 for (int i = 0; i < attrCol.size(); i++) {
 
                     String sort = attrSortList.get(i);
-                    if (objectMap.getOrDefault("zokusei"+sort, "未登録").equals(map.get("val"))){
-                        newObjectMap.put(attrCol.get(i).get("zokusei_colname").toString(),map.getOrDefault("nm","未登録"));
+                    if (objectMap.get("zokusei"+sort ).equals(map.get("val"))){
+                        newObjectMap.put(attrCol.get(i).get("zokusei_colname").toString(),map.get("nm"));
                     }
                     newObjectMap.put(attrCol.get(i).get("zokusei_colcd").toString(), objectMap.get("zokusei"+sort));
-                    newObjectMap.putIfAbsent(attrCol.get(i).get("zokusei_colname").toString(),"未登録");
+                    newObjectMap.putIfAbsent(attrCol.get(i).get("zokusei_colname").toString(),objectMap.get("zokusei"+sort));
                 }
             }
             newRestrictList.add(newObjectMap);

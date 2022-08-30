@@ -73,7 +73,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         Map<String, List<Map<String, Object>>> listMap = ptsGroup.stream().collect(Collectors.groupingBy(map -> {
             String attrKey = "";
             for (Map<String,Object> col : attrCol) {
-                    attrKey += map.get("zokusei" + col.get("zokusei_col"));
+                    attrKey += map.get( col.get("zokusei_colcd"));
             }
 
             return attrKey;
@@ -83,10 +83,10 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         String janColumns = "";
         for (Map<String,Object> col : attrCol) {
             if (colHeader.equals("")) {
-                janColumns +=  col.get("zokusei_colcd");
+                janColumns +=  col.get("zokusei_colname");
                 colHeader +=col.get("zokusei_nm");
             }else {
-                janColumns += "," + col.get("zokusei_colcd");
+                janColumns += "," + col.get("zokusei_colname");
                 colHeader +=","+col.get("zokusei_nm");
             }
         }
@@ -99,7 +99,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : listMap.entrySet()) {
             Map<String,Object> map = new HashMap<>();
             for (Map<String,Object> col : attrCol) {
-                map.put( col.get("zokusei_colcd").toString(),stringListEntry.getValue().get(0).getOrDefault(col.get("zokusei_colname"),""));
+                map.put( col.get("zokusei_colname").toString(),stringListEntry.getValue().get(0).getOrDefault(col.get("zokusei_colname"),""));
             }
 
             map.put("restrictCd",stringListEntry.getValue().get(0).get("restrictCd"));

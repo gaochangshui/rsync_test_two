@@ -65,7 +65,7 @@
         select
         <include refid="Base_Column_List" />
         from planocycle.work_basic_pattern_restrict_result
-        where priority_order_cd=#{priorityOrderCd}
+        where priority_order_cd=#{priorityOrderCd} and restrict_cd!=9999
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
@@ -435,25 +435,25 @@
         where pts_cd=#{ptsCd}
     </select>
     <select id="selectNewJanZokusei" resultType="java.util.Map">
-        select face_count as "faceNum",coalesce(jan_new, jandata.jan) "janCd"
-        ,
+        select face_count as "faceNum",coalesce(jan_new, jandata.jan) "janCd",
         <foreach collection="attrName" separator="," item="item" index="index">
-           case when coalesce ("${item.zokusei_col}",'未登録') = '' then '未登録' else coalesce ("${item.zokusei_col}",'未登録') end as "${item.zokusei_colname}"
+           case when coalesce (case when janinfo."1" is not null then "${item.zokusei_col}" else '_' end,'未登録') = '' then '未登録' else
+            coalesce (case when janinfo."1" is not null then "${item.zokusei_col}" else '_' end,'未登録') end as "${item.zokusei_colname}"
         </foreach>
         <foreach collection="attrList" item="item1" open="," separator=",">
-            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'未登録')</if>
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">
+                coalesce (case when janinfo."1" is not null then "${item1.zokuseiCol}" else '_' end,'未登録')</if>
             <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
-                <foreach collection="allCdList" item="item2" separator="|| '_' ||">
+                coalesce (case when janinfo."1" is not null then <foreach collection="allCdList" item="item2" separator="|| '_' ||">
                     <if test="item2 &lt;= item1.zokuseiCol">
-                       coalesce ("${item2}",'未登録')
+                       "${item2}"
                     </if>
-                </foreach>
+                </foreach> else '_' end,'未登録')
             </if>
             as "zokusei${item1.zokuseiSort}"
         </foreach>
-
         ,jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",resultdata.sort_rank as rank,tanaposition_cd as "tanapositionCd",
-        "2" as "janName"
+        case when janinfo."1" is not null then "2" else '_' end as "janName"
         <foreach collection="janSizeCol" item="item">
                 ,coalesce (janinfo1."${item.infoCol}" ::integer,0) as "${item.colCd}"
         </foreach>
@@ -462,7 +462,7 @@
         on replace.priority_order_cd=#{priorityOrderCd} and jan_new=jandata.jan
         left join planocycle.work_priority_order_result_data resultdata
             on resultdata.priority_order_cd=#{priorityOrderCd} and jandata.jan =resultdata.jan_cd
-        inner join ${proInfoTable} janinfo on  janinfo."1"=coalesce(jan_old, jandata.jan)
+        left join ${proInfoTable} janinfo on  janinfo."1"=coalesce(jan_old, jandata.jan)
         left join "9999".prod_0000_jan_info janinfo1 on  janinfo1."1"=coalesce(jan_old, jandata.jan)
         left join planocycle.product_power_mst_data prodata
         on prodata.jan = coalesce(jan_old, jandata.jan) and prodata.product_power_cd = #{productPowerCd}
@@ -539,23 +539,25 @@
          face_kaiten  as "faceKaiten",
           tumiagesu  as "tumiagesu",
         <foreach collection="attrName" separator="," item="item" index="index">
-           case  when coalesce ("${item.zokusei_col}",'未登録') = '' then '未登録' else coalesce ("${item.zokusei_col}",'未登録') end as "${item.zokusei_colname}"
+            case when coalesce (case when janinfo."1" is not null then "${item.zokusei_col}" else '_' end,'未登録') = '' then '未登録' else
+            coalesce (case when janinfo."1" is not null then "${item.zokusei_col}" else '_' end,'未登録') end as "${item.zokusei_colname}"
         </foreach>
         <foreach collection="attrList" item="item1" open="," separator=",">
-            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'未登録')</if>
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">
+                coalesce (case when janinfo."1" is not null then "${item1.zokuseiCol}" else '_' end,'未登録')</if>
             <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
-                <foreach collection="allCdList" item="item2" separator="|| '_' ||">
-                    <if test="item2 &lt;= item1.zokuseiCol">
-                        coalesce ("${item2}",'未登録')
-                    </if>
-                </foreach>
+                coalesce (case when janinfo."1" is not null then <foreach collection="allCdList" item="item2" separator="|| '_' ||">
+                <if test="item2 &lt;= item1.zokuseiCol">
+                    "${item2}"
+                </if>
+            </foreach> else '_' end,'未登録')
             </if>
             as "zokusei${item1.zokuseiSort}"
         </foreach>
         ,coalesce(replace.jan_new, resultdata.jan_cd) "janCd"
         ,jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",jandata.tanaposition_cd as "tanapositionCd"
         ,resultdata.sort_rank as rank,
-        "2" as "janName"
+        case when janinfo."1" is not null then "2" else '_' end as "janName"
         <foreach collection="janSizeCol" item="item">
                 ,coalesce (janinfo1."${item.infoCol}" ::integer,0) as "${item.colCd}"
         </foreach>
@@ -573,7 +575,7 @@
         and not EXISTS (SELECT jan_new from planocycle.work_priority_order_jan_replace where priority_order_cd = jannew.priority_order_cd and jannew.jan_new = jan_new)
         left join planocycle.work_priority_order_cut cut
             on cut.jan_cd = resultdata.jan_cd and cut.priority_order_cd=#{priorityOrderCd}
-        inner join ${proInfoTable} janinfo on  janinfo."1"=coalesce(replace.jan_old, resultdata.jan_cd)
+        left join ${proInfoTable} janinfo on  janinfo."1"=coalesce(replace.jan_old, resultdata.jan_cd)
         left join "9999".prod_0000_jan_info janinfo1 on janinfo1."1" = coalesce ( replace.jan_old, resultdata.jan_cd )
         where resultdata.priority_order_cd = #{priorityOrderCd}
     order by
@@ -586,22 +588,24 @@
         select face_count as "faceNum",coalesce(jan_new, jandata.jan) "janCd"
         ,
         <foreach collection="attrName" separator="," item="item" index="index">
-            case when coalesce ("${item.zokusei_col}",'未登録') = '' then '未登録' else coalesce ("${item.zokusei_col}",'未登録') end as "${item.zokusei_colname}"
+            case when coalesce (case when janinfo."1" is not null then "${item.zokusei_col}" else '_' end,'未登録') = '' then '未登録' else
+            coalesce (case when janinfo."1" is not null then "${item.zokusei_col}" else '_' end,'未登録') end as "${item.zokusei_colname}"
         </foreach>
         <foreach collection="attrList" item="item1" open="," separator=",">
-            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">coalesce ("${item1.zokuseiCol}",'未登録')</if>
+            <if test="item1.zokuseiCol > (allCdList[allCdList.size-1])">
+                coalesce (case when janinfo."1" is not null then "${item1.zokuseiCol}" else '_' end,'未登録')</if>
             <if test="item1.zokuseiCol &lt;= (allCdList[allCdList.size-1])">
-                <foreach collection="allCdList" item="item2" separator="|| '_' ||">
-                    <if test="item2 &lt;= item1.zokuseiCol">
-                        coalesce ("${item2}",'未登録')
-                    </if>
-                </foreach>
+                coalesce (case when janinfo."1" is not null then <foreach collection="allCdList" item="item2" separator="|| '_' ||">
+                <if test="item2 &lt;= item1.zokuseiCol">
+                    "${item2}"
+                </if>
+            </foreach> else '_' end,'未登録')
             </if>
             as "zokusei${item1.zokuseiSort}"
         </foreach>
 
         ,jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",'' as rank,tanaposition_cd as "tanapositionCd",
-        "2" as "janName"
+        case when janinfo."1" is not null then "2" else '_' end as "janName"
         <foreach collection="janSizeCol" item="item">
                 ,coalesce (janinfo1."${item.infoCol}" ::integer,0) as "${item.colCd}"
         </foreach>
@@ -610,7 +614,7 @@
         on replace.priority_order_cd=#{priorityOrderCd} and jan_new=jandata.jan
         left join planocycle.work_priority_order_result_data resultdata
         on resultdata.priority_order_cd=#{priorityOrderCd} and jandata.jan =resultdata.jan_cd
-        inner join ${proInfoTable} janinfo on  janinfo."1"=coalesce(jan_old, jandata.jan)
+        left join ${proInfoTable} janinfo on  janinfo."1"=coalesce(jan_old, jandata.jan)
         left join "9999".prod_0000_jan_info janinfo1 on janinfo1."1" = coalesce ( jan_old, jandata.jan )
         left join planocycle.product_power_mst_data prodata
         on prodata.jan = coalesce(jan_old, jandata.jan) and prodata.product_power_cd = #{productPowerCd}

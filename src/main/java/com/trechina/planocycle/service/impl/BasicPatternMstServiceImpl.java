@@ -2,7 +2,9 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ser.impl.StringArraySerializer;
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -197,7 +199,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     if(key.length()>0){
                         key.append(",");
                     }
-                    key.append(MapUtils.getString(janMap, zokusei+"", MagicString.DEFAULT_VALUE));
+                    String val = MapUtils.getString(janMap, zokusei + "", MagicString.DEFAULT_VALUE);
+                    key.append(Strings.isNullOrEmpty(val)?MagicString.DEFAULT_VALUE: val);
                 }
 
                 if(lastKey.equals(key.toString()) && (i+1)==jans.size()){
@@ -271,7 +274,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 if(MapUtils.getString(map, "mstExist").equals("0")){
                     classifyId.append("_");
                 }else{
-                    classifyId.append(MapUtils.getString(map, id+"", MagicString.DEFAULT_VALUE));
+                    String val = MapUtils.getString(map, id + "", MagicString.DEFAULT_VALUE);
+                    classifyId.append(Strings.isNullOrEmpty(val)?MagicString.DEFAULT_VALUE:val);
                 }
             }
 
@@ -284,7 +288,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                         if(MapUtils.getString(map, "mstExist").equals("0")){
                             method.invoke(result, "_");
                         }else{
-                            method.invoke(result, MapUtils.getString(map, zokusei+"", MagicString.DEFAULT_VALUE));
+                            String val = MapUtils.getString(map, zokusei+"", MagicString.DEFAULT_VALUE);
+                            method.invoke(result, Strings.isNullOrEmpty(val)?MagicString.DEFAULT_VALUE:val);
                         }
                     } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                         throw new RuntimeException(e);
@@ -759,8 +764,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             for (Map<String, Object> restrict : restrictResult) {
                 int equalsCount = 0;
                 for (Integer integer : attrList) {
-                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
-                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
+                    String restrictKeyVal = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
+                    String restrictKey = Strings.isNullOrEmpty(restrictKeyVal)?MagicString.DEFAULT_VALUE:restrictKeyVal;
+                    String zokuseiKeyVal = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
+                    String zokuseiKey = Strings.isNullOrEmpty(zokuseiKeyVal)?MagicString.DEFAULT_VALUE: zokuseiKeyVal;
 
                     if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
                         equalsCount++;

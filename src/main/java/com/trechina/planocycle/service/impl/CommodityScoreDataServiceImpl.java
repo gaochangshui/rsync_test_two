@@ -191,7 +191,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         map.put("attrCondition",attrCondition);
         //map.remove("prodAttrData");
         String company_kokigyou = planocycleKigyoListMapper.getGroupInfo(companyCd);
-
+        if (map.get("prdCd").equals("")) {
+            map.put("prdCd",null);
+        }
         //グループ企業かどうかを判断する
         if (company_kokigyou!=null){
             map.put("company_kokigyou",company_kokigyou);
@@ -288,7 +290,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             }
                             break;
                         }
-
                     }
             logger.info("pos结束时间：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
                     if (map1.get("data")!=null) {
@@ -371,7 +372,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             }
         }
 
-        return finalValue.equals("")?"false":finalValue;
+        return finalValue.equals("")?null:finalValue;
     }
 
     /**
