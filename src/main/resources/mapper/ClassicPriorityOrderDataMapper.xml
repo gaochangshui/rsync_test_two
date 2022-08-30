@@ -681,6 +681,7 @@
         select "2" as label ,concat( '9999' ,'_', '0000' ,'_', "3") as value,3 as attr_type,"11" as type
         FROM "9999".prod_0000_jan_attr_header_sys
         where "4" is not null and "1" not in ('jan_cd','jan_name','description','sync','update_time','updater','product_shape')
+        and "11" = '6'
         order by "4"::integer
     </select>
 </mapper>
