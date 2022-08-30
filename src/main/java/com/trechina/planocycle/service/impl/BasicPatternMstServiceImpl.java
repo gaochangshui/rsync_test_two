@@ -402,7 +402,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
     @Override
     public Map<String, Object> getAttrDisplay(String companyCd, Integer priorityOrderCd) {
-        List<PriorityOrderMstAttrSort> priorityOrderMstAttrSorts = priorityOrderMstAttrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
 
         String aud = session.getAttribute("aud").toString();
         WorkPriorityOrderMst priorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, aud,priorityOrderCd);
