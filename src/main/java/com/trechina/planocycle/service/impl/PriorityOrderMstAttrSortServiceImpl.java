@@ -107,6 +107,7 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         Integer width = Integer.parseInt(newTanaWidth.get("width").toString());
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         logger.info("开始：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+        Map<String,Object> map = new HashMap<>();
         List list = new ArrayList();
         for (int j = 0; j  < attrCol.size(); j++) {
             String prodMstClass = commonTableName.getProdMstClass();
@@ -120,8 +121,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             }
             list.add(attrDistinct);
         }
+        List<String> attrName = attrCol.stream().map(attrMap -> MapUtils.getString(attrMap,"zokusei_colname")).collect(Collectors.toList());
+        map.put("data",list);
+        map.put("attrName",attrName);
         logger.info("结束：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-        return ResultMaps.result(ResultEnum.SUCCESS,list);
+        return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
 
