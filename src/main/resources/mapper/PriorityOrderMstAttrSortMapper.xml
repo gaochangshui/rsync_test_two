@@ -96,21 +96,18 @@
   </select>
   <select id="getAttrDistinct" resultType="java.util.Map">
     select DISTINCT coalesce (result.zokusei${zokuseiSortCd},'') as "${colCd}",coalesce ( nm, '未登録' ) as "zokuseiName${attr}",
-    round(sum(relation.area*tana_width)/${width},2) as area,coalesce ( mst.zokusei_nm, '' ) as "classifyName"
+    round(sum(relation.area*tana_width)/${width},2) as area,#{classifyName} as "classifyName"
     from planocycle.work_basic_pattern_restrict_result result
            inner join planocycle.work_basic_pattern_restrict_relation relation
                       on relation.restrict_cd = result.restrict_cd
                         and result.priority_order_cd = relation.priority_order_cd
            left join masterdb.planocycle_zokusei_mst_data mstdata
-        on coalesce (zokusei${zokuseiSortCd},'') = coalesce ( val, '' )
-      and concat(mstdata.company_cd, '_', mstdata.class_cd) in (concat(#{companyCd}, '_', #{classCd}), '9999_0000')
-           inner join masterdb.planocycle_zokusei_mst mst on
-          concat(mst.company_cd, '_', mst.class_cd) in (concat(#{companyCd}, '_', #{classCd}), '9999_0000')
-        and mst.zokusei_id = #{attr} ::integer
+        on coalesce (zokusei${zokuseiSortCd},'') = coalesce ( val, '')
+      and concat(mstdata.company_cd, '_', mstdata.class_cd) in (concat(#{companyCd}, '_', #{classCd}), '9999_0000') and mstdata.zokusei_id = #{attr} ::integer
            left join planocycle.work_priority_order_pts_data_tanamst tanamst
                      on tanamst.pts_cd =#{id} and tanamst.tai_cd = relation.tai_cd and tanamst.tana_cd = relation.tana_cd
         where result.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
-        group by coalesce (result.zokusei${zokuseiSortCd},''),coalesce ( nm, '未登録' ),coalesce ( mst.zokusei_nm, '' )
+        group by coalesce (result.zokusei${zokuseiSortCd},''),coalesce ( nm, '未登録' )
   </select>
   <select id="getColNmforMst" resultType="java.lang.String">
     select case when attrinfo."3" is null then (zokusei_col::INTEGER)+1 else zokusei_col ::INTEGER end  as "attrSort"

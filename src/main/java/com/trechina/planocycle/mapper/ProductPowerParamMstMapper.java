@@ -27,11 +27,11 @@ public interface ProductPowerParamMstMapper {
     int deleteParam(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
     int insertParam(@Param("item") ProductPowerParam productPowerParam, @Param("customerCondition") String customerCondition, @Param("authorCd") String authorCd
-    ,@Param("newProductPowerCd")Integer newProductPowerCd);
+    ,@Param("newProductPowerCd")Integer newProductPowerCd,@Param("prodAttrData")String prodAttrData);
 
     ProductPowerParam getParam(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
-    void setWork(@Param("item") Map<String, Object> map,@Param("authorCd") String authorCd,@Param("customerCondition") String customerCondition);
+    void setWork(@Param("item") Map<String, Object> map,@Param("authorCd") String authorCd,@Param("customerCondition") String customerCondition,@Param("prodAttrData")String prodAttrData);
 
     void deleteWork(String companyCd, Integer productPowerCd);
 

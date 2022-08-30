@@ -172,8 +172,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerMstMapper.setWork(productPowerCd,companyCd,authorCd,simpleDateFormat.format(date));
         //param
         String customerConditionStr = map.get("customerCondition").toString();
+        String prodAttrData = map.get("prodAttrData").toString();
         productPowerParamMstMapper.deleteWork(companyCd,productPowerCd);
-        productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr);
+        productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr,prodAttrData);
         if (paramCount >0){
             map.put("changeFlag","1");
         }else {
@@ -188,7 +189,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String uuid1 = UUID.randomUUID().toString();
         String attrCondition =  this.attrList(map);
         map.put("attrCondition",attrCondition);
-        map.remove("prodAttrData");
+        //map.remove("prodAttrData");
         String company_kokigyou = planocycleKigyoListMapper.getGroupInfo(companyCd);
 
         //グループ企業かどうかを判断する
