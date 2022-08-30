@@ -199,7 +199,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     if(key.length()>0){
                         key.append(",");
                     }
-                    key.append(MapUtils.getString(janMap, zokusei+"", MagicString.DEFAULT_VALUE));
+                    String val = MapUtils.getString(janMap, zokusei + "", MagicString.DEFAULT_VALUE);
+                    key.append(Strings.isNullOrEmpty(val)?MagicString.DEFAULT_VALUE: val);
                 }
 
                 if(lastKey.equals(key.toString()) && (i+1)==jans.size()){
