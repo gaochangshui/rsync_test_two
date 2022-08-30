@@ -81,7 +81,14 @@
         val,zokusei_id,type,nm,company_cd,class_cd)
         values
         <foreach collection="maps" item="item" separator="," >
-            (#{item.zokusei_nm},#{item.zokusei_id},0,#{item.zokusei_nm},#{companyCd},#{classCd})
+               <choose>
+                   <when test="item.zokusei_id >=104">
+                       (#{item.zokusei_nm},#{item.zokusei_id},0,#{item.zokusei_nm},'9999','0000')
+                   </when>
+                   <otherwise>
+                       (#{item.zokusei_nm},#{item.zokusei_id},0,#{item.zokusei_nm},#{companyCd},#{classCd})
+                   </otherwise>
+               </choose>
         </foreach>
 
         on conflict(zokusei_id,val,company_cd,class_cd)

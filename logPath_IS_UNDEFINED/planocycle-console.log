@@ -52,3 +52,6 @@
 20220830 09:50:17.172  [http-nio-8383-exec-4] INFO  com.trechina.planocycle.service.impl.PriorityOrderMstAttrSortServiceImpl.getAttributeList():123 - 结束：2022/08/30 09:50:17
 20220830 09:52:16.904  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
 20220830 09:52:16.908  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.
+20220830 10:41:07.432  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=2m30s144ms66µs600ns).
+20220830 10:41:09.862  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
+20220830 10:41:09.868  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.

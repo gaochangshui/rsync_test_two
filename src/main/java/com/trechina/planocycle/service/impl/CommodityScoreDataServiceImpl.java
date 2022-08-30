@@ -191,7 +191,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         map.put("attrCondition",attrCondition);
         //map.remove("prodAttrData");
         String company_kokigyou = planocycleKigyoListMapper.getGroupInfo(companyCd);
-
+        if (map.get("prdCd").equals("")) {
+            map.put("prdCd",null);
+        }
         //グループ企業かどうかを判断する
         if (company_kokigyou!=null){
             map.put("company_kokigyou",company_kokigyou);

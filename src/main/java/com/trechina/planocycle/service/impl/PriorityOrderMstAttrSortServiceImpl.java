@@ -154,11 +154,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                 for (int i = 0; i < attrCol.size(); i++) {
 
                     String sort = attrSortList.get(i);
-                    if (objectMap.getOrDefault("zokusei"+sort, "未登録").equals(map.get("val"))){
-                        newObjectMap.put(attrCol.get(i).get("zokusei_colname").toString(),map.getOrDefault("nm","未登録"));
+                    if (objectMap.get("zokusei"+sort ).equals(map.get("val"))){
+                        newObjectMap.put(attrCol.get(i).get("zokusei_colname").toString(),map.get("nm"));
                     }
                     newObjectMap.put(attrCol.get(i).get("zokusei_colcd").toString(), objectMap.get("zokusei"+sort));
-                    newObjectMap.putIfAbsent(attrCol.get(i).get("zokusei_colname").toString(),"未登録");
+                    newObjectMap.putIfAbsent(attrCol.get(i).get("zokusei_colname").toString(),objectMap.get("zokusei"+sort));
                 }
             }
             newRestrictList.add(newObjectMap);
