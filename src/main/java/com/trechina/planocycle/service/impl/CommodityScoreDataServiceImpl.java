@@ -288,7 +288,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             }
                             break;
                         }
-
                     }
             logger.info("pos结束时间：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
                     if (map1.get("data")!=null) {
@@ -371,7 +370,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             }
         }
 
-        return finalValue.equals("")?"false":finalValue;
+        return finalValue.equals("")?null:finalValue;
     }
 
     /**

@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
@@ -210,6 +211,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerParamMstMapper.setWorkForFinal(companyCd,productPowerNo,newProductPowerCd);
 
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
+        List<Map<String, Object>> commodityNotList = new Gson().fromJson(param.getProdAttrData().toString(), new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
+        param.setProdAttrData(commodityNotList);
         List<String> cdList = new ArrayList<>();
          cdList.addAll(Arrays.asList(param.getProject().split(",")));
         List<String> yobi = productPowerDataMapper.getYobi(companyCd, productPowerNo, aud);
@@ -241,9 +244,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
         List<LinkedHashMap<String, Object>> returnDataAttr = new ArrayList<>();
-        ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, newProductPowerCd);
-        //List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
-        //List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
         List<LinkedHashMap<String, Object>> allDataAttr = productPowerDataMapper.getAllDataAttr(companyCd, productPowerNo
                 , cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName);
         colMap.put("branchNum","定番店舗数");
@@ -283,6 +283,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setJanName2colNum(param.getJanName2colNum());
         powerParam.setProductPowerNo(newProductPowerCd);
         powerParam.setCompany(companyCd);
+        powerParam.setProdAttrData(param.getProdAttrData());
         List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(productPowerNo, companyCd);
         List<Object> dataAll = new ArrayList();
         dataAll.add(returnDataAttr);
