@@ -1204,7 +1204,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
             for (Map<String, Object> ptsDataJandata : newPtsJanList) {
                 List<String> janData = Lists.newArrayList(MapUtils.getInteger(ptsDataJandata, MagicString.TAI_CD) + "",
-                        MapUtils.getInteger(ptsDataJandata,"tana_cd") + "", MapUtils.getInteger(ptsDataJandata,MagicString.TANAPOSITION_CD) + "", ptsDataJandata.get("jan") + "",
+                        MapUtils.getInteger(ptsDataJandata,MagicString.TANA_CD) + "", MapUtils.getInteger(ptsDataJandata,MagicString.TANA_POSITION_CD) + "", ptsDataJandata.get("jan") + "",
                         MapUtils.getInteger(ptsDataJandata,"face_count",1)+ "",
                         MapUtils.getInteger(ptsDataJandata,"face_men", 1)+ "",
                         MapUtils.getInteger(ptsDataJandata,"face_kaiten", 0) + "",
