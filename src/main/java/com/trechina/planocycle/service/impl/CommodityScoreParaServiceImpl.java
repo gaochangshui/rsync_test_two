@@ -141,7 +141,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
 
         productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
-        productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd,newProductPowerCd);
+        productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd,newProductPowerCd,productPowerParam.getProdAttrData().toString());
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

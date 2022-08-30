@@ -23,5 +23,6 @@ public class ProductPowerParamVo {
     private String placeNm;
     private String channelNm;
     private Integer janName2colNum;
+    private Object prodAttrData;
 
 }

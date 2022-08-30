@@ -57,8 +57,14 @@
             val,zokusei_id,type,nm,company_cd,class_cd)
         values
             <foreach collection="maps" item="item" index="index" separator="," >
-               
-                (#{item},#{index} :: integer,0,#{item},#{companyCd},#{classCd})
+               <choose>
+                   <when test="index >= 104">
+                       (#{item},${index},0,#{item},'9999','0000')
+                   </when>
+                   <otherwise>
+                       (#{item},#{index} :: integer,0,#{item},#{companyCd},#{classCd})
+                   </otherwise>
+               </choose>
             </foreach>
 
         on conflict(zokusei_id,val,company_cd,class_cd)
