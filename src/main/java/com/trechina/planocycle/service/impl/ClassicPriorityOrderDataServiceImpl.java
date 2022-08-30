@@ -194,7 +194,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", s1[0], s1[1]);
                 String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", s1[0], s1[1]);
 
-                String colName = priorityOrderDataMapper.getColName(tableNameAttr, tableNameKaisou, s1[2]);
+                String colName = priorityOrderDataMapper.getColName(tableNameAttr, tableNameKaisou, s1[2],s1[0]);
                 mapColHeader.put("attr"+i,colName);
                 listTableName.put("\""+s1[0]+s1[1]+"\"",tableNameInfo);
                 i++;

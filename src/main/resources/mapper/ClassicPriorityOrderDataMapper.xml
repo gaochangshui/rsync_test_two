@@ -607,9 +607,12 @@
         </foreach>
     </select>
     <select id="getColName" resultType="java.lang.String">
-        select "2" from (select "1","2","3" from ${tableNameKaisou}
-                       union
-                       select "1","2","3" from	${tableNameAttr}
+        select "2" from (
+            <if test="company !='9999'">
+                select "1","2","3" from ${tableNameKaisou}
+                union
+            </if>
+              select "1","2","3" from	${tableNameAttr}
                       ) as t1
         where t1."3" = #{colName}
     </select>

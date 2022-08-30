@@ -104,7 +104,7 @@ public interface ClassicPriorityOrderDataMapper {
 
     List<Map<String, Object>> selectDynamicAttr(String[] jans, List<AttrHeaderSysDto> attrTableList, String coreTableName, String janCdCol, String janNameCol);
 
-    String getColName(String tableNameAttr, String tableNameKaisou,String colName);
+    String getColName(String tableNameAttr, String tableNameKaisou,String colName,String company);
 
     int deleteWorkData(String companyCd,Integer priorityOrderCd);
 

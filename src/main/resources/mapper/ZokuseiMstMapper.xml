@@ -57,6 +57,7 @@
             val,zokusei_id,type,nm,company_cd,class_cd)
         values
             <foreach collection="maps" item="item" index="index" separator="," >
+               
                 (#{item},#{index} :: integer,0,#{item},#{companyCd},#{classCd})
             </foreach>
 

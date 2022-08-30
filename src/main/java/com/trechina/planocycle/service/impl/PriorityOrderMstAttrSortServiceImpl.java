@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -98,7 +99,6 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
     public Map<String, Object> getAttributeList(PriorityOrderAttrDto priorityOrderAttrDto) {
         String companyCd = priorityOrderAttrDto.getCompanyCd();
         Integer priorityOrderCd = priorityOrderAttrDto.getPriorityOrderCd();
-        List<String> attrList = priorityOrderMstAttrSortMapper.getAttrList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
         List<String> attrSortList = priorityOrderMstAttrSortMapper.getAttrSortList(priorityOrderAttrDto.getCompanyCd(), priorityOrderAttrDto.getPriorityOrderCd());
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(priorityOrderAttrDto.getCommonPartsData(), priorityOrderAttrDto.getCompanyCd());
         List<String> mainColor = priorityOrderColorMapper.getMainColor();
@@ -106,20 +106,21 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         Integer id = Integer.parseInt(newTanaWidth.get("id").toString());
         Integer width = Integer.parseInt(newTanaWidth.get("width").toString());
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+        logger.info("开始：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
         List list = new ArrayList();
         for (int j = 0; j  < attrCol.size(); j++) {
             String prodMstClass = commonTableName.getProdMstClass();
             String prodIsCore = commonTableName.getProdIsCore();
-
-
             List<Map<String, Object>> attrDistinct = priorityOrderMstAttrSortMapper.getAttrDistinct(Integer.parseInt(attrCol.get(j).get("value").toString())<104?prodMstClass:"0000"
-                    ,Integer.parseInt(attrCol.get(j).get("value").toString())<104? prodIsCore :"9999",priorityOrderAttrDto.getPriorityOrderCd(),attrCol.get(j).get("value").toString() ,id,width, attrSortList.get(j)
-                    ,attrCol.get(j).get("zokusei_colname").toString(),attrCol.get(j).get("zokusei_colcd").toString());
+                    ,Integer.parseInt(attrCol.get(j).get("value").toString())<104? prodIsCore :"9999",priorityOrderAttrDto.getPriorityOrderCd()
+                    ,attrCol.get(j).get("value").toString() ,id,width, attrSortList.get(j)
+                    ,attrCol.get(j).get("zokusei_colname").toString(),attrCol.get(j).get("zokusei_colcd").toString(),attrCol.get(j).get("zokusei_nm").toString());
             for (int i = 0; i < attrDistinct.size(); i++) {
                 attrDistinct.get(i).put("color",mainColor.get(i));
             }
             list.add(attrDistinct);
         }
+        logger.info("结束：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 
