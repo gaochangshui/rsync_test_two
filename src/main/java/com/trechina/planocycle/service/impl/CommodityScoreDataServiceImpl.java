@@ -188,6 +188,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String uuid1 = UUID.randomUUID().toString();
         String attrCondition =  this.attrList(map);
         map.put("attrCondition",attrCondition);
+        map.remove("prodAttrData");
         String company_kokigyou = planocycleKigyoListMapper.getGroupInfo(companyCd);
 
         //グループ企業かどうかを判断する
@@ -277,6 +278,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             String uuid = "";
                 Map<String, Object> map1 = null;
                 logger.info("pos开始时间：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+
                     while (true) {
                         map1 = cgiUtil.postCgiOfWeb(taskQuery, posResult, tokenInfo,smartPath);
                         if (!"9".equals(map1.get("data"))) {
@@ -346,7 +348,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
     private String attrList(Map<String,Object> map) {
         String finalValue = "";
-        String tableNameAttr;
+
         List list = (ArrayList) map.get("prodAttrData");
 
         if (!list.isEmpty()){
@@ -367,13 +369,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 }
             }
         }
-        if (finalValue.equals("")){
-            tableNameAttr = "false";
-        }else {
-            tableNameAttr = MessageFormat.format("awk {0}","'"+finalValue+"'");
 
-        }
-        return tableNameAttr;
+        return finalValue.equals("")?"false":finalValue;
     }
 
     /**
