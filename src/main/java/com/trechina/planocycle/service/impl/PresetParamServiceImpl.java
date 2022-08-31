@@ -1,5 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.po.PresetAttribute;
 import com.trechina.planocycle.entity.po.PresetParam;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -49,7 +51,17 @@ public class PresetParamServiceImpl implements PresetParamService {
     @Override
     public Map<String, Object> getPresetParamForProduct(PresetAttribute presetAttribute) {
         String authorCd = session.getAttribute("aud").toString();
-        PresetAttribute presetParam = presetParamMapper.getProductPresetParam(authorCd,presetAttribute);
-        return ResultMaps.result(ResultEnum.SUCCESS,presetParam);
+        JSONObject jsonObject = JSON.parseObject(presetAttribute.getCommonPartsData());
+        List<PresetAttribute> presetParam = presetParamMapper.getProductPresetParam(authorCd);
+
+        for (PresetAttribute attribute : presetParam) {
+            JSONObject jsonObject1 = JSON.parseObject(attribute.getCommonPartsData());
+
+            if (jsonObject.get("storeIsCore").equals(jsonObject1.get("storeIsCore"))
+                    && jsonObject.get("storeMstClass").equals(jsonObject1.get("storeMstClass"))){
+                return ResultMaps.result(ResultEnum.SUCCESS,attribute);
+            }
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS,null);
     }
 }

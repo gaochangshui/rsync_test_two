@@ -24,6 +24,6 @@
   </select>
   <select id="getProductPresetParam" resultType="com.trechina.planocycle.entity.po.PresetAttribute">
     select attr_data, common_parts_data from planocycle.product_preset_param attribute
-    where author_cd=#{authorCd} and jsonb_eq(common_parts_data ::jsonb, '${presetAttribute.commonPartsData}' ::jsonb)
+    where author_cd=#{authorCd}
   </select>
 </mapper>
