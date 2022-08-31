@@ -30,6 +30,10 @@ public class MagicString {
      */
     public static final Integer PRODUCT_TYPE_JAN = 1;
     /**
+     * item単位
+     */
+    public static final Integer PRODUCT_TYPE_ITEM = 3;
+    /**
      * SKU単位-品名1
      */
     public static final Integer PRODUCT_TYPE_SKU = 2;

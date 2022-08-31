@@ -574,6 +574,7 @@ public class MstJanServiceImpl implements MstJanService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
+
     public Map<String, Object> syncJanData() {
         String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
         String[] companyList = syncCompanyList.split(",");

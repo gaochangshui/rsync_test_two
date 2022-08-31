@@ -141,9 +141,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date);
         String format1 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date1);
         String format2 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date2);
-        log.info("开始时间{}",format);
-        log.info("抽出时间{}",format2);
-        log.info("结束时间{}",format1);
+        log.info("開始時間{}",format);
+        log.info("時間を割く{}",format2);
+        log.info("終了時間{}",format1);
         return ResultMaps.result(ResultEnum.SUCCESS, resultData);
 
 
@@ -280,7 +280,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         Future<?> future = executor.submit(() -> {
             String uuid = "";
                 Map<String, Object> map1 = null;
-                logger.info("pos开始时间：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+                logger.info("pos開始時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
 
                     while (true) {
                         map1 = cgiUtil.postCgiOfWeb(taskQuery, posResult, tokenInfo,smartPath);
@@ -291,12 +291,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             break;
                         }
                     }
-            logger.info("pos结束时间：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+                logger.info("pos終了時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
                     if (map1.get("data")!=null) {
                         Map<Object, Object> customerCondition = (Map<Object, Object>) map.get("customerCondition");
                         if (!customerCondition.isEmpty()) {
                             logger.info("顧客パラメータ{}", map);
-                            logger.info("顧客开始时间：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+                            logger.info("顧客開始時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
                             String groupResult = cgiUtil.postCgi(productPowerData, map, tokenInfo, smartPath);
                             while (true) {
                                 Map<String, Object> map2 = cgiUtil.postCgiOfWeb(taskQuery, groupResult, tokenInfo, smartPath);
@@ -307,7 +307,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                                     break;
                                 }
                             }
-                            logger.info("顧客结束时间：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+                            logger.info("顧客終了時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
                         }
                         //市場データ
                         if (map.get("channelNm") != null && !"".equals(map.get("channelNm"))) {
@@ -317,7 +317,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             map.put("tableName", "planocycle.work_product_power_intage");
                             logger.info("市場パラメータ{}", map);
                             String intergeResult = cgiUtil.postCgi(productPowerData, map, tokenInfo, smartPath);
-                            logger.info("市場开始时间：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+                            logger.info("市場開始時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
                             while (true) {
                                 Map<String, Object> map2 = cgiUtil.postCgiOfWeb(taskQuery, intergeResult, tokenInfo, smartPath);
                                 if (!"9".equals(map2.get("data"))) {
@@ -327,7 +327,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                                     break;
                                 }
                             }
-                            logger.info("市場结束时间：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+                            logger.info("市場終了時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
                         }
                     }
             vehicleNumCache.put(posResult,"ok");

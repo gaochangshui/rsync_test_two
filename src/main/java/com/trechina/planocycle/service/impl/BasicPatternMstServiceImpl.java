@@ -457,6 +457,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 itemMap.put("groupName",groupName);
                 itemMap.remove("json");
                 itemMap.put("tanaPosition", MapUtils.getString(itemMap, "areaPosition"));
+                itemMap.put(MagicString.RESTRICT_CD, MapUtils.getInteger(itemMap, MagicString.RESTRICT_CD, MagicString.NO_RESTRICT_CD.intValue()));
                 groups.add(itemMap);
                 resultMap.put("groups", groups);
             }

@@ -27,10 +27,10 @@
         result.restrict_cd as "restrictCd", round(area,0) area,value color
         <foreach collection="attrCol" open="," item="item" separator=",">  coalesce ("zokusei${item.sort}",'') as "${item.zokusei_colcd}"</foreach>
         from planocycle.work_priority_order_pts_data ptsdata
-        left join
+        inner join
         planocycle.work_priority_order_pts_data_tanamst tanamst
         on tanamst.pts_cd = ptsdata.id
-        left join (select tai_cd, tana_cd,restrict_cd, sum(area) area from planocycle.work_basic_pattern_restrict_relation
+        inner join (select tai_cd, tana_cd,restrict_cd, sum(area) area from planocycle.work_basic_pattern_restrict_relation
         where priority_order_cd=#{priorityOrderCd} and restrict_cd!=9999
         group by tai_cd, tana_cd, restrict_cd) relation on tanamst.tai_cd = relation.tai_cd and tanamst.tana_cd = relation.tana_cd
         left join
@@ -38,8 +38,9 @@
                json_object_agg (COALESCE(val, '_'), COALESCE(nm, '_')) json from planocycle.work_basic_pattern_restrict_result result
         left JOIN masterdb.planocycle_zokusei_mst_data zokuseidata ON concat(zokuseidata.company_cd, '_',zokuseidata.class_cd)
         in( concat(#{companyCd}, '_',#{classCd}), '9999_0000')
-        <foreach collection="attrCol" item="item" open="and (" separator="or" close=")" >
-            val=result."zokusei${item.sort}" and zokusei_id=${item.zokusei_id}</foreach>
+        <foreach collection="attrCol" item="item" open=" and (" separator="or" close=")">
+            (val=result."zokusei${item.sort}" and zokusei_id=${item.zokusei_id})
+        </foreach>
         where priority_order_cd = #{priorityOrderCd}  group by restrict_cd
         <foreach collection="attrCol" item="item" open="," separator="," >"zokusei${item.sort}"</foreach>
         ) result

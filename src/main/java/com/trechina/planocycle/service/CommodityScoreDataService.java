@@ -18,6 +18,7 @@ public interface CommodityScoreDataService {
      * @param
      * @return
      */
+
     Map<String, Object> getCommodityScoreTaskId( Map<String,Object> map);
 
     /**
