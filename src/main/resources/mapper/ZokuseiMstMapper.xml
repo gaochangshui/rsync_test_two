@@ -68,8 +68,7 @@
             </foreach>
 
         on conflict(zokusei_id,val,company_cd,class_cd)
-        do update set
-        company_cd = #{companyCd}
+        do nothing;
 
     </update>
     <update id="updateZokuseiName">
@@ -92,8 +91,7 @@
         </foreach>
 
         on conflict(zokusei_id,val,company_cd,class_cd)
-        do update set
-            val = EXCLUDED.val,zokusei_id = EXCLUDED.zokusei_id,type =EXCLUDED.type ,nm = EXCLUDED.nm,company_cd = EXCLUDED.company_cd,class_cd = EXCLUDED.class_cd
+        do nothing;
     </insert>
     <insert id="setItem">
         insert into masterdb.planocycle_zokusei_mst (company_cd,class_cd,zokusei_id,zokusei_nm,zokusei_sort,type,zokusei_col)

@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -575,7 +574,7 @@ public class MstJanServiceImpl implements MstJanService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    @PostConstruct
+
     public Map<String, Object> syncJanData() {
         String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
         String[] companyList = syncCompanyList.split(",");

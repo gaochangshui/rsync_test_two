@@ -2,7 +2,6 @@ package com.trechina.planocycle.utils;
 
 
 import com.google.common.base.Strings;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -102,7 +101,7 @@ public class ExcelUtils {
                             janCell.setCellValue((Integer)value);
                         }else{
                             Matcher isNum = numberPattern.matcher(String.valueOf(value));
-                            if (!columnName.equals("jan") && isNum.matches()){
+                            if (!columnName.equals("jan") && !columnName.equals("jan_name") && isNum.matches()){
                                 janCell.setCellType(CellType.NUMERIC);
                                 janCell.setCellValue(Math.floor(Double.parseDouble(String.valueOf(value))));
                             }else{
@@ -121,6 +120,8 @@ public class ExcelUtils {
                     }
                 }
             }
+
+            XSSFSheet sheet1 = workbook.createSheet();
 
             workbook.write(outputStream);
         }catch (Exception e){

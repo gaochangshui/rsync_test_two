@@ -196,6 +196,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         if(janName2colNum==null || Objects.equals(janName2colNum, MagicString.PRODUCT_TYPE_JAN)){
             //product name（品名2）
             janNameColIndex = Integer.parseInt(janName.get(0).get("sort").toString());
+        }else if ( Objects.equals(janName2colNum, MagicString.PRODUCT_TYPE_ITEM)){
+            janNameColIndex = skuNameConfigMapper.getJanItem2colNum(companyCd, prodMstClass);
         }else{
             //品名1
             janNameColIndex = skuNameConfigMapper.getJanName2colNum(companyCd, prodMstClass);

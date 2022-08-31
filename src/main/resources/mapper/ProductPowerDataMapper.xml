@@ -592,7 +592,7 @@
     <select id="getSyokikaAllData" resultType="java.util.Map">
         select power_syokika.jan as jan,
         <foreach collection="classify" index="index" item="item" separator=",">
-            <if test="item.sort != 1">
+            <if test="item.attr != 'jan'">
                  coalesce (jan_info."${item.sort}",'') as ${item.attr}
 
             </if>
@@ -700,7 +700,7 @@
     <select id="getAllDataAttr" resultType="java.util.LinkedHashMap">
         select datas.jan,
         <foreach collection="classify" index="index" item="item" separator=",">
-            <if test="item.sort != 1">
+            <if test="item.attr != 'jan'">
                 case  when jan_info."${item.sort}" is null then '' else jan_info."${item.sort}"  end  as ${item.attr}
             </if>
         </foreach>

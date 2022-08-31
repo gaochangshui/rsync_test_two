@@ -231,6 +231,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         Integer colNum = 2;
         if (janName2colNum == 1){
             colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+        }else if(janName2colNum==3){
+            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
         }
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
