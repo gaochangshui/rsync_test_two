@@ -30,7 +30,7 @@ public interface BasicPatternMstService {
                                                                String companyCd, List<ZokuseiMst> zokuseiMst, String authorCd, Long priorityOrderCd);
 
     /**
-     * jan长宽高修改
+     * jan縦横の高さの変更
      */
     List<PriorityOrderResultDataDto> updateJanSize( List<PriorityOrderResultDataDto> priorityOrderResultDataDtoList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     List<Map<String, Object>> updateJanSizeByMap( List<Map<String, Object>> priorityOrderResultDataDtoList);

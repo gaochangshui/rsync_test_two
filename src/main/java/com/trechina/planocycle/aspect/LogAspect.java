@@ -2,15 +2,12 @@ package com.trechina.planocycle.aspect;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.google.common.base.Strings;
 import com.trechina.planocycle.mapper.LogMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.utils.VehicleNumCache;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +15,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
 /**
@@ -42,7 +37,6 @@ public class LogAspect {
     private ThreadPoolTaskExecutor executor;
 
     //定義切入点
-    //通オーバー自定義注解来定義切入点表达式
     //只要加了MonitorLog注解的方法，就是切入点
     @Pointcut("execution(public * com.trechina.planocycle.service..*.*(..))")
     public void point(){
@@ -58,7 +52,6 @@ public class LogAspect {
             //取得＃シュトク＃被代理オブジェクト象名称
             String targetName = joinPoint.getTarget().getClass().getName();
 
-            //取得＃シュトク＃传入ターゲット方法的参数オブジェクト象
             Object[] arguments = joinPoint.getArgs();
 
             JSONArray jsonArray = new JSONArray();

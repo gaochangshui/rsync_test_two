@@ -21,8 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class CommodityScoreParaServiceImpl implements CommodityScoreParaService {
@@ -256,11 +258,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         productPowerDataMapper.deleteWKData(companyCd,authorCd,productPowerCd);
         map.remove("companyCd");
         map.remove("productPowerCd");
-        String format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
-        logger.info("rank计算开始：{}",format);
         List<Map<String, Object>> rankCalculate = productPowerDataMapper.getProductRankCalculate(map, companyCd, productPowerCd,authorCd);
-        logger.info("rank计算开始：{}",format);
-        logger.info("rank计算结束：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
         ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
         List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
         if (storeCd.isEmpty()){
@@ -283,7 +281,6 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             if (!list.isEmpty()) {
                 productPowerDataMapper.insertWkRank(list, authorCd, companyCd, productPowerCd);
             }
-        logger.info("rank计算插入结束：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
         return ResultMaps.result(ResultEnum.SUCCESS,rankCalculate);
     }
 

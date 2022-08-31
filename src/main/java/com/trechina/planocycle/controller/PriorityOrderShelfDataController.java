@@ -80,7 +80,7 @@ public class PriorityOrderShelfDataController {
     }
 
     /**
-     * faceNum,修改/删除
+     * faceNum,修改/削除
      */
     @PostMapping("setFaceNumAndPositionForData")
     public Map<String,Object> setFaceNumAndPositionForData(@RequestBody Map<String,Object> map) {
