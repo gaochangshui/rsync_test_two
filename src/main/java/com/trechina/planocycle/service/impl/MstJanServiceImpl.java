@@ -559,7 +559,9 @@ public class MstJanServiceImpl implements MstJanService {
                     }
                 }
             }
-            zokuseiMstMapper.setValBatch(zokuseiList,companyCd,prodMstClass);
+            if(!zokuseiList.isEmpty()){
+                zokuseiMstMapper.setValBatch(zokuseiList,companyCd,prodMstClass);
+            }
 
         } catch (Exception e) {
             logAspect.setTryErrorLog(e,new Object[]{commonPartsData,companyCd,classCd});
