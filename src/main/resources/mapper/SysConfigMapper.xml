@@ -9,4 +9,7 @@
         select item_name,item_value from planocycle.sys_config
         where item_name like concat(#{targetColumnPre}, '%')
     </select>
+    <select id="selectIsGroupCompany" resultType="int">
+        select count(*) from masterdb.group_company where group_cd=#{companyCd}
+    </select>
 </mapper>

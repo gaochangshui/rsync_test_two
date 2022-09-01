@@ -5,8 +5,10 @@
     <select id="getSyncSet" resultType="com.trechina.planocycle.entity.po.CommoditySyncSet">
         select 1 as "prodIsCore", "1" "prodMstClass", "2" "prodMstName","3" "flag"
         from ${tableName}
+        <if test="tableNameCompany!=null and tableNameCompany!=''">
         union select  0 as "prodIsCore", "1"  "prodMstClass", "2" "prodMstName","3" "flag"
         from ${tableNameCompany}
+        </if>
     </select>
 
     <update id="setSyncSet">
