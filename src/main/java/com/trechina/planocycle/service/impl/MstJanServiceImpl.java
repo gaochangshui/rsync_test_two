@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -107,7 +108,7 @@ public class MstJanServiceImpl implements MstJanService {
      * @return
      */
     @Override
-    public JanInfoVO getJanList(DownFlagVO downFlagVO, HttpServletResponse response) {
+    public Map<String, Object> getJanList(DownFlagVO downFlagVO) throws Exception {
         JanInfoVO janInfoVO = new JanInfoVO();
         if (cacheUtil.get(downFlagVO.getTaskID()) == null) {
             return null;
@@ -141,27 +142,44 @@ public class MstJanServiceImpl implements MstJanService {
                 .collect(Collectors.joining(",")));
         janInfoVO.setJanColumn(dataConverUtils.camelize(janColumn));
         if(Integer.valueOf(1).equals(downFlagVO.getDownFlag())){
-            response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-            String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("商品明細-%s.xlsx",
-                    LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
-            response.setHeader("Content-Disposition", format);
-            try (
-                ServletOutputStream outputStream = response.getOutputStream()){
-                List<String[]> excelData = new ArrayList<>();
-                excelData.add(janInfoVO.getJanHeader().split(","));
-                for(LinkedHashMap<String, Object> map:janInfoVO.getJanDataList()){
-                    excelData.add(map.values().stream().map(Object::toString).toArray(String[]::new));
+            cacheUtil.put(downFlagVO.getTaskID()+",status", MagicString.TASK_STATUS_PROCESSING);
+            Future futureTask = executor.submit(()->{
+                try {
+                    List<String[]> excelData = new ArrayList<>();
+                    excelData.add(janInfoVO.getJanHeader().split(","));
+                    String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("商品明細-%s.xlsx",
+                            LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
+
+                    for(LinkedHashMap<String, Object> map:janInfoVO.getJanDataList()){
+                        excelData.add(map.values().stream().map(Object::toString).toArray(String[]::new));
+                    }
+
+                    String filePath = ExcelUtils.generateNormalExcelToFile(excelData, format);
+                    cacheUtil.put(downFlagVO.getTaskID()+",status", MagicString.TASK_STATUS_SUCCESS);
+                    cacheUtil.put(downFlagVO.getTaskID()+",filepath", filePath);
+                }catch (Exception e){
+                    logger.error("", e);
                 }
-                ExcelUtils.generateNormalExcel(excelData, outputStream);
-                outputStream.flush();
-            } catch (IOException e) {
-                logger.error("商品明細ダウンロード", e);
-                logAspect.setTryErrorLog(e,new Object[]{downFlagVO});
+            });
+
+            try {
+                futureTask.get(MagicString.TASK_TIME_OUT, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                JSONObject returnJson = new JSONObject();
+                json.put("status", "9");
+                json.put("taskId", downFlagVO.getTaskID());
+                return ResultMaps.result(ResultEnum.SUCCESS, returnJson.toJSONString());
+            } catch(InterruptedException e ){
+                Thread.currentThread().interrupt();
+                logger.error("", e);
+                return ResultMaps.result(ResultEnum.FAILURE);
+            } catch (ExecutionException e){
+                logger.error("", e);
+                return ResultMaps.result(ResultEnum.FAILURE);
             }
-            return null;
         }
 
-        return janInfoVO;
+        return null;
     }
 
     @Override
@@ -606,6 +624,11 @@ public class MstJanServiceImpl implements MstJanService {
             }
         }
         return ResultMaps.result(ResultEnum.SUCCESS.getCode(),"同期完了しました");
+    }
+
+    @Override
+    public JanInfoVO getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response) {
+        return null;
     }
 
     /**
