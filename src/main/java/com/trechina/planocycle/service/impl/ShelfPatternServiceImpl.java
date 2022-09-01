@@ -72,14 +72,14 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             if (result.getStoreCdStr()==null) {
                 result.setStoreCd(new String[]{});
                 result.setBranchNum(0);
-                result.setSpecialFlag("×");
+                result.setSpecialFlag("-");
             }else{
                 String storeCdStr = result.getStoreCdStr();
                 String[] storeCdStrList = storeCdStr.split(",");
                 long count = Sets.intersection(existSpecialUse, Arrays.stream(storeCdStrList).collect(Collectors.toSet())).stream().count();
                 result.setStoreCd(storeCdStrList);
                 result.setBranchNum(storeCdStrList.length);
-                result.setSpecialFlag(count == 0 ? "×" : "◯");
+                result.setSpecialFlag(count == 0 ? "-" : "◯");
             }
         }).collect(Collectors.toList());
         logger.info("棚pattern情報の戻り値の取得：{}",resultInfo);
@@ -417,7 +417,9 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData.get(i), companyCd);
             map.put("a"+i,commonTableName.getStoreInfoTable());
         }
-
+        if (commonPartsData.isEmpty()){
+            return ResultMaps.result(ResultEnum.PATTERN_NOT_EXIST);
+        }
         List<ShelfPatternNameVO> patternForStorel = shelfPatternMstMapper.getPatternForStorel(storeIsCore, companyCd,map);
         for (ShelfPatternNameVO shelfPatternNameVO : patternForStorel) {
             String prodIsCore = shelfPatternNameVO.getStoreIsCore();
