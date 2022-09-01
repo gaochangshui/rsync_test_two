@@ -9,4 +9,6 @@ import java.util.Map;
 public interface SysConfigMapper {
     String selectSycConfig(String targetColumn);
     List<Map<String, String>> selectByPrefix(String targetColumnPre);
+
+    Integer selectIsGroupCompany(String companyCd);
 }

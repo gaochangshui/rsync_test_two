@@ -34,6 +34,10 @@ public class MstCommodityServiceImpl implements MstCommodityService {
         String coreCompanycd = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         String tableName = MessageFormat.format(MagicString.MASTER_SYOHIN, coreCompanycd);
         String tableNameCompany = MessageFormat.format(MagicString.MASTER_SYOHIN, companyCd);
+        boolean isGroupComapny = sysConfigMapper.selectIsGroupCompany(companyCd) > 0;
+        if(isGroupComapny){
+            tableNameCompany = null;
+        }
         return mstCommodityMapper.getSyncSet(tableName,tableNameCompany);
     }
 
