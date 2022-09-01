@@ -441,7 +441,7 @@ public class MstJanServiceImpl implements MstJanService {
                                              String commonPartsData, String companyCd) {
         Pattern numberPattern = Pattern.compile("[0-9]+");
         int count;
-        if (!fileName.startsWith("商品明細-") || !fileName.endsWith(".xlsx")) {
+        if (!fileName.endsWith(".xlsx")) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_UPLOAD_CORRECT_FILE);
         }
         List<String[]> excelData = ExcelUtils.readExcel(file);
