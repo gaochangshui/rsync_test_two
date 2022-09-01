@@ -173,7 +173,8 @@
         </foreach>
       where   shelf.deleteflg=0  and shelf.company_cd = #{companyCd}
       group by   shelf.shelf_name_cd,name.shelf_name, shelf.shelf_pattern_cd,  shelf.shelf_pattern_name,storeIsCore
-      having string_agg(branch.branch, ',') filter(
+      having string_agg(branch.branch, ',')
+       filter(
         where <foreach collection="map" index="index" separator="or">
         "${index}"."100" = '0'
     </foreach>

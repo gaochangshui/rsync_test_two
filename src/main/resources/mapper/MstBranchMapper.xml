@@ -37,7 +37,7 @@
                 #{item}
             </foreach>
             and teninfo."100" = '1'
-            order by split_part( teninfo."1", '_', 1 ) :: integer, split_part( teninfo."1", '_', 2 ) :: integer
+            order by split_part( teninfo."1", '_', 1 ), split_part( teninfo."1", '_', 2 ) :: integer
     </select>
     <select id="getCompanyBranchInfo" resultType="java.util.Map">
         select
