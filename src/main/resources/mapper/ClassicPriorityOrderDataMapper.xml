@@ -685,7 +685,7 @@
         order by "4"::integer
     </select>
     <select id="getJanInfo" resultType="java.util.Map">
-        select jan_new as jan,concat(jan_new,'-',sku) as "janName",case when t1.jan_cd is null then false else true end as flag
+        select jan_new as value,concat(jan_new,' - ',sku) as "label",case when t1.jan_cd is null then false else true end as flag
             from priority.work_priority_order_result_data datas
             left join (select distinct jan_cd from  ${janInfoTableName} where priority_order_cd = #{priorityOrderCd}) t1
             on t1.jan_cd = datas.jan_new

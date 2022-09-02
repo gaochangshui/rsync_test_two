@@ -581,7 +581,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             for (Map<String,Object> janMap : janName) {
                 Map<String,Object> map = new HashMap<>();
                 map.put("jan",janMap.get("jan"));
-                map.put("jan",janMap.get("janName"));
+                map.put("janName",janMap.get("janName"));
                 for (Map<String, Object> objectMap : branchList) {
                     map.put(objectMap.get("sort")+"_"+objectMap.get("branchCd").toString(),"×");
                 }
