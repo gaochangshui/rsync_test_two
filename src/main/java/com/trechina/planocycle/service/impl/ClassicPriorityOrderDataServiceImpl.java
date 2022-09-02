@@ -642,14 +642,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<PriorityOrderMstAttrSortDto> priorityOrderMstAttrSortDtos = classicPriorityOrderMstAttrSortMapper.selectWKRankSort(company, priorityOrderCd);
         List<String> attrSort = priorityOrderMstAttrSortDtos.stream().map(PriorityOrderMstAttrSortDto::getValue).collect(Collectors.toList());
         List<Map<String, Object>> tempData = priorityOrderDataMapper.selectTempDataByRankUpd(attrSort, priorityOrderCd,company,  attrValueList);
-        tempData.forEach(item -> {
-            if (item.get("rank").toString().equals("-1")) {
-                item.put("rank", "新規");
-            }
-            if (item.get("rank_upd").toString().equals("99999999")) {
-                item.put("rank_upd", "カット");
-            }
-        });
         result.addAll(tempData);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
@@ -1431,7 +1423,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         String branchNumUpd = "0";
         if(branchNum.get("code").equals(ResultEnum.SUCCESS.getCode())){
             List<Map<String, Object>> mapList = (List<Map<String, Object>>) branchNum.get("data");
-            Optional<Map<String, Object>> first = mapList.stream().filter(map -> map.get("jan_old").toString().equals(tmpItem.get("jan_old"))).findFirst();
+            Optional<Map<String, Object>> first = mapList.stream().filter(map -> map.get("jan_old").toString().equals(tmpItem.get("jan_old"))
+                    && map.get("jan_new").toString().equals(tmpItem.get("jan_new"))).findFirst();
             if(first.isPresent()){
                 branchNumUpd = MapUtils.getInteger(first.get(), "branch_num_upd", 0)+"";
 

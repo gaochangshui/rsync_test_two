@@ -108,7 +108,7 @@
         <foreach collection="existJanCut" item="item">
             when #{item.jan} then 99999999
         </foreach>
-        else rank_upd end
+        else rank_upd end,branch_num_upd=0
         where priority_order_cd=#{priorityOrderCd}
     </update>
     <update id="updateUPdRank">

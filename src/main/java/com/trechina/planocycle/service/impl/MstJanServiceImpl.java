@@ -441,7 +441,7 @@ public class MstJanServiceImpl implements MstJanService {
                                              String commonPartsData, String companyCd) {
         Pattern numberPattern = Pattern.compile("[0-9]+");
         int count;
-        if (!fileName.startsWith("商品明細-") || !fileName.endsWith(".xlsx")) {
+        if (!fileName.endsWith(".xlsx")) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_UPLOAD_CORRECT_FILE);
         }
         List<String[]> excelData = ExcelUtils.readExcel(file);
@@ -559,7 +559,9 @@ public class MstJanServiceImpl implements MstJanService {
                     }
                 }
             }
-            zokuseiMstMapper.setValBatch(zokuseiList,companyCd,prodMstClass);
+            if(!zokuseiList.isEmpty()){
+                zokuseiMstMapper.setValBatch(zokuseiList,companyCd,prodMstClass);
+            }
 
         } catch (Exception e) {
             logAspect.setTryErrorLog(e,new Object[]{commonPartsData,companyCd,classCd});

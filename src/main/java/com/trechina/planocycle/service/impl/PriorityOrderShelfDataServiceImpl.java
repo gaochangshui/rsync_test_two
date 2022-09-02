@@ -137,6 +137,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
             List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd,"planocycle.work_priority_order_pts_data_jandata");
             ptsGroup= ptsGroup.stream().filter(map->map.get("restrictCd").toString().equals(priorityOrderRestDto.getRestrictCd()+""))
+                    .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank")))
                     .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanaCd")))
                     .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd")))
                     .collect(Collectors.toList());
@@ -161,6 +162,10 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             return a == groupOld.size();
         }).collect(Collectors.toList());
         ptsOldGroup = this.ptsProcessing(ptsOldGroup,zokuseiCol);
+        ptsOldGroup = ptsOldGroup.stream()
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanapositionCd")))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanaCd")))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd"))).collect(Collectors.toList());
         mapHeader.put("newData",ptsGroup);
         mapHeader.put("oldData",ptsOldGroup);
         return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
