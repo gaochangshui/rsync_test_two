@@ -9,6 +9,7 @@ import com.trechina.planocycle.entity.po.JanInfoList;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -66,5 +67,5 @@ public interface MstJanService {
      */
     Map<String, Object> syncJanData();
 
-    JanInfoVO getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response);
+    void getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response) throws IOException;
 }

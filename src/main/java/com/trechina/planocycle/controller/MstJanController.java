@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -47,8 +48,8 @@ public class MstJanController {
     }
 
     @PostMapping("/getJanListResult")
-    public void getJanListResult(@RequestBody DownFlagVO downFlagVO, HttpServletResponse response){
-        return mstJanService.getJanListResult(downFlagVO, response);
+    public void getJanListResult(@RequestBody DownFlagVO downFlagVO, HttpServletResponse response) throws IOException {
+        mstJanService.getJanListResult(downFlagVO, response);
     }
 
     /**
