@@ -556,9 +556,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
         if (starReadingTableDto.getModeCheck() == 1) {
             List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(starReadingTableDto);
-            branchList=branchList.stream().filter(map -> starReadingTableDto.getAreaList().contains(map.get("sort"))).collect(Collectors.toList());
+            branchList=branchList.stream().filter(map -> starReadingTableDto.getExpressItemList().contains(map.get("sort"))).collect(Collectors.toList());
             List<Map<String, Object>> saveBranch = starReadingTableMapper.getBranchdiff(starReadingTableDto,branchList);
             List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList);
+
             if (!autoBranch.isEmpty()){
                 for (Map<String, Object> branch : autoBranch) {
                     for (Map<String, Object> objectMap : branchList) {
@@ -576,9 +577,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 }
             }
             List<Map<String, Object>> list = new ArrayList();
-            for (String s : starReadingTableDto.getJanList()) {
+            List<Map<String, Object>> janName = classicPriorityOrderDataMapper.getJanName(starReadingTableDto.getJanList());
+            for (Map<String,Object> janMap : janName) {
                 Map<String,Object> map = new HashMap<>();
-                map.put("jan",s);
+                map.put("jan",janMap.get("jan"));
+                map.put("jan",janMap.get("janName"));
                 for (Map<String, Object> objectMap : branchList) {
                     map.put(objectMap.get("sort")+"_"+objectMap.get("branchCd").toString(),"×");
                 }
@@ -627,14 +630,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     }
 
     @Override
-    public Map<String, Object> getStarReadingParam(StarReadingTableDto starReadingTableDto) {
-        Integer priorityOrderCd = starReadingTableDto.getPriorityOrderCd();
-        String companyCd = starReadingTableDto.getCompanyCd();
-        Integer modeCheck = priorityOrderMstMapper.getModeCheck(starReadingTableDto.getPriorityOrderCd());
+    public Map<String, Object> getStarReadingParam(String companyCd,Integer priorityOrderCd) {
+
+        Integer modeCheck = priorityOrderMstMapper.getModeCheck(priorityOrderCd);
         if (modeCheck == null){
             modeCheck =1;
         }
-        modeCheck =1;
+
         List<Map<String, Object>> expressItemList =new ArrayList<>();
         String janInfoTableName = "";
         if (modeCheck == 1){

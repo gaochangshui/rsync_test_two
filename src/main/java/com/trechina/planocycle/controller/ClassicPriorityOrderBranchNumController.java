@@ -157,8 +157,8 @@ public class ClassicPriorityOrderBranchNumController {
     /**
      * 获取星取表参数信息
      */
-    @PostMapping("getStarReadingParam")
-    public Map<String,Object> getStarReadingParam(@RequestBody StarReadingTableDto starReadingTableDto){
-        return priorityOrderBranchNumService.getStarReadingParam(starReadingTableDto);
+    @GetMapping("getStarReadingParam")
+    public Map<String,Object> getStarReadingParam(String companyCd,Integer priorityOrderCd){
+        return priorityOrderBranchNumService.getStarReadingParam(companyCd,priorityOrderCd);
     }
 }
