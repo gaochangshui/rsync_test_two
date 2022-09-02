@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service;
 
+import com.trechina.planocycle.entity.dto.StarReadingTableDto;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
 import com.trechina.planocycle.entity.vo.CommodityBranchPrimaryKeyVO;
@@ -117,4 +118,8 @@ public interface ClassicPriorityOrderBranchNumService {
      * @return
      */
     Map<String, Object> delCommodityNotBranch(CommodityBranchPrimaryKeyVO commodityBranchPrimaryKeyVO);
+
+    Map<String, Object> getStarReadingTable(StarReadingTableDto starReadingTableDto);
+
+    Map<String, Object> getStarReadingParam(StarReadingTableDto starReadingTableDto);
 }
