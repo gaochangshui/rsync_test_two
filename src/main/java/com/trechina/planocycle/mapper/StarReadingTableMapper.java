@@ -8,13 +8,16 @@ import java.util.List;
 import java.util.Map;
 @Mapper
 public interface StarReadingTableMapper {
-    void insertBranchdiff(@Param("item") StarReadingTableDto starReadingTableDto);
 
-    List<Map<String,Object>> getBranchdiff(@Param("item") StarReadingTableDto starReadingTableDto);
+    List<Map<String,Object>> getBranchdiff(@Param("item") StarReadingTableDto starReadingTableDto
+            ,@Param("branchList")List<Map<String,Object>> branchList);
 
     List<Map<String,Object>> getBranchList(StarReadingTableDto starReadingTableDto);
 
     List<Map<String,Object>> getAreaList(Integer priorityOrderCd);
 
     List<Map<String,Object>> getPatternList(Integer priorityOrderCd);
+
+    List<Map<String, Object>> getBranchdiffForBranch(@Param("item") StarReadingTableDto starReadingTableDto
+            , @Param("branchList")List<Map<String,Object>> branchList);
 }

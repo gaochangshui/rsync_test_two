@@ -548,50 +548,82 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
     @Override
     public Map<String, Object> getStarReadingTable(StarReadingTableDto starReadingTableDto) {
-        if (starReadingTableDto.getModeCheck() == null){
-            starReadingTableDto.setModeCheck(1);
-        }
-        priorityOrderMstMapper.updateModeCheck(starReadingTableDto);
-        List<Map<String, Object>> branchdiff = starReadingTableMapper.getBranchdiff(starReadingTableDto);
-        if (branchdiff.isEmpty()){
-            starReadingTableMapper.insertBranchdiff(starReadingTableDto);
-            branchdiff = starReadingTableMapper.getBranchdiff(starReadingTableDto);
-        }
-        Integer modeCheck = priorityOrderMstMapper.getModeCheck(starReadingTableDto.getPriorityOrderCd());
-        List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(starReadingTableDto);
-        List<Map<String,Object>> list = new ArrayList();
-        Map<String, List<Map<String, Object>>> janGroup = branchdiff.stream()
-                .collect(Collectors.groupingBy(map -> MapUtils.getString(map, "jan")));
-        for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
-            Map<String,Object> objectMap = new HashMap<>();
-            objectMap.put("jan",stringListEntry.getKey());
-            objectMap.put("janName",stringListEntry.getValue().get(0).get("janName"));
-            for (Map<String, Object> map : stringListEntry.getValue()) {
-                for (Map<String, Object> stringObjectMap : branchList) {
-                    if (stringObjectMap.get("area").equals(map.get("area").toString())){
-                        objectMap.put("a"+stringObjectMap.get("sort")+"_"+map.get("branchCd").toString(),map.get("flag"));
+
+        //priorityOrderMstMapper.updateModeCheck(starReadingTableDto);
+        String column = "jan,janName";
+        String header = "JAN,商品名";
+        Map mapResult = new HashMap();
+        LinkedHashMap<String, Object> group = new LinkedHashMap<>();
+        if (starReadingTableDto.getModeCheck() == 1) {
+            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(starReadingTableDto);
+            branchList=branchList.stream().filter(map -> starReadingTableDto.getAreaList().contains(map.get("sort"))).collect(Collectors.toList());
+            List<Map<String, Object>> saveBranch = starReadingTableMapper.getBranchdiff(starReadingTableDto,branchList);
+            List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList);
+            if (!autoBranch.isEmpty()){
+                for (Map<String, Object> branch : autoBranch) {
+                    for (Map<String, Object> objectMap : branchList) {
+                        if (branch.get("area").equals(objectMap.get("area"))){
+                            branch.put("sort",objectMap.get("sort"));
+                        }
                     }
-                    objectMap.putIfAbsent("a"+stringObjectMap.get("sort")+"_"+map.get("branchCd").toString(),0);
+                }
+            }
+            for (Map<String, Object> branch : saveBranch) {
+                for (Map<String, Object> objectMap : autoBranch) {
+                    if (branch.get("jan").equals(objectMap.get("jan"))&& branch.get("branchCd").equals(objectMap.get("branchCd"))){
+                        objectMap.put("flag",branch.get("flag"));
+                    }
+                }
+            }
+            List<Map<String, Object>> list = new ArrayList();
+            for (String s : starReadingTableDto.getJanList()) {
+                Map<String,Object> map = new HashMap<>();
+                map.put("jan",s);
+                for (Map<String, Object> objectMap : branchList) {
+                    map.put(objectMap.get("sort")+"_"+objectMap.get("branchCd").toString(),"×");
+                }
+                list.add(map);
+            }
+            Map<String, List<Map<String, Object>>> janGroup = autoBranch.stream()
+                    .collect(Collectors.groupingBy(map -> MapUtils.getString(map, "jan")));
+            for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
+                for (Map<String, Object> map : stringListEntry.getValue()) {
+                    for (Map<String, Object> stringObjectMap : list) {
+                        if (stringObjectMap.get("jan").equals(stringListEntry.getKey())){
+                                stringObjectMap.put(map.get("sort")+"_"+map.get("branchCd"),map.get("flag"));
+                        }
+                    }
                 }
 
             }
-            list.add(objectMap);
+            //for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
+            //    Map<String, Object> objectMap = new HashMap<>();
+            //    objectMap.put("jan", stringListEntry.getKey());
+            //    objectMap.put("janName", stringListEntry.getValue().get(0).get("janName"));
+            //    for (Map<String, Object> map : stringListEntry.getValue()) {
+            //        for (Map<String, Object> stringObjectMap : branchList) {
+            //            if (stringObjectMap.get("area").equals(map.get("area").toString())) {
+            //                objectMap.put(stringObjectMap.get("sort") + "_" + map.get("branchCd").toString(), map.get("flag"));
+            //            }
+            //            objectMap.putIfAbsent(stringObjectMap.get("sort") + "_" + map.get("branchCd").toString(), 0);
+            //        }
+            //
+            //    }
+            //    list.add(objectMap);
+            //}
+            for (Map<String, Object> objectMap : branchList) {
+                column += "," + objectMap.get("sort") + "_" + objectMap.get("branchCd");
+                header += "," + objectMap.get("branchName");
+                group.put( objectMap.get("sort").toString(), objectMap.get("area"));
+            }
+            mapResult.put("column", column);
+            mapResult.put("header", header);
+            mapResult.put("group", group);
+            mapResult.put("data", list);
+            return ResultMaps.result(ResultEnum.SUCCESS,mapResult);
         }
-        String column = "jan,janName";
-        String header = "JAN,商品名";
-        LinkedHashMap<String,Object> group = new LinkedHashMap<>();
-        for (Map<String, Object> objectMap : branchList) {
-           column+=",a"+objectMap.get("sort")+"_"+objectMap.get("branchCd");
-            header+=","+objectMap.get("branchName");
-            group.put("a"+objectMap.get("sort"),objectMap.get("area"));
-        }
-        Map mapResult = new HashMap();
-        mapResult.put("column",column);
-        mapResult.put("header",header);
-        mapResult.put("group",group);
-        mapResult.put("data",list);
-        mapResult.put("modeCheck",modeCheck);
-        return ResultMaps.result(ResultEnum.SUCCESS,mapResult);
+
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     @Override

@@ -1,39 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.StarReadingTableMapper">
-    <select id="insertBranchdiff" resultType="java.util.Map">
-        insert into priority.work_priority_order_commodity_branch(jan_cd,branch_cd,exist_flag,before_exist_flag
-        ,area,priority_order_cd,company_cd)
-        select
-            DISTINCT jan_new,split_part(branch,'_',2),1,1,"6",#{item.priorityOrderCd},#{item.companyCd}
-        from
-            priority.work_priority_order_result_data resultdata
-                left join planocycle.shelf_pts_data_jandata jandata on resultdata.jan_new = jandata.jan
-                left join planocycle.shelf_pts_data ptsdata on jandata.pts_cd = ptsdata.id
-                left join planocycle.shelf_pattern_branch branch on ptsdata.shelf_pattern_cd = branch.shelf_pattern_cd
-                left join "1000".ten_0000_ten_info teninfo on teninfo."1" = branch.branch
-        where
-            priority_order_cd = #{item.priorityOrderCd}
-          and ptsdata.shelf_pattern_cd in ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{item.priorityOrderCd})
 
-    </select>
     <select id="getBranchdiff" resultType="java.util.Map">
-        select branch.jan_cd as "jan",sku as "janName" ,branch_cd as "branchCd",exist_flag as flag,area
+        select branch.jan_cd as "jan",sku as "janName" ,branch_cd as "branchCd"
+             ,case when exist_flag =-1 then '×' when exist_flag = 0 then '' else  '◯' end  as flag
+             ,area
         from priority.work_priority_order_commodity_branch branch
         left join priority.work_priority_order_result_data datas
         on datas.jan_new = branch.jan_cd and branch.priority_order_cd = datas.priority_order_cd
-        where branch.priority_order_cd = #{item.priorityOrderCd}
+        where branch.priority_order_cd = #{item.priorityOrderCd} and branch.jan_cd in
+        <foreach collection="item.janList" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        and area in
+        <foreach collection="branchList" item="item" separator="," open="(" close=")">
+            #{item.area}
+        </foreach>
     </select>
     <select id="getBranchList" resultType="map">
         select
-            split_part(branch,'_',2) as "branchCd","2" as "branchName","6" as area,"dense_rank"() over( order by "6") as sort
+            split_part(branch,'_',2) as "branchCd","2" as "branchName"
+             ,"6" as area,concat('area',"dense_rank"() over( order by "6")) as sort
         from
             planocycle.shelf_pattern_branch branch
                 left join "1000".ten_0000_ten_info teninfo
                           on teninfo."1" = branch.branch
         where
                 branch.shelf_pattern_cd in
-                ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{priorityOrderCd} )
+                ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{priorityOrderCd})
         order by split_part(branch,'_',2) ::integer
     </select>
     <select id="getAreaList" resultType="java.util.Map">
@@ -60,5 +55,26 @@
         left join (select distinct shelf_pattern_cd from  priority.work_priority_order_commodity_pattern where priority_order_cd = #{priorityOrderCd}) t1
             on t1.shelf_pattern_cd = pattern.shelf_pattern_cd
         where pattern.priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getBranchdiffForBranch" resultType="java.util.Map">
+        select
+            DISTINCT jan_new as jan,sku as "janName",split_part(branch,'_',2)as "branchCd",'◯' as flag,"6" as area
+        from
+            priority.work_priority_order_result_data resultdata
+                left join planocycle.shelf_pts_data_jandata jandata on resultdata.jan_new = jandata.jan
+                left join planocycle.shelf_pts_data ptsdata on jandata.pts_cd = ptsdata.id
+                left join planocycle.shelf_pattern_branch branch on ptsdata.shelf_pattern_cd = branch.shelf_pattern_cd
+                left join "1000".ten_0000_ten_info teninfo on teninfo."1" = branch.branch
+        where
+            priority_order_cd = #{item.priorityOrderCd}
+          and ptsdata.shelf_pattern_cd in ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{item.priorityOrderCd})
+          and  resultdata.jan_new in
+        <foreach collection="item.janList" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        and "6" in
+        <foreach collection="branchList" item="item" separator="," open="(" close=")">
+            #{item.area}
+        </foreach>
     </select>
 </mapper>
