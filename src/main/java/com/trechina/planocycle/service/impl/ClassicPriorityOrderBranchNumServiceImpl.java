@@ -660,7 +660,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         String janInfoTableName = "";
         String column = "jan,janName,total";
         String header = "JAN,商品名,合計";
-        Map mapResult = null;
+        Map mapResult = new HashMap();
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
         if (modeCheck == 1){
             janInfoTableName = "priority.work_priority_order_commodity_branch";
@@ -739,7 +739,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         map.put("expressItemList",expressItemList);
         map.put("janList",janList);
         map.put("modeCheck",modeCheck);
-        map.put("data",mapResult);
+        map.put("data",mapResult.isEmpty()?null:mapResult);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
@@ -751,6 +751,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         starReadingTableMapper.delPatternList(companyCd,priorityOrderCd);
         priorityOrderMstMapper.updateModeCheck(starReadingVo);
         if (starReadingVo.getData().isEmpty()){
+            starReadingVo.setModeCheck(null);
+            priorityOrderMstMapper.updateModeCheck(starReadingVo);
             ResultMaps.result(ResultEnum.SUCCESS);
         }
         List<Map<String, Object>> list = new ArrayList<>();
