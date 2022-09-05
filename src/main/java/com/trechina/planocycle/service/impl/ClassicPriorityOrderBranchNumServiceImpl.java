@@ -602,6 +602,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             mapResult.put("column", column);
             mapResult.put("header", header);
             mapResult.put("group", group);
+            list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,"jan"))).collect(Collectors.toList());
             mapResult.put("data", list);
 
         }else {
@@ -643,6 +644,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             mapResult.put("column", column);
             mapResult.put("header", header);
             mapResult.put("group", group);
+            list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,"jan"))).collect(Collectors.toList());
             mapResult.put("data", list);
         }
         return ResultMaps.result(ResultEnum.SUCCESS,mapResult);
@@ -695,6 +697,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             mapResult.put("column", column);
             mapResult.put("header", header);
             mapResult.put("group", group);
+            list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,"jan"))).collect(Collectors.toList());
             mapResult.put("data", list);
 
         }else if (modeCheck == 0){
@@ -729,6 +732,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             mapResult.put("column", column);
             mapResult.put("header", header);
             mapResult.put("group", group);
+            list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,"jan"))).collect(Collectors.toList());
             mapResult.put("data", list);
         }
         List<Map<String, Object>> areaList = starReadingTableMapper.getAreaList(priorityOrderCd);
