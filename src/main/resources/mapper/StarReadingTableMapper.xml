@@ -12,11 +12,14 @@
         insert into priority.work_priority_order_commodity_pattern(jan_cd,shelf_pattern_cd,exist_flag,priority_order_cd,company_cd,shelf_name_cd)
         values
         <foreach collection="list" item="item" separator=",">
-            (#{item.jan},#{item.branch},#{item.flag},#{item.priorityOrderCd},#{item.companyCd},#{item.area})
+            (#{item.jan},#{item.branch} ::integer,#{item.flag},#{item.priorityOrderCd},#{item.companyCd},#{item.patternNameCd,jdbcType=INTEGER})
         </foreach>
     </insert>
     <delete id="delBranchList">
         delete from priority.work_priority_order_commodity_branch where priority_order_cd = #{priorityOrderCd}
+    </delete>
+    <delete id="delPatternList">
+        delete from priority.work_priority_order_commodity_pattern where priority_order_cd = #{priorityOrderCd}
     </delete>
 
     <select id="getBranchdiff" resultType="java.util.Map">
@@ -29,15 +32,15 @@
         where branch.priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getBranchList" resultType="map">
-        select
+        select DISTINCT
             case when  "char_length"(split_part(branch.branch, '_', 2))  > 0 then
                      split_part( branch.branch, '_', 2 ) else branch
-                end as "branchCd",teninfo."2" as "branchName"
-             ,teninfo."6" as area,concat('area',"dense_rank"() over( order by teninfo."6")) as sort
+                end as "branchCd",coalesce (teninfo."2",'未登録') as "branchName"
+             ,coalesce (teninfo."6",'未登録') as area,concat('area',"dense_rank"() over( order by teninfo."6")) as sort
         from
             planocycle.shelf_pattern_branch branch
                 left join "1000".ten_0000_ten_info teninfo
-                          on (teninfo."1" = branch.branch or split_part(teninfo."1",'_',2) = branch.branch)
+                          on (teninfo."1" = branch.branch or split_part(teninfo."1",'_',2) = branch.branch) and split_part(teninfo."1",'_',1) = #{companyCd}
         where
                 branch.shelf_pattern_cd in
                 ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{priorityOrderCd})
