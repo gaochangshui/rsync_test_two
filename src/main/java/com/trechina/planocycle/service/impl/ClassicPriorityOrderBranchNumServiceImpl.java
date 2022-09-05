@@ -657,13 +657,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
         List<Map<String, Object>> expressItemList =new ArrayList<>();
         String janInfoTableName = "";
+        List<Map<String,Object>> janInfoList = new ArrayList<>();
         if (modeCheck == 1){
             janInfoTableName = "priority.work_priority_order_commodity_branch";
             //List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
             //List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd);
             //Map<String, List<Map<String, Object>>> janGroup = branchDiff.stream()
             //        .collect(Collectors.groupingBy(map -> MapUtils.getString(map, "jan")));
-            //List<Map<String,Object>> janInfoList = new ArrayList<>();
             //for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
             //    Map<String,Object> map = new HashMap<>();
             //    map.put("jan",stringListEntry.getValue().get(0).get("jan"));
@@ -692,6 +692,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         map.put("expressItemList",expressItemList);
         map.put("janList",janList);
         map.put("modeCheck",modeCheck);
+        map.put("data",janInfoList);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
