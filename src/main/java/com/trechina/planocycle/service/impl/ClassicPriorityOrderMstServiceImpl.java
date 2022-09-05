@@ -1039,10 +1039,19 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             String attrBigs = bigs;
             String attrSmalls = smalls;
 
-            List<Map<String, Object>> bigList = newPtsJanMap.get(attrBigs).stream().filter(map->
-                    !"1".equals(MapUtils.getString(map, MagicString.DEL_FLAG)) && !"0".equals(MapUtils.getString(map, MagicString.DEL_FLAG))).collect(Collectors.toList());
-            List<Map<String, Object>> smallList = newPtsJanMap.get(attrSmalls).stream().filter(map->
-                    !"1".equals(MapUtils.getString(map, MagicString.DEL_FLAG)) && !"0".equals(MapUtils.getString(map, MagicString.DEL_FLAG))).collect(Collectors.toList());
+            List<Map<String, Object>> bigList = null;
+            List<Map<String, Object>> smallList = null;
+            if(newPtsJanMap.containsKey(attrBigs)){
+                bigList = newPtsJanMap.get(attrBigs).stream().filter(map->
+                        !"1".equals(MapUtils.getString(map, MagicString.DEL_FLAG)) && !"0".equals(MapUtils.getString(map, MagicString.DEL_FLAG))).collect(Collectors.toList());
+            }
+
+            if(newPtsJanMap.containsKey(attrSmalls)){
+                smallList = newPtsJanMap.get(attrSmalls).stream().filter(map->
+                        !"1".equals(MapUtils.getString(map, MagicString.DEL_FLAG)) && !"0".equals(MapUtils.getString(map, MagicString.DEL_FLAG))).collect(Collectors.toList());
+            }else{
+                continue;
+            }
 
             List<Map<String, Object>> smallListSortByRank = smallList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, MagicString.RANK_UPD))).collect(Collectors.toList());
             Map<String, Object> compressJan = smallListSortByRank.get(smallList.size() - 1);
