@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.dto.StarReadingTableDto;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
 import com.trechina.planocycle.entity.vo.CommodityBranchPrimaryKeyVO;
+import com.trechina.planocycle.entity.vo.StarReadingVo;
 import com.trechina.planocycle.service.ClassicPriorityOrderBranchNumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -166,8 +167,8 @@ public class ClassicPriorityOrderBranchNumController {
     /**
      * 星取表信息保存
      */
-    @GetMapping("setStarReadingData")
-    public Map<String,Object> setStarReadingData(String companyCd,Integer priorityOrderCd){
-        return priorityOrderBranchNumService.setStarReadingData(companyCd,priorityOrderCd);
+    @PostMapping("setStarReadingData")
+    public Map<String,Object> setStarReadingData(@RequestBody StarReadingVo starReadingVo){
+        return priorityOrderBranchNumService.setStarReadingData(starReadingVo);
     }
 }

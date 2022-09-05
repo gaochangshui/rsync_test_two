@@ -12,6 +12,7 @@ import com.trechina.planocycle.entity.po.ProductPowerParamVo;
 import com.trechina.planocycle.entity.vo.CommodityBranchPrimaryKeyVO;
 import com.trechina.planocycle.entity.vo.CommodityBranchVO;
 import com.trechina.planocycle.entity.vo.PriorityOrderCommodityVO;
+import com.trechina.planocycle.entity.vo.StarReadingVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderBranchNumService;
@@ -697,8 +698,47 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     }
 
     @Override
-    public Map<String, Object> setStarReadingData(String companyCd, Integer priorityOrderCd) {
-        return null;
+    public Map<String, Object> setStarReadingData(StarReadingVo starReadingVo) {
+        Integer priorityOrderCd = starReadingVo.getPriorityOrderCd();
+        String companyCd = starReadingVo.getCompanyCd();
+        starReadingTableMapper.delBranchList(companyCd,priorityOrderCd);
+        priorityOrderMstMapper.updateModeCheck(starReadingVo);
+        List<String> column = Arrays.asList(starReadingVo.getColumn().split(","));
+        List<String> header = Arrays.asList(starReadingVo.getHeader().split(","));
+        Map<String,Object> pName = new HashMap<>();
+        for (int i = 0; i < column.size(); i++) {
+            pName.put(column.get(i).split("_")[0],header.get(i));
+        }
+        pName.remove("jan");
+        pName.remove("janName");
+        List<Map<String, Object>> list = new ArrayList<>();
+
+            for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
+                String jan = datum.get("jan").toString();
+                for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("jan", jan);
+                    map.put("companyCd", companyCd);
+                    map.put("priorityOrderCd", priorityOrderCd);
+                    if (!stringObjectEntry.getKey().equals("jan") && !stringObjectEntry.getKey().equals("janName") && !stringObjectEntry.getKey().equals("total")) {
+                        map.put("branch", stringObjectEntry.getKey().split("_")[1]);
+                        map.put("flag", stringObjectEntry.getValue().equals("☓") ? -1 : stringObjectEntry.getValue().equals("") ? 0 : 1);
+                        for (Map.Entry<String, Object> objectEntry : pName.entrySet()) {
+                            if (objectEntry.getKey().equals(stringObjectEntry.getKey().split("_")[0])) {
+                                map.put("area", objectEntry.getValue());
+                            }
+                        }
+                    }
+                    list.add(map);
+                }
+            }
+        if (starReadingVo.getModeCheck() == 1) {
+            starReadingTableMapper.setBranchList(list);
+        }else {
+            starReadingTableMapper.setPatternList(list);
+        }
+
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
 

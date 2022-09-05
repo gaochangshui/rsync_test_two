@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.dto.StarReadingTableDto;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
 import com.trechina.planocycle.entity.vo.CommodityBranchPrimaryKeyVO;
+import com.trechina.planocycle.entity.vo.StarReadingVo;
 
 import java.util.List;
 import java.util.Map;
@@ -123,5 +124,5 @@ public interface ClassicPriorityOrderBranchNumService {
 
     Map<String, Object> getStarReadingParam(String companyCd,Integer priorityOrderCd);
 
-    Map<String, Object> setStarReadingData(String companyCd, Integer priorityOrderCd);
+    Map<String, Object> setStarReadingData(StarReadingVo starReadingVo);
 }

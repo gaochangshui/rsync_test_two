@@ -26,4 +26,9 @@ public interface StarReadingTableMapper {
 
     List<Map<String,Object>> getPatterndiffForPattern(@Param("item") StarReadingTableDto starReadingTableDto,@Param("shelfNameCd")List<String> shelfNameCd);
 
+    void setBranchList(List<Map<String,Object>> list);
+
+    void delBranchList(String companyCd, Integer priorityOrderCd);
+
+    void setPatternList(List<Map<String, Object>> list);
 }
