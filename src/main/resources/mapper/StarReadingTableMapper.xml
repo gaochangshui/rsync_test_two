@@ -13,14 +13,14 @@
     </select>
     <select id="getBranchList" resultType="map">
         select
-           branch.branch as "branchCd",teninfo."2" as "branchName"
-             ,COALESCE(teninfo."6",teninfo1."6") as area,concat('area',"dense_rank"() over( order by COALESCE(teninfo."6",teninfo1."6"))) as sort
+            case when  "char_length"(split_part(branch.branch, '_', 2))  > 0 then
+                     split_part( branch.branch, '_', 2 ) else branch
+                end as "branchCd",teninfo."2" as "branchName"
+             ,teninfo."6" as area,concat('area',"dense_rank"() over( order by teninfo."6")) as sort
         from
             planocycle.shelf_pattern_branch branch
                 left join "1000".ten_0000_ten_info teninfo
-                          on teninfo."1" = branch.branch
-                left join "1000".ten_0000_ten_info teninfo1
-                          on split_part(teninfo1."1",'_',2) = branch.branch
+                          on (teninfo."1" = branch.branch or split_part(teninfo."1",'_',2) = branch.branch)
         where
                 branch.shelf_pattern_cd in
                 ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{priorityOrderCd})
@@ -60,7 +60,8 @@
                 left join planocycle.shelf_pts_data_jandata jandata on resultdata.jan_new = jandata.jan
                 left join planocycle.shelf_pts_data ptsdata on jandata.pts_cd = ptsdata.id
                 left join planocycle.shelf_pattern_branch branch on ptsdata.shelf_pattern_cd = branch.shelf_pattern_cd
-                left join "1000".ten_0000_ten_info teninfo on teninfo."1" = branch.branch
+                left join "1000".ten_0000_ten_info teninfo on (teninfo."1" = branch.branch or split_part(teninfo."1",'_',2) = branch.branch)
+
         where
             priority_order_cd = #{item.priorityOrderCd}
           and ptsdata.shelf_pattern_cd in ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{item.priorityOrderCd})

@@ -557,7 +557,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
         List<Map<String, Object>> janName = classicPriorityOrderDataMapper.getJanName(starReadingTableDto.getJanList(),priorityOrderCd);
         if (starReadingTableDto.getModeCheck() == 1) {
-            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,companyCd);
+            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd);
             branchList=branchList.stream().filter(map -> starReadingTableDto.getExpressItemList().contains(map.get("sort"))).collect(Collectors.toList());
             List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList);
 
@@ -578,7 +578,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 map.put("janName",janMap.get("janName"));
                 map.put("total","");
                 for (Map<String, Object> objectMap : branchList) {
-                    map.put(objectMap.get("sort")+"_"+objectMap.get("branchCd").toString(),"×");
+                    map.put(objectMap.get("sort")+"_"+objectMap.get("branchCd").toString(),"☓");
                 }
                 list.add(map);
             }
@@ -596,7 +596,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             }
             for (Map<String, Object> objectMap : branchList) {
                 column += "," + objectMap.get("sort") + "_" + objectMap.get("branchCd");
-                header += "," + objectMap.get("branchName");
+                header += "," + objectMap.get("branchCd")+"<br />"+ objectMap.get("branchName");
                 group.put( objectMap.get("sort").toString(), objectMap.get("area"));
             }
             mapResult.put("column", column);
@@ -616,7 +616,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 map.put("janName",janMap.get("janName"));
                 map.put("total","");
                 for (Map<String, Object> objectMap : patternNameList) {
-                    map.put(objectMap.get("id")+"_"+objectMap.get("shelfPatternCd").toString(),"×");
+                    map.put(objectMap.get("id")+"_"+objectMap.get("shelfPatternCd").toString(),"☓");
                 }
                 list.add(map);
             }

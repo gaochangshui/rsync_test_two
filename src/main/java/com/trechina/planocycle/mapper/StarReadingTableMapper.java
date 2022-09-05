@@ -11,7 +11,7 @@ public interface StarReadingTableMapper {
 
     List<Map<String,Object>> getBranchdiff(@Param("priorityOrderCd") Integer priorityOrderCd);
 
-    List<Map<String,Object>> getBranchList(@Param("priorityOrderCd") Integer priorityOrderCd,@Param("companyCd")String companyCd);
+    List<Map<String,Object>> getBranchList(@Param("priorityOrderCd") Integer priorityOrderCd);
 
     List<Map<String,Object>> getAreaList(Integer priorityOrderCd);
 
