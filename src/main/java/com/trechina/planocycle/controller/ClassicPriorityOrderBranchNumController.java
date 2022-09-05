@@ -1,8 +1,10 @@
 package com.trechina.planocycle.controller;
 
+import com.trechina.planocycle.entity.dto.StarReadingTableDto;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
 import com.trechina.planocycle.entity.vo.CommodityBranchPrimaryKeyVO;
+import com.trechina.planocycle.entity.vo.StarReadingVo;
 import com.trechina.planocycle.service.ClassicPriorityOrderBranchNumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -141,5 +143,32 @@ public class ClassicPriorityOrderBranchNumController {
     @DeleteMapping("/delCommodityNotBranch")
     public Map<String,Object> delCommodityNotBranch(@RequestBody CommodityBranchPrimaryKeyVO commodityBranchPrimaryKeyVO){
         return priorityOrderBranchNumService.delCommodityNotBranch(commodityBranchPrimaryKeyVO);
+    }
+
+
+    /**
+     * 获取星取表
+     */
+    @PostMapping("getStarReadingTable")
+    public Map<String,Object> getStarReadingTable(@RequestBody StarReadingTableDto starReadingTableDto){
+        return priorityOrderBranchNumService.getStarReadingTable(starReadingTableDto);
+    }
+
+
+    /**
+     * 获取星取表参数信息
+     */
+    @GetMapping("getStarReadingParam")
+    public Map<String,Object> getStarReadingParam(String companyCd,Integer priorityOrderCd){
+        return priorityOrderBranchNumService.getStarReadingParam(companyCd,priorityOrderCd);
+    }
+
+
+    /**
+     * 星取表信息保存
+     */
+    @PostMapping("setStarReadingData")
+    public Map<String,Object> setStarReadingData(@RequestBody StarReadingVo starReadingVo){
+        return priorityOrderBranchNumService.setStarReadingData(starReadingVo);
     }
 }

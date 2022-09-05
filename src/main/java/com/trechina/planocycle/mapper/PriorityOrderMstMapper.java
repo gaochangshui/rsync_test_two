@@ -4,6 +4,7 @@ import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMst;
+import com.trechina.planocycle.entity.vo.StarReadingVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -62,4 +63,8 @@ public interface PriorityOrderMstMapper {
 
     PriorityOrderAttrDto selectCommonPartsData(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
     PriorityOrderAttrDto getCommonPartsData(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
+
+    void updateModeCheck(@Param("item") StarReadingVo starReadingVo);
+
+    Integer getModeCheck(Integer priorityOrderCd);
 }
