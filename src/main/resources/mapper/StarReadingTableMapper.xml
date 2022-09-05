@@ -9,42 +9,38 @@
         from priority.work_priority_order_commodity_branch branch
         left join priority.work_priority_order_result_data datas
         on datas.jan_new = branch.jan_cd and branch.priority_order_cd = datas.priority_order_cd
-        where branch.priority_order_cd = #{item.priorityOrderCd} and branch.jan_cd in
-        <foreach collection="item.janList" item="item" separator="," open="(" close=")">
-            #{item}
-        </foreach>
-        and area in
-        <foreach collection="branchList" item="item" separator="," open="(" close=")">
-            #{item.area}
-        </foreach>
+        where branch.priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getBranchList" resultType="map">
         select
-            split_part(branch,'_',2) as "branchCd","2" as "branchName"
-             ,"6" as area,concat('area',"dense_rank"() over( order by "6")) as sort
+            branch as "branchCd",coalesce (teninfo."2",teninfo1."2") as "branchName"
+             ,COALESCE(teninfo."6",teninfo1."6") as area,concat('area',"dense_rank"() over( order by COALESCE(teninfo."6",teninfo1."6"))) as sort
         from
             planocycle.shelf_pattern_branch branch
                 left join "1000".ten_0000_ten_info teninfo
                           on teninfo."1" = branch.branch
+                left join "0001".ten_0000_ten_info teninfo1
+                          on teninfo1."1" = branch.branch
         where
                 branch.shelf_pattern_cd in
                 ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{priorityOrderCd})
-        order by split_part(branch,'_',2) ::integer
     </select>
     <select id="getAreaList" resultType="java.util.Map">
         select
-            distinct "6" as "label",concat('area',"dense_rank"() over( order by "6")) as "value",
+            distinct COALESCE(teninfo."6",teninfo1."6") as "label",concat('area',"dense_rank"() over( order by COALESCE(teninfo."6",teninfo1."6"))) as "value",
                      case when t1.area is null then false else true end as flag,1 as  mode
         from
             planocycle.shelf_pattern_branch branch
             left join "1000".ten_0000_ten_info teninfo
         on teninfo."1" = branch.branch
+            left join "0001".ten_0000_ten_info teninfo1
+                      on teninfo1."1" = branch.branch
         left join (select distinct area from  priority.work_priority_order_commodity_branch where priority_order_cd = #{priorityOrderCd}) t1
         on t1.area = teninfo."6"
         where
             branch.shelf_pattern_cd in
             ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{priorityOrderCd} )
-        order by "6"
+        order by COALESCE(teninfo."6",teninfo1."6")
     </select>
     <select id="getPatternList" resultType="map">
         select distinct concat('pattern',namemst.id) as "value",shelf_name as "label",
@@ -77,6 +73,48 @@
         and "6" in
         <foreach collection="branchList" item="item" separator="," open="(" close=")">
             #{item.area}
+        </foreach>
+    </select>
+    <select id="getPatterndiff" resultType="java.util.Map">
+        select pattern.jan_cd as "jan",sku as "janName" ,shelf_pattern_cd as "shelfPatternCd"
+        ,case when exist_flag =-1 then '×' when exist_flag = 0 then '' else  '◯' end  as flag
+        ,shelf_name_cd as "shelfNameCd"
+        from priority.work_priority_order_commodity_pattern pattern
+        left join priority.work_priority_order_result_data datas
+        on datas.jan_new = pattern.jan_cd and pattern.priority_order_cd = datas.priority_order_cd
+        left join planocycle.shelf_name_mst namemst
+        on namemst.id = shelf_name_cd
+        where pattern.priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getPatternNameList" resultType="java.util.Map">
+        select patternmst.shelf_pattern_cd "shelfPatternCd",shelf_pattern_name "shelfPatternName",concat('pattern',id) id,shelf_name as "shelfName"
+        from priority.work_priority_order_pattern pattern
+        left join  planocycle.shelf_pattern_mst patternmst
+        on pattern.shelf_pattern_cd = patternmst.shelf_pattern_cd and pattern.company_cd = patternmst.company_cd
+        left join  planocycle.shelf_name_mst namemst
+        on namemst.id = patternmst.shelf_name_cd and namemst.company_cd = patternmst.company_cd
+        where priority_order_cd = #{priorityOrderCd}
+        order by namemst.id,patternmst.shelf_pattern_cd
+    </select>
+    <select id="getPatterndiffForPattern" resultType="java.util.Map">
+        select
+        DISTINCT jan_new as jan,sku as "janName",patternmst.shelf_pattern_cd as "shelfPatternCd",'◯' as flag,namemst.shelf_name as "shelfName",concat('pattern',namemst.id)  id
+        from
+        priority.work_priority_order_result_data resultdata
+        left join planocycle.shelf_pts_data_jandata jandata on resultdata.jan_new = jandata.jan
+        left join planocycle.shelf_pts_data ptsdata on jandata.pts_cd = ptsdata.id
+        left join planocycle.shelf_pattern_mst patternmst on ptsdata.shelf_pattern_cd = patternmst.shelf_pattern_cd
+        left join planocycle.shelf_name_mst namemst on patternmst.shelf_name_cd = namemst.id
+        where
+        resultdata.priority_order_cd = #{item.priorityOrderCd}
+        and ptsdata.shelf_pattern_cd in ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{item.priorityOrderCd})
+        and  resultdata.jan_new in
+        <foreach collection="item.janList" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        and namemst.id in
+        <foreach collection="shelfNameCd" item="item" separator="," open="(" close=")">
+            #{item} ::integer
         </foreach>
     </select>
 </mapper>

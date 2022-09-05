@@ -548,16 +548,17 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
     @Override
     public Map<String, Object> getStarReadingTable(StarReadingTableDto starReadingTableDto) {
-
+        Integer priorityOrderCd = starReadingTableDto.getPriorityOrderCd();
+        String companyCd = starReadingTableDto.getCompanyCd();
         //priorityOrderMstMapper.updateModeCheck(starReadingTableDto);
         String column = "jan,janName";
         String header = "JAN,商品名";
         Map mapResult = new HashMap();
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
+        List<Map<String, Object>> janName = classicPriorityOrderDataMapper.getJanName(starReadingTableDto.getJanList(),priorityOrderCd);
         if (starReadingTableDto.getModeCheck() == 1) {
-            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(starReadingTableDto);
+            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd);
             branchList=branchList.stream().filter(map -> starReadingTableDto.getExpressItemList().contains(map.get("sort"))).collect(Collectors.toList());
-            List<Map<String, Object>> saveBranch = starReadingTableMapper.getBranchdiff(starReadingTableDto,branchList);
             List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList);
 
             if (!autoBranch.isEmpty()){
@@ -569,15 +570,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     }
                 }
             }
-            for (Map<String, Object> branch : saveBranch) {
-                for (Map<String, Object> objectMap : autoBranch) {
-                    if (branch.get("jan").equals(objectMap.get("jan"))&& branch.get("branchCd").equals(objectMap.get("branchCd"))){
-                        objectMap.put("flag",branch.get("flag"));
-                    }
-                }
-            }
             List<Map<String, Object>> list = new ArrayList();
-            List<Map<String, Object>> janName = classicPriorityOrderDataMapper.getJanName(starReadingTableDto.getJanList());
+
             for (Map<String,Object> janMap : janName) {
                 Map<String,Object> map = new HashMap<>();
                 map.put("jan",janMap.get("jan"));
@@ -599,21 +593,6 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 }
 
             }
-            //for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
-            //    Map<String, Object> objectMap = new HashMap<>();
-            //    objectMap.put("jan", stringListEntry.getKey());
-            //    objectMap.put("janName", stringListEntry.getValue().get(0).get("janName"));
-            //    for (Map<String, Object> map : stringListEntry.getValue()) {
-            //        for (Map<String, Object> stringObjectMap : branchList) {
-            //            if (stringObjectMap.get("area").equals(map.get("area").toString())) {
-            //                objectMap.put(stringObjectMap.get("sort") + "_" + map.get("branchCd").toString(), map.get("flag"));
-            //            }
-            //            objectMap.putIfAbsent(stringObjectMap.get("sort") + "_" + map.get("branchCd").toString(), 0);
-            //        }
-            //
-            //    }
-            //    list.add(objectMap);
-            //}
             for (Map<String, Object> objectMap : branchList) {
                 column += "," + objectMap.get("sort") + "_" + objectMap.get("branchCd");
                 header += "," + objectMap.get("branchName");
@@ -623,10 +602,47 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             mapResult.put("header", header);
             mapResult.put("group", group);
             mapResult.put("data", list);
-            return ResultMaps.result(ResultEnum.SUCCESS,mapResult);
-        }
 
-        return ResultMaps.result(ResultEnum.SUCCESS);
+        }else {
+            List<String> expressItemList = starReadingTableDto.getExpressItemList();
+            List<String> pattern = expressItemList.stream().map(item -> item.split("pattern")[1]).collect(Collectors.toList());
+            List<Map<String, Object>> patternNameList = starReadingTableMapper.getPatternNameList(priorityOrderCd);
+            List<Map<String, Object>> patternDiffForPattern = starReadingTableMapper.getPatterndiffForPattern(starReadingTableDto, pattern);
+            List<Map<String, Object>> list = new ArrayList();
+            for (Map<String,Object> janMap : janName) {
+                Map<String,Object> map = new HashMap<>();
+                map.put("jan",janMap.get("jan"));
+                map.put("janName",janMap.get("janName"));
+                for (Map<String, Object> objectMap : patternNameList) {
+                    map.put(objectMap.get("id")+"_"+objectMap.get("shelfPatternCd").toString(),"×");
+                }
+                list.add(map);
+            }
+
+            Map<String, List<Map<String, Object>>> janGroup = patternDiffForPattern.stream()
+                    .collect(Collectors.groupingBy(map -> MapUtils.getString(map, "jan")));
+            for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
+                for (Map<String, Object> map : stringListEntry.getValue()) {
+                    for (Map<String, Object> stringObjectMap : list) {
+                        if (stringObjectMap.get("jan").equals(stringListEntry.getKey())){
+                            stringObjectMap.put(map.get("id")+"_"+map.get("shelfPatternCd"),map.get("flag"));
+                        }
+                    }
+                }
+
+            }
+
+            for (Map<String, Object> objectMap : patternNameList) {
+                column += "," + objectMap.get("id") + "_" + objectMap.get("shelfPatternCd");
+                header += "," + objectMap.get("shelfPatternName");
+                group.put( objectMap.get("id").toString(), objectMap.get("shelfName"));
+            }
+            mapResult.put("column", column);
+            mapResult.put("header", header);
+            mapResult.put("group", group);
+            mapResult.put("data", list);
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS,mapResult);
     }
 
     @Override
@@ -641,19 +657,45 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         String janInfoTableName = "";
         if (modeCheck == 1){
             janInfoTableName = "priority.work_priority_order_commodity_branch";
+            //List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
+            //List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd);
+            //Map<String, List<Map<String, Object>>> janGroup = branchDiff.stream()
+            //        .collect(Collectors.groupingBy(map -> MapUtils.getString(map, "jan")));
+            //List<Map<String,Object>> janInfoList = new ArrayList<>();
+            //for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
+            //    Map<String,Object> map = new HashMap<>();
+            //    map.put("jan",stringListEntry.getValue().get(0).get("jan"));
+            //    map.put("janName",stringListEntry.getValue().get(0).get("janName"));
+            //    for (Map<String, Object> objectMap : branchList) {
+            //        for (Map<String, Object> stringObjectMap : stringListEntry.getValue()) {
+            //            if (objectMap.get("branchCd").equals(stringObjectMap.get("branchCd"))){
+            //                map.put(objectMap.get("sort")+"_"+objectMap.get("branchCd"),stringObjectMap.get("flag"));
+            //            }
+            //        }
+            //    }
+            //    janInfoList.add(map);
+            //}
+
         }else if (modeCheck == 0){
             janInfoTableName = "priority.work_priority_order_commodity_pattern";
+            //List<Map<String, Object>> patternDiff = starReadingTableMapper.getPatterndiff(priorityOrderCd);
         }
         List<Map<String, Object>> areaList = starReadingTableMapper.getAreaList(priorityOrderCd);
         List<Map<String, Object>>  patternList =  starReadingTableMapper.getPatternList(priorityOrderCd);
         expressItemList.addAll(areaList);
         expressItemList.addAll(patternList);
         List<Map<String, Object>> janList = classicPriorityOrderDataMapper.getJanInfo(priorityOrderCd,janInfoTableName);
+
         Map<String,Object> map = new HashMap<>();
         map.put("expressItemList",expressItemList);
         map.put("janList",janList);
         map.put("modeCheck",modeCheck);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
+    }
+
+    @Override
+    public Map<String, Object> setStarReadingData(String companyCd, Integer priorityOrderCd) {
+        return null;
     }
 
 

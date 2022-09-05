@@ -122,4 +122,6 @@ public interface ClassicPriorityOrderBranchNumService {
     Map<String, Object> getStarReadingTable(StarReadingTableDto starReadingTableDto);
 
     Map<String, Object> getStarReadingParam(String companyCd,Integer priorityOrderCd);
+
+    Map<String, Object> setStarReadingData(String companyCd, Integer priorityOrderCd);
 }

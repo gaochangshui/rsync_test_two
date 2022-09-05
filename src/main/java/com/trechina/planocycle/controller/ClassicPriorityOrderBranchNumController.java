@@ -161,4 +161,13 @@ public class ClassicPriorityOrderBranchNumController {
     public Map<String,Object> getStarReadingParam(String companyCd,Integer priorityOrderCd){
         return priorityOrderBranchNumService.getStarReadingParam(companyCd,priorityOrderCd);
     }
+
+
+    /**
+     * 星取表信息保存
+     */
+    @GetMapping("setStarReadingData")
+    public Map<String,Object> setStarReadingData(String companyCd,Integer priorityOrderCd){
+        return priorityOrderBranchNumService.setStarReadingData(companyCd,priorityOrderCd);
+    }
 }

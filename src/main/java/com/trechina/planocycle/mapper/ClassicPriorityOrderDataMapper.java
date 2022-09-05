@@ -126,5 +126,5 @@ public interface ClassicPriorityOrderDataMapper {
 
     List<Map<String,Object>> getJanInfo(Integer priorityOrderCd,String janInfoTableName);
 
-    List<Map<String,Object>> getJanName(List<String> janList);
+    List<Map<String,Object>> getJanName(List<String> janList,Integer priorityOrderCd);
 }
