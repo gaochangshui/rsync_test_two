@@ -13,34 +13,30 @@
     </select>
     <select id="getBranchList" resultType="map">
         select
-            branch as "branchCd",coalesce (teninfo."2",teninfo1."2") as "branchName"
+            branch as "branchCd",teninfo."2" as "branchName"
              ,COALESCE(teninfo."6",teninfo1."6") as area,concat('area',"dense_rank"() over( order by COALESCE(teninfo."6",teninfo1."6"))) as sort
         from
             planocycle.shelf_pattern_branch branch
                 left join "1000".ten_0000_ten_info teninfo
                           on teninfo."1" = branch.branch
-                left join "0001".ten_0000_ten_info teninfo1
-                          on teninfo1."1" = branch.branch
         where
                 branch.shelf_pattern_cd in
                 ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{priorityOrderCd})
     </select>
     <select id="getAreaList" resultType="java.util.Map">
         select
-            distinct COALESCE(teninfo."6",teninfo1."6") as "label",concat('area',"dense_rank"() over( order by COALESCE(teninfo."6",teninfo1."6"))) as "value",
+            distinct teninfo."6" as "label",concat('area',"dense_rank"() over( order by teninfo."6")) as "value",
                      case when t1.area is null then false else true end as flag,1 as  mode
         from
             planocycle.shelf_pattern_branch branch
             left join "1000".ten_0000_ten_info teninfo
         on teninfo."1" = branch.branch
-            left join "0001".ten_0000_ten_info teninfo1
-                      on teninfo1."1" = branch.branch
         left join (select distinct area from  priority.work_priority_order_commodity_branch where priority_order_cd = #{priorityOrderCd}) t1
         on t1.area = teninfo."6"
         where
             branch.shelf_pattern_cd in
-            ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{priorityOrderCd} )
-        order by COALESCE(teninfo."6",teninfo1."6")
+            ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{priorityOrderCd})
+        order by teninfo."6"
     </select>
     <select id="getPatternList" resultType="map">
         select distinct concat('pattern',namemst.id) as "value",shelf_name as "label",
