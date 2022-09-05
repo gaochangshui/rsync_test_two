@@ -994,20 +994,16 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     }
 
                     adoptPtsJanList.set(i, ptsJan);
-                }else{
-                    boolean ptsIsExist = resultData.stream().anyMatch(pts->MapUtils.getString(pts, MagicString.JAN).equals(jan));
-                    Optional<PriorityOrderCatePakVO> smallOpt = catePakList.stream().filter(catePak -> catePak.getSmalls().equals(attrKey)
-                            && catePak.getRank().toString().equals(rankUpd) && ptsIsExist).findAny();
-                    int finalI = i;
-                    smallOpt.ifPresent(priorityOrderCatePakVO -> {
-                        Map<String, String> catePakItemMap = catePakMap.getOrDefault(smallOpt.get().getBigs()+"@"+rankUpd, Maps.newHashMap());
-                        catePakItemMap.put(MagicString.SMALLS, priorityOrderCatePakVO.getSmalls());
-                        catePakItemMap.put(MagicString.SMALLS_INDEX, finalI +"");
-                        catePakItemMap.put(MagicString.SMALLS_JAN,  jan);
-                        catePakMap.put(priorityOrderCatePakVO.getBigs()+"@"+rankUpd, catePakItemMap);
-                    });
                 }
+            }
 
+            int finalSkuNumInit = skuNumInit;
+            List<PriorityOrderCatePakVO> catePakVOS = catePakList.stream().filter(catePak -> catePak.getSmalls().equals(group)
+                    && Integer.parseInt(catePak.getRank().toString()) <= finalSkuNumInit).collect(Collectors.toList());
+            for (PriorityOrderCatePakVO catePakVO : catePakVOS) {
+                Map<String, String> catePakItemMap = catePakMap.getOrDefault(catePakVO.getBigs()+"@"+catePakVO.getRank(), Maps.newHashMap());
+                catePakItemMap.put(MagicString.SMALLS, catePakVO.getSmalls());
+                catePakMap.put(catePakVO.getBigs()+"@"+catePakVO.getRank(), catePakItemMap);
             }
 
             String transferGroup = group;
@@ -1066,7 +1062,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
             Map<String, Object> ptsJanMap = smallList.get(smallsIndex);
 
-            if(deleteJanList.stream().noneMatch(map->smallJan.equals(map.get(MagicString.JAN).toString())) && !repeatOldJan.containsKey(smallJan)){
+            if(deleteJanList.stream().noneMatch(map->smallJan.equals(map.get(MagicString.JAN_OLD).toString())) && !repeatOldJan.containsKey(smallJan)){
                 Map<String, Object> oldJanMap = new HashMap<>(ptsJanMap);
                 oldJanMap.put("pattern_name", pattern.getShelfPatternName());
                 oldJanMap.put(MagicString.PTS_NAME, fileName);
