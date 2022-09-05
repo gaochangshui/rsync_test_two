@@ -340,7 +340,8 @@
     </insert>
 
     <select id="getJanAttrColWK" resultType="java.lang.String">
-        select "3" from ${tableName}
+        select "3" from ${tableNameHeaderWK}
+        union select "3" from ${tableNameKaisouHeader}
     </select>
     <select id="getAttrNameForId" resultType="java.lang.String">
         select distinct "2"

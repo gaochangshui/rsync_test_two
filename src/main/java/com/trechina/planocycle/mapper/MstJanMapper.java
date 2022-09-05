@@ -137,7 +137,7 @@ public interface MstJanMapper {
      * 同期Janコラムを取得
      * @return
      */
-    List<String> getJanAttrColWK(String tableName);
+    List<String> getJanAttrColWK(String tableNameHeaderWK,String tableNameKaisouHeader);
 
     /**
      * 重複Janを削除
