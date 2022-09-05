@@ -107,6 +107,9 @@
     select common_parts_data,priority_order_cd,company_cd  from planocycle.priority_order_mst
     where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
+  <select id="getModeCheck" resultType="java.lang.Integer">
+    select mode_check from priority.work_priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+  </select>
   <update id="updateOrderName">
     update planocycle.priority_order_mst set priority_order_name=#{priorityOrderName} where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     and deleteflg=0
@@ -129,5 +132,9 @@
             tana_wid_check = #{tanaWidthCheck}
         </trim>
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and author_cd = #{authorCd}
+    </update>
+    <update id="updateModeCheck">
+      update  priority.work_priority_order_mst set mode_check = #{item.modeCheck}
+        where priority_order_cd = #{item.priorityOrderCd,jdbcType=INTEGER}
     </update>
 </mapper>
