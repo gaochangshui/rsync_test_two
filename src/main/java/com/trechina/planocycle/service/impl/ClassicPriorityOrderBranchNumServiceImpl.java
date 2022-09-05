@@ -666,7 +666,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
             List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,companyCd);
             List<Object> branchCd = branchDiff.stream().map(map -> map.get("branchCd")).collect(Collectors.toList());
-            branchList=branchList.stream().filter(map ->branchCd.contains(map.get("area"))).collect(Collectors.toList());
+            branchList=branchList.stream().filter(map ->branchCd.contains(map.get("branchCd"))).collect(Collectors.toList());
             Map<String, List<Map<String, Object>>> janGroup = branchDiff.stream()
                     .collect(Collectors.groupingBy(map -> MapUtils.getString(map, "jan")));
             List<Map<String, Object>> list = new ArrayList();
