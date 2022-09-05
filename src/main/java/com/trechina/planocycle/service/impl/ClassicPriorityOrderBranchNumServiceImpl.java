@@ -652,10 +652,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     public Map<String, Object> getStarReadingParam(String companyCd,Integer priorityOrderCd) {
 
         Integer modeCheck = priorityOrderMstMapper.getModeCheck(priorityOrderCd);
+        Boolean isModeCheck = true;
         if (modeCheck == null){
             modeCheck =1;
+            isModeCheck = false;
         }
-
         List<Map<String, Object>> expressItemList =new ArrayList<>();
         String janInfoTableName = "";
         String column = "jan,janName,total";
@@ -675,6 +676,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 Map<String,Object> map = new HashMap<>();
                 map.put("jan",stringListEntry.getValue().get(0).get("jan"));
                 map.put("janName",stringListEntry.getValue().get(0).get("janName"));
+                map.put("total","");
                 for (Map<String, Object> objectMap : branchList) {
                     for (Map<String, Object> stringObjectMap : stringListEntry.getValue()) {
                         if (objectMap.get("branchCd").equals(stringObjectMap.get("branchCd"))){
@@ -739,7 +741,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         map.put("expressItemList",expressItemList);
         map.put("janList",janList);
         map.put("modeCheck",modeCheck);
-        map.put("data",mapResult.isEmpty()?null:mapResult);
+        map.put("data",!isModeCheck?null:mapResult);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
@@ -753,7 +755,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         if (starReadingVo.getData().isEmpty()){
             starReadingVo.setModeCheck(null);
             priorityOrderMstMapper.updateModeCheck(starReadingVo);
-            ResultMaps.result(ResultEnum.SUCCESS);
+            return ResultMaps.result(ResultEnum.SUCCESS);
         }
         List<Map<String, Object>> list = new ArrayList<>();
 
