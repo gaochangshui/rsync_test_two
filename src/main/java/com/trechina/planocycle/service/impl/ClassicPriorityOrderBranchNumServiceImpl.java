@@ -749,9 +749,6 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         starReadingTableMapper.delBranchList(companyCd,priorityOrderCd);
         starReadingTableMapper.delPatternList(companyCd,priorityOrderCd);
         priorityOrderMstMapper.updateModeCheck(starReadingVo);
-        List<String> column = Arrays.asList(starReadingVo.getColumn().split(","));
-        List<String> header = Arrays.asList(starReadingVo.getHeader().split(","));
-
         List<Map<String, Object>> list = new ArrayList<>();
 
             for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
