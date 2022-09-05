@@ -557,7 +557,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
         List<Map<String, Object>> janName = classicPriorityOrderDataMapper.getJanName(starReadingTableDto.getJanList(),priorityOrderCd);
         if (starReadingTableDto.getModeCheck() == 1) {
-            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd);
+            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,companyCd);
             branchList=branchList.stream().filter(map -> starReadingTableDto.getExpressItemList().contains(map.get("sort"))).collect(Collectors.toList());
             List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList);
 
@@ -576,6 +576,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 Map<String,Object> map = new HashMap<>();
                 map.put("jan",janMap.get("jan"));
                 map.put("janName",janMap.get("janName"));
+                map.put("total","");
                 for (Map<String, Object> objectMap : branchList) {
                     map.put(objectMap.get("sort")+"_"+objectMap.get("branchCd").toString(),"×");
                 }
