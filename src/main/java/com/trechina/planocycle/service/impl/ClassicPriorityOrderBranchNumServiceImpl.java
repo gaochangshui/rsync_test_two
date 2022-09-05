@@ -551,8 +551,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         Integer priorityOrderCd = starReadingTableDto.getPriorityOrderCd();
         String companyCd = starReadingTableDto.getCompanyCd();
         //priorityOrderMstMapper.updateModeCheck(starReadingTableDto);
-        String column = "jan,janName";
-        String header = "JAN,商品名";
+        String column = "jan,janName,total";
+        String header = "JAN,商品名,合計";
         Map mapResult = new HashMap();
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
         List<Map<String, Object>> janName = classicPriorityOrderDataMapper.getJanName(starReadingTableDto.getJanList(),priorityOrderCd);
@@ -613,6 +613,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 Map<String,Object> map = new HashMap<>();
                 map.put("jan",janMap.get("jan"));
                 map.put("janName",janMap.get("janName"));
+                map.put("total","");
                 for (Map<String, Object> objectMap : patternNameList) {
                     map.put(objectMap.get("id")+"_"+objectMap.get("shelfPatternCd").toString(),"×");
                 }
