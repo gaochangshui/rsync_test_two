@@ -666,7 +666,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
             List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,companyCd);
             List<Object> branchCd = branchDiff.stream().map(map -> map.get("branchCd")).collect(Collectors.toList());
-            branchList=branchList.stream().filter(map ->branchCd.contains(map.get("area"))).collect(Collectors.toList());
+            branchList=branchList.stream().filter(map ->branchCd.contains(map.get("branchCd"))).collect(Collectors.toList());
             Map<String, List<Map<String, Object>>> janGroup = branchDiff.stream()
                     .collect(Collectors.groupingBy(map -> MapUtils.getString(map, "jan")));
             List<Map<String, Object>> list = new ArrayList();
@@ -746,17 +746,9 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     public Map<String, Object> setStarReadingData(StarReadingVo starReadingVo) {
         Integer priorityOrderCd = starReadingVo.getPriorityOrderCd();
         String companyCd = starReadingVo.getCompanyCd();
-        //starReadingTableMapper.delBranchList(companyCd,priorityOrderCd);
+        starReadingTableMapper.delBranchList(companyCd,priorityOrderCd);
         starReadingTableMapper.delPatternList(companyCd,priorityOrderCd);
         priorityOrderMstMapper.updateModeCheck(starReadingVo);
-        List<String> column = Arrays.asList(starReadingVo.getColumn().split(","));
-        List<String> header = Arrays.asList(starReadingVo.getHeader().split(","));
-        Map<String,Object> pName = new HashMap<>();
-        for (int i = 0; i < column.size(); i++) {
-            pName.put(column.get(i).split("_")[0],header.get(i));
-        }
-        pName.remove("jan");
-        pName.remove("janName");
         List<Map<String, Object>> list = new ArrayList<>();
 
             for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
@@ -772,7 +764,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                         if (starReadingVo.getModeCheck() == 0){
                             map.put("patternNameCd",Integer.valueOf(stringObjectEntry.getKey().split("_")[0].split("pattern")[1]));
                         }
-                        for (Map.Entry<String, Object> objectEntry : pName.entrySet()) {
+                        for (Map.Entry<String, Object> objectEntry : starReadingVo.getGroup().entrySet()) {
                             if (objectEntry.getKey().equals(stringObjectEntry.getKey().split("_")[0])) {
                                 map.put("area", objectEntry.getValue());
                             }
