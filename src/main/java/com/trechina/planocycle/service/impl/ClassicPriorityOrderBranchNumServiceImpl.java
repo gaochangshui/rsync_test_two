@@ -608,6 +608,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             List<String> expressItemList = starReadingTableDto.getExpressItemList();
             List<String> pattern = expressItemList.stream().map(item -> item.split("pattern")[1]).collect(Collectors.toList());
             List<Map<String, Object>> patternNameList = starReadingTableMapper.getPatternNameList(priorityOrderCd);
+            patternNameList = patternNameList.stream().filter(map->expressItemList.contains(map.get("id").toString())).collect(Collectors.toList());
             List<Map<String, Object>> patternDiffForPattern = starReadingTableMapper.getPatterndiffForPattern(starReadingTableDto, pattern);
             List<Map<String, Object>> list = new ArrayList();
             for (Map<String,Object> janMap : janName) {

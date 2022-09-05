@@ -74,13 +74,15 @@
     </select>
     <select id="getBranchdiffForBranch" resultType="java.util.Map">
         select
-            DISTINCT jan_new as jan,sku as "janName",split_part(branch,'_',2)as "branchCd",'◯' as flag,"6" as area
+            DISTINCT jan_new as jan,sku as "janName", case when  "char_length"(split_part(branch.branch, '_', 2))  > 0 then
+        split_part( branch.branch, '_', 2 ) else branch
+        end as "branchCd",'◯' as flag,"6" as area
         from
             priority.work_priority_order_result_data resultdata
                 left join planocycle.shelf_pts_data_jandata jandata on resultdata.jan_new = jandata.jan
                 left join planocycle.shelf_pts_data ptsdata on jandata.pts_cd = ptsdata.id
                 left join planocycle.shelf_pattern_branch branch on ptsdata.shelf_pattern_cd = branch.shelf_pattern_cd
-                left join "1000".ten_0000_ten_info teninfo on (teninfo."1" = branch.branch or split_part(teninfo."1",'_',2) = branch.branch)
+                left join "1000".ten_0000_ten_info teninfo on (teninfo."1" = branch.branch or split_part(teninfo."1",'_',2) = branch.branch) and split_part(teninfo."1",'_',1) = #{item.companyCd}
 
         where
             priority_order_cd = #{item.priorityOrderCd}
