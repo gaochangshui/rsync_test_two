@@ -164,4 +164,20 @@
         from priority.priority_order_commodity_branch comm_branch
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd} and shelf_pattern_cd=#{shelfPatternCd} and exist_flag!=0
     </select>
+    <delete id="deleteFinalByBranch">
+        DELETE FROM priority.priority_order_commodity_branch WHERE company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </delete>
+    <delete id="deleteFinalByPattern">
+        DELETE FROM priority.priority_order_commodity_pattern WHERE company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </delete>
+    <insert id="setFinalForWorkByBranch">
+        insert into  priority.priority_order_commodity_branch
+        select * from priority.work_priority_order_commodity_branch
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </insert>
+    <insert id="setFinalForWorkByPattern">
+        insert into  priority.priority_order_commodity_pattern
+        select * from priority.work_priority_order_commodity_pattern
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </insert>
 </mapper>

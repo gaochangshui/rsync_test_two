@@ -40,4 +40,11 @@ public interface StarReadingTableMapper {
 
     int selectCountMustNotJan(String companyCd, Integer priorityOrderCd);
 
+    void deleteFinalByBranch(String companyCd, Integer priorityOrderCd);
+
+    void deleteFinalByPattern(String companyCd, Integer priorityOrderCd);
+
+    int setFinalForWorkByBranch(String companyCd, Integer priorityOrderCd);
+
+    int setFinalForWorkByPattern(String companyCd, Integer priorityOrderCd);
 }

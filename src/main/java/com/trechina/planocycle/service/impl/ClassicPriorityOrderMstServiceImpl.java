@@ -204,18 +204,25 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderAttributeClassifyMapper.deleteFinal(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderAttributeClassifyMapper.insertFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
 
-            //resultData保存
+            //save resultData
             priorityOrderResultDataMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderResultDataMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd(),authorCd);
-            //屬性attr保存
+            //save 屬性attr
             priorityOrderMstAttrSortMapper.deleteAttrFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMstAttrSortMapper.insertAttrFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            //sort保存
+            // save sort
             priorityOrderMstAttrSortMapper.deleteAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMstAttrSortMapper.insertAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            //group保存
+            // save group
             priorityOrderPtsClassifyMapper.deleteFinal(companyCd,priorityOrderCd);
             priorityOrderPtsClassifyMapper.setFinalForWork(companyCd,priorityOrderCd);
+            //save 星取表 branch
+            starReadingTableMapper.deleteFinalByBranch(companyCd,priorityOrderCd);
+            starReadingTableMapper.setFinalForWorkByBranch(companyCd,priorityOrderCd);
+            //save 星取表 pattern
+            starReadingTableMapper.deleteFinalByPattern(companyCd,priorityOrderCd);
+            starReadingTableMapper.setFinalForWorkByPattern(companyCd,priorityOrderCd);
+
             List<PriorityOrderPattern> priorityOrderPatternList = new ArrayList<>();
             String[] shelfPatternList = priorityOrderMstDto.getShelfPatternCd().split(",");
             for (int i = 0; i < shelfPatternList.length; i++) {
