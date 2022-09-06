@@ -38,7 +38,7 @@ public interface StarReadingTableMapper {
 
     List<Map<String, Object>> selectJanForBranch(String companyCd, Integer priorityOrderCd, String branchList);
 
-    int selectCountMustNotJan(String companyCd, Integer priorityOrderCd);
+    List<String> selectBranchMustNotJan(String companyCd, Integer priorityOrderCd);
 
     void deleteFinalByBranch(String companyCd, Integer priorityOrderCd);
 

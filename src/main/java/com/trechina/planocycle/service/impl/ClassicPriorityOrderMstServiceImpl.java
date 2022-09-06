@@ -8,6 +8,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.trechina.planocycle.constant.MagicString;
@@ -623,12 +624,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 Set<String> mustNotBranch = new HashSet<>(mustBranch);
                 mustNotBranch.addAll(notBranch);
 
-                int allBranchSize = shelfPatternBranchMapper.selectByPrimaryKey(shelfPatternCd).size();
+                List<String> allBranchList = shelfPatternBranchMapper.selectByPrimaryKey(shelfPatternCd)
+                        .stream().map(shelfPattern->shelfPattern.getBranch().contains("_")?shelfPattern.getBranch().split("_")[1]:shelfPattern.getBranch()).collect(Collectors.toList());
                 boolean isAllForMustNot = true;
 
                 if(Objects.equals(modeCheck, 1)){
                     //if all branch
-                    isAllForMustNot = Objects.equals(allBranchSize,starReadingTableMapper.selectCountMustNotJan(companyCd, priorityOrderCd));
+                    List<String> branchList = starReadingTableMapper.selectBranchMustNotJan(companyCd, priorityOrderCd);
+                    long count = Sets.intersection(Sets.newHashSet(allBranchList), Sets.newHashSet(branchList)).stream().count();
+                    isAllForMustNot = Objects.equals(count,branchList.size());
                 }
 
                 //must and not only one branch, download a pts csv
