@@ -193,4 +193,7 @@ public class MagicString {
     public static final String TASK_STATUS_SUCCESS = "1";
 
     public static final Integer TASK_TIME_OUT = 10;
+
+    public static final Integer START_READING_STATUS_MUST = 1;
+    public static final Integer START_READING_STATUS_NOT = -1;
 }

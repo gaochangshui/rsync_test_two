@@ -32,6 +32,10 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
     order by priority_order_cd desc
   </select>
+  <select id="selectModeCheck" resultType="int">
+    select mode_check from priority.priority_order_mst
+    where priority_order_cd = #{priorityOrderCd}
+  </select>
   <select id="selectPriorityOrderCount" resultType="java.lang.Integer">
     select count(1)
     from priority.shelf_pts_data pts

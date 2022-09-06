@@ -33,4 +33,11 @@ public interface StarReadingTableMapper {
     void setPatternList(List<Map<String, Object>> list);
 
     void delPatternList(String companyCd, Integer priorityOrderCd);
+
+    List<Map<String, Object>> selectJanForPattern(String companyCd, Integer priorityOrderCd, Integer shelfPatternCd);
+
+    List<Map<String, Object>> selectJanForBranch(String companyCd, Integer priorityOrderCd, String branchList);
+
+    int selectCountMustNotJan(String companyCd, Integer priorityOrderCd);
+
 }

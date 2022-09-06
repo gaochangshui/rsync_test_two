@@ -133,6 +133,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     private WorkPriorityOrderPtsClassifyMapper workPriorityOrderPtsClassify;
     @Autowired
     private JansMapper jansMapper;
+    @Autowired
+    private StarReadingTableMapper starReadingTableMapper;
     /**
      * 優先順位テーブルlistの取得
      *
@@ -522,6 +524,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
         cacheUtil.put(taskId, "1");
 
+        Integer modeCheck = priorityOrderMstMapper.selectModeCheck(priorityOrderCd);
+
         long currentTimeMillis = System.currentTimeMillis();
         String fileParentPath = Joiner.on(File.separator).join(Lists.newArrayList(path, currentTimeMillis));
         File file = new File(fileParentPath);
@@ -576,8 +580,20 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 //                        .collect(Collectors.toList());
 
                 List<String> patternBranchCd = patternBranches.stream().map(map->map.get("branch").toString()).collect(Collectors.toList());
-                List<Map<String, Object>> commodityMustJans = priorityOrderCommodityMustMapper.selectMustJan(companyCd, priorityOrderCd, Joiner.on(",").join(patternBranchCd), shelfPatternCd);
-                List<Map<String, Object>> commodityNotJans = priorityOrderCommodityNotMapper.selectNotJan(companyCd, priorityOrderCd, Joiner.on(",").join(patternBranchCd), shelfPatternCd);
+                List<Map<String, Object>> commodityMustJans = null;
+                List<Map<String, Object>> commodityNotJans = null;
+                List<Map<String, Object>> janMustNot = null;
+
+                if(Objects.equals(modeCheck, 1)){
+                    //branch
+                    janMustNot = starReadingTableMapper.selectJanForBranch(companyCd, priorityOrderCd, Joiner.on(",").join(patternBranchCd));
+                }else{
+                    //pattern
+                    janMustNot = starReadingTableMapper.selectJanForPattern(companyCd, priorityOrderCd, shelfPatternCd);
+                }
+
+                commodityMustJans = janMustNot.stream().filter(map->MapUtils.getInteger(map,"exist_flag").equals(MagicString.START_READING_STATUS_MUST)).collect(Collectors.toList());
+                commodityNotJans = janMustNot.stream().filter(map->MapUtils.getInteger(map,"exist_flag").equals(MagicString.START_READING_STATUS_NOT)).collect(Collectors.toList());
 
                 if(commodityMustJans.isEmpty() && commodityNotJans.isEmpty()){
                     branchMustNot = false;
@@ -601,10 +617,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 mustNotBranch.addAll(notBranch);
 
                 int allBranchSize = shelfPatternBranchMapper.selectByPrimaryKey(shelfPatternCd).size();
-                boolean isAllForMust = Objects.equals(allBranchSize,priorityOrderCommodityMustMapper.selectCountMustJan(companyCd, priorityOrderCd, shelfPatternCd));
-                boolean isAllForNot = Objects.equals(allBranchSize,priorityOrderCommodityNotMapper.selectCountNotJan(companyCd, priorityOrderCd, shelfPatternCd));
+                boolean isAllForMustNot = true;
+
+                if(Objects.equals(modeCheck, 1)){
+                    //if all branch
+                    isAllForMustNot = Objects.equals(allBranchSize,starReadingTableMapper.selectCountMustNotJan(companyCd, priorityOrderCd));
+                }
+
                 //must and not only one branch, download a pts csv
-                if(mustNotBranch.size()!=1 && !(isAllForNot||isAllForMust)){
+                if(mustNotBranch.size()!=1 && !isAllForMustNot){
                     String json = new Gson().toJson(ptsJanDtoListByGroup);
                     Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
                             new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
@@ -617,26 +638,31 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
                 if(branchMustNot){
                     //commodity_must+commodity_not
+                    boolean finalIsAllForMustNot = isAllForMustNot;
+                    List<Map<String, Object>> finalCommodityMustJans = commodityMustJans;
+                    List<Map<String, Object>> finalCommodityNotJans = commodityNotJans;
+
                     CompletableFuture<Map<String, List<Map<String, Object>>>> mustNotFuture = CompletableFuture.supplyAsync(() -> {
                         Map<String, List<Map<String, Object>>> resultMap = new ConcurrentHashMap<>();
-                        if(isAllForNot||isAllForMust){
+                        if(finalIsAllForMustNot){
                             String json = new Gson().toJson(ptsJanDtoListByGroup);
                             Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
                                     new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
                             Map<String, List<Map<String, Object>>> tmpResultMap = doNewOldPtsCompare(finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
                                     shelfPtsHeaderDto, ptsVersion, catePakList, companyCd, fileParentPath,
-                                    Maps.newHashMap(), commodityMustJans, commodityNotJans, janReplaceMap, ptsJanDtoList);
+                                    Maps.newHashMap(), finalCommodityMustJans, finalCommodityNotJans, janReplaceMap, ptsJanDtoList);
 
                             resultMap.put(MagicString.DELETE_LIST, tmpResultMap.getOrDefault(MagicString.DELETE_LIST, Lists.newArrayList()));
                             resultMap.put(MagicString.NEW_LIST, tmpResultMap.getOrDefault(MagicString.NEW_LIST, Lists.newArrayList()));
                         }else{
+                            //must not != all branch
                             for (Map<String, Object> branch : patternBranches) {
                                 String json = new Gson().toJson(ptsJanDtoListByGroup);
                                 Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
                                         new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
                                 String branchCd = branch.get("branch").toString();
-                                List<Map<String, Object>> commodityMustBranchJans = commodityMustJans.stream().filter(m -> m.get("branch").toString().equals(branchCd)).collect(Collectors.toList());
-                                List<Map<String, Object>> commodityNotBranchJans = commodityNotJans.stream().filter(m -> m.get("branch").toString().equals(branchCd)).collect(Collectors.toList());
+                                List<Map<String, Object>> commodityMustBranchJans = finalCommodityMustJans.stream().filter(m -> m.get("branch").toString().equals(branchCd)).collect(Collectors.toList());
+                                List<Map<String, Object>> commodityNotBranchJans = finalCommodityNotJans.stream().filter(m -> m.get("branch").toString().equals(branchCd)).collect(Collectors.toList());
 
                                 if(commodityMustBranchJans.isEmpty() && commodityNotBranchJans.isEmpty()){
                                     logger.info("patternCd: {},branchCd:{} no commodityMust and commodityNot", pattern.getId(), branchCd);
@@ -851,8 +877,12 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             List<Map<String, Object>> bkResultData = resultDataByAttr.stream()
                     .filter(s->!finalCommodityNotJansCd.contains(s.get(MagicString.JAN).toString()))
                     .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()))).collect(Collectors.toList());
-            List<Map<String, Object>> notInPtsJanList = bkResultData.stream().filter(map -> !ptsJanCdList.contains(map.get(MagicString.JAN).toString()))
-                    .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()))).collect(Collectors.toList());
+            List<Map<String, Object>> notInPtsJanList = bkResultData.stream()
+                    .filter(map -> Integer.parseInt(map.get(MagicString.RANK_UPD).toString()) > finalSkuNum
+                            || (Integer.parseInt(map.get(MagicString.RANK_UPD).toString()) <= finalSkuNum
+                            && !ptsJanCdList.contains(MapUtils.getString(map, MagicString.JAN))))
+                    .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD)
+                            .toString()))).collect(Collectors.toList());
             notInPtsJanListByGroup.put(group, notInPtsJanList);
 
             int newJanIndex = 0;
@@ -948,13 +978,13 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
                             }
                         }else{
-                            Map<String, Object> tmpNewJanMap = notInPtsJanList.get(newJanIndex);
-
-                            //縮jan exist priority order，don't adopted
-                            if(catePakList.stream().anyMatch(catePak -> catePak.getSmalls().equals(attrKey) &&
-                                    catePak.getRank().equals(tmpNewJanMap.get(MagicString.RANK_UPD).toString()))){
-                                newJanIndex++;
-                            }
+//                            Map<String, Object> tmpNewJanMap = notInPtsJanList.get(newJanIndex);
+//
+//                            //縮jan exist priority order，don't adopted
+//                            if(catePakList.stream().anyMatch(catePak -> catePak.getSmalls().equals(attrKey) &&
+//                                    catePak.getRank().equals(tmpNewJanMap.get(MagicString.RANK_UPD).toString()))){
+//                                newJanIndex++;
+//                            }
 
                             String finalNewJan = newJan;
                             if(!notInPtsJanList.isEmpty() && newJanList.stream()
@@ -995,16 +1025,17 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
                     adoptPtsJanList.set(i, ptsJan);
                 }
+
+                int finalSkuNumInit = skuNumInit;
+                List<PriorityOrderCatePakVO> catePakVOS = catePakList.stream().filter(catePak -> catePak.getSmalls().equals(attrKey)
+                        && Integer.parseInt(catePak.getRank().toString()) <= finalSkuNumInit).collect(Collectors.toList());
+                for (PriorityOrderCatePakVO catePakVO : catePakVOS) {
+                    Map<String, String> catePakItemMap = catePakMap.getOrDefault(catePakVO.getBigs()+"@"+catePakVO.getRank(), Maps.newHashMap());
+                    catePakItemMap.put(MagicString.SMALLS, catePakVO.getSmalls());
+                    catePakMap.put(catePakVO.getBigs()+"@"+catePakVO.getRank(), catePakItemMap);
+                }
             }
 
-            int finalSkuNumInit = skuNumInit;
-            List<PriorityOrderCatePakVO> catePakVOS = catePakList.stream().filter(catePak -> catePak.getSmalls().equals(group)
-                    && Integer.parseInt(catePak.getRank().toString()) <= finalSkuNumInit).collect(Collectors.toList());
-            for (PriorityOrderCatePakVO catePakVO : catePakVOS) {
-                Map<String, String> catePakItemMap = catePakMap.getOrDefault(catePakVO.getBigs()+"@"+catePakVO.getRank(), Maps.newHashMap());
-                catePakItemMap.put(MagicString.SMALLS, catePakVO.getSmalls());
-                catePakMap.put(catePakVO.getBigs()+"@"+catePakVO.getRank(), catePakItemMap);
-            }
 
             String transferGroup = group;
             //拡 find 縮, record last newJanIndex
