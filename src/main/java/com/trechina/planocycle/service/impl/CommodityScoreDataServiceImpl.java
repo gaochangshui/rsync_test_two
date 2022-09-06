@@ -359,13 +359,14 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 List value = (List)proMap.get("value");
                 if (!value.isEmpty()){
                     String id = proMap.get("id").toString().split("_")[2];
-                    String join = Joiner.on("|").join(value);
+
+                    String join = Joiner.on("^|$").join(value);
                     Boolean flag = (Boolean) proMap.get("flag");
                     String eq = flag ? "!~":"~";
                     if (finalValue.equals("")){
-                        finalValue += "$"+id+eq+"/"+join+"/ ";
+                        finalValue += "$"+id+eq+"/^"+join+"$/ ";
                     }else {
-                        finalValue +="&& $"+id+eq+"/"+join+"/ ";
+                        finalValue +="&& $"+id+eq+"/^"+join+"$/ ";
                     }
 
                 }

@@ -769,8 +769,6 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     if (!stringObjectEntry.getKey().equals("jan") && !stringObjectEntry.getKey().equals("janName") && !stringObjectEntry.getKey().equals("total")) {
                         Map<String, Object> map = new HashMap<>();
                         map.put("jan", jan);
-                        map.put("companyCd", companyCd);
-                        map.put("priorityOrderCd", priorityOrderCd);
                         map.put("branch", stringObjectEntry.getKey().split("_")[1]);
                         map.put("flag", stringObjectEntry.getValue().equals("☓") ? -1 : stringObjectEntry.getValue().equals("") ? 0 : 1);
                         if (starReadingVo.getModeCheck() == 0){
@@ -785,11 +783,20 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     }
 
                 }
+                if (list.size() >= 5000){
+                    if (starReadingVo.getModeCheck() == 1) {
+                        starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
+                    }else {
+                        starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
+                    }
+                    list.clear();
+                }
             }
+
         if (starReadingVo.getModeCheck() == 1) {
-            starReadingTableMapper.setBranchList(list);
+            starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
         }else {
-            starReadingTableMapper.setPatternList(list);
+            starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS);

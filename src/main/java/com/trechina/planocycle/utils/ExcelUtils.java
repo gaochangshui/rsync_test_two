@@ -122,7 +122,8 @@ public class ExcelUtils {
             }
 
             XSSFSheet sheet1 = workbook.createSheet();
-
+            colIndex=0;
+            sheet1.createRow(colIndex);
             workbook.write(outputStream);
         }catch (Exception e){
             logger.error("", e);

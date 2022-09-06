@@ -5,14 +5,14 @@
     insert into priority.work_priority_order_commodity_branch(jan_cd,branch_cd,exist_flag,priority_order_cd,company_cd,area)
     values
         <foreach collection="list" item="item" separator=",">
-            (#{item.jan},#{item.branch},#{item.flag},#{item.priorityOrderCd},#{item.companyCd},#{item.area})
+            (#{item.jan},#{item.branch},#{item.flag},#{priorityOrderCd},#{companyCd},#{item.area})
         </foreach>
     </insert>
     <insert id="setPatternList">
         insert into priority.work_priority_order_commodity_pattern(jan_cd,shelf_pattern_cd,exist_flag,priority_order_cd,company_cd,shelf_name_cd)
         values
         <foreach collection="list" item="item" separator=",">
-            (#{item.jan},#{item.branch} ::integer,#{item.flag},#{item.priorityOrderCd},#{item.companyCd},#{item.patternNameCd,jdbcType=INTEGER})
+            (#{item.jan},#{item.branch} ::integer,#{item.flag},#{priorityOrderCd},#{companyCd},#{item.patternNameCd,jdbcType=INTEGER})
         </foreach>
     </insert>
     <delete id="delBranchList">

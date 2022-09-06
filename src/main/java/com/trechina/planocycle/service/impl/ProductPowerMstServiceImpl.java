@@ -341,4 +341,20 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         columnsByClassify.put(ProductPowerHeaderEnum.RANK.getName(), Lists.newArrayList("rank_result"));
         return columnsByClassify;
     }
+
+
+
+
+    private Map<String,Object> getProductParam(String companyCd,Integer productPowerCd){
+        Map<String,Object> mapResult = new HashMap<>();
+        String company = productPowerMstMapper.getCompanyName(companyCd);
+        mapResult.put("company",company);
+        ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerCd);
+        String dateRange = "";
+        if (Strings.isNullOrEmpty(param.getRecentlyFlag())) {
+            dateRange = param.getRecentlyFlag().equals("0")?"年月":"年週";
+            dateRange += param.getRecentlyStTime()+"~"+param.getRecentlyEndTime();
+        }
+        return null;
+    }
 }
