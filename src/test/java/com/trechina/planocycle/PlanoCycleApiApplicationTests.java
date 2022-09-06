@@ -2,12 +2,12 @@ package com.trechina.planocycle;
 
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityAllResultDataDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.PriorityOrderJanNewService;
 import com.trechina.planocycle.service.PriorityOrderMstService;
+import com.trechina.planocycle.service.impl.ProductPowerMstServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -64,6 +65,8 @@ class PlanoCycleApiApplicationTests {
     JanClassifyMapper janClassifyMapper;
     @Autowired
     private BasicPatternJanPlacementMapper basicPatternJanPlacementMapper;
+    @Autowired
+    private ProductPowerMstServiceImpl productPowerMstService;
     @Autowired
     private BasicPatternMstService basicPatternMstService;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -160,53 +163,10 @@ class PlanoCycleApiApplicationTests {
 
 
     @Test
-    public  void test8() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        long planoWidth = 0 ;
-        long planoHeight = 0 ;
-        long planoDepth = 0 ;
-        List<PriorityOrderResultDataDto> priorityOrderResultDataDtoList = new ArrayList<>();
-        PriorityOrderResultDataDto priorityOrderResultDataDtoList1 = new PriorityOrderResultDataDto();
-        priorityOrderResultDataDtoList1.setFaceMen(1L);
-        priorityOrderResultDataDtoList1.setFaceKaiten(1);
-        priorityOrderResultDataDtoList1.setPlanoWidth(198L);
-        priorityOrderResultDataDtoList1.setPlanoHeight(60L);
-        priorityOrderResultDataDtoList1.setPlanoDepth(132L);
-        priorityOrderResultDataDtoList.add(priorityOrderResultDataDtoList1);
-
-        for (PriorityOrderResultDataDto priorityOrderResultDataDto : priorityOrderResultDataDtoList) {
-            for (PriorityOrderResultDataDto orderResultDataDto : priorityOrderResultDataDtoList) {
-                Long faceMen = priorityOrderResultDataDto.getFaceMen();
-                Integer faceKaiten = priorityOrderResultDataDto.getFaceKaiten();
-                if (orderResultDataDto.getFaceMen().equals(faceMen)){
-
-                }
-                if (orderResultDataDto.getFaceKaiten().equals(faceKaiten)){
-
-                }
-            }
-        }
-        //List<Map<String, Object>> janPlacementList = basicPatternJanPlacementMapper.getJanPlacementList();
-        //Class clazz = PriorityOrderResultDataDto.class;
-        //for (PriorityOrderResultDataDto priorityOrderResultDataDto : priorityOrderResultDataDtoList) {
-        //    for (Map<String, Object> map : janPlacementList) {
-        //        if (priorityOrderResultDataDto.getFaceKaiten().intValue() == MapUtils.getInteger(map,"faceKaiten") &&
-        //                priorityOrderResultDataDto.getFaceMen().intValue() == MapUtils.getInteger(map,"faceMen")
-        //        ){
-        //            Method getPlanoWidth = clazz.getMethod("getPlano" + map.get("planoWidth").toString().substring(0, 1).toUpperCase() + map.get("planoWidth").toString().substring(1));
-        //            Method getPlanoHeight = clazz.getMethod("getPlano" + map.get("planoHeight").toString().substring(0, 1).toUpperCase() + map.get("planoHeight").toString().substring(1));
-        //            Method getPlanoDepth = clazz.getMethod("getPlano" + map.get("planoDepth").toString().substring(0, 1).toUpperCase() + map.get("planoDepth").toString().substring(1));
-        //             planoWidth = (long)getPlanoWidth.invoke(priorityOrderResultDataDto);
-        //             planoHeight = (long)getPlanoHeight.invoke(priorityOrderResultDataDto);
-        //             planoDepth = (long)getPlanoDepth.invoke(priorityOrderResultDataDto);
-        //
-        //            priorityOrderResultDataDto.setPlanoWidth(planoWidth);
-        //            priorityOrderResultDataDto.setPlanoHeight(planoHeight);
-        //            priorityOrderResultDataDto.setPlanoDepth(planoDepth);
-        //        }
-        //    }
-        //}
-        //
-        //logger.info("",priorityOrderResultDataDtoList);
-
+    public  void test8()  {
+        Map<String,Object> a = new HashMap<>();
+        a.put("1","0014");
+        //List<String>  janClassify = productPowerDataMapper.getJanClassify(a,"\"1000\".prod_0000_jan_kaisou");
+        Map<String, Object> productParam = productPowerMstService.getProductParam("0001", 1466);
     }
 }

@@ -199,4 +199,9 @@ public interface ProductPowerDataMapper {
 
     void delWork(String tableName);
 
+    List<String> getStoreName(List<String> storeList, String tableName);
+
+    List<String> getJanClassify(List<Map<String, Object>> janClassCd, String tableName);
+
+    String getAttrName(String col, String tableName);
 }

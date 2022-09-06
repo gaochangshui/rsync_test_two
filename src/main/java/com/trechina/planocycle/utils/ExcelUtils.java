@@ -30,7 +30,7 @@ public class ExcelUtils {
 
     public static void generateExcel(Map<String, List<String>> headersByClassify,
                                          Map<String, List<String>> columnsByClassify, List<Map<String, Object>> allData,
-                                         OutputStream outputStream) {
+                                         OutputStream outputStream,Map<String,Object> paramMap) {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
             XSSFSheet sheet = workbook.createSheet();
             Pattern numberPattern = Pattern.compile("-?[0-9]+(\\.[0-9]+)?%?");
@@ -120,16 +120,68 @@ public class ExcelUtils {
                     }
                 }
             }
-
-            XSSFSheet sheet1 = workbook.createSheet();
-            colIndex=0;
-            sheet1.createRow(colIndex);
+            ParamForExcel(workbook,paramMap);
             workbook.write(outputStream);
         }catch (Exception e){
             logger.error("", e);
         }
     }
 
+    public static void ParamForExcel (XSSFWorkbook workbook,Map<String,Object> paramMap){
+        XSSFSheet sheet1 = workbook.createSheet();
+        int colIndex=0;
+        int  headerColIndex=0;
+        //企業
+        XSSFRow row = sheet1.createRow(colIndex);
+        XSSFCell cell = row.createCell(0);
+        cell.setCellValue("企業(業態)");
+        cell = row.createCell(1);
+        cell.setCellValue(paramMap.get("company").toString());
+        colIndex++;
+        //期間設定
+            //直近期間
+            row = sheet1.createRow(colIndex);
+            cell = row.createCell(0);
+            cell.setCellValue("直近期間");
+            cell = row.createCell(1);
+            cell.setCellValue(paramMap.get("dateRange1").toString());
+            colIndex++;
+            //
+            row = sheet1.createRow(colIndex);
+            cell = row.createCell(0);
+            cell.setCellValue("直近期間");
+            cell = row.createCell(1);
+            cell.setCellValue(paramMap.get("dateRange2").toString());
+            colIndex++;
+        //商品出力粒度
+        row = sheet1.createRow(colIndex);
+        cell = row.createCell(0);
+        cell.setCellValue("商品出力粒度");
+        cell = row.createCell(1);
+        cell.setCellValue(paramMap.get("granularity").toString());
+        colIndex+=2;
+        //一级头
+        row = sheet1.createRow(colIndex);
+        cell = row.createCell(headerColIndex);
+        cell.setCellValue("店舗条件");
+        cell = row.createCell(headerColIndex+=2);
+        cell.setCellValue("商品条件");
+        cell = row.createCell(headerColIndex+=3);
+        cell.setCellValue("顧客条件");
+        cell = row.createCell(headerColIndex+=2);
+        cell.setCellValue("市場条件");
+        colIndex+=1;
+        row = sheet1.createRow(colIndex);
+        cell = row.createCell(headerColIndex);
+        cell.setCellValue("店舗");
+        cell = row.createCell(headerColIndex+=2);
+        cell.setCellValue("商品分類");
+        cell = row.createCell(headerColIndex+=3);
+        cell.setCellValue("商品属性");
+        cell = row.createCell(headerColIndex+=2);
+        cell.setCellValue("市場条件");
+
+    }
     public static void generateNormalExcel(List<String[]> allData, OutputStream outputStream) {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
             XSSFSheet sheet = workbook.createSheet();

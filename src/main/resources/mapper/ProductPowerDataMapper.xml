@@ -833,4 +833,21 @@
 
         where power_syokika.company_cd = #{companyCd} and power_syokika.product_power_cd = #{productPowerCd}
     </select>
+    <select id="getStoreName" resultType="java.lang.String">
+        select "2" from ${tableName}
+        where "1" in
+        <foreach collection="storeList" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+    </select>
+    <select id="getJanClassify" resultType="java.lang.String">
+       <foreach collection="janClassCd" item="item" separator=" union ">
+           select distinct "${item.name}"
+           from  ${tableName}
+            where "${item.cd}" = #{item.value}
+       </foreach>
+    </select>
+    <select id="getAttrName" resultType="java.lang.String">
+        select "2" from ${tableName} where "3" = #{col}
+    </select>
 </mapper>

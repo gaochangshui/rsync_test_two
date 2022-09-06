@@ -5,8 +5,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.ProductPowerParamVo;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
@@ -15,6 +17,7 @@ import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import com.trechina.planocycle.enums.ProductPowerHeaderEnum;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.ProductPowerMstService;
 import com.trechina.planocycle.utils.ExcelUtils;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -57,6 +60,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     private ClassicPriorityOrderMstMapper classicPriorityOrderMstMapper;
     @Autowired
     HttpSession session;
+    @Autowired
+    private BasicPatternMstService basicPatternMstService;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private ShelfPtsDataMapper shelfPtsDataMapper;
@@ -224,6 +229,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
                 intageValue,paramListByGroup.get(ProductPowerHeaderEnum.INTAGE.getCode()), headersByClassify, columnsByClassify, weightKeys);
         this.fillPrepareParamData(prepareValue, productPowerCd, companyCd, headersByClassify, columnsByClassify, weightKeys);
 
+        Map<String, Object> productParam = this.getProductParam(companyCd, productPowerCd);
         ServletOutputStream outputStream = null;
         try {
             String productPowerName = productPowerInfo.getProductPowerName();
@@ -232,7 +238,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
             response.setHeader("Content-Disposition", format);
             outputStream = response.getOutputStream();
-            ExcelUtils.generateExcel(headersByClassify, columnsByClassify, allData, outputStream);
+            ExcelUtils.generateExcel(headersByClassify, columnsByClassify, allData, outputStream,productParam);
             outputStream.flush();
         } catch (IOException e) {
             logger.error("", e);
@@ -345,16 +351,85 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
 
 
-    private Map<String,Object> getProductParam(String companyCd,Integer productPowerCd){
+    public Map<String,Object> getProductParam(String companyCd,Integer productPowerCd){
         Map<String,Object> mapResult = new HashMap<>();
+        //エンタープライズ
         String company = productPowerMstMapper.getCompanyName(companyCd);
         mapResult.put("company",company);
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerCd);
-        String dateRange = "";
-        if (Strings.isNullOrEmpty(param.getRecentlyFlag())) {
-            dateRange = param.getRecentlyFlag().equals("0")?"年月":"年週";
-            dateRange += param.getRecentlyStTime()+"~"+param.getRecentlyEndTime();
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+        //商品出力粒度
+        String granularity = param.getJanName2colNum() == 1 ?"JAN単位":param.getJanName2colNum() == 2 ?"SKU単位":"Item単位";
+        mapResult.put("granularity",granularity);
+        //期間設定
+        String dateRange1 = "";
+        String dateRange2 = "";
+        if (!Strings.isNullOrEmpty(param.getRecentlyFlag())) {
+            dateRange1 = param.getRecentlyFlag().equals("0")?"年月":"年週";
+            dateRange1 += param.getRecentlyStTime()+"~"+param.getRecentlyEndTime();
         }
-        return null;
+        if (!Strings.isNullOrEmpty(param.getSeasonFlag())) {
+            dateRange2 = param.getSeasonFlag().equals("0")?"年月":"年週";
+            dateRange2 += param.getSeasonStTime()+"~"+param.getSeasonEndTime();
+        }
+        mapResult.put("dateRange1",dateRange1);
+        mapResult.put("dateRange2",dateRange2);
+        //店舗条件
+        List<String> storeList = new ArrayList<>();
+        if (!Strings.isNullOrEmpty(param.getStoreCd())) {
+            storeList = productPowerDataMapper.getStoreName(Arrays.asList(param.getStoreCd().split(",")),commonTableName.getStoreInfoTable());
+        }
+        mapResult.put("storeList",storeList);
+        //商品条件
+            //classify
+        List<String> janClassify =  new ArrayList<>();
+        if (!Strings.isNullOrEmpty(param.getPrdCd())) {
+            List<String> list = Arrays.asList(param.getPrdCd().split(","));
+            List<Map<String,Object>>  janClassifyList = new ArrayList();
+            for (String s : list) {
+                Map<String,Object> janClassCd = new HashMap<>();
+                janClassCd.put("value",s.split("-")[1]);
+                janClassCd.put("cd",(Integer.parseInt(s.split("-")[0]) * 2 - 1)+"");
+                janClassCd.put("name",(Integer.parseInt(s.split("-")[0]) * 2)+"");
+                janClassifyList.add(janClassCd);
+            }
+            janClassify = productPowerDataMapper.getJanClassify(janClassifyList,commonTableName.getProKaisouInfoTable());
+        }
+        mapResult.put("janClassify",janClassify);
+            //attr
+        Map<String,Object> janAttr =  new HashMap<>();
+        List<Map<String, Object>> janAttrList = new Gson().fromJson(param.getProdAttrData().toString(),
+                new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
+        if(!janAttrList.isEmpty()){
+            for (Map<String, Object> objectMap : janAttrList) {
+                List<String> value= (List<String>)objectMap.get("value");
+                String attrName = productPowerDataMapper.getAttrName(objectMap.get("id").toString().split("_")[2],commonTableName.getProAttrTable());
+                janAttr.put(attrName,value);
+            }
+        }
+        mapResult.put("janAttr",janAttr);
+        //顧客条件
+        JSONObject jsonObject = JSON.parseObject(param.getCustomerCondition());
+        List<String> groupNames = new ArrayList<>();
+        if (!jsonObject.isEmpty()) {
+            JSONObject customerGroup = JSON.parseObject(jsonObject.get("customerGroup").toString());
+            JSONArray jsonArray = customerGroup.getJSONArray("groupNames");
+            for (Object o : jsonArray) {
+                groupNames.add(o.toString());
+            }
+        }
+        mapResult.put("groupNames",groupNames);
+        //市場条件
+        List<String> channelNm = new ArrayList<>();
+        if (!Strings.isNullOrEmpty(param.getChannelNm())){
+            channelNm = Arrays.asList(param.getChannelNm().split(","));
+        }
+        mapResult.put("channelNm",channelNm);
+        List<String> placeNm = new ArrayList<>();
+        if (!Strings.isNullOrEmpty(param.getPlaceNm())){
+            placeNm = Arrays.asList(param.getPlaceNm().split(","));
+        }
+        mapResult.put("placeNm",placeNm);
+        return mapResult;
     }
 }
