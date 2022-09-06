@@ -128,13 +128,13 @@ public class MstJanServiceImpl implements MstJanService {
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", "9");
             returnJson.put("taskId", downFlagVO.getTaskID());
-            return ResultMaps.result(ResultEnum.SUCCESS, returnJson.toJSONString());
+            return ResultMaps.result(ResultEnum.SUCCESS, returnJson);
         }else if(MagicString.TASK_STATUS_EXCEPTION.equals(cacheUtil.get(downFlagVO.getTaskID()+",status"))){
             return ResultMaps.result(ResultEnum.FAILURE);
         }else if(MagicString.TASK_STATUS_SUCCESS.equals(cacheUtil.get(downFlagVO.getTaskID()+",status"))){
             JSONObject json = new JSONObject();
             json.put("taskId", downFlagVO.getTaskID());
-            return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+            return ResultMaps.result(ResultEnum.SUCCESS, json);
         }
 
         cacheUtil.put(downFlagVO.getTaskID()+",status", MagicString.TASK_STATUS_PROCESSING);
@@ -195,7 +195,7 @@ public class MstJanServiceImpl implements MstJanService {
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", "9");
             returnJson.put("taskId", downFlagVO.getTaskID());
-            return ResultMaps.result(ResultEnum.SUCCESS, returnJson.toJSONString());
+            return ResultMaps.result(ResultEnum.SUCCESS, returnJson);
         } catch(InterruptedException e ){
             Thread.currentThread().interrupt();
             logger.error("", e);
