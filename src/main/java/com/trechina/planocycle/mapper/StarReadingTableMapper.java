@@ -33,4 +33,26 @@ public interface StarReadingTableMapper {
     void setPatternList(List<Map<String, Object>> list,String companyCd,Integer priorityOrderCd);
 
     void delPatternList(String companyCd, Integer priorityOrderCd);
+
+    List<Map<String, Object>> selectJanForPattern(String companyCd, Integer priorityOrderCd, Integer shelfPatternCd);
+
+    List<Map<String, Object>> selectJanForBranch(String companyCd, Integer priorityOrderCd, String branchList);
+
+    int selectCountMustNotJan(String companyCd, Integer priorityOrderCd);
+
+    void deleteFinalByBranch(String companyCd, Integer priorityOrderCd);
+
+    void deleteFinalByPattern(String companyCd, Integer priorityOrderCd);
+
+    int setFinalForWorkByBranch(String companyCd, Integer priorityOrderCd);
+
+    int setFinalForWorkByPattern(String companyCd, Integer priorityOrderCd);
+
+    void deleteWorkByPattern(String companyCd, Integer newPriorityOrderCd);
+
+    void insertForFinalByPattern(String companyCd, Integer priorityOrderCd, Integer newPriorityOrderCd);
+
+    void deleteWorkByBranch(String companyCd, Integer newPriorityOrderCd);
+
+    void insertForFinalByBranch(String companyCd, Integer priorityOrderCd, Integer newPriorityOrderCd);
 }

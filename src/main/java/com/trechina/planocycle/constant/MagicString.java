@@ -187,4 +187,13 @@ public class MagicString {
     public static final String MSG_UPLOAD_SUCCESS="件のデータを取込成功しました。";
 
     public static final String DEFAULT_VALUE = "未登録";
+
+    public static final String TASK_STATUS_PROCESSING = "0";
+    public static final String TASK_STATUS_EXCEPTION = "-1";
+    public static final String TASK_STATUS_SUCCESS = "1";
+
+    public static final Integer TASK_TIME_OUT = 10;
+
+    public static final Integer START_READING_STATUS_MUST = 1;
+    public static final Integer START_READING_STATUS_NOT = -1;
 }

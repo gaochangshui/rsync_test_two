@@ -1,7 +1,9 @@
 package com.trechina.planocycle.utils;
 
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -12,9 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -210,6 +210,41 @@ public class ExcelUtils {
         }catch (Exception e){
             logger.error("", e);
         }
+    }
+
+
+    /**
+     * generate excel to file
+     * @param allData
+     * @param fileName
+     * @return file's path
+     */
+    public static String generateNormalExcelToFile(List<String[]> allData, String fileName){
+        String path = ExcelUtils.class.getClassLoader().getResource("").getPath();
+        String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
+
+        try(XSSFWorkbook workbook = new XSSFWorkbook();
+            FileOutputStream fos = new FileOutputStream(filePath)){
+            XSSFSheet sheet = workbook.createSheet();
+            XSSFRow janRow;
+            XSSFCell janCell;
+            for (int i = 0; i < allData.size(); i++) {
+                int columnIndex = 0;
+                janRow = sheet.createRow(i);
+                for (String column : allData.get(i)) {
+                    Object value = column;
+                    janCell= janRow.createCell(columnIndex);
+                    janCell.setCellType(CellType.STRING);
+                    janCell.setCellValue(Objects.nonNull(value)?String.valueOf(value):"");
+                    columnIndex++;
+                }
+            }
+            workbook.write(fos);
+        }catch (Exception e){
+            logger.error("", e);
+        }
+
+        return filePath;
     }
 
     public static List<String[]> readExcel(MultipartFile file)

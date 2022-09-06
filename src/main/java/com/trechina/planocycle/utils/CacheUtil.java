@@ -12,7 +12,7 @@ public class CacheUtil {
     private Cache<String,Object> cache = CacheBuilder.newBuilder()
             .recordStats()
             .maximumSize(5000000)
-            .expireAfterWrite(10, TimeUnit.MINUTES)
+            .expireAfterWrite(30, TimeUnit.MINUTES)
             .build();
     /**
      * 返回是否存在車輛，非null為存在

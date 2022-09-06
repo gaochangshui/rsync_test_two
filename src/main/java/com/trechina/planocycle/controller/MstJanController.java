@@ -10,7 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 @RestController
 @RequestMapping("/planoCycleApi/MstJan")
 public class MstJanController {
@@ -39,8 +43,13 @@ public class MstJanController {
      * @return
      */
     @PostMapping("/getJanList")
-    public JanInfoVO getJanList(@RequestBody DownFlagVO downFlagVO, HttpServletResponse response){
-        return mstJanService.getJanList(downFlagVO, response);
+    public Map<String, Object> getJanList(@RequestBody DownFlagVO downFlagVO) throws Exception {
+        return mstJanService.getJanList(downFlagVO);
+    }
+
+    @PostMapping("/getJanListResult")
+    public void getJanListResult(@RequestBody DownFlagVO downFlagVO, HttpServletResponse response) throws IOException {
+        mstJanService.getJanListResult(downFlagVO, response);
     }
 
     /**
