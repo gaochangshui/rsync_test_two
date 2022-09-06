@@ -123,6 +123,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     private LogAspect logAspect;
     @Autowired
     private IDGeneratorService idGeneratorService;
+    @Autowired
+    private StarReadingTableMapper starReadingTableMapper;
 
     /**
      * 初期取得優先順位テーブルデータ
@@ -483,6 +485,12 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
             classicPriorityOrderMstAttrSortMapper.insertAttrForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
             classicPriorityOrderMstAttrSortMapper.insertAttrSortForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
+
+            starReadingTableMapper.deleteWorkByPattern(companyCd,newPriorityOrderCd);
+            starReadingTableMapper.insertForFinalByPattern(companyCd, priorityOrderCd,newPriorityOrderCd);
+
+            starReadingTableMapper.deleteWorkByBranch(companyCd,newPriorityOrderCd);
+            starReadingTableMapper.insertForFinalByBranch(companyCd, priorityOrderCd,newPriorityOrderCd);
         }
         List list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();

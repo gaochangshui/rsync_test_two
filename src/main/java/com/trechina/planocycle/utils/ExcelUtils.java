@@ -1,20 +1,19 @@
 package com.trechina.planocycle.utils;
 
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +29,9 @@ public class ExcelUtils {
 
     public static void generateExcel(Map<String, List<String>> headersByClassify,
                                          Map<String, List<String>> columnsByClassify, List<Map<String, Object>> allData,
-                                         OutputStream outputStream) {
+                                         OutputStream outputStream,Map<String,Object> paramMap) {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
-            XSSFSheet sheet = workbook.createSheet();
+            XSSFSheet sheet = workbook.createSheet("商品明細");
             Pattern numberPattern = Pattern.compile("-?[0-9]+(\\.[0-9]+)?%?");
 
             //最初の行の索引
@@ -120,15 +119,153 @@ public class ExcelUtils {
                     }
                 }
             }
-
-            XSSFSheet sheet1 = workbook.createSheet();
-
+            ParamForExcel(workbook,paramMap);
             workbook.write(outputStream);
         }catch (Exception e){
             logger.error("", e);
         }
     }
 
+    public static void ParamForExcel (XSSFWorkbook workbook,Map<String,Object> paramMap){
+        XSSFSheet sheet1 = workbook.createSheet("抽出条件");
+        sheet1.setDisplayGridlines(false);
+        //设置样式
+        XSSFCellStyle cellStyle = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setColor((short) 1);
+        cellStyle.setFont(font);
+        cellStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        sheet1.createFreezePane(0,7,0,1);
+
+
+        int colIndex=0;
+        int  headerColIndex=0;
+        //企業
+        XSSFRow row = sheet1.createRow(colIndex);
+        XSSFCell cell = row.createCell(0);
+        cell.setCellValue("企業(業態)");
+        cell.setCellStyle(cellStyle);
+        cell = row.createCell(1);
+        cell.setCellValue(paramMap.get("company").toString());
+        colIndex++;
+        //期間設定
+            //直近期間
+            row = sheet1.createRow(colIndex);
+            cell = row.createCell(0);
+            cell.setCellValue("直近期間");
+            cell.setCellStyle(cellStyle);
+            cell = row.createCell(1);
+            cell.setCellValue(paramMap.get("dateRange1").toString());
+            colIndex++;
+            //
+            row = sheet1.createRow(colIndex);
+            cell = row.createCell(0);
+            cell.setCellValue("比較期間");
+            cell.setCellStyle(cellStyle);
+            cell = row.createCell(1);
+            cell.setCellValue(paramMap.get("dateRange2").toString());
+            colIndex++;
+        //商品出力粒度
+        row = sheet1.createRow(colIndex);
+        cell = row.createCell(0);
+        cell.setCellValue("商品出力粒度");
+        cell.setCellStyle(cellStyle);
+        cell = row.createCell(1);
+        cell.setCellValue(paramMap.get("granularity").toString());
+        colIndex+=2;
+        //一级头
+        row = sheet1.createRow(colIndex);
+        cell = row.createCell(headerColIndex);
+        cell.setCellValue("店舗条件");
+        cell.setCellStyle(cellStyle);
+        List<Map<String,Object>> kaisouList = (List<Map<String,Object>>) paramMap.get("janClassify");
+        List<Map<String,Object>> kaisouHeader = (List<Map<String,Object>>) paramMap.get("classifyHeader");
+            cell = row.createCell(headerColIndex += 2);
+            cell.setCellValue("商品分類");
+            cell.setCellStyle(cellStyle);
+        cell = row.createCell(headerColIndex+=kaisouHeader.size()+1);
+        cell.setCellValue("商品属性");
+        cell.setCellStyle(cellStyle);
+        Map<String,Object> attrList = (Map<String, Object>) paramMap.get("janAttr");
+        cell = row.createCell(headerColIndex+=attrList.size()+1);
+        cell.setCellValue("顧客条件");
+        cell.setCellStyle(cellStyle);
+        cell = row.createCell(headerColIndex+=2);
+        cell.setCellValue("市場条件");
+        cell.setCellStyle(cellStyle);
+        colIndex+=1;
+        //二级头
+        row = sheet1.createRow(colIndex);
+        headerColIndex=0;
+        cell = row.createCell(headerColIndex);
+        cell.setCellValue("店舗");
+        cell.setCellStyle(cellStyle);
+        headerColIndex+=2;
+        for (Map<String, Object> objectMap : kaisouHeader) {
+            cell = row.createCell(headerColIndex++);
+            cell.setCellValue(objectMap.get("name").toString());
+            cell.setCellStyle(cellStyle);
+        }
+
+        headerColIndex+=1;
+        for (Map.Entry<String, Object> stringObjectEntry : attrList.entrySet()) {
+            cell = row.createCell(headerColIndex++);
+            cell.setCellValue(stringObjectEntry.getKey());
+            cell.setCellStyle(cellStyle);
+        }
+        headerColIndex++;
+        cell = row.createCell(headerColIndex);
+        cell.setCellValue("顧客グループ");
+        cell.setCellStyle(cellStyle);
+        cell = row.createCell(headerColIndex+=2);
+        cell.setCellValue("業態");
+        cell.setCellStyle(cellStyle);
+        cell = row.createCell(headerColIndex+=1);
+        cell.setCellValue("都道府県");
+        cell.setCellStyle(cellStyle);
+        colIndex++;
+        List<Integer> sizeList= new ArrayList<>();
+        sizeList.add(((List<String>)paramMap.get("storeList")).size());
+        sizeList.add(((List<Map<String,Object>>)paramMap.get("janClassify")).size());
+        for (Map.Entry<String, Object> stringObjectEntry : attrList.entrySet()) {
+            sizeList.add(((List<String>)stringObjectEntry.getValue()).size());
+        }
+        sizeList.add(((List<String>)paramMap.get("groupNames")).size());
+        sizeList.add(((List<String>)paramMap.get("channelNm")).size());
+        sizeList.add(((List<String>)paramMap.get("placeNm")).size());
+        Integer integer = sizeList.stream().max(Integer::max).get();
+        System.out.println(integer);
+        for (int i = 0; i < integer; i++) {
+            row = sheet1.createRow(colIndex);
+            cell = row.createCell(headerColIndex = 0);
+            cell.setCellValue(((List<String>)paramMap.get("storeList")).size()>i?((List<String>)paramMap.get("storeList")).get(i):"");
+
+            if (!kaisouList.isEmpty()) {
+                headerColIndex +=1;
+                for (Map<String, Object> objectMap : kaisouHeader) {
+                    cell = row.createCell(headerColIndex +=1 );
+                    cell.setCellValue(kaisouList.size()>i?kaisouList.get(i).get(objectMap.get("name")).toString():"");
+                }
+            }else {
+                headerColIndex +=5;
+            }
+
+            headerColIndex+=2;
+            for (Map.Entry<String, Object> stringObjectEntry : attrList.entrySet()) {
+                cell = row.createCell(headerColIndex++);
+                cell.setCellValue(((List<String>)stringObjectEntry.getValue()).size()>i?((List<String>)stringObjectEntry.getValue()).get(i):"");
+            }
+            headerColIndex++;
+            cell = row.createCell(headerColIndex);
+            cell.setCellValue(((List<String>)paramMap.get("groupNames")).size()>i?((List<String>)paramMap.get("groupNames")).get(i):"");
+            cell = row.createCell(headerColIndex+=2);
+            cell.setCellValue(((List<String>)paramMap.get("channelNm")).size()>i?((List<String>)paramMap.get("channelNm")).get(i):"");
+            cell = row.createCell(headerColIndex+=1);
+            cell.setCellValue(((List<String>)paramMap.get("placeNm")).size()>i?((List<String>)paramMap.get("placeNm")).get(i):"");
+            colIndex++;
+        }
+    }
     public static void generateNormalExcel(List<String[]> allData, OutputStream outputStream) {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
             XSSFSheet sheet = workbook.createSheet();
@@ -157,6 +294,41 @@ public class ExcelUtils {
         }catch (Exception e){
             logger.error("", e);
         }
+    }
+
+
+    /**
+     * generate excel to file
+     * @param allData
+     * @param fileName
+     * @return file's path
+     */
+    public static String generateNormalExcelToFile(List<String[]> allData, String fileName){
+        String path = ExcelUtils.class.getClassLoader().getResource("").getPath();
+        String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
+
+        try(XSSFWorkbook workbook = new XSSFWorkbook();
+            FileOutputStream fos = new FileOutputStream(filePath)){
+            XSSFSheet sheet = workbook.createSheet();
+            XSSFRow janRow;
+            XSSFCell janCell;
+            for (int i = 0; i < allData.size(); i++) {
+                int columnIndex = 0;
+                janRow = sheet.createRow(i);
+                for (String column : allData.get(i)) {
+                    Object value = column;
+                    janCell= janRow.createCell(columnIndex);
+                    janCell.setCellType(CellType.STRING);
+                    janCell.setCellValue(Objects.nonNull(value)?String.valueOf(value):"");
+                    columnIndex++;
+                }
+            }
+            workbook.write(fos);
+        }catch (Exception e){
+            logger.error("", e);
+        }
+
+        return filePath;
     }
 
     public static List<String[]> readExcel(MultipartFile file)

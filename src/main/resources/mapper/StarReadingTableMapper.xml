@@ -5,23 +5,26 @@
     insert into priority.work_priority_order_commodity_branch(jan_cd,branch_cd,exist_flag,priority_order_cd,company_cd,area)
     values
         <foreach collection="list" item="item" separator=",">
-            (#{item.jan},#{item.branch},#{item.flag},#{item.priorityOrderCd},#{item.companyCd},#{item.area})
+            (#{item.jan},#{item.branch},#{item.flag},#{priorityOrderCd},#{companyCd},#{item.area})
         </foreach>
     </insert>
     <insert id="setPatternList">
         insert into priority.work_priority_order_commodity_pattern(jan_cd,shelf_pattern_cd,exist_flag,priority_order_cd,company_cd,shelf_name_cd)
         values
         <foreach collection="list" item="item" separator=",">
-            (#{item.jan},#{item.branch},#{item.flag},#{item.priorityOrderCd},#{item.companyCd},#{item.area})
+            (#{item.jan},#{item.branch} ::integer,#{item.flag},#{priorityOrderCd},#{companyCd},#{item.patternNameCd,jdbcType=INTEGER})
         </foreach>
     </insert>
     <delete id="delBranchList">
         delete from priority.work_priority_order_commodity_branch where priority_order_cd = #{priorityOrderCd}
     </delete>
+    <delete id="delPatternList">
+        delete from priority.work_priority_order_commodity_pattern where priority_order_cd = #{priorityOrderCd}
+    </delete>
 
     <select id="getBranchdiff" resultType="java.util.Map">
         select branch.jan_cd as "jan",sku as "janName" ,branch_cd as "branchCd"
-             ,case when exist_flag =-1 then '×' when exist_flag = 0 then '' else  '◯' end  as flag
+             ,case when exist_flag =-1 then '☓' when exist_flag = 0 then '' else  '◯' end  as flag
              ,area
         from priority.work_priority_order_commodity_branch branch
         left join priority.work_priority_order_result_data datas
@@ -29,18 +32,28 @@
         where branch.priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getBranchList" resultType="map">
-        select
-            case when  "char_length"(split_part(branch.branch, '_', 2))  > 0 then
-                     split_part( branch.branch, '_', 2 ) else branch
-                end as "branchCd",teninfo."2" as "branchName"
-             ,teninfo."6" as area,concat('area',"dense_rank"() over( order by teninfo."6")) as sort
-        from
-            planocycle.shelf_pattern_branch branch
-                left join "1000".ten_0000_ten_info teninfo
-                          on (teninfo."1" = branch.branch or split_part(teninfo."1",'_',2) = branch.branch)
-        where
-                branch.shelf_pattern_cd in
-                ( select shelf_pattern_cd from priority.work_priority_order_pattern where priority_order_cd = #{priorityOrderCd})
+        select *
+        from (
+                 select DISTINCT case
+                                     when "char_length"(split_part(branch.branch, '_', 2)) > 0 then
+                                         split_part(branch.branch, '_', 2)
+                                     else branch
+                     end                                                                    as "branchCd"
+                               , coalesce(teninfo."2", '未登録')                               as "branchName"
+                               , coalesce(teninfo."6", '未登録')                               as area
+                               , concat('area', "dense_rank"() over( order by teninfo."6")) as sort
+                               , "dense_rank"()                                                over ( order by teninfo."6" ) b
+                 from planocycle.shelf_pattern_branch branch
+                          left join "1000".ten_0000_ten_info teninfo
+                                    on (teninfo."1" = branch.branch or
+                                        split_part(teninfo."1", '_', 2) = branch.branch) and
+                                       split_part(teninfo."1", '_', 1) = #{companyCd}
+                 where branch.shelf_pattern_cd in
+                       (select shelf_pattern_cd
+                        from priority.work_priority_order_pattern
+                        where priority_order_cd = #{priorityOrderCd})
+             ) a
+        order by a.b
     </select>
     <select id="getAreaList" resultType="java.util.Map">
         select
@@ -71,13 +84,15 @@
     </select>
     <select id="getBranchdiffForBranch" resultType="java.util.Map">
         select
-            DISTINCT jan_new as jan,sku as "janName",split_part(branch,'_',2)as "branchCd",'◯' as flag,"6" as area
+            DISTINCT jan_new as jan,sku as "janName", case when  "char_length"(split_part(branch.branch, '_', 2))  > 0 then
+        split_part( branch.branch, '_', 2 ) else branch
+        end as "branchCd",'◯' as flag,"6" as area
         from
             priority.work_priority_order_result_data resultdata
                 left join planocycle.shelf_pts_data_jandata jandata on resultdata.jan_new = jandata.jan
                 left join planocycle.shelf_pts_data ptsdata on jandata.pts_cd = ptsdata.id
                 left join planocycle.shelf_pattern_branch branch on ptsdata.shelf_pattern_cd = branch.shelf_pattern_cd
-                left join "1000".ten_0000_ten_info teninfo on (teninfo."1" = branch.branch or split_part(teninfo."1",'_',2) = branch.branch)
+                left join "1000".ten_0000_ten_info teninfo on (teninfo."1" = branch.branch or split_part(teninfo."1",'_',2) = branch.branch) and split_part(teninfo."1",'_',1) = #{item.companyCd}
 
         where
             priority_order_cd = #{item.priorityOrderCd}
@@ -93,7 +108,7 @@
     </select>
     <select id="getPatterndiff" resultType="java.util.Map">
         select pattern.jan_cd as "jan",sku as "janName" ,shelf_pattern_cd as "shelfPatternCd"
-        ,case when exist_flag =-1 then '×' when exist_flag = 0 then '' else  '◯' end  as flag
+        ,case when exist_flag =-1 then '☓' when exist_flag = 0 then '' else  '◯' end  as flag
         ,shelf_name_cd as "shelfNameCd"
         from priority.work_priority_order_commodity_pattern pattern
         left join priority.work_priority_order_result_data datas
@@ -133,4 +148,54 @@
             #{item} ::integer
         </foreach>
     </select>
+    <select id="selectJanForPattern" resultType="map">
+        select jan_cd jan_new, exist_flag
+        from priority.priority_order_commodity_pattern comm_pattern
+        where priority_order_cd=#{priorityOrderCd} and shelf_pattern_cd=#{shelfPatternCd} and exist_flag!=0
+    </select>
+    <select id="selectJanForBranch" resultType="map">
+        select jan_cd jan_new,branch_cd as "branch", exist_flag
+        from priority.priority_order_commodity_branch comm_branch
+        where priority_order_cd = #{priorityOrderCd}
+        and branch_cd=any(string_to_array(#{branchList},',')) and exist_flag!=0
+    </select>
+    <select id="selectBranchMustNotJan" resultType="string">
+        select distinct branch_cd
+        from priority.priority_order_commodity_branch comm_branch
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd} and exist_flag!=0
+    </select>
+    <delete id="deleteFinalByBranch">
+        DELETE FROM priority.priority_order_commodity_branch WHERE company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </delete>
+    <delete id="deleteFinalByPattern">
+        DELETE FROM priority.priority_order_commodity_pattern WHERE company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </delete>
+    <insert id="setFinalForWorkByBranch">
+        insert into  priority.priority_order_commodity_branch
+        select * from priority.work_priority_order_commodity_branch
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </insert>
+    <insert id="setFinalForWorkByPattern">
+        insert into  priority.priority_order_commodity_pattern
+        select * from priority.work_priority_order_commodity_pattern
+        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    </insert>
+    <delete id="deleteWorkByPattern">
+        DELETE FROM priority.work_priority_order_commodity_pattern WHERE company_cd = #{companyCd} and priority_order_cd = #{newPriorityOrderCd}
+    </delete>
+    <insert id="insertForFinalByPattern">
+        insert into priority.work_priority_order_commodity_pattern(company_cd,priority_order_cd,shelf_pattern_cd,exist_flag,jan_cd,shelf_name_cd)
+        select  company_cd,#{newPriorityOrderCd},shelf_pattern_cd,exist_flag,jan_cd,shelf_name_cd
+        from priority.priority_order_commodity_pattern
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
+    </insert>
+    <delete id="deleteWorkByBranch">
+        DELETE FROM priority.work_priority_order_commodity_branch WHERE company_cd = #{companyCd} and priority_order_cd = #{newPriorityOrderCd}
+    </delete>
+    <insert id="insertForFinalByBranch">
+        insert into priority.work_priority_order_commodity_branch(company_cd,priority_order_cd,branch_cd,exist_flag,jan_cd,area)
+        select  company_cd,#{newPriorityOrderCd},branch_cd,exist_flag,jan_cd,area
+        from priority.priority_order_commodity_branch
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
+    </insert>
 </mapper>

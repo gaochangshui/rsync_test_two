@@ -33,12 +33,23 @@ import org.springframework.web.util.UriUtils;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -107,61 +118,96 @@ public class MstJanServiceImpl implements MstJanService {
      * @return
      */
     @Override
-    public JanInfoVO getJanList(DownFlagVO downFlagVO, HttpServletResponse response) {
+    public Map<String, Object> getJanList(DownFlagVO downFlagVO) throws Exception {
         JanInfoVO janInfoVO = new JanInfoVO();
         if (cacheUtil.get(downFlagVO.getTaskID()) == null) {
-            return null;
-        }
-        JSONObject json =JSON.parseObject(cacheUtil.get(downFlagVO.getTaskID()).toString());
-        JanParamVO janParamVO = JSON.parseObject(json.getString("janParamVO"),JanParamVO.class);
-        String janInfoTable = json.getString("janInfoTable");
-        String janInfoTablePlanoCycle = json.getString("janInfoTablePlanoCycle");
-        String tableNameAttr = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, janParamVO.getCompanyCd(),
-                janParamVO.getCommonPartsData().getProdMstClass());
-        String tableNameKaisou = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS, janParamVO.getCompanyCd(),
-                janParamVO.getCommonPartsData().getProdMstClass());
-        String tableNamePlanoCycle = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS,
-                MagicString.PLANO_CYCLE_COMPANY_CD,MagicString.FIRST_CLASS_CD);
-        String janColumn = json.getString("janColumn");
-        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr, tableNameKaisou,tableNamePlanoCycle, janColumn);
-        List<JanHeaderAttr> janHeaderSort = new ArrayList<>();
-        for (String column : janColumn.split(",")) {
-            Optional<JanHeaderAttr> optional = janHeader.stream().filter(e->column.equals(e.getAttr())).findFirst();
-            if(optional.isPresent()){
-                janHeaderSort.add(optional.get());
-            }
-        }
-        janHeader = janHeaderSort;
-        //SQL文の列： a."1" "jan_cd",a."2" "jan_name",a."21" "kikaku",b."104" "planoWidth"
-        String column = janHeader.stream().map(map -> "COALESCE(" + ("5".equals(map.getType()) ||"6".equals(map.getType()) ? "b" : "a") + ".\""
-                + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
-                .collect(Collectors.joining(","));
-        janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTable, janInfoTablePlanoCycle, column));
-        janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
-                .collect(Collectors.joining(",")));
-        janInfoVO.setJanColumn(dataConverUtils.camelize(janColumn));
-        if(Integer.valueOf(1).equals(downFlagVO.getDownFlag())){
-            response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-            String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("商品明細-%s.xlsx",
-                    LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
-            response.setHeader("Content-Disposition", format);
-            try (
-                ServletOutputStream outputStream = response.getOutputStream()){
-                List<String[]> excelData = new ArrayList<>();
-                excelData.add(janInfoVO.getJanHeader().split(","));
-                for(LinkedHashMap<String, Object> map:janInfoVO.getJanDataList()){
-                    excelData.add(map.values().stream().map(Object::toString).toArray(String[]::new));
-                }
-                ExcelUtils.generateNormalExcel(excelData, outputStream);
-                outputStream.flush();
-            } catch (IOException e) {
-                logger.error("商品明細ダウンロード", e);
-                logAspect.setTryErrorLog(e,new Object[]{downFlagVO});
-            }
-            return null;
+            return ResultMaps.result(ResultEnum.FAILURE, "taskId not exists");
         }
 
-        return janInfoVO;
+        if(MagicString.TASK_STATUS_PROCESSING.equals(cacheUtil.get(downFlagVO.getTaskID()+",status"))){
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", "9");
+            returnJson.put("taskId", downFlagVO.getTaskID());
+            return ResultMaps.result(ResultEnum.SUCCESS, returnJson);
+        }else if(MagicString.TASK_STATUS_EXCEPTION.equals(cacheUtil.get(downFlagVO.getTaskID()+",status"))){
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }else if(MagicString.TASK_STATUS_SUCCESS.equals(cacheUtil.get(downFlagVO.getTaskID()+",status"))){
+            JSONObject json = new JSONObject();
+            json.put("taskId", downFlagVO.getTaskID());
+            return ResultMaps.result(ResultEnum.SUCCESS, json);
+        }
+
+        cacheUtil.put(downFlagVO.getTaskID()+",status", MagicString.TASK_STATUS_PROCESSING);
+        Future futureTask = executor.submit(()->{
+            try {
+                JSONObject json =JSON.parseObject(cacheUtil.get(downFlagVO.getTaskID()).toString());
+                JanParamVO janParamVO = JSON.parseObject(json.getString("janParamVO"),JanParamVO.class);
+                String janInfoTable = json.getString("janInfoTable");
+                String janInfoTablePlanoCycle = json.getString("janInfoTablePlanoCycle");
+                String tableNameAttr = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, janParamVO.getCompanyCd(),
+                        janParamVO.getCommonPartsData().getProdMstClass());
+                String tableNameKaisou = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS, janParamVO.getCompanyCd(),
+                        janParamVO.getCommonPartsData().getProdMstClass());
+                String tableNamePlanoCycle = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS,
+                        MagicString.PLANO_CYCLE_COMPANY_CD,MagicString.FIRST_CLASS_CD);
+                String janColumn = json.getString("janColumn");
+                List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr, tableNameKaisou,tableNamePlanoCycle, janColumn);
+                List<JanHeaderAttr> janHeaderSort = new ArrayList<>();
+                for (String column : janColumn.split(",")) {
+                    Optional<JanHeaderAttr> optional = janHeader.stream().filter(e->column.equals(e.getAttr())).findFirst();
+                    if(optional.isPresent()){
+                        janHeaderSort.add(optional.get());
+                    }
+                }
+                janHeader = janHeaderSort;
+                //SQL文の列： a."1" "jan_cd",a."2" "jan_name",a."21" "kikaku",b."104" "planoWidth"
+                String column = janHeader.stream().map(map -> "COALESCE(" + ("5".equals(map.getType()) ||"6".equals(map.getType()) ? "b" : "a") + ".\""
+                        + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
+                        .collect(Collectors.joining(","));
+                janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTable, janInfoTablePlanoCycle, column));
+                janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
+                        .collect(Collectors.joining(",")));
+                janInfoVO.setJanColumn(dataConverUtils.camelize(janColumn));
+                 if(Integer.valueOf(1).equals(downFlagVO.getDownFlag())) {
+                     List<String[]> excelData = new ArrayList<>();
+                     excelData.add(janInfoVO.getJanHeader().split(","));
+                     String format = MessageFormat.format("attachment;filename={0};", UriUtils.encode(String.format("商品明細-%s.xlsx",
+                             LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
+
+                     for (LinkedHashMap<String, Object> map : janInfoVO.getJanDataList()) {
+                         excelData.add(map.values().stream().map(Object::toString).toArray(String[]::new));
+                     }
+
+                     String filePath = ExcelUtils.generateNormalExcelToFile(excelData, format);
+                     cacheUtil.put(downFlagVO.getTaskID() + ",status", MagicString.TASK_STATUS_SUCCESS);
+                     cacheUtil.put(downFlagVO.getTaskID() + ",filepath", filePath);
+                 }
+            }catch (Exception e){
+                logger.error("", e);
+                cacheUtil.put(downFlagVO.getTaskID()+",status", MagicString.TASK_STATUS_EXCEPTION);
+                cacheUtil.remove(downFlagVO.getTaskID()+",status");
+            }
+        });
+
+        try {
+            futureTask.get(MagicString.TASK_TIME_OUT, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", "9");
+            returnJson.put("taskId", downFlagVO.getTaskID());
+            return ResultMaps.result(ResultEnum.SUCCESS, returnJson);
+        } catch(InterruptedException e ){
+            Thread.currentThread().interrupt();
+            logger.error("", e);
+            cacheUtil.remove(downFlagVO.getTaskID()+",status");
+            return ResultMaps.result(ResultEnum.FAILURE);
+        } catch (ExecutionException e){
+            logger.error("", e);
+            cacheUtil.remove(downFlagVO.getTaskID()+",status");
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
+
+        return null;
     }
 
     @Override
@@ -607,6 +653,38 @@ public class MstJanServiceImpl implements MstJanService {
             }
         }
         return ResultMaps.result(ResultEnum.SUCCESS.getCode(),"同期完了しました");
+    }
+
+    @Override
+    public void getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response) throws IOException {
+        response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+        String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("商品明細-%s.xlsx",
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
+        response.setHeader("Content-Disposition", format);
+
+        ServletOutputStream outputStream = response.getOutputStream();
+        if (MagicString.TASK_STATUS_SUCCESS.equals(cacheUtil.get(downFlagVO.getTaskID()+",status"))) {
+            Object o = cacheUtil.get(downFlagVO.getTaskID() + ",filepath");
+            if(o!=null){
+                String filePath = o.toString();
+                try( FileInputStream fis = new FileInputStream(filePath);
+                     FileChannel chIn = fis.getChannel();
+                     WritableByteChannel chOut = Channels.newChannel(outputStream)){
+                    ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+                    while(chIn.read(byteBuffer)!=-1){
+                        byteBuffer.flip();
+                        chOut.write(byteBuffer);
+                        byteBuffer.clear();
+                    }
+                } finally {
+                    Files.deleteIfExists(new File(filePath).toPath());
+                    cacheUtil.remove(downFlagVO.getTaskID()+",status");
+                    cacheUtil.remove(downFlagVO.getTaskID()+",filepath");
+                }
+            }
+        }
+
+        outputStream.flush();
     }
 
     /**

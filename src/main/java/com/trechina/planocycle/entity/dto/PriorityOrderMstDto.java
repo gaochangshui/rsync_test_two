@@ -22,4 +22,6 @@ public class PriorityOrderMstDto {
 
     private String attrOption;
 
+    private Integer modeCheck;
+
 }

@@ -18,9 +18,9 @@
   </insert>
   <insert id="setWorkForFinal">
     insert  into priority.work_priority_order_mst(company_cd, priority_order_cd,priority_order_name,attr_option,
-      product_power_cd,author_cd,create_time,editer_cd,edit_time,shelf_pattern_cd)
+      product_power_cd,author_cd,create_time,editer_cd,edit_time,shelf_pattern_cd,mode_check)
     select company_cd, #{newPriorityOrderCd},concat('一時保存データ',#{date}),attr_option,
-      product_power_cd,author_cd,now(),editer_cd,now(),shelf_pattern_cd
+      product_power_cd,author_cd,now(),editer_cd,now(),shelf_pattern_cd,mode_check
     from priority.priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR} and priority_order_cd =#{priorityOrderCd,jdbcType=INTEGER}
   </insert>
@@ -31,6 +31,10 @@
     from priority.priority_order_mst
     where company_cd = #{companyCd,jdbcType=VARCHAR}
     order by priority_order_cd desc
+  </select>
+  <select id="selectModeCheck" resultType="int">
+    select mode_check from priority.priority_order_mst
+    where priority_order_cd = #{priorityOrderCd}
   </select>
   <select id="selectPriorityOrderCount" resultType="java.lang.Integer">
     select count(1)
@@ -90,9 +94,9 @@
   </delete>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.dto.PriorityOrderMstDto">
     insert into priority.priority_order_mst (company_cd, priority_order_cd, priority_order_name,attr_option,
-      product_power_cd,author_cd,create_time,editer_cd,edit_time,shelf_pattern_cd)
+      product_power_cd,author_cd,create_time,editer_cd,edit_time,shelf_pattern_cd,mode_check)
     select company_cd,priority_order_cd ,#{list.priorityOrderName},attr_option,
-           product_power_cd,#{authorCd},now(),#{authorCd},now(),#{list.shelfPatternCd}
+           product_power_cd,#{authorCd},now(),#{authorCd},now(),#{list.shelfPatternCd},mode_check
     from priority.work_priority_order_mst
     where priority_order_cd = #{list.priorityOrderCd,jdbcType=INTEGER}
   </insert>
