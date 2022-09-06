@@ -180,4 +180,22 @@
         select * from priority.work_priority_order_commodity_pattern
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </insert>
+    <delete id="deleteWorkByPattern">
+        DELETE FROM priority.work_priority_order_commodity_pattern WHERE company_cd = #{companyCd} and priority_order_cd = #{newPriorityOrderCd}
+    </delete>
+    <insert id="insertForFinalByPattern">
+        insert into priority.work_priority_order_commodity_pattern(company_cd,priority_order_cd,shelf_pattern_cd,exist_flag,jan_cd,shelf_name_cd)
+        select  company_cd,#{newPriorityOrderCd},shelf_pattern_cd,exist_flag,jan_cd,shelf_name_cd
+        from priority.priority_order_commodity_pattern
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
+    </insert>
+    <delete id="deleteWorkByBranch">
+        DELETE FROM priority.work_priority_order_commodity_branch WHERE company_cd = #{companyCd} and priority_order_cd = #{newPriorityOrderCd}
+    </delete>
+    <insert id="insertForFinalByBranch">
+        insert into priority.work_priority_order_commodity_branch(company_cd,priority_order_cd,branch_cd,exist_flag,jan_cd,area)
+        select  company_cd,#{newPriorityOrderCd},branch_cd,exist_flag,jan_cd,area
+        from priority.priority_order_commodity_branch
+        where priority_order_cd=#{priorityOrderCd} and company_cd=#{companyCd};
+    </insert>
 </mapper>

@@ -47,4 +47,12 @@ public interface StarReadingTableMapper {
     int setFinalForWorkByBranch(String companyCd, Integer priorityOrderCd);
 
     int setFinalForWorkByPattern(String companyCd, Integer priorityOrderCd);
+
+    void deleteWorkByPattern(String companyCd, Integer newPriorityOrderCd);
+
+    void insertForFinalByPattern(String companyCd, Integer priorityOrderCd, Integer newPriorityOrderCd);
+
+    void deleteWorkByBranch(String companyCd, Integer newPriorityOrderCd);
+
+    void insertForFinalByBranch(String companyCd, Integer priorityOrderCd, Integer newPriorityOrderCd);
 }
