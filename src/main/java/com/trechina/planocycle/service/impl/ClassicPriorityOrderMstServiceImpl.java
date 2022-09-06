@@ -618,21 +618,22 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 List<Map<String, Object>> resultDataList = priorityOrderResultDataMapper.selectFinalDataByAttr(priorityOrderCd, companyCd, rankAttrList);
                 List<CompletableFuture<Map<String, List<Map<String, Object>>>>> tasks = new ArrayList<>();
 
-                List<String> mustBranch = commodityMustJans.stream().map(map->map.get("branch").toString()).collect(Collectors.toList());
-                List<String> notBranch = commodityNotJans.stream().map(map->map.get("branch").toString()).collect(Collectors.toList());
-
-                Set<String> mustNotBranch = new HashSet<>(mustBranch);
-                mustNotBranch.addAll(notBranch);
-
                 List<String> allBranchList = shelfPatternBranchMapper.selectByPrimaryKey(shelfPatternCd)
                         .stream().map(shelfPattern->shelfPattern.getBranch().contains("_")?shelfPattern.getBranch().split("_")[1]:shelfPattern.getBranch()).collect(Collectors.toList());
                 boolean isAllForMustNot = true;
+                Set<String> mustNotBranch = new HashSet<>();
 
                 if(Objects.equals(modeCheck, 1)){
                     //if all branch
                     List<String> branchList = starReadingTableMapper.selectBranchMustNotJan(companyCd, priorityOrderCd);
                     long count = Sets.intersection(Sets.newHashSet(allBranchList), Sets.newHashSet(branchList)).stream().count();
                     isAllForMustNot = Objects.equals(count,branchList.size());
+
+                    List<String> mustBranch = commodityMustJans.stream().map(map->map.get("branch").toString()).collect(Collectors.toList());
+                    List<String> notBranch = commodityNotJans.stream().map(map->map.get("branch").toString()).collect(Collectors.toList());
+
+                    mustNotBranch.addAll(mustBranch);
+                    mustNotBranch.addAll(notBranch);
                 }
 
                 //must and not only one branch, download a pts csv
@@ -647,7 +648,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     tasks.add(commonFuture);
                 }
 
-                if(branchMustNot){
+                if(branchMustNot || Objects.equals(0, modeCheck)){
                     //commodity_must+commodity_not
                     boolean finalIsAllForMustNot = isAllForMustNot;
                     List<Map<String, Object>> finalCommodityMustJans = commodityMustJans;
