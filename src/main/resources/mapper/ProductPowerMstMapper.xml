@@ -143,4 +143,17 @@
       </foreach>
     )
   </select>
+    <select id="getCompanyName" resultType="java.lang.String">
+      select
+        group_name
+      from
+        masterdb.group_company
+      where group_cd = #{companyCd}
+      union
+      select
+        "2"
+      from
+        masterdb.kigyou_name
+      WHERE "1"  = #{companyCd}
+    </select>
 </mapper>

@@ -2,7 +2,6 @@ package com.trechina.planocycle.mapper;
 
 import com.trechina.planocycle.entity.dto.FaceNumDataDto;
 import com.trechina.planocycle.entity.dto.GetPatternForProductPowerCd;
-import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.ProductPowerMst;
 import com.trechina.planocycle.entity.vo.CommodityListInfoVO;
@@ -11,7 +10,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface ProductPowerMstMapper {
@@ -50,4 +48,6 @@ public interface ProductPowerMstMapper {
     void setWork(Integer productPowerCd, String companyCd,String authorCd, String date);
 
     void deleteWork(String companyCd, Integer productPowerCd);
+
+    String getCompanyName(String companyCd);
 }

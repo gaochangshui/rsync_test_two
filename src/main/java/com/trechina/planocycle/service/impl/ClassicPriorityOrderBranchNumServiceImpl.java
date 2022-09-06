@@ -602,6 +602,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             mapResult.put("column", column);
             mapResult.put("header", header);
             mapResult.put("group", group);
+            list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,"jan"))).collect(Collectors.toList());
             mapResult.put("data", list);
 
         }else {
@@ -643,6 +644,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             mapResult.put("column", column);
             mapResult.put("header", header);
             mapResult.put("group", group);
+            list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,"jan"))).collect(Collectors.toList());
             mapResult.put("data", list);
         }
         return ResultMaps.result(ResultEnum.SUCCESS,mapResult);
@@ -652,10 +654,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     public Map<String, Object> getStarReadingParam(String companyCd,Integer priorityOrderCd) {
 
         Integer modeCheck = priorityOrderMstMapper.getModeCheck(priorityOrderCd);
+        Boolean isModeCheck = true;
         if (modeCheck == null){
             modeCheck =1;
+            isModeCheck = false;
         }
-
         List<Map<String, Object>> expressItemList =new ArrayList<>();
         String janInfoTableName = "";
         String column = "jan,janName,total";
@@ -675,6 +678,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 Map<String,Object> map = new HashMap<>();
                 map.put("jan",stringListEntry.getValue().get(0).get("jan"));
                 map.put("janName",stringListEntry.getValue().get(0).get("janName"));
+                map.put("total","");
                 for (Map<String, Object> objectMap : branchList) {
                     for (Map<String, Object> stringObjectMap : stringListEntry.getValue()) {
                         if (objectMap.get("branchCd").equals(stringObjectMap.get("branchCd"))){
@@ -693,6 +697,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             mapResult.put("column", column);
             mapResult.put("header", header);
             mapResult.put("group", group);
+            list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,"jan"))).collect(Collectors.toList());
             mapResult.put("data", list);
 
         }else if (modeCheck == 0){
@@ -727,6 +732,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             mapResult.put("column", column);
             mapResult.put("header", header);
             mapResult.put("group", group);
+            list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,"jan"))).collect(Collectors.toList());
             mapResult.put("data", list);
         }
         List<Map<String, Object>> areaList = starReadingTableMapper.getAreaList(priorityOrderCd);
@@ -739,7 +745,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         map.put("expressItemList",expressItemList);
         map.put("janList",janList);
         map.put("modeCheck",modeCheck);
-        map.put("data",mapResult);
+        map.put("data",!isModeCheck?null:mapResult);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
@@ -750,6 +756,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         starReadingTableMapper.delBranchList(companyCd,priorityOrderCd);
         starReadingTableMapper.delPatternList(companyCd,priorityOrderCd);
         priorityOrderMstMapper.updateModeCheck(starReadingVo);
+        if (starReadingVo.getData().isEmpty()){
+            starReadingVo.setModeCheck(null);
+            priorityOrderMstMapper.updateModeCheck(starReadingVo);
+            return ResultMaps.result(ResultEnum.SUCCESS);
+        }
         List<Map<String, Object>> list = new ArrayList<>();
 
             for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
@@ -758,8 +769,6 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     if (!stringObjectEntry.getKey().equals("jan") && !stringObjectEntry.getKey().equals("janName") && !stringObjectEntry.getKey().equals("total")) {
                         Map<String, Object> map = new HashMap<>();
                         map.put("jan", jan);
-                        map.put("companyCd", companyCd);
-                        map.put("priorityOrderCd", priorityOrderCd);
                         map.put("branch", stringObjectEntry.getKey().split("_")[1]);
                         map.put("flag", stringObjectEntry.getValue().equals("☓") ? -1 : stringObjectEntry.getValue().equals("") ? 0 : 1);
                         if (starReadingVo.getModeCheck() == 0){
@@ -774,11 +783,20 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     }
 
                 }
+                if (list.size() >= 5000){
+                    if (starReadingVo.getModeCheck() == 1) {
+                        starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
+                    }else {
+                        starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
+                    }
+                    list.clear();
+                }
             }
+
         if (starReadingVo.getModeCheck() == 1) {
-            starReadingTableMapper.setBranchList(list);
+            starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
         }else {
-            starReadingTableMapper.setPatternList(list);
+            starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS);
