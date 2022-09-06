@@ -840,14 +840,25 @@
             #{item}
         </foreach>
     </select>
-    <select id="getJanClassify" resultType="java.lang.String">
-       <foreach collection="janClassCd" item="item" separator=" union ">
-           select distinct "${item.name}"
+    <select id="getJanClassify" resultType="map">
+
+           select distinct
+           <foreach collection="colMap" item="item" separator=",">
+               "${item.col}" as ${item.name}
+           </foreach>
            from  ${tableName}
-            where "${item.cd}" = #{item.value}
-       </foreach>
+           where
+            <foreach collection="janClassCd" item="item" separator="and">
+                 "${item.cd}" = #{item.value}
+           </foreach>
     </select>
     <select id="getAttrName" resultType="java.lang.String">
         select "2" from ${tableName} where "3" = #{col}
+    </select>
+    <select id="getClassifyHeader" resultType="java.util.LinkedHashMap">
+        select "1" as "cd","2" as name,"4" as col
+        from ${tableName}
+        where "4" is not null and "1" like '%name'
+        order by "3" ::integer
     </select>
 </mapper>

@@ -201,7 +201,9 @@ public interface ProductPowerDataMapper {
 
     List<String> getStoreName(List<String> storeList, String tableName);
 
-    List<String> getJanClassify(List<Map<String, Object>> janClassCd, String tableName);
+    List<Map<String,Object>> getJanClassify(List<Map<String, Object>> janClassCd, String tableName,List<LinkedHashMap<String, Object>> colMap);
 
     String getAttrName(String col, String tableName);
+
+    List<LinkedHashMap<String,Object>> getClassifyHeader(String tableName);
 }

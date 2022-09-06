@@ -382,9 +382,11 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         mapResult.put("storeList",storeList);
         //商品条件
             //classify
-        List<String> janClassify =  new ArrayList<>();
+        List<LinkedHashMap<String, Object>> classifyHeader = productPowerDataMapper.getClassifyHeader(commonTableName.getProKaisouTable());
+        List<Map<String,Object>> janClassify =  new ArrayList<>();
         if (!Strings.isNullOrEmpty(param.getPrdCd())) {
             List<String> list = Arrays.asList(param.getPrdCd().split(","));
+
             List<Map<String,Object>>  janClassifyList = new ArrayList();
             for (String s : list) {
                 Map<String,Object> janClassCd = new HashMap<>();
@@ -393,9 +395,11 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
                 janClassCd.put("name",(Integer.parseInt(s.split("-")[0]) * 2)+"");
                 janClassifyList.add(janClassCd);
             }
-            janClassify = productPowerDataMapper.getJanClassify(janClassifyList,commonTableName.getProKaisouInfoTable());
+            janClassify = productPowerDataMapper.getJanClassify(janClassifyList,commonTableName.getProKaisouInfoTable(),classifyHeader);
         }
+
         mapResult.put("janClassify",janClassify);
+        mapResult.put("classifyHeader",classifyHeader);
             //attr
         Map<String,Object> janAttr =  new HashMap<>();
         List<Map<String, Object>> janAttrList = new Gson().fromJson(param.getProdAttrData().toString(),
@@ -430,6 +434,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             placeNm = Arrays.asList(param.getPlaceNm().split(","));
         }
         mapResult.put("placeNm",placeNm);
+
         return mapResult;
     }
 }
