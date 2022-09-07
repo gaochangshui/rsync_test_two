@@ -174,8 +174,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         //param
         String customerConditionStr = map.get("customerCondition").toString();
         String prodAttrData = map.get("prodAttrData").toString();
+        String singleJan = map.get("singleJan").toString();
         productPowerParamMstMapper.deleteWork(companyCd,productPowerCd);
-        productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr,prodAttrData);
+        productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr,prodAttrData,singleJan);
         if (paramCount >0){
             map.put("changeFlag","1");
         }else {
