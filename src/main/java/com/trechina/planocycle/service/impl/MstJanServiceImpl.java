@@ -2,6 +2,8 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.CommoditySyncSet;
@@ -174,13 +176,14 @@ public class MstJanServiceImpl implements MstJanService {
                      excelData.add(janInfoVO.getJanHeader().split(","));
                      String fileName = String.format("商品明細-%s.xlsx",
                              LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS)));
-                     String format = MessageFormat.format("attachment;filename={0};", UriUtils.encode(fileName, "utf-8"));
+                    String path = this.getClass().getClassLoader().getResource("").getPath();
+                    String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
 
                      for (LinkedHashMap<String, Object> map : janInfoVO.getJanDataList()) {
                          excelData.add(map.values().stream().map(Object::toString).toArray(String[]::new));
                      }
 
-                     String filePath = ExcelUtils.generateNormalExcelToFile(excelData, fileName);
+                     ExcelUtils.generateNormalExcelToFile(excelData, filePath);
                      cacheUtil.put(downFlagVO.getTaskID() + ",status", MagicString.TASK_STATUS_SUCCESS);
                      cacheUtil.put(downFlagVO.getTaskID() + ",filepath", filePath);
                  }else{

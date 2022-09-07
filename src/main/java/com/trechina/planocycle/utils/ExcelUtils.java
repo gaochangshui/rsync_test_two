@@ -308,13 +308,11 @@ public class ExcelUtils {
     /**
      * generate excel to file
      * @param allData
-     * @param fileName
+     * @param filePath
      * @return file's path
      */
-    public static String generateNormalExcelToFile(List<String[]> allData, String fileName){
-        logger.info("start generate excel,now:{}, filename: {}", LocalDateTime.now(),fileName);
-        String path = ExcelUtils.class.getClassLoader().getResource("").getPath();
-        String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
+    public static String generateNormalExcelToFile(List<String[]> allData, String filePath){
+        logger.info("start generate excel,now:{}, filename: {}", LocalDateTime.now(),filePath);
 
         try(XSSFWorkbook workbook = new XSSFWorkbook();
             FileOutputStream fos = new FileOutputStream(filePath)){
@@ -336,7 +334,7 @@ public class ExcelUtils {
         }catch (Exception e){
             logger.error("", e);
         }
-        logger.info("end generate excel,now:{}, filename: {}", LocalDateTime.now(), fileName);
+        logger.info("end generate excel,now:{}, filename: {}", LocalDateTime.now(), filePath);
         return filePath;
     }
 
