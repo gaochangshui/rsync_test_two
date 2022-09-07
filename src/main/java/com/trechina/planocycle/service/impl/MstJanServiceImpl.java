@@ -26,6 +26,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -175,10 +176,9 @@ public class MstJanServiceImpl implements MstJanService {
                      excelData.add(janInfoVO.getJanHeader().split(","));
                      String fileName = String.format("商品明細-%s.xlsx",
                              LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS)));
-                    String path = this.getClass().getClassLoader().getResource("").getPath();
-                    if(path.startsWith("/")){
-                        path = path.substring(1);
-                    }
+                    ApplicationHome h = new ApplicationHome(this.getClass());
+                    File jarF = h.getSource();
+                    String path = jarF.getParentFile().toString();
                     String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
 
                      for (LinkedHashMap<String, Object> map : janInfoVO.getJanDataList()) {
@@ -679,14 +679,14 @@ public class MstJanServiceImpl implements MstJanService {
                 
                 Object o = cacheUtil.get(downFlagVO.getTaskID() + ",filepath");
                 if(o!=null){
+                    ApplicationHome h = new ApplicationHome(this.getClass());
+                    File jarF = h.getSource();
                     String fileName = o.toString();
-                    String path = this.getClass().getClassLoader().getResource("").getPath();
-                    if(path.startsWith("/")){
-                        path = path.substring(1);
-                    }
+                    String path = jarF.getParentFile().toString();
+
                     String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
 
-                    try(InputStream fis = this.getClass().getClassLoader().getResourceAsStream(fileName);
+                    try(FileInputStream fis = new FileInputStream(filePath);
                         ReadableByteChannel chIn = Channels.newChannel(fis);
                         WritableByteChannel chOut = Channels.newChannel(outputStream)){
                         ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
