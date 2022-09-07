@@ -520,7 +520,7 @@ public class MstJanServiceImpl implements MstJanService {
         String taskId = UUID.randomUUID().toString();
         String finalCompanyCd = companyCd;
         cacheUtil.put(taskId+",status", MagicString.TASK_STATUS_PROCESSING);
-        Future futureTask = executor.submit(()->{
+        executor.execute(()->{
             Map<String, String> headerNameIndex = new HashMap<>();
             for (JanHeaderAttr headerAttr : janHeader) {
                 headerNameIndex.put(headerAttr.getAttrVal(), headerAttr.getSort());
@@ -627,24 +627,6 @@ public class MstJanServiceImpl implements MstJanService {
                 cacheUtil.put(taskId+",status", MagicString.TASK_STATUS_EXCEPTION);
             }
         });
-
-        try {
-            futureTask.get(MagicString.TASK_TIME_OUT, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            JSONObject returnJson = new JSONObject();
-            returnJson.put("status", "9");
-            returnJson.put("taskId", taskId);
-            return ResultMaps.result(ResultEnum.SUCCESS, returnJson);
-        } catch(InterruptedException e ){
-            Thread.currentThread().interrupt();
-            logger.error("", e);
-            cacheUtil.remove(taskId+",status");
-            return ResultMaps.result(ResultEnum.FAILURE);
-        } catch (ExecutionException e){
-            logger.error("", e);
-            cacheUtil.remove(taskId+",status");
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
 
         JSONObject json = new JSONObject();
         json.put("taskId", taskId);
