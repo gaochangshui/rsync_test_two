@@ -2,6 +2,9 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.cloud.ReadChannel;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.CommoditySyncSet;
@@ -33,13 +36,11 @@ import org.springframework.web.util.UriUtils;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -174,15 +175,19 @@ public class MstJanServiceImpl implements MstJanService {
                      excelData.add(janInfoVO.getJanHeader().split(","));
                      String fileName = String.format("商品明細-%s.xlsx",
                              LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS)));
-                     String format = MessageFormat.format("attachment;filename={0};", UriUtils.encode(fileName, "utf-8"));
+                    String path = this.getClass().getClassLoader().getResource("").getPath();
+                    if(path.startsWith("/")){
+                        path = path.substring(1);
+                    }
+                    String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
 
                      for (LinkedHashMap<String, Object> map : janInfoVO.getJanDataList()) {
                          excelData.add(map.values().stream().map(Object::toString).toArray(String[]::new));
                      }
 
-                     String filePath = ExcelUtils.generateNormalExcelToFile(excelData, fileName);
+                     ExcelUtils.generateNormalExcelToFile(excelData, filePath);
                      cacheUtil.put(downFlagVO.getTaskID() + ",status", MagicString.TASK_STATUS_SUCCESS);
-                     cacheUtil.put(downFlagVO.getTaskID() + ",filepath", filePath);
+                     cacheUtil.put(downFlagVO.getTaskID() + ",filepath", fileName);
                  }else{
                      cacheUtil.put(downFlagVO.getTaskID() + ",status", MagicString.TASK_STATUS_SUCCESS);
                      cacheUtil.put(downFlagVO.getTaskID() + ",returnVal", janInfoVO);
@@ -674,24 +679,32 @@ public class MstJanServiceImpl implements MstJanService {
                 
                 Object o = cacheUtil.get(downFlagVO.getTaskID() + ",filepath");
                 if(o!=null){
-                    String filePath = o.toString();
-                    try( FileInputStream fis = new FileInputStream(filePath);
-                         FileChannel chIn = fis.getChannel();
-                         WritableByteChannel chOut = Channels.newChannel(outputStream)){
+                    String fileName = o.toString();
+                    String path = this.getClass().getClassLoader().getResource("").getPath();
+                    if(path.startsWith("/")){
+                        path = path.substring(1);
+                    }
+                    String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
+
+                    try(InputStream fis = this.getClass().getClassLoader().getResourceAsStream(fileName);
+                        ReadableByteChannel chIn = Channels.newChannel(fis);
+                        WritableByteChannel chOut = Channels.newChannel(outputStream)){
                         ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
                         while(chIn.read(byteBuffer)!=-1){
                             byteBuffer.flip();
                             chOut.write(byteBuffer);
                             byteBuffer.clear();
                         }
-                    } finally {
+                        outputStream.flush();
+                    } catch (Exception e){
+                        logger.error("",e);
+                    }finally {
                         Files.deleteIfExists(new File(filePath).toPath());
                         cacheUtil.remove(downFlagVO.getTaskID()+",status");
                         cacheUtil.remove(downFlagVO.getTaskID()+",flag");
                         cacheUtil.remove(downFlagVO.getTaskID()+",filepath");
                     }
                 }
-                outputStream.flush();
             }else{
                 JanInfoVO janInfoVO = (JanInfoVO) cacheUtil.get(downFlagVO.getTaskID() + ",returnVal");
                 cacheUtil.remove(downFlagVO.getTaskID()+",status");
