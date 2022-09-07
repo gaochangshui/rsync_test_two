@@ -743,6 +743,8 @@ public class MstJanServiceImpl implements MstJanService {
         Object o = cacheUtil.get(taskId + ",status");
         if (Objects.equals(o.toString(), MagicString.TASK_STATUS_SUCCESS)) {
             String data = cacheUtil.get(taskId + ",data").toString();
+            cacheUtil.remove(taskId+",data");
+            cacheUtil.remove(taskId+",status");
             return ResultMaps.result(ResultEnum.SUCCESS.getCode(), data);
         }else if(Objects.equals(o.toString(), MagicString.TASK_STATUS_PROCESSING)){
             JSONObject returnJson = new JSONObject();
@@ -751,7 +753,9 @@ public class MstJanServiceImpl implements MstJanService {
             return ResultMaps.result(ResultEnum.SUCCESS, returnJson);
         }
 
-        Object msg = cacheUtil.get(taskId + ",Exception");
+        Object msg = cacheUtil.get(taskId + ",exception");
+        cacheUtil.remove(taskId+",data");
+        cacheUtil.remove(taskId+",exception");
         return ResultMaps.result(ResultEnum.FAILURE, msg);
     }
 
