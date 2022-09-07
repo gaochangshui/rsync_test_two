@@ -172,14 +172,15 @@ public class MstJanServiceImpl implements MstJanService {
                 if(Integer.valueOf(1).equals(downFlagVO.getDownFlag())) {
                      List<String[]> excelData = new ArrayList<>();
                      excelData.add(janInfoVO.getJanHeader().split(","));
-                     String format = MessageFormat.format("attachment;filename={0};", UriUtils.encode(String.format("商品明細-%s.xlsx",
-                             LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
+                     String fileName = String.format("商品明細-%s.xlsx",
+                             LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS)));
+                     String format = MessageFormat.format("attachment;filename={0};", UriUtils.encode(fileName, "utf-8"));
 
                      for (LinkedHashMap<String, Object> map : janInfoVO.getJanDataList()) {
                          excelData.add(map.values().stream().map(Object::toString).toArray(String[]::new));
                      }
 
-                     String filePath = ExcelUtils.generateNormalExcelToFile(excelData, format);
+                     String filePath = ExcelUtils.generateNormalExcelToFile(excelData, fileName);
                      cacheUtil.put(downFlagVO.getTaskID() + ",status", MagicString.TASK_STATUS_SUCCESS);
                      cacheUtil.put(downFlagVO.getTaskID() + ",filepath", filePath);
                  }else{
