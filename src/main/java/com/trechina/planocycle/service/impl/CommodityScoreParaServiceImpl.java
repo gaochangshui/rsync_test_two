@@ -141,9 +141,11 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             productPowerDataMapper.setData(productPowerCd,companyCd,newProductPowerCd);
             //期間パラメータ削除挿入{{きかんぱらめーた:さくじょそうにゅう}}
             String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
-
+        String prodAttrData = productPowerParam.getProdAttrData().toString();
         productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
-        productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd,newProductPowerCd,productPowerParam.getProdAttrData().toString());
+        String singleJan = productPowerParam.getSingleJan().toString();
+        productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd,newProductPowerCd
+                ,prodAttrData, singleJan);
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

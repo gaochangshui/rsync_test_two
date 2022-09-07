@@ -211,8 +211,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerParamMstMapper.setWorkForFinal(companyCd,productPowerNo,newProductPowerCd);
 
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
-        List<Map<String, Object>> commodityNotList = new Gson().fromJson(param.getProdAttrData().toString(), new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
-        param.setProdAttrData(commodityNotList);
+        List<Map<String, Object>> prodAttrData = new Gson().fromJson(param.getProdAttrData().toString(), new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
+        //LinkedHashMap<String, Object> singleJan = new Gson().fromJson(param.getSingleJan().toString(), new com.google.common.reflect.TypeToken<LinkedHashMap<String, Object>>(){}.getType());
+        param.setProdAttrData(prodAttrData);
+        param.setSingleJan(null);
         List<String> cdList = new ArrayList<>();
          cdList.addAll(Arrays.asList(param.getProject().split(",")));
         List<String> yobi = productPowerDataMapper.getYobi(companyCd, productPowerNo, aud);
@@ -286,6 +288,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setProductPowerNo(newProductPowerCd);
         powerParam.setCompany(companyCd);
         powerParam.setProdAttrData(param.getProdAttrData());
+        powerParam.setSingleJan(param.getSingleJan());
         List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(productPowerNo, companyCd);
         List<Object> dataAll = new ArrayList();
         dataAll.add(returnDataAttr);
