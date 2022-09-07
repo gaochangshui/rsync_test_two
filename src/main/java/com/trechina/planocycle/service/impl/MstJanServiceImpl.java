@@ -176,6 +176,9 @@ public class MstJanServiceImpl implements MstJanService {
                      String fileName = String.format("商品明細-%s.xlsx",
                              LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS)));
                     String path = this.getClass().getClassLoader().getResource("").getPath();
+                    if(path.startsWith("/")){
+                        path = path.substring(1);
+                    }
                     String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
 
                      for (LinkedHashMap<String, Object> map : janInfoVO.getJanDataList()) {
@@ -678,6 +681,9 @@ public class MstJanServiceImpl implements MstJanService {
                 if(o!=null){
                     String fileName = o.toString();
                     String path = this.getClass().getClassLoader().getResource("").getPath();
+                    if(path.startsWith("/")){
+                        path = path.substring(1);
+                    }
                     String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
 
                     try(InputStream fis = this.getClass().getClassLoader().getResourceAsStream(fileName);
