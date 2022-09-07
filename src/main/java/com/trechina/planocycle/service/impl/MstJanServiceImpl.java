@@ -623,7 +623,7 @@ public class MstJanServiceImpl implements MstJanService {
                 cacheUtil.put(taskId+",data", count + MagicString.MSG_UPLOAD_SUCCESS);
             } catch (Exception e) {
                 logAspect.setTryErrorLog(e,new Object[]{commonPartsData, finalCompanyCd,classCd});
-                cacheUtil.put(taskId+",Exception", MagicString.MSG_ABNORMALITY_DATA);
+                cacheUtil.put(taskId+",exception", MagicString.MSG_ABNORMALITY_DATA);
                 cacheUtil.put(taskId+",status", MagicString.TASK_STATUS_EXCEPTION);
             }
         });
@@ -742,7 +742,6 @@ public class MstJanServiceImpl implements MstJanService {
     public Map<String, Object> getUploadJanDataResult(String taskId) {
         Object o = cacheUtil.get(taskId + ",status");
         if (Objects.equals(o.toString(), MagicString.TASK_STATUS_SUCCESS)) {
-            JSONObject returnJson = new JSONObject();
             String data = cacheUtil.get(taskId + ",data").toString();
             return ResultMaps.result(ResultEnum.SUCCESS.getCode(), data);
         }else if(Objects.equals(o.toString(), MagicString.TASK_STATUS_PROCESSING)){
@@ -752,10 +751,8 @@ public class MstJanServiceImpl implements MstJanService {
             return ResultMaps.result(ResultEnum.SUCCESS, returnJson);
         }
 
-        JSONObject returnJson = new JSONObject();
-        returnJson.put("status", "9");
-        returnJson.put("taskId", taskId);
-        return ResultMaps.result(ResultEnum.SUCCESS, returnJson);
+        Object msg = cacheUtil.get(taskId + ",Exception");
+        return ResultMaps.result(ResultEnum.FAILURE, msg);
     }
 
     /**
