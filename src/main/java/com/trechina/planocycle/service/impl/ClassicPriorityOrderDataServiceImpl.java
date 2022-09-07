@@ -15,10 +15,7 @@ import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
-import com.trechina.planocycle.service.ClassicPriorityOrderAttributeClassifyService;
-import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
-import com.trechina.planocycle.service.ClassicPriorityOrderJanCardService;
-import com.trechina.planocycle.service.IDGeneratorService;
+import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.CacheUtil;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
@@ -124,6 +121,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Autowired
     private IDGeneratorService idGeneratorService;
     @Autowired
+    private BasicPatternMstService basicPatternMstService;
+    @Autowired
     private StarReadingTableMapper starReadingTableMapper;
 
     /**
@@ -215,11 +214,14 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             List<Map<String, Object>> initialExtraction = new ArrayList<>();
             initialExtraction.add(mapColHeader);
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderDataDto.getProductPowerCd());
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
         String colName = "";
         if (param.getJanName2colNum() == 1){
-            colName = "jan";
-        }else {
+            colName = "1";
+        }else if (param.getJanName2colNum() == 2){
             colName = "2";
+        }else {
+            colName = productPowerDataMapper.getItemCol(commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
         }
         List<Map<String, Object>> datas = shelfPtsDataMapper.getInitialExtraction(shelfPtsData, tableName
                 , priorityOrderDataDto.getProductPowerCd(), listTableName, listAttr,colName);

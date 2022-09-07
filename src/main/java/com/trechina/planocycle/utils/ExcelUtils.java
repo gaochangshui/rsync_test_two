@@ -15,10 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -136,8 +133,7 @@ public class ExcelUtils {
         cellStyle.setFont(font);
         cellStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        sheet1.createFreezePane(0,7,0,1);
-
+        sheet1.createFreezePane(0,7);
 
         int colIndex=0;
         int  headerColIndex=0;
@@ -187,8 +183,9 @@ public class ExcelUtils {
         cell = row.createCell(headerColIndex+=kaisouHeader.size()+1);
         cell.setCellValue("商品属性");
         cell.setCellStyle(cellStyle);
-        Map<String,Object> attrList = (Map<String, Object>) paramMap.get("janAttr");
-        cell = row.createCell(headerColIndex+=attrList.size()+1);
+        LinkedHashMap<String,Object> attrList = (LinkedHashMap<String, Object>) paramMap.get("janAttr");
+        LinkedHashMap<String,Object> janAttrFlag = (LinkedHashMap<String, Object>) paramMap.get("janAttrFlag");
+        cell = row.createCell(headerColIndex+=attrList.size() * 2 +1);
         cell.setCellValue("顧客条件");
         cell.setCellStyle(cellStyle);
         cell = row.createCell(headerColIndex+=2);
@@ -212,6 +209,10 @@ public class ExcelUtils {
         for (Map.Entry<String, Object> stringObjectEntry : attrList.entrySet()) {
             cell = row.createCell(headerColIndex++);
             cell.setCellValue(stringObjectEntry.getKey());
+            cell.setCellStyle(cellStyle);
+
+            cell = row.createCell(headerColIndex++);
+            cell.setCellValue(stringObjectEntry.getKey()+"区分");
             cell.setCellStyle(cellStyle);
         }
         headerColIndex++;
@@ -255,6 +256,8 @@ public class ExcelUtils {
             for (Map.Entry<String, Object> stringObjectEntry : attrList.entrySet()) {
                 cell = row.createCell(headerColIndex++);
                 cell.setCellValue(((List<String>)stringObjectEntry.getValue()).size()>i?((List<String>)stringObjectEntry.getValue()).get(i):"");
+                cell = row.createCell(headerColIndex++);
+                cell.setCellValue( ((List<String>)stringObjectEntry.getValue()).size()>i?janAttrFlag.get(stringObjectEntry.getKey()+"区分").toString():"");
             }
             headerColIndex++;
             cell = row.createCell(headerColIndex);

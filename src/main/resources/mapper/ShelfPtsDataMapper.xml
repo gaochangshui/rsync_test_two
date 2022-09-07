@@ -635,7 +635,7 @@
             t1.branch_num as branch_num,t1.branch_num as branch_num_upd,coalesce(t2.pos_store_item01,'0') as branch_amount_upd,0 as difference,0 as sale_forecast
             ,ROW_NUMBER () OVER (order by t1.branch_num desc , t2.pos_item01 desc) as rank,coalesce(t2.rank_result,99999998) as rank_prop,99999998 as rank_upd,coalesce(t2.rank_result,99999998) as goods_rank
     from(
-          select  jan,info."2",count(DISTINCT branch) as branch_num
+          select  jan,info."2",info."${colName}" as a,count(DISTINCT branch) as branch_num
           from
             planocycle.shelf_pts_data_jandata  jandata
               left join ${tableName} info
@@ -646,17 +646,17 @@
             <foreach collection="shelfPtsData" item="item" open="(" close=")" separator=",">
               #{item.id}
             </foreach>
-        GROUP BY jan,info."2"
+        GROUP BY jan,info."2","${colName}"
         ) t1
           left join
-        (SELECT datas.jan,info."2" ,datas.pos_item01,datas.pos_item03,datas.pos_store_item01,datas.rank_result
+        (SELECT datas.jan,info."${colName}" ,datas.pos_item01,datas.pos_item03,datas.pos_store_item01,datas.rank_result
          from
            planocycle.product_power_mst_data datas
              left join  ${tableName} info
                        on datas.jan = info."1"
          where datas.product_power_cd =#{productPowerCd}
         ) t2
-        on t1."${colName}" = t2."${colName}"
+        on t1. a = t2."${colName}"
         <foreach collection="attrTableName" item="item" index="index">
           left join ${item} as ${index}
         on ${index}."1" = t1.jan

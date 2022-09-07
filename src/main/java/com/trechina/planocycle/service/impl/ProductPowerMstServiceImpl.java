@@ -371,6 +371,8 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         if (!Strings.isNullOrEmpty(param.getSeasonFlag())) {
             dateRange2 = param.getSeasonFlag().equals("0")?"年月":"年週";
             dateRange2 += param.getSeasonStTime()+"~"+param.getSeasonEndTime();
+        }else {
+            dateRange2 +="昨対";
         }
         mapResult.put("dateRange1",dateRange1);
         mapResult.put("dateRange2",dateRange2);
@@ -401,17 +403,22 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         mapResult.put("janClassify",janClassify);
         mapResult.put("classifyHeader",classifyHeader);
             //attr
-        Map<String,Object> janAttr =  new HashMap<>();
+        Map<String,Object> janAttr =  new LinkedHashMap<>();
+        Map<String,Object> janAttrFlag =  new LinkedHashMap<>();
         List<Map<String, Object>> janAttrList = new Gson().fromJson(param.getProdAttrData().toString(),
                 new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
         if(!janAttrList.isEmpty()){
             for (Map<String, Object> objectMap : janAttrList) {
                 List<String> value= (List<String>)objectMap.get("value");
+                boolean flag= (boolean)objectMap.get("flag");
                 String attrName = productPowerDataMapper.getAttrName(objectMap.get("id").toString().split("_")[2],commonTableName.getProAttrTable());
                 janAttr.put(attrName,value);
+                janAttrFlag.put(attrName+"区分",flag?"対象":"除外");
+
             }
         }
         mapResult.put("janAttr",janAttr);
+        mapResult.put("janAttrFlag",janAttrFlag);
         //顧客条件
         JSONObject jsonObject = JSON.parseObject(param.getCustomerCondition());
         List<String> groupNames = new ArrayList<>();
