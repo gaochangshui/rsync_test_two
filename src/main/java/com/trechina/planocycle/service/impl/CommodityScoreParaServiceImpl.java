@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerParamMst;
 import com.trechina.planocycle.entity.po.WorkProductPowerReserveData;
@@ -143,7 +144,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
         String prodAttrData = productPowerParam.getProdAttrData().toString();
         productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
-        String singleJan = productPowerParam.getSingleJan().toString();
+        String singleJan =new Gson().toJson(productPowerParam.getSingleJan());
         productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd,newProductPowerCd
                 ,prodAttrData, singleJan);
 

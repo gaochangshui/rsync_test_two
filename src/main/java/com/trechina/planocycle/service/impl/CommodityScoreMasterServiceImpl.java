@@ -212,9 +212,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
 
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
         List<Map<String, Object>> prodAttrData = new Gson().fromJson(param.getProdAttrData().toString(), new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
-        //LinkedHashMap<String, Object> singleJan = new Gson().fromJson(param.getSingleJan().toString(), new com.google.common.reflect.TypeToken<LinkedHashMap<String, Object>>(){}.getType());
+
+        LinkedHashMap<String, Object> singleJan = new Gson().fromJson(param.getSingleJan().toString(), new com.google.common.reflect.TypeToken<LinkedHashMap<String, Object>>(){}.getType());
         param.setProdAttrData(prodAttrData);
-        param.setSingleJan(null);
+        param.setSingleJan(singleJan);
         List<String> cdList = new ArrayList<>();
          cdList.addAll(Arrays.asList(param.getProject().split(",")));
         List<String> yobi = productPowerDataMapper.getYobi(companyCd, productPowerNo, aud);
