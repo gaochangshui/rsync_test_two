@@ -190,7 +190,15 @@ public class ExcelUtils {
         cell.setCellStyle(cellStyle);
         LinkedHashMap<String,Object> attrList = (LinkedHashMap<String, Object>) paramMap.get("janAttr");
         LinkedHashMap<String,Object> janAttrFlag = (LinkedHashMap<String, Object>) paramMap.get("janAttrFlag");
-        cell = row.createCell(headerColIndex+=attrList.size() * 2 +1);
+        if (attrList.size() == 0) {
+            headerColIndex+=2;
+        }else {
+            headerColIndex+=attrList.size() * 2+1;
+        }
+        cell = row.createCell(headerColIndex);
+        cell.setCellValue("単品JAN");
+        cell.setCellStyle(cellStyle);
+        cell = row.createCell(headerColIndex+=3);
         cell.setCellValue("顧客条件");
         cell.setCellStyle(cellStyle);
         cell = row.createCell(headerColIndex+=2);
@@ -220,8 +228,18 @@ public class ExcelUtils {
             cell.setCellValue(stringObjectEntry.getKey()+"区分");
             cell.setCellStyle(cellStyle);
         }
-        headerColIndex++;
+        if (attrList.size() == 0) {
+            headerColIndex+=2;
+        }else {
+            headerColIndex+=1;
+        }
         cell = row.createCell(headerColIndex);
+        cell.setCellValue("単品JAN");
+        cell.setCellStyle(cellStyle);
+        cell = row.createCell(headerColIndex+=1);
+        cell.setCellValue("JAN区分");
+        cell.setCellStyle(cellStyle);
+        cell = row.createCell(headerColIndex+=2);
         cell.setCellValue("顧客グループ");
         cell.setCellStyle(cellStyle);
         cell = row.createCell(headerColIndex+=2);
@@ -241,7 +259,6 @@ public class ExcelUtils {
         sizeList.add(((List<String>)paramMap.get("channelNm")).size());
         sizeList.add(((List<String>)paramMap.get("placeNm")).size());
         Integer integer = sizeList.stream().max(Integer::max).get();
-        System.out.println(integer);
         for (int i = 0; i < integer; i++) {
             row = sheet1.createRow(colIndex);
             cell = row.createCell(headerColIndex = 0);
@@ -264,7 +281,13 @@ public class ExcelUtils {
                 cell = row.createCell(headerColIndex++);
                 cell.setCellValue( ((List<String>)stringObjectEntry.getValue()).size()>i?janAttrFlag.get(stringObjectEntry.getKey()+"区分").toString():"");
             }
-            headerColIndex++;
+            if (attrList.size() == 0) {
+                headerColIndex+=2;
+            }else {
+                headerColIndex+=1;
+            }
+            headerColIndex+=3;
+
             cell = row.createCell(headerColIndex);
             cell.setCellValue(((List<String>)paramMap.get("groupNames")).size()>i?((List<String>)paramMap.get("groupNames")).get(i):"");
             cell = row.createCell(headerColIndex+=2);

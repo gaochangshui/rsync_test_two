@@ -137,7 +137,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             productPowerDataMapper.endIntageForWK(companyCd,productPowerCd,authorCd,newProductPowerCd);
             //物理削除挿入の保存の変更
         
-            productPowerDataMapper.deleteData(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.deleteData(companyCd,newProductPowerCd);
             productPowerDataMapper.setData(productPowerCd,companyCd,newProductPowerCd);
             //期間パラメータ削除挿入{{きかんぱらめーた:さくじょそうにゅう}}
             String customerCondition = productPowerParam.getCustomerCondition().toJSONString();

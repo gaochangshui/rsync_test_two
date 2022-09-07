@@ -138,7 +138,7 @@ public interface ProductPowerDataMapper {
     int setWKData(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd,@Param("productPowerCd")Integer productPowerCd
             ,@Param("ptsCd")List<Integer> ptsCd,@Param("storeCd") List<String> storeCd);
 
-    int deleteData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
+    int deleteData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
     int setData(@Param("productPowerCd") Integer productPowerCd, @Param("companyCd") String companyCd
     ,@Param("newProductPowerCd")Integer newProductPowerCd);

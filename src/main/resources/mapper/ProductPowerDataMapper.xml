@@ -287,7 +287,7 @@
     </delete>
     <delete id="deleteData">
         delete  from planocycle.product_power_mst_data
-        where company_cd =#{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
+        where company_cd =#{companyCd}  and product_power_cd = #{productPowerCd}
     </delete>
     <delete id="deleteWKYobiiiternCd">
         delete from planocycle.work_product_power_reserve_mst where company_cd=#{companyCd} and product_power_cd = #{productPowerCd} and author_cd=#{authorCd} and data_cd = #{valueCd}
