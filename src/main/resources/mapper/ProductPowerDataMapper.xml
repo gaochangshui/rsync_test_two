@@ -841,7 +841,6 @@
         </foreach>
     </select>
     <select id="getJanClassify" resultType="map">
-
            select distinct
            <foreach collection="colMap" item="item" separator=",">
                "${item.col}" as ${item.name}
@@ -860,5 +859,8 @@
         from ${tableName}
         where "4" is not null and "1" like '%name'
         order by "3" ::integer
+    </select>
+    <select id="getItemCol" resultType="java.lang.String">
+        select jan_item2col_num from planocycle.sku_name_config where company_cd = #{company} and class = #{classCd}
     </select>
 </mapper>

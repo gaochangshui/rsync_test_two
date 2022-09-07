@@ -206,4 +206,6 @@ public interface ProductPowerDataMapper {
     String getAttrName(String col, String tableName);
 
     List<LinkedHashMap<String,Object>> getClassifyHeader(String tableName);
+
+    String getItemCol(String company, String classCd);
 }
