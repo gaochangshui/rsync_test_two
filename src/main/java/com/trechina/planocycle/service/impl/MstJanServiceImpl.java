@@ -211,7 +211,9 @@ public class MstJanServiceImpl implements MstJanService {
             return ResultMaps.result(ResultEnum.FAILURE);
         }
 
-        return null;
+        JSONObject json = new JSONObject();
+        json.put("taskId", downFlagVO.getTaskID());
+        return ResultMaps.result(ResultEnum.SUCCESS, json);
     }
 
     @Override
