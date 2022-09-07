@@ -685,14 +685,11 @@ public class MstJanServiceImpl implements MstJanService {
                     String path = jarF.getParentFile().toString();
                     String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
 
-                    try(FileInputStream fis = new FileInputStream(filePath);
-                        ReadableByteChannel chIn = Channels.newChannel(fis);
-                        WritableByteChannel chOut = Channels.newChannel(outputStream)){
-                        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
-                        while(chIn.read(byteBuffer)!=-1){
-                            byteBuffer.flip();
-                            chOut.write(byteBuffer);
-                            byteBuffer.clear();
+                    try(FileInputStream fis = new FileInputStream(filePath)){
+                        byte[] byteBuffer = new byte[1024];
+                        int len = 0;
+                        while ((len = fis.read(byteBuffer))!=-1){
+                            outputStream.write(byteBuffer, 0, len);
                         }
                     } catch (Exception e){
                         logger.error("",e);
