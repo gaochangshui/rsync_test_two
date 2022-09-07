@@ -274,3 +274,5 @@ Caused by: java.io.IOException: 你的主机中的软件中止了一个已建立
 20220907 10:39:17.182  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=46s350ms192µs400ns).
 20220907 10:40:41.569  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=1m22s946ms398µs900ns).
 20220907 10:41:36.226  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=56s96ms971µs600ns).
+20220907 15:22:09.276  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
+20220907 15:22:09.282  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.
