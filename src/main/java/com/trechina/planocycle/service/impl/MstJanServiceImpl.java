@@ -2,7 +2,6 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.cloud.ReadChannel;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.aspect.LogAspect;
@@ -38,20 +37,14 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -498,7 +491,7 @@ public class MstJanServiceImpl implements MstJanService {
     public Map<String, Object> uploadJanData(MultipartFile file, String fileName, String classCd,
                                              String commonPartsData, String companyCd) {
         Pattern numberPattern = Pattern.compile("[0-9]+");
-        int count;
+        AtomicInteger count = new AtomicInteger();
         if (!fileName.endsWith(".xlsx")) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_UPLOAD_CORRECT_FILE);
         }
@@ -523,109 +516,121 @@ public class MstJanServiceImpl implements MstJanService {
         if (header.length > janHeader.size()) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_UNIDENTIFIED_COLUMN);
         }
-        Map<String, String> headerNameIndex = new HashMap<>();
-        for (JanHeaderAttr headerAttr : janHeader) {
-            headerNameIndex.put(headerAttr.getAttrVal(), headerAttr.getSort());
-        }
-        List<String> columnHeader = new ArrayList<>();
-        for (String column : header) {
-            columnHeader.add(headerNameIndex.get(column));
-        }
-        String infoHeader = "\"" + String.join("\",\"", columnHeader) + "\"";
-        List<LinkedHashMap<String, Object>> janData = new ArrayList<>();
-        LinkedHashMap<String, Object> jan;
-        List<LinkedHashMap<String, Object>> janKaisouList = mstJanMapper.getJanKaisouList(tableNameKaisou);
-        Integer kaiSouLength = mstJanMapper.getKaiSouLength(tableNameKaisouData);
-        List<JanHeaderAttr> planoType = mstJanMapper.getPlanoType(tableNameAttr);
-        Date date = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        try {
-            for (int i = 1; i < excelData.size(); i++) {
-                String[] row = excelData.get(i);
-                jan = new LinkedHashMap<>();
-                Map<String,Object> map = new HashMap<>();
 
-                for (int j = 0; j < header.length; j++) {
-                    for (JanHeaderAttr janHeaderAttr : planoType) {
-                        if (janHeaderAttr.getSort().equals(headerNameIndex.get(header[j]))&& !numberPattern.matcher(row[j]).matches()) {
-                            row[j] = "0";
-                        }
-                    }
+        String taskId = UUID.randomUUID().toString();
+        String finalCompanyCd = companyCd;
+        cacheUtil.put(taskId+",status", MagicString.TASK_STATUS_PROCESSING);
+        executor.execute(()->{
+            Map<String, String> headerNameIndex = new HashMap<>();
+            for (JanHeaderAttr headerAttr : janHeader) {
+                headerNameIndex.put(headerAttr.getAttrVal(), headerAttr.getSort());
+            }
+            List<String> columnHeader = new ArrayList<>();
+            for (String column : header) {
+                columnHeader.add(headerNameIndex.get(column));
+            }
 
-                    for (int k = 0; k < janKaisouList.size(); k++) {
+            List<LinkedHashMap<String, Object>> janData = new ArrayList<>();
+            LinkedHashMap<String, Object> jan;
+            List<LinkedHashMap<String, Object>> janKaisouList = mstJanMapper.getJanKaisouList(tableNameKaisou);
+            Integer kaiSouLength = mstJanMapper.getKaiSouLength(tableNameKaisouData);
+            List<JanHeaderAttr> planoType = mstJanMapper.getPlanoType(tableNameAttr);
+            Date date = new Date();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            try {
+                for (int i = 1; i < excelData.size(); i++) {
+                    String[] row = excelData.get(i);
+                    jan = new LinkedHashMap<>();
+                    Map<String,Object> map = new HashMap<>();
 
-                        if (String.valueOf(Integer.parseInt(janKaisouList.get(k).get("3").toString())-1).equals(headerNameIndex.get(header[j]))){
-
-                            int diff = kaiSouLength - row[j].length();
-                            StringBuilder branchStr = new StringBuilder();
-                            for (int l = 0; l < diff; l++) {
-                                branchStr.append("0");
+                    for (int j = 0; j < header.length; j++) {
+                        for (JanHeaderAttr janHeaderAttr : planoType) {
+                            if (janHeaderAttr.getSort().equals(headerNameIndex.get(header[j]))&& !numberPattern.matcher(row[j]).matches()) {
+                                row[j] = "0";
                             }
-                            row[j] = branchStr + row[j];
-                            map.put(String.valueOf(Integer.parseInt(janKaisouList.get(k).get("4").toString())-1),row[j]);
-                            String s = mstJanMapper.checkKaisou(tableNameKaisouData, map);
-                            if (s != null){
-                                jan.put(headerNameIndex.get(header[j]), row[j]);
-                                jan.put(String.valueOf(Integer.parseInt(headerNameIndex.get(header[j]))+1), s);
+                        }
 
+                        for (int k = 0; k < janKaisouList.size(); k++) {
+
+                            if (String.valueOf(Integer.parseInt(janKaisouList.get(k).get("3").toString())-1).equals(headerNameIndex.get(header[j]))){
+
+                                int diff = kaiSouLength - row[j].length();
+                                StringBuilder branchStr = new StringBuilder();
+                                for (int l = 0; l < diff; l++) {
+                                    branchStr.append("0");
+                                }
+                                row[j] = branchStr + row[j];
+                                map.put(String.valueOf(Integer.parseInt(janKaisouList.get(k).get("4").toString())-1),row[j]);
+                                String s = mstJanMapper.checkKaisou(tableNameKaisouData, map);
+                                if (s != null){
+                                    jan.put(headerNameIndex.get(header[j]), row[j]);
+                                    jan.put(String.valueOf(Integer.parseInt(headerNameIndex.get(header[j]))+1), s);
+
+                                }else {
+                                    jan.put(headerNameIndex.get(header[j]), "9999");
+                                    jan.put(String.valueOf(Integer.parseInt(headerNameIndex.get(header[j]))+1), "未登録");
+
+                                }
+                                break;
                             }else {
-                                jan.put(headerNameIndex.get(header[j]), "9999");
-                                jan.put(String.valueOf(Integer.parseInt(headerNameIndex.get(header[j]))+1), "未登録");
-
+                                if (!"未登録".equals(jan.get(headerNameIndex.get(header[j])))){
+                                    jan.put(headerNameIndex.get(header[j]), row[j]);
+                                }
                             }
-                            break;
-                        }else {
-                            if (!"未登録".equals(jan.get(headerNameIndex.get(header[j])))){
-                                jan.put(headerNameIndex.get(header[j]), row[j]);
+                        }
+                    }
+
+                    jan.remove("102");
+                    jan.remove("103");
+                    janData.add(jan);
+                }
+                String dateStr = simpleDateFormat.format(date);
+                String authorCd = session.getAttribute("aud").toString();
+                List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(finalCompanyCd, prodMstClass);
+                List<String> janInfoCol = mstJanMapper.getJanInfoCol();
+
+                List<LinkedHashMap<String, Object>> janInfoData = janData.stream()
+                        .map(map -> map.entrySet().stream().filter(infoMap -> !janInfoCol.contains(infoMap.getKey()))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new)))
+                        .collect(Collectors.toList());
+
+                List<LinkedHashMap<String, Object>> janSpecialData = janData.stream()
+                        .map(map -> map.entrySet().stream().filter(infoMap -> janInfoCol.contains(infoMap.getKey()) || "1".equals(infoMap.getKey()))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new)))
+                        .collect(Collectors.toList());
+                count.set(mstJanMapper.insertJanList(tableNameInfo, janInfoData, dateStr, authorCd));
+                count.set(mstJanMapper.insertJanSpecialList(janSpecialData));
+
+                Set zokuseiList = new HashSet();
+                for (LinkedHashMap<String, Object> janDatum : janData) {
+                    for (Map.Entry<String, Object> stringObjectEntry : janDatum.entrySet()) {
+                        for (Map<String, Object> map : zokuseiIdAndCol) {
+                            if (stringObjectEntry.getKey().equals(map.get("zokusei_col"))) {
+                                Map <String,Object> zokuseiMap = new HashMap<>();
+                                zokuseiMap.put("zokusei_id",map.get("zokusei_id"));
+                                zokuseiMap.put("zokusei_col",map.get("zokusei_col"));
+                                zokuseiMap.put("zokusei_nm",stringObjectEntry.getValue());
+                                zokuseiList.add(zokuseiMap);
                             }
                         }
                     }
                 }
-
-                jan.remove("102");
-                jan.remove("103");
-                janData.add(jan);
-            }
-            String dateStr = simpleDateFormat.format(date);
-            String authorCd = session.getAttribute("aud").toString();
-            List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, prodMstClass);
-            List<String> janInfoCol = mstJanMapper.getJanInfoCol();
-
-            List<LinkedHashMap<String, Object>> janInfoData = janData.stream()
-                    .map(map -> map.entrySet().stream().filter(infoMap -> !janInfoCol.contains(infoMap.getKey()))
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new)))
-                    .collect(Collectors.toList());
-
-            List<LinkedHashMap<String, Object>> janSpecialData = janData.stream()
-                    .map(map -> map.entrySet().stream().filter(infoMap -> janInfoCol.contains(infoMap.getKey()) || "1".equals(infoMap.getKey()))
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new)))
-                    .collect(Collectors.toList());
-                count = mstJanMapper.insertJanList(tableNameInfo, janInfoData, dateStr, authorCd);
-                count = mstJanMapper.insertJanSpecialList(janSpecialData);
-
-            Set zokuseiList = new HashSet();
-            for (LinkedHashMap<String, Object> janDatum : janData) {
-                for (Map.Entry<String, Object> stringObjectEntry : janDatum.entrySet()) {
-                    for (Map<String, Object> map : zokuseiIdAndCol) {
-                        if (stringObjectEntry.getKey().equals(map.get("zokusei_col"))) {
-                            Map <String,Object> zokuseiMap = new HashMap<>();
-                            zokuseiMap.put("zokusei_id",map.get("zokusei_id"));
-                            zokuseiMap.put("zokusei_col",map.get("zokusei_col"));
-                            zokuseiMap.put("zokusei_nm",stringObjectEntry.getValue());
-                            zokuseiList.add(zokuseiMap);
-                        }
-                    }
+                if(!zokuseiList.isEmpty()){
+                    zokuseiMstMapper.setValBatch(zokuseiList, finalCompanyCd,prodMstClass);
                 }
-            }
-            if(!zokuseiList.isEmpty()){
-                zokuseiMstMapper.setValBatch(zokuseiList,companyCd,prodMstClass);
-            }
 
-        } catch (Exception e) {
-            logAspect.setTryErrorLog(e,new Object[]{commonPartsData,companyCd,classCd});
-            return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_ABNORMALITY_DATA);
-        }
-        return ResultMaps.result(ResultEnum.SUCCESS.getCode(), count + MagicString.MSG_UPLOAD_SUCCESS);
+                cacheUtil.put(taskId+",status", MagicString.TASK_STATUS_SUCCESS);
+                cacheUtil.put(taskId+",data", count + MagicString.MSG_UPLOAD_SUCCESS);
+            } catch (Exception e) {
+                logAspect.setTryErrorLog(e,new Object[]{commonPartsData, finalCompanyCd,classCd});
+                cacheUtil.put(taskId+",exception", MagicString.MSG_ABNORMALITY_DATA);
+                cacheUtil.put(taskId+",status", MagicString.TASK_STATUS_EXCEPTION);
+            }
+        });
+
+        JSONObject json = new JSONObject();
+        json.put("taskId", taskId);
+        return ResultMaps.result(ResultEnum.SUCCESS, json);
     }
 
     /**
@@ -713,6 +718,27 @@ public class MstJanServiceImpl implements MstJanService {
             }
         }
         return null;
+    }
+
+    @Override
+    public Map<String, Object> getUploadJanDataResult(String taskId) {
+        Object o = cacheUtil.get(taskId + ",status");
+        if (Objects.equals(o.toString(), MagicString.TASK_STATUS_SUCCESS)) {
+            String data = cacheUtil.get(taskId + ",data").toString();
+            cacheUtil.remove(taskId+",data");
+            cacheUtil.remove(taskId+",status");
+            return ResultMaps.result(ResultEnum.SUCCESS.getCode(), data);
+        }else if(Objects.equals(o.toString(), MagicString.TASK_STATUS_PROCESSING)){
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", "9");
+            returnJson.put("taskId", taskId);
+            return ResultMaps.result(ResultEnum.SUCCESS, returnJson);
+        }
+
+        Object msg = cacheUtil.get(taskId + ",exception");
+        cacheUtil.remove(taskId+",data");
+        cacheUtil.remove(taskId+",exception");
+        return ResultMaps.result(ResultEnum.FAILURE, msg);
     }
 
     /**
