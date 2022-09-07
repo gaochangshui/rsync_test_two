@@ -68,4 +68,6 @@ public interface MstJanService {
     Map<String, Object> syncJanData();
 
     JanInfoVO getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response) throws IOException;
+
+    Map<String, Object> getUploadJanDataResult(String taskId);
 }
