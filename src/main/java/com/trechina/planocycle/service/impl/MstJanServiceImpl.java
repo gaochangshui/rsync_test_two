@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.cloud.ReadChannel;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.aspect.LogAspect;
@@ -35,13 +36,11 @@ import org.springframework.web.util.UriUtils;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -681,9 +680,9 @@ public class MstJanServiceImpl implements MstJanService {
                     String path = this.getClass().getClassLoader().getResource("").getPath();
                     String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
 
-                    try( FileInputStream fis = new FileInputStream(filePath);
-                         FileChannel chIn = fis.getChannel();
-                         WritableByteChannel chOut = Channels.newChannel(outputStream)){
+                    try(InputStream fis = this.getClass().getClassLoader().getResourceAsStream(fileName);
+                        ReadableByteChannel chIn = Channels.newChannel(fis);
+                        WritableByteChannel chOut = Channels.newChannel(outputStream)){
                         ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
                         while(chIn.read(byteBuffer)!=-1){
                             byteBuffer.flip();
@@ -691,7 +690,9 @@ public class MstJanServiceImpl implements MstJanService {
                             byteBuffer.clear();
                         }
                         outputStream.flush();
-                    } finally {
+                    } catch (Exception e){
+                        logger.error("",e);
+                    }finally {
                         Files.deleteIfExists(new File(filePath).toPath());
                         cacheUtil.remove(downFlagVO.getTaskID()+",status");
                         cacheUtil.remove(downFlagVO.getTaskID()+",flag");
