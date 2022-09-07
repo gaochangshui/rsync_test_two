@@ -185,7 +185,7 @@ public class MstJanServiceImpl implements MstJanService {
 
                      ExcelUtils.generateNormalExcelToFile(excelData, filePath);
                      cacheUtil.put(downFlagVO.getTaskID() + ",status", MagicString.TASK_STATUS_SUCCESS);
-                     cacheUtil.put(downFlagVO.getTaskID() + ",filepath", filePath);
+                     cacheUtil.put(downFlagVO.getTaskID() + ",filepath", fileName);
                  }else{
                      cacheUtil.put(downFlagVO.getTaskID() + ",status", MagicString.TASK_STATUS_SUCCESS);
                      cacheUtil.put(downFlagVO.getTaskID() + ",returnVal", janInfoVO);
@@ -677,7 +677,10 @@ public class MstJanServiceImpl implements MstJanService {
                 
                 Object o = cacheUtil.get(downFlagVO.getTaskID() + ",filepath");
                 if(o!=null){
-                    String filePath = o.toString();
+                    String fileName = o.toString();
+                    String path = this.getClass().getClassLoader().getResource("").getPath();
+                    String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
+
                     try( FileInputStream fis = new FileInputStream(filePath);
                          FileChannel chIn = fis.getChannel();
                          WritableByteChannel chOut = Channels.newChannel(outputStream)){
@@ -687,6 +690,7 @@ public class MstJanServiceImpl implements MstJanService {
                             chOut.write(byteBuffer);
                             byteBuffer.clear();
                         }
+                        outputStream.flush();
                     } finally {
                         Files.deleteIfExists(new File(filePath).toPath());
                         cacheUtil.remove(downFlagVO.getTaskID()+",status");
@@ -694,7 +698,6 @@ public class MstJanServiceImpl implements MstJanService {
                         cacheUtil.remove(downFlagVO.getTaskID()+",filepath");
                     }
                 }
-                outputStream.flush();
             }else{
                 JanInfoVO janInfoVO = (JanInfoVO) cacheUtil.get(downFlagVO.getTaskID() + ",returnVal");
                 cacheUtil.remove(downFlagVO.getTaskID()+",status");
