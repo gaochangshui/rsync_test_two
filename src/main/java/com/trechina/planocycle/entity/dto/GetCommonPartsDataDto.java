@@ -18,6 +18,10 @@ public class GetCommonPartsDataDto {
      */
     private String proKaisouTable;
     /**
+     *
+     */
+    private String proKaisouInfoTable;
+    /**
      * 店舗ヘッドテーブル
      */
     private String storeAttrTable;

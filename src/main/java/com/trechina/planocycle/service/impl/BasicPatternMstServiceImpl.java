@@ -2,7 +2,6 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.ser.impl.StringArraySerializer;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
@@ -380,6 +379,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             getCommonPartsDataDto.setProdIsCore(isCompanyCd);
 
             getCommonPartsDataDto.setProKaisouTable(MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass));
+            getCommonPartsDataDto.setProKaisouInfoTable(MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou", isCompanyCd, prodMstClass));
             getCommonPartsDataDto.setProAttrTable(MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass));
             getCommonPartsDataDto.setProInfoTable(MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass));
         }
