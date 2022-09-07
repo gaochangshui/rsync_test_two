@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -304,6 +305,7 @@ public class ExcelUtils {
      * @return file's path
      */
     public static String generateNormalExcelToFile(List<String[]> allData, String fileName){
+        logger.info("start generate excel,now:{}, filename: {}", LocalDateTime.now(),fileName);
         String path = ExcelUtils.class.getClassLoader().getResource("").getPath();
         String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
 
@@ -327,7 +329,7 @@ public class ExcelUtils {
         }catch (Exception e){
             logger.error("", e);
         }
-
+        logger.info("end generate excel,now:{}, filename: {}", LocalDateTime.now(), fileName);
         return filePath;
     }
 

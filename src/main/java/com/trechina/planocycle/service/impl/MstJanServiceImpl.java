@@ -661,14 +661,14 @@ public class MstJanServiceImpl implements MstJanService {
 
     @Override
     public JanInfoVO getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response) throws IOException {
-        response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-        String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("商品明細-%s.xlsx",
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
-        response.setHeader("Content-Disposition", format);
-
-        ServletOutputStream outputStream = response.getOutputStream();
         if (MagicString.TASK_STATUS_SUCCESS.equals(cacheUtil.get(downFlagVO.getTaskID()+",status"))) {
             if (Objects.equals(cacheUtil.get(downFlagVO.getTaskID()+",flag"), 1)) {
+                response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+                String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("商品明細-%s.xlsx",
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
+                response.setHeader("Content-Disposition", format);
+                ServletOutputStream outputStream = response.getOutputStream();
+                
                 Object o = cacheUtil.get(downFlagVO.getTaskID() + ",filepath");
                 if(o!=null){
                     String filePath = o.toString();
@@ -684,12 +684,17 @@ public class MstJanServiceImpl implements MstJanService {
                     } finally {
                         Files.deleteIfExists(new File(filePath).toPath());
                         cacheUtil.remove(downFlagVO.getTaskID()+",status");
+                        cacheUtil.remove(downFlagVO.getTaskID()+",flag");
                         cacheUtil.remove(downFlagVO.getTaskID()+",filepath");
                     }
                 }
                 outputStream.flush();
             }else{
                 JanInfoVO janInfoVO = (JanInfoVO) cacheUtil.get(downFlagVO.getTaskID() + ",returnVal");
+                cacheUtil.remove(downFlagVO.getTaskID()+",status");
+                cacheUtil.remove(downFlagVO.getTaskID()+",flag");
+                cacheUtil.remove(downFlagVO.getTaskID()+",returnVal");
+
                 return janInfoVO;
             }
         }
