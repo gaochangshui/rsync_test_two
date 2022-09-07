@@ -138,6 +138,7 @@ public class MstJanServiceImpl implements MstJanService {
         }
 
         cacheUtil.put(downFlagVO.getTaskID()+",status", MagicString.TASK_STATUS_PROCESSING);
+        cacheUtil.put(downFlagVO.getTaskID()+",flag", downFlagVO.getDownFlag());
         Future futureTask = executor.submit(()->{
             try {
                 JSONObject json =JSON.parseObject(cacheUtil.get(downFlagVO.getTaskID()).toString());
@@ -168,7 +169,7 @@ public class MstJanServiceImpl implements MstJanService {
                 janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
                         .collect(Collectors.joining(",")));
                 janInfoVO.setJanColumn(dataConverUtils.camelize(janColumn));
-                 if(Integer.valueOf(1).equals(downFlagVO.getDownFlag())) {
+                if(Integer.valueOf(1).equals(downFlagVO.getDownFlag())) {
                      List<String[]> excelData = new ArrayList<>();
                      excelData.add(janInfoVO.getJanHeader().split(","));
                      String format = MessageFormat.format("attachment;filename={0};", UriUtils.encode(String.format("商品明細-%s.xlsx",
@@ -181,7 +182,10 @@ public class MstJanServiceImpl implements MstJanService {
                      String filePath = ExcelUtils.generateNormalExcelToFile(excelData, format);
                      cacheUtil.put(downFlagVO.getTaskID() + ",status", MagicString.TASK_STATUS_SUCCESS);
                      cacheUtil.put(downFlagVO.getTaskID() + ",filepath", filePath);
-                 }
+                 }else{
+                     cacheUtil.put(downFlagVO.getTaskID() + ",status", MagicString.TASK_STATUS_SUCCESS);
+                     cacheUtil.put(downFlagVO.getTaskID() + ",returnVal", janInfoVO);
+                }
             }catch (Exception e){
                 logger.error("", e);
                 cacheUtil.put(downFlagVO.getTaskID()+",status", MagicString.TASK_STATUS_EXCEPTION);
@@ -207,7 +211,9 @@ public class MstJanServiceImpl implements MstJanService {
             return ResultMaps.result(ResultEnum.FAILURE);
         }
 
-        return null;
+        JSONObject json = new JSONObject();
+        json.put("taskId", downFlagVO.getTaskID());
+        return ResultMaps.result(ResultEnum.SUCCESS, json);
     }
 
     @Override
@@ -656,35 +662,46 @@ public class MstJanServiceImpl implements MstJanService {
     }
 
     @Override
-    public void getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response) throws IOException {
-        response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-        String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("商品明細-%s.xlsx",
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
-        response.setHeader("Content-Disposition", format);
-
-        ServletOutputStream outputStream = response.getOutputStream();
+    public JanInfoVO getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response) throws IOException {
         if (MagicString.TASK_STATUS_SUCCESS.equals(cacheUtil.get(downFlagVO.getTaskID()+",status"))) {
-            Object o = cacheUtil.get(downFlagVO.getTaskID() + ",filepath");
-            if(o!=null){
-                String filePath = o.toString();
-                try( FileInputStream fis = new FileInputStream(filePath);
-                     FileChannel chIn = fis.getChannel();
-                     WritableByteChannel chOut = Channels.newChannel(outputStream)){
-                    ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
-                    while(chIn.read(byteBuffer)!=-1){
-                        byteBuffer.flip();
-                        chOut.write(byteBuffer);
-                        byteBuffer.clear();
+            if (Objects.equals(cacheUtil.get(downFlagVO.getTaskID()+",flag"), 1)) {
+                response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+                String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("商品明細-%s.xlsx",
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
+                response.setHeader("Content-Disposition", format);
+                ServletOutputStream outputStream = response.getOutputStream();
+                
+                Object o = cacheUtil.get(downFlagVO.getTaskID() + ",filepath");
+                if(o!=null){
+                    String filePath = o.toString();
+                    try( FileInputStream fis = new FileInputStream(filePath);
+                         FileChannel chIn = fis.getChannel();
+                         WritableByteChannel chOut = Channels.newChannel(outputStream)){
+                        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+                        while(chIn.read(byteBuffer)!=-1){
+                            byteBuffer.flip();
+                            chOut.write(byteBuffer);
+                            byteBuffer.clear();
+                        }
+                    } finally {
+                        Files.deleteIfExists(new File(filePath).toPath());
+                        cacheUtil.remove(downFlagVO.getTaskID()+",status");
+                        cacheUtil.remove(downFlagVO.getTaskID()+",flag");
+                        cacheUtil.remove(downFlagVO.getTaskID()+",filepath");
                     }
-                } finally {
-                    Files.deleteIfExists(new File(filePath).toPath());
-                    cacheUtil.remove(downFlagVO.getTaskID()+",status");
-                    cacheUtil.remove(downFlagVO.getTaskID()+",filepath");
                 }
+                outputStream.flush();
+            }else{
+                JanInfoVO janInfoVO = (JanInfoVO) cacheUtil.get(downFlagVO.getTaskID() + ",returnVal");
+                cacheUtil.remove(downFlagVO.getTaskID()+",status");
+                cacheUtil.remove(downFlagVO.getTaskID()+",flag");
+                cacheUtil.remove(downFlagVO.getTaskID()+",returnVal");
+
+                return janInfoVO;
             }
         }
 
-        outputStream.flush();
+        return null;
     }
 
     /**

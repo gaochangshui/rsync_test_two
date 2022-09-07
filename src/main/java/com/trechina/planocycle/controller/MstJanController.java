@@ -48,8 +48,8 @@ public class MstJanController {
     }
 
     @PostMapping("/getJanListResult")
-    public void getJanListResult(@RequestBody DownFlagVO downFlagVO, HttpServletResponse response) throws IOException {
-        mstJanService.getJanListResult(downFlagVO, response);
+    public JanInfoVO getJanListResult(@RequestBody DownFlagVO downFlagVO, HttpServletResponse response) throws IOException {
+        return mstJanService.getJanListResult(downFlagVO, response);
     }
 
     /**
