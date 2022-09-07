@@ -1,9 +1,7 @@
 package com.trechina.planocycle.utils;
 
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -13,14 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.util.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -249,6 +246,9 @@ public class ExcelUtils {
         cell.setCellValue("都道府県");
         cell.setCellStyle(cellStyle);
         colIndex++;
+
+        List<String> janList = (List<String>) paramMap.get("janList");
+
         List<Integer> sizeList= new ArrayList<>();
         sizeList.add(((List<String>)paramMap.get("storeList")).size());
         sizeList.add(((List<Map<String,Object>>)paramMap.get("janClassify")).size());
@@ -258,6 +258,7 @@ public class ExcelUtils {
         sizeList.add(((List<String>)paramMap.get("groupNames")).size());
         sizeList.add(((List<String>)paramMap.get("channelNm")).size());
         sizeList.add(((List<String>)paramMap.get("placeNm")).size());
+        sizeList.add(janList.size());
         Integer integer = sizeList.stream().max(Integer::max).get();
         for (int i = 0; i < integer; i++) {
             row = sheet1.createRow(colIndex);
@@ -286,7 +287,13 @@ public class ExcelUtils {
             }else {
                 headerColIndex+=1;
             }
-            headerColIndex+=3;
+
+
+            cell = row.createCell(headerColIndex++);
+            cell.setCellValue(janList.size()>i?janList.get(i):"");
+            cell = row.createCell(headerColIndex++);
+            cell.setCellValue(janList.size()>i?paramMap.get("janFlag").toString():"");
+            headerColIndex++;
 
             cell = row.createCell(headerColIndex);
             cell.setCellValue(((List<String>)paramMap.get("groupNames")).size()>i?((List<String>)paramMap.get("groupNames")).get(i):"");
