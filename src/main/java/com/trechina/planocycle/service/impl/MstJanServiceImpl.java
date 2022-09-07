@@ -26,6 +26,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -175,10 +176,9 @@ public class MstJanServiceImpl implements MstJanService {
                      excelData.add(janInfoVO.getJanHeader().split(","));
                      String fileName = String.format("商品明細-%s.xlsx",
                              LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS)));
-                    String path = this.getClass().getClassLoader().getResource("").getPath();
-                    if(path.startsWith("/")){
-                        path = path.substring(1);
-                    }
+                    ApplicationHome h = new ApplicationHome(this.getClass());
+                    File jarF = h.getSource();
+                    String path = jarF.getParentFile().toString();
                     String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
 
                      for (LinkedHashMap<String, Object> map : janInfoVO.getJanDataList()) {
@@ -669,24 +669,24 @@ public class MstJanServiceImpl implements MstJanService {
 
     @Override
     public JanInfoVO getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response) throws IOException {
+        response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+        String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("商品明細-%s.xlsx",
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
+        response.setHeader("Content-Disposition", format);
+        ServletOutputStream outputStream = response.getOutputStream();
+
         if (MagicString.TASK_STATUS_SUCCESS.equals(cacheUtil.get(downFlagVO.getTaskID()+",status"))) {
             if (Objects.equals(cacheUtil.get(downFlagVO.getTaskID()+",flag"), 1)) {
-                response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-                String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("商品明細-%s.xlsx",
-                        LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
-                response.setHeader("Content-Disposition", format);
-                ServletOutputStream outputStream = response.getOutputStream();
-                
                 Object o = cacheUtil.get(downFlagVO.getTaskID() + ",filepath");
                 if(o!=null){
+                    ApplicationHome h = new ApplicationHome(this.getClass());
+                    File jarF = h.getSource();
                     String fileName = o.toString();
-                    String path = this.getClass().getClassLoader().getResource("").getPath();
-                    if(path.startsWith("/")){
-                        path = path.substring(1);
-                    }
+                    String path = jarF.getParentFile().toString();
+
                     String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
 
-                    try(InputStream fis = this.getClass().getClassLoader().getResourceAsStream(fileName);
+                    try(FileInputStream fis = new FileInputStream(filePath);
                         ReadableByteChannel chIn = Channels.newChannel(fis);
                         WritableByteChannel chOut = Channels.newChannel(outputStream)){
                         ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
@@ -696,6 +696,7 @@ public class MstJanServiceImpl implements MstJanService {
                             byteBuffer.clear();
                         }
                         outputStream.flush();
+                        return null;
                     } catch (Exception e){
                         logger.error("",e);
                     }finally {
