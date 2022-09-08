@@ -455,6 +455,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
             return ResultMaps.result(ResultEnum.SUCCESS, returnData);
         } catch (Exception e) {
+            logger.error("",e);
             return ResultMaps.result(ResultEnum.FAILURE);
 
         }
