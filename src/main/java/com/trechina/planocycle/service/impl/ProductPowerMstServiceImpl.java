@@ -393,9 +393,12 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             List<Map<String,Object>>  janClassifyList = new ArrayList();
             for (String s : list) {
                 Map<String,Object> janClassCd = new HashMap<>();
-                janClassCd.put("value",s.split("-")[1]);
-                janClassCd.put("cd",(Integer.parseInt(s.split("-")[0]) * 2 - 1)+"");
-                janClassCd.put("name",(Integer.parseInt(s.split("-")[0]) * 2)+"");
+                String s1 = s.split("-")[1];
+                String[] s2 = s1.split("_");
+                for (int i = 0; i < s2.length; i++) {
+                    janClassCd.put(2*i+1+"",s2[i]);
+                }
+
                 janClassifyList.add(janClassCd);
             }
             janClassify = productPowerDataMapper.getJanClassify(janClassifyList,commonTableName.getProKaisouInfoTable(),classifyHeader);
