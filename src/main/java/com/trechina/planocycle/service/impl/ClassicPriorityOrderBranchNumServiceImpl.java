@@ -773,7 +773,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             } else if (vehicleNumCache.get("save"+starReadingVo.getTaskID()).equals("2")) {
                 return ResultMaps.result(ResultEnum.FAILURE);
             }else {
-                return ResultMaps.result(ResultEnum.SUCCESS,"9");
+                Map<String,Object> map = new HashMap<>();
+                map.put("status","9");
+                map.put("taskID",starReadingVo.getTaskID());
+                return ResultMaps.result(ResultEnum.SUCCESS,map);
             }
         }
         Integer priorityOrderCd = starReadingVo.getPriorityOrderCd();
@@ -842,7 +845,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             logger.error("thread is interrupted", e);
             Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
-            return ResultMaps.result(ResultEnum.SUCCESS, uuid);
+            Map<String,Object> map = new HashMap<>();
+            map.put("status","9");
+            map.put("taskID",uuid);
+            return ResultMaps.result(ResultEnum.SUCCESS, map);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
