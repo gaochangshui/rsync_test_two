@@ -55,4 +55,6 @@ public interface StarReadingTableMapper {
     void deleteWorkByBranch(String companyCd, Integer newPriorityOrderCd);
 
     void insertForFinalByBranch(String companyCd, Integer priorityOrderCd, Integer newPriorityOrderCd);
+
+    List<Map<String,Object>> getJanOrName(String companyCd,Integer priorityOrderCd);
 }

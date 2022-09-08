@@ -283,6 +283,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String productPowerData = cgiUtil.setPath("ProductPowerData");
         String posResult = cgiUtil.postCgi(productPowerData, posMap, tokenInfo,smartPath);
         String smartPath = this.smartPath;
+
         Future<?> future = executor.submit(() -> {
             String uuid = "";
                 Map<String, Object> map1 = null;
@@ -384,7 +385,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 if (!value.isEmpty()){
                     String id = proMap.get("id").toString().split("_")[2];
 
-                    String join = Joiner.on("^|$").join(value);
+                    String join = Joiner.on("$|^").join(value);
                     Boolean flag = (Boolean) proMap.get("flag");
                     String eq = flag ? "!~":"~";
                     if (finalValue.equals("")){

@@ -23,12 +23,11 @@
     </delete>
 
     <select id="getBranchdiff" resultType="java.util.Map">
-        select branch.jan_cd as "jan",sku as "janName" ,branch_cd as "branchCd"
+        select branch.jan_cd as "jan",branch_cd as "branchCd"
              ,case when exist_flag =-1 then '☓' when exist_flag = 0 then '' else  '◯' end  as flag
              ,area
         from priority.work_priority_order_commodity_branch branch
-        left join priority.work_priority_order_result_data datas
-        on datas.jan_new = branch.jan_cd and branch.priority_order_cd = datas.priority_order_cd
+
         where branch.priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getBranchList" resultType="map">
@@ -163,6 +162,11 @@
         select distinct branch_cd
         from priority.priority_order_commodity_branch comm_branch
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd} and exist_flag!=0
+    </select>
+    <select id="getJanOrName" resultType="java.util.Map">
+        select jan_new,sku
+        from priority.work_priority_order_result_data datas
+        where priority_order_cd = #{priorityOrderCd}
     </select>
     <delete id="deleteFinalByBranch">
         DELETE FROM priority.priority_order_commodity_branch WHERE company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}

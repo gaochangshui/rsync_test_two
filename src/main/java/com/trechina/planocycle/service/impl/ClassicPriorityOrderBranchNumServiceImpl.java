@@ -32,6 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -669,12 +672,19 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             janInfoTableName = "priority.work_priority_order_commodity_branch";
             List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
             List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,companyCd);
+            List<Map<String, Object>> janOrName = starReadingTableMapper.getJanOrName(companyCd, priorityOrderCd);
             List<Object> branchCd = branchDiff.stream().map(map -> map.get("branchCd")).collect(Collectors.toList());
             branchList=branchList.stream().filter(map ->branchCd.contains(map.get("branchCd"))).collect(Collectors.toList());
             Map<String, List<Map<String, Object>>> janGroup = branchDiff.stream()
                     .collect(Collectors.groupingBy(map -> MapUtils.getString(map, "jan")));
+
             List<Map<String, Object>> list = new ArrayList();
             for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
+                for (Map<String, Object> stringObjectMap : janOrName) {
+                    if (stringListEntry.getKey().equals(stringObjectMap.get("jan_new"))){
+                        stringListEntry.getValue().get(0).put("janName",stringObjectMap.get("sku"));
+                    }
+                }
                 Map<String,Object> map = new HashMap<>();
                 map.put("jan",stringListEntry.getValue().get(0).get("jan"));
                 map.put("janName",stringListEntry.getValue().get(0).get("janName"));
@@ -782,6 +792,25 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                         list.add(map);
                     }
 
+                }
+
+                int threadNum = Runtime.getRuntime().availableProcessors() +1;
+                ThreadPoolExecutor executor = new ThreadPoolExecutor(threadNum,threadNum,0L
+                        , TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(),new ThreadPoolExecutor.DiscardOldestPolicy());
+                int batchSize = 1000;
+                int janDataNum = (int) Math.ceil(list.size() / 1000.0);
+                List<List<Map<String,Object>>> list1 = new ArrayList();
+                for (int i = 0; i < janDataNum; i++) {
+                    int end = batchSize*(i+1) >= list.size()?list.size():batchSize*(i+1);
+                    list1.add(list.subList(batchSize * i, end));
+
+                }
+                for (List<Map<String, Object>> maps : list1) {
+                    if (starReadingVo.getModeCheck() == 1) {
+                        starReadingTableMapper.setBranchList(maps,companyCd,priorityOrderCd);
+                    }else {
+                        starReadingTableMapper.setPatternList(maps,companyCd,priorityOrderCd);
+                    }
                 }
                 if (list.size() >= 5000){
                     if (starReadingVo.getModeCheck() == 1) {
