@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerParamMst;
 import com.trechina.planocycle.entity.po.WorkProductPowerReserveData;
@@ -137,13 +138,15 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             productPowerDataMapper.endIntageForWK(companyCd,productPowerCd,authorCd,newProductPowerCd);
             //物理削除挿入の保存の変更
         
-            productPowerDataMapper.deleteData(companyCd,newProductPowerCd,authorCd);
+            productPowerDataMapper.deleteData(companyCd,newProductPowerCd);
             productPowerDataMapper.setData(productPowerCd,companyCd,newProductPowerCd);
             //期間パラメータ削除挿入{{きかんぱらめーた:さくじょそうにゅう}}
             String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
-
+        String prodAttrData = productPowerParam.getProdAttrData().toString();
         productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
-        productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd,newProductPowerCd,productPowerParam.getProdAttrData().toString());
+        String singleJan =new Gson().toJson(productPowerParam.getSingleJan());
+        productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd,newProductPowerCd
+                ,prodAttrData, singleJan);
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

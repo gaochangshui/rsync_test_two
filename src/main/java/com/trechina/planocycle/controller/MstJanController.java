@@ -132,6 +132,11 @@ public class MstJanController {
         return mstJanService.uploadJanData(file, fileName, classCd, commonPartsData, companyCd);
     }
 
+    @GetMapping("/getUploadJanDataResult")
+    public Map<String, Object> getUploadJanDataResult(String taskId){
+        return mstJanService.getUploadJanDataResult(taskId);
+    }
+
     /**
      * JANデータ同期
      *

@@ -1,47 +1,59 @@
-20220906 15:47:05.139  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
-20220906 15:47:05.172  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.
-20220906 15:55:02.450  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=1m35s297ms900µs500ns).
-20220906 15:55:04.924  [http-nio-8383-exec-10] ERROR com.trechina.planocycle.aspect.GlobalExceptionHandler.handlerException():22 - 
-java.lang.NullPointerException: null
-	at org.apache.coyote.http11.Http11OutputBuffer$SocketOutputBuffer.flush(Http11OutputBuffer.java:573)
-	at org.apache.coyote.http11.filters.ChunkedOutputFilter.flush(ChunkedOutputFilter.java:157)
-	at org.apache.coyote.http11.Http11OutputBuffer.flush(Http11OutputBuffer.java:221)
-	at org.apache.coyote.http11.Http11Processor.flush(Http11Processor.java:1205)
-	at org.apache.coyote.AbstractProcessor.action(AbstractProcessor.java:402)
-	at org.apache.coyote.Response.action(Response.java:209)
-	at org.apache.catalina.connector.OutputBuffer.doFlush(OutputBuffer.java:306)
-	at org.apache.catalina.connector.OutputBuffer.flush(OutputBuffer.java:273)
-	at org.apache.catalina.connector.CoyoteOutputStream.flush(CoyoteOutputStream.java:118)
-	at com.trechina.planocycle.service.impl.ProductPowerMstServiceImpl.downloadProductPowerInfo(ProductPowerMstServiceImpl.java:242)
-	at com.trechina.planocycle.service.impl.ProductPowerMstServiceImpl$$FastClassBySpringCGLIB$$bc461075.invoke(<generated>)
-	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:779)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:750)
-	at org.springframework.aop.aspectj.AspectJAfterThrowingAdvice.invoke(AspectJAfterThrowingAdvice.java:64)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:750)
-	at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:97)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:750)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:692)
-	at com.trechina.planocycle.service.impl.ProductPowerMstServiceImpl$$EnhancerBySpringCGLIB$$7fad9c01.downloadProductPowerInfo(<generated>)
-	at com.trechina.planocycle.controller.ProductPowerMstController.downloadProductPowerInfo(ProductPowerMstController.java:65)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:197)
-	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:141)
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:106)
+20220907 09:39:28.026  [http-nio-8383-exec-1] INFO  org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/].log():173 - Initializing Spring DispatcherServlet 'dispatcherServlet'
+20220907 09:39:28.030  [http-nio-8383-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet.initServletBean():525 - Initializing Servlet 'dispatcherServlet'
+20220907 09:39:28.032  [http-nio-8383-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet.initServletBean():547 - Completed initialization in 1 ms
+20220907 09:39:28.112  [http-nio-8383-exec-1] INFO  com.zaxxer.hikari.HikariDataSource.getConnection():110 - DatebookHikariCP - Starting...
+20220907 09:39:28.286  [http-nio-8383-exec-8] INFO  com.trechina.planocycle.service.impl.UserServiceImpl.getUserCd():22 - 登録した社員番号：10215814
+20220907 09:39:28.748  [http-nio-8383-exec-1] INFO  com.zaxxer.hikari.HikariDataSource.getConnection():123 - DatebookHikariCP - Start completed.
+20220907 09:39:28.856  [http-nio-8383-exec-1] INFO  com.trechina.planocycle.service.impl.CommodityScoreMasterServiceImpl.getEnterpriseInfo():74 - つかむ取企業信息：[{F1=0001, F2=トライアル, F3=0001, F4=トライアル, F5=1}, {F1=gpt111, F2=ライフグループ, F3=0002, F4=ライフ関東, F5=0}, {F1=gpt111, F2=ライフグループ, F3=0003, F4=ライフ関西, F5=0}]
+20220907 09:39:30.978  [http-nio-8383-exec-3] INFO  com.trechina.planocycle.service.impl.UserServiceImpl.getUserCd():22 - 登録した社員番号：10215814
+20220907 09:39:31.055  [http-nio-8383-exec-6] INFO  com.trechina.planocycle.service.impl.CommodityScoreMasterServiceImpl.getEnterpriseInfo():74 - つかむ取企業信息：[{F1=0001, F2=トライアル, F3=0001, F4=トライアル, F5=1}, {F1=gpt111, F2=ライフグループ, F3=0002, F4=ライフ関東, F5=0}, {F1=gpt111, F2=ライフグループ, F3=0003, F4=ライフ関西, F5=0}]
+20220907 09:39:39.659  [http-nio-8383-exec-5] ERROR com.trechina.planocycle.aspect.GlobalExceptionHandler.handlerException():22 - 
+org.apache.catalina.connector.ClientAbortException: java.io.IOException: 你的主机中的软件中止了一个已建立的连接。
+	at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:353)
+	at org.apache.catalina.connector.OutputBuffer.flushByteBuffer(OutputBuffer.java:783)
+	at org.apache.catalina.connector.OutputBuffer.append(OutputBuffer.java:688)
+	at org.apache.catalina.connector.OutputBuffer.writeBytes(OutputBuffer.java:388)
+	at org.apache.catalina.connector.OutputBuffer.write(OutputBuffer.java:366)
+	at org.apache.catalina.connector.CoyoteOutputStream.write(CoyoteOutputStream.java:96)
+	at org.springframework.util.StreamUtils$NonClosingOutputStream.write(StreamUtils.java:287)
+	at com.fasterxml.jackson.core.json.UTF8JsonGenerator._flushBuffer(UTF8JsonGenerator.java:2177)
+	at com.fasterxml.jackson.core.json.UTF8JsonGenerator.writeNumber(UTF8JsonGenerator.java:967)
+	at com.fasterxml.jackson.databind.ser.std.NumberSerializers$IntegerSerializer.serialize(NumberSerializers.java:152)
+	at com.fasterxml.jackson.databind.ser.std.MapSerializer.serializeFields(MapSerializer.java:808)
+	at com.fasterxml.jackson.databind.ser.std.MapSerializer.serializeWithoutTypeInfo(MapSerializer.java:764)
+	at com.fasterxml.jackson.databind.ser.std.MapSerializer.serialize(MapSerializer.java:720)
+	at com.fasterxml.jackson.databind.ser.std.MapSerializer.serialize(MapSerializer.java:35)
+	at com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer.serializeContents(IndexedListSerializer.java:119)
+	at com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer.serialize(IndexedListSerializer.java:79)
+	at com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer.serialize(IndexedListSerializer.java:18)
+	at com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer.serializeContents(IndexedListSerializer.java:119)
+	at com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer.serialize(IndexedListSerializer.java:79)
+	at com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer.serialize(IndexedListSerializer.java:18)
+	at com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer.serializeContents(IndexedListSerializer.java:119)
+	at com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer.serialize(IndexedListSerializer.java:79)
+	at com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer.serialize(IndexedListSerializer.java:18)
+	at com.fasterxml.jackson.databind.ser.std.MapSerializer.serializeFields(MapSerializer.java:808)
+	at com.fasterxml.jackson.databind.ser.std.MapSerializer.serializeWithoutTypeInfo(MapSerializer.java:764)
+	at com.fasterxml.jackson.databind.ser.std.MapSerializer.serialize(MapSerializer.java:720)
+	at com.fasterxml.jackson.databind.ser.std.MapSerializer.serialize(MapSerializer.java:35)
+	at com.fasterxml.jackson.databind.ser.DefaultSerializerProvider._serialize(DefaultSerializerProvider.java:480)
+	at com.fasterxml.jackson.databind.ser.DefaultSerializerProvider.serializeValue(DefaultSerializerProvider.java:400)
+	at com.fasterxml.jackson.databind.ObjectWriter$Prefetch.serialize(ObjectWriter.java:1510)
+	at com.fasterxml.jackson.databind.ObjectWriter.writeValue(ObjectWriter.java:1006)
+	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.writeInternal(AbstractJackson2HttpMessageConverter.java:454)
+	at org.springframework.http.converter.AbstractGenericHttpMessageConverter.write(AbstractGenericHttpMessageConverter.java:104)
+	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:290)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor.handleReturnValue(RequestResponseBodyMethodProcessor.java:183)
+	at org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite.handleReturnValue(HandlerMethodReturnValueHandlerComposite.java:78)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:124)
 	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
 	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808)
 	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
 	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1064)
 	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963)
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
-	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:681)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:655)
 	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
 	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764)
 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:228)
@@ -77,13 +89,78 @@ java.lang.NullPointerException: null
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
 	at java.lang.Thread.run(Thread.java:748)
-20220906 15:55:04.934  [http-nio-8383-exec-10] WARN  org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.doResolveHandlerMethodException():434 - Failure in @ExceptionHandler com.trechina.planocycle.aspect.GlobalExceptionHandler#handlerException(Exception)
-java.lang.NullPointerException: null
-	at org.springframework.web.util.UrlPathHelper.getSanitizedPath(UrlPathHelper.java:409)
-	at org.springframework.web.util.UrlPathHelper.decodeAndCleanUriString(UrlPathHelper.java:550)
-	at org.springframework.web.util.UrlPathHelper.getOriginatingRequestUri(UrlPathHelper.java:495)
-	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.addContentDispositionHeader(AbstractMessageConverterMethodProcessor.java:431)
-	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:288)
+	Suppressed: org.apache.catalina.connector.ClientAbortException: java.io.IOException: 你的主机中的软件中止了一个已建立的连接。
+		at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:353)
+		at org.apache.catalina.connector.OutputBuffer.flushByteBuffer(OutputBuffer.java:783)
+		at org.apache.catalina.connector.OutputBuffer.append(OutputBuffer.java:688)
+		at org.apache.catalina.connector.OutputBuffer.writeBytes(OutputBuffer.java:388)
+		at org.apache.catalina.connector.OutputBuffer.write(OutputBuffer.java:366)
+		at org.apache.catalina.connector.CoyoteOutputStream.write(CoyoteOutputStream.java:96)
+		at org.springframework.util.StreamUtils$NonClosingOutputStream.write(StreamUtils.java:287)
+		at com.fasterxml.jackson.core.json.UTF8JsonGenerator._flushBuffer(UTF8JsonGenerator.java:2177)
+		at com.fasterxml.jackson.core.json.UTF8JsonGenerator.close(UTF8JsonGenerator.java:1220)
+		at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.writeInternal(AbstractJackson2HttpMessageConverter.java:458)
+		... 48 common frames omitted
+	Caused by: java.io.IOException: 你的主机中的软件中止了一个已建立的连接。
+		at sun.nio.ch.SocketDispatcher.write0(Native Method)
+		at sun.nio.ch.SocketDispatcher.write(SocketDispatcher.java:51)
+		at sun.nio.ch.IOUtil.writeFromNativeBuffer(IOUtil.java:93)
+		at sun.nio.ch.IOUtil.write(IOUtil.java:65)
+		at sun.nio.ch.SocketChannelImpl.write(SocketChannelImpl.java:469)
+		at org.apache.tomcat.util.net.NioChannel.write(NioChannel.java:135)
+		at org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper.doWrite(NioEndpoint.java:1364)
+		at org.apache.tomcat.util.net.SocketWrapperBase.doWrite(SocketWrapperBase.java:766)
+		at org.apache.tomcat.util.net.SocketWrapperBase.writeBlocking(SocketWrapperBase.java:586)
+		at org.apache.tomcat.util.net.SocketWrapperBase.write(SocketWrapperBase.java:530)
+		at org.apache.coyote.http11.Http11OutputBuffer$SocketOutputBuffer.doWrite(Http11OutputBuffer.java:547)
+		at org.apache.coyote.http11.filters.ChunkedOutputFilter.doWrite(ChunkedOutputFilter.java:110)
+		at org.apache.coyote.http11.Http11OutputBuffer.doWrite(Http11OutputBuffer.java:194)
+		at org.apache.coyote.Response.doWrite(Response.java:615)
+		at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:340)
+		... 57 common frames omitted
+Caused by: java.io.IOException: 你的主机中的软件中止了一个已建立的连接。
+	at sun.nio.ch.SocketDispatcher.write0(Native Method)
+	at sun.nio.ch.SocketDispatcher.write(SocketDispatcher.java:51)
+	at sun.nio.ch.IOUtil.writeFromNativeBuffer(IOUtil.java:93)
+	at sun.nio.ch.IOUtil.write(IOUtil.java:65)
+	at sun.nio.ch.SocketChannelImpl.write(SocketChannelImpl.java:469)
+	at org.apache.tomcat.util.net.NioChannel.write(NioChannel.java:135)
+	at org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper.doWrite(NioEndpoint.java:1364)
+	at org.apache.tomcat.util.net.SocketWrapperBase.doWrite(SocketWrapperBase.java:766)
+	at org.apache.tomcat.util.net.SocketWrapperBase.writeBlocking(SocketWrapperBase.java:586)
+	at org.apache.tomcat.util.net.SocketWrapperBase.write(SocketWrapperBase.java:530)
+	at org.apache.coyote.http11.Http11OutputBuffer$SocketOutputBuffer.doWrite(Http11OutputBuffer.java:547)
+	at org.apache.coyote.http11.filters.ChunkedOutputFilter.doWrite(ChunkedOutputFilter.java:112)
+	at org.apache.coyote.http11.Http11OutputBuffer.doWrite(Http11OutputBuffer.java:194)
+	at org.apache.coyote.Response.doWrite(Response.java:615)
+	at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:340)
+	... 79 common frames omitted
+20220907 09:39:39.676  [http-nio-8383-exec-5] WARN  org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.doResolveHandlerMethodException():434 - Failure in @ExceptionHandler com.trechina.planocycle.aspect.GlobalExceptionHandler#handlerException(Exception)
+org.apache.catalina.connector.ClientAbortException: java.io.IOException: 你的主机中的软件中止了一个已建立的连接。
+	at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:353)
+	at org.apache.catalina.connector.OutputBuffer.flushByteBuffer(OutputBuffer.java:783)
+	at org.apache.catalina.connector.OutputBuffer.append(OutputBuffer.java:688)
+	at org.apache.catalina.connector.OutputBuffer.writeBytes(OutputBuffer.java:388)
+	at org.apache.catalina.connector.OutputBuffer.write(OutputBuffer.java:366)
+	at org.apache.catalina.connector.CoyoteOutputStream.write(CoyoteOutputStream.java:96)
+	at org.springframework.util.StreamUtils$NonClosingOutputStream.write(StreamUtils.java:287)
+	at com.fasterxml.jackson.core.json.UTF8JsonGenerator._flushBuffer(UTF8JsonGenerator.java:2177)
+	at com.fasterxml.jackson.core.json.UTF8JsonGenerator._writeStringSegment2(UTF8JsonGenerator.java:1491)
+	at com.fasterxml.jackson.core.json.UTF8JsonGenerator._writeStringSegment(UTF8JsonGenerator.java:1438)
+	at com.fasterxml.jackson.core.json.UTF8JsonGenerator._writeStringSegments(UTF8JsonGenerator.java:1321)
+	at com.fasterxml.jackson.core.json.UTF8JsonGenerator.writeString(UTF8JsonGenerator.java:517)
+	at com.fasterxml.jackson.databind.ser.std.StringSerializer.serialize(StringSerializer.java:41)
+	at com.fasterxml.jackson.databind.ser.std.MapSerializer.serializeFields(MapSerializer.java:808)
+	at com.fasterxml.jackson.databind.ser.std.MapSerializer.serializeWithoutTypeInfo(MapSerializer.java:764)
+	at com.fasterxml.jackson.databind.ser.std.MapSerializer.serialize(MapSerializer.java:720)
+	at com.fasterxml.jackson.databind.ser.std.MapSerializer.serialize(MapSerializer.java:35)
+	at com.fasterxml.jackson.databind.ser.DefaultSerializerProvider._serialize(DefaultSerializerProvider.java:480)
+	at com.fasterxml.jackson.databind.ser.DefaultSerializerProvider.serializeValue(DefaultSerializerProvider.java:400)
+	at com.fasterxml.jackson.databind.ObjectWriter$Prefetch.serialize(ObjectWriter.java:1510)
+	at com.fasterxml.jackson.databind.ObjectWriter.writeValue(ObjectWriter.java:1006)
+	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.writeInternal(AbstractJackson2HttpMessageConverter.java:454)
+	at org.springframework.http.converter.AbstractGenericHttpMessageConverter.write(AbstractGenericHttpMessageConverter.java:104)
+	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:290)
 	at org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor.handleReturnValue(RequestResponseBodyMethodProcessor.java:183)
 	at org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite.handleReturnValue(HandlerMethodReturnValueHandlerComposite.java:78)
 	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:124)
@@ -96,8 +173,8 @@ java.lang.NullPointerException: null
 	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1081)
 	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963)
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
-	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:681)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:655)
 	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
 	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764)
 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:228)
@@ -133,5 +210,69 @@ java.lang.NullPointerException: null
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
 	at java.lang.Thread.run(Thread.java:748)
-20220906 15:55:04.946  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
-20220906 15:55:04.951  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.
+	Suppressed: org.apache.catalina.connector.ClientAbortException: java.io.IOException: 你的主机中的软件中止了一个已建立的连接。
+		at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:353)
+		at org.apache.catalina.connector.OutputBuffer.flushByteBuffer(OutputBuffer.java:783)
+		at org.apache.catalina.connector.OutputBuffer.append(OutputBuffer.java:688)
+		at org.apache.catalina.connector.OutputBuffer.writeBytes(OutputBuffer.java:388)
+		at org.apache.catalina.connector.OutputBuffer.write(OutputBuffer.java:366)
+		at org.apache.catalina.connector.CoyoteOutputStream.write(CoyoteOutputStream.java:96)
+		at org.springframework.util.StreamUtils$NonClosingOutputStream.write(StreamUtils.java:287)
+		at com.fasterxml.jackson.core.json.UTF8JsonGenerator._flushBuffer(UTF8JsonGenerator.java:2177)
+		at com.fasterxml.jackson.core.json.UTF8JsonGenerator.close(UTF8JsonGenerator.java:1220)
+		at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.writeInternal(AbstractJackson2HttpMessageConverter.java:458)
+		... 51 common frames omitted
+	Caused by: java.io.IOException: 你的主机中的软件中止了一个已建立的连接。
+		at sun.nio.ch.SocketDispatcher.write0(Native Method)
+		at sun.nio.ch.SocketDispatcher.write(SocketDispatcher.java:51)
+		at sun.nio.ch.IOUtil.writeFromNativeBuffer(IOUtil.java:93)
+		at sun.nio.ch.IOUtil.write(IOUtil.java:65)
+		at sun.nio.ch.SocketChannelImpl.write(SocketChannelImpl.java:469)
+		at org.apache.tomcat.util.net.NioChannel.write(NioChannel.java:135)
+		at org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper.doWrite(NioEndpoint.java:1364)
+		at org.apache.tomcat.util.net.SocketWrapperBase.doWrite(SocketWrapperBase.java:766)
+		at org.apache.tomcat.util.net.SocketWrapperBase.writeBlocking(SocketWrapperBase.java:586)
+		at org.apache.tomcat.util.net.SocketWrapperBase.write(SocketWrapperBase.java:530)
+		at org.apache.coyote.http11.Http11OutputBuffer$SocketOutputBuffer.doWrite(Http11OutputBuffer.java:547)
+		at org.apache.coyote.http11.filters.ChunkedOutputFilter.doWrite(ChunkedOutputFilter.java:110)
+		at org.apache.coyote.http11.Http11OutputBuffer.doWrite(Http11OutputBuffer.java:194)
+		at org.apache.coyote.Response.doWrite(Response.java:615)
+		at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:340)
+		... 60 common frames omitted
+Caused by: java.io.IOException: 你的主机中的软件中止了一个已建立的连接。
+	at sun.nio.ch.SocketDispatcher.write0(Native Method)
+	at sun.nio.ch.SocketDispatcher.write(SocketDispatcher.java:51)
+	at sun.nio.ch.IOUtil.writeFromNativeBuffer(IOUtil.java:93)
+	at sun.nio.ch.IOUtil.write(IOUtil.java:65)
+	at sun.nio.ch.SocketChannelImpl.write(SocketChannelImpl.java:469)
+	at org.apache.tomcat.util.net.NioChannel.write(NioChannel.java:135)
+	at org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper.doWrite(NioEndpoint.java:1364)
+	at org.apache.tomcat.util.net.SocketWrapperBase.doWrite(SocketWrapperBase.java:766)
+	at org.apache.tomcat.util.net.SocketWrapperBase.writeBlocking(SocketWrapperBase.java:586)
+	at org.apache.tomcat.util.net.SocketWrapperBase.write(SocketWrapperBase.java:530)
+	at org.apache.coyote.http11.Http11OutputBuffer$SocketOutputBuffer.doWrite(Http11OutputBuffer.java:547)
+	at org.apache.coyote.http11.filters.ChunkedOutputFilter.doWrite(ChunkedOutputFilter.java:110)
+	at org.apache.coyote.http11.Http11OutputBuffer.doWrite(Http11OutputBuffer.java:194)
+	at org.apache.coyote.Response.doWrite(Response.java:615)
+	at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:340)
+	... 72 common frames omitted
+20220907 09:44:56.701  [task-1] INFO  com.trechina.planocycle.utils.ExcelUtils.generateNormalExcelToFile():315 - start generate excel,now:2022-09-07T09:44:56.701, filename: attachment;filename=%E5%95%86%E5%93%81%E6%98%8E%E7%B4%B0-20220907094456.xlsx;
+20220907 10:02:04.549  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=47s141ms733µs400ns).
+20220907 10:06:31.695  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=4m40s973ms198µs700ns).
+20220907 10:07:44.887  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=1m17s402ms191µs300ns).
+20220907 10:13:33.318  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=5m52s295ms236µs899ns).
+20220907 10:15:17.987  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=1m29s979ms506µs201ns).
+20220907 10:16:48.024  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=1m47s582ms59µs400ns).
+20220907 10:18:24.078  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=1m36s53ms71µs400ns).
+20220907 10:20:47.431  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=2m9s481ms263µs500ns).
+20220907 10:22:35.902  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=2m2s340ms993µs500ns).
+20220907 10:23:04.851  [http-nio-8383-exec-5] INFO  com.trechina.planocycle.service.impl.UserServiceImpl.getUserCd():22 - 登録した社員番号：10215814
+20220907 10:24:29.918  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=1m52s620ms391µs200ns).
+20220907 10:26:43.500  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=2m4s579ms390µs300ns).
+20220907 10:29:40.700  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=3m4s502ms774µs).
+20220907 10:30:57.317  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=1m19s709ms470µs700ns).
+20220907 10:39:17.182  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=46s350ms192µs400ns).
+20220907 10:40:41.569  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=1m22s946ms398µs900ns).
+20220907 10:41:36.226  [DatebookHikariCP housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool.run():788 - DatebookHikariCP - Thread starvation or clock leap detected (housekeeper delta=56s96ms971µs600ns).
+20220907 15:22:09.276  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
+20220907 15:22:09.282  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.

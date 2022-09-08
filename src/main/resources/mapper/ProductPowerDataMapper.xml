@@ -287,7 +287,7 @@
     </delete>
     <delete id="deleteData">
         delete  from planocycle.product_power_mst_data
-        where company_cd =#{companyCd} and author_cd = #{authorCd} and product_power_cd = #{productPowerCd}
+        where company_cd =#{companyCd}  and product_power_cd = #{productPowerCd}
     </delete>
     <delete id="deleteWKYobiiiternCd">
         delete from planocycle.work_product_power_reserve_mst where company_cd=#{companyCd} and product_power_cd = #{productPowerCd} and author_cd=#{authorCd} and data_cd = #{valueCd}
@@ -447,38 +447,38 @@
             <foreach collection="showList" item="item" open="," separator=",">coalesce(${item.itemCd},'0') as ${item.itemCd}</foreach>
             <foreach collection="showPreparedList" item="item" open="," separator=",">coalesce(${item.data_cd},0) as ${item.data_cd}</foreach>
         from  planocycle.work_product_power_syokika syokika
-            <if test="prepareCd.size()>0">
+            <if test="!prepareCd.isEmpty">
                 left join (select
                 dd.jan as jan,
                 <trim suffixOverrides=",">
-                <if test="prepareCd.contains('item1')">
+                <if test="'item1' in prepareCd">
                     sum ( case when dd.data_cd = '31001' then dd.data_value else 0 end ) as item1,
                 </if>
-                <if test="prepareCd.contains('item2')">
+                <if test="'item2' in prepareCd">
                 sum ( case when dd.data_cd = '31002' then dd.data_value else 0 end ) as item2,
                 </if>
-                <if test="prepareCd.contains('item3')">
+                <if test="'item3' in prepareCd">
                 sum ( case when dd.data_cd = '31003' then dd.data_value else 0 end ) as item3,
                 </if>
-                <if test="prepareCd.contains('item4')">
+                <if test="'item4' in prepareCd">
                 sum ( case when dd.data_cd = '31004' then dd.data_value else 0 end ) as item4,
                 </if>
-                <if test="prepareCd.contains('item5')">
+                <if test="'item5' in prepareCd">
                 sum ( case when dd.data_cd = '31005' then dd.data_value else 0 end ) as item5,
                 </if>
-                <if test="prepareCd.contains('item6')">
+                <if test="'item6' in prepareCd">
                 sum ( case when dd.data_cd = '31006' then dd.data_value else 0 end ) as item6,
                 </if>
-                <if test="prepareCd.contains('item7')">
+                <if test="'item7' in prepareCd">
                 sum ( case when dd.data_cd = '31007' then dd.data_value else 0 end ) as item7,
                 </if>
-                <if test="prepareCd.contains('item8')">
+                <if test="'item8' in prepareCd">
                 sum ( case when dd.data_cd = '31008' then dd.data_value else 0 end ) as item8,
                 </if>
-                <if test="prepareCd.contains('item9')">
+                <if test="'item9' in prepareCd">
                 sum ( case when dd.data_cd = '31009' then dd.data_value else 0 end ) as item9,
                 </if>
-                <if test="prepareCd.contains('item10')">
+                <if test="'item10' in prepareCd">
                 sum ( case when dd.data_cd = '31010' then dd.data_value else 0 end ) as item10
                 </if>
                 </trim>
@@ -536,7 +536,7 @@
     <select id="getParam" resultType="com.trechina.planocycle.entity.po.ProductPowerParamVo">
         select company_cd as company,product_power_cd as productPowerNo,customer_condition,prd_cd,rank_weight,recently_end_time,recently_flag,recently_st_time,
                season_end_time,season_flag,season_st_time,store_cd,year_flag,common_parts_data,project,shelf_pattern_cd,channel_nm,place_nm,jan_name2col_num
-                ,prod_attr_data
+                ,prod_attr_data,single_jan
         from planocycle.product_power_param_mst
         where company_cd=#{companyCd} and product_power_cd = #{productPowerCd} and deleteflg=0
 
@@ -847,8 +847,12 @@
            </foreach>
            from  ${tableName}
            where
-            <foreach collection="janClassCd" item="item" separator="and">
-                 "${item.cd}" = #{item.value}
+            <foreach collection="janClassCd" item="map" separator="or">
+                (
+                 <foreach collection="map" index="index" item="item" separator="and">
+                     "${index}" = #{item}
+                 </foreach>
+                )
            </foreach>
     </select>
     <select id="getAttrName" resultType="java.lang.String">

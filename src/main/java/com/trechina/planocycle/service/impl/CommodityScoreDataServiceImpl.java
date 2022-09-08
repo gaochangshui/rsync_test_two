@@ -2,12 +2,14 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
+import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreDataService;
+import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
 import com.trechina.planocycle.utils.cgiUtils;
@@ -173,8 +175,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         //param
         String customerConditionStr = map.get("customerCondition").toString();
         String prodAttrData = map.get("prodAttrData").toString();
+        String singleJan = new Gson().toJson(map.get("singleJan"));
         productPowerParamMstMapper.deleteWork(companyCd,productPowerCd);
-        productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr,prodAttrData);
+        productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr,prodAttrData,singleJan);
         if (paramCount >0){
             map.put("changeFlag","1");
         }else {
@@ -189,7 +192,10 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String uuid1 = UUID.randomUUID().toString();
         String attrCondition =  this.attrList(map);
         map.put("attrCondition",attrCondition);
-        //map.remove("prodAttrData");
+        Map<String,Object> janList =  this.janList(map);
+        map.put("filterJanlist",janList.get("listDisparitStr"));
+        map.put("excjanFlg",janList.get("janExclude"));
+        map.remove("singleJan");
         String company_kokigyou = planocycleKigyoListMapper.getGroupInfo(companyCd);
         if (map.get("prdCd").equals("")) {
             map.put("prdCd",null);
@@ -348,6 +354,24 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 
+    private Map<String, Object> janList(Map<String, Object> map) {
+        Map<String, Object> resultMap = new HashMap<>();
+        Map<String,Object> singleJan = (Map<String,Object>) map.get("singleJan");
+        if (!singleJan.isEmpty()) {
+            List<String> filterJanList = (List<String>) singleJan.get("filterJanList");
+            List<String> noSelectedJanListAll = (List<String>) singleJan.get("noSelectedJanListAll");
+            boolean janExclude = (boolean) singleJan.get("janExclude");
+            List<String> listDisparitStr = ListDisparityUtils.getListDisparitStr(filterJanList, noSelectedJanListAll);
+
+            resultMap.put("janExclude", janExclude ? 1 : 0);
+            resultMap.put("listDisparitStr", Joiner.on(",").join(listDisparitStr));
+        }else {
+            resultMap.put("janExclude", null);
+            resultMap.put("listDisparitStr", null);
+        }
+        return resultMap;
+    }
+
     private String attrList(Map<String,Object> map) {
         String finalValue = "";
 
@@ -431,6 +455,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
             return ResultMaps.result(ResultEnum.SUCCESS, returnData);
         } catch (Exception e) {
+            logger.error("",e);
             return ResultMaps.result(ResultEnum.FAILURE);
 
         }

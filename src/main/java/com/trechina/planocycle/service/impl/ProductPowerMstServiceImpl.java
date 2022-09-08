@@ -20,6 +20,7 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.ProductPowerMstService;
 import com.trechina.planocycle.utils.ExcelUtils;
+import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -392,9 +393,12 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             List<Map<String,Object>>  janClassifyList = new ArrayList();
             for (String s : list) {
                 Map<String,Object> janClassCd = new HashMap<>();
-                janClassCd.put("value",s.split("-")[1]);
-                janClassCd.put("cd",(Integer.parseInt(s.split("-")[0]) * 2 - 1)+"");
-                janClassCd.put("name",(Integer.parseInt(s.split("-")[0]) * 2)+"");
+                String s1 = s.split("-")[1];
+                String[] s2 = s1.split("_");
+                for (int i = 0; i < s2.length; i++) {
+                    janClassCd.put(2*i+1+"",s2[i]);
+                }
+
                 janClassifyList.add(janClassCd);
             }
             janClassify = productPowerDataMapper.getJanClassify(janClassifyList,commonTableName.getProKaisouInfoTable(),classifyHeader);
@@ -419,6 +423,21 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         }
         mapResult.put("janAttr",janAttr);
         mapResult.put("janAttrFlag",janAttrFlag);
+            //jan
+        Map<String, Object> singleJan = new Gson().fromJson(param.getSingleJan().toString(),
+                new com.google.common.reflect.TypeToken<Map<String, Object>>(){}.getType());
+        List<String> janList = new ArrayList<>();
+        String janFlag = "";
+        if (!singleJan.isEmpty()){
+           List<String>filterJanList =  (List<String>) singleJan.get("filterJanList");
+           List<String>noSelectedJanListAll =  (List<String>) singleJan.get("noSelectedJanListAll");
+           boolean janExclude =  (boolean) singleJan.get("janExclude");
+             janList = ListDisparityUtils.getListDisparitStr(filterJanList, noSelectedJanListAll);
+             janFlag =janExclude?"除外":"対象";
+        }
+        mapResult.put("janList",janList);
+        mapResult.put("janFlag",janFlag);
+
         //顧客条件
         JSONObject jsonObject = JSON.parseObject(param.getCustomerCondition());
         List<String> groupNames = new ArrayList<>();

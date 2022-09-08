@@ -1,9 +1,7 @@
 package com.trechina.planocycle.utils;
 
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -13,14 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.util.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -190,7 +187,15 @@ public class ExcelUtils {
         cell.setCellStyle(cellStyle);
         LinkedHashMap<String,Object> attrList = (LinkedHashMap<String, Object>) paramMap.get("janAttr");
         LinkedHashMap<String,Object> janAttrFlag = (LinkedHashMap<String, Object>) paramMap.get("janAttrFlag");
-        cell = row.createCell(headerColIndex+=attrList.size() * 2 +1);
+        if (attrList.size() == 0) {
+            headerColIndex+=2;
+        }else {
+            headerColIndex+=attrList.size() * 2+1;
+        }
+        cell = row.createCell(headerColIndex);
+        cell.setCellValue("単品JAN");
+        cell.setCellStyle(cellStyle);
+        cell = row.createCell(headerColIndex+=3);
         cell.setCellValue("顧客条件");
         cell.setCellStyle(cellStyle);
         cell = row.createCell(headerColIndex+=2);
@@ -220,8 +225,18 @@ public class ExcelUtils {
             cell.setCellValue(stringObjectEntry.getKey()+"区分");
             cell.setCellStyle(cellStyle);
         }
-        headerColIndex++;
+        if (attrList.size() == 0) {
+            headerColIndex+=2;
+        }else {
+            headerColIndex+=1;
+        }
         cell = row.createCell(headerColIndex);
+        cell.setCellValue("単品JAN");
+        cell.setCellStyle(cellStyle);
+        cell = row.createCell(headerColIndex+=1);
+        cell.setCellValue("JAN区分");
+        cell.setCellStyle(cellStyle);
+        cell = row.createCell(headerColIndex+=2);
         cell.setCellValue("顧客グループ");
         cell.setCellStyle(cellStyle);
         cell = row.createCell(headerColIndex+=2);
@@ -231,6 +246,9 @@ public class ExcelUtils {
         cell.setCellValue("都道府県");
         cell.setCellStyle(cellStyle);
         colIndex++;
+
+        List<String> janList = (List<String>) paramMap.get("janList");
+
         List<Integer> sizeList= new ArrayList<>();
         sizeList.add(((List<String>)paramMap.get("storeList")).size());
         sizeList.add(((List<Map<String,Object>>)paramMap.get("janClassify")).size());
@@ -240,8 +258,8 @@ public class ExcelUtils {
         sizeList.add(((List<String>)paramMap.get("groupNames")).size());
         sizeList.add(((List<String>)paramMap.get("channelNm")).size());
         sizeList.add(((List<String>)paramMap.get("placeNm")).size());
+        sizeList.add(janList.size());
         Integer integer = sizeList.stream().max(Integer::max).get();
-        System.out.println(integer);
         for (int i = 0; i < integer; i++) {
             row = sheet1.createRow(colIndex);
             cell = row.createCell(headerColIndex = 0);
@@ -264,7 +282,19 @@ public class ExcelUtils {
                 cell = row.createCell(headerColIndex++);
                 cell.setCellValue( ((List<String>)stringObjectEntry.getValue()).size()>i?janAttrFlag.get(stringObjectEntry.getKey()+"区分").toString():"");
             }
+            if (attrList.size() == 0) {
+                headerColIndex+=2;
+            }else {
+                headerColIndex+=1;
+            }
+
+
+            cell = row.createCell(headerColIndex++);
+            cell.setCellValue(janList.size()>i?janList.get(i):"");
+            cell = row.createCell(headerColIndex++);
+            cell.setCellValue(janList.size()>i?paramMap.get("janFlag").toString():"");
             headerColIndex++;
+
             cell = row.createCell(headerColIndex);
             cell.setCellValue(((List<String>)paramMap.get("groupNames")).size()>i?((List<String>)paramMap.get("groupNames")).get(i):"");
             cell = row.createCell(headerColIndex+=2);
@@ -308,13 +338,11 @@ public class ExcelUtils {
     /**
      * generate excel to file
      * @param allData
-     * @param fileName
+     * @param filePath
      * @return file's path
      */
-    public static String generateNormalExcelToFile(List<String[]> allData, String fileName){
-        logger.info("start generate excel,now:{}, filename: {}", LocalDateTime.now(),fileName);
-        String path = ExcelUtils.class.getClassLoader().getResource("").getPath();
-        String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
+    public static String generateNormalExcelToFile(List<String[]> allData, String filePath){
+        logger.info("start generate excel,now:{}, filename: {}", LocalDateTime.now(),filePath);
 
         try(XSSFWorkbook workbook = new XSSFWorkbook();
             FileOutputStream fos = new FileOutputStream(filePath)){
@@ -336,7 +364,7 @@ public class ExcelUtils {
         }catch (Exception e){
             logger.error("", e);
         }
-        logger.info("end generate excel,now:{}, filename: {}", LocalDateTime.now(), fileName);
+        logger.info("end generate excel,now:{}, filename: {}", LocalDateTime.now(), filePath);
         return filePath;
     }
 
