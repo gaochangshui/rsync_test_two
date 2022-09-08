@@ -413,7 +413,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Override
     public Map<String, Object> getCommodityScoreDataFromDB(Integer productPowerCd, String companyCd, String[] posCd,
                                                            String[] prepareCd, String[] intageCd, String[] customerCd) {
-        //try {
+        try {
             List<String> cdList = new ArrayList<>();
 
             if(posCd.length>0){
@@ -454,10 +454,11 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             returnData.addAll(productPowerMstData);
 
             return ResultMaps.result(ResultEnum.SUCCESS, returnData);
-        //} catch (Exception e) {
-        //    return ResultMaps.result(ResultEnum.FAILURE);
-        //
-        //}
+        } catch (Exception e) {
+            logger.error("",e);
+            return ResultMaps.result(ResultEnum.FAILURE);
+
+        }
 
     }
 
