@@ -519,6 +519,7 @@ public class MstJanServiceImpl implements MstJanService {
 
         String taskId = UUID.randomUUID().toString();
         String finalCompanyCd = companyCd;
+        String authorCd = session.getAttribute("aud").toString();
         cacheUtil.put(taskId+",status", MagicString.TASK_STATUS_PROCESSING);
         executor.execute(()->{
             Map<String, String> headerNameIndex = new HashMap<>();
@@ -585,7 +586,6 @@ public class MstJanServiceImpl implements MstJanService {
                     janData.add(jan);
                 }
                 String dateStr = simpleDateFormat.format(date);
-                String authorCd = session.getAttribute("aud").toString();
                 List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(finalCompanyCd, prodMstClass);
                 List<String> janInfoCol = mstJanMapper.getJanInfoCol();
 
@@ -598,8 +598,15 @@ public class MstJanServiceImpl implements MstJanService {
                         .map(map -> map.entrySet().stream().filter(infoMap -> janInfoCol.contains(infoMap.getKey()) || "1".equals(infoMap.getKey()))
                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new)))
                         .collect(Collectors.toList());
-                count.set(mstJanMapper.insertJanList(tableNameInfo, janInfoData, dateStr, authorCd));
-                count.set(mstJanMapper.insertJanSpecialList(janSpecialData));
+                int batchSize = 1000;
+                int janDataNum = (int) Math.ceil(janInfoData.size() / 1000.0);
+                for (int i = 0; i < janDataNum; i++) {
+                    int end = batchSize*(i+1) >= janInfoData.size()?janInfoData.size():batchSize*(i+1);
+                    int i1 = mstJanMapper.insertJanList(tableNameInfo, janInfoData.subList(batchSize * i, end), dateStr, authorCd);
+                    mstJanMapper.insertJanSpecialList(janSpecialData.subList(batchSize * i, end));
+
+                    count.addAndGet(i1);
+                }
 
                 Set zokuseiList = new HashSet();
                 for (LinkedHashMap<String, Object> janDatum : janData) {
@@ -622,6 +629,7 @@ public class MstJanServiceImpl implements MstJanService {
                 cacheUtil.put(taskId+",status", MagicString.TASK_STATUS_SUCCESS);
                 cacheUtil.put(taskId+",data", count + MagicString.MSG_UPLOAD_SUCCESS);
             } catch (Exception e) {
+                logger.error("", e);
                 logAspect.setTryErrorLog(e,new Object[]{commonPartsData, finalCompanyCd,classCd});
                 cacheUtil.put(taskId+",exception", MagicString.MSG_ABNORMALITY_DATA);
                 cacheUtil.put(taskId+",status", MagicString.TASK_STATUS_EXCEPTION);
@@ -727,7 +735,9 @@ public class MstJanServiceImpl implements MstJanService {
             String data = cacheUtil.get(taskId + ",data").toString();
             cacheUtil.remove(taskId+",data");
             cacheUtil.remove(taskId+",status");
-            return ResultMaps.result(ResultEnum.SUCCESS.getCode(), data);
+            Map<String, Object> result = ResultMaps.result(ResultEnum.SUCCESS.getCode(), data);
+            result.put("data", data);
+            return result;
         }else if(Objects.equals(o.toString(), MagicString.TASK_STATUS_PROCESSING)){
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", "9");
