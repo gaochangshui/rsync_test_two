@@ -768,9 +768,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Override
     public Map<String, Object> setStarReadingData(StarReadingVo starReadingVo) {
         if (starReadingVo.getTaskID()!=null){
-            if (vehicleNumCache.get("save"+starReadingVo.getTaskID()).equals("1")) {
+            if ("1".equals(vehicleNumCache.get("save"+starReadingVo.getTaskID()))) {
+                vehicleNumCache.remove("save"+starReadingVo.getTaskID());
                 return ResultMaps.result(ResultEnum.SUCCESS);
-            } else if (vehicleNumCache.get("save"+starReadingVo.getTaskID()).equals("2")) {
+            } else if ("2".equals(vehicleNumCache.get("save"+starReadingVo.getTaskID()))) {
+                vehicleNumCache.remove("save"+starReadingVo.getTaskID());
                 return ResultMaps.result(ResultEnum.FAILURE);
             }else {
                 Map<String,Object> map = new HashMap<>();
@@ -826,7 +828,6 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     }
                 }
 
-
                 if (starReadingVo.getModeCheck() == 1) {
                     starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
                 }else {
@@ -849,6 +850,9 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             map.put("status","9");
             map.put("taskID",uuid);
             return ResultMaps.result(ResultEnum.SUCCESS, map);
+        }
+        if (vehicleNumCache.get("save"+uuid).equals("2")){
+            return ResultMaps.result(ResultEnum.FAILURE);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
