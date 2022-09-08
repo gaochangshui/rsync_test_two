@@ -10,7 +10,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/planoCycleApi/ProductPowerMst")
-public class ProductPowerMstController {
+public  class ProductPowerMstController {
     @Autowired
     private ProductPowerMstService powerMstService;
     /**
@@ -64,4 +64,5 @@ public class ProductPowerMstController {
     public void downloadProductPowerInfo(@RequestBody ProductPowerVO productPowerVO, HttpServletResponse response){
         powerMstService.downloadProductPowerInfo(productPowerVO.getCompanyCd(),productPowerVO.getProductPowerNo(),response);
     }
+
 }
