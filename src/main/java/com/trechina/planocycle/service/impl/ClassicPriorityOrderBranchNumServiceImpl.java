@@ -851,7 +851,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             map.put("taskID",uuid);
             return ResultMaps.result(ResultEnum.SUCCESS, map);
         }
-        if (vehicleNumCache.get("save"+uuid).equals("2")){
+        if ("2".equals(vehicleNumCache.get("save"+uuid))){
             return ResultMaps.result(ResultEnum.FAILURE);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
