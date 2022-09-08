@@ -46,7 +46,10 @@
                           left join "1000".ten_0000_ten_info teninfo
                                     on (teninfo."1" = branch.branch or
                                         split_part(teninfo."1", '_', 2) = branch.branch) and
-                                       split_part(teninfo."1", '_', 1) = #{companyCd}
+                                       split_part(teninfo."1", '_', 1) in
+                                    <foreach collection="groupCompany" item="item" separator="," open="(" close=")">
+                                        #{item}
+                                    </foreach>
                  where branch.shelf_pattern_cd in
                        (select shelf_pattern_cd
                         from priority.work_priority_order_pattern
@@ -61,7 +64,12 @@
         from
             planocycle.shelf_pattern_branch branch
             left join "1000".ten_0000_ten_info teninfo
-        on teninfo."1" = branch.branch
+        on (teninfo."1" = branch.branch or
+        split_part(teninfo."1", '_', 2) = branch.branch) and
+        split_part(teninfo."1", '_', 1) in
+        <foreach collection="groupCompany" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
         left join (select distinct area from  priority.work_priority_order_commodity_branch where priority_order_cd = #{priorityOrderCd}) t1
         on t1.area = teninfo."6"
         where

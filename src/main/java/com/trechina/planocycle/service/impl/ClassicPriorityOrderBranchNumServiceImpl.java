@@ -18,23 +18,19 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderBranchNumService;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanReplaceService;
-import com.trechina.planocycle.utils.ListDisparityUtils;
-import com.trechina.planocycle.utils.ResultMaps;
-import com.trechina.planocycle.utils.cgiUtils;
-import com.trechina.planocycle.utils.dataConverUtils;
+import com.trechina.planocycle.utils.*;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -80,6 +76,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     private PriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
     private StarReadingTableMapper starReadingTableMapper;
+    @Autowired
+    private VehicleNumCache vehicleNumCache;
+    @Autowired
+    private ThreadPoolTaskExecutor executor;
+
 
     public static final Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
 
@@ -560,7 +561,9 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
         List<Map<String, Object>> janName = classicPriorityOrderDataMapper.getJanName(starReadingTableDto.getJanList(),priorityOrderCd);
         if (starReadingTableDto.getModeCheck() == 1) {
-            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,companyCd);
+            List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
+            groupCompany.add(companyCd);
+            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany);
             branchList=branchList.stream().filter(map -> starReadingTableDto.getExpressItemList().contains(map.get("sort"))).collect(Collectors.toList());
             List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList);
 
@@ -668,10 +671,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         String header = "JAN,商品名,合計";
         Map mapResult = new HashMap();
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
+        List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
+        groupCompany.add(companyCd);
         if (modeCheck == 1){
             janInfoTableName = "priority.work_priority_order_commodity_branch";
+
             List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
-            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,companyCd);
+            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany);
             List<Map<String, Object>> janOrName = starReadingTableMapper.getJanOrName(companyCd, priorityOrderCd);
             List<Object> branchCd = branchDiff.stream().map(map -> map.get("branchCd")).collect(Collectors.toList());
             branchList=branchList.stream().filter(map ->branchCd.contains(map.get("branchCd"))).collect(Collectors.toList());
@@ -745,7 +751,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,"jan"))).collect(Collectors.toList());
             mapResult.put("data", list);
         }
-        List<Map<String, Object>> areaList = starReadingTableMapper.getAreaList(priorityOrderCd);
+        List<Map<String, Object>> areaList = starReadingTableMapper.getAreaList(priorityOrderCd,groupCompany);
         List<Map<String, Object>>  patternList =  starReadingTableMapper.getPatternList(priorityOrderCd);
         expressItemList.addAll(areaList);
         expressItemList.addAll(patternList);
@@ -761,6 +767,15 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
     @Override
     public Map<String, Object> setStarReadingData(StarReadingVo starReadingVo) {
+        if (starReadingVo.getTaskID()!=null){
+            if (vehicleNumCache.get("save"+starReadingVo.getTaskID()).equals("1")) {
+                return ResultMaps.result(ResultEnum.SUCCESS);
+            } else if (vehicleNumCache.get("save"+starReadingVo.getTaskID()).equals("2")) {
+                return ResultMaps.result(ResultEnum.FAILURE);
+            }else {
+                return ResultMaps.result(ResultEnum.SUCCESS,"9");
+            }
+        }
         Integer priorityOrderCd = starReadingVo.getPriorityOrderCd();
         String companyCd = starReadingVo.getCompanyCd();
         starReadingTableMapper.delBranchList(companyCd,priorityOrderCd);
@@ -771,63 +786,64 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             priorityOrderMstMapper.updateModeCheck(starReadingVo);
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
-        List<Map<String, Object>> list = new ArrayList<>();
+        String uuid = UUID.randomUUID().toString();
+        Future<?> future = executor.submit(() -> {
+            try {
+                List<Map<String, Object>> list = new ArrayList<>();
 
-            for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
-                String jan = datum.get("jan").toString();
-                for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
-                    if (!stringObjectEntry.getKey().equals("jan") && !stringObjectEntry.getKey().equals("janName") && !stringObjectEntry.getKey().equals("total")) {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("jan", jan);
-                        map.put("branch", stringObjectEntry.getKey().split("_")[1]);
-                        map.put("flag", stringObjectEntry.getValue().equals("☓") ? -1 : stringObjectEntry.getValue().equals("") ? 0 : 1);
-                        if (starReadingVo.getModeCheck() == 0){
-                            map.put("patternNameCd",Integer.valueOf(stringObjectEntry.getKey().split("_")[0].split("pattern")[1]));
-                        }
-                        for (Map.Entry<String, Object> objectEntry : starReadingVo.getGroup().entrySet()) {
-                            if (objectEntry.getKey().equals(stringObjectEntry.getKey().split("_")[0])) {
-                                map.put("area", objectEntry.getValue());
+                for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
+                    String jan = datum.get("jan").toString();
+                    for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
+                        if (!stringObjectEntry.getKey().equals("jan") && !stringObjectEntry.getKey().equals("janName") && !stringObjectEntry.getKey().equals("total")) {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("jan", jan);
+                            map.put("branch", stringObjectEntry.getKey().split("_")[1]);
+                            map.put("flag", stringObjectEntry.getValue().equals("☓") ? -1 : stringObjectEntry.getValue().equals("") ? 0 : 1);
+                            if (starReadingVo.getModeCheck() == 0){
+                                map.put("patternNameCd",Integer.valueOf(stringObjectEntry.getKey().split("_")[0].split("pattern")[1]));
                             }
+                            for (Map.Entry<String, Object> objectEntry : starReadingVo.getGroup().entrySet()) {
+                                if (objectEntry.getKey().equals(stringObjectEntry.getKey().split("_")[0])) {
+                                    map.put("area", objectEntry.getValue());
+                                }
+                            }
+                            list.add(map);
                         }
-                        list.add(map);
+
                     }
 
-                }
 
-                int threadNum = Runtime.getRuntime().availableProcessors() +1;
-                ThreadPoolExecutor executor = new ThreadPoolExecutor(threadNum,threadNum,0L
-                        , TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(),new ThreadPoolExecutor.DiscardOldestPolicy());
-                int batchSize = 1000;
-                int janDataNum = (int) Math.ceil(list.size() / 1000.0);
-                List<List<Map<String,Object>>> list1 = new ArrayList();
-                for (int i = 0; i < janDataNum; i++) {
-                    int end = batchSize*(i+1) >= list.size()?list.size():batchSize*(i+1);
-                    list1.add(list.subList(batchSize * i, end));
-
-                }
-                for (List<Map<String, Object>> maps : list1) {
-                    if (starReadingVo.getModeCheck() == 1) {
-                        starReadingTableMapper.setBranchList(maps,companyCd,priorityOrderCd);
-                    }else {
-                        starReadingTableMapper.setPatternList(maps,companyCd,priorityOrderCd);
+                    if (list.size() >= 5000){
+                        if (starReadingVo.getModeCheck() == 1) {
+                            starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
+                        }else {
+                            starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
+                        }
+                        list.clear();
                     }
                 }
-                if (list.size() >= 5000){
-                    if (starReadingVo.getModeCheck() == 1) {
-                        starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
-                    }else {
-                        starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
-                    }
-                    list.clear();
+
+
+                if (starReadingVo.getModeCheck() == 1) {
+                    starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
+                }else {
+                    starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
                 }
+                vehicleNumCache.put("save"+uuid,"1");
+            } catch (NumberFormatException e) {
+                vehicleNumCache.put("save"+uuid,"2");
             }
-
-        if (starReadingVo.getModeCheck() == 1) {
-            starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
-        }else {
-            starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
+        });
+        try {
+            future.get(10, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e){
+            logger.error("thread is interrupted", e);
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException e) {
+            return ResultMaps.result(ResultEnum.SUCCESS, uuid);
         }
-
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -869,5 +885,73 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         map.put("table2",table2);
         map.put("janInfoTable",janInfoTable);
         return map;
+    }
+
+
+    /**
+     * 多线程插入pos基本数据
+     */
+    class MyThread implements Runnable{
+        private List list;
+        private CountDownLatch begin;
+        private CountDownLatch end;
+        private Integer modeCheck;
+        String companyCd;
+        Integer priorityOrderCd;
+        public MyThread(List list,CountDownLatch begin,CountDownLatch end,Integer modeCheck,String companyCd,Integer priorityOrderCd){
+            this.list = list;
+            this.begin = begin;
+            this.end = end;
+            this.modeCheck = modeCheck;
+            this.priorityOrderCd = priorityOrderCd;
+            this.companyCd = companyCd;
+        }
+        @Override
+        public void run() {
+
+            try {
+                if (modeCheck == 1) {
+                            starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
+                        }else {
+                            starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
+                        }
+                begin.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }finally {
+                end.countDown();
+            }
+
+        }
+    }
+    public  void exec(List<Map<String,Object>> list,Integer modeCheck,String companyCd,Integer priorityOrderCd) throws InterruptedException {
+        int count = 5000;
+        int listSize = list.size();
+        int runSize = (listSize/count)+1;
+        List<Map<String,Object>> newList = null;
+        ExecutorService executor = Executors.newFixedThreadPool(runSize);
+        CountDownLatch begin = new CountDownLatch(1);
+        CountDownLatch end = new CountDownLatch(runSize);
+        //循环线程
+        for (int i = 0; i < runSize; i++) {
+            if ((i+1)==runSize){
+                int startIndex = i*count;
+                int endIndex = list.size();
+                newList=list.subList(startIndex,endIndex);
+
+            }else {
+                int startIndex = i*count;
+                int endIndex = (i+1)*count;
+                newList = list.subList(startIndex,endIndex);
+            }
+
+            MyThread myThread = new MyThread(newList, begin, end,modeCheck,companyCd,priorityOrderCd);
+
+            executor.execute(myThread);
+
+        }
+        begin.countDown();
+        end.await();
+        executor.shutdown();
     }
 }
