@@ -24,11 +24,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriUtils;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.regex.Pattern;
@@ -856,6 +862,42 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             return ResultMaps.result(ResultEnum.FAILURE);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public void starReadingDataForExcel(StarReadingVo starReadingVo, HttpServletResponse response) {
+        ServletOutputStream outputStream = null;
+
+        List<String> header = Arrays.asList(starReadingVo.getHeader().replaceAll("<br />","_").split(","));
+        List<String>  column = Arrays.asList(starReadingVo.getColumn().split(","));
+        List<String>  columns = new ArrayList<>(column);
+        columns.remove("total");
+        Map<String, Object> group = starReadingVo.getGroup();
+        LinkedHashMap<String,Object> linkedHashMap = new LinkedHashMap<>();
+        for (Map.Entry<String, Object> stringObjectEntry : group.entrySet()) {
+            List<String> list =new ArrayList<>();
+            for (int i = 0; i < header.size(); i++) {
+
+                if (column.get(i).split("_")[0].equals(stringObjectEntry.getKey())){
+                    list.add(header.get(i));
+                }
+            }
+            linkedHashMap.put(stringObjectEntry.getValue().toString(),list);
+        }
+
+        try {
+            String fileName = String.format("%s.xlsx", "必須不可出力");
+            String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
+            response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+            response.setHeader("Content-Disposition", format);
+            outputStream = response.getOutputStream();
+
+            ExcelUtils.starReadingExcel(header,columns, linkedHashMap,starReadingVo.getData() ,outputStream);
+            outputStream.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 

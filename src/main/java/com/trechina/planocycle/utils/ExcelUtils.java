@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -260,7 +261,7 @@ public class ExcelUtils {
         sizeList.add(((List<String>)paramMap.get("channelNm")).size());
         sizeList.add(((List<String>)paramMap.get("placeNm")).size());
         sizeList.add(janList.size());
-        Integer integer = sizeList.stream().max(Integer::max).get();
+        Integer integer = sizeList.stream().max(Integer::compare).get();
         for (int i = 0; i < integer; i++) {
             row = sheet1.createRow(colIndex);
             cell = row.createCell(headerColIndex = 0);
@@ -429,4 +430,67 @@ public class ExcelUtils {
         //    return "";
         //}
     }
+
+    public static void starReadingExcel(List<String> header, List<String> column, LinkedHashMap<String, Object> group, List<LinkedHashMap<String, Object>> data, ServletOutputStream outputStream) {
+        try(XSSFWorkbook workbook = new XSSFWorkbook()){
+            XSSFSheet sheet = workbook.createSheet();
+            //最初の行の索引
+            int colIndex=2;
+            //2行目の索引
+            int headerColIndex=2;
+            XSSFCell cell = null;
+            XSSFRow dataRow;
+            //最初の行
+            XSSFRow headerClassifyRow = sheet.createRow(0);
+            //2行目
+            XSSFRow headerRow = sheet.createRow(1);
+            for (Map.Entry<String, Object> entry : group.entrySet()) {
+                String headerClassify = entry.getKey();
+                List<String> headers = (List<String>)entry.getValue();
+                    cell = headerClassifyRow.createCell(colIndex);
+                    //最後の列のヘッダーは空の文字列に処理されます
+                    cell.setCellValue(headerClassify);
+                    cell.setCellType(CellType.STRING);
+                    //連結カラムの開始インデックス
+                    int startMergeIndex = colIndex;
+                    //連結カラムの最後のインデックス
+                    int endMergeIndex = colIndex+headers.size()-1;
+                    if(startMergeIndex!=endMergeIndex){
+                        //[startMergeIndex,endMergeIndex]のセルをマージ
+                        sheet.addMergedRegion(new CellRangeAddress(0, 0, startMergeIndex, endMergeIndex));
+                    }
+                    colIndex+=headers.size();
+                    //セルを結合しない2行目の列
+                    XSSFCell headerCell = headerRow.createCell(0);
+                    headerCell.setCellType(CellType.STRING);
+                    headerCell.setCellValue("JAN");
+                    headerCell = headerRow.createCell(1);
+                    headerCell.setCellType(CellType.STRING);
+                    headerCell.setCellValue("商品名");
+                    for (String colName : headers) {
+                        headerCell = headerRow.createCell(headerColIndex);
+                        headerCell.setCellType(CellType.STRING);
+                        headerCell.setCellValue(colName);
+
+                        headerColIndex++;
+                    }
+            }
+            int rowIndex = 2;
+            for (LinkedHashMap<String, Object> datum : data) {
+                 dataRow = sheet.createRow(rowIndex);
+
+                for (int i = 0; i < column.size(); i++) {
+                     cell = dataRow.createCell(i);
+                     cell.setCellValue(datum.get(column.get(i)).toString());
+                     cell.setCellType(CellType.STRING);
+                }
+                rowIndex++;
+            }
+            workbook.write(outputStream);
+        }catch (Exception e){
+            logger.error("", e);
+        }
+    }
 }
+
+
