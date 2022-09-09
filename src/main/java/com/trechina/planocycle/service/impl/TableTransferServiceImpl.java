@@ -1,5 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
+import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.entity.po.CommoditySyncSet;
 import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.TableTransferService;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 @Service
@@ -24,6 +27,8 @@ public class TableTransferServiceImpl implements TableTransferService {
     private JanInfoMapper janInfoMapper;
     @Autowired
     private SysConfigMapper sysConfigMapper;
+    @Autowired
+    private MstCommodityMapper mstCommodityMapper;
 
     @Autowired
     private ZokuseiMstDataService zokuseiMstDataService;
@@ -91,7 +96,11 @@ public class TableTransferServiceImpl implements TableTransferService {
         String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
         String[] companyList = syncCompanyList.split(",");
         for (String company : companyList) {
-            zokuseiMstDataService.syncZokuseiMstData(company, "");
+            String tableName = MessageFormat.format(MagicString.MASTER_SYOHIN, company);
+            List<CommoditySyncSet> commodityList = mstCommodityMapper.getCommodityList(tableName);
+            for (CommoditySyncSet commoditySyncSet : commodityList) {
+                zokuseiMstDataService.syncZokuseiMstData(company, commoditySyncSet.getProdMstClass());
+            }
         }
     }
 
