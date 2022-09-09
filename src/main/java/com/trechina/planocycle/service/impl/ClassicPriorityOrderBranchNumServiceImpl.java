@@ -827,13 +827,14 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                         list.clear();
                     }
                 }
-
-                if (starReadingVo.getModeCheck() == 1) {
-                    starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
-                }else {
-                    starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
+                if (!list.isEmpty()) {
+                    if (starReadingVo.getModeCheck() == 1) {
+                        starReadingTableMapper.setBranchList(list, companyCd, priorityOrderCd);
+                    } else {
+                        starReadingTableMapper.setPatternList(list, companyCd, priorityOrderCd);
+                    }
                 }
-                vehicleNumCache.put("save"+uuid,"1");
+                vehicleNumCache.put("save" + uuid, "1");
             } catch (NumberFormatException e) {
                 vehicleNumCache.put("save"+uuid,"2");
             }

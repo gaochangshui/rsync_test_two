@@ -30,6 +30,7 @@ public class ExcelUtils {
                                          Map<String, List<String>> columnsByClassify, List<Map<String, Object>> allData,
                                          OutputStream outputStream,Map<String,Object> paramMap) {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
+            XSSFSheet sheet1 = workbook.createSheet("抽出条件");
             XSSFSheet sheet = workbook.createSheet("商品明細");
             Pattern numberPattern = Pattern.compile("-?[0-9]+(\\.[0-9]+)?%?");
 
@@ -118,15 +119,15 @@ public class ExcelUtils {
                     }
                 }
             }
-            ParamForExcel(workbook,paramMap);
+            ParamForExcel(sheet1,paramMap,workbook);
             workbook.write(outputStream);
         }catch (Exception e){
             logger.error("", e);
         }
     }
 
-    public static void ParamForExcel (XSSFWorkbook workbook,Map<String,Object> paramMap){
-        XSSFSheet sheet1 = workbook.createSheet("抽出条件");
+    public static void ParamForExcel ( XSSFSheet sheet1,Map<String,Object> paramMap,XSSFWorkbook workbook){
+
         sheet1.setDisplayGridlines(false);
         //设置样式
         XSSFCellStyle cellStyle = workbook.createCellStyle();

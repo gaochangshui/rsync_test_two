@@ -292,6 +292,7 @@
       planocycle.shelf_pts_data_tanamst tanaMst
       on ptsData."id" =  tanaMst.pts_cd
     where ptsData.shelf_pattern_cd = #{patternCd}
+    order by tanaMst.tai_cd,tanaMst.tana_cd
   </select>
   <select id="getTaiData" resultType="com.trechina.planocycle.entity.vo.PtsTaiVo">
     select
@@ -302,6 +303,7 @@
       planocycle.shelf_pts_data_taimst taiMst
       on ptsData."id" =  taiMst.pts_cd
     where ptsData.shelf_pattern_cd = #{patternCd}
+    order by taiMst.tai_cd
   </select>
   <select id="getJanData" resultType="java.util.LinkedHashMap">
     select
