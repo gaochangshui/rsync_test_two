@@ -68,6 +68,15 @@ public class BasicPatternMstController {
     }
 
     /**
+     * 自動計算
+     * @return
+     */
+    @GetMapping("/cancelAutoCalculation")
+    public Map<String,Object> cancelAutoCalculation(String taskId){
+        return basicPatternMstService.cancelAutoCalculation(taskId);
+    }
+
+    /**
      * 表示自動計算実行ステータス
      * @param taskId
      * @return

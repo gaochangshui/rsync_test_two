@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
@@ -40,10 +41,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -356,6 +354,20 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         return priorityOrderResultDataDtoList;
     }
 
+    @Override
+    public Map<String, Object> cancelAutoCalculation(String taskId) {
+        Object o = vehicleNumCache.get(taskId + ",task");
+        if(o!=null){
+            Future future = (Future) o;
+            future.cancel(true);
+            if(future.isCancelled()){
+                vehicleNumCache.put(taskId+",canceled", "1");
+                return ResultMaps.result(ResultEnum.SUCCESS);
+            }
+        }
+        return null;
+    }
+
     public GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd ) {
 
         JSONObject jsonObject = JSON.parseObject(commonPartsData);
@@ -470,6 +482,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd, Integer partition, Integer heightSpace,
                                                Integer tanaWidthCheck) {
         String authorCd = session.getAttribute("aud").toString();
@@ -513,6 +526,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition, finalHeightSpace, tanaWidthCheck);
                 //まず社員番号に従ってワークシートのデータを削除します
                 workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
+
+                if(Thread.currentThread().isInterrupted()){
+                    return;
+                }
                 //制約条件の取得
                 List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData( companyCd
                         ,priorityOrderCd, productPowerCd, authorCd,patternCd);
@@ -522,9 +539,14 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
                 String resultDataList = workPriorityOrderResultDataMapper.getResultDataList(companyCd, authorCd, priorityOrderCd);
                 if (resultDataList == null) {
-
                     vehicleNumCache.put("janNotExist"+uuid,1);
                 }
+
+                if(Thread.currentThread().isInterrupted()){
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return;
+                }
+
                 String[] array = resultDataList.split(",");
                 //cgiを呼び出す
 
@@ -545,6 +567,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     }
                     workPriorityOrderResultDataMapper.update(list, companyCd, authorCd, priorityOrderCd);
 
+                    if(Thread.currentThread().isInterrupted()){
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                        return;
+                    }
 
                     //古いptsの平均値、最大値最小値を取得
                     FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(patternCd);
@@ -577,6 +603,11 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
                     }
                     workPriorityOrderResultDataMapper.updateFace(resultDatas, companyCd, authorCd);
+
+                    if(Thread.currentThread().isInterrupted()){
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                        return;
+                    }
                 }
                 //属性別に並べ替える
                 priorityOrderMstService.getNewReorder(companyCd, priorityOrderCd, authorCd);
@@ -605,6 +636,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
                 int isReOrder = colNmforMst.size();
 
+                if(Thread.currentThread().isInterrupted()){
+                    return;
+                }
+
                 String proMstHeaderTb = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
                 String proMstTb = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
                 List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(proMstHeaderTb);
@@ -631,9 +666,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 vehicleNumCache.put(uuid+"-error",JSON.toJSONString(e));
             }
         });
-
+        vehicleNumCache.put(uuid+",task",future);
         try {
-            future.get(10, TimeUnit.SECONDS);
+            future.get(MagicString.TASK_TIME_OUT, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e){
@@ -641,6 +676,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
             return ResultMaps.result(ResultEnum.SUCCESS, uuid);
+        } catch (CancellationException e) {
+            return ResultMaps.result(202, "canceled");
+        } finally {
+            future.cancel(true);
         }
         return ResultMaps.result(ResultEnum.SUCCESS,uuid);
     }

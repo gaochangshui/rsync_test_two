@@ -26,6 +26,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
@@ -252,6 +253,11 @@ public class CommonMstServiceImpl implements CommonMstService {
                 sizeAndIrisu, proMstTb);
         List<PriorityOrderResultDataDto> newJanDtoList = new ArrayList<>();
         for (int i = 0; i < newList.size(); i++) {
+            if(Thread.currentThread().isInterrupted()){
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return null;
+            }
+
             PriorityOrderResultDataDto dto = new PriorityOrderResultDataDto();
             Map<String, Object> zokusei = newList.get(i);
 
@@ -326,6 +332,11 @@ public class CommonMstServiceImpl implements CommonMstService {
         List<Map<String, Object>> outOfHeight = new ArrayList<>();
 
         for (Map.Entry<Long, List<Map<String, Object>>> entry : relationGroupRestrictCd.entrySet()) {
+            if(Thread.currentThread().isInterrupted()){
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return null;
+            }
+
             Long restrictCd = entry.getKey();
 
             List<Map<String, Object>> relationList = entry.getValue();
@@ -358,6 +369,11 @@ public class CommonMstServiceImpl implements CommonMstService {
                             MapUtils.getString(map, MagicString.TANA_CD) + "_" + MapUtils.getString(map, MagicString.RESTRICT_CD),
                     Collectors.summingInt(map -> MapUtils.getInteger(map, "janCount", 0))));
             for (Map<String, Object> relation : relationList) {
+                if(Thread.currentThread().isInterrupted()){
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return null;
+                }
+
                 String taiCd = MapUtils.getString(relation, MagicString.TAI_CD);
                 String tanaCd = MapUtils.getString(relation, MagicString.TANA_CD);
                 Integer janCount = relationSumJanCount.get(taiCd+"_"+tanaCd+"_"+restrictCd);
@@ -454,6 +470,11 @@ public class CommonMstServiceImpl implements CommonMstService {
         Map<String, List<PriorityOrderResultDataDto>> adoptJanByTaiTana = adoptJan.stream()
                 .filter(dto->!Objects.equals(dto.getCutFlag(),1)).collect(Collectors.groupingBy(dto -> dto.getTaiCd() + "_" + dto.getTanaCd()));
         for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : adoptJanByTaiTana.entrySet()) {
+            if(Thread.currentThread().isInterrupted()){
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return null;
+            }
+
             List<PriorityOrderResultDataDto> value = entry.getValue();
             List<PriorityOrderResultDataDto> newJanList = value.stream().filter(dto -> dto.getTanapositionCd() == null
                     || dto.getTanapositionCd().equals(0)).collect(Collectors.toList());
@@ -486,6 +507,11 @@ public class CommonMstServiceImpl implements CommonMstService {
         }
 
         for (int i = 0; i < finalAdoptJan.size(); i++) {
+            if(Thread.currentThread().isInterrupted()){
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return null;
+            }
+
             PriorityOrderResultDataDto dataDto = finalAdoptJan.get(i);
             Integer oldTaiCd = dataDto.getOldTaiCd();
             Integer oldTanaCd = dataDto.getOldTanaCd();

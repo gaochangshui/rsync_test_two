@@ -34,4 +34,6 @@ public interface BasicPatternMstService {
      */
     List<PriorityOrderResultDataDto> updateJanSize( List<PriorityOrderResultDataDto> priorityOrderResultDataDtoList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     List<Map<String, Object>> updateJanSizeByMap( List<Map<String, Object>> priorityOrderResultDataDtoList);
+
+    Map<String, Object> cancelAutoCalculation(String taskId);
 }
