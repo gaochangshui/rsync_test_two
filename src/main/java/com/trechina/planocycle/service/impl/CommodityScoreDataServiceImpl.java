@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.entity.po.Branchs;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -83,6 +84,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String companyCd = taskIdMap.get("companyCd").toString();
         String authorCd = session.getAttribute("aud").toString();
         final Map<String, Object>[] returnMap = new Map[]{null};
+        final Map<String, Object>[] colMap = new Map[]{null};
+        final List<Map<String, Object>>[] allData = new List[]{null};
 
         Future future = executor.submit(()->{
             while (true){
@@ -105,10 +108,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     break;
                 }
 
-                if ("ok".equals(vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()).toString())){
+                if ("ok".equals(vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()).toString()) && allData[0]==null){
                     Date date = new Date();
                     log.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()));
-                    vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
                     String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
                     JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
                     String prodMstClass = jsonObject.get("prodMstClass").toString();
@@ -135,32 +137,29 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             map.put("sort",colNum);
                         }
                     }
-                    Map<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1,k2)->k1, LinkedHashMap::new));
-                    colMap.put("branchNum","定番店舗数");
+                    colMap[0] =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1, k2)->k1, LinkedHashMap::new));
+                    colMap[0].put("branchNum","定番店舗数");
                     Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
                     ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
                     List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
                     List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
-                    Date date2 = new Date();
-                    List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
+                    allData[0] = productPowerDataMapper.getSyokikaAllData(companyCd,
                             janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd,shelfPts,storeCd);
+                    break;
+                }
+                if ("ok".equals(vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()).toString()) && allData[0]!=null && colMap[0]!=null){
                     List<Map<String, Object>> resultData = new ArrayList<>();
-                    if (allData.isEmpty()){
+                    if (allData[0].isEmpty()){
                         returnMap[0] = ResultMaps.result(ResultEnum.SIZEISZERO);
-                        return;
+                        break;
                     }
-                    resultData.add(colMap);
-                    resultData.addAll(allData);
+
+                    resultData.add(colMap[0]);
+                    resultData.addAll(allData[0]);
 
                     log.info("返回pos基本情報はい{}", resultData.size());
-                    Date date1 = new Date();
-                    String format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date);
-                    String format1 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date1);
-                    String format2 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date2);
-                    log.info("開始時間{}",format);
-                    log.info("時間を割く{}",format2);
-                    log.info("終了時間{}",format1);
+                    vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
                     returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS, resultData);
                 }
             }
