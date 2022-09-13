@@ -792,13 +792,13 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         restrictResultDataMapper.deleteByPrimaryKey(priorityOrderCd);
         zokuseiList = zokuseiList.stream().filter(map->map.get(MagicString.RESTRICT_CD)!=null).collect(Collectors.toList());
 
-        if (this.interruptThread(uuid, "6")) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return;
-        }
-
         if(!zokuseiList.isEmpty()){
             restrictResultDataMapper.insertBatch(attrList, zokuseiList, priorityOrderCd, companyCd, authorCd);
+        }
+
+        if (this.interruptThread(uuid, "7")) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return;
         }
     }
 }
