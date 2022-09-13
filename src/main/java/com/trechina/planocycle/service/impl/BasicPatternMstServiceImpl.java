@@ -728,6 +728,11 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     }
                     break;
                 }
+
+                if (vehicleNumCache.get(taskId+",canceled")!= null && "1".equals(vehicleNumCache.get(taskId+",canceled").toString())){
+                    return ResultMaps.result(ResultEnum.SUCCESS);
+                    break;
+                }
             }
         });
 
