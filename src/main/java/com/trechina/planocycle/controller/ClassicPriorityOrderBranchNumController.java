@@ -9,6 +9,7 @@ import com.trechina.planocycle.service.ClassicPriorityOrderBranchNumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -170,5 +171,13 @@ public class ClassicPriorityOrderBranchNumController {
     @PostMapping("setStarReadingData")
     public Map<String,Object> setStarReadingData(@RequestBody StarReadingVo starReadingVo){
         return priorityOrderBranchNumService.setStarReadingData(starReadingVo);
+    }
+
+    /**
+     * 星取表信息Excel出力
+     */
+    @PostMapping("starReadingDataForExcel")
+    public void starReadingDataForExcel(@RequestBody StarReadingVo starReadingVo, HttpServletResponse response){
+         priorityOrderBranchNumService.starReadingDataForExcel(starReadingVo,response);
     }
 }

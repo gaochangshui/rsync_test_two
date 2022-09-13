@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -164,9 +164,29 @@ class PlanoCycleApiApplicationTests {
 
     @Test
     public  void test8()  {
-        Map<String,Object> a = new HashMap<>();
-        a.put("1","0014");
-        //List<String>  janClassify = productPowerDataMapper.getJanClassify(a,"\"1000\".prod_0000_jan_kaisou");
-        Map<String, Object> productParam = productPowerMstService.getProductParam("0001", 1466);
+        ArrayList<String> sites = new ArrayList<String>();
+        sites.add("Taobao");
+        sites.add("Wiki");
+        sites.add("Runoob");
+        sites.add("Weibo");
+        sites.add("Google");
+        Collections.sort(sites);  // 字母排序
+        for (String i : sites) {
+            System.out.println(i);
+        }
+
+        ArrayList<Integer> myNumbers = new ArrayList<Integer>();
+        myNumbers.add(33);
+        myNumbers.add(15);
+        myNumbers.add(20);
+        myNumbers.add(34);
+        myNumbers.add(8);
+        myNumbers.add(12);
+
+        Collections.sort(myNumbers);  // 数字排序
+        myNumbers.removeIf(map->map.equals(8));
+        for (int i : myNumbers) {
+            System.out.println(i);
+        }
     }
 }
