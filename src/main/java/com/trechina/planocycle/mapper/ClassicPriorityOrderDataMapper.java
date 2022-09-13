@@ -8,6 +8,7 @@ import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -127,4 +128,6 @@ public interface ClassicPriorityOrderDataMapper {
     List<Map<String,Object>> getJanInfo(Integer priorityOrderCd,String janInfoTableName);
 
     List<Map<String,Object>> getJanName(List<String> janList,Integer priorityOrderCd);
+
+    List<LinkedHashMap<String,Object>> getAttrForName(String companyCd, Integer priorityOrderCd);
 }

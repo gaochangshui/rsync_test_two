@@ -700,4 +700,9 @@
         </foreach>
         and priority_order_cd = #{priorityOrderCd}
     </select>
+    <select id="getAttrForName" resultType="java.util.LinkedHashMap">
+        select sort ,name
+        from priority.work_priority_order_mst_attr
+        where priority_order_cd = #{priorityOrderCd}
+    </select>
 </mapper>

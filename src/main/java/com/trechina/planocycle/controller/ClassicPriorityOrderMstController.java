@@ -117,4 +117,14 @@ public class ClassicPriorityOrderMstController {
     public Map<String,Object> getAttrInfo(String companyCd,Integer priorityOrderCd){
         return priorityOrderMstService.getAttrInfo(companyCd,priorityOrderCd);
     }
+
+
+    /**
+     * 優先順位表のエクセル出力機能
+     */
+
+    @PostMapping("/priorityOrderDataForExcel")
+    public void priorityOrderDataForExcel(@RequestBody PriorityOrderMstDto priorityOrderMstDto,HttpServletResponse response){
+         priorityOrderMstService.priorityOrderDataForExcel(priorityOrderMstDto,response);
+    }
 }
