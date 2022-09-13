@@ -512,7 +512,7 @@ public class ExcelUtils {
             cellStyle.setFont(font);
             cellStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
             cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            sheet1.createFreezePane(0,4);
+            //sheet1.createFreezePane(0,4);
 
             //最初の行の索引
             int colIndex=0;
@@ -569,7 +569,7 @@ public class ExcelUtils {
                 }
                 rowIndex++;
             }
-            colIndex=0;
+
             XSSFRow row = sheet1.createRow(0);
             cell = row.createCell(0);
             cell.setCellValue("企業(業態)");

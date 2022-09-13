@@ -11,6 +11,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
@@ -136,6 +137,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     private StarReadingTableMapper starReadingTableMapper;
     @Autowired
     private ProductPowerMstMapper productPowerMstMapper;
+    @Autowired
+    private LogAspect logAspect;
+
     /**
      * 優先順位テーブルlistの取得
      *
@@ -839,6 +843,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             outputStream.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }finally {
+            if(Objects.nonNull(outputStream)){
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    logger.error("io閉じる異常", e);
+                    logAspect.setTryErrorLog(e,new Object[]{companyCd,priorityOrderCd});
+                }
+            }
         }
 
 
