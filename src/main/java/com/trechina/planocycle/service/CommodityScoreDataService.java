@@ -10,7 +10,7 @@ public interface CommodityScoreDataService {
      * @param
      * @return
      */
-    Map<String, Object> getCommodityScoreData(Map<String,Object> map);
+    Map<String, Object> getCommodityScoreData(Map<String,Object> map) throws InterruptedException;
 
     /**
      * 商品力点数表基本taskidを取得する

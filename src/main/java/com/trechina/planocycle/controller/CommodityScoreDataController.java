@@ -21,7 +21,7 @@ public class CommodityScoreDataController {
      */
 
     @PostMapping("/getCommodityScoreData")
-    public Map<String, Object> getCommodityScoreData(@RequestBody Map<String,Object> map) {
+    public Map<String, Object> getCommodityScoreData(@RequestBody Map<String,Object> map) throws InterruptedException {
         return commodityScoreDataService.getCommodityScoreData(map);
     }
 

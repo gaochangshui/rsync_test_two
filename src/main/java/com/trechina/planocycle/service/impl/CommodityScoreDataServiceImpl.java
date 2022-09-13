@@ -75,80 +75,112 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
      * @return  String taskID, String companyCd,String commonPartsData,Integer productPowerCd
      */
     @Override
-    public Map<String, Object> getCommodityScoreData(Map<String,Object> taskIdMap) {
+    public Map<String, Object> getCommodityScoreData(Map<String,Object> taskIdMap) throws InterruptedException {
 
         String taskID = taskIdMap.get(MagicString.TASK_ID).toString();
         String commonPartsData = taskIdMap.get("commonPartsData").toString();
         Integer productPowerCd = Integer.valueOf(taskIdMap.get("productPowerCd").toString());
         String companyCd = taskIdMap.get("companyCd").toString();
         String authorCd = session.getAttribute("aud").toString();
+        final Map<String, Object>[] returnMap = new Map[]{null};
 
-        if (taskID.equals("")){
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
-        if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()+"Exception")!=null){
-            return ResultMaps.result(ResultEnum.CGIERROR);
-        }
-       if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString())==null){
-           return ResultMaps.result(ResultEnum.SUCCESS,"9");
-       }
-       Date date = new Date();
-       log.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()));
-       vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
-        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
-        JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
-        String prodMstClass = jsonObject.get("prodMstClass").toString();
-        String prodIsCore = jsonObject.get("prodIsCore").toString();
-        String isCompanyCd = null;
-        if ("1".equals(prodIsCore)) {
-            isCompanyCd = coreCompany;
-        } else {
-            isCompanyCd = companyCd;
-        }
-        int janName2colNum = Integer.parseInt(taskIdMap.get("janName2colNum").toString());
-        int colNum = 2;
-        if (janName2colNum == 2){
-             colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
-        }else if(janName2colNum==3){
-            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
-        }
+        Future future = executor.submit(()->{
+            while (true){
+                if (taskID.equals("")){
+                    returnMap[0] = ResultMaps.result(ResultEnum.FAILURE);
+                    break;
+                }
 
-        String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
-        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
-        List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
-        for (Map<String, Object> map : janClassifyList) {
-            if ("jan_name".equals(map.get("attr"))) {
-                map.put("sort",colNum);
+                if("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))){
+                    returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
+                    break;
+                }
+
+                if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()+"Exception")!=null){
+                    returnMap[0] = ResultMaps.result(ResultEnum.CGIERROR);
+                    break;
+                }
+                if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString())==null){
+                    returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS,"9");
+                    break;
+                }
+
+                if ("ok".equals(vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()).toString())){
+                    Date date = new Date();
+                    log.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()));
+                    vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
+                    String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+                    JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
+                    String prodMstClass = jsonObject.get("prodMstClass").toString();
+                    String prodIsCore = jsonObject.get("prodIsCore").toString();
+                    String isCompanyCd = null;
+                    if ("1".equals(prodIsCore)) {
+                        isCompanyCd = coreCompany;
+                    } else {
+                        isCompanyCd = companyCd;
+                    }
+                    int janName2colNum = Integer.parseInt(taskIdMap.get("janName2colNum").toString());
+                    int colNum = 2;
+                    if (janName2colNum == 2){
+                        colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+                    }else if(janName2colNum==3){
+                        colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+                    }
+
+                    String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
+                    String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
+                    List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
+                    for (Map<String, Object> map : janClassifyList) {
+                        if ("jan_name".equals(map.get("attr"))) {
+                            map.put("sort",colNum);
+                        }
+                    }
+                    Map<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1,k2)->k1, LinkedHashMap::new));
+                    colMap.put("branchNum","定番店舗数");
+                    Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
+
+                    ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
+                    List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
+                    List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
+                    Date date2 = new Date();
+                    List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
+                            janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd,shelfPts,storeCd);
+                    List<Map<String, Object>> resultData = new ArrayList<>();
+                    if (allData.isEmpty()){
+                        returnMap[0] = ResultMaps.result(ResultEnum.SIZEISZERO);
+                        return;
+                    }
+                    resultData.add(colMap);
+                    resultData.addAll(allData);
+
+                    log.info("返回pos基本情報はい{}", resultData.size());
+                    Date date1 = new Date();
+                    String format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date);
+                    String format1 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date1);
+                    String format2 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date2);
+                    log.info("開始時間{}",format);
+                    log.info("時間を割く{}",format2);
+                    log.info("終了時間{}",format1);
+                    returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS, resultData);
+                }
             }
+        });
+
+        try {
+            future.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            logger.error("", e);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        } catch (TimeoutException e) {
+            logger.error("", e);
+            return ResultMaps.result(ResultEnum.SUCCESS,"9");
         }
-        Map<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1,k2)->k1, LinkedHashMap::new));
-        colMap.put("branchNum","定番店舗数");
-        Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
-        ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
-        List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
-        List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
-        Date date2 = new Date();
-        List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
-                janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd,shelfPts,storeCd);
-        List<Map<String, Object>> resultData = new ArrayList<>();
-        if (allData.isEmpty()){
-            return ResultMaps.result(ResultEnum.SIZEISZERO);
+        if(returnMap[0]!=null){
+            return returnMap[0];
         }
-        resultData.add(colMap);
-        resultData.addAll(allData);
 
-        log.info("返回pos基本情報はい{}", resultData.size());
-        Date date1 = new Date();
-        String format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date);
-        String format1 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date1);
-        String format2 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date2);
-        log.info("開始時間{}",format);
-        log.info("時間を割く{}",format2);
-        log.info("終了時間{}",format1);
-        return ResultMaps.result(ResultEnum.SUCCESS, resultData);
-
-
+        return ResultMaps.result(ResultEnum.SUCCESS,"9");
     }
 
 
@@ -284,11 +316,13 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String posResult = cgiUtil.postCgi(productPowerData, posMap, tokenInfo,smartPath);
         String smartPath = this.smartPath;
 
-        Future<?> future = executor.submit(() -> {
-            String uuid = "";
+        Future future = executor.submit(() -> {
+                List<String> taskIdList = new ArrayList<>();
+                taskIdList.add(posResult);
+                String uuid = "";
                 Map<String, Object> map1 = null;
                 logger.info("pos開始時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-
+                vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_CGI, posResult), Joiner.on(",").join(taskIdList));
                     while (true) {
                         map1 = cgiUtil.postCgiOfWeb(taskQuery, posResult, tokenInfo,smartPath);
                         if (!"9".equals(map1.get("data"))) {
@@ -305,6 +339,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             logger.info("顧客パラメータ{}", map);
                             logger.info("顧客開始時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
                             String groupResult = cgiUtil.postCgi(productPowerData, map, tokenInfo, smartPath);
+                            taskIdList.add(groupResult);
+                            vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_CGI, posResult), Joiner.on(",").join(taskIdList));
                             while (true) {
                                 Map<String, Object> map2 = cgiUtil.postCgiOfWeb(taskQuery, groupResult, tokenInfo, smartPath);
                                 if (!"9".equals(map2.get("data"))) {
@@ -324,6 +360,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             map.put("tableName", "planocycle.work_product_power_intage");
                             logger.info("市場パラメータ{}", map);
                             String intergeResult = cgiUtil.postCgi(productPowerData, map, tokenInfo, smartPath);
+                            taskIdList.add(intergeResult);
+                            vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_CGI, posResult), Joiner.on(",").join(taskIdList));
                             logger.info("市場開始時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
                             while (true) {
                                 Map<String, Object> map2 = cgiUtil.postCgiOfWeb(taskQuery, intergeResult, tokenInfo, smartPath);
@@ -340,16 +378,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             vehicleNumCache.put(posResult,"ok");
                 });
         String result =  posResult;
-        try {
-            future.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e){
-            logger.error("thread is interrupted", e);
-            Thread.currentThread().interrupt();
-        } catch (TimeoutException e) {
-            return ResultMaps.result(ResultEnum.SUCCESS, result);
-        }
+
+        vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, posResult), future);
 
         logger.info("taskId返回：{}", result);
         return ResultMaps.result(ResultEnum.SUCCESS, result);

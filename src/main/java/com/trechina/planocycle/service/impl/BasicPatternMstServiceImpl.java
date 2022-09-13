@@ -23,11 +23,13 @@ import com.trechina.planocycle.service.PriorityOrderMstService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
+import com.trechina.planocycle.utils.cgiUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.stereotype.Service;
@@ -103,6 +105,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     private PriorityOrderSortMapper priorityOrderSortMapper;
     @Autowired
     private BasicPatternJanPlacementMapper basicPatternJanPlacementMapper;
+    @Autowired
+    private cgiUtils cgiUtil;
+    @Value("${smartUrlPath}")
+    public String smartPath;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -357,15 +363,32 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
     @Override
     public Map<String, Object> cancelTask(String taskId) {
-        Object o = vehicleNumCache.get(taskId + ",task");
+        String taskKey = MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskId);
+        String cancelKey = MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskId);
+        Object o = vehicleNumCache.get(taskKey);
+        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         if(o!=null){
             Future future = (Future) o;
             future.cancel(true);
-            vehicleNumCache.remove(taskId + ",task");
+            vehicleNumCache.remove(taskKey);
             if(future.isCancelled()){
-                vehicleNumCache.put(taskId+",canceled", "1");
+                String cgiKey = MessageFormat.format(MagicString.TASK_KEY_CGI, taskId);
+                if(vehicleNumCache.get(cgiKey)!=null){
+                    String[] cgiTasks = vehicleNumCache.get(cgiKey).toString().split(",");
+                    for (String cgiTask : cgiTasks) {
+                        Map<String,Object> posMap = new HashMap();
+                        posMap.put("taskid",cgiTask);
+                        String s = cgiUtil.postCgi(MagicString.CGI_KILL_PROCESS, posMap, tokenInfo, smartPath);
+                        logger.info("taskId:{}, cancel result:{}",cgiTask, s);
+                    }
+                }
+
+                vehicleNumCache.put(cancelKey, "1");
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
+
+            logger.warn("taskId:{} is interrupt error", taskId);
+            return ResultMaps.result(ResultEnum.FAILURE);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
