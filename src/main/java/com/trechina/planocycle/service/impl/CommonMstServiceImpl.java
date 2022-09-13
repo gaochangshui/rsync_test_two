@@ -219,7 +219,7 @@ public class CommonMstServiceImpl implements CommonMstService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> commSetJanForShelf(Integer patternCd, String companyCd, Integer priorityOrderCd,
-                                                  Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
+                                                  List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
                                                   List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
                                                   GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
                                                   Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,

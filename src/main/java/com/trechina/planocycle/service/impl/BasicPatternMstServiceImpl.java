@@ -520,10 +520,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 }
 
                 this.setPtsJandataByRestrictCd(priorityOrderCd, patternCd,companyCd, authorCd, attrList, zokuseiMsts,
-                        commonTableName, allCdList,newRestrictResult);
+                        commonTableName, allCdList,newRestrictResult, uuid);
                 Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, authorCd, priorityOrderCd);
 
-                Integer minFaceNum = 1;
                 //仕切り板の厚さと仕切り板を使用して保存するかどうか
                 priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition, finalHeightSpace, tanaWidthCheck);
                 //まず社員番号に従ってワークシートのデータを削除します
@@ -548,66 +547,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     return;
                 }
 
-                String[] array = resultDataList.split(",");
-                //cgiを呼び出す
-
-                Map<String, Object> data = priorityOrderMstService.getFaceKeisanForCgi(array, companyCd, patternCd, authorCd,tokenInfo);
-                if (data.get("data") != null && data.get("data") != "") {
-                    String[] strResult = data.get("data").toString().split("@");
-                    String[] strSplit = null;
-                    List<WorkPriorityOrderResultData> list = new ArrayList<>();
-                    WorkPriorityOrderResultData orderResultData = null;
-                    for (int i = 0; i < strResult.length; i++) {
-                        orderResultData = new WorkPriorityOrderResultData();
-                        strSplit = strResult[i].split(" ");
-                        orderResultData.setSalesCnt(Double.valueOf(strSplit[1]));
-                        orderResultData.setJanCd(strSplit[0]);
-
-
-                        list.add(orderResultData);
-                    }
-                    workPriorityOrderResultDataMapper.update(list, companyCd, authorCd, priorityOrderCd);
-
-                    if (this.interruptThread(uuid, "3")) {
-                        return;
-                    }
-
-                    //古いptsの平均値、最大値最小値を取得
-                    FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(patternCd);
-                    minFaceNum = faceNum.getFaceMinNum();
-                    DecimalFormat df = new DecimalFormat("#.00");
-                    //salescntAvgを取得し、小数点を2桁保持
-                    Double salesCntAvg = productPowerMstMapper.getSalesCntAvg(companyCd, authorCd, priorityOrderCd);
-                    String format = df.format(salesCntAvg);
-                    salesCntAvg = Double.valueOf(format);
-
-                    List<WorkPriorityOrderResultData> resultDatas = workPriorityOrderResultDataMapper.getResultDatas(companyCd, authorCd, priorityOrderCd);
-
-                    Double d = null;
-                    for (WorkPriorityOrderResultData resultData : resultDatas) {
-                        resultData.setPriorityOrderCd(priorityOrderCd);
-                        if (resultData.getSalesCnt() != null) {
-                            d = resultData.getSalesCnt() * faceNum.getFaceAvgNum() / salesCntAvg;
-
-                            if (d > faceNum.getFaceMaxNum()) {
-                                resultData.setFace(Long.valueOf(faceNum.getFaceMaxNum()));
-                            } else if (d < faceNum.getFaceMinNum()) {
-                                resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
-                            } else {
-                                resultData.setFace(d.longValue());
-                            }
-
-                        } else {
-                            resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
-                        }
-
-                    }
-                    workPriorityOrderResultDataMapper.updateFace(resultDatas, companyCd, authorCd);
-
-                    if (this.interruptThread(uuid, "4")) {
-                        return;
-                    }
-                }
                 //属性別に並べ替える
                 priorityOrderMstService.getNewReorder(companyCd, priorityOrderCd, authorCd);
                 //商品を並べる
@@ -645,7 +584,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(authorCd, companyCd, patternCd, priorityOrderCd,
                         sizeAndIrisu, isReOrder, commonTableName.getProInfoTable(), proMstTb);
                 Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd,
-                        minFaceNum, zokuseiMsts, allCdList,
+                        zokuseiMsts, allCdList,
                         newRestrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck,
                         tanaList, relationMap, janResult, sizeAndIrisu, isReOrder, productPowerCd, colNmforMst);
 
@@ -814,13 +753,18 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         return ResultMaps.result(ResultEnum.SUCCESS, unused>0?1:0);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     private void setPtsJandataByRestrictCd(Integer priorityOrderCd, Integer patternCd, String companyCd, String authorCd, List<Integer> attrList,
                                            List<ZokuseiMst> zokuseiMsts, GetCommonPartsDataDto commonTableName, List<Integer> allCdList,
-                                           List<Map<String, Object>> restrictResult){
+                                           List<Map<String, Object>> restrictResult, String uuid){
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
         String proInfoTable = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
         List<Map<String, Object>> zokuseiList = restrictResultMapper.selectJanZokusei(priorityOrderCd, ptsCd, zokuseiMsts, allCdList,
                 commonTableName.getProInfoTable(), proInfoTable);
+
+        if (this.interruptThread(uuid, "6")) {
+            return;
+        }
 
         for (int i = 0; i < zokuseiList.size(); i++) {
             Map<String, Object> zokusei = zokuseiList.get(i);
@@ -845,9 +789,14 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
             zokuseiList.set(i, zokusei);
         }
-
         restrictResultDataMapper.deleteByPrimaryKey(priorityOrderCd);
         zokuseiList = zokuseiList.stream().filter(map->map.get(MagicString.RESTRICT_CD)!=null).collect(Collectors.toList());
+
+        if (this.interruptThread(uuid, "6")) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return;
+        }
+
         if(!zokuseiList.isEmpty()){
             restrictResultDataMapper.insertBatch(attrList, zokuseiList, priorityOrderCd, companyCd, authorCd);
         }
