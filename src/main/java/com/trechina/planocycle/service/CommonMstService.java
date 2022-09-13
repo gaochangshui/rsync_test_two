@@ -27,12 +27,12 @@ public interface CommonMstService {
 
     @Transactional(rollbackFor = Exception.class)
     Map<String, Object> commSetJanForShelf(Integer patternCd, String companyCd, Integer priorityOrderCd,
-                                           Integer minFace, List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
+                                           List<ZokuseiMst> zokuseiMsts, List<Integer> allCdList,
                                            List<Map<String, Object>> restrictResult, List<Integer> attrList, String aud,
                                            GetCommonPartsDataDto commonTableName, Short partitionVal, Short topPartitionVal,
                                            Integer tanaWidthCheck, List<Map<String, Object>> tanaList, List<Map<String, Object>> relationMap,
                                            List<PriorityOrderResultDataDto> janResult, List<Map<String, Object>> sizeAndIrisu,
-                                           int isReOrder, Integer productPowerCd,List<String> colNmforMst) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+                                           int isReOrder, Integer productPowerCd, List<String> colNmforMst) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
 
     List<WorkPriorityOrderResultDataDto> calculateTanaPosition(List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData, int isReOrder);
 

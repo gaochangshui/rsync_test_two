@@ -29,8 +29,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
@@ -40,10 +42,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -356,6 +355,21 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         return priorityOrderResultDataDtoList;
     }
 
+    @Override
+    public Map<String, Object> cancelTask(String taskId) {
+        Object o = vehicleNumCache.get(taskId + ",task");
+        if(o!=null){
+            Future future = (Future) o;
+            future.cancel(true);
+            vehicleNumCache.remove(taskId + ",task");
+            if(future.isCancelled()){
+                vehicleNumCache.put(taskId+",canceled", "1");
+                return ResultMaps.result(ResultEnum.SUCCESS);
+            }
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
     public GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd ) {
 
         JSONObject jsonObject = JSON.parseObject(commonPartsData);
@@ -470,6 +484,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd, Integer partition, Integer heightSpace,
                                                Integer tanaWidthCheck) {
         String authorCd = session.getAttribute("aud").toString();
@@ -505,14 +520,17 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 }
 
                 this.setPtsJandataByRestrictCd(priorityOrderCd, patternCd,companyCd, authorCd, attrList, zokuseiMsts,
-                        commonTableName, allCdList,newRestrictResult);
+                        commonTableName, allCdList,newRestrictResult, uuid);
                 Integer productPowerCd = productPowerMstMapper.getProductPowerCd(companyCd, authorCd, priorityOrderCd);
 
-                Integer minFaceNum = 1;
                 //仕切り板の厚さと仕切り板を使用して保存するかどうか
                 priorityOrderMstMapper.setPartition(companyCd,priorityOrderCd,authorCd,partition, finalHeightSpace, tanaWidthCheck);
                 //まず社員番号に従ってワークシートのデータを削除します
                 workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
+
+                if(this.interruptThread(uuid, "1")){
+                    return;
+                }
                 //制約条件の取得
                 List<ProductPowerDataDto> productPowerData = workPriorityOrderRestrictResultMapper.getProductPowerData( companyCd
                         ,priorityOrderCd, productPowerCd, authorCd,patternCd);
@@ -522,62 +540,13 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
                 String resultDataList = workPriorityOrderResultDataMapper.getResultDataList(companyCd, authorCd, priorityOrderCd);
                 if (resultDataList == null) {
-
                     vehicleNumCache.put("janNotExist"+uuid,1);
                 }
-                String[] array = resultDataList.split(",");
-                //cgiを呼び出す
 
-                Map<String, Object> data = priorityOrderMstService.getFaceKeisanForCgi(array, companyCd, patternCd, authorCd,tokenInfo);
-                if (data.get("data") != null && data.get("data") != "") {
-                    String[] strResult = data.get("data").toString().split("@");
-                    String[] strSplit = null;
-                    List<WorkPriorityOrderResultData> list = new ArrayList<>();
-                    WorkPriorityOrderResultData orderResultData = null;
-                    for (int i = 0; i < strResult.length; i++) {
-                        orderResultData = new WorkPriorityOrderResultData();
-                        strSplit = strResult[i].split(" ");
-                        orderResultData.setSalesCnt(Double.valueOf(strSplit[1]));
-                        orderResultData.setJanCd(strSplit[0]);
-
-
-                        list.add(orderResultData);
-                    }
-                    workPriorityOrderResultDataMapper.update(list, companyCd, authorCd, priorityOrderCd);
-
-
-                    //古いptsの平均値、最大値最小値を取得
-                    FaceNumDataDto faceNum = productPowerMstMapper.getFaceNum(patternCd);
-                    minFaceNum = faceNum.getFaceMinNum();
-                    DecimalFormat df = new DecimalFormat("#.00");
-                    //salescntAvgを取得し、小数点を2桁保持
-                    Double salesCntAvg = productPowerMstMapper.getSalesCntAvg(companyCd, authorCd, priorityOrderCd);
-                    String format = df.format(salesCntAvg);
-                    salesCntAvg = Double.valueOf(format);
-
-                    List<WorkPriorityOrderResultData> resultDatas = workPriorityOrderResultDataMapper.getResultDatas(companyCd, authorCd, priorityOrderCd);
-
-                    Double d = null;
-                    for (WorkPriorityOrderResultData resultData : resultDatas) {
-                        resultData.setPriorityOrderCd(priorityOrderCd);
-                        if (resultData.getSalesCnt() != null) {
-                            d = resultData.getSalesCnt() * faceNum.getFaceAvgNum() / salesCntAvg;
-
-                            if (d > faceNum.getFaceMaxNum()) {
-                                resultData.setFace(Long.valueOf(faceNum.getFaceMaxNum()));
-                            } else if (d < faceNum.getFaceMinNum()) {
-                                resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
-                            } else {
-                                resultData.setFace(d.longValue());
-                            }
-
-                        } else {
-                            resultData.setFace(Long.valueOf(faceNum.getFaceMinNum()));
-                        }
-
-                    }
-                    workPriorityOrderResultDataMapper.updateFace(resultDatas, companyCd, authorCd);
+                if(this.interruptThread(uuid, "2")){
+                    return;
                 }
+
                 //属性別に並べ替える
                 priorityOrderMstService.getNewReorder(companyCd, priorityOrderCd, authorCd);
                 //商品を並べる
@@ -605,13 +574,17 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
                 int isReOrder = colNmforMst.size();
 
+                if (this.interruptThread(uuid, "5")) {
+                    return;
+                }
+
                 String proMstHeaderTb = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
                 String proMstTb = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
                 List<Map<String, Object>> sizeAndIrisu = janClassifyMapper.getSizeAndIrisu(proMstHeaderTb);
                 List<PriorityOrderResultDataDto> janResult = jandataMapper.selectJanByPatternCd(authorCd, companyCd, patternCd, priorityOrderCd,
                         sizeAndIrisu, isReOrder, commonTableName.getProInfoTable(), proMstTb);
                 Map<String, Object> resultMap = commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd,
-                        minFaceNum, zokuseiMsts, allCdList,
+                        zokuseiMsts, allCdList,
                         newRestrictResult, attrList, authorCd, commonTableName, partitionVal, topPartitionVal, tanaWidthCheck,
                         tanaList, relationMap, janResult, sizeAndIrisu, isReOrder, productPowerCd, colNmforMst);
 
@@ -625,24 +598,29 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     shelfPtsService.basicSaveWorkPtsData(companyCd, authorCd, priorityOrderCd, workData, isReOrder);
                     vehicleNumCache.put(uuid,1);
                 }
+                logger.info("taskId:{} auto calculate end", uuid);
             }catch (Exception e){
                 logger.error("auto calculation is error", e);
                 vehicleNumCache.put(uuid,2);
                 vehicleNumCache.put(uuid+"-error",JSON.toJSONString(e));
             }
         });
-
+        vehicleNumCache.put(uuid+",task",future);
         try {
-            future.get(10, TimeUnit.SECONDS);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e){
-            logger.error("thread is interrupted", e);
-            Thread.currentThread().interrupt();
-        } catch (TimeoutException e) {
-            return ResultMaps.result(ResultEnum.SUCCESS, uuid);
+            return ResultMaps.result(ResultEnum.SUCCESS,uuid);
+        } catch (CancellationException e) {
+            return ResultMaps.result(202, "canceled");
         }
-        return ResultMaps.result(ResultEnum.SUCCESS,uuid);
+    }
+
+    private boolean interruptThread(String taskId, String step){
+        if(Thread.currentThread().isInterrupted()){
+            logger.info("taskId:{} interrupted, step:{}", taskId, step);
+            Thread.currentThread().interrupt();
+            return true;
+        }
+
+        return false;
     }
 
     private List<Map<String, Object>> scaleTaiTanaWidth(List<Map<String, Object>> relationMap, Integer tanaWidthCheck){
@@ -716,33 +694,61 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     @Override
-    public Map<String, Object> autoTaskId(String taskId) {
-        if (vehicleNumCache.get("janNotExist"+taskId)!=null){
-            vehicleNumCache.remove("janNotExist"+taskId);
-            return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
-        }
-        if (vehicleNumCache.get("PatternCdNotExist"+taskId)!=null){
-            vehicleNumCache.remove("PatternCdNotExist"+taskId);
-            return ResultMaps.error(ResultEnum.FAILURE, "PatternCdNotExist");
-        }
+    public Map<String, Object> autoTaskId(String taskId) throws InterruptedException {
+        final Map<String, Object>[] resultMap = new Map[]{null};
+        Future future = executor.submit(()->{
+            while (true) {
+                if (vehicleNumCache.get("janNotExist"+taskId)!=null){
+                    vehicleNumCache.remove("janNotExist"+taskId);
+                    resultMap[0] = ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
+                    break;
+                }
+                if (vehicleNumCache.get("PatternCdNotExist"+taskId)!=null){
+                    vehicleNumCache.remove("PatternCdNotExist"+taskId);
+                    resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, "PatternCdNotExist");
+                    break;
+                }
 
-        if (vehicleNumCache.get("setJanHeightError"+taskId)!=null){
-            Object o = vehicleNumCache.get("setJanHeightError" + taskId);
-            vehicleNumCache.remove("setJanHeightError"+taskId);
-            return ResultMaps.result(ResultEnum.HEIGHT_NOT_ENOUGH, o);
-        }
+                if (vehicleNumCache.get("setJanHeightError"+taskId)!=null){
+                    Object o = vehicleNumCache.get("setJanHeightError" + taskId);
+                    vehicleNumCache.remove("setJanHeightError"+taskId);
+                    resultMap[0] = ResultMaps.result(ResultEnum.HEIGHT_NOT_ENOUGH, o);
+                    break;
+                }
 
-        if (vehicleNumCache.get(taskId) != null){
-            if(Objects.equals(vehicleNumCache.get(taskId), 2)){
-                vehicleNumCache.remove(taskId);
-                String error = vehicleNumCache.get(taskId + "-error").toString();
-                vehicleNumCache.remove(taskId+"-error");
-                return ResultMaps.error(ResultEnum.FAILURE, error);
+                if (vehicleNumCache.get(taskId) != null){
+                    if(Objects.equals(vehicleNumCache.get(taskId), 2)){
+                        vehicleNumCache.remove(taskId);
+                        String error = vehicleNumCache.get(taskId + "-error").toString();
+                        vehicleNumCache.remove(taskId+"-error");
+                        resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, error);
+                    }else{
+                        vehicleNumCache.remove(taskId);
+                        resultMap[0] = ResultMaps.result(ResultEnum.SUCCESS,"success");
+                    }
+                    break;
+                }
+
+                if (vehicleNumCache.get(taskId+",canceled")!= null && "1".equals(vehicleNumCache.get(taskId+",canceled").toString())){
+                    resultMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
+                    break;
+                }
             }
-            vehicleNumCache.remove(taskId);
-            return ResultMaps.result(ResultEnum.SUCCESS,"success");
+        });
+
+        try {
+            future.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            logger.error("", e);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        } catch (TimeoutException e) {
+            return ResultMaps.result(ResultEnum.SUCCESS,"9");
         }
-        return ResultMaps.result(ResultEnum.SUCCESS,"9");
+
+        if(resultMap[0]==null){
+            return ResultMaps.result(ResultEnum.SUCCESS,"9");
+        }
+        return resultMap[0];
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -752,13 +758,18 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         return ResultMaps.result(ResultEnum.SUCCESS, unused>0?1:0);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     private void setPtsJandataByRestrictCd(Integer priorityOrderCd, Integer patternCd, String companyCd, String authorCd, List<Integer> attrList,
                                            List<ZokuseiMst> zokuseiMsts, GetCommonPartsDataDto commonTableName, List<Integer> allCdList,
-                                           List<Map<String, Object>> restrictResult){
+                                           List<Map<String, Object>> restrictResult, String uuid){
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
         String proInfoTable = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);
         List<Map<String, Object>> zokuseiList = restrictResultMapper.selectJanZokusei(priorityOrderCd, ptsCd, zokuseiMsts, allCdList,
                 commonTableName.getProInfoTable(), proInfoTable);
+
+        if (this.interruptThread(uuid, "6")) {
+            return;
+        }
 
         for (int i = 0; i < zokuseiList.size(); i++) {
             Map<String, Object> zokusei = zokuseiList.get(i);
@@ -783,11 +794,16 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
             zokuseiList.set(i, zokusei);
         }
-
         restrictResultDataMapper.deleteByPrimaryKey(priorityOrderCd);
         zokuseiList = zokuseiList.stream().filter(map->map.get(MagicString.RESTRICT_CD)!=null).collect(Collectors.toList());
+
         if(!zokuseiList.isEmpty()){
             restrictResultDataMapper.insertBatch(attrList, zokuseiList, priorityOrderCd, companyCd, authorCd);
+        }
+
+        if (this.interruptThread(uuid, "7")) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return;
         }
     }
 }
