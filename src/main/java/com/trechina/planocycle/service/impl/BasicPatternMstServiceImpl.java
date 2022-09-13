@@ -794,6 +794,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             return ResultMaps.result(ResultEnum.SUCCESS,"9");
         }
 
+        if(resultMap[0]==null){
+            return ResultMaps.result(ResultEnum.SUCCESS,"9");
+        }
         return resultMap[0];
     }
 
