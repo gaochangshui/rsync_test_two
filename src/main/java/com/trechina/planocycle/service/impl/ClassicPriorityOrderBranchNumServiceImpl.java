@@ -871,7 +871,6 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         List<String> header = Arrays.asList(starReadingVo.getHeader().replaceAll("<br />","_").split(","));
         List<String>  column = Arrays.asList(starReadingVo.getColumn().split(","));
         List<String>  columns = new ArrayList<>(column);
-        columns.remove("total");
         Map<String, Object> group = starReadingVo.getGroup();
         LinkedHashMap<String,Object> linkedHashMap = new LinkedHashMap<>();
         for (Map.Entry<String, Object> stringObjectEntry : group.entrySet()) {

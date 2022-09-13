@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.reflect.InvocationTargetException;
@@ -21,9 +22,9 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
@@ -69,6 +70,8 @@ class PlanoCycleApiApplicationTests {
     private ProductPowerMstServiceImpl productPowerMstService;
     @Autowired
     private BasicPatternMstService basicPatternMstService;
+    @Autowired
+    private ThreadPoolTaskExecutor executor;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
@@ -164,29 +167,29 @@ class PlanoCycleApiApplicationTests {
 
     @Test
     public  void test8()  {
-        ArrayList<String> sites = new ArrayList<String>();
-        sites.add("Taobao");
-        sites.add("Wiki");
-        sites.add("Runoob");
-        sites.add("Weibo");
-        sites.add("Google");
-        Collections.sort(sites);  // 字母排序
-        for (String i : sites) {
-            System.out.println(i);
+        for (int i = 0; i < 10; i++) {
+            long b = 0;
+            executor.execute(()->{
+                long id = Thread.currentThread().getId();
+                int a = 0;
+                for (int j = 0; j < 1000; j++){
+                    a++;
+                }
+                    System.out.println(id);
+
+
+            });
         }
 
-        ArrayList<Integer> myNumbers = new ArrayList<Integer>();
-        myNumbers.add(33);
-        myNumbers.add(15);
-        myNumbers.add(20);
-        myNumbers.add(34);
-        myNumbers.add(8);
-        myNumbers.add(12);
+        Set<Thread> setOfThread = Thread.getAllStackTraces().keySet();
 
-        Collections.sort(myNumbers);  // 数字排序
-        myNumbers.removeIf(map->map.equals(8));
-        for (int i : myNumbers) {
-            System.out.println(i);
+//Iterate over set to find yours
+        for(Thread thread : setOfThread){
+            if(thread.getId()==21){
+                thread.interrupt();
+                thread.stop();
+            }
         }
+
     }
 }

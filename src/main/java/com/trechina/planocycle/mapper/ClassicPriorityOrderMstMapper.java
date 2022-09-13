@@ -46,4 +46,8 @@ public interface ClassicPriorityOrderMstMapper {
     PriorityOrderMstDto getPriorityOrderMst(String companyCd, Integer priorityOrderCd);
 
     List<ShelfPtsDataDto> selectPattern(String companyCd, Integer priorityOrderCd);
+
+    String getProductName(String companyCd, Integer priorityOrderCd);
+
+    List<String> getShelfPatternName(String companyCd, Integer priorityOrderCd);
 }

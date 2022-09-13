@@ -463,4 +463,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
         return mapResult;
     }
+
+
+
 }
