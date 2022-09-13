@@ -23,11 +23,13 @@ import com.trechina.planocycle.service.PriorityOrderMstService;
 import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
+import com.trechina.planocycle.utils.cgiUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.stereotype.Service;
@@ -103,6 +105,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     private PriorityOrderSortMapper priorityOrderSortMapper;
     @Autowired
     private BasicPatternJanPlacementMapper basicPatternJanPlacementMapper;
+    @Autowired
+    private cgiUtils cgiUtil;
+    @Value("${smartUrlPath}")
+    public String smartPath;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -357,15 +363,32 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
     @Override
     public Map<String, Object> cancelTask(String taskId) {
-        Object o = vehicleNumCache.get(taskId + ",task");
+        String taskKey = MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskId);
+        String cancelKey = MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskId);
+        Object o = vehicleNumCache.get(taskKey);
+        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         if(o!=null){
             Future future = (Future) o;
             future.cancel(true);
-            vehicleNumCache.remove(taskId + ",task");
+            vehicleNumCache.remove(taskKey);
             if(future.isCancelled()){
-                vehicleNumCache.put(taskId+",canceled", "1");
+                String cgiKey = MessageFormat.format(MagicString.TASK_KEY_CGI, taskId);
+                if(vehicleNumCache.get(cgiKey)!=null){
+                    String[] cgiTasks = vehicleNumCache.get(cgiKey).toString().split(",");
+                    for (String cgiTask : cgiTasks) {
+                        Map<String,Object> posMap = new HashMap();
+                        posMap.put("taskid",cgiTask);
+                        String s = cgiUtil.postCgi(MagicString.CGI_KILL_PROCESS, posMap, tokenInfo, smartPath);
+                        logger.info("taskId:{}, cancel result:{}",cgiTask, s);
+                    }
+                }
+
+                vehicleNumCache.put(cancelKey, "1");
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
+
+            logger.warn("taskId:{} is interrupt error", taskId);
+            return ResultMaps.result(ResultEnum.FAILURE);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
@@ -540,7 +563,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
                 String resultDataList = workPriorityOrderResultDataMapper.getResultDataList(companyCd, authorCd, priorityOrderCd);
                 if (resultDataList == null) {
-                    vehicleNumCache.put("janNotExist"+uuid,1);
+                    vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_JAN_NOT_EXIST, uuid),1);
                 }
 
                 if(this.interruptThread(uuid, "2")){
@@ -554,7 +577,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 Long shelfPatternCd = priorityOrderMst.getShelfPatternCd();
 
                 if (shelfPatternCd == null) {
-                    vehicleNumCache.put("PatternCdNotExist"+uuid,1);
+                    vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_PATTERN_NOT_EXIST, uuid),1);
                 }
 
                 Short partitionFlag = Optional.ofNullable(priorityOrderMst.getPartitionFlag()).orElse((short) 0);
@@ -589,7 +612,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                         tanaList, relationMap, janResult, sizeAndIrisu, isReOrder, productPowerCd, colNmforMst);
 
                 if (resultMap!=null && MapUtils.getInteger(resultMap, "code").equals(ResultEnum.HEIGHT_NOT_ENOUGH.getCode())) {
-                    vehicleNumCache.put("setJanHeightError"+uuid,resultMap.get("data"));
+                    vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_SET_JAN_HEIGHT_ERROR, uuid),resultMap.get("data"));
                 }else{
                     //ptsを一時テーブルに保存
                     Object tmpData = MapUtils.getObject(resultMap, "data");
@@ -605,7 +628,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 vehicleNumCache.put(uuid+"-error",JSON.toJSONString(e));
             }
         });
-        vehicleNumCache.put(uuid+",task",future);
+        vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, uuid),future);
         try {
             return ResultMaps.result(ResultEnum.SUCCESS,uuid);
         } catch (CancellationException e) {
@@ -698,20 +721,22 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         final Map<String, Object>[] resultMap = new Map[]{null};
         Future future = executor.submit(()->{
             while (true) {
-                if (vehicleNumCache.get("janNotExist"+taskId)!=null){
-                    vehicleNumCache.remove("janNotExist"+taskId);
+                String cacheKey = MessageFormat.format(MagicString.TASK_KEY_JAN_NOT_EXIST, taskId);
+                if (vehicleNumCache.get(cacheKey)!=null){
+                    vehicleNumCache.remove(cacheKey);
                     resultMap[0] = ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
                     break;
                 }
-                if (vehicleNumCache.get("PatternCdNotExist"+taskId)!=null){
-                    vehicleNumCache.remove("PatternCdNotExist"+taskId);
+                cacheKey = MessageFormat.format(MagicString.TASK_KEY_PATTERN_NOT_EXIST, taskId);
+                if (vehicleNumCache.get(cacheKey)!=null){
+                    vehicleNumCache.remove(cacheKey);
                     resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, "PatternCdNotExist");
                     break;
                 }
-
-                if (vehicleNumCache.get("setJanHeightError"+taskId)!=null){
-                    Object o = vehicleNumCache.get("setJanHeightError" + taskId);
-                    vehicleNumCache.remove("setJanHeightError"+taskId);
+                cacheKey = MessageFormat.format(MagicString.TASK_KEY_SET_JAN_HEIGHT_ERROR, taskId);
+                if (vehicleNumCache.get(cacheKey)!=null){
+                    Object o = vehicleNumCache.get(cacheKey);
+                    vehicleNumCache.remove(cacheKey);
                     resultMap[0] = ResultMaps.result(ResultEnum.HEIGHT_NOT_ENOUGH, o);
                     break;
                 }
@@ -719,8 +744,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 if (vehicleNumCache.get(taskId) != null){
                     if(Objects.equals(vehicleNumCache.get(taskId), 2)){
                         vehicleNumCache.remove(taskId);
-                        String error = vehicleNumCache.get(taskId + "-error").toString();
-                        vehicleNumCache.remove(taskId+"-error");
+                        cacheKey = MessageFormat.format(MagicString.TASK_KEY_ERROR, taskId);
+                        String error = vehicleNumCache.get(cacheKey).toString();
+                        vehicleNumCache.remove(cacheKey);
                         resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, error);
                     }else{
                         vehicleNumCache.remove(taskId);
@@ -729,7 +755,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     break;
                 }
 
-                if (vehicleNumCache.get(taskId+",canceled")!= null && "1".equals(vehicleNumCache.get(taskId+",canceled").toString())){
+                cacheKey = MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskId);
+                if (vehicleNumCache.get(cacheKey)!= null && "1".equals(vehicleNumCache.get(cacheKey).toString())){
                     resultMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
                     break;
                 }

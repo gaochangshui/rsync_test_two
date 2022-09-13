@@ -197,4 +197,14 @@ public class MagicString {
 
     public static final Integer START_READING_STATUS_MUST = 1;
     public static final Integer START_READING_STATUS_NOT = -1;
+
+    public static final String TASK_KEY_FUTURE = "{0},task";
+    public static final String TASK_KEY_CGI = "{0},cgi";
+    public static final String TASK_KEY_CANCEL = "{0},canceled";
+    public static final String TASK_KEY_JAN_NOT_EXIST = "janNotExist:{0}";
+    public static final String TASK_KEY_ERROR = "{0}-error";
+    public static final String TASK_KEY_PATTERN_NOT_EXIST="PatternCdNotExist:{0}";
+    public static final String TASK_KEY_SET_JAN_HEIGHT_ERROR="setJanHeightError:{0}";
+
+    public static final String CGI_KILL_PROCESS="PLANOCYCLE.KILLPROCESS.CGI";
 }
