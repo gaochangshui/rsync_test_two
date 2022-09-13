@@ -84,8 +84,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String companyCd = taskIdMap.get("companyCd").toString();
         String authorCd = session.getAttribute("aud").toString();
         final Map<String, Object>[] returnMap = new Map[]{null};
-        final Map<String, Object>[] colMap = new Map[]{null};
-        final List<Map<String, Object>>[] allData = new List[]{null};
 
         Future future = executor.submit(()->{
             while (true){
@@ -104,13 +102,24 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     break;
                 }
                 if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString())==null){
-                    returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS,"9");
+                    returnMap[0] = ResultMaps.result(ResultEnum.FAILURE);
                     break;
                 }
 
-                if ("ok".equals(vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()).toString()) && allData[0]==null){
-                    Date date = new Date();
+                if ("9".equals(vehicleNumCache.get(taskID))) {
+                    List<Map<String, Object>> o = (List<Map<String, Object>>) vehicleNumCache.get(taskID + ",data");
+                    if (o.isEmpty()){
+                        returnMap[0] = ResultMaps.result(ResultEnum.SIZEISZERO);
+                        break;
+                    }
+
+                    returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS, o);
+                    break;
+                }
+
+                if ("ok".equals(vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()).toString()) && !"2".equals(vehicleNumCache.get(taskID).toString())){
                     log.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()));
+                    vehicleNumCache.put(taskID, "2");
                     String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
                     JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
                     String prodMstClass = jsonObject.get("prodMstClass").toString();
@@ -129,6 +138,11 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
                     }
 
+                    if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
+                        returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
+                        break;
+                    }
+
                     String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
                     String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
                     List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
@@ -137,30 +151,37 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             map.put("sort",colNum);
                         }
                     }
-                    colMap[0] =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1, k2)->k1, LinkedHashMap::new));
-                    colMap[0].put("branchNum","定番店舗数");
+                    Map<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1, k2)->k1, LinkedHashMap::new));
+                    colMap.put("branchNum","定番店舗数");
                     Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
                     ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
                     List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
                     List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
-                    allData[0] = productPowerDataMapper.getSyokikaAllData(companyCd,
-                            janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd,shelfPts,storeCd);
-                    break;
-                }
-                if ("ok".equals(vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()).toString()) && allData[0]!=null && colMap[0]!=null){
-                    List<Map<String, Object>> resultData = new ArrayList<>();
-                    if (allData[0].isEmpty()){
-                        returnMap[0] = ResultMaps.result(ResultEnum.SIZEISZERO);
+
+                    if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
+                        returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
                         break;
                     }
 
-                    resultData.add(colMap[0]);
-                    resultData.addAll(allData[0]);
+                    List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
+                            janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd,shelfPts,storeCd);
+                    List<Map<String, Object>> resultData = new ArrayList<>();
+                    if (allData.isEmpty()){
+                        returnMap[0] = ResultMaps.result(ResultEnum.SIZEISZERO);
+                        vehicleNumCache.put(taskID+",data", resultData);
+                        break;
+                    }
+
+                    resultData.add(colMap);
+                    resultData.addAll(allData);
 
                     log.info("返回pos基本情報はい{}", resultData.size());
                     vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
                     returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS, resultData);
+                    vehicleNumCache.put(taskID, "9");
+                    vehicleNumCache.put(taskID+",data", resultData);
+                    break;
                 }
             }
         });
@@ -171,7 +192,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             logger.error("", e);
             return ResultMaps.result(ResultEnum.FAILURE);
         } catch (TimeoutException e) {
-            logger.error("", e);
             return ResultMaps.result(ResultEnum.SUCCESS,"9");
         }
 
@@ -179,7 +199,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             return returnMap[0];
         }
 
-        return ResultMaps.result(ResultEnum.SUCCESS,"9");
+        return ResultMaps.result(ResultEnum.SUCCESS, "9");
     }
 
 
@@ -378,6 +398,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 });
         String result =  posResult;
 
+        vehicleNumCache.put(posResult, "1");
         vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, posResult), future);
 
         logger.info("taskId返回：{}", result);
