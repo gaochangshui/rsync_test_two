@@ -104,12 +104,11 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     break;
                 }
                 if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString())==null){
-                    returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS,"9");
+                    returnMap[0] = ResultMaps.result(ResultEnum.FAILURE);
                     break;
                 }
 
                 if ("ok".equals(vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()).toString()) && allData[0]==null){
-                    Date date = new Date();
                     log.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()));
                     String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
                     JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
@@ -161,6 +160,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     log.info("返回pos基本情報はい{}", resultData.size());
                     vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
                     returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS, resultData);
+                    break;
                 }
             }
         });
@@ -378,6 +378,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 });
         String result =  posResult;
 
+        vehicleNumCache.put(posResult, "1");
         vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, posResult), future);
 
         logger.info("taskId返回：{}", result);
