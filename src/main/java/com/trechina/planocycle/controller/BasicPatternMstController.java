@@ -68,12 +68,12 @@ public class BasicPatternMstController {
     }
 
     /**
-     * 自動計算
+     * cancel task
      * @return
      */
-    @GetMapping("/cancelAutoCalculation")
-    public Map<String,Object> cancelAutoCalculation(String taskId){
-        return basicPatternMstService.cancelAutoCalculation(taskId);
+    @GetMapping("/cancelTask")
+    public Map<String,Object> cancelTask(String taskId){
+        return basicPatternMstService.cancelTask(taskId);
     }
 
     /**
@@ -82,7 +82,7 @@ public class BasicPatternMstController {
      * @return
      */
     @GetMapping("/autoTaskId")
-    public Map<String, Object> autoTaskId(String taskId){
+    public Map<String, Object> autoTaskId(String taskId) throws InterruptedException {
         return basicPatternMstService.autoTaskId(taskId);
     }
 

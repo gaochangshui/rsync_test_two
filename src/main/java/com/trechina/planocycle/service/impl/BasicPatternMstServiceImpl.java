@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -355,17 +356,18 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     @Override
-    public Map<String, Object> cancelAutoCalculation(String taskId) {
+    public Map<String, Object> cancelTask(String taskId) {
         Object o = vehicleNumCache.get(taskId + ",task");
         if(o!=null){
             Future future = (Future) o;
             future.cancel(true);
+            vehicleNumCache.remove(taskId + ",task");
             if(future.isCancelled()){
                 vehicleNumCache.put(taskId+",canceled", "1");
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
         }
-        return null;
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     public GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd ) {
@@ -527,7 +529,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 //まず社員番号に従ってワークシートのデータを削除します
                 workPriorityOrderResultDataMapper.delResultData(companyCd, authorCd, priorityOrderCd);
 
-                if(Thread.currentThread().isInterrupted()){
+                if(this.interruptThread(uuid, "1")){
                     return;
                 }
                 //制約条件の取得
@@ -542,8 +544,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     vehicleNumCache.put("janNotExist"+uuid,1);
                 }
 
-                if(Thread.currentThread().isInterrupted()){
-                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                if(this.interruptThread(uuid, "2")){
                     return;
                 }
 
@@ -567,8 +568,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     }
                     workPriorityOrderResultDataMapper.update(list, companyCd, authorCd, priorityOrderCd);
 
-                    if(Thread.currentThread().isInterrupted()){
-                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    if (this.interruptThread(uuid, "3")) {
                         return;
                     }
 
@@ -604,8 +604,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     }
                     workPriorityOrderResultDataMapper.updateFace(resultDatas, companyCd, authorCd);
 
-                    if(Thread.currentThread().isInterrupted()){
-                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    if (this.interruptThread(uuid, "4")) {
                         return;
                     }
                 }
@@ -636,7 +635,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
                 int isReOrder = colNmforMst.size();
 
-                if(Thread.currentThread().isInterrupted()){
+                if (this.interruptThread(uuid, "5")) {
                     return;
                 }
 
@@ -660,6 +659,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     shelfPtsService.basicSaveWorkPtsData(companyCd, authorCd, priorityOrderCd, workData, isReOrder);
                     vehicleNumCache.put(uuid,1);
                 }
+                logger.info("taskId:{} auto calculate end", uuid);
             }catch (Exception e){
                 logger.error("auto calculation is error", e);
                 vehicleNumCache.put(uuid,2);
@@ -668,20 +668,20 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         });
         vehicleNumCache.put(uuid+",task",future);
         try {
-            future.get(MagicString.TASK_TIME_OUT, TimeUnit.SECONDS);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e){
-            logger.error("thread is interrupted", e);
-            Thread.currentThread().interrupt();
-        } catch (TimeoutException e) {
-            return ResultMaps.result(ResultEnum.SUCCESS, uuid);
+            return ResultMaps.result(ResultEnum.SUCCESS,uuid);
         } catch (CancellationException e) {
             return ResultMaps.result(202, "canceled");
-        } finally {
-            future.cancel(true);
         }
-        return ResultMaps.result(ResultEnum.SUCCESS,uuid);
+    }
+
+    private boolean interruptThread(String taskId, String step){
+        if(Thread.currentThread().isInterrupted()){
+            logger.info("taskId:{} interrupted, step:{}", taskId, step);
+            Thread.currentThread().interrupt();
+            return true;
+        }
+
+        return false;
     }
 
     private List<Map<String, Object>> scaleTaiTanaWidth(List<Map<String, Object>> relationMap, Integer tanaWidthCheck){
@@ -755,33 +755,46 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     @Override
-    public Map<String, Object> autoTaskId(String taskId) {
-        if (vehicleNumCache.get("janNotExist"+taskId)!=null){
-            vehicleNumCache.remove("janNotExist"+taskId);
-            return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
-        }
-        if (vehicleNumCache.get("PatternCdNotExist"+taskId)!=null){
-            vehicleNumCache.remove("PatternCdNotExist"+taskId);
-            return ResultMaps.error(ResultEnum.FAILURE, "PatternCdNotExist");
-        }
-
-        if (vehicleNumCache.get("setJanHeightError"+taskId)!=null){
-            Object o = vehicleNumCache.get("setJanHeightError" + taskId);
-            vehicleNumCache.remove("setJanHeightError"+taskId);
-            return ResultMaps.result(ResultEnum.HEIGHT_NOT_ENOUGH, o);
-        }
-
-        if (vehicleNumCache.get(taskId) != null){
-            if(Objects.equals(vehicleNumCache.get(taskId), 2)){
-                vehicleNumCache.remove(taskId);
-                String error = vehicleNumCache.get(taskId + "-error").toString();
-                vehicleNumCache.remove(taskId+"-error");
-                return ResultMaps.error(ResultEnum.FAILURE, error);
+    public Map<String, Object> autoTaskId(String taskId) throws InterruptedException {
+        final Map<String, Object>[] resultMap = new Map[]{null};
+        Future future = executor.submit(()->{
+            if (vehicleNumCache.get("janNotExist"+taskId)!=null){
+                vehicleNumCache.remove("janNotExist"+taskId);
+                resultMap[0] = ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
             }
-            vehicleNumCache.remove(taskId);
-            return ResultMaps.result(ResultEnum.SUCCESS,"success");
+            if (vehicleNumCache.get("PatternCdNotExist"+taskId)!=null){
+                vehicleNumCache.remove("PatternCdNotExist"+taskId);
+                resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, "PatternCdNotExist");
+            }
+
+            if (vehicleNumCache.get("setJanHeightError"+taskId)!=null){
+                Object o = vehicleNumCache.get("setJanHeightError" + taskId);
+                vehicleNumCache.remove("setJanHeightError"+taskId);
+                resultMap[0] = ResultMaps.result(ResultEnum.HEIGHT_NOT_ENOUGH, o);
+            }
+
+            if (vehicleNumCache.get(taskId) != null){
+                if(Objects.equals(vehicleNumCache.get(taskId), 2)){
+                    vehicleNumCache.remove(taskId);
+                    String error = vehicleNumCache.get(taskId + "-error").toString();
+                    vehicleNumCache.remove(taskId+"-error");
+                    resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, error);
+                }
+                vehicleNumCache.remove(taskId);
+                resultMap[0] = ResultMaps.result(ResultEnum.SUCCESS,"success");
+            }
+        });
+
+        try {
+            future.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            logger.error("", e);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        } catch (TimeoutException e) {
+            return ResultMaps.result(ResultEnum.SUCCESS,"9");
         }
-        return ResultMaps.result(ResultEnum.SUCCESS,"9");
+
+        return resultMap[0];
     }
 
     @Transactional(rollbackFor = Exception.class)

@@ -22,7 +22,7 @@ public interface BasicPatternMstService {
 
     Map<String, Object> setAttrDisplay( BasicPatternRestrictRelation basicPatternRestrictRelation);
 
-    Map<String, Object> autoTaskId(String taskId);
+    Map<String, Object> autoTaskId(String taskId) throws InterruptedException;
 
     Map<String, Object> preCalculation(String companyCd, Long patternCd, Integer priorityOrderCd);
 
@@ -35,5 +35,5 @@ public interface BasicPatternMstService {
     List<PriorityOrderResultDataDto> updateJanSize( List<PriorityOrderResultDataDto> priorityOrderResultDataDtoList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
     List<Map<String, Object>> updateJanSizeByMap( List<Map<String, Object>> priorityOrderResultDataDtoList);
 
-    Map<String, Object> cancelAutoCalculation(String taskId);
+    Map<String, Object> cancelTask(String taskId);
 }
