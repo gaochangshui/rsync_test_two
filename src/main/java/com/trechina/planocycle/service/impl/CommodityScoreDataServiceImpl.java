@@ -341,7 +341,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 });
         String result =  posResult;
         try {
-            future.get(10, TimeUnit.SECONDS);
+            future.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e){
