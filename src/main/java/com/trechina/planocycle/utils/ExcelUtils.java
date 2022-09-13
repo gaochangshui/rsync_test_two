@@ -529,15 +529,15 @@ public class ExcelUtils {
 
             cell = headerClassifyRow.createCell(colIndex+=3);
             cell.setCellValue("カテゴリー");
-            sheet.addMergedRegion(new CellRangeAddress(0, 0, colIndex, colIndex+attrSize-1));
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, 3, 3+attrSize-1));
 
             cell = headerClassifyRow.createCell(colIndex+=attrSize);
             cell.setCellValue("");
-            sheet.addMergedRegion(new CellRangeAddress(0, 0, colIndex, colIndex+attrSize-1));
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, colIndex, colIndex+2));
 
             cell = headerClassifyRow.createCell(colIndex+=3);
             cell.setCellValue("現状");
-            sheet.addMergedRegion(new CellRangeAddress(0, 0, colIndex, colIndex+2));
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, colIndex, colIndex+1));
 
             cell = headerClassifyRow.createCell(colIndex+=2);
             cell.setCellValue("提案");
