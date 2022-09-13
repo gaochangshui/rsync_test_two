@@ -758,30 +758,37 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     public Map<String, Object> autoTaskId(String taskId) throws InterruptedException {
         final Map<String, Object>[] resultMap = new Map[]{null};
         Future future = executor.submit(()->{
-            if (vehicleNumCache.get("janNotExist"+taskId)!=null){
-                vehicleNumCache.remove("janNotExist"+taskId);
-                resultMap[0] = ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
-            }
-            if (vehicleNumCache.get("PatternCdNotExist"+taskId)!=null){
-                vehicleNumCache.remove("PatternCdNotExist"+taskId);
-                resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, "PatternCdNotExist");
-            }
-
-            if (vehicleNumCache.get("setJanHeightError"+taskId)!=null){
-                Object o = vehicleNumCache.get("setJanHeightError" + taskId);
-                vehicleNumCache.remove("setJanHeightError"+taskId);
-                resultMap[0] = ResultMaps.result(ResultEnum.HEIGHT_NOT_ENOUGH, o);
-            }
-
-            if (vehicleNumCache.get(taskId) != null){
-                if(Objects.equals(vehicleNumCache.get(taskId), 2)){
-                    vehicleNumCache.remove(taskId);
-                    String error = vehicleNumCache.get(taskId + "-error").toString();
-                    vehicleNumCache.remove(taskId+"-error");
-                    resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, error);
+            while (true) {
+                if (vehicleNumCache.get("janNotExist"+taskId)!=null){
+                    vehicleNumCache.remove("janNotExist"+taskId);
+                    resultMap[0] = ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
+                    break;
                 }
-                vehicleNumCache.remove(taskId);
-                resultMap[0] = ResultMaps.result(ResultEnum.SUCCESS,"success");
+                if (vehicleNumCache.get("PatternCdNotExist"+taskId)!=null){
+                    vehicleNumCache.remove("PatternCdNotExist"+taskId);
+                    resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, "PatternCdNotExist");
+                    break;
+                }
+
+                if (vehicleNumCache.get("setJanHeightError"+taskId)!=null){
+                    Object o = vehicleNumCache.get("setJanHeightError" + taskId);
+                    vehicleNumCache.remove("setJanHeightError"+taskId);
+                    resultMap[0] = ResultMaps.result(ResultEnum.HEIGHT_NOT_ENOUGH, o);
+                    break;
+                }
+
+                if (vehicleNumCache.get(taskId) != null){
+                    if(Objects.equals(vehicleNumCache.get(taskId), 2)){
+                        vehicleNumCache.remove(taskId);
+                        String error = vehicleNumCache.get(taskId + "-error").toString();
+                        vehicleNumCache.remove(taskId+"-error");
+                        resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, error);
+                    }else{
+                        vehicleNumCache.remove(taskId);
+                        resultMap[0] = ResultMaps.result(ResultEnum.SUCCESS,"success");
+                    }
+                    break;
+                }
             }
         });
 
