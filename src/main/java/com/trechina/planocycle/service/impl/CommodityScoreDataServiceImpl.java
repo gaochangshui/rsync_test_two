@@ -138,6 +138,11 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
                     }
 
+                    if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
+                        returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
+                        break;
+                    }
+
                     String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
                     String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
                     List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
@@ -153,6 +158,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
                     List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
                     List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
+
+                    if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
+                        returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
+                        break;
+                    }
+
                     List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
                             janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd,shelfPts,storeCd);
                     List<Map<String, Object>> resultData = new ArrayList<>();
