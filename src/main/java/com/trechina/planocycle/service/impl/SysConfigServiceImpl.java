@@ -57,6 +57,15 @@ public class SysConfigServiceImpl implements SysConfigService {
         }else {
             resultMap.put("showJanSkuFlag", 0);
         }
+        Map<String, Object> kokyakuShow = skuNameConfigMapper.getKokyakuShow(isCompanyCd, prodMstClass);
+        if (kokyakuShow.isEmpty()){
+            resultMap.put("kokyakuFlag",0);
+            resultMap.put("kokyakuFlag",0);
+        }else {
+            resultMap.put("kokyakuFlag",kokyakuShow.get("kokyaku"));
+            resultMap.put("intageFlag",kokyakuShow.get("intage"));
+        }
+
         return ResultMaps.result(ResultEnum.SUCCESS, resultMap);
     }
 }

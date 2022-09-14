@@ -514,7 +514,6 @@ public class ExcelUtils {
             cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             sheet1.createFreezePane(0,4);
             sheet.createFreezePane(0,2);
-
             //最初の行の索引
             int colIndex=0;
 

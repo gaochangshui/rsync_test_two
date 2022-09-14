@@ -507,7 +507,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             objectObjectHashMap.put("sort","jan_new");
             attrSpecialList.add(objectObjectHashMap);
             priorityOrderDataMapper.setSpecialName(linkedHashMaps,attrSpecialList);
-            logger.info("");
+
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
