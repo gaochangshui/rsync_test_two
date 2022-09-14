@@ -61,4 +61,6 @@ public interface BasicPatternRestrictRelationMapper {
     void updateAreaPosition(List<Map<String, Object>> list, Integer priorityOrderCd);
 
 
+    Map<String,Object> getTanaInfo(@Param("item") BasicPatternRestrictRelation basicPatternRestrictRelation);
+
 }

@@ -8,7 +8,6 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.FaceNumDataDto;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.ProductPowerDataDto;
@@ -31,7 +30,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -41,7 +39,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.*;
@@ -682,7 +679,14 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         Long priorityOrderCd = basicPatternRestrictRelation.getPriorityOrderCd();
         shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd.intValue());
         if (basicPatternRestrictRelation.getRestrictCd()== null){
-            basicPatternRestrictRelation.setRestrictCd(9999L);
+            Map<String, Object> tanaInfo = restrictRelationMapper.getTanaInfo(basicPatternRestrictRelation);
+            Double areaNew = Double.parseDouble(tanaInfo.get("area").toString()) - basicPatternRestrictRelation.getArea();
+            if (areaNew>1){
+                basicPatternRestrictRelation.setArea(areaNew.longValue());
+                basicPatternRestrictRelation.setRestrictCd(Long.parseLong(tanaInfo.get("restrict_cd").toString()));
+            }else {
+                basicPatternRestrictRelation.setRestrictCd(9999L);
+            }
         }
         restrictRelationMapper.deleteForTanaPosition(basicPatternRestrictRelation);
         restrictRelationMapper.update(basicPatternRestrictRelation,authorCd);
