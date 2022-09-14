@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +31,7 @@ public class ExcelUtils {
                                          Map<String, List<String>> columnsByClassify, List<Map<String, Object>> allData,
                                          OutputStream outputStream,Map<String,Object> paramMap) {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
+            XSSFSheet sheet1 = workbook.createSheet("抽出条件");
             XSSFSheet sheet = workbook.createSheet("商品明細");
             Pattern numberPattern = Pattern.compile("-?[0-9]+(\\.[0-9]+)?%?");
 
@@ -118,17 +120,17 @@ public class ExcelUtils {
                     }
                 }
             }
-            ParamForExcel(workbook,paramMap);
+            ParamForExcel(sheet1,paramMap,workbook);
             workbook.write(outputStream);
         }catch (Exception e){
             logger.error("", e);
         }
     }
 
-    public static void ParamForExcel (XSSFWorkbook workbook,Map<String,Object> paramMap){
-        XSSFSheet sheet1 = workbook.createSheet("抽出条件");
+    public static void ParamForExcel ( XSSFSheet sheet1,Map<String,Object> paramMap,XSSFWorkbook workbook){
+
         sheet1.setDisplayGridlines(false);
-        //设置样式
+        //スタイルの設定
         XSSFCellStyle cellStyle = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
         font.setColor((short) 1);
@@ -172,7 +174,7 @@ public class ExcelUtils {
         cell = row.createCell(1);
         cell.setCellValue(paramMap.get("granularity").toString());
         colIndex+=2;
-        //一级头
+        //いちだんヘッド
         row = sheet1.createRow(colIndex);
         cell = row.createCell(headerColIndex);
         cell.setCellValue("店舗条件");
@@ -202,7 +204,7 @@ public class ExcelUtils {
         cell.setCellValue("市場条件");
         cell.setCellStyle(cellStyle);
         colIndex+=1;
-        //二级头
+        //にだんヘッド
         row = sheet1.createRow(colIndex);
         headerColIndex=0;
         cell = row.createCell(headerColIndex);
@@ -259,7 +261,7 @@ public class ExcelUtils {
         sizeList.add(((List<String>)paramMap.get("channelNm")).size());
         sizeList.add(((List<String>)paramMap.get("placeNm")).size());
         sizeList.add(janList.size());
-        Integer integer = sizeList.stream().max(Integer::max).get();
+        Integer integer = sizeList.stream().max(Integer::compare).get();
         for (int i = 0; i < integer; i++) {
             row = sheet1.createRow(colIndex);
             cell = row.createCell(headerColIndex = 0);
@@ -428,4 +430,190 @@ public class ExcelUtils {
         //    return "";
         //}
     }
+
+    public static void starReadingExcel(List<String> header, List<String> column, LinkedHashMap<String, Object> group, List<LinkedHashMap<String, Object>> data, ServletOutputStream outputStream) {
+        try(XSSFWorkbook workbook = new XSSFWorkbook()){
+            XSSFSheet sheet = workbook.createSheet();
+            //最初の行の索引
+            int colIndex=3;
+            //2行目の索引
+            int headerColIndex=3;
+            XSSFCell cell = null;
+            XSSFRow dataRow;
+            //最初の行
+            XSSFRow headerClassifyRow = sheet.createRow(0);
+            //2行目
+            XSSFRow headerRow = sheet.createRow(1);
+            for (Map.Entry<String, Object> entry : group.entrySet()) {
+                String headerClassify = entry.getKey();
+                List<String> headers = (List<String>)entry.getValue();
+                    cell = headerClassifyRow.createCell(colIndex);
+                    //最後の列のヘッダーは空の文字列に処理されます
+                    cell.setCellValue(headerClassify);
+                    cell.setCellType(CellType.STRING);
+                    //連結カラムの開始インデックス
+                    int startMergeIndex = colIndex;
+                    //連結カラムの最後のインデックス
+                    int endMergeIndex = colIndex+headers.size()-1;
+                    if(startMergeIndex!=endMergeIndex){
+                        //[startMergeIndex,endMergeIndex]のセルをマージ
+                        sheet.addMergedRegion(new CellRangeAddress(0, 0, startMergeIndex, endMergeIndex));
+                    }
+                    colIndex+=headers.size();
+                    //セルを結合しない2行目の列
+                    XSSFCell headerCell = headerRow.createCell(0);
+                    headerCell.setCellType(CellType.STRING);
+                    headerCell.setCellValue("JAN");
+                    headerCell = headerRow.createCell(1);
+                    headerCell.setCellType(CellType.STRING);
+                    headerCell.setCellValue("商品名");
+                    headerCell = headerRow.createCell(2);
+                    headerCell.setCellType(CellType.STRING);
+                    headerCell.setCellValue("合計");
+                    for (String colName : headers) {
+                        headerCell = headerRow.createCell(headerColIndex);
+                        headerCell.setCellType(CellType.STRING);
+                        headerCell.setCellValue(colName);
+
+                        headerColIndex++;
+                    }
+            }
+            int rowIndex = 2;
+            for (LinkedHashMap<String, Object> datum : data) {
+                 dataRow = sheet.createRow(rowIndex);
+                for (int i = 0; i < column.size(); i++) {
+                    cell = dataRow.createCell(i);
+                    cell.setCellValue(datum.get(column.get(i)).toString());
+                    if (i  == 2){
+                        cell.setCellType(CellType.NUMERIC);
+                    }else {
+                        cell.setCellType(CellType.STRING);
+                    }
+                }
+                rowIndex++;
+            }
+            workbook.write(outputStream);
+        }catch (Exception e){
+            logger.error("", e);
+        }
+    }
+
+    public static void priorityOrderExcel(String colSort, List<Map<String, Object>> priorityData,ServletOutputStream outputStream,Integer attrSize,Map<String,Object> paramData) {
+        try(XSSFWorkbook workbook = new XSSFWorkbook()){
+            XSSFSheet sheet1 = workbook.createSheet("抽出条件");
+            XSSFSheet sheet = workbook.createSheet("商品明細");
+            Pattern numberPattern = Pattern.compile("-?[0-9]+(\\.[0-9]+)?%?");
+
+            sheet1.setDisplayGridlines(false);
+            //スタイルの設定
+            XSSFCellStyle cellStyle = workbook.createCellStyle();
+            XSSFFont font = workbook.createFont();
+            font.setColor((short) 1);
+            cellStyle.setFont(font);
+            cellStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            sheet1.createFreezePane(0,4);
+            sheet.createFreezePane(0,2);
+
+            //最初の行の索引
+            int colIndex=0;
+
+            int rowIndex = 1;
+            XSSFCell cell = null;
+
+            //最初の行
+            XSSFRow headerClassifyRow = sheet.createRow(0);
+
+            cell = headerClassifyRow.createCell(colIndex);
+            cell.setCellValue("");
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 2));
+
+            cell = headerClassifyRow.createCell(colIndex+=3);
+            cell.setCellValue("カテゴリー");
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, 3, 3+attrSize-1));
+
+            cell = headerClassifyRow.createCell(colIndex+=attrSize);
+            cell.setCellValue("");
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, colIndex, colIndex+2));
+
+            cell = headerClassifyRow.createCell(colIndex+=3);
+            cell.setCellValue("現状");
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, colIndex, colIndex+1));
+
+            cell = headerClassifyRow.createCell(colIndex+=2);
+            cell.setCellValue("提案");
+
+            cell = headerClassifyRow.createCell(colIndex+=1);
+            cell.setCellValue("変更後");
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, colIndex, colIndex+3));
+            cell = headerClassifyRow.createCell(colIndex+=4);
+            cell.setCellValue("");
+
+            //2行目
+            for (Map<String, Object> priorityDatum : priorityData) {
+                //2行目の索引
+                int headerColIndex=0;
+                XSSFRow headerRow = sheet.createRow(rowIndex);
+                for (String s : colSort.split(",")) {
+                    if (numberPattern.matcher(priorityDatum.get(s).toString()).matches() && !s.equals("jan_old")  && !s.equals("jan_new")){
+                        cell = headerRow.createCell(headerColIndex);
+                        cell.setCellValue(Math.floor(Double.parseDouble(String.valueOf(priorityDatum.get(s).toString()))));
+                        cell.setCellType(CellType.NUMERIC);
+                        headerColIndex++;
+                    }else {
+                        cell = headerRow.createCell(headerColIndex);
+                        cell.setCellValue(priorityDatum.get(s).toString());
+                        cell.setCellType(CellType.STRING);
+                        headerColIndex++;
+                    }
+
+                }
+                rowIndex++;
+            }
+
+            XSSFRow row = sheet1.createRow(0);
+            cell = row.createCell(0);
+            cell.setCellValue("企業(業態)");
+            cell.setCellStyle(cellStyle);
+            cell = row.createCell(1);
+            cell.setCellValue(paramData.get("company").toString());
+
+            row = sheet1.createRow(1);
+            cell = row.createCell(0);
+            cell.setCellValue("商品力点数表");
+            cell.setCellStyle(cellStyle);
+            cell = row.createCell(1);
+            cell.setCellValue(paramData.get("productName").toString());
+
+            row = sheet1.createRow(3);
+            cell = row.createCell(0);
+            cell.setCellValue("棚パターン");
+            cell.setCellStyle(cellStyle);
+
+            cell = row.createCell(2);
+            cell.setCellValue("属性項目");
+            cell.setCellStyle(cellStyle);
+
+            List<Integer> listSize = new ArrayList<>();
+            listSize.add(((List<String>)paramData.get("attrName")).size());
+            listSize.add(((List<String>)paramData.get("shelfPatternName")).size());
+            Integer integer = listSize.stream().max(Integer::compare).get();
+            colIndex = 4;
+            for (int i = 0; i < integer; i++) {
+                row = sheet1.createRow(colIndex);
+                cell = row.createCell( 0);
+                cell.setCellValue(((List<String>)paramData.get("shelfPatternName")).size()>i?((List<String>)paramData.get("shelfPatternName")).get(i):"");
+
+                cell = row.createCell( 2);
+                cell.setCellValue(((List<String>)paramData.get("attrName")).size()>i?((List<String>)paramData.get("attrName")).get(i):"");
+                colIndex++;
+            }
+
+            workbook.write(outputStream);
+        }catch (Exception e){
+            logger.error("", e);
+        }
+    }
 }
+
+

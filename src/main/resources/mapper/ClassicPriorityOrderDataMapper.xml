@@ -127,6 +127,27 @@
         where rank_upd = 99999999
             and priority_order_cd=#{priorityOrderCd} and company_cd = #{companyCd}
     </update>
+    <update id="setSpecialName">
+        insert into "9999".prod_0000_jan_info(
+        <foreach collection="attrSpecialList" item="map" separator=",">
+            "${map.value}"
+        </foreach>
+
+        )
+        values
+        <foreach collection="linkedHashMaps" item="items" separator=",">
+            (
+            <foreach collection="attrSpecialList" item="map" separator=",">
+                #{items.${map.sort}}
+            </foreach>
+            )
+        </foreach>
+        on conflict("1")
+        do update set
+        <foreach collection="attrSpecialList" item="map" separator=",">
+            "${map.value}" = EXCLUDED."${map.value}"
+        </foreach>
+    </update>
     <select id="selectExistJan" resultType="string">
         select jan_new from ${tableName}
         where
@@ -699,5 +720,10 @@
             #{item}
         </foreach>
         and priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getAttrForName" resultType="java.util.LinkedHashMap">
+        select sort ,name
+        from priority.work_priority_order_mst_attr
+        where priority_order_cd = #{priorityOrderCd}
     </select>
 </mapper>

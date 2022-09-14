@@ -113,4 +113,25 @@
     inner join priority.shelf_pts_data pts_data on pts_data.shelf_pattern_cd=pattern.shelf_pattern_cd
     where priority_order_cd=#{priorityOrderCd} and pattern.company_cd=#{companyCd}
   </select>
+    <select id="getProductName" resultType="java.lang.String">
+      select
+      product_power_name
+      from
+      priority.work_priority_order_mst  primst
+      left join planocycle.product_power_mst promst
+      on primst.product_power_cd = promst.product_power_cd
+      where
+      priority_order_cd = #{priorityOrderCd}
+    </select>
+  <select id="getShelfPatternName" resultType="java.lang.String">
+    select
+    shelf_pattern_name
+    from
+    priority.work_priority_order_pattern  pattern
+    left join planocycle.shelf_pattern_mst patternmst
+    on patternmst.shelf_pattern_cd = pattern.shelf_pattern_cd
+    where
+    priority_order_cd = #{priorityOrderCd}
+    order by patternmst.shelf_pattern_cd
+  </select>
 </mapper>

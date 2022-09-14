@@ -11,9 +11,9 @@ public interface StarReadingTableMapper {
 
     List<Map<String,Object>> getBranchdiff(@Param("priorityOrderCd") Integer priorityOrderCd);
 
-    List<Map<String,Object>> getBranchList(@Param("priorityOrderCd") Integer priorityOrderCd,@Param("companyCd")String companyCd);
+    List<Map<String,Object>> getBranchList(@Param("priorityOrderCd") Integer priorityOrderCd,@Param("groupCompany")List<String> groupCompany);
 
-    List<Map<String,Object>> getAreaList(Integer priorityOrderCd);
+    List<Map<String,Object>> getAreaList(Integer priorityOrderCd,List<String> groupCompany);
 
     List<Map<String,Object>> getPatternList(Integer priorityOrderCd);
 
@@ -55,4 +55,6 @@ public interface StarReadingTableMapper {
     void deleteWorkByBranch(String companyCd, Integer newPriorityOrderCd);
 
     void insertForFinalByBranch(String companyCd, Integer priorityOrderCd, Integer newPriorityOrderCd);
+
+    List<Map<String,Object>> getJanOrName(String companyCd,Integer priorityOrderCd);
 }

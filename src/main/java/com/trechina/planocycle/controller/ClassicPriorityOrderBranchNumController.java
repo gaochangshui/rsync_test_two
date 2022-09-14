@@ -9,6 +9,7 @@ import com.trechina.planocycle.service.ClassicPriorityOrderBranchNumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -147,7 +148,7 @@ public class ClassicPriorityOrderBranchNumController {
 
 
     /**
-     * 获取星取表
+     * 星取表の取得
      */
     @PostMapping("getStarReadingTable")
     public Map<String,Object> getStarReadingTable(@RequestBody StarReadingTableDto starReadingTableDto){
@@ -156,7 +157,7 @@ public class ClassicPriorityOrderBranchNumController {
 
 
     /**
-     * 获取星取表参数信息
+     * 星取表パラメータ情報の取得
      */
     @GetMapping("getStarReadingParam")
     public Map<String,Object> getStarReadingParam(String companyCd,Integer priorityOrderCd){
@@ -165,10 +166,18 @@ public class ClassicPriorityOrderBranchNumController {
 
 
     /**
-     * 星取表信息保存
+     * 星取表情報の保存
      */
     @PostMapping("setStarReadingData")
     public Map<String,Object> setStarReadingData(@RequestBody StarReadingVo starReadingVo){
         return priorityOrderBranchNumService.setStarReadingData(starReadingVo);
+    }
+
+    /**
+     * 星取表情報Excel出力
+     */
+    @PostMapping("starReadingDataForExcel")
+    public void starReadingDataForExcel(@RequestBody StarReadingVo starReadingVo, HttpServletResponse response){
+         priorityOrderBranchNumService.starReadingDataForExcel(starReadingVo,response);
     }
 }

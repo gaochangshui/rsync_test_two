@@ -14,5 +14,6 @@ public class StarReadingVo {
     private Map<String,Object> group;
     private String companyCd;
     private Integer priorityOrderCd;
+    private String taskID;
 
 }

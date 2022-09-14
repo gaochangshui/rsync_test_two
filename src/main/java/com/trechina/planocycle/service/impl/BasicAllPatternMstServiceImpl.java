@@ -217,7 +217,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
         List<String> colNmforMst = priorityOrderMstAttrSortMapper.getColNmforMst(companyCd, authorCd, priorityOrderCd,commonTableName);
 
-        return commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd, minFaceNum, zokuseiMsts, allCdList,
+        return commonMstService.commSetJanForShelf(patternCd, companyCd, priorityOrderCd, zokuseiMsts, allCdList,
                 restrictResult, attrList, authorCd, commonTableName,
                 partitionVal, null, tanaWidCheck, tanaList, relationMap,janResult,sizeAndIrisu, isReOrder, productPowerCd, colNmforMst);
     }

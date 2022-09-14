@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +22,6 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -69,6 +69,10 @@ class PlanoCycleApiApplicationTests {
     private ProductPowerMstServiceImpl productPowerMstService;
     @Autowired
     private BasicPatternMstService basicPatternMstService;
+    @Autowired
+    private ThreadPoolTaskExecutor executor;
+    @Autowired
+    private ClassicPriorityOrderMstAttrSortMapper classicPriorityOrderMstAttrSortMapper;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
@@ -164,9 +168,7 @@ class PlanoCycleApiApplicationTests {
 
     @Test
     public  void test8()  {
-        Map<String,Object> a = new HashMap<>();
-        a.put("1","0014");
-        //List<String>  janClassify = productPowerDataMapper.getJanClassify(a,"\"1000\".prod_0000_jan_kaisou");
-        Map<String, Object> productParam = productPowerMstService.getProductParam("0001", 1466);
+        List<Map<String, Object>> attrSpecialList = classicPriorityOrderMstAttrSortMapper.getAttrSpecialList("0001", 578);
+        System.out.println(attrSpecialList);
     }
 }

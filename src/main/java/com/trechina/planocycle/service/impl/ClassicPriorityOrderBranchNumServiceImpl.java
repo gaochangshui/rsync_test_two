@@ -18,20 +18,25 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderBranchNumService;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanReplaceService;
-import com.trechina.planocycle.utils.ListDisparityUtils;
-import com.trechina.planocycle.utils.ResultMaps;
-import com.trechina.planocycle.utils.cgiUtils;
-import com.trechina.planocycle.utils.dataConverUtils;
+import com.trechina.planocycle.utils.*;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriUtils;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -77,6 +82,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     private PriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
     private StarReadingTableMapper starReadingTableMapper;
+    @Autowired
+    private VehicleNumCache vehicleNumCache;
+    @Autowired
+    private ThreadPoolTaskExecutor executor;
+
 
     public static final Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
 
@@ -557,7 +567,9 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
         List<Map<String, Object>> janName = classicPriorityOrderDataMapper.getJanName(starReadingTableDto.getJanList(),priorityOrderCd);
         if (starReadingTableDto.getModeCheck() == 1) {
-            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,companyCd);
+            List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
+            groupCompany.add(companyCd);
+            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany);
             branchList=branchList.stream().filter(map -> starReadingTableDto.getExpressItemList().contains(map.get("sort"))).collect(Collectors.toList());
             List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList);
 
@@ -665,16 +677,26 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         String header = "JAN,商品名,合計";
         Map mapResult = new HashMap();
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
+        List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
+        groupCompany.add(companyCd);
         if (modeCheck == 1){
             janInfoTableName = "priority.work_priority_order_commodity_branch";
+
             List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
-            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,companyCd);
+            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany);
+            List<Map<String, Object>> janOrName = starReadingTableMapper.getJanOrName(companyCd, priorityOrderCd);
             List<Object> branchCd = branchDiff.stream().map(map -> map.get("branchCd")).collect(Collectors.toList());
             branchList=branchList.stream().filter(map ->branchCd.contains(map.get("branchCd"))).collect(Collectors.toList());
             Map<String, List<Map<String, Object>>> janGroup = branchDiff.stream()
                     .collect(Collectors.groupingBy(map -> MapUtils.getString(map, "jan")));
+
             List<Map<String, Object>> list = new ArrayList();
             for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
+                for (Map<String, Object> stringObjectMap : janOrName) {
+                    if (stringListEntry.getKey().equals(stringObjectMap.get("jan_new"))){
+                        stringListEntry.getValue().get(0).put("janName",stringObjectMap.get("sku"));
+                    }
+                }
                 Map<String,Object> map = new HashMap<>();
                 map.put("jan",stringListEntry.getValue().get(0).get("jan"));
                 map.put("janName",stringListEntry.getValue().get(0).get("janName"));
@@ -735,7 +757,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,"jan"))).collect(Collectors.toList());
             mapResult.put("data", list);
         }
-        List<Map<String, Object>> areaList = starReadingTableMapper.getAreaList(priorityOrderCd);
+        List<Map<String, Object>> areaList = starReadingTableMapper.getAreaList(priorityOrderCd,groupCompany);
         List<Map<String, Object>>  patternList =  starReadingTableMapper.getPatternList(priorityOrderCd);
         expressItemList.addAll(areaList);
         expressItemList.addAll(patternList);
@@ -751,6 +773,20 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
     @Override
     public Map<String, Object> setStarReadingData(StarReadingVo starReadingVo) {
+        if (starReadingVo.getTaskID()!=null){
+            if ("1".equals(vehicleNumCache.get("save"+starReadingVo.getTaskID()))) {
+                vehicleNumCache.remove("save"+starReadingVo.getTaskID());
+                return ResultMaps.result(ResultEnum.SUCCESS);
+            } else if ("2".equals(vehicleNumCache.get("save"+starReadingVo.getTaskID()))) {
+                vehicleNumCache.remove("save"+starReadingVo.getTaskID());
+                return ResultMaps.result(ResultEnum.FAILURE);
+            }else {
+                Map<String,Object> map = new HashMap<>();
+                map.put("status","9");
+                map.put("taskID",starReadingVo.getTaskID());
+                return ResultMaps.result(ResultEnum.SUCCESS,map);
+            }
+        }
         Integer priorityOrderCd = starReadingVo.getPriorityOrderCd();
         String companyCd = starReadingVo.getCompanyCd();
         starReadingTableMapper.delBranchList(companyCd,priorityOrderCd);
@@ -761,45 +797,106 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             priorityOrderMstMapper.updateModeCheck(starReadingVo);
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
-        List<Map<String, Object>> list = new ArrayList<>();
+        String uuid = UUID.randomUUID().toString();
+        Future<?> future = executor.submit(() -> {
+            try {
+                List<Map<String, Object>> list = new ArrayList<>();
 
-            for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
-                String jan = datum.get("jan").toString();
-                for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
-                    if (!stringObjectEntry.getKey().equals("jan") && !stringObjectEntry.getKey().equals("janName") && !stringObjectEntry.getKey().equals("total")) {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("jan", jan);
-                        map.put("branch", stringObjectEntry.getKey().split("_")[1]);
-                        map.put("flag", stringObjectEntry.getValue().equals("☓") ? -1 : stringObjectEntry.getValue().equals("") ? 0 : 1);
-                        if (starReadingVo.getModeCheck() == 0){
-                            map.put("patternNameCd",Integer.valueOf(stringObjectEntry.getKey().split("_")[0].split("pattern")[1]));
-                        }
-                        for (Map.Entry<String, Object> objectEntry : starReadingVo.getGroup().entrySet()) {
-                            if (objectEntry.getKey().equals(stringObjectEntry.getKey().split("_")[0])) {
-                                map.put("area", objectEntry.getValue());
+                for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
+                    String jan = datum.get("jan").toString();
+                    for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
+                        if (!stringObjectEntry.getKey().equals("jan") && !stringObjectEntry.getKey().equals("janName") && !stringObjectEntry.getKey().equals("total")) {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("jan", jan);
+                            map.put("branch", stringObjectEntry.getKey().split("_")[1]);
+                            map.put("flag", stringObjectEntry.getValue().equals("☓") ? -1 : stringObjectEntry.getValue().equals("") ? 0 : 1);
+                            if (starReadingVo.getModeCheck() == 0){
+                                map.put("patternNameCd",Integer.valueOf(stringObjectEntry.getKey().split("_")[0].split("pattern")[1]));
                             }
+                            for (Map.Entry<String, Object> objectEntry : starReadingVo.getGroup().entrySet()) {
+                                if (objectEntry.getKey().equals(stringObjectEntry.getKey().split("_")[0])) {
+                                    map.put("area", objectEntry.getValue());
+                                }
+                            }
+                            list.add(map);
                         }
-                        list.add(map);
+
                     }
 
-                }
-                if (list.size() >= 5000){
-                    if (starReadingVo.getModeCheck() == 1) {
-                        starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
-                    }else {
-                        starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
+
+                    if (list.size() >= 5000){
+                        if (starReadingVo.getModeCheck() == 1) {
+                            starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
+                        }else {
+                            starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
+                        }
+                        list.clear();
                     }
-                    list.clear();
+                }
+                if (!list.isEmpty()) {
+                    if (starReadingVo.getModeCheck() == 1) {
+                        starReadingTableMapper.setBranchList(list, companyCd, priorityOrderCd);
+                    } else {
+                        starReadingTableMapper.setPatternList(list, companyCd, priorityOrderCd);
+                    }
+                }
+                vehicleNumCache.put("save" + uuid, "1");
+            } catch (NumberFormatException e) {
+                vehicleNumCache.put("save"+uuid,"2");
+            }
+        });
+        try {
+            future.get(10, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e){
+            logger.error("thread is interrupted", e);
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException e) {
+            Map<String,Object> map = new HashMap<>();
+            map.put("status","9");
+            map.put("taskID",uuid);
+            return ResultMaps.result(ResultEnum.SUCCESS, map);
+        }
+        if ("2".equals(vehicleNumCache.get("save"+uuid))){
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public void starReadingDataForExcel(StarReadingVo starReadingVo, HttpServletResponse response) {
+        ServletOutputStream outputStream = null;
+
+        List<String> header = Arrays.asList(starReadingVo.getHeader().replaceAll("<br />","_").split(","));
+        List<String>  column = Arrays.asList(starReadingVo.getColumn().split(","));
+        List<String>  columns = new ArrayList<>(column);
+        Map<String, Object> group = starReadingVo.getGroup();
+        LinkedHashMap<String,Object> linkedHashMap = new LinkedHashMap<>();
+        for (Map.Entry<String, Object> stringObjectEntry : group.entrySet()) {
+            List<String> list =new ArrayList<>();
+            for (int i = 0; i < header.size(); i++) {
+
+                if (column.get(i).split("_")[0].equals(stringObjectEntry.getKey())){
+                    list.add(header.get(i));
                 }
             }
-
-        if (starReadingVo.getModeCheck() == 1) {
-            starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
-        }else {
-            starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
+            linkedHashMap.put(stringObjectEntry.getValue().toString(),list);
         }
 
-        return ResultMaps.result(ResultEnum.SUCCESS);
+        try {
+            String fileName = String.format("%s.xlsx", "必須不可出力");
+            String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
+            response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+            response.setHeader("Content-Disposition", format);
+            outputStream = response.getOutputStream();
+
+            ExcelUtils.starReadingExcel(header,columns, linkedHashMap,starReadingVo.getData() ,outputStream);
+            outputStream.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 
@@ -841,4 +938,5 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         map.put("janInfoTable",janInfoTable);
         return map;
     }
+
 }

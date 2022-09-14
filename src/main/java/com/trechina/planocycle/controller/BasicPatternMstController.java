@@ -68,12 +68,21 @@ public class BasicPatternMstController {
     }
 
     /**
+     * cancel task
+     * @return
+     */
+    @GetMapping("/cancelTask")
+    public Map<String,Object> cancelTask(String taskId){
+        return basicPatternMstService.cancelTask(taskId);
+    }
+
+    /**
      * 表示自動計算実行ステータス
      * @param taskId
      * @return
      */
     @GetMapping("/autoTaskId")
-    public Map<String, Object> autoTaskId(String taskId){
+    public Map<String, Object> autoTaskId(String taskId) throws InterruptedException {
         return basicPatternMstService.autoTaskId(taskId);
     }
 

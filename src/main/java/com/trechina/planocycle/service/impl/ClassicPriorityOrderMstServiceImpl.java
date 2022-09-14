@@ -11,6 +11,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
@@ -19,10 +20,7 @@ import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
-import com.trechina.planocycle.utils.CacheUtil;
-import com.trechina.planocycle.utils.ResultMaps;
-import com.trechina.planocycle.utils.cgiUtils;
-import com.trechina.planocycle.utils.sshFtpUtils;
+import com.trechina.planocycle.utils.*;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.poi.ss.usermodel.CellType;
@@ -46,6 +44,7 @@ import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.nio.file.Files;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -109,6 +108,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Autowired
     private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     @Autowired
+    private ClassicPriorityOrderMstAttrSortMapper classicPriorityOrderMstAttrSortMapper;
+    @Autowired
     private cgiUtils cgiUtil;
     @Autowired
     private CacheUtil cacheUtil;
@@ -136,6 +137,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     private JansMapper jansMapper;
     @Autowired
     private StarReadingTableMapper starReadingTableMapper;
+    @Autowired
+    private ProductPowerMstMapper productPowerMstMapper;
+    @Autowired
+    private LogAspect logAspect;
+
     /**
      * 優先順位テーブルlistの取得
      *
@@ -494,6 +500,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         if (!goodsRank.isEmpty()) {
             priorityOrderDataMapper.updateGoodsRank(goodsRank, companyCd, priorityOrderCd);
         }
+        List<Map<String, Object>> attrSpecialList = classicPriorityOrderMstAttrSortMapper.getAttrSpecialList(companyCd, priorityOrderCd);
+        if (!attrSpecialList.isEmpty()){
+            HashMap<String, Object> objectObjectHashMap = new HashMap<>();
+            objectObjectHashMap.put("value","1");
+            objectObjectHashMap.put("sort","jan_new");
+            attrSpecialList.add(objectObjectHashMap);
+            priorityOrderDataMapper.setSpecialName(linkedHashMaps,attrSpecialList);
+            logger.info("");
+        }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -788,6 +803,71 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         List<Map<String, Object>> attrInfo = workPriorityOrderPtsClassify.getAttrInfo(companyCd, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,attrInfo);
     }
+
+    @Override
+    public void priorityOrderDataForExcel(PriorityOrderMstDto priorityOrderMstDto,HttpServletResponse response) {
+        String companyCd = priorityOrderMstDto.getCompanyCd();
+        Integer priorityOrderCd = priorityOrderMstDto.getPriorityOrderCd();
+        List<Map<String, Object>> priorityData = new Gson().fromJson(priorityOrderMstDto.getPriorityData(), new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
+        List<LinkedHashMap<String, Object>> attrForName = priorityOrderDataMapper.getAttrForName(companyCd, priorityOrderCd);
+        Map<String,Object> paramData = new HashMap<>();
+        String productName = priorityOrderMstMapper.getProductName(companyCd, priorityOrderCd);
+
+        paramData.put("productName",productName);
+        List<String> shelfPatternName = priorityOrderMstMapper.getShelfPatternName(companyCd, priorityOrderCd);
+        paramData.put("shelfPatternName",shelfPatternName);
+        List<String> attrName = attrForName.stream().map(map -> map.get("name").toString()).collect(Collectors.toList());
+        paramData.put("attrName",attrName);
+        String company = productPowerMstMapper.getCompanyName(companyCd);
+        paramData.put("company",company);
+        LinkedHashMap<String,Object> mapColHeader = new LinkedHashMap<>();
+        mapColHeader.put("jan_old","旧JAN");
+        mapColHeader.put("jan_new","新JAN");
+        mapColHeader.put("sku","SKU");
+        mapColHeader.put("branch_amount_upd","店@金額(円)");
+        mapColHeader.put("pos_amount","POS金額(円)");
+        mapColHeader.put("unit_price","単価");
+        mapColHeader.put("branch_amount","店@金額(円)");
+        mapColHeader.put("branch_num","定番 店舗数");
+        mapColHeader.put("branch_num_upd","定番 店舗数");
+        mapColHeader.put("difference","配荷差");
+        mapColHeader.put("sale_forecast","売上増減 予測(千円)");
+        mapColHeader.put("rank","Rank");
+        mapColHeader.put("rank_prop","Rank");
+        mapColHeader.put("rank_upd","Rank");
+        String colSort = "jan_old,jan_new,sku";
+        for (LinkedHashMap<String, Object> linkedHashMap : attrForName) {
+            mapColHeader.put(linkedHashMap.get("sort").toString(),linkedHashMap.get("name"));
+            colSort +=","+linkedHashMap.get("sort");
+        }
+        priorityData.add(0,mapColHeader);
+        colSort+= ",pos_amount,branch_amount,unit_price,rank,branch_num,rank_prop,rank_upd,branch_num_upd,branch_amount_upd,difference,sale_forecast";
+        ServletOutputStream outputStream = null;
+        String date = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+        try {
+            String fileName = String.format("%s.xlsx", "優先順位表"+date);
+            String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
+            response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+            response.setHeader("Content-Disposition", format);
+            outputStream = response.getOutputStream();
+            ExcelUtils.priorityOrderExcel(colSort,priorityData,outputStream,attrForName.size(),paramData);
+            outputStream.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }finally {
+            if(Objects.nonNull(outputStream)){
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    logger.error("io閉じる異常", e);
+                    logAspect.setTryErrorLog(e,new Object[]{companyCd,priorityOrderCd});
+                }
+            }
+        }
+
+
+    }
+
 
     @Override
     public void packagePtsZip(String taskId, HttpServletResponse response) throws IOException {
