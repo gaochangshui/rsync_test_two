@@ -483,10 +483,12 @@ public class ExcelUtils {
                  dataRow = sheet.createRow(rowIndex);
                 for (int i = 0; i < column.size(); i++) {
                     cell = dataRow.createCell(i);
-                    cell.setCellValue(datum.get(column.get(i)).toString());
+
                     if (i  == 2){
+                        cell.setCellValue(Integer.parseInt(datum.get(column.get(i)).toString()));
                         cell.setCellType(CellType.NUMERIC);
                     }else {
+                        cell.setCellValue(datum.get(column.get(i)).toString());
                         cell.setCellType(CellType.STRING);
                     }
                 }
@@ -514,7 +516,6 @@ public class ExcelUtils {
             cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             sheet1.createFreezePane(0,4);
             sheet.createFreezePane(0,2);
-
             //最初の行の索引
             int colIndex=0;
 

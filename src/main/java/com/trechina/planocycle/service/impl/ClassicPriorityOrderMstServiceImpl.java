@@ -507,7 +507,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             objectObjectHashMap.put("sort","jan_new");
             attrSpecialList.add(objectObjectHashMap);
             priorityOrderDataMapper.setSpecialName(linkedHashMaps,attrSpecialList);
-            logger.info("");
+
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
@@ -652,7 +652,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 }
 
                 //must and not only one branch, download a pts csv
-                if(mustNotBranch.size()!=1 && !isAllForMustNot){
+                if((mustNotBranch.size()!=1 && !isAllForMustNot) || !branchMustNot){
                     String json = new Gson().toJson(ptsJanDtoListByGroup);
                     Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
                             new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
