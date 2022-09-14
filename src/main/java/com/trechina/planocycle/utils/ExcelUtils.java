@@ -130,7 +130,7 @@ public class ExcelUtils {
     public static void ParamForExcel ( XSSFSheet sheet1,Map<String,Object> paramMap,XSSFWorkbook workbook){
 
         sheet1.setDisplayGridlines(false);
-        //设置样式
+        //スタイルの設定
         XSSFCellStyle cellStyle = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
         font.setColor((short) 1);
@@ -174,7 +174,7 @@ public class ExcelUtils {
         cell = row.createCell(1);
         cell.setCellValue(paramMap.get("granularity").toString());
         colIndex+=2;
-        //一级头
+        //いちだんヘッド
         row = sheet1.createRow(colIndex);
         cell = row.createCell(headerColIndex);
         cell.setCellValue("店舗条件");
@@ -204,7 +204,7 @@ public class ExcelUtils {
         cell.setCellValue("市場条件");
         cell.setCellStyle(cellStyle);
         colIndex+=1;
-        //二级头
+        //にだんヘッド
         row = sheet1.createRow(colIndex);
         headerColIndex=0;
         cell = row.createCell(headerColIndex);
@@ -505,7 +505,7 @@ public class ExcelUtils {
             Pattern numberPattern = Pattern.compile("-?[0-9]+(\\.[0-9]+)?%?");
 
             sheet1.setDisplayGridlines(false);
-            //设置样式
+            //スタイルの設定
             XSSFCellStyle cellStyle = workbook.createCellStyle();
             XSSFFont font = workbook.createFont();
             font.setColor((short) 1);
@@ -513,7 +513,7 @@ public class ExcelUtils {
             cellStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
             cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             sheet1.createFreezePane(0,4);
-
+            sheet.createFreezePane(0,2);
             //最初の行の索引
             int colIndex=0;
 
@@ -569,7 +569,7 @@ public class ExcelUtils {
                 }
                 rowIndex++;
             }
-            colIndex=0;
+
             XSSFRow row = sheet1.createRow(0);
             cell = row.createCell(0);
             cell.setCellValue("企業(業態)");

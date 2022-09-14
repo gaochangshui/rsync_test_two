@@ -130,4 +130,6 @@ public interface ClassicPriorityOrderDataMapper {
     List<Map<String,Object>> getJanName(List<String> janList,Integer priorityOrderCd);
 
     List<LinkedHashMap<String,Object>> getAttrForName(String companyCd, Integer priorityOrderCd);
+
+    void setSpecialName(List<Map<String, Object>> linkedHashMaps, List<Map<String, Object>> attrSpecialList);
 }

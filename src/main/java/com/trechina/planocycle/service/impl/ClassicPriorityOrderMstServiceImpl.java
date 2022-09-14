@@ -11,6 +11,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
@@ -107,6 +108,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Autowired
     private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     @Autowired
+    private ClassicPriorityOrderMstAttrSortMapper classicPriorityOrderMstAttrSortMapper;
+    @Autowired
     private cgiUtils cgiUtil;
     @Autowired
     private CacheUtil cacheUtil;
@@ -136,6 +139,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     private StarReadingTableMapper starReadingTableMapper;
     @Autowired
     private ProductPowerMstMapper productPowerMstMapper;
+    @Autowired
+    private LogAspect logAspect;
+
     /**
      * 優先順位テーブルlistの取得
      *
@@ -494,6 +500,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         if (!goodsRank.isEmpty()) {
             priorityOrderDataMapper.updateGoodsRank(goodsRank, companyCd, priorityOrderCd);
         }
+        List<Map<String, Object>> attrSpecialList = classicPriorityOrderMstAttrSortMapper.getAttrSpecialList(companyCd, priorityOrderCd);
+        if (!attrSpecialList.isEmpty()){
+            HashMap<String, Object> objectObjectHashMap = new HashMap<>();
+            objectObjectHashMap.put("value","1");
+            objectObjectHashMap.put("sort","jan_new");
+            attrSpecialList.add(objectObjectHashMap);
+            priorityOrderDataMapper.setSpecialName(linkedHashMaps,attrSpecialList);
+
+        }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -839,6 +854,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             outputStream.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }finally {
+            if(Objects.nonNull(outputStream)){
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    logger.error("io閉じる異常", e);
+                    logAspect.setTryErrorLog(e,new Object[]{companyCd,priorityOrderCd});
+                }
+            }
         }
 
 

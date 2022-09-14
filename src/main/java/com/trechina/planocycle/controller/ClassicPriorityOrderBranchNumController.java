@@ -148,7 +148,7 @@ public class ClassicPriorityOrderBranchNumController {
 
 
     /**
-     * 获取星取表
+     * 星取表の取得
      */
     @PostMapping("getStarReadingTable")
     public Map<String,Object> getStarReadingTable(@RequestBody StarReadingTableDto starReadingTableDto){
@@ -157,7 +157,7 @@ public class ClassicPriorityOrderBranchNumController {
 
 
     /**
-     * 获取星取表参数信息
+     * 星取表パラメータ情報の取得
      */
     @GetMapping("getStarReadingParam")
     public Map<String,Object> getStarReadingParam(String companyCd,Integer priorityOrderCd){
@@ -166,7 +166,7 @@ public class ClassicPriorityOrderBranchNumController {
 
 
     /**
-     * 星取表信息保存
+     * 星取表情報の保存
      */
     @PostMapping("setStarReadingData")
     public Map<String,Object> setStarReadingData(@RequestBody StarReadingVo starReadingVo){
@@ -174,7 +174,7 @@ public class ClassicPriorityOrderBranchNumController {
     }
 
     /**
-     * 星取表信息Excel出力
+     * 星取表情報Excel出力
      */
     @PostMapping("starReadingDataForExcel")
     public void starReadingDataForExcel(@RequestBody StarReadingVo starReadingVo, HttpServletResponse response){
