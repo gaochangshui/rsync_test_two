@@ -108,6 +108,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Autowired
     private PriorityOrderMstAttrSortMapper priorityOrderMstAttrSortMapper;
     @Autowired
+    private ClassicPriorityOrderMstAttrSortMapper classicPriorityOrderMstAttrSortMapper;
+    @Autowired
     private cgiUtils cgiUtil;
     @Autowired
     private CacheUtil cacheUtil;
@@ -497,6 +499,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,linkedHashMaps,authorCd);
         if (!goodsRank.isEmpty()) {
             priorityOrderDataMapper.updateGoodsRank(goodsRank, companyCd, priorityOrderCd);
+        }
+        List<Map<String, Object>> attrSpecialList = classicPriorityOrderMstAttrSortMapper.getAttrSpecialList(companyCd, priorityOrderCd);
+        if (!attrSpecialList.isEmpty()){
+            HashMap<String, Object> objectObjectHashMap = new HashMap<>();
+            objectObjectHashMap.put("value","1");
+            objectObjectHashMap.put("sort","jan_new");
+            attrSpecialList.add(objectObjectHashMap);
+            priorityOrderDataMapper.setSpecialName(linkedHashMaps,attrSpecialList);
+            logger.info("");
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

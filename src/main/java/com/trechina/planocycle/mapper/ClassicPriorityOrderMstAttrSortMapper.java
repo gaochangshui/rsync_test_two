@@ -48,4 +48,5 @@ public interface ClassicPriorityOrderMstAttrSortMapper {
 
     List<ClassicPriorityOrderMstAttrSortDto> selectAttrName(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
 
+    List<Map<String,Object>> getAttrSpecialList(String companyCd, Integer priorityOrderCd);
 }

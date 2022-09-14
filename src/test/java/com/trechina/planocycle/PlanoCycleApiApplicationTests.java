@@ -24,7 +24,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
@@ -72,6 +71,8 @@ class PlanoCycleApiApplicationTests {
     private BasicPatternMstService basicPatternMstService;
     @Autowired
     private ThreadPoolTaskExecutor executor;
+    @Autowired
+    private ClassicPriorityOrderMstAttrSortMapper classicPriorityOrderMstAttrSortMapper;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
@@ -167,29 +168,7 @@ class PlanoCycleApiApplicationTests {
 
     @Test
     public  void test8()  {
-        for (int i = 0; i < 10; i++) {
-            long b = 0;
-            executor.execute(()->{
-                long id = Thread.currentThread().getId();
-                int a = 0;
-                for (int j = 0; j < 1000; j++){
-                    a++;
-                }
-                    System.out.println(id);
-
-
-            });
-        }
-
-        Set<Thread> setOfThread = Thread.getAllStackTraces().keySet();
-
-//Iterate over set to find yours
-        for(Thread thread : setOfThread){
-            if(thread.getId()==21){
-                thread.interrupt();
-                thread.stop();
-            }
-        }
-
+        List<Map<String, Object>> attrSpecialList = classicPriorityOrderMstAttrSortMapper.getAttrSpecialList("0001", 578);
+        System.out.println(attrSpecialList);
     }
 }

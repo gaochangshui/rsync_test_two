@@ -152,4 +152,9 @@
     and attr.priority_order_cd = attrsort.priority_order_cd
     where attr.company_cd = #{companyCd,jdbcType=VARCHAR} and attr.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER};
   </select>
+    <select id="getAttrSpecialList" resultType="java.util.Map">
+      select split_part(value, '_', 3) as value,sort
+      from priority.work_priority_order_mst_attr
+      where priority_order_cd = #{priorityOrderCd} and split_part(value, '_', 3) ::integer > 111
+    </select>
 </mapper>
