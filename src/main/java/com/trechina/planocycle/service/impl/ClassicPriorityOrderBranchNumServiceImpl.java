@@ -952,7 +952,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             headers.add(header4);
             for (int i = 0; i < columnList.size(); i++) {
                 LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-                map.put("branch", header.get(i));
+                map.put("branch", header.get(i).split("<br />")[1]);
                 map.put("area", group.get(columnList.get(i).split("_")[0]));
                 map.put("branchCd", columnList.get(i).split("_")[1]);
                 map.put("areaCd", columnList.get(i).split("_")[0]);
@@ -987,17 +987,12 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
                 resultList.add(map);
             }
-            String column = "";
-            String header = "";
+            String column = "jan,janName,maker,total";
+            String header = "JAN,商品名,メーカー,合計";
             Map<String,Object> group = new LinkedHashMap<>();
             for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
-                if (column.equals("")){
-                    column += datum.get("areaCd")+"_"+datum.get("branchCd");
-                    header += datum.get("branch");
-                }else {
                     column += ","+datum.get("areaCd")+"_"+datum.get("branchCd");
-                    header += ","+datum.get("branch");
-                }
+                    header += ","+datum.get("branchCd")+"<br />"+datum.get("branch");
                 group.putIfAbsent(datum.get("areaCd").toString(),datum.get("area"));
             }
             StarReadingVo starReadingVo1 = new StarReadingVo();
