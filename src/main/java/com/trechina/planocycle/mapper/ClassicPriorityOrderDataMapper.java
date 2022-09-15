@@ -127,7 +127,7 @@ public interface ClassicPriorityOrderDataMapper {
 
     List<Map<String,Object>> getJanInfo(Integer priorityOrderCd,String janInfoTableName);
 
-    List<Map<String,Object>> getJanName(List<String> janList,Integer priorityOrderCd);
+    List<Map<String,Object>> getJanName(List<String> janList,Integer priorityOrderCd,String makerCol,String tableName);
 
     List<LinkedHashMap<String,Object>> getAttrForName(String companyCd, Integer priorityOrderCd);
 
