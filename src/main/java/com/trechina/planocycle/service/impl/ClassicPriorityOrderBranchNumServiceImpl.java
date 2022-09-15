@@ -811,6 +811,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
         if (starReadingVo.getGroup() == null){
+            starReadingVo.setFlag(0);
             Map<String, Object> stringObjectMap = this.rowColumnConversion(starReadingVo);
             starReadingVo = (StarReadingVo) stringObjectMap.get("data");
         }
