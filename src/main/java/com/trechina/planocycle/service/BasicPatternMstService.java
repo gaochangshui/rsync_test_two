@@ -36,4 +36,6 @@ public interface BasicPatternMstService {
     List<Map<String, Object>> updateJanSizeByMap( List<Map<String, Object>> priorityOrderResultDataDtoList);
 
     Map<String, Object> cancelTask(String taskId);
+
+    Map<String, Object> getCoreCompany();
 }
