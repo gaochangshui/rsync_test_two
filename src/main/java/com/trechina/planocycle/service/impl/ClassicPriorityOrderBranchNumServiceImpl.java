@@ -921,18 +921,31 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             List<String> columnList = new ArrayList<>(list);
             List<LinkedHashMap<String, Object>> resultList = new ArrayList<>();
             List<String> headers = new ArrayList<>();
-            String header1 = "area,branch";
+            String header1 = "";
             String header2 = "";
             String header3 = "";
             String header4 = "";
-            String column = "";
+            if (starReadingVo.getModeCheck() == 1) {
+                 header4 = "エリア,店舗CD,店舗名";
+            }else {
+                 header4 = "棚名称,棚パターンCD,棚パターン";
+            }
+            String column = "area,branchCd,branch";
             List<LinkedHashMap<String, Object>> data = starReadingVo.getData().stream().sorted(Comparator.comparing(map -> MapUtils.getString(map, "jan"))).collect(Collectors.toList());
             for (LinkedHashMap<String, Object> datum : data) {
+                if (header1.equals("")) {
+                    header1 +=  datum.get("maker");
+                    header2 +=  datum.get("total");
+                    header3 +=  datum.get("jan");
+                    header4 +=  datum.get("janName");
+
+                }else {
                     header1 += "," + datum.get("maker");
                     header2 += "," + datum.get("total");
                     header3 += "," + datum.get("jan");
                     header4 += "," + datum.get("janName");
                     column += ",jan" + datum.get("jan");
+                }
             }
             headers.add(header1);
             headers.add(header2);
@@ -942,7 +955,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 LinkedHashMap<String, Object> map = new LinkedHashMap<>();
                 map.put("branch", header.get(i));
                 map.put("area", group.get(columnList.get(i).split("_")[0]));
-                map.put("branchCd", columnList.get(i));
+                map.put("branchCd", columnList.get(i).split("_")[1]);
                 map.put("areaCd", columnList.get(i).split("_")[0]);
                 for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
                     map.put("jan" + datum.get("jan"), datum.get(columnList.get(i)));
@@ -954,6 +967,9 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             starReadingVo1.setHeader(headers);
             starReadingVo1.setData(resultList);
             return ResultMaps.result(ResultEnum.SUCCESS,starReadingVo1);
+        }else {
+           List<String> headers =  (List<String>) starReadingVo.getHeader();
+
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
