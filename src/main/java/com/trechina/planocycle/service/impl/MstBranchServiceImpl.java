@@ -108,7 +108,7 @@ public class MstBranchServiceImpl implements MstBranchService {
                 int i = mstBranchMapper.checkTableExist(tableNameInfoWK.split("\\.")[1], companyCd);
                 if(i < 1){
                     //if not exist, delete from table
-                    mstBranchMapper.deleteNotExistTenMst(classCd, masterTenTb);
+                    mstBranchMapper.deleteNotExistMst(classCd, masterTenTb);
                     logger.info("{} not exist", tableNameInfoWK);
                     continue;
                 }

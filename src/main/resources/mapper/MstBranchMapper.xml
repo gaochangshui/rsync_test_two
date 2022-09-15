@@ -96,7 +96,7 @@
     <select id="checkSchemaExist" resultType="int">
         select count(*) from information_schema.tables where table_schema=#{schemaCd}
     </select>
-    <delete id="deleteNotExistTenMst">
+    <delete id="deleteNotExistMst">
         delete from ${tableName} where "1"=#{classCd}
     </delete>
 </mapper>
