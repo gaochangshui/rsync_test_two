@@ -10,10 +10,13 @@ import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.MstBranchService;
 import com.trechina.planocycle.service.MstCommodityService;
 import com.trechina.planocycle.utils.ResultMaps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,6 +33,8 @@ public class MstBranchServiceImpl implements MstBranchService {
     private ClassicPriorityOrderCommodityMustMapper classicPriorityOrderCommodityMustMapper;
     @Autowired
     private MstCommodityService mstCommodityService;
+
+    private Logger logger = LoggerFactory.getLogger(MstBranchServiceImpl.class);
 
     @Override
     public Map<String, Object> getBranchInfo(BranchList branchList) {
@@ -99,6 +104,12 @@ public class MstBranchServiceImpl implements MstBranchService {
                 tableNameInfo = MessageFormat.format(MagicString.PROD_TEN_INFO, companyCd, classCd);
                 tableNameInfoWK = MessageFormat.format(MagicString.WK_PROD_TEN_INFO, companyCd, classCd);
                 tableNameHeaderInfo = MessageFormat.format(MagicString.WK_PROD_TEN_INFO_HEADER, companyCd, classCd);
+
+                int i = mstBranchMapper.checkTableExist(tableNameInfoWK.split("\\.")[1], companyCd);
+                if(i < 1){
+                    logger.info("{} not exist", tableNameInfoWK);
+                    continue;
+                }
 
                 tenList = mstBranchMapper.getTenHeader(tableNameHeaderInfo);
                 column = tenList.stream().map(e->e.get("3").toString()).collect(Collectors.joining(","));

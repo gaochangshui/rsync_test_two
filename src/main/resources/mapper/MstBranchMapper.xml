@@ -90,4 +90,7 @@
     <select id="getMasterTenClass" resultType="string">
         select "1" from ${tableName}
     </select>
+    <select id="checkTableExist" resultType="int">
+        select count(*) from information_schema.tables where "table_name"=#{tableName} and table_schema=#{schema}
+    </select>
 </mapper>

@@ -478,12 +478,23 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                         }
                     }
                     itemMap.putIfAbsent(zokuseiId.get("zokusei_colname").toString(), "");
+
+                    Integer isExist = MapUtils.getInteger(zokuseiId, "is_exist", 0);
+                    String colname = MapUtils.getString(itemMap, zokuseiId.get("zokusei_colname").toString());
+                    if(isExist==0 && Strings.isNullOrEmpty(MapUtils.getString(itemMap, zokuseiId.get("zokusei_colname").toString()))){
+                        colname = "_";
+                    }
+
+                    if(isExist==1 && Strings.isNullOrEmpty(MapUtils.getString(itemMap, zokuseiId.get("zokusei_colname").toString()))){
+                        colname = MagicString.DEFAULT_VALUE;
+                    }
+
                     if (groupCd.equals("")){
                         groupCd += itemMap.get(zokuseiId.get("zokusei_colcd").toString());
-                        groupName += itemMap.get(zokuseiId.get("zokusei_colname").toString());
+                        groupName += colname;
                     }else {
                         groupCd +="->"+ itemMap.get(zokuseiId.get("zokusei_colcd").toString());
-                        groupName += "->" + itemMap.get(zokuseiId.get("zokusei_colname").toString());
+                        groupName += "->" + colname;
                     }
 
                 }
