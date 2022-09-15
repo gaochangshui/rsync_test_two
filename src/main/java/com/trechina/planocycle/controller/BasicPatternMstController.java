@@ -86,5 +86,12 @@ public class BasicPatternMstController {
         return basicPatternMstService.autoTaskId(taskId);
     }
 
-
+    /**
+     * check core company is exist
+     * @return
+     */
+    @GetMapping("/getCoreCompany")
+    public Map<String, Object> getCoreCompany() {
+        return basicPatternMstService.getCoreCompany();
+    }
 }

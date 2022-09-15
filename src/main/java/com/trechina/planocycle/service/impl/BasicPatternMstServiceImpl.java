@@ -103,6 +103,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     @Autowired
     private BasicPatternJanPlacementMapper basicPatternJanPlacementMapper;
     @Autowired
+    private MstBranchMapper mstBranchMapper;
+    @Autowired
     private cgiUtils cgiUtil;
     @Value("${smartUrlPath}")
     public String smartPath;
@@ -388,6 +390,16 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             return ResultMaps.result(ResultEnum.FAILURE);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    @Override
+    public Map<String, Object> getCoreCompany() {
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        int i = mstBranchMapper.checkSchemaExist(coreCompany);
+        if(i>0){
+            return ResultMaps.result(ResultEnum.SUCCESS, 1);
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS, 0);
     }
 
     public GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd ) {
