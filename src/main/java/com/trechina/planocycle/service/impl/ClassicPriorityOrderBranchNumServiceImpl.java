@@ -785,6 +785,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
     @Override
     public Map<String, Object> setStarReadingData(StarReadingVo starReadingVo) {
+        if (starReadingVo.getGroup() == null){
+            Map<String, Object> stringObjectMap = this.rowColumnConversion(starReadingVo);
+            starReadingVo = (StarReadingVo) stringObjectMap.get("data");
+        }
         if (starReadingVo.getTaskID()!=null){
             if ("1".equals(vehicleNumCache.get("save"+starReadingVo.getTaskID()))) {
                 vehicleNumCache.remove("save"+starReadingVo.getTaskID());
@@ -810,11 +814,12 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
         String uuid = UUID.randomUUID().toString();
+        StarReadingVo finalStarReadingVo = starReadingVo;
         Future<?> future = executor.submit(() -> {
             try {
                 List<Map<String, Object>> list = new ArrayList<>();
 
-                for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
+                for (LinkedHashMap<String, Object> datum : finalStarReadingVo.getData()) {
                     String jan = datum.get("jan").toString();
                     for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
                         if (!stringObjectEntry.getKey().equals("jan") && !stringObjectEntry.getKey().equals("janName") && !stringObjectEntry.getKey().equals("total")
@@ -823,10 +828,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                             map.put("jan", jan);
                             map.put("branch", stringObjectEntry.getKey().split("_")[1]);
                             map.put("flag", stringObjectEntry.getValue().equals("☓") ? -1 : stringObjectEntry.getValue().equals("") ? 0 : 1);
-                            if (starReadingVo.getModeCheck() == 0){
+                            if (finalStarReadingVo.getModeCheck() == 0){
                                 map.put("patternNameCd",Integer.valueOf(stringObjectEntry.getKey().split("_")[0].split("pattern")[1]));
                             }
-                            for (Map.Entry<String, Object> objectEntry : starReadingVo.getGroup().entrySet()) {
+                            for (Map.Entry<String, Object> objectEntry : finalStarReadingVo.getGroup().entrySet()) {
                                 if (objectEntry.getKey().equals(stringObjectEntry.getKey().split("_")[0])) {
                                     map.put("area", objectEntry.getValue());
                                 }
@@ -838,7 +843,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
 
                     if (list.size() >= 5000){
-                        if (starReadingVo.getModeCheck() == 1) {
+                        if (finalStarReadingVo.getModeCheck() == 1) {
                             starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
                         }else {
                             starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
@@ -847,7 +852,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     }
                 }
                 if (!list.isEmpty()) {
-                    if (starReadingVo.getModeCheck() == 1) {
+                    if (finalStarReadingVo.getModeCheck() == 1) {
                         starReadingTableMapper.setBranchList(list, companyCd, priorityOrderCd);
                     } else {
                         starReadingTableMapper.setPatternList(list, companyCd, priorityOrderCd);
@@ -880,7 +885,23 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Override
     public void starReadingDataForExcel(StarReadingVo starReadingVo, HttpServletResponse response) {
         ServletOutputStream outputStream = null;
+        if (starReadingVo.getGroup() == null){
+            starReadingVo.setFlag(0);
+            Map<String, Object> stringObjectMap = this.rowColumnConversion(starReadingVo);
+            starReadingVo = (StarReadingVo) stringObjectMap.get("data");
+            List<LinkedHashMap<String, Object>> data = starReadingVo.getData();
+            for (LinkedHashMap<String, Object> datum : data) {
+                int total = 0;
+                for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
+                    if (stringObjectEntry.getValue().equals("◯")){
+                        total++;
+                    }
 
+                }
+                datum.put("total",total);
+            }
+            starReadingVo.setData(data);
+        }
         List<String> header = Arrays.asList(starReadingVo.getHeader().toString().replaceAll("<br />","_").split(","));
         List<String>  column = Arrays.asList(starReadingVo.getColumn().split(","));
         List<String>  columns = new ArrayList<>(column);
@@ -951,7 +972,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             headers.add(header4);
             for (int i = 0; i < columnList.size(); i++) {
                 LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-                map.put("branch", header.get(i).split("<br />")[1]);
+                if (starReadingVo.getModeCheck() == 1) {
+                    map.put("branch", header.get(i).split("<br />")[1]);
+                }else {
+                    map.put("branch", header.get(i));
+                }
                 map.put("area", group.get(columnList.get(i).split("_")[0]));
                 map.put("branchCd", columnList.get(i).split("_")[1]);
                 map.put("areaCd", columnList.get(i).split("_")[0]);

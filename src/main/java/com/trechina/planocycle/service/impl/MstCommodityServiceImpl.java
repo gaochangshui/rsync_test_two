@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import com.google.api.client.util.Strings;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.CommoditySyncSet;
 import com.trechina.planocycle.entity.vo.CommoditySyncSetVO;
@@ -32,7 +33,10 @@ public class MstCommodityServiceImpl implements MstCommodityService {
     @Override
     public List<CommoditySyncSet> getSyncSet(String companyCd) {
         String coreCompanycd = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
-        String tableName = MessageFormat.format(MagicString.MASTER_SYOHIN, coreCompanycd);
+        String tableName = "";
+        if (Strings.isNullOrEmpty(coreCompanycd)){
+             tableName = MessageFormat.format(MagicString.MASTER_SYOHIN, coreCompanycd);
+        }
         String tableNameCompany = MessageFormat.format(MagicString.MASTER_SYOHIN, companyCd);
         boolean isGroupComapny = sysConfigMapper.selectIsGroupCompany(companyCd) > 0;
         if(isGroupComapny){
