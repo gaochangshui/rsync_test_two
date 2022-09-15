@@ -86,7 +86,6 @@ public class MstBranchServiceImpl implements MstBranchService {
 
     @Transactional
     @Override
-    @PostConstruct
     public Map<String, Object> syncTenData() {
         String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
         String[] companyList = syncCompanyList.split(",");
