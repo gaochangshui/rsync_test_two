@@ -1017,7 +1017,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             Map<String,Object> group = new LinkedHashMap<>();
             for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
                     column += ","+datum.get("areaCd")+"_"+datum.get("branchCd");
-                    header += ","+datum.get("branchCd")+"<br />"+datum.get("branch");
+                if (starReadingVo.getModeCheck() == 1) {
+                    header += "," + datum.get("branchCd") + "<br />" + datum.get("branch");
+                }else {
+                    header += "," + datum.get("branch");
+                }
                 group.putIfAbsent(datum.get("areaCd").toString(),datum.get("area"));
             }
             StarReadingVo starReadingVo1 = new StarReadingVo();
