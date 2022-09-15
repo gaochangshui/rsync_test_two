@@ -937,15 +937,14 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     header1 +=  datum.get("maker");
                     header2 +=  datum.get("total");
                     header3 +=  datum.get("jan");
-                    header4 +=  datum.get("janName");
-
                 }else {
                     header1 += "," + datum.get("maker");
                     header2 += "," + datum.get("total");
                     header3 += "," + datum.get("jan");
-                    header4 += "," + datum.get("janName");
-                    column += ",jan" + datum.get("jan");
+
                 }
+                header4 += "," + datum.get("janName");
+                column += ",jan" + datum.get("jan");
             }
             headers.add(header1);
             headers.add(header2);
@@ -966,12 +965,50 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             starReadingVo1.setColumn(column);
             starReadingVo1.setHeader(headers);
             starReadingVo1.setData(resultList);
+            starReadingVo1.setFlag(0);
             return ResultMaps.result(ResultEnum.SUCCESS,starReadingVo1);
         }else {
            List<String> headers =  (List<String>) starReadingVo.getHeader();
+            List<String> header1 = Arrays.asList(headers.get(0).split(","));
+            List<String> header2 = Arrays.asList(headers.get(1).split(","));
+            List<String> header3 = Arrays.asList(headers.get(2).split(","));
+            List<String> header4 = Arrays.asList(headers.get(3).split(","));
+            List<LinkedHashMap<String,Object>> resultList = new ArrayList<>();
+            for (int i = 0; i < header3.size(); i++) {
+                LinkedHashMap<String,Object> map= new LinkedHashMap<>();
+                map.put("jan",header3.get(i));
+                map.put("janName",header4.get(i+3));
+                map.put("total",header2.get(i));
+                map.put("maker",header1.get(i));
+                for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
+                    map.put(datum.get("areaCd")+"_"+datum.get("branchCd"),datum.get("jan"+header3.get(i)));
+                }
 
+                resultList.add(map);
+            }
+            String column = "";
+            String header = "";
+            Map<String,Object> group = new LinkedHashMap<>();
+            for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
+                if (column.equals("")){
+                    column += datum.get("areaCd")+"_"+datum.get("branchCd");
+                    header += datum.get("branch");
+                }else {
+                    column += ","+datum.get("areaCd")+"_"+datum.get("branchCd");
+                    header += ","+datum.get("branch");
+                }
+                group.putIfAbsent(datum.get("areaCd").toString(),datum.get("area"));
+            }
+            StarReadingVo starReadingVo1 = new StarReadingVo();
+            starReadingVo1.setColumn(column);
+            starReadingVo1.setHeader(header);
+            starReadingVo1.setData(resultList);
+            starReadingVo1.setGroup(group);
+            starReadingVo1.setFlag(0);
+            starReadingVo1.setModeCheck(starReadingVo.getModeCheck());
+            return ResultMaps.result(ResultEnum.SUCCESS,starReadingVo1);
         }
-        return ResultMaps.result(ResultEnum.SUCCESS);
+
     }
 
 
