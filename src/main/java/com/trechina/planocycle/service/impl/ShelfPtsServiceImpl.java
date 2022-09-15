@@ -596,7 +596,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         if(Optional.ofNullable(shelfPtsData).isPresent()){
             Integer oldPtsCd = shelfPtsData.getId();
             shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
-            if (!positionResultData.isEmpty()) {
+            if (positionResultData!=null && !positionResultData.isEmpty()) {
                 positionResultData = positionResultData.stream()
                         .sorted(Comparator.comparing(PriorityOrderResultDataDto::getTanapositionCd))
                         .sorted(Comparator.comparing(PriorityOrderResultDataDto::getTanaCd))
