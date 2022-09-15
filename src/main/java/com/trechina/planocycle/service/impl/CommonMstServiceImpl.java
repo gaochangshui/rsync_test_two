@@ -254,6 +254,7 @@ public class CommonMstServiceImpl implements CommonMstService {
         List<PriorityOrderResultDataDto> newJanDtoList = new ArrayList<>();
         for (int i = 0; i < newList.size(); i++) {
             if(Thread.currentThread().isInterrupted()){
+                logger.info("task interrupted, step:{}", "3");
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return null;
             }
@@ -333,6 +334,7 @@ public class CommonMstServiceImpl implements CommonMstService {
 
         for (Map.Entry<Long, List<Map<String, Object>>> entry : relationGroupRestrictCd.entrySet()) {
             if(Thread.currentThread().isInterrupted()){
+                logger.info("task interrupted, step:{}", "11");
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return null;
             }
@@ -370,6 +372,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     Collectors.summingInt(map -> MapUtils.getInteger(map, "janCount", 0))));
             for (Map<String, Object> relation : relationList) {
                 if(Thread.currentThread().isInterrupted()){
+                    logger.info("task interrupted, step:{}", "4");
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return null;
                 }
@@ -471,6 +474,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 .filter(dto->!Objects.equals(dto.getCutFlag(),1)).collect(Collectors.groupingBy(dto -> dto.getTaiCd() + "_" + dto.getTanaCd()));
         for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : adoptJanByTaiTana.entrySet()) {
             if(Thread.currentThread().isInterrupted()){
+                logger.info("task interrupted, step:{}", "8");
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return null;
             }
@@ -509,6 +513,7 @@ public class CommonMstServiceImpl implements CommonMstService {
         for (int i = 0; i < finalAdoptJan.size(); i++) {
             if(Thread.currentThread().isInterrupted()){
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                logger.info("task interrupted, step:{}", "9");
                 return null;
             }
 
