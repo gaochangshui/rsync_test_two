@@ -561,11 +561,15 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     public Map<String, Object> getStarReadingTable(StarReadingTableDto starReadingTableDto) {
         Integer priorityOrderCd = starReadingTableDto.getPriorityOrderCd();
         String companyCd = starReadingTableDto.getCompanyCd();
-        String column = "jan,janName,total";
-        String header = "JAN,商品名,合計";
+        String column = "jan,janName,maker,total";
+        String header = "JAN,商品名,メーカー,合計";
         Map mapResult = new HashMap();
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
-        List<Map<String, Object>> janName = classicPriorityOrderDataMapper.getJanName(starReadingTableDto.getJanList(),priorityOrderCd);
+        PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+        ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+        String makerCol = classicPriorityOrderMstMapper.getMakerCol(commonTableName.getProAttrTable());
+        List<Map<String, Object>> janName = classicPriorityOrderDataMapper.getJanName(starReadingTableDto.getJanList(),priorityOrderCd,makerCol,commonTableName.getProInfoTable());
         if (starReadingTableDto.getModeCheck() == 1) {
             List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
             groupCompany.add(companyCd);
@@ -588,6 +592,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 Map<String,Object> map = new HashMap<>();
                 map.put("jan",janMap.get("jan"));
                 map.put("janName",janMap.get("janName"));
+                map.put("maker",janMap.get("maker"));
                 map.put("total","");
                 for (Map<String, Object> objectMap : branchList) {
                     map.put(objectMap.get("sort")+"_"+objectMap.get("branchCd").toString(),"☓");
@@ -628,6 +633,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 Map<String,Object> map = new HashMap<>();
                 map.put("jan",janMap.get("jan"));
                 map.put("janName",janMap.get("janName"));
+                map.put("maker",janMap.get("maker"));
                 map.put("total","");
                 for (Map<String, Object> objectMap : patternNameList) {
                     map.put(objectMap.get("id")+"_"+objectMap.get("shelfPatternCd").toString(),"☓");
@@ -664,7 +670,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
     @Override
     public Map<String, Object> getStarReadingParam(String companyCd,Integer priorityOrderCd) {
-
+        PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+        ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+        String makerCol = classicPriorityOrderMstMapper.getMakerCol(commonTableName.getProAttrTable());
         Integer modeCheck = priorityOrderMstMapper.getModeCheck(priorityOrderCd);
         Boolean isModeCheck = true;
         if (modeCheck == null){
@@ -673,8 +682,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         }
         List<Map<String, Object>> expressItemList =new ArrayList<>();
         String janInfoTableName = "";
-        String column = "jan,janName,total";
-        String header = "JAN,商品名,合計";
+        String column = "jan,janName,maker,total";
+        String header = "JAN,商品名,メーカー,合計";
         Map mapResult = new HashMap();
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
         List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
@@ -684,7 +693,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
             List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
             List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany);
-            List<Map<String, Object>> janOrName = starReadingTableMapper.getJanOrName(companyCd, priorityOrderCd);
+            List<Map<String, Object>> janOrName = starReadingTableMapper.getJanOrName(companyCd, priorityOrderCd,commonTableName.getProInfoTable(),makerCol);
             List<Object> branchCd = branchDiff.stream().map(map -> map.get("branchCd")).collect(Collectors.toList());
             branchList=branchList.stream().filter(map ->branchCd.contains(map.get("branchCd"))).collect(Collectors.toList());
             Map<String, List<Map<String, Object>>> janGroup = branchDiff.stream()
@@ -695,11 +704,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 for (Map<String, Object> stringObjectMap : janOrName) {
                     if (stringListEntry.getKey().equals(stringObjectMap.get("jan_new"))){
                         stringListEntry.getValue().get(0).put("janName",stringObjectMap.get("sku"));
+                        stringListEntry.getValue().get(0).put("maker",stringObjectMap.get("maker"));
                     }
                 }
                 Map<String,Object> map = new HashMap<>();
                 map.put("jan",stringListEntry.getValue().get(0).get("jan"));
                 map.put("janName",stringListEntry.getValue().get(0).get("janName"));
+                map.put("maker",stringListEntry.getValue().get(0).get("maker"));
                 map.put("total","");
                 for (Map<String, Object> objectMap : branchList) {
                     for (Map<String, Object> stringObjectMap : stringListEntry.getValue()) {
@@ -735,6 +746,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 Map<String,Object> patternMap = new HashMap<>();
                 patternMap.put("jan",stringListEntry.getKey());
                 patternMap.put("janName",stringListEntry.getValue().get(0).get("janName"));
+                patternMap.put("maker",stringListEntry.getValue().get(0).get("maker"));
                 patternMap.put("total","");
                 for (Map<String, Object> map : stringListEntry.getValue()) {
                     for (Map<String, Object> stringObjectMap : patternNameList) {
@@ -805,7 +817,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
                     String jan = datum.get("jan").toString();
                     for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
-                        if (!stringObjectEntry.getKey().equals("jan") && !stringObjectEntry.getKey().equals("janName") && !stringObjectEntry.getKey().equals("total")) {
+                        if (!stringObjectEntry.getKey().equals("jan") && !stringObjectEntry.getKey().equals("janName") && !stringObjectEntry.getKey().equals("total")
+                                &&!stringObjectEntry.getKey().equals("maker")) {
                             Map<String, Object> map = new HashMap<>();
                             map.put("jan", jan);
                             map.put("branch", stringObjectEntry.getKey().split("_")[1]);
@@ -868,7 +881,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     public void starReadingDataForExcel(StarReadingVo starReadingVo, HttpServletResponse response) {
         ServletOutputStream outputStream = null;
 
-        List<String> header = Arrays.asList(starReadingVo.getHeader().replaceAll("<br />","_").split(","));
+        List<String> header = Arrays.asList(starReadingVo.getHeader().toString().replaceAll("<br />","_").split(","));
         List<String>  column = Arrays.asList(starReadingVo.getColumn().split(","));
         List<String>  columns = new ArrayList<>(column);
         Map<String, Object> group = starReadingVo.getGroup();
@@ -895,6 +908,101 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             outputStream.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public Map<String, Object> rowColumnConversion(StarReadingVo starReadingVo) {
+        if (starReadingVo.getFlag()==1) {
+            List<String> list = Arrays.asList(starReadingVo.getColumn().split(",")).stream().filter(item -> !item.equals("jan") && !item.equals("janName") && !item.equals("total") && !item.equals("maker")).collect(Collectors.toList());
+            List<String> header = Arrays.asList(starReadingVo.getHeader().toString().split(",")).stream().filter(item -> !item.equals("商品名") && !item.equals("JAN") && !item.equals("合計") && !item.equals("メーカー")).collect(Collectors.toList());
+            Map<String, Object> group = starReadingVo.getGroup();
+            List<String> columnList = new ArrayList<>(list);
+            List<LinkedHashMap<String, Object>> resultList = new ArrayList<>();
+            List<String> headers = new ArrayList<>();
+            String header1 = "";
+            String header2 = "";
+            String header3 = "";
+            String header4 = "";
+            if (starReadingVo.getModeCheck() == 1) {
+                 header4 = "エリア,店舗CD,店舗名";
+            }else {
+                 header4 = "棚名称,棚パターンCD,棚パターン";
+            }
+            String column = "area,branchCd,branch";
+            List<LinkedHashMap<String, Object>> data = starReadingVo.getData().stream().sorted(Comparator.comparing(map -> MapUtils.getString(map, "jan"))).collect(Collectors.toList());
+            for (LinkedHashMap<String, Object> datum : data) {
+                if (header1.equals("")) {
+                    header1 +=  datum.get("maker");
+                    header2 +=  datum.get("total");
+                    header3 +=  datum.get("jan");
+                }else {
+                    header1 += "," + datum.get("maker");
+                    header2 += "," + datum.get("total");
+                    header3 += "," + datum.get("jan");
+
+                }
+                header4 += "," + datum.get("janName");
+                column += ",jan" + datum.get("jan");
+            }
+            headers.add(header1);
+            headers.add(header2);
+            headers.add(header3);
+            headers.add(header4);
+            for (int i = 0; i < columnList.size(); i++) {
+                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                map.put("branch", header.get(i).split("<br />")[1]);
+                map.put("area", group.get(columnList.get(i).split("_")[0]));
+                map.put("branchCd", columnList.get(i).split("_")[1]);
+                map.put("areaCd", columnList.get(i).split("_")[0]);
+                for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
+                    map.put("jan" + datum.get("jan"), datum.get(columnList.get(i)));
+                }
+                resultList.add(map);
+            }
+            StarReadingVo starReadingVo1 = new StarReadingVo();
+            starReadingVo1.setColumn(column);
+            starReadingVo1.setHeader(headers);
+            starReadingVo1.setData(resultList);
+            starReadingVo1.setFlag(1);
+            starReadingVo1.setModeCheck(starReadingVo.getModeCheck());
+            return ResultMaps.result(ResultEnum.SUCCESS,starReadingVo1);
+        }else {
+           List<String> headers =  (List<String>) starReadingVo.getHeader();
+            List<String> header1 = Arrays.asList(headers.get(0).split(","));
+            List<String> header2 = Arrays.asList(headers.get(1).split(","));
+            List<String> header3 = Arrays.asList(headers.get(2).split(","));
+            List<String> header4 = Arrays.asList(headers.get(3).split(","));
+            List<LinkedHashMap<String,Object>> resultList = new ArrayList<>();
+            for (int i = 0; i < header3.size(); i++) {
+                LinkedHashMap<String,Object> map= new LinkedHashMap<>();
+                map.put("jan",header3.get(i));
+                map.put("janName",header4.get(i+3));
+                map.put("total",header2.get(i));
+                map.put("maker",header1.get(i));
+                for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
+                    map.put(datum.get("areaCd")+"_"+datum.get("branchCd"),datum.get("jan"+header3.get(i)));
+                }
+
+                resultList.add(map);
+            }
+            String column = "jan,janName,maker,total";
+            String header = "JAN,商品名,メーカー,合計";
+            Map<String,Object> group = new LinkedHashMap<>();
+            for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
+                    column += ","+datum.get("areaCd")+"_"+datum.get("branchCd");
+                    header += ","+datum.get("branchCd")+"<br />"+datum.get("branch");
+                group.putIfAbsent(datum.get("areaCd").toString(),datum.get("area"));
+            }
+            StarReadingVo starReadingVo1 = new StarReadingVo();
+            starReadingVo1.setColumn(column);
+            starReadingVo1.setHeader(header);
+            starReadingVo1.setData(resultList);
+            starReadingVo1.setGroup(group);
+            starReadingVo1.setFlag(0);
+            starReadingVo1.setModeCheck(starReadingVo.getModeCheck());
+            return ResultMaps.result(ResultEnum.SUCCESS,starReadingVo1);
         }
 
     }

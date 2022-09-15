@@ -29,4 +29,10 @@ public interface MstBranchMapper {
 
     void deleteBranch(String branchInfoTableName,List<String> groupCd);
     void deleteBranch1(String branchInfoTableName);
+
+    void deleteNotExistMst(String classCd, String tableName);
+
+    int checkSchemaExist(String schemaCd);
+
+    int checkTableExist(String tableName, String schema);
 }

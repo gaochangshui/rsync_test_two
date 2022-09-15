@@ -713,8 +713,10 @@
         where datas.priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getJanName" resultType="java.util.Map">
-        select jan_new jan,sku "janName"
-        from priority.work_priority_order_result_data
+        select jan_new jan,sku "janName",COALESCE("${makerCol}",'_') as maker
+        from priority.work_priority_order_result_data datas
+        left join ${tableName} info
+        on info."1" = datas.jan_new
         where jan_new in
         <foreach collection="janList" separator="," item="item" open="(" close=")">
             #{item}

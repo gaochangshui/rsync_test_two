@@ -50,4 +50,6 @@ public interface ClassicPriorityOrderMstMapper {
     String getProductName(String companyCd, Integer priorityOrderCd);
 
     List<String> getShelfPatternName(String companyCd, Integer priorityOrderCd);
+
+    String getMakerCol(String tableName);
 }

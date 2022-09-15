@@ -103,6 +103,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     @Autowired
     private BasicPatternJanPlacementMapper basicPatternJanPlacementMapper;
     @Autowired
+    private MstBranchMapper mstBranchMapper;
+    @Autowired
     private cgiUtils cgiUtil;
     @Value("${smartUrlPath}")
     public String smartPath;
@@ -390,6 +392,16 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
+    @Override
+    public Map<String, Object> getCoreCompany() {
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        int i = mstBranchMapper.checkSchemaExist(coreCompany);
+        if(i>0){
+            return ResultMaps.result(ResultEnum.SUCCESS, 1);
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS, 0);
+    }
+
     public GetCommonPartsDataDto getCommonTableName(String commonPartsData, String companyCd ) {
 
         JSONObject jsonObject = JSON.parseObject(commonPartsData);
@@ -478,12 +490,23 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                         }
                     }
                     itemMap.putIfAbsent(zokuseiId.get("zokusei_colname").toString(), "");
+
+                    Integer isExist = MapUtils.getInteger(zokuseiId, "is_exist", 0);
+                    String colname = MapUtils.getString(itemMap, zokuseiId.get("zokusei_colname").toString());
+                    if(isExist==0 && Strings.isNullOrEmpty(MapUtils.getString(itemMap, zokuseiId.get("zokusei_colname").toString()))){
+                        colname = "_";
+                    }
+
+                    if(isExist==1 && Strings.isNullOrEmpty(MapUtils.getString(itemMap, zokuseiId.get("zokusei_colname").toString()))){
+                        colname = MagicString.DEFAULT_VALUE;
+                    }
+
                     if (groupCd.equals("")){
                         groupCd += itemMap.get(zokuseiId.get("zokusei_colcd").toString());
-                        groupName += itemMap.get(zokuseiId.get("zokusei_colname").toString());
+                        groupName += colname;
                     }else {
                         groupCd +="->"+ itemMap.get(zokuseiId.get("zokusei_colcd").toString());
-                        groupName += "->" + itemMap.get(zokuseiId.get("zokusei_colname").toString());
+                        groupName += "->" + colname;
                     }
 
                 }

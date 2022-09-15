@@ -9,11 +9,12 @@ import java.util.Map;
 public class StarReadingVo {
     private List<LinkedHashMap<String,Object>> data;
     private String column;
-    private String header;
+    private Object header;
     private Integer modeCheck;
     private Map<String,Object> group;
     private String companyCd;
     private Integer priorityOrderCd;
     private String taskID;
+    private Integer flag;
 
 }

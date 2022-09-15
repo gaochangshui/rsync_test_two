@@ -344,12 +344,25 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Override
     public Map<String, Object> setFaceNumAndPositionForData(Map<String,Object> map) {
         Integer id = shelfPtsDataMapper.getId(map.get("companyCd").toString(), Integer.parseInt(map.get("priorityOrderCd").toString()));
-        if (Integer.parseInt(map.get("delFlag").toString()) == 0){
+        if (Integer.parseInt(map.get("flag").toString()) == 0){
             priorityOrderShelfDataMapper.updateFaceNum(map,id);
-        }else {
+        }else if (Integer.parseInt(map.get("flag").toString()) == 1){
             priorityOrderShelfDataMapper.delJan(map,id);
             List<Map<String, Object>> alikeTana = priorityOrderShelfDataMapper.getAlikeTana(map, id);
             priorityOrderShelfDataMapper.updatePositionCd(alikeTana,id);
+        }else {
+            List<Map<String, Object>> alikeTana = priorityOrderShelfDataMapper.getAlikeTana(map, id);
+            if (Integer.parseInt(map.get("tanapositionCd").toString())-1>=alikeTana.size()){
+                alikeTana.add(map);
+            }else {
+                alikeTana.add(Integer.parseInt(map.get("tanapositionCd").toString()) - 1, map);
+            }
+            int i = 1;
+            for (Map<String, Object> stringObjectMap : alikeTana) {
+                stringObjectMap.put("tanapositionCd",i++);
+            }
+            priorityOrderShelfDataMapper.delTana(map,id);
+            priorityOrderShelfDataMapper.insertPosition(alikeTana,id);
         }
         Map<String,Object> map1 = new HashMap<>();
         map1.put("faceNum",shelfPtsDataMapper.getNewFaceNum(Integer.parseInt(map.get("priorityOrderCd").toString())));
