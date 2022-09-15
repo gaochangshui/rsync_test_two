@@ -651,7 +651,6 @@ public class MstJanServiceImpl implements MstJanService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-@PostConstruct
     public Map<String, Object> syncJanData() {
         String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
         String[] companyList = syncCompanyList.split(",");
@@ -668,20 +667,21 @@ public class MstJanServiceImpl implements MstJanService {
             commoditySyncSetList = mstCommodityService.getCommodityList(companyCd);
             for (CommoditySyncSet commoditySyncSet : commoditySyncSetList) {
                 prodMstClass = commoditySyncSet.getProdMstClass();
-                syncJanKaisou(companyCd, prodMstClass);
                 tableNameHeader = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
                 tableNameInfo = MessageFormat.format(MagicString.PROD_JAN_INFO, companyCd, prodMstClass);
                 tableNameHeaderWK = MessageFormat.format(MagicString.WK_PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
                 String tableNameKaisouHeader = MessageFormat.format(MagicString.WK_PROD_JAN_KAISOU_HEADER_SYS, companyCd, prodMstClass);
                 tableNameInfoWK = MessageFormat.format(MagicString.WK_PROD_JAN_INFO, companyCd, prodMstClass);
 
-                int i = mstBranchMapper.checkTableExist(tableNameInfoWK, companyCd);
+                int i = mstBranchMapper.checkTableExist(tableNameInfoWK.split("\\.")[1], companyCd);
                 if(i<1){
                     //if jan_info not exist, delete from master_syohin
                     String mstSyohin = MessageFormat.format(MagicString.MASTER_SYOHIN, companyCd);
                     mstBranchMapper.deleteNotExistMst(prodMstClass, mstSyohin);
                     continue;
                 }
+
+                syncJanKaisou(companyCd, prodMstClass);
 
                 mstJanMapper.syncJanHeader(tableNameHeader,tableNameHeaderWK);
                 janAttrList = mstJanMapper.getJanAttrColWK(tableNameHeaderWK, tableNameKaisouHeader);
