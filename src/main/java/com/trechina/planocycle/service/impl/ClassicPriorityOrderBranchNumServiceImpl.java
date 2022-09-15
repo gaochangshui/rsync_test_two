@@ -942,6 +942,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 LinkedHashMap<String, Object> map = new LinkedHashMap<>();
                 map.put("branch", header.get(i));
                 map.put("area", group.get(columnList.get(i).split("_")[0]));
+                map.put("branchCd", columnList.get(i));
+                map.put("areaCd", columnList.get(i).split("_")[0]);
                 for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
                     map.put("jan" + datum.get("jan"), datum.get(columnList.get(i)));
                 }
