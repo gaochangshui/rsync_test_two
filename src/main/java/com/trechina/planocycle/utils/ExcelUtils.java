@@ -504,8 +504,9 @@ public class ExcelUtils {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
             XSSFSheet sheet1 = workbook.createSheet("抽出条件");
             XSSFSheet sheet = workbook.createSheet("商品明細");
+            sheet.autoSizeColumn(10);
+            sheet.autoSizeColumn(10,true);
             Pattern numberPattern = Pattern.compile("-?[0-9]+(\\.[0-9]+)?%?");
-
             sheet1.setDisplayGridlines(false);
             //スタイルの設定
             XSSFCellStyle cellStyle = workbook.createCellStyle();

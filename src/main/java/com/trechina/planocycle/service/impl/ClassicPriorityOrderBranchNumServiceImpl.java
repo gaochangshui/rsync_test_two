@@ -899,6 +899,23 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
     }
 
+    @Override
+    public Map<String, Object> rowColumnConversion(StarReadingVo starReadingVo) {
+        List<String> list = Arrays.asList(starReadingVo.getColumn().split(",")).stream().filter(item->item.equals("jan") && item.equals("janName") && item.equals("total")).collect(Collectors.toList());
+        List<String> header = Arrays.asList(starReadingVo.getHeader().split(",")).stream().filter(item->item.equals("商品名") && item.equals("JAN") && item.equals("合計")).collect(Collectors.toList());
+        Map<String, Object> group = starReadingVo.getGroup();
+        List<String> columnList = new ArrayList<>(list);
+        for (int i = 0; i < columnList.size(); i++) {
+            Map<String,Object> map = new HashMap<>();
+            map.put("branch",header.get(i));
+            map.put("area",group.get(columnList.get(i).split("_")[0]));
+            for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
+                map.put("jan"+datum.get("jan"),datum.get(columnList.get(i)));
+            }
+        }
+        return null;
+    }
+
 
     public Map<String,Object> getTableName(String companyCd,Integer priorityOrderCd ){
         String table1 = "";

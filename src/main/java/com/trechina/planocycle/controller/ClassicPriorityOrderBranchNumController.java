@@ -180,4 +180,12 @@ public class ClassicPriorityOrderBranchNumController {
     public void starReadingDataForExcel(@RequestBody StarReadingVo starReadingVo, HttpServletResponse response){
          priorityOrderBranchNumService.starReadingDataForExcel(starReadingVo,response);
     }
+
+    /**
+     * 行列转换
+     */
+    @PostMapping("rowColumnConversion")
+    public Map<String, Object> rowColumnConversion(@RequestBody StarReadingVo starReadingVo){
+       return priorityOrderBranchNumService.rowColumnConversion(starReadingVo);
+    }
 }
