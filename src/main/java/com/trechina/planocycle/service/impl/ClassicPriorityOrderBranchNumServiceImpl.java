@@ -785,10 +785,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
     @Override
     public Map<String, Object> setStarReadingData(StarReadingVo starReadingVo) {
-        if (starReadingVo.getGroup() == null){
-            Map<String, Object> stringObjectMap = this.rowColumnConversion(starReadingVo);
-            starReadingVo = (StarReadingVo) stringObjectMap.get("data");
-        }
+
         if (starReadingVo.getTaskID()!=null){
             if ("1".equals(vehicleNumCache.get("save"+starReadingVo.getTaskID()))) {
                 vehicleNumCache.remove("save"+starReadingVo.getTaskID());
@@ -812,6 +809,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             starReadingVo.setModeCheck(null);
             priorityOrderMstMapper.updateModeCheck(starReadingVo);
             return ResultMaps.result(ResultEnum.SUCCESS);
+        }
+        if (starReadingVo.getGroup() == null){
+            Map<String, Object> stringObjectMap = this.rowColumnConversion(starReadingVo);
+            starReadingVo = (StarReadingVo) stringObjectMap.get("data");
         }
         String uuid = UUID.randomUUID().toString();
         StarReadingVo finalStarReadingVo = starReadingVo;
