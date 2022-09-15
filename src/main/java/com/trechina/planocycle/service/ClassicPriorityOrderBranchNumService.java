@@ -128,4 +128,6 @@ public interface ClassicPriorityOrderBranchNumService {
     Map<String, Object> setStarReadingData(StarReadingVo starReadingVo);
 
     void starReadingDataForExcel(StarReadingVo starReadingVo, HttpServletResponse response);
+
+    Map<String, Object> rowColumnConversion(StarReadingVo starReadingVo);
 }
