@@ -681,7 +681,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         if (basicPatternRestrictRelation.getRestrictCd()== null){
             Map<String, Object> tanaInfo = restrictRelationMapper.getTanaInfo(basicPatternRestrictRelation);
             Double areaNew = Double.parseDouble(tanaInfo.get("area").toString()) - basicPatternRestrictRelation.getArea();
-            if (areaNew!=1){
+            if (areaNew>1){
                 basicPatternRestrictRelation.setArea(areaNew.longValue());
                 basicPatternRestrictRelation.setRestrictCd(Long.parseLong(tanaInfo.get("restrict_cd").toString()));
             }else {
