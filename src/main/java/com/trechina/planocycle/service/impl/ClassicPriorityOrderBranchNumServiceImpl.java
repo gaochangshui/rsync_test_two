@@ -947,7 +947,6 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 column += ",jan" + datum.get("jan");
             }
             headers.add(header1);
-            headers.add(header2);
             headers.add(header3);
             headers.add(header4);
             for (int i = 0; i < columnList.size(); i++) {
@@ -973,16 +972,15 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             List<String> header1 = Arrays.asList(headers.get(0).split(","));
             List<String> header2 = Arrays.asList(headers.get(1).split(","));
             List<String> header3 = Arrays.asList(headers.get(2).split(","));
-            List<String> header4 = Arrays.asList(headers.get(3).split(","));
             List<LinkedHashMap<String,Object>> resultList = new ArrayList<>();
-            for (int i = 0; i < header3.size(); i++) {
+            for (int i = 0; i < header2.size(); i++) {
                 LinkedHashMap<String,Object> map= new LinkedHashMap<>();
-                map.put("jan",header3.get(i));
-                map.put("janName",header4.get(i+3));
-                map.put("total",header2.get(i));
+                map.put("jan",header2.get(i));
+                map.put("janName",header3.get(i+3));
                 map.put("maker",header1.get(i));
+                map.put("total","");
                 for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
-                    map.put(datum.get("areaCd")+"_"+datum.get("branchCd"),datum.get("jan"+header3.get(i)));
+                    map.put(datum.get("areaCd")+"_"+datum.get("branchCd"),datum.get("jan"+header2.get(i)));
                 }
 
                 resultList.add(map);
