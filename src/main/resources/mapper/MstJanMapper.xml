@@ -193,6 +193,7 @@
                   "${index}" = #{item}
               </if>
     </foreach>
+    limit 1
     </select>
     <select id="getNameExist" resultType="java.lang.String">
         select "1" from ${tableName} where "2" = #{name}
