@@ -88,25 +88,30 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         Future future = executor.submit(()->{
             while (true){
                 if (taskID.equals("")){
+                    logger.info("getCommodityScoreData:{}", 1);
                     returnMap[0] = ResultMaps.result(ResultEnum.FAILURE);
                     break;
                 }
 
                 if("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))){
+                    logger.info("getCommodityScoreData:{}", 2);
                     returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
                     break;
                 }
 
                 if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()+"Exception")!=null){
+                    logger.info("getCommodityScoreData:{}", 3);
                     returnMap[0] = ResultMaps.result(ResultEnum.CGIERROR);
                     break;
                 }
                 if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString())==null){
+                    logger.info("getCommodityScoreData:{}", 4);
                     returnMap[0] = ResultMaps.result(ResultEnum.FAILURE);
                     break;
                 }
 
                 if ("9".equals(vehicleNumCache.get(taskID))) {
+                    logger.info("getCommodityScoreData:{}", 5);
                     List<Map<String, Object>> o = (List<Map<String, Object>>) vehicleNumCache.get(taskID + ",data");
                     if (o.isEmpty()){
                         returnMap[0] = ResultMaps.result(ResultEnum.SIZEISZERO);
