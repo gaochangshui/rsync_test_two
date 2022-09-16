@@ -24,7 +24,8 @@
                 </if>
             </foreach>
         </trim>
-        from "${company}".prod_${classCd}_jan_info limit 1
+        from "${company}".prod_${classCd}_jan_info
+        on conflict(zokusei_id,company_cd,class_cd,val) do nothing
     </insert>
     <insert id="insertZokuseiData1">
         insert into masterdb.planocycle_zokusei_mst_data(zokusei_id,val,val_parent,type,nm,company_cd,class_cd)
