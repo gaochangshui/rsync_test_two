@@ -52,6 +52,8 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
     @Autowired
     private SysConfigMapper sysConfigMapper;
     @Autowired
+    private MstBranchMapper mstBranchMapper;
+    @Autowired
     private LogAspect logAspect;
     /**
      * card商品リストの取得
@@ -65,7 +67,11 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
         List<ClassicPriorityOrderJanNewVO> janNewList = priorityOrderJanNewMapper.getExistOtherMst(companyCd, priorityOrderCd);
         logger.info("card商品リストパラメータを取得する:{},{}",companyCd,priorityOrderCd);
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
-        String tableName = String.format("\"%s\".prod_%s_jan_info",coreCompany, MagicString.FIRST_CLASS_CD);
+        int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
+        String tableName ="";
+        if (existTableName == 0){
+            coreCompany = companyCd;
+        }
         List<Map<String, Object>> janHeader = janClassifyMapper.selectJanClassify(tableName);
         String janCdCol = janHeader.stream().filter(map -> map.get("attr").equals(MagicString.JAN_HEADER_JAN_CD_COL))
                 .map(map -> map.get("sort")).findFirst().orElse(MagicString.JAN_HEADER_JAN_CD_DEFAULT).toString();
