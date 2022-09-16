@@ -114,7 +114,7 @@
         </foreach>
     </select>
     <select id="getPatterndiff" resultType="java.util.Map">
-        select pattern.jan_cd as "jan",sku as "janName" ,shelf_pattern_cd as "shelfPatternCd"
+        select pattern.jan_cd as "jan",sku as "janName" ,COALESCE(info."${makerCol}",'_') as "maker",shelf_pattern_cd as "shelfPatternCd"
         ,case when exist_flag =-1 then '☓' when exist_flag = 0 then '' else  '◯' end  as flag
         ,shelf_name_cd as "shelfNameCd"
         from priority.work_priority_order_commodity_pattern pattern
@@ -122,6 +122,8 @@
         on datas.jan_new = pattern.jan_cd and pattern.priority_order_cd = datas.priority_order_cd
         left join planocycle.shelf_name_mst namemst
         on namemst.id = shelf_name_cd
+        left join ${tableName} info
+        on info."1" = pattern.jan_cd
         where pattern.priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getPatternNameList" resultType="java.util.Map">

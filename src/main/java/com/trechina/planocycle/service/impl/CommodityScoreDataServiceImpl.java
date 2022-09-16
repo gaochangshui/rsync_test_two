@@ -114,6 +114,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     }
 
                     returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS, o);
+                    vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
+                    vehicleNumCache.remove(taskID+",data");
                     break;
                 }
 
@@ -177,7 +179,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     resultData.addAll(allData);
 
                     log.info("返回pos基本情報はい{}", resultData.size());
-                    vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
                     returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS, resultData);
                     vehicleNumCache.put(taskID, "9");
                     vehicleNumCache.put(taskID+",data", resultData);

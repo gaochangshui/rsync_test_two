@@ -20,7 +20,7 @@ public interface StarReadingTableMapper {
     List<Map<String, Object>> getBranchdiffForBranch(@Param("item") StarReadingTableDto starReadingTableDto
             , @Param("branchList")List<Map<String,Object>> branchList);
 
-    List<Map<String,Object>> getPatterndiff(@Param("priorityOrderCd") Integer priorityOrderCd);
+    List<Map<String,Object>> getPatterndiff(@Param("priorityOrderCd") Integer priorityOrderCd,@Param("tableName")String tableName,@Param("makerCol")String makerCol);
 
     List<Map<String,Object>> getPatternNameList(@Param("priorityOrderCd") Integer priorityOrderCd);
 

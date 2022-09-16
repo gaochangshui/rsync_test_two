@@ -735,7 +735,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
         }else if (modeCheck == 0){
             janInfoTableName = "priority.work_priority_order_commodity_pattern";
-            List<Map<String, Object>> patternDiff = starReadingTableMapper.getPatterndiff(priorityOrderCd);
+            List<Map<String, Object>> patternDiff = starReadingTableMapper.getPatterndiff(priorityOrderCd,commonTableName.getProInfoTable(),makerCol);
             List<Map<String, Object>> patternNameList = starReadingTableMapper.getPatternNameList(priorityOrderCd);
             List<String> shelfNameCd = patternDiff.stream().map(map -> "pattern"+map.get("shelfNameCd").toString()).collect(Collectors.toList());
             patternNameList = patternNameList.stream().filter(map->shelfNameCd.contains(map.get("id").toString())).collect(Collectors.toList());
