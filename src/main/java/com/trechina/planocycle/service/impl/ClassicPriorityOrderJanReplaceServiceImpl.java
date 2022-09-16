@@ -51,6 +51,8 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
     private BasicPatternMstServiceImpl basicPatternMstService;
     @Autowired
     private ClassicPriorityOrderJanNewMapper classicPriorityOrderJanNewMapper;
+    @Autowired
+    private MstBranchMapper mstBranchMapper;
     /**
      * jan変更リストの情報を取得する
      *
@@ -62,6 +64,10 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
     public Map<String, Object> getPriorityOrderJanInfo(String companyCd, Integer priorityOrderCd) {
         logger.info("jan変の情報パラメータを取得する：{},{}",companyCd,priorityOrderCd);
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
+        if (existTableName == 0){
+            coreCompany = companyCd;
+        }
         String tableName = String.format("\"%s\".prod_%s_jan_info", coreCompany, MagicString.FIRST_CLASS_CD);
         List<ClassicPriorityOrderJanReplaceVO> priorityOrderJanReplaceVOList = priorityOrderJanReplaceMapper
                 .selectJanInfo(companyCd,priorityOrderCd, tableName, MagicString.JAN_HEADER_JAN_CD_DEFAULT, MagicString.JAN_HEADER_JAN_NAME_DEFAULT);
