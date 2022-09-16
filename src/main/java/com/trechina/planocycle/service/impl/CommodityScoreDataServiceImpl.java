@@ -26,10 +26,7 @@ import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -85,112 +82,89 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String authorCd = session.getAttribute("aud").toString();
         final Map<String, Object>[] returnMap = new Map[]{null};
 
-        Future future = executor.submit(()->{
-            while (true){
-                if (taskID.equals("")){
-                    logger.info("getCommodityScoreData:{}", 1);
-                    returnMap[0] = ResultMaps.result(ResultEnum.FAILURE);
-                    break;
-                }
+        if (taskID.equals("")){
+            logger.info("getCommodityScoreData:{}", 1);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
 
-                if("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))){
-                    logger.info("getCommodityScoreData:{}", 2);
-                    returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
-                    break;
-                }
+        if("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))){
+            logger.info("getCommodityScoreData:{}", 2);
+            return ResultMaps.result(ResultEnum.SUCCESS);
+        }
 
-                if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()+"Exception")!=null){
-                    logger.info("getCommodityScoreData:{}", 3);
-                    returnMap[0] = ResultMaps.result(ResultEnum.CGIERROR);
-                    break;
-                }
-                if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString())==null){
-                    logger.info("getCommodityScoreData:{}", 4);
-                    returnMap[0] = ResultMaps.result(ResultEnum.FAILURE);
-                    break;
-                }
+        if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()+"Exception")!=null){
+            logger.info("getCommodityScoreData:{}", 3);
+            return ResultMaps.result(ResultEnum.CGIERROR);
+        }
+        if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString())==null){
+            logger.info("getCommodityScoreData:{}", 4);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
 
-                if ("9".equals(vehicleNumCache.get(taskID))) {
-                    logger.info("getCommodityScoreData:{}", 5);
-                    List<Map<String, Object>> o = (List<Map<String, Object>>) vehicleNumCache.get(taskID + ",data");
-                    if (o.isEmpty()){
-                        returnMap[0] = ResultMaps.result(ResultEnum.SIZEISZERO);
-                        break;
-                    }
-
-                    returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS, o);
-                    vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
-                    vehicleNumCache.remove(taskID+",data");
-                    break;
-                }
-
-                if ("ok".equals(vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()).toString()) && !"2".equals(vehicleNumCache.get(taskID).toString())){
-                    log.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()));
-                    vehicleNumCache.put(taskID, "2");
-                    String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
-                    JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
-                    String prodMstClass = jsonObject.get("prodMstClass").toString();
-                    String prodIsCore = jsonObject.get("prodIsCore").toString();
-                    String isCompanyCd = null;
-                    if ("1".equals(prodIsCore)) {
-                        isCompanyCd = coreCompany;
-                    } else {
-                        isCompanyCd = companyCd;
-                    }
-                    int janName2colNum = Integer.parseInt(taskIdMap.get("janName2colNum").toString());
-                    int colNum = 2;
-                    if (janName2colNum == 2){
-                        colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
-                    }else if(janName2colNum==3){
-                        colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
-                    }
-
-                    if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
-                        returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
-                        break;
-                    }
-
-                    String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
-                    String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
-                    List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
-                    for (Map<String, Object> map : janClassifyList) {
-                        if ("jan_name".equals(map.get("attr"))) {
-                            map.put("sort",colNum);
+        Future future = (Future) vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID)+"2");
+        if(future==null){
+            future = executor.submit(()->{
+                while (true){
+                    if ("ok".equals(vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()).toString())) {
+                        log.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()));
+                        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+                        JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
+                        String prodMstClass = jsonObject.get("prodMstClass").toString();
+                        String prodIsCore = jsonObject.get("prodIsCore").toString();
+                        String isCompanyCd = null;
+                        if ("1".equals(prodIsCore)) {
+                            isCompanyCd = coreCompany;
+                        } else {
+                            isCompanyCd = companyCd;
                         }
-                    }
-                    Map<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1, k2)->k1, LinkedHashMap::new));
-                    colMap.put("branchNum","定番店舗数");
-                    Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
+                        int janName2colNum = Integer.parseInt(taskIdMap.get("janName2colNum").toString());
+                        int colNum = 2;
+                        if (janName2colNum == 2){
+                            colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+                        }else if(janName2colNum==3){
+                            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+                        }
 
-                    ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
-                    List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
-                    List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
+                        if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
+                            break;
+                        }
 
-                    if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
-                        returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
-                        break;
-                    }
+                        String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
+                        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
+                        List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
+                        for (Map<String, Object> map : janClassifyList) {
+                            if ("jan_name".equals(map.get("attr"))) {
+                                map.put("sort",colNum);
+                            }
+                        }
+                        Map<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1, k2)->k1, LinkedHashMap::new));
+                        colMap.put("branchNum","定番店舗数");
+                        Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
-                    List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
-                            janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd,shelfPts,storeCd);
-                    List<Map<String, Object>> resultData = new ArrayList<>();
-                    if (allData.isEmpty()){
-                        returnMap[0] = ResultMaps.result(ResultEnum.SIZEISZERO);
+                        ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
+                        List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
+                        List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
+
+                        if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
+                            break;
+                        }
+
+                        List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
+                                janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd,shelfPts,storeCd);
+                        List<Map<String, Object>> resultData = new ArrayList<>();
+
+                        resultData.add(colMap);
+                        resultData.addAll(allData);
+
+                        log.info("返回pos基本情報はい{}", resultData.size());
+                        vehicleNumCache.put(taskID, "9");
                         vehicleNumCache.put(taskID+",data", resultData);
                         break;
                     }
-
-                    resultData.add(colMap);
-                    resultData.addAll(allData);
-
-                    log.info("返回pos基本情報はい{}", resultData.size());
-                    returnMap[0] = ResultMaps.result(ResultEnum.SUCCESS, resultData);
-                    vehicleNumCache.put(taskID, "9");
-                    vehicleNumCache.put(taskID+",data", resultData);
-                    break;
                 }
-            }
-        });
+            });
+            vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID)+"2", future);
+        }
 
         try {
             future.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
@@ -199,10 +173,22 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             return ResultMaps.result(ResultEnum.FAILURE);
         } catch (TimeoutException e) {
             return ResultMaps.result(ResultEnum.SUCCESS,"9");
+        } catch (CancellationException e){
+            logger.error("taskId:{} canceled", taskID);
+            return ResultMaps.result(ResultEnum.SUCCESS);
         }
 
-        if(returnMap[0]!=null){
-            return returnMap[0];
+        if("9".equals(vehicleNumCache.get(taskID))){
+            List<Map<String, Object>> o = (List<Map<String, Object>>) vehicleNumCache.get(taskID + ",data");
+            if (o.isEmpty()){
+                return ResultMaps.result(ResultEnum.SIZEISZERO);
+            }
+
+            vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
+            vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
+            vehicleNumCache.remove(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID));
+            vehicleNumCache.remove(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID)+"2");
+            return ResultMaps.result(ResultEnum.SUCCESS, o);
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS, "9");
