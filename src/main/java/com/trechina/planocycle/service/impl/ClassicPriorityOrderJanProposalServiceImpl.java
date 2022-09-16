@@ -14,7 +14,6 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.BasicPatternMstService;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanProposalService;
-import com.trechina.planocycle.service.ClassicPriorityOrderMstService;
 import com.trechina.planocycle.service.CommonMstService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
@@ -58,6 +57,8 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
     private ClassicPriorityOrderMstMapper priorityOrderMstMapper;
     @Autowired
     private BasicPatternMstService basicPatternMstService;
+    @Autowired
+    private MstBranchMapper mstBranchMapper;
 
 
     /**
@@ -70,16 +71,21 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
     @Override
     public Map<String, Object> getPriorityOrderJanProposal(String companyCd, Integer priorityOrderCd,Integer productPowerNo,String shelfPatternNo) {
         logger.info("jan変提案listのパラメータを取得する:{},{}",companyCd,priorityOrderCd);
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
+        if (existTableName == 0){
+            coreCompany = companyCd;
+        }
+        String tableName = String.format("\"%s\".prod_0000_jan_info", coreCompany);
         PriorityOrderMstDto priorityOrderMst = priorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
         List<PriorityOrderJanProposalVO> priorityOrderJanProposals = priorityOrderJanProposalMapper.selectByPrimaryKey(companyCd,
-                priorityOrderCd);
+                priorityOrderCd,tableName);
         logger.info("jan変提案listの戻り値を取得する：{}",priorityOrderJanProposals);
         if(priorityOrderJanProposals.isEmpty()){
-            String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
                 janProposalDataFromDB(companyCd, productPowerNo,shelfPatternNo,priorityOrderCd, commonTableName);
-                String tableName = String.format("\"%s\".prod_0000_jan_info", coreCompany);
+
                 priorityOrderJanProposals = priorityOrderJanProposalMapper.selectJanInfoByPrimaryKey(companyCd,priorityOrderCd,
                         tableName,"1", "2");
         }

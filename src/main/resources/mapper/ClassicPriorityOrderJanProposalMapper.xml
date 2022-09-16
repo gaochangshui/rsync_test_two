@@ -27,7 +27,7 @@
     left join priority.priority_order_jan_replace as rep2
               on pro.company_cd = rep2.company_cd
                 and pro.jan_new = rep2.jan_old and pro.flag=1
-    left join "1000".prod_0000_jan_info jans
+    left join ${tableName} jans
     on pro.jan_new = jans."1"
     where pro.company_cd = #{companyCd,jdbcType=VARCHAR}
       and pro.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

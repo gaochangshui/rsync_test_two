@@ -33,6 +33,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.StopWatch;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
@@ -373,6 +374,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             if(future.isCancelled()){
                 String cgiKey = MessageFormat.format(MagicString.TASK_KEY_CGI, taskId);
                 if(vehicleNumCache.get(cgiKey)!=null){
+                    Future f = (Future) vehicleNumCache.get(taskKey+"2");
+                    f.cancel(true);
+                    vehicleNumCache.remove(taskKey);
                     String[] cgiTasks = vehicleNumCache.get(cgiKey).toString().split(",");
                     for (String cgiTask : cgiTasks) {
                         Map<String,Object> posMap = new HashMap();
@@ -746,57 +750,52 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     @Override
     public Map<String, Object> autoTaskId(String taskId) throws InterruptedException {
         final Map<String, Object>[] resultMap = new Map[]{null};
-        Future future = executor.submit(()->{
-            while (true) {
-                String cacheKey = MessageFormat.format(MagicString.TASK_KEY_JAN_NOT_EXIST, taskId);
-                if (vehicleNumCache.get(cacheKey)!=null){
-                    vehicleNumCache.remove(cacheKey);
-                    resultMap[0] = ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
-                    break;
-                }
-                cacheKey = MessageFormat.format(MagicString.TASK_KEY_PATTERN_NOT_EXIST, taskId);
-                if (vehicleNumCache.get(cacheKey)!=null){
-                    vehicleNumCache.remove(cacheKey);
-                    resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, "PatternCdNotExist");
-                    break;
-                }
-                cacheKey = MessageFormat.format(MagicString.TASK_KEY_SET_JAN_HEIGHT_ERROR, taskId);
-                if (vehicleNumCache.get(cacheKey)!=null){
-                    Object o = vehicleNumCache.get(cacheKey);
-                    vehicleNumCache.remove(cacheKey);
-                    resultMap[0] = ResultMaps.result(ResultEnum.HEIGHT_NOT_ENOUGH, o);
-                    break;
-                }
-
-                if (vehicleNumCache.get(taskId) != null){
-                    if(Objects.equals(vehicleNumCache.get(taskId), 2)){
-                        vehicleNumCache.remove(taskId);
-                        cacheKey = MessageFormat.format(MagicString.TASK_KEY_ERROR, taskId);
-                        String error = vehicleNumCache.get(cacheKey).toString();
-                        vehicleNumCache.remove(cacheKey);
-                        resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, error);
-                    }else{
-                        vehicleNumCache.remove(taskId);
-                        resultMap[0] = ResultMaps.result(ResultEnum.SUCCESS,"success");
-                    }
-                    break;
-                }
-
-                cacheKey = MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskId);
-                if (vehicleNumCache.get(cacheKey)!= null && "1".equals(vehicleNumCache.get(cacheKey).toString())){
-                    resultMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
-                    break;
-                }
+        StopWatch stopwatch = new StopWatch();
+        stopwatch.start();
+        while (true) {
+            String cacheKey = MessageFormat.format(MagicString.TASK_KEY_JAN_NOT_EXIST, taskId);
+            if (vehicleNumCache.get(cacheKey)!=null){
+                vehicleNumCache.remove(cacheKey);
+                resultMap[0] = ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
+                break;
             }
-        });
+            cacheKey = MessageFormat.format(MagicString.TASK_KEY_PATTERN_NOT_EXIST, taskId);
+            if (vehicleNumCache.get(cacheKey)!=null){
+                vehicleNumCache.remove(cacheKey);
+                resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, "PatternCdNotExist");
+                break;
+            }
+            cacheKey = MessageFormat.format(MagicString.TASK_KEY_SET_JAN_HEIGHT_ERROR, taskId);
+            if (vehicleNumCache.get(cacheKey)!=null){
+                Object o = vehicleNumCache.get(cacheKey);
+                vehicleNumCache.remove(cacheKey);
+                resultMap[0] = ResultMaps.result(ResultEnum.HEIGHT_NOT_ENOUGH, o);
+                break;
+            }
 
-        try {
-            future.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
-        } catch (ExecutionException e) {
-            logger.error("", e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        } catch (TimeoutException e) {
-            return ResultMaps.result(ResultEnum.SUCCESS,"9");
+            if (vehicleNumCache.get(taskId) != null){
+                if(Objects.equals(vehicleNumCache.get(taskId), 2)){
+                    vehicleNumCache.remove(taskId);
+                    cacheKey = MessageFormat.format(MagicString.TASK_KEY_ERROR, taskId);
+                    String error = vehicleNumCache.get(cacheKey).toString();
+                    vehicleNumCache.remove(cacheKey);
+                    resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, error);
+                }else{
+                    vehicleNumCache.remove(taskId);
+                    resultMap[0] = ResultMaps.result(ResultEnum.SUCCESS,"success");
+                }
+                break;
+            }
+
+            cacheKey = MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskId);
+            if (vehicleNumCache.get(cacheKey)!= null && "1".equals(vehicleNumCache.get(cacheKey).toString())){
+                resultMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
+                break;
+            }
+
+            if(stopwatch.getTotalTimeSeconds()>MagicString.TASK_TIME_OUT_LONG){
+                return ResultMaps.result(ResultEnum.SUCCESS,"9");
+            }
         }
 
         if(resultMap[0]==null){

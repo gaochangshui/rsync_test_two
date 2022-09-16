@@ -124,6 +124,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     private BasicPatternMstService basicPatternMstService;
     @Autowired
     private StarReadingTableMapper starReadingTableMapper;
+    @Autowired
+    private MstBranchMapper mstBranchMapper;
 
     /**
      * 初期取得優先順位テーブルデータ
@@ -158,7 +160,14 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         // 初期化データ
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, priorityOrderDataDto.getShelfPatternCd());
         //ただの用品名2
-        String tableName = "\"1000\".prod_0000_jan_info";
+        int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", "1000");
+        String tableName ="";
+        if (existTableName == 1){
+             tableName = "\"1000\".prod_0000_jan_info";
+        }else {
+            tableName = "\""+companyCd+"\".prod_0000_jan_info";
+        }
+
 
         Set<Map.Entry<String, Object>> entrySet = priorityOrderDataDto.getAttrList().entrySet();
         List<String> list = new ArrayList<>();
