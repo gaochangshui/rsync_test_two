@@ -48,6 +48,8 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
     @Autowired
     private WorkPriorityOrderPtsClassifyMapper workPriorityOrderPtsClassifyMapper;
     @Autowired
+    private MstBranchMapper mstBranchMapper;
+    @Autowired
     private LogAspect logAspect;
 
     /**
@@ -318,7 +320,14 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         logger.info("新規商品リスト動的属性列の処理後のパラメータを保存する：{}" , janAttributeList);
         List<String> janNews = janNewList.stream().map(ClassicPriorityOrderJanNew::getJanNew).collect(Collectors.toList());
         if (!janNews.isEmpty()) {
-            List<Jans> janNewMst = priorityOrderJanNewMapper.getJanNewMst(janNews, companyCd);
+            int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", "1000");
+            String tableName ="";
+            if (existTableName == 0){
+                 tableName = String.format("\"%s\".prod_0000_jan_info", companyCd);
+            }else {
+                 tableName = String.format("\"%s\".prod_0000_jan_info", "1000");
+            }
+            List<Jans> janNewMst = priorityOrderJanNewMapper.getJanNewMst(janNews, companyCd,tableName);
             if (!janNews.isEmpty()) {
                 for (Jans jans : janNewMst) {
                     for (ClassicPriorityOrderJanNew priorityOrderJanNew : janNewList) {
