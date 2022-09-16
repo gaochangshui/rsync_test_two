@@ -185,7 +185,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             }
 
             vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
-            vehicleNumCache.remove(taskID+",data");
+            vehicleNumCache.remove(taskIdMap.get(MagicString.TASK_ID).toString());
+            vehicleNumCache.remove(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID));
+            vehicleNumCache.remove(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID)+"2");
             return ResultMaps.result(ResultEnum.SUCCESS, o);
         }
 
