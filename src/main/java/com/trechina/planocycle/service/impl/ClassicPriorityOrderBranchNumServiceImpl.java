@@ -785,6 +785,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
     @Override
     public Map<String, Object> setStarReadingData(StarReadingVo starReadingVo) {
+
         if (starReadingVo.getTaskID()!=null){
             if ("1".equals(vehicleNumCache.get("save"+starReadingVo.getTaskID()))) {
                 vehicleNumCache.remove("save"+starReadingVo.getTaskID());
@@ -809,12 +810,18 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             priorityOrderMstMapper.updateModeCheck(starReadingVo);
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
+        if (starReadingVo.getGroup() == null){
+            starReadingVo.setFlag(0);
+            Map<String, Object> stringObjectMap = this.rowColumnConversion(starReadingVo);
+            starReadingVo = (StarReadingVo) stringObjectMap.get("data");
+        }
         String uuid = UUID.randomUUID().toString();
+        StarReadingVo finalStarReadingVo = starReadingVo;
         Future<?> future = executor.submit(() -> {
             try {
                 List<Map<String, Object>> list = new ArrayList<>();
 
-                for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
+                for (LinkedHashMap<String, Object> datum : finalStarReadingVo.getData()) {
                     String jan = datum.get("jan").toString();
                     for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
                         if (!stringObjectEntry.getKey().equals("jan") && !stringObjectEntry.getKey().equals("janName") && !stringObjectEntry.getKey().equals("total")
@@ -823,10 +830,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                             map.put("jan", jan);
                             map.put("branch", stringObjectEntry.getKey().split("_")[1]);
                             map.put("flag", stringObjectEntry.getValue().equals("☓") ? -1 : stringObjectEntry.getValue().equals("") ? 0 : 1);
-                            if (starReadingVo.getModeCheck() == 0){
+                            if (finalStarReadingVo.getModeCheck() == 0){
                                 map.put("patternNameCd",Integer.valueOf(stringObjectEntry.getKey().split("_")[0].split("pattern")[1]));
                             }
-                            for (Map.Entry<String, Object> objectEntry : starReadingVo.getGroup().entrySet()) {
+                            for (Map.Entry<String, Object> objectEntry : finalStarReadingVo.getGroup().entrySet()) {
                                 if (objectEntry.getKey().equals(stringObjectEntry.getKey().split("_")[0])) {
                                     map.put("area", objectEntry.getValue());
                                 }
@@ -838,7 +845,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
 
                     if (list.size() >= 5000){
-                        if (starReadingVo.getModeCheck() == 1) {
+                        if (finalStarReadingVo.getModeCheck() == 1) {
                             starReadingTableMapper.setBranchList(list,companyCd,priorityOrderCd);
                         }else {
                             starReadingTableMapper.setPatternList(list,companyCd,priorityOrderCd);
@@ -847,7 +854,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     }
                 }
                 if (!list.isEmpty()) {
-                    if (starReadingVo.getModeCheck() == 1) {
+                    if (finalStarReadingVo.getModeCheck() == 1) {
                         starReadingTableMapper.setBranchList(list, companyCd, priorityOrderCd);
                     } else {
                         starReadingTableMapper.setPatternList(list, companyCd, priorityOrderCd);
@@ -880,7 +887,23 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Override
     public void starReadingDataForExcel(StarReadingVo starReadingVo, HttpServletResponse response) {
         ServletOutputStream outputStream = null;
+        if (starReadingVo.getGroup() == null){
+            starReadingVo.setFlag(0);
+            Map<String, Object> stringObjectMap = this.rowColumnConversion(starReadingVo);
+            starReadingVo = (StarReadingVo) stringObjectMap.get("data");
+            List<LinkedHashMap<String, Object>> data = starReadingVo.getData();
+            for (LinkedHashMap<String, Object> datum : data) {
+                int total = 0;
+                for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
+                    if (stringObjectEntry.getValue().equals("◯")){
+                        total++;
+                    }
 
+                }
+                datum.put("total",total);
+            }
+            starReadingVo.setData(data);
+        }
         List<String> header = Arrays.asList(starReadingVo.getHeader().toString().replaceAll("<br />","_").split(","));
         List<String>  column = Arrays.asList(starReadingVo.getColumn().split(","));
         List<String>  columns = new ArrayList<>(column);
@@ -947,12 +970,15 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 column += ",jan" + datum.get("jan");
             }
             headers.add(header1);
-            headers.add(header2);
             headers.add(header3);
             headers.add(header4);
             for (int i = 0; i < columnList.size(); i++) {
                 LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-                map.put("branch", header.get(i).split("<br />")[1]);
+                if (starReadingVo.getModeCheck() == 1) {
+                    map.put("branch", header.get(i).split("<br />")[1]);
+                }else {
+                    map.put("branch", header.get(i));
+                }
                 map.put("area", group.get(columnList.get(i).split("_")[0]));
                 map.put("branchCd", columnList.get(i).split("_")[1]);
                 map.put("areaCd", columnList.get(i).split("_")[0]);
@@ -973,16 +999,15 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             List<String> header1 = Arrays.asList(headers.get(0).split(","));
             List<String> header2 = Arrays.asList(headers.get(1).split(","));
             List<String> header3 = Arrays.asList(headers.get(2).split(","));
-            List<String> header4 = Arrays.asList(headers.get(3).split(","));
             List<LinkedHashMap<String,Object>> resultList = new ArrayList<>();
-            for (int i = 0; i < header3.size(); i++) {
+            for (int i = 0; i < header2.size(); i++) {
                 LinkedHashMap<String,Object> map= new LinkedHashMap<>();
-                map.put("jan",header3.get(i));
-                map.put("janName",header4.get(i+3));
-                map.put("total",header2.get(i));
+                map.put("jan",header2.get(i));
+                map.put("janName",header3.get(i+3));
                 map.put("maker",header1.get(i));
+                map.put("total","");
                 for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
-                    map.put(datum.get("areaCd")+"_"+datum.get("branchCd"),datum.get("jan"+header3.get(i)));
+                    map.put(datum.get("areaCd")+"_"+datum.get("branchCd"),datum.get("jan"+header2.get(i)));
                 }
 
                 resultList.add(map);
@@ -992,7 +1017,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             Map<String,Object> group = new LinkedHashMap<>();
             for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
                     column += ","+datum.get("areaCd")+"_"+datum.get("branchCd");
-                    header += ","+datum.get("branchCd")+"<br />"+datum.get("branch");
+                if (starReadingVo.getModeCheck() == 1) {
+                    header += "," + datum.get("branchCd") + "<br />" + datum.get("branch");
+                }else {
+                    header += "," + datum.get("branch");
+                }
                 group.putIfAbsent(datum.get("areaCd").toString(),datum.get("area"));
             }
             StarReadingVo starReadingVo1 = new StarReadingVo();
