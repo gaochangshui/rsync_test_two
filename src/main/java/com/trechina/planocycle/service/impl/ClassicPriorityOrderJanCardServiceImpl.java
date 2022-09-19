@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,10 +69,11 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
         logger.info("card商品リストパラメータを取得する:{},{}",companyCd,priorityOrderCd);
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
-        String tableName ="";
+
         if (existTableName == 0){
             coreCompany = companyCd;
         }
+        String tableName = MessageFormat.format("\"{0}\".prod_0000_jan_info", coreCompany);
         List<Map<String, Object>> janHeader = janClassifyMapper.selectJanClassify(tableName);
         String janCdCol = janHeader.stream().filter(map -> map.get("attr").equals(MagicString.JAN_HEADER_JAN_CD_COL))
                 .map(map -> map.get("sort")).findFirst().orElse(MagicString.JAN_HEADER_JAN_CD_DEFAULT).toString();
