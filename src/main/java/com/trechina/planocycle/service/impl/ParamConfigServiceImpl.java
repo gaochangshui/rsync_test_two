@@ -16,8 +16,8 @@ public class ParamConfigServiceImpl implements ParamConfigService {
     @Autowired
     private ParamConfigMapper paramConfigMapper;
     @Override
-    public Map<String, Object> getParamConfigList() {
-        List<ParamConfigDto> paramConfig = paramConfigMapper.getParamConfig();
+    public Map<String, Object> getParamConfigList(Integer showItemCheck) {
+        List<ParamConfigDto> paramConfig = paramConfigMapper.getParamConfig(showItemCheck);
         return ResultMaps.result(ResultEnum.SUCCESS,paramConfig);
     }
 }

@@ -4,6 +4,7 @@ import com.trechina.planocycle.service.ParamConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -15,8 +16,8 @@ public class ParamConfigController {
     private ParamConfigService paramConfigService;
 
     @GetMapping("getParamConfigList")
-    public Map<String,Object> getParamConfigList()  {
+    public Map<String,Object> getParamConfigList(@RequestParam(required = false) Integer showItemCheck)  {
 
-        return paramConfigService.getParamConfigList();
+        return paramConfigService.getParamConfigList(showItemCheck);
     }
 }

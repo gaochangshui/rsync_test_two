@@ -9,7 +9,7 @@ import java.util.List;
 
 @Mapper
 public interface ParamConfigMapper {
-    List<ParamConfigDto> getParamConfig();
+    List<ParamConfigDto> getParamConfig(Integer showItemCheck);
 
     List<ParamConfigVO> selectParamConfig();
 

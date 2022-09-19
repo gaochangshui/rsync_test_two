@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface ParamConfigService {
 
-    Map<String, Object> getParamConfigList();
+    Map<String, Object> getParamConfigList(Integer showItemCheck);
 }
