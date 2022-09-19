@@ -1283,7 +1283,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TAI_CD)))
                 .collect(Collectors.toList());
         Map<String, Integer> taiTanaMap = new HashMap<>();
-        newPtsJanList.stream().peek(map->{
+        newPtsJanList = newPtsJanList.stream().peek(map->{
             String taiTanaKey = MapUtils.getInteger(map, MagicString.TAI_CD)+"_"+MapUtils.getInteger(map, MagicString.TANA_CD);
             Integer order = taiTanaMap.getOrDefault(taiTanaKey, 0)+1;
             map.put(MagicString.TANA_POSITION_CD, order);
