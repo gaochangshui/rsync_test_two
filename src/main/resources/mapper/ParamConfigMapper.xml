@@ -9,7 +9,7 @@
     select item_cd as colName,item_value as value,item_name as label,rank_flag as rankFlag,item_type as itemType
     from planocycle.param_config config
     where flag=0 order by item_value
-    <if test="showItemCheck == 0">
+    <if test="showItemCheck = 0">
     and item_cd not in ( 'pos_item12','pos_item13')
     </if>
   </select>
