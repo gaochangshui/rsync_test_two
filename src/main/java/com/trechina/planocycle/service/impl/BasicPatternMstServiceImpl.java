@@ -812,7 +812,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    private void setPtsJandataByRestrictCd(Integer priorityOrderCd, Integer patternCd, String companyCd, String authorCd, List<Integer> attrList,
+    public void setPtsJandataByRestrictCd(Integer priorityOrderCd, Integer patternCd, String companyCd, String authorCd, List<Integer> attrList,
                                            List<ZokuseiMst> zokuseiMsts, GetCommonPartsDataDto commonTableName, List<Integer> allCdList,
                                            List<Map<String, Object>> restrictResult, String uuid){
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);

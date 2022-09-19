@@ -80,7 +80,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         Integer productPowerCd = Integer.valueOf(taskIdMap.get("productPowerCd").toString());
         String companyCd = taskIdMap.get("companyCd").toString();
         String authorCd = session.getAttribute("aud").toString();
-        final Map<String, Object>[] returnMap = new Map[]{null};
 
         if (taskID.equals("")){
             logger.info("getCommodityScoreData:{}", 1);
