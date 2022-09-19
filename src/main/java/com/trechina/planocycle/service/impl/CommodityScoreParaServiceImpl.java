@@ -358,8 +358,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
             if (vehicleNumCache.get(taskID+",data") != null){
+                Object o = vehicleNumCache.get(taskID + ",data");
                 vehicleNumCache.remove(taskID+",data");
-                return ResultMaps.result(ResultEnum.SUCCESS,vehicleNumCache.get(taskID+",data"));
+                return ResultMaps.result(ResultEnum.SUCCESS,o);
             }
             try {
                 Thread.sleep(1000);

@@ -670,6 +670,11 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         priorityOrderSortRankMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
         //削除space表
         priorityOrderSpaceMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
+
+        List<String> basicAllList = priorityOrderMstMapper.getBasicAllList(companyCd, priorityOrderCd);
+        for (String basicAllCd : basicAllList) {
+
+        }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 

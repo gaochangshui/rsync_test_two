@@ -110,7 +110,10 @@
   <select id="getModeCheck" resultType="java.lang.Integer">
     select mode_check from priority.work_priority_order_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
-  <update id="updateOrderName">
+    <select id="getBasicAllList" resultType="java.lang.String">
+      select  priority_all_name from planocycle.priority_all_mst where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+    </select>
+    <update id="updateOrderName">
     update planocycle.priority_order_mst set priority_order_name=#{priorityOrderName} where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     and deleteflg=0
   </update>
