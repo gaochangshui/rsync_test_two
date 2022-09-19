@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderPtsPatternNameMapper">
+    <insert id="insertPtsPatternName">
+        insert into priority.priority_order_pts_pattern_name(priority_order_cd, shelf_name_cd, jan)
+        values
+        <foreach collection="newJanList" item="item" separator=",">
+            (#{priorityOrderCd}, #{shelfNameCd}, #{item.jan})
+        </foreach>
+        on conflict do nothing
+    </insert>
+    <delete id="deletePtsPatternName">
+        delete from priority.priority_order_pts_pattern_name where create_time &lt; current_date::timestamp - INTERVAL '1 day'
+    </delete>
+    <select id="selectExistPatternJan" resultType="string">
+        select jan from priority.priority_order_pts_pattern_name
+        <where>
+            priority_order_cd=#{priorityOrderCd} and shelf_name_cd!=#{shelfNameCd} and jan in
+            (<foreach collection="newPtsJanCdList" item="item" separator=",">#{item} </foreach>)
+        </where>
+    </select>
+</mapper>

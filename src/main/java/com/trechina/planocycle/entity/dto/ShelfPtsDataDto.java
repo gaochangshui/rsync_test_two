@@ -6,6 +6,16 @@ public class ShelfPtsDataDto {
 
     private String shelfPatternName;
 
+    private Integer shelfNameCd;
+
+    public Integer getShelfNameCd() {
+        return shelfNameCd;
+    }
+
+    public void setShelfNameCd(Integer shelfNameCd) {
+        this.shelfNameCd = shelfNameCd;
+    }
+
     public String getShelfPatternName() {
         return shelfPatternName;
     }

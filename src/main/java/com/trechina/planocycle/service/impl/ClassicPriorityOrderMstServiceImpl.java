@@ -129,6 +129,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     private ThreadPoolTaskExecutor taskExecutor;
     @Autowired
     private ShelfPatternMstMapper patternMstMapper;
+//    @Autowired
+//    private priority_order_pts_pattern_name
     @Autowired
     private BasicPatternMstService basicPatternMstService;
     @Autowired
@@ -141,6 +143,10 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     private ProductPowerMstMapper productPowerMstMapper;
     @Autowired
     private LogAspect logAspect;
+    @Autowired
+    private PriorityOrderPtsBackupJanMapper ptsBackupJanMapper;
+    @Autowired
+    private PriorityOrderPtsPatternNameMapper ptsPatternNameMapper;
 
     /**
      * 優先順位テーブルlistの取得
@@ -659,7 +665,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     //common compare
                     CompletableFuture<Map<String, List<Map<String, Object>>>> commonFuture = CompletableFuture.supplyAsync(() -> doNewOldPtsCompare(finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
                             shelfPtsHeaderDto, ptsVersion, catePakList, companyCd, fileParentPath,
-                            null, null, null, janReplaceMap, ptsJanDtoList));
+                            null, null, priorityOrderCd, null, janReplaceMap, ptsJanDtoList));
                     tasks.add(commonFuture);
                 }
 
@@ -677,7 +683,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                     new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
                             Map<String, List<Map<String, Object>>> tmpResultMap = doNewOldPtsCompare(finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
                                     shelfPtsHeaderDto, ptsVersion, catePakList, companyCd, fileParentPath,
-                                    Maps.newHashMap(), finalCommodityMustJans, finalCommodityNotJans, janReplaceMap, ptsJanDtoList);
+                                    Maps.newHashMap(), finalCommodityMustJans, priorityOrderCd, finalCommodityNotJans, janReplaceMap, ptsJanDtoList);
 
                             resultMap.put(MagicString.DELETE_LIST, tmpResultMap.getOrDefault(MagicString.DELETE_LIST, Lists.newArrayList()));
                             resultMap.put(MagicString.NEW_LIST, tmpResultMap.getOrDefault(MagicString.NEW_LIST, Lists.newArrayList()));
@@ -698,7 +704,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
                                 Map<String, List<Map<String, Object>>> tmpResultMap = doNewOldPtsCompare(finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
                                         shelfPtsHeaderDto, ptsVersion, catePakList, companyCd, fileParentPath,
-                                        branch, commodityMustBranchJans, commodityNotBranchJans, janReplaceMap, ptsJanDtoList);
+                                        branch, commodityMustBranchJans, priorityOrderCd, commodityNotBranchJans, janReplaceMap, ptsJanDtoList);
 
                                 resultMap.put(MagicString.DELETE_LIST, tmpResultMap.getOrDefault(MagicString.DELETE_LIST, Lists.newArrayList()));
                                 resultMap.put(MagicString.NEW_LIST, tmpResultMap.getOrDefault(MagicString.NEW_LIST, Lists.newArrayList()));
@@ -897,7 +903,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                                                       List<Map<String, Object>> resultDataList, List<Map<String, Object>> ptsSkuNum,
                                                                       ShelfPtsDataDto pattern, ShelfPtsHeaderDto shelfPtsHeaderDto,
           Integer ptsVersion, List<PriorityOrderCatePakVO> catePakList, String companyCd, String fileParentPath,
-          Map<String, Object> branch, List<Map<String, Object>> commodityMustJans,
+          Map<String, Object> branch, List<Map<String, Object>> commodityMustJans,Integer priorityOrderCd,
           List<Map<String, Object>> commodityNotJans, Map<String, String> janReplaceMap, List<Map<String, Object>> ptsJanDtoList){
         Map<String, Map<String, String>> catePakMap = new HashMap<>();
         List<Map<String, Object>> newJanList = new ArrayList<>();
@@ -905,9 +911,10 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         Map<String, List<Map<String, Object>>> newPtsJanMap = new HashMap<>();
         Map<String, List<Map<String, Object>>> resultMap = new HashMap<>(2);
 
-        String branchName = "";
+        String branchName = "", branchCd = "";
         if(branch!=null && !branch.isEmpty()){
             branchName = branch.get("branch_name").toString();
+            branchCd = branch.get("branch").toString();
         }
 
         String fileName = shelfPtsHeaderDto.getFileName().replace(".csv", "")+ (Strings.isNullOrEmpty(branchName)?"":"_"+branchName)+".csv";
@@ -976,6 +983,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD)
                             .toString()))).collect(Collectors.toList());
             notInPtsJanListByGroup.put(group, notInPtsJanList);
+            if(!notInPtsJanList.isEmpty()){
+                ptsBackupJanMapper.insertBackupJan(priorityOrderCd, pattern.getShelfPatternCd(), group, branchCd, notInPtsJanList);
+            }
 
             int newJanIndex = 0;
             List<Map<String, Object>> adoptPtsJanList = new ArrayList<>(ptsJanList);
@@ -1070,14 +1080,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
                             }
                         }else{
-//                            Map<String, Object> tmpNewJanMap = notInPtsJanList.get(newJanIndex);
-//
-//                            //縮jan exist priority order，don't adopted
-//                            if(catePakList.stream().anyMatch(catePak -> catePak.getSmalls().equals(attrKey) &&
-//                                    catePak.getRank().equals(tmpNewJanMap.get(MagicString.RANK_UPD).toString()))){
-//                                newJanIndex++;
-//                            }
-
                             String finalNewJan = newJan;
                             if(!notInPtsJanList.isEmpty() && newJanList.stream()
                                     .noneMatch(map-> finalNewJan.equals(map.get(MagicString.JAN).toString()))){
@@ -1253,6 +1255,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             newPtsJanMap.put(attrSmalls, smallList);
         }
 
+        this.pluralJan(newPtsJanMap, priorityOrderCd,pattern, branchCd,
+                ptsVersion, companyCd, deleteJanList, newJanList, fileName);
+
         resultMap.put(MagicString.DELETE_LIST, deleteJanList);
         resultMap.put(MagicString.NEW_LIST, newJanList);
 
@@ -1260,12 +1265,79 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         List<ShelfPtsDataTaimst> shelfPtsDataTaimst = shelfPtsDataMapper.selectShelfPtsTaiMst(pattern.getId());
         List<ShelfPtsDataTanamst> shelfPtsDataTanamst = shelfPtsDataMapper.selectShelfPtsTanaMst(pattern.getId());
 
+        this.saveJanShelfNameCd(newPtsJanList, pattern.getShelfNameCd(), priorityOrderCd);
         this.generateCsv2File(newJanList.stream().map(map->map.get(MagicString.JAN).toString()).collect(Collectors.toList()),
                 deleteJanList.stream().map(map->map.get(MagicString.JAN).toString()).collect(Collectors.toList()),
                 fileParentPath,newPtsJanList, shelfPtsHeaderDto,
                 shelfPtsDataTaimst, shelfPtsDataTanamst, fileName);
 
         return resultMap;
+    }
+
+    /**
+     * 優先順位表で複数棚名称を選択した時、出力されるパターンでJANが重複しないように
+     */
+    private void pluralJan(Map<String, List<Map<String, Object>>> newPtsJanMap, Integer priorityOrderCd, ShelfPtsDataDto shelfPtsDataDto,
+                           String branchCd, Integer ptsVersion, String companyCd, List<Map<String, Object>> deleteList,
+                           List<Map<String, Object>> newList, String fileName){
+        Integer shelfNameCd = shelfPtsDataDto.getShelfNameCd();
+
+        List<Map<String, Object>> backupJanList = ptsBackupJanMapper.selectBackupJan(priorityOrderCd, shelfPtsDataDto.getShelfPatternCd(), shelfNameCd, branchCd);
+        Map<String, List<Map<String, Object>>> backupJanListByGroup = backupJanList.stream().collect(Collectors.groupingBy(map -> MapUtils.getString(map, "group")));
+        Map<String, String> repeatOldJan = new HashMap<>();
+
+        for (Map.Entry<String, List<Map<String, Object>>> entry : newPtsJanMap.entrySet()) {
+            final int[] usedIndex = {0};
+
+            List<Map<String, Object>> newPtsJanList = entry.getValue();
+            List<String> newPtsJanCdList = newPtsJanList.stream().map(map -> MapUtils.getString(map, MagicString.JAN)).collect(Collectors.toList());
+            List<Map<String, Object>> backupJan = backupJanListByGroup.getOrDefault(entry.getKey(), ImmutableList.of());
+
+            List<String> existOtherPatternJan = ptsPatternNameMapper.selectExistPatternJan(priorityOrderCd, shelfNameCd, newPtsJanCdList);
+            backupJanList.removeIf(janMap->newPtsJanCdList.contains(MapUtils.getString(janMap, MagicString.JAN)));
+
+            newPtsJanList.forEach(janMap->{
+                String janOld = MapUtils.getString(janMap, MagicString.JAN_OLD);
+                String janCd = MapUtils.getString(janMap, MagicString.JAN);
+                if(existOtherPatternJan.contains(MapUtils.getString(janMap, MagicString.JAN))){
+                    if (deleteList.stream().noneMatch(map-> MapUtils.getString(map, MagicString.JAN).equals(janOld))) {
+                        deleteList.add(janMap);
+                    }
+
+                    if(backupJan.isEmpty() || usedIndex[0]>=backupJan.size()){
+                        if(ptsVersion == 2){
+                            janMap.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,MapUtils.getString(janMap, MagicString.JAN_OLD)));
+                        }else{
+                            janMap.put(MagicString.DEL_FLAG, "1");
+                        }
+                    }else{
+                        if(ptsVersion == 1){
+                            if(repeatOldJan.containsKey(janOld)){
+                                janMap.put(MagicString.JAN, repeatOldJan.get(janOld));
+                            }else{
+                                Map<String, Object> janNewMap = backupJan.get(usedIndex[0]++);
+
+                                if(!janOld.equals(janCd)){
+                                    newList.removeIf(map->map.get(MagicString.JAN).equals(janCd));
+                                }
+
+                                if (newList.stream().noneMatch(map-> MapUtils.getString(map, MagicString.JAN).equals(janOld))) {
+                                    janNewMap.put(MagicString.PTS_NAME, fileName);
+                                    janNewMap.put("pattern_name", shelfPtsDataDto.getShelfPatternName());
+
+                                    janMap.put(MagicString.JAN, janNewMap.get(MagicString.JAN));
+                                    newList.add(janNewMap);
+                                }
+                            }
+                        }else{
+                            janMap.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,MapUtils.getString(janMap, MagicString.JAN_OLD)));
+                        }
+                    }
+                }
+            });
+
+            newPtsJanMap.put(entry.getKey(), newPtsJanList);
+        }
     }
 
     private List<Map<String, Object>> reOrderByTaiTana(Map<String, List<Map<String, Object>>> newPtsJanMap){
@@ -1290,6 +1362,13 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         return newPtsJanList;
     }
 
+    /**
+     * save jan and shelf_name_cd, in order to process [[優先順位表で複数棚名称を選択した時、出力されるパターンでJANが重複しないように]]
+     * @return
+     */
+    public void saveJanShelfNameCd(List<Map<String, Object>> newJanList, Integer shelfNameCd, Integer priorityOrderCd){
+        ptsPatternNameMapper.insertPtsPatternName(priorityOrderCd, shelfNameCd, newJanList);
+    }
     public String generateCsv2File(List<String> newJanList, List<String> deleteJanList, String fileParentPath,
                                    List<Map<String, Object>> newPtsJanList, ShelfPtsHeaderDto shelfPtsHeaderDto,
                                    List<ShelfPtsDataTaimst> shelfPtsDataTaimst, List<ShelfPtsDataTanamst> shelfPtsDataTanamst, String fileName) {
