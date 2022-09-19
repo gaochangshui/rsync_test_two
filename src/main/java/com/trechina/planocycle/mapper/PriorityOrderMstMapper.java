@@ -68,5 +68,5 @@ public interface PriorityOrderMstMapper {
 
     Integer getModeCheck(Integer priorityOrderCd);
 
-    List<String> getBasicAllList(String companyCd, Integer priorityOrderCd);
+    List<Integer> getBasicAllList(String companyCd, Integer priorityOrderCd);
 }

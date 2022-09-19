@@ -602,7 +602,11 @@ public class ExcelUtils {
             List<Integer> listSize = new ArrayList<>();
             listSize.add(((List<String>)paramData.get("attrName")).size());
             listSize.add(((List<String>)paramData.get("shelfPatternName")).size());
-            Integer integer = listSize.stream().max(Integer::compare).get();
+            Integer integer = 0;
+            if (listSize.stream().max(Integer::compare).isPresent()) {
+                integer = listSize.stream().max(Integer::compare).get();
+            }
+
             colIndex = 4;
             for (int i = 0; i < integer; i++) {
                 row = sheet1.createRow(colIndex);

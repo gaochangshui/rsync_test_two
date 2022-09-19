@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
+import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderJanCgiDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMst;
@@ -126,6 +127,8 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     private BasicPatternAttrMapper basicPatternAttrMapper;
     @Autowired
     private BasicPatternRestrictResultDataMapper basicPatternRestrictResultDataMapper;
+    @Autowired
+    private PriorityAllMstService priorityAllMstService;
     @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
@@ -671,9 +674,12 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         //削除space表
         priorityOrderSpaceMapper.logicDeleteByPriorityOrderCd(companyCd, aud, priorityOrderCd);
 
-        List<String> basicAllList = priorityOrderMstMapper.getBasicAllList(companyCd, priorityOrderCd);
-        for (String basicAllCd : basicAllList) {
-
+        List<Integer> basicAllList = priorityOrderMstMapper.getBasicAllList(companyCd, priorityOrderCd);
+        for (Integer basicAllCd : basicAllList) {
+            PriorityAllSaveDto priorityAllSaveDto = new PriorityAllSaveDto();
+            priorityAllSaveDto.setPriorityAllCd(basicAllCd);
+            priorityAllSaveDto.setCompanyCd(companyCd);
+            priorityAllMstService.deletePriorityAll(priorityAllSaveDto);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

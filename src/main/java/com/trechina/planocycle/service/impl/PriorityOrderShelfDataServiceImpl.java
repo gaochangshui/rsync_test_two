@@ -332,7 +332,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.getPtsJanInfo(priorityOrderCd, id, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,tableName,janSizeCol);
         Map<String,Object> map = new HashMap<>();
         map.put("width","幅");
-        map.put("width","高さ");
+        map.put("height","高さ");
         map.put("depth","奥行");
         for (Map<String, Object> objectMap : zokuseiCol) {
             map.put("zokuseiName"+objectMap.get("zokusei_id").toString(),objectMap.get("zokusei_nm"));
