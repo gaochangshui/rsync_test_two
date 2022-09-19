@@ -182,7 +182,7 @@ public class ClassicPriorityOrderBranchNumController {
     }
 
     /**
-     * 行列转换
+     * 行列の変換
      */
     @PostMapping("rowColumnConversion")
     public Map<String, Object> rowColumnConversion(@RequestBody StarReadingVo starReadingVo){

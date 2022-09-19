@@ -280,7 +280,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         if (!productPowerData.isEmpty()) {
             productPowerData = CommonUtil.janSort(productPowerData, data, "rank");
         }else {
-            data.stream().sorted(Comparator.comparing(map1->MapUtils.getInteger(map1,"rank"))).collect(Collectors.toList());
+            data = data.stream().sorted(Comparator.comparing(map1->MapUtils.getInteger(map1,"rank"))).collect(Collectors.toList());
             int j = 1;
             for (Map<String, Object> datum : data) {
                 datum.put("rank",j++);

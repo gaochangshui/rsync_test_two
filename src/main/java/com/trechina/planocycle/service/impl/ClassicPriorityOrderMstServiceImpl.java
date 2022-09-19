@@ -177,6 +177,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         Integer priorityOrderCd = priorityOrderMstDto.getPriorityOrderCd();
         String companyCd = priorityOrderMstDto.getCompanyCd();
         //パラメータを2つのテーブルのデータに処理するinsert
+        priorityOrderMstDto.setSetSpecialFlag(1);
         priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
         //try {
             logger.info("優先順位テーブルパラメータの保存：{}",priorityOrderMstDto);
@@ -500,14 +501,16 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         if (!goodsRank.isEmpty()) {
             priorityOrderDataMapper.updateGoodsRank(goodsRank, companyCd, priorityOrderCd);
         }
-        List<Map<String, Object>> attrSpecialList = classicPriorityOrderMstAttrSortMapper.getAttrSpecialList(companyCd, priorityOrderCd);
-        if (!attrSpecialList.isEmpty()){
-            HashMap<String, Object> objectObjectHashMap = new HashMap<>();
-            objectObjectHashMap.put("value","1");
-            objectObjectHashMap.put("sort","jan_new");
-            attrSpecialList.add(objectObjectHashMap);
-            priorityOrderDataMapper.setSpecialName(linkedHashMaps,attrSpecialList);
+        if (priorityOrderMstDto.getSetSpecialFlag() == 1) {
+            List<Map<String, Object>> attrSpecialList = classicPriorityOrderMstAttrSortMapper.getAttrSpecialList(companyCd, priorityOrderCd);
+            if (!attrSpecialList.isEmpty()){
+                HashMap<String, Object> objectObjectHashMap = new HashMap<>();
+                objectObjectHashMap.put("value","1");
+                objectObjectHashMap.put("sort","jan_new");
+                attrSpecialList.add(objectObjectHashMap);
+                priorityOrderDataMapper.setSpecialName(linkedHashMaps,attrSpecialList);
 
+            }
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
@@ -1280,7 +1283,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TAI_CD)))
                 .collect(Collectors.toList());
         Map<String, Integer> taiTanaMap = new HashMap<>();
-        newPtsJanList.stream().peek(map->{
+        newPtsJanList = newPtsJanList.stream().peek(map->{
             String taiTanaKey = MapUtils.getInteger(map, MagicString.TAI_CD)+"_"+MapUtils.getInteger(map, MagicString.TANA_CD);
             Integer order = taiTanaMap.getOrDefault(taiTanaKey, 0)+1;
             map.put(MagicString.TANA_POSITION_CD, order);

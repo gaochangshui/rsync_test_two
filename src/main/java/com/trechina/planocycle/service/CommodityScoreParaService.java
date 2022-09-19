@@ -49,4 +49,6 @@ public interface CommodityScoreParaService {
      * @return
      */
      Map<String,Object> deleteReserve(JSONObject jsonObject);
+
+    Map<String, Object> rankCalculateForTaskId(String taskID);
 }

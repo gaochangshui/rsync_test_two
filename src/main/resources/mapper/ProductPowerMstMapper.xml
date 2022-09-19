@@ -156,4 +156,10 @@
         masterdb.kigyou_name
       WHERE "1"  = #{companyCd}
     </select>
+    <select id="getBasicList" resultType="java.lang.Integer">
+      select priority_order_cd from planocycle.priority_order_mst where company_cd = #{companyCd} and product_power_cd = #{productPowerCd}
+    </select>
+  <select id="getPriorityOrderList" resultType="java.lang.Integer">
+    select priority_order_cd from priority.priority_order_mst where company_cd = #{companyCd} and product_power_cd = #{productPowerCd}
+  </select>
 </mapper>

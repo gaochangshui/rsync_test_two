@@ -19,16 +19,3 @@ fileSaveRemote方法,切換物理机代碼
 # PriorityOrderMstServiceImpl.java 文件  --无效
 # getPtsFileDownLoad方法，切換物理机代碼
 
-# 本地調試環境変量
-```$xslt
-PLANO_URL=jdbc:postgresql://10.100.1.161:54333/PLANOCYCLE?characterEncoding=UTF-8&useSSL=false
-PLANO_USERNAME=admin
-PLANO_PASSWORD=admin1234
-loggingFilePath=D:\files
-PORTAL_URL=http://10.100.1.161:8102/planocycleweb/
-projectIds=nothing
-bucketNames=nothing
-ptsDownPath=http://10.100.1.161:8102/planocycleweb/
-productDownPath=D:\files
-smartUrlPath=http://10.100.1.161:12001/suntorylink/planocycle/CGI/
-```

@@ -67,4 +67,6 @@ public interface PriorityOrderMstMapper {
     void updateModeCheck(@Param("item") StarReadingVo starReadingVo);
 
     Integer getModeCheck(Integer priorityOrderCd);
+
+    List<Integer> getBasicAllList(String companyCd, Integer priorityOrderCd);
 }

@@ -41,6 +41,9 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -750,8 +753,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     @Override
     public Map<String, Object> autoTaskId(String taskId) throws InterruptedException {
         final Map<String, Object>[] resultMap = new Map[]{null};
-        StopWatch stopwatch = new StopWatch();
-        stopwatch.start();
+        LocalDateTime now = LocalDateTime.now();
         while (true) {
             String cacheKey = MessageFormat.format(MagicString.TASK_KEY_JAN_NOT_EXIST, taskId);
             if (vehicleNumCache.get(cacheKey)!=null){
@@ -793,7 +795,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 break;
             }
 
-            if(stopwatch.getTotalTimeSeconds()>MagicString.TASK_TIME_OUT_LONG){
+            if(Duration.between(now, LocalDateTime.now()).getSeconds() >MagicString.TASK_TIME_OUT_LONG){
                 return ResultMaps.result(ResultEnum.SUCCESS,"9");
             }
         }
@@ -812,7 +814,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    private void setPtsJandataByRestrictCd(Integer priorityOrderCd, Integer patternCd, String companyCd, String authorCd, List<Integer> attrList,
+    public void setPtsJandataByRestrictCd(Integer priorityOrderCd, Integer patternCd, String companyCd, String authorCd, List<Integer> attrList,
                                            List<ZokuseiMst> zokuseiMsts, GetCommonPartsDataDto commonTableName, List<Integer> allCdList,
                                            List<Map<String, Object>> restrictResult, String uuid){
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
