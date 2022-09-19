@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.trechina.planocycle.aspect.LogAspect;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityMust;
 import com.trechina.planocycle.entity.po.PriorityOrderCommodityNot;
@@ -86,6 +87,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     private VehicleNumCache vehicleNumCache;
     @Autowired
     private ThreadPoolTaskExecutor executor;
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
+    @Autowired
+    private MstBranchMapper mstBranchMapper;
 
 
     public static final Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
@@ -565,6 +570,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         String header = "JAN,商品名,メーカー,合計";
         Map mapResult = new HashMap();
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
+
+        if (existTableName == 0){
+            coreCompany = companyCd;
+        }
+        String tableName = MessageFormat.format("\"{0}\".ten_0000_ten_info", coreCompany);
         PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
@@ -573,7 +585,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         if (starReadingTableDto.getModeCheck() == 1) {
             List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
             groupCompany.add(companyCd);
-            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany);
+            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
             branchList=branchList.stream().filter(map -> starReadingTableDto.getExpressItemList().contains(map.get("sort"))).collect(Collectors.toList());
             List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList);
 
@@ -680,6 +692,15 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             modeCheck =1;
             isModeCheck = false;
         }
+
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
+
+        if (existTableName == 0){
+            coreCompany = companyCd;
+        }
+        String tableName = MessageFormat.format("\"{0}\".ten_0000_ten_info", coreCompany);
+
         List<Map<String, Object>> expressItemList =new ArrayList<>();
         String janInfoTableName = "";
         String column = "jan,janName,maker,total";
@@ -692,7 +713,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             janInfoTableName = "priority.work_priority_order_commodity_branch";
 
             List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
-            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany);
+            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
             List<Map<String, Object>> janOrName = starReadingTableMapper.getJanOrName(companyCd, priorityOrderCd,commonTableName.getProInfoTable(),makerCol);
             List<Object> branchCd = branchDiff.stream().map(map -> map.get("branchCd")).collect(Collectors.toList());
             branchList=branchList.stream().filter(map ->branchCd.contains(map.get("branchCd"))).collect(Collectors.toList());
@@ -769,7 +790,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,"jan"))).collect(Collectors.toList());
             mapResult.put("data", list);
         }
-        List<Map<String, Object>> areaList = starReadingTableMapper.getAreaList(priorityOrderCd,groupCompany);
+        List<Map<String, Object>> areaList = starReadingTableMapper.getAreaList(priorityOrderCd,groupCompany,tableName);
         List<Map<String, Object>>  patternList =  starReadingTableMapper.getPatternList(priorityOrderCd);
         expressItemList.addAll(areaList);
         expressItemList.addAll(patternList);

@@ -1,6 +1,7 @@
 package com.trechina.planocycle;
 
 import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityAllResultDataDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.mapper.*;
@@ -168,7 +169,7 @@ class PlanoCycleApiApplicationTests {
 
     @Test
     public  void test8()  {
-        List<Map<String, Object>> attrSpecialList = classicPriorityOrderMstAttrSortMapper.getAttrSpecialList("0001", 578);
-        System.out.println(attrSpecialList);
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName("{\"dateIsCore\":\"1\",\"storeLevel\":\"4\",\"storeIsCore\":\"0\",\"storeMstClass\":\"0000\",\"prodIsCore\":\"0\",\"prodMstClass\":\"0000\",\"storeName\":\"企業-基準マスタ1\",\"prodName\":\"企業-基準マスタ1\"}", "87c6f4");
+        System.out.println(commonTableName);
     }
 }

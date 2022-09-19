@@ -6,13 +6,12 @@ import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerParamMst;
 import com.trechina.planocycle.entity.po.WorkProductPowerReserveData;
+import com.trechina.planocycle.entity.vo.PriorityOrderMstVO;
+import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import com.trechina.planocycle.entity.vo.ProductPowerPrimaryKeyVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
-import com.trechina.planocycle.service.CommodityScoreMasterService;
-import com.trechina.planocycle.service.CommodityScoreParaService;
-import com.trechina.planocycle.service.IDGeneratorService;
-import com.trechina.planocycle.service.PriorityOrderMstService;
+import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
 import com.trechina.planocycle.utils.cgiUtils;
@@ -51,7 +50,12 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Autowired
     private PriorityOrderMstService priorityOrderMstService;
     @Autowired
+    private ClassicPriorityOrderMstService classicPriorityOrderMstService;
+
+    @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
+    private ProductPowerMstMapper productPowerMstMapper;
     @Autowired
     private ShelfPatternMstMapper shelfPatternMstMapper;
     @Autowired
@@ -172,10 +176,26 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Override
     public Map<String, Object> delCommodityScoreAllInfo(ProductPowerPrimaryKeyVO primaryKeyVO) {
         logger.info("参数はい：{}",primaryKeyVO);
+        String companyCd = primaryKeyVO.getCompanyCd();
+        Integer productPowerCd = primaryKeyVO.getProductPowerCd();
         ProductPowerParamMst productPowerParamMst = new ProductPowerParamMst();
-        productPowerParamMst.setConpanyCd(primaryKeyVO.getCompanyCd());
-        productPowerParamMst.setProductPowerCd(primaryKeyVO.getProductPowerCd());
+        productPowerParamMst.setConpanyCd(companyCd);
+        productPowerParamMst.setProductPowerCd(productPowerCd);
         commodityScoreMasterService.delSmartData(productPowerParamMst);
+        List<Integer> basicListList = productPowerMstMapper.getBasicList(companyCd, productPowerCd);
+        for (Integer priorityOrderCd : basicListList) {
+            PriorityOrderMstVO priorityOrderMstVO = new PriorityOrderMstVO();
+            priorityOrderMstVO.setCompanyCd(companyCd);
+            priorityOrderMstVO.setPriorityOrderCd(priorityOrderCd);
+            priorityOrderMstService.deletePriorityOrderAll(priorityOrderMstVO);
+        }
+        List<Integer> priorityOrderList = productPowerMstMapper.getPriorityOrderList(companyCd, productPowerCd);
+        for (Integer priorityOrderCd : priorityOrderList) {
+            PriorityOrderPrimaryKeyVO priorityOrderPrimaryKeyVO = new PriorityOrderPrimaryKeyVO();
+            priorityOrderPrimaryKeyVO.setCompanyCd(companyCd);
+            priorityOrderPrimaryKeyVO.setPriorityOrderCd(priorityOrderCd);
+            classicPriorityOrderMstService.delPriorityOrderAllInfo(priorityOrderPrimaryKeyVO);
+        }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -334,7 +354,11 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         stopwatch.start();
         int i = 1;
         while (i<Integer.valueOf(MagicString.TASK_TIME_OUT_LONG)){
+            if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
+                return ResultMaps.result(ResultEnum.SUCCESS);
+            }
             if (vehicleNumCache.get(taskID+",data") != null){
+                vehicleNumCache.remove(taskID+",data");
                 return ResultMaps.result(ResultEnum.SUCCESS,vehicleNumCache.get(taskID+",data"));
             }
             try {

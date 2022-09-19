@@ -43,7 +43,7 @@
                                , concat('area', "dense_rank"() over( order by teninfo."6")) as sort
                                , "dense_rank"()                                                over ( order by teninfo."6" ) b
                  from planocycle.shelf_pattern_branch branch
-                          left join "1000".ten_0000_ten_info teninfo
+                          left join ${tableName} teninfo
                                     on (teninfo."1" = branch.branch or
                                         split_part(teninfo."1", '_', 2) = branch.branch) and
                                        split_part(teninfo."1", '_', 1) in
@@ -63,7 +63,7 @@
                      case when t1.area is null then false else true end as flag,1 as  mode
         from
             planocycle.shelf_pattern_branch branch
-            left join "1000".ten_0000_ten_info teninfo
+            left join ${tableName} teninfo
         on (teninfo."1" = branch.branch or
         split_part(teninfo."1", '_', 2) = branch.branch) and
         split_part(teninfo."1", '_', 1) in

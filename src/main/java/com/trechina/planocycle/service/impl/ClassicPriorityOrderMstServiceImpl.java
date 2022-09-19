@@ -177,6 +177,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         Integer priorityOrderCd = priorityOrderMstDto.getPriorityOrderCd();
         String companyCd = priorityOrderMstDto.getCompanyCd();
         //パラメータを2つのテーブルのデータに処理するinsert
+        priorityOrderMstDto.setSetSpecialFlag(1);
         priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
         //try {
             logger.info("優先順位テーブルパラメータの保存：{}",priorityOrderMstDto);
@@ -500,14 +501,16 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         if (!goodsRank.isEmpty()) {
             priorityOrderDataMapper.updateGoodsRank(goodsRank, companyCd, priorityOrderCd);
         }
-        List<Map<String, Object>> attrSpecialList = classicPriorityOrderMstAttrSortMapper.getAttrSpecialList(companyCd, priorityOrderCd);
-        if (!attrSpecialList.isEmpty()){
-            HashMap<String, Object> objectObjectHashMap = new HashMap<>();
-            objectObjectHashMap.put("value","1");
-            objectObjectHashMap.put("sort","jan_new");
-            attrSpecialList.add(objectObjectHashMap);
-            priorityOrderDataMapper.setSpecialName(linkedHashMaps,attrSpecialList);
+        if (priorityOrderMstDto.getSetSpecialFlag() == 1) {
+            List<Map<String, Object>> attrSpecialList = classicPriorityOrderMstAttrSortMapper.getAttrSpecialList(companyCd, priorityOrderCd);
+            if (!attrSpecialList.isEmpty()){
+                HashMap<String, Object> objectObjectHashMap = new HashMap<>();
+                objectObjectHashMap.put("value","1");
+                objectObjectHashMap.put("sort","jan_new");
+                attrSpecialList.add(objectObjectHashMap);
+                priorityOrderDataMapper.setSpecialName(linkedHashMaps,attrSpecialList);
 
+            }
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
