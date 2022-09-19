@@ -70,6 +70,14 @@ public class CommodityScoreParaController {
         return commodityScoreParaService.rankCalculate(map);
     }
 
+    /**
+     *
+     */
+    @GetMapping("rankCalculateForTaskId")
+    public Map<String,Object> rankCalculateForTaskId(String taskID) {
+
+        return commodityScoreParaService.rankCalculateForTaskId(taskID);
+    }
 
     /**
      * プロジェクト削除の準備
