@@ -1321,10 +1321,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                             }else{
                                 Map<String, Object> janNewMap = backupJan.get(usedIndex[0]++);
 
-                                if(!janOld.equals(janCd)){
-                                    newList.removeIf(map->map.get(MagicString.JAN).equals(janCd));
-                                }
-
                                 if (newList.stream().noneMatch(map-> MapUtils.getString(map, MagicString.JAN).equals(janOld))) {
                                     janNewMap.put(MagicString.PTS_NAME, fileName);
                                     janNewMap.put("pattern_name", shelfPtsDataDto.getShelfPatternName());
