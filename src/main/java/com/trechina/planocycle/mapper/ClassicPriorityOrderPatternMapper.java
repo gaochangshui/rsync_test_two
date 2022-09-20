@@ -12,7 +12,7 @@ import java.util.Map;
 public interface ClassicPriorityOrderPatternMapper {
     int deleteByPrimaryKey(@Param("priorityOrderCd") Integer priorityOrderCd, @Param("companyCd") String companyCd, @Param("shelfPatternCd") Integer shelfPatternCd);
 
-    int insert(@Param("lists") List<PriorityOrderPattern> record);
+    int insertForFinal(@Param("priorityOrderCd") Integer priorityOrderCd, @Param("companyCd") String companyCd);
 
     int selectByPriorityOrderName(String companyCd,String priorityOrderName,Integer priorityOrderCd);
 

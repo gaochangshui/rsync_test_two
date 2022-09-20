@@ -18,14 +18,6 @@
     and priority_order_name = #{priorityOrderName,jdbcType=VARCHAR}
     and priority_order_cd != #{priorityOrderCd,jdbcType=INTEGER}
   </select>
-  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderPattern">
-    insert into priority.priority_order_pattern (priority_order_cd, company_cd, shelf_pattern_cd
-      )
-    values
-    <foreach collection="lists" item="list" separator=",">
-     (#{list.priorityOrderCd,jdbcType=INTEGER}, #{list.companyCd,jdbcType=VARCHAR}, #{list.shelfPatternCd,jdbcType=INTEGER})
-    </foreach>
-  </insert>
   <delete id="deleteforid">
     delete from priority.priority_order_pattern where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
@@ -68,6 +60,11 @@
       select #{newPriorityOrderCd}, company_cd, shelf_pattern_cd
     from priority.priority_order_pattern
     where priority_order_cd = #{priorityOrderCd}
+  </insert>
+  <insert id="insertForFinal">
+    insert into priority.priority_order_pattern
+    select * from priority.work_priority_order_pattern
+    where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
   </insert>
   <delete id="deleteWork">
     delete from priority.work_priority_order_pattern where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

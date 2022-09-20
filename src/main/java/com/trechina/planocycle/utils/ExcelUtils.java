@@ -261,7 +261,12 @@ public class ExcelUtils {
         sizeList.add(((List<String>)paramMap.get("channelNm")).size());
         sizeList.add(((List<String>)paramMap.get("placeNm")).size());
         sizeList.add(janList.size());
-        Integer integer = sizeList.stream().max(Integer::compare).get();
+        int integer = 0;
+        Optional<Integer> max = sizeList.stream().max(Integer::compare);
+        if (max.isPresent()){
+             integer =  max.get();
+        }
+
         for (int i = 0; i < integer; i++) {
             row = sheet1.createRow(colIndex);
             cell = row.createCell(headerColIndex = 0);
@@ -602,9 +607,10 @@ public class ExcelUtils {
             List<Integer> listSize = new ArrayList<>();
             listSize.add(((List<String>)paramData.get("attrName")).size());
             listSize.add(((List<String>)paramData.get("shelfPatternName")).size());
-            Integer integer = 0;
-            if (listSize.stream().max(Integer::compare).isPresent()) {
-                integer = listSize.stream().max(Integer::compare).get();
+            int integer = 0;
+            Optional<Integer> max = listSize.stream().max(Integer::compare);
+            if (max.isPresent()){
+                integer =  max.get();
             }
 
             colIndex = 4;
