@@ -181,7 +181,7 @@
         "${index}"."100" = '0'
     </foreach>
         ) is not null
-      order by shelf.shelf_pattern_cd desc
+      order by name.id desc,shelf.shelf_pattern_cd desc
     </select>
     <delete id="deleteByPrimaryKey" parameterType="map">
         delete from planocycle.shelf_pattern_mst

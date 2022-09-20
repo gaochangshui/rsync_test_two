@@ -146,13 +146,21 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
         List<PriorityOrderPattern> priorityOrderPatternList = new ArrayList<>();
         String[] shelfPatternList = priorityOrderDataDto.getShelfPatternCd().split(",");
-        for (int i = 0; i < shelfPatternList.length; i++) {
-            PriorityOrderPattern priorityOrderPattern = new PriorityOrderPattern();
-            priorityOrderPattern.setCompanyCd(priorityOrderDataDto.getCompanyCd());
-            priorityOrderPattern.setPriorityOrderCd(priorityOrderDataDto.getPriorityOrderCd());
-            priorityOrderPattern.setShelfPatternCd(Integer.valueOf(shelfPatternList[i]));
-            priorityOrderPatternList.add(priorityOrderPattern);
+        String[] shelfNameList = priorityOrderDataDto.getShelfNameCd().split(",");
+        List<Map<String, Object>> shelfNameCd = priorityOrderPatternMapper.getShelfNameCd(companyCd, shelfPatternList);
+        for (Map<String, Object> stringObjectMap : shelfNameCd) {
+                for (int i = 0; i < shelfNameList.length; i++) {
+                if (shelfNameList[i].equals(stringObjectMap.get("shelfNameCd").toString())){
+                    PriorityOrderPattern priorityOrderPattern = new PriorityOrderPattern();
+                    priorityOrderPattern.setCompanyCd(priorityOrderDataDto.getCompanyCd());
+                    priorityOrderPattern.setPriorityOrderCd(priorityOrderDataDto.getPriorityOrderCd());
+                    priorityOrderPattern.setShelfPatternCd(Integer.valueOf(stringObjectMap.get("shelfPatternCd").toString()));
+                    priorityOrderPattern.setSort(i+1);
+                    priorityOrderPatternList.add(priorityOrderPattern);
+                }
+            }
         }
+
         logger.info("優先順位テーブルpattertテーブルが保存するデータを保存するには{}：",priorityOrderPatternList);
         priorityOrderPatternMapper.deleteWork(priorityOrderDataDto.getPriorityOrderCd());
         priorityOrderPatternMapper.insertWork(priorityOrderPatternList);

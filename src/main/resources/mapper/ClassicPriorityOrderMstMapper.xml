@@ -12,9 +12,11 @@
   </sql>
   <insert id="setWork">
     insert into priority.work_priority_order_mst (company_cd, priority_order_cd,priority_order_name,
-                                             product_power_cd,author_cd,create_time,editer_cd,edit_time,shelf_pattern_cd,attr_option)
+                                             product_power_cd,author_cd,create_time,editer_cd,edit_time,shelf_pattern_cd,attr_option
+                                             ,shelf_name_cd)
     values (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER},concat('一時保存データ',#{date}),
-            #{list.productPowerCd,jdbcType=INTEGER},#{authorCd},now(),#{authorCd},now(),#{list.shelfPatternCd},#{list.attrOption})
+            #{list.productPowerCd,jdbcType=INTEGER},#{authorCd},now(),#{authorCd},now(),#{list.shelfPatternCd},#{list.attrOption}
+            ,#{list.shelfNameCd})
   </insert>
   <insert id="setWorkForFinal">
     insert  into priority.work_priority_order_mst(company_cd, priority_order_cd,priority_order_name,attr_option,

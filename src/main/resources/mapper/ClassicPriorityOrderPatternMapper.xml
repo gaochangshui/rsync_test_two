@@ -46,12 +46,21 @@
     where priority_order_cd = #{priorityOrderCd}
     limit 1
   </select>
+  <select id="getShelfNameCd" resultType="java.util.Map">
+    select shelf_pattern_cd as "shelfPatternCd",shelf_name_cd as "shelfNameCd" from planocycle.shelf_pattern_mst
+                                           where shelf_pattern_cd in
+                                           <foreach collection="shelfPatternList" item="item" open="(" close=")" separator=",">
+                                             #{item} ::integer
+                                           </foreach>
+    and company_cd = #{companyCd}
+  </select>
   <insert id="insertWork">
-    insert into priority.work_priority_order_pattern (priority_order_cd, company_cd, shelf_pattern_cd
+    insert into priority.work_priority_order_pattern (priority_order_cd, company_cd, shelf_pattern_cd,sort
     )
     values
     <foreach collection="lists" item="list" separator=",">
-      (#{list.priorityOrderCd,jdbcType=INTEGER}, #{list.companyCd,jdbcType=VARCHAR}, #{list.shelfPatternCd,jdbcType=INTEGER})
+      (#{list.priorityOrderCd,jdbcType=INTEGER}, #{list.companyCd,jdbcType=VARCHAR}, #{list.shelfPatternCd,jdbcType=INTEGER}
+      ,#{list.sort,jdbcType=INTEGER})
     </foreach>
   </insert>
   <insert id="insertWorkForFinal">
