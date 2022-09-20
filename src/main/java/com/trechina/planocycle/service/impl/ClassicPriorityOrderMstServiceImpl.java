@@ -328,8 +328,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         String path = resourceBundle.getString("PriorityOrderData");
         priorityOrderPtsDownDto.setGuid(uuid);
         // rankAttributeCd
-        List<Map<String, Object>> array = (List<Map<String, Object>>) JSONArray.parse(priorityOrderPtsDownDto.getRankAttributeList());
-        logger.info("rankAttributeCdList"+array);
+        List<Map<String, Object>> array = (List<Map<String, Object>>) JSON.parse(priorityOrderPtsDownDto.getRankAttributeList());
+        logger.info("rankAttributeCdList:{}",array);
         String rankInfo = "";
         String attrInfo = "";
         String rankInfoMulit = "";
@@ -368,11 +368,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         priorityOrderPtsDownDto.setShelfPatternNoNm(resultShelf.replaceAll(" ","*"));
         logger.info("つかむ取處理完的pts出力参数:{}",priorityOrderPtsDownDto);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        Map<String,Object> ptsPath = new HashMap<>();
+        Map<String,Object> ptsPath;
         //cgiを再帰的に呼び出し、まずtaskidに行きます。
 
         String result = cgiUtil.postCgi(path,priorityOrderPtsDownDto,tokenInfo);
-        logger.info("taskIdリターン："+result);
+        logger.info("taskIdリターン：{}",result);
         String queryPath = resourceBundle.getString("TaskQuery");
         //taskIdを持っています，cgiに実行状態の取得を再度要求する
         ptsPath =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
@@ -989,8 +989,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 String curAttrList = ptsJan.get(MagicString.ATTR_LIST).toString();
 
                 //mulit_attr-->attr?
-                String attrKey =  Arrays.stream(curAttrList.split(","))
-                        .collect(Collectors.joining(","));
+                String attrKey = String.join(",", curAttrList.split(","));
 
                 if(resultData.stream().noneMatch(map->jan.equals(map.get(MagicString.JAN).toString()))){
                     //replace
