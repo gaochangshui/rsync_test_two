@@ -347,6 +347,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     if (map1.get("data")!=null) {
                         Map<Object, Object> customerCondition = (Map<Object, Object>) map.get("customerCondition");
                         if (!customerCondition.isEmpty()) {
+                            map.put("basketFlg",0);
                             logger.info("顧客パラメータ{}", map);
                             logger.info("顧客開始時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
                             String groupResult = cgiUtil.postCgi(productPowerData, map, tokenInfo, smartPath);

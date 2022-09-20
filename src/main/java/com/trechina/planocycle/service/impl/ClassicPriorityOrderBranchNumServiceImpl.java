@@ -270,6 +270,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             if (not.isEmpty()){
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
+            // jancheck
+            PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+            ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
+            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+            String proInfoTable = commonTableName.getProInfoTable();
             // 査詢企業的店cd是几位数
             String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd);
             int branchLen = branchCd.length();
@@ -290,11 +295,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             });
             logger.info("不可商品list店が0を補充した結菓を保存します{}",not);
 
-            // jancheck
-            PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
-            ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
-            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
-            String proInfoTable = commonTableName.getProInfoTable();
+
 
             List<String> janList = not.stream().map(PriorityOrderCommodityNot::getJan).collect(Collectors.toList());
             List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList,priorityOrderCd);
