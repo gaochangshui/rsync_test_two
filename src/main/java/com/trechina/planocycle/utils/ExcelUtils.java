@@ -33,7 +33,7 @@ public class ExcelUtils {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
             XSSFSheet sheet1 = workbook.createSheet("抽出条件");
             XSSFSheet sheet = workbook.createSheet("商品明細");
-            Pattern numberPattern = Pattern.compile("-?[0-9]+(\\.[0-9]+)?%?");
+            Pattern numberPattern = Pattern.compile("-?\\d+(\\.\\d+)?%?");
 
             //最初の行の索引
             int colIndex=0;
@@ -410,7 +410,6 @@ public class ExcelUtils {
     }
 
     public static String getStringVal(XSSFCell cell) {
-        CellType cellType=cell.getCellType();
         //if(cellType==CellType.BOOLEAN) {
         //    return cell.getBooleanCellValue() ? "TRUE" : "FALSE";
         //}else if(cellType==CellType.FORMULA) {

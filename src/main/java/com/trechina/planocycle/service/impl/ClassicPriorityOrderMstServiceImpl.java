@@ -1264,7 +1264,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         Integer shelfNameCd = shelfPtsDataDto.getShelfNameCd();
 
         List<Map<String, Object>> backupJanList = ptsBackupJanMapper.selectBackupJan(priorityOrderCd, shelfPtsDataDto.getShelfPatternCd(), shelfNameCd, branchCd);
-        Map<String, List<Map<String, Object>>> backupJanListByGroup = backupJanList.stream().collect(Collectors.groupingBy(map -> MapUtils.getString(map, "group")));
+        Map<String, List<Map<String, Object>>> backupJanListByGroup = backupJanList.stream().collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.ATTR_LIST)));
         Map<String, String> repeatOldJan = new HashMap<>();
 
         for (Map.Entry<String, List<Map<String, Object>>> entry : newPtsJanMap.entrySet()) {
@@ -1282,6 +1282,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 String janCd = MapUtils.getString(janMap, MagicString.JAN);
                 if(existOtherPatternJan.contains(MapUtils.getString(janMap, MagicString.JAN))){
                     if (janOld.equals(janCd)) {
+                        janMap.put(MagicString.PTS_NAME, fileName);
+                        janMap.put(MagicString.PATTERN_NAME, shelfPtsDataDto.getShelfPatternName());
                         deleteList.add(janMap);
                     }else{
                         newList.removeIf(map->map.get(MagicString.JAN).equals(janCd));
