@@ -21,11 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StopWatch;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
@@ -350,10 +351,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
     @Override
     public Map<String, Object> rankCalculateForTaskId(String taskID) {
-        StopWatch stopwatch = new StopWatch();
-        stopwatch.start();
-        int i = 1;
-        while (i<Integer.valueOf(MagicString.TASK_TIME_OUT_LONG)){
+        LocalDateTime now = LocalDateTime.now();
+
+        while (true){
             if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
@@ -362,15 +362,12 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 vehicleNumCache.remove(taskID+",data");
                 return ResultMaps.result(ResultEnum.SUCCESS,o);
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+
+            if(Duration.between(now, LocalDateTime.now()).getSeconds() >MagicString.TASK_TIME_OUT_LONG){
+                return ResultMaps.result(ResultEnum.SUCCESS,"9");
             }
-            i++;
         }
 
-            return ResultMaps.result(ResultEnum.SUCCESS,"9");
     }
 
     /**

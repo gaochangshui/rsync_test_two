@@ -9,6 +9,7 @@ public class PriorityOrderDataDto {
     private String companyCd;
     private Integer productPowerCd;
     private String shelfPatternCd;
+    private String shelfNameCd;
     private LinkedHashMap<String,Object> attrList;
     private Integer priorityOrderCd;
     private String attrOption;
