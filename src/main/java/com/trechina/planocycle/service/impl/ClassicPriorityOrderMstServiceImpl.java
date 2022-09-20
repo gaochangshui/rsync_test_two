@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.trechina.planocycle.aspect.LogAspect;
@@ -156,9 +153,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
      */
     @Override
     public Map<String, Object> getPriorityOrderList(String companyCd) {
-        logger.info("優先順位テーブルパラメータの取得："+companyCd);
+        logger.info("優先順位テーブルパラメータの取得：{}",companyCd);
         List<PriorityOrderMst> priorityOrderMstList = priorityOrderMstMapper.selectByPrimaryKey(companyCd);
-        logger.info("優先順位テーブル戻り値の取得："+priorityOrderMstList);
+        logger.info("優先順位テーブル戻り値の取得：{}",priorityOrderMstList);
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderMstList);
     }
 
@@ -185,7 +182,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         //パラメータを2つのテーブルのデータに処理するinsert
         priorityOrderMstDto.setSetSpecialFlag(1);
         priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
-        //try {
             logger.info("優先順位テーブルパラメータの保存：{}",priorityOrderMstDto);
             priorityOrderMstMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderMstMapper.insert(priorityOrderMstDto,authorCd);
@@ -240,11 +236,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderPatternMapper.insertForFinal(priorityOrderCd,companyCd);
             return ResultMaps.result(ResultEnum.SUCCESS);
-        //} catch (Exception e) {
-        //    logger.info("エラーを報告:"+e);
-        //    logger.error("保存優先順位テーブルエラー："+e);
-        //    return ResultMaps.result(ResultEnum.FAILURE);
-        //}
     }
 
 
@@ -304,7 +295,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
      */
     @Override
     public Map<String, Object> getRankAttr(String companyCd, Integer productPowerCd) {
-        logger.info("優先順位テーブルrank属性の動的列の取得："+companyCd+","+productPowerCd);
+        logger.info("優先順位テーブルrank属性の動的列の取得：{},{}",companyCd,productPowerCd);
         Map<String,Object> result = new HashMap<>();
         commodityScoreMasterService.productPowerParamAttrName(companyCd, productPowerCd, result);
         return ResultMaps.result(ResultEnum.SUCCESS,result);
@@ -327,26 +318,25 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         String path = resourceBundle.getString("PriorityOrderData");
         priorityOrderPtsDownDto.setGuid(uuid);
         // rankAttributeCd
-        List<Map<String, Object>> array = (List<Map<String, Object>>) JSONArray.parse(priorityOrderPtsDownDto.getRankAttributeList());
-        logger.info("rankAttributeCdList"+array);
+        List<Map<String, Object>> array = (List<Map<String, Object>>) JSON.parse(priorityOrderPtsDownDto.getRankAttributeList());
+        logger.info("rankAttributeCdList:{}",array);
         String rankInfo = "";
         String attrInfo = "";
-        String rankInfo_mulit = "";
-        String attrInfo_mulit = "";
+        String rankInfoMulit = "";
+        String attrInfoMulit = "";
         String sortStr = "";
         String sort = "";
         for (int i = 1; i <= array.size(); i++) {
             for (int j = 0; j < array.size(); j++) {
                 sortStr = String.valueOf(array.get(j).get("sort"));
-                sort = "";
                 if(sortStr.equals("")){
                     sort="0";
                 } else {
                     sort=sortStr;
                 }
                 if (String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i ==array.size()){
-                    rankInfo_mulit += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
-                    attrInfo_mulit += "13,";
+                    rankInfoMulit += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
+                    attrInfoMulit += "13,";
                 }else {
                     if (!String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i == Integer.valueOf(String.valueOf(array.get(j).get("value")))){
                         rankInfo += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
@@ -355,28 +345,28 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 }
             }
         }
-        rankInfo = rankInfo+rankInfo_mulit;
-        attrInfo = attrInfo+attrInfo_mulit;
+        rankInfo = rankInfo+rankInfoMulit;
+        attrInfo = attrInfo+attrInfoMulit;
         String rankFinalInfo = rankInfo.substring(0,rankInfo.length()-1);
         String attrFinalInfo = attrInfo.substring(0,attrInfo.length()-1);
-        logger.info("處理完的rankAttributeCd"+rankFinalInfo);
+        logger.info("處理完的rankAttributeCd:{}",rankFinalInfo);
         priorityOrderPtsDownDto.setAttributeCd(attrFinalInfo);
         priorityOrderPtsDownDto.setRankAttributeCd(rankFinalInfo);
         // shelfPatternNoNm
         String resultShelf=shelfPatternService.getShePatternNoNm(priorityOrderPtsDownDto.getShelfPatternNo());
-        logger.info("抽出完的shelfPatternNoNm"+resultShelf);
+        logger.info("抽出完的shelfPatternNoNm:{}",resultShelf);
         priorityOrderPtsDownDto.setShelfPatternNoNm(resultShelf.replaceAll(" ","*"));
-        logger.info("つかむ取處理完的pts出力参数:"+priorityOrderPtsDownDto);
+        logger.info("つかむ取處理完的pts出力参数:{}",priorityOrderPtsDownDto);
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        Map<String,Object> ptsPath = new HashMap<>();
+        Map<String,Object> ptsPath;
         //cgiを再帰的に呼び出し、まずtaskidに行きます。
 
         String result = cgiUtil.postCgi(path,priorityOrderPtsDownDto,tokenInfo);
-        logger.info("taskIdリターン："+result);
+        logger.info("taskIdリターン：{}",result);
         String queryPath = resourceBundle.getString("TaskQuery");
         //taskIdを持っています，cgiに実行状態の取得を再度要求する
         ptsPath =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-        logger.info("ptsパスがデータを返す："+ptsPath);
+        logger.info("ptsパスがデータを返す：{}",ptsPath);
 
         String filePath = ptsPath.get("data").toString();
         if (filePath.length()>1) {
@@ -386,16 +376,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             try {
                 logger.info("ptsフルパス出力："+ptsDownPath+ptsPath.get("data").toString());
                 byte[] files = sshFtp.downLoafCgi(ptsDownPath+ptsPath.get("data").toString(),tokenInfo);
-                logger.info("files byte:"+files);
+                logger.info("files byte:{}",files);
                 response.setContentType("application/Octet-stream");
-                logger.info("finename:"+fileName[fileName.length-1]);
+                logger.info("finename:{}",fileName[fileName.length-1]);
                 response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName[fileName.length-1], "UTF-8"));
                 OutputStream outputStream = response.getOutputStream();
                 outputStream.write(files);
                 outputStream.close();
             } catch (IOException e) {
-//                e.printStackTrace();
-                logger.info("ptsファイルダウンロードエラーの取得"+e);
+                logger.info("ptsファイルダウンロードエラーの取得",e);
             }
         }
         logger.info("ダウンロード成功");
@@ -410,9 +399,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
      */
     @Override
     public Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd) {
-        logger.info("優先順位テーブルcdに基づいて商品力点数テーブルcdのパラメータを取得する"+priorityOrderCd);
+        logger.info("優先順位テーブルcdに基づいて商品力点数テーブルcdのパラメータを取得する,{}",priorityOrderCd);
         Map<String,Object> productPowerCd = priorityOrderMstMapper.selectProductPowerCd(priorityOrderCd);
-        logger.info("優先順位テーブルcdから商品力点数テーブルcdの戻り値を取得する"+priorityOrderCd);
+        logger.info("優先順位テーブルcdから商品力点数テーブルcdの戻り値を取得する,{}",priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,productPowerCd);
     }
 
@@ -478,7 +467,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         JSONArray datas = JSON.parseArray(priorityData);
         List<Map<String, String>> keyNameList = new ArrayList<>();
         colNameList(datas, keyNameList);
-        List<Map> delJanList = datas.toJavaList(Map.class).stream().filter(item -> item.get("rank_upd").equals(99999999)).collect(Collectors.toList());
+        List<Map> delJanList = datas.toJavaList(Map.class).stream().filter(item -> item.get(MagicString.RANK_UPD).equals(99999999)).collect(Collectors.toList());
         priorityOrderJanCardMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
         if (!delJanList.isEmpty()) {
             priorityOrderJanCardMapper.setDelJanList(delJanList, companyCd, priorityOrderCd);
@@ -502,7 +491,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             if (!attrSpecialList.isEmpty()){
                 HashMap<String, Object> objectObjectHashMap = new HashMap<>();
                 objectObjectHashMap.put("value","1");
-                objectObjectHashMap.put("sort","jan_new");
+                objectObjectHashMap.put("sort",MagicString.JAN_NEW);
                 attrSpecialList.add(objectObjectHashMap);
                 priorityOrderDataMapper.setSpecialName(linkedHashMaps,attrSpecialList);
 
@@ -600,7 +589,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 List<Map<String, Object>> patternBranches = shelfPatternBranchMapper.selectAllPatternBranch(priorityOrderCd, companyCd, tenTableName, shelfPatternCd);
                 branchs.addAll(patternBranches);
 
-                List<String> patternBranchCd = patternBranches.stream().map(map->map.get("branch").toString()).collect(Collectors.toList());
+                List<String> patternBranchCd = patternBranches.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
                 List<Map<String, Object>> commodityMustJans = null;
                 List<Map<String, Object>> commodityNotJans = null;
                 List<Map<String, Object>> janMustNot = null;
@@ -642,8 +631,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     long count = Sets.intersection(Sets.newHashSet(allBranchList), Sets.newHashSet(branchList)).stream().count();
                     isAllForMustNot = Objects.equals(count,branchList.size());
 
-                    List<String> mustBranch = commodityMustJans.stream().map(map->map.get("branch").toString()).collect(Collectors.toList());
-                    List<String> notBranch = commodityNotJans.stream().map(map->map.get("branch").toString()).collect(Collectors.toList());
+                    List<String> mustBranch = commodityMustJans.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
+                    List<String> notBranch = commodityNotJans.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
 
                     mustNotBranch.addAll(mustBranch);
                     mustNotBranch.addAll(notBranch);
@@ -685,9 +674,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                 String json = new Gson().toJson(ptsJanDtoListByGroup);
                                 Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
                                         new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
-                                String branchCd = branch.get("branch").toString();
-                                List<Map<String, Object>> commodityMustBranchJans = finalCommodityMustJans.stream().filter(m -> m.get("branch").toString().equals(branchCd)).collect(Collectors.toList());
-                                List<Map<String, Object>> commodityNotBranchJans = finalCommodityNotJans.stream().filter(m -> m.get("branch").toString().equals(branchCd)).collect(Collectors.toList());
+                                String branchCd = branch.get(MagicString.BRANCH).toString();
+                                List<Map<String, Object>> commodityMustBranchJans = finalCommodityMustJans.stream().filter(m -> m.get(MagicString.BRANCH).toString().equals(branchCd)).collect(Collectors.toList());
+                                List<Map<String, Object>> commodityNotBranchJans = finalCommodityNotJans.stream().filter(m -> m.get(MagicString.BRANCH).toString().equals(branchCd)).collect(Collectors.toList());
 
                                 if(commodityMustBranchJans.isEmpty() && commodityNotBranchJans.isEmpty()){
                                     logger.info("patternCd: {},branchCd:{} no commodityMust and commodityNot", pattern.getId(), branchCd);
@@ -737,7 +726,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         json.put("path", fileParentPath);
         json.put("fileName", zipFileName);
         cacheUtil.put(taskId, json.toJSONString());
-        return null;
+        return ImmutableMap.of();
     }
 
     @Override
@@ -820,19 +809,19 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         paramData.put("company",company);
         LinkedHashMap<String,Object> mapColHeader = new LinkedHashMap<>();
         mapColHeader.put("jan_old","旧JAN");
-        mapColHeader.put("jan_new","新JAN");
+        mapColHeader.put(MagicString.JAN_NEW,"新JAN");
         mapColHeader.put("sku","SKU");
-        mapColHeader.put("branch_amount_upd","店@金額(円)");
+        mapColHeader.put(MagicString.BRANCH_AMOUNT_UPD,"店@金額(円)");
         mapColHeader.put("pos_amount","POS金額(円)");
         mapColHeader.put("unit_price","単価");
         mapColHeader.put("branch_amount","店@金額(円)");
         mapColHeader.put("branch_num","定番 店舗数");
-        mapColHeader.put("branch_num_upd","定番 店舗数");
+        mapColHeader.put(MagicString.BRANCH_NUM_UPD,"定番 店舗数");
         mapColHeader.put("difference","配荷差");
         mapColHeader.put("sale_forecast","売上増減 予測(千円)");
         mapColHeader.put("rank","Rank");
         mapColHeader.put("rank_prop","Rank");
-        mapColHeader.put("rank_upd","Rank");
+        mapColHeader.put(MagicString.RANK_UPD,"Rank");
         String colSort = "jan_old,jan_new,sku";
         for (LinkedHashMap<String, Object> linkedHashMap : attrForName) {
             mapColHeader.put(linkedHashMap.get("sort").toString(),linkedHashMap.get("name"));
@@ -903,10 +892,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         Map<String, List<Map<String, Object>>> newPtsJanMap = new HashMap<>();
         Map<String, List<Map<String, Object>>> resultMap = new HashMap<>(2);
 
-        String branchName = "", branchCd = "";
+        String branchName = "";
+        String branchCd = "";
         if(branch!=null && !branch.isEmpty()){
             branchName = branch.get("branch_name").toString();
-            branchCd = branch.get("branch").toString();
+            branchCd = branch.get(MagicString.BRANCH).toString();
         }
 
         String fileName = shelfPtsHeaderDto.getFileName().replace(".csv", "")+ (Strings.isNullOrEmpty(branchName)?"":"_"+branchName)+".csv";
@@ -932,7 +922,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             AtomicInteger maxSkuNum = new AtomicInteger(skuNumInit);
             List<String> commodityNotJansCd = new ArrayList<>();
             if(branch!=null){
-                commodityNotJansCd = commodityNotJans.stream().map(map->map.get("jan_new").toString()).collect(Collectors.toList());
+                commodityNotJansCd = commodityNotJans.stream().map(map->map.get(MagicString.JAN_NEW).toString()).collect(Collectors.toList());
             }
 
             List<String> finalCommodityNotJansCd = commodityNotJansCd;
@@ -941,15 +931,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
             if(branch!=null){
                 //must jan first
-                List<String> commodityMustJansCd = commodityMustJans.stream().map(map->map.get("jan_new").toString()).collect(Collectors.toList());
+                List<String> commodityMustJansCd = commodityMustJans.stream().map(map->map.get(MagicString.JAN_NEW).toString()).collect(Collectors.toList());
                 List<String> finalCommodityNotJansCdList = commodityNotJansCd;
                 resultDataByAttr = resultDataByAttr.stream().map(map->{
                     String janNew = map.get(MagicString.JAN).toString();
-                    int rank = Integer.parseInt(map.get("rank_upd").toString());
+                    int rank = Integer.parseInt(map.get(MagicString.RANK_UPD).toString());
                     if (commodityMustJansCd.contains(janNew) && rank>maxSkuNum.get()) {
                         maxSkuNum.getAndDecrement();
                         map.put("rank_upd_original", MapUtils.getString(map, MagicString.RANK_UPD));
-                        map.put("rank_upd", "0");
+                        map.put(MagicString.RANK_UPD, "0");
                     }
 
                     if (finalCommodityNotJansCdList.contains(janNew) && rank<=maxSkuNum.get()) {
@@ -989,14 +979,13 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 String curAttrList = ptsJan.get(MagicString.ATTR_LIST).toString();
 
                 //mulit_attr-->attr?
-                String attrKey =  Arrays.stream(curAttrList.split(","))
-                        .collect(Collectors.joining(","));
+                String attrKey = String.join(",", curAttrList.split(","));
 
                 if(resultData.stream().noneMatch(map->jan.equals(map.get(MagicString.JAN).toString()))){
                     //replace
                     if(deleteJanList.stream().noneMatch(map->jan.equals(map.get(MagicString.JAN).toString()))){
                         Map<String, Object> oldJanMap = new HashMap<>(ptsJan);
-                        oldJanMap.put("pattern_name", pattern.getShelfPatternName());
+                        oldJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
                         oldJanMap.put(MagicString.PTS_NAME, fileName);
                         deleteJanList.add(oldJanMap);
                     }else {
@@ -1013,9 +1002,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                 if (oldJanMap.isPresent()) {
                                     Map<String, Object> oldJan = oldJanMap.get();
                                     Map<String, Object> newCopyJanMap = new HashMap<>(oldJan);
-                                    newCopyJanMap.put("branch_num_upd", oldJan.get("branch_num_upd"));
-                                    newCopyJanMap.put("branch_amount_upd", oldJan.get("branch_amount_upd"));
-                                    newCopyJanMap.put("pattern_name", pattern.getShelfPatternName());
+                                    newCopyJanMap.put(MagicString.BRANCH_NUM_UPD, oldJan.get(MagicString.BRANCH_NUM_UPD));
+                                    newCopyJanMap.put(MagicString.BRANCH_AMOUNT_UPD, oldJan.get(MagicString.BRANCH_AMOUNT_UPD));
+                                    newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
                                     newCopyJanMap.put(MagicString.PTS_NAME, fileName);
                                     newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(oldJan, MagicString.RANK_UPD));
                                     //priority_order_data exist jan
@@ -1061,9 +1050,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                 if (oldJanMap.isPresent()) {
                                     Map<String, Object> oldJan = oldJanMap.get();
                                     Map<String, Object> newCopyJanMap = new HashMap<>(oldJan);
-                                    newCopyJanMap.put("branch_num_upd", oldJan.get("branch_num_upd"));
-                                    newCopyJanMap.put("branch_amount_upd", oldJan.get("branch_amount_upd"));
-                                    newCopyJanMap.put("pattern_name", pattern.getShelfPatternName());
+                                    newCopyJanMap.put(MagicString.BRANCH_NUM_UPD, oldJan.get(MagicString.BRANCH_NUM_UPD));
+                                    newCopyJanMap.put(MagicString.BRANCH_AMOUNT_UPD, oldJan.get(MagicString.BRANCH_AMOUNT_UPD));
+                                    newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
                                     newCopyJanMap.put(MagicString.PTS_NAME, fileName);
                                     newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(oldJan, MagicString.RANK_UPD));
                                     //priority_order_data exist jan
@@ -1077,9 +1066,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                     .noneMatch(map-> finalNewJan.equals(map.get(MagicString.JAN).toString()))){
                                 Map<String, Object> newJanMap = notInPtsJanList.get(newJanIndex);
                                 Map<String, Object> newCopyJanMap = new HashMap<>(newJanMap);
-                                newCopyJanMap.put("branch_num_upd", newJanMap.get("branch_num_upd"));
-                                newCopyJanMap.put("branch_amount_upd", newJanMap.get("branch_amount_upd"));
-                                newCopyJanMap.put("pattern_name", pattern.getShelfPatternName());
+                                newCopyJanMap.put(MagicString.BRANCH_NUM_UPD, newJanMap.get(MagicString.BRANCH_NUM_UPD));
+                                newCopyJanMap.put(MagicString.BRANCH_AMOUNT_UPD, newJanMap.get(MagicString.BRANCH_AMOUNT_UPD));
+                                newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
                                 newCopyJanMap.put(MagicString.PTS_NAME, fileName);
                                 newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(newJanMap, MagicString.RANK_UPD));
                                 //priority_order_data exist jan
@@ -1190,7 +1179,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
             if(deleteJanList.stream().noneMatch(map->smallJan.equals(map.get(MagicString.JAN_OLD).toString())) && !repeatOldJan.containsKey(smallJan)){
                 Map<String, Object> oldJanMap = new HashMap<>(ptsJanMap);
-                oldJanMap.put("pattern_name", pattern.getShelfPatternName());
+                oldJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
                 oldJanMap.put(MagicString.PTS_NAME, fileName);
                 deleteJanList.add(oldJanMap);
             }
@@ -1236,7 +1225,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     Map<String, Object> newCopyJanMap = new HashMap<>(bigMap);
                     newCopyJanMap.put(MagicString.BRANCH_NUM, bigMap.get(MagicString.BRANCH_NUM));
                     newCopyJanMap.put(MagicString.BRANCH_AMOUNT, bigMap.get(MagicString.BRANCH_AMOUNT));
-                    newCopyJanMap.put("pattern_name", pattern.getShelfPatternName());
+                    newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
                     newCopyJanMap.put(MagicString.PTS_NAME, fileName);
                     //priority_order_data exist jan
                     newJanList.add(newCopyJanMap);
@@ -1313,7 +1302,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
                                 if (newList.stream().noneMatch(map-> MapUtils.getString(map, MagicString.JAN).equals(janOld))) {
                                     janNewMap.put(MagicString.PTS_NAME, fileName);
-                                    janNewMap.put("pattern_name", shelfPtsDataDto.getShelfPatternName());
+                                    janNewMap.put(MagicString.PATTERN_NAME, shelfPtsDataDto.getShelfPatternName());
 
                                     janMap.put(MagicString.JAN, janNewMap.get(MagicString.JAN));
                                     newList.add(janNewMap);
@@ -1344,12 +1333,12 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TAI_CD)))
                 .collect(Collectors.toList());
         Map<String, Integer> taiTanaMap = new HashMap<>();
-        newPtsJanList = newPtsJanList.stream().peek(map->{
+        newPtsJanList.forEach(map->{
             String taiTanaKey = MapUtils.getInteger(map, MagicString.TAI_CD)+"_"+MapUtils.getInteger(map, MagicString.TANA_CD);
             Integer order = taiTanaMap.getOrDefault(taiTanaKey, 0)+1;
             map.put(MagicString.TANA_POSITION_CD, order);
             taiTanaMap.put(taiTanaKey, order);
-        }).collect(Collectors.toList());
+        });
 
         return newPtsJanList;
     }
@@ -1439,7 +1428,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             FileOutputStream fos = new FileOutputStream(filePath);){
             //新規
             XSSFSheet newJanSheet = workbook.createSheet("新規");
-            List<String> newJanHeader = Lists.newArrayList("棚パターン名", "PTS名", "JAN", "商品名");
+            List<String> newJanHeader = Lists.newArrayList(MagicString.PATTERN_NAME_TEXT, "PTS名", "JAN", "商品名");
             for (Map.Entry<String, String> entry : mstAttrSortDtoMap.entrySet()) {
                 newJanHeader.add(entry.getValue());
             }
@@ -1455,7 +1444,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             int rowIndex = 1;
             for (Map<String, Object> newJan : allNewList) {
                 XSSFRow row = newJanSheet.createRow(rowIndex);
-                row.createCell(0).setCellValue(newJan.get("pattern_name").toString());
+                row.createCell(0).setCellValue(newJan.get(MagicString.PATTERN_NAME).toString());
                 row.createCell(1).setCellValue(newJan.get(MagicString.PTS_NAME).toString());
                 XSSFCell cell = row.createCell(2);
                 cell.setCellType(CellType.STRING);
@@ -1473,9 +1462,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     colIndex++;
                 }
 
-                row.createCell(colIndex++).setCellValue(newJan.get("rank_upd").toString());
-                row.createCell(colIndex++).setCellValue(newJan.get("branch_num_upd").toString());
-                row.createCell(colIndex++).setCellValue(newJan.get("branch_amount_upd").toString());
+                row.createCell(colIndex++).setCellValue(newJan.get(MagicString.RANK_UPD).toString());
+                row.createCell(colIndex++).setCellValue(newJan.get(MagicString.BRANCH_NUM_UPD).toString());
+                row.createCell(colIndex++).setCellValue(newJan.get(MagicString.BRANCH_AMOUNT_UPD).toString());
                 rowIndex++;
             }
 
@@ -1491,7 +1480,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             rowIndex = 1;
             for (Map<String, Object> deleteJan : allDeleteList) {
                 XSSFRow row = cutJanSheet.createRow(rowIndex);
-                row.createCell(0).setCellValue(deleteJan.get("pattern_name").toString());
+                row.createCell(0).setCellValue(deleteJan.get(MagicString.PATTERN_NAME).toString());
                 row.createCell(1).setCellValue(deleteJan.get(MagicString.PTS_NAME).toString());
                 row.createCell(2).setCellValue(deleteJan.get(MagicString.JAN).toString());
                 row.createCell(3).setCellValue(deleteJan.get("sku").toString());
@@ -1511,7 +1500,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             for (Map<String, Object> branch : branchs) {
                 XSSFRow row = relationSheet.createRow(rowIndex);
                 row.createCell(0).setCellValue(branch.get("shelf_pattern_name").toString());
-                row.createCell(1).setCellValue(Integer.parseInt(branch.get("branch").toString()));
+                row.createCell(1).setCellValue(Integer.parseInt(branch.get(MagicString.BRANCH).toString()));
                 row.createCell(2).setCellValue(branch.get("branch_name").toString());
                 rowIndex++;
             }
@@ -1528,10 +1517,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             for (File f : Objects.requireNonNull(file.listFiles())) {
                 try(FileInputStream fis = new FileInputStream(f)) {
                     zos.putNextEntry(new ZipEntry(f.getName()));
-//                    if(f.getName().endsWith("csv")){
-//                        byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-//                        zos.write(bom);
-//                    }
 
                     byte[] bytes = new byte[1024];
                     int len;

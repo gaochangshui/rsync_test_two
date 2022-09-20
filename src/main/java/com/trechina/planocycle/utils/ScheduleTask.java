@@ -1,10 +1,12 @@
 package com.trechina.planocycle.utils;
 
-import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.mapper.LogMapper;
+import com.trechina.planocycle.mapper.PriorityOrderPtsBackupJanMapper;
+import com.trechina.planocycle.mapper.PriorityOrderPtsPatternNameMapper;
+import com.trechina.planocycle.mapper.ProductPowerDataMapper;
 import com.trechina.planocycle.service.MstBranchService;
 import com.trechina.planocycle.service.MstJanService;
 import com.trechina.planocycle.service.TableTransferService;
-import com.trechina.planocycle.service.impl.MstBranchServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
