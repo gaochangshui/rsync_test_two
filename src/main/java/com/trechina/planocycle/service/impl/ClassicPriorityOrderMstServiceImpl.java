@@ -237,16 +237,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             starReadingTableMapper.deleteFinalByPattern(companyCd,priorityOrderCd);
             starReadingTableMapper.setFinalForWorkByPattern(companyCd,priorityOrderCd);
 
-            //List<PriorityOrderPattern> priorityOrderPatternList = new ArrayList<>();
-            //String[] shelfPatternList = priorityOrderMstDto.getShelfPatternCd().split(",");
-            //for (int i = 0; i < shelfPatternList.length; i++) {
-            //    PriorityOrderPattern priorityOrderPattern = new PriorityOrderPattern();
-            //    priorityOrderPattern.setCompanyCd(priorityOrderMstDto.getCompanyCd());
-            //    priorityOrderPattern.setPriorityOrderCd(priorityOrderMstDto.getPriorityOrderCd());
-            //    priorityOrderPattern.setShelfPatternCd(Integer.valueOf(shelfPatternList[i]));
-            //    priorityOrderPatternList.add(priorityOrderPattern);
-            //}
-            //logger.info("優先順位テーブルpattertテーブルが保存するデータを保存する："+priorityOrderPatternList.toString());
             priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
             priorityOrderPatternMapper.insertForFinal(priorityOrderCd,companyCd);
             return ResultMaps.result(ResultEnum.SUCCESS);

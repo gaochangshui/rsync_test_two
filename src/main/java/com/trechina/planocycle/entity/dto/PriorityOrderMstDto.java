@@ -13,6 +13,7 @@ public class PriorityOrderMstDto {
     private Integer productPowerCd;
 
     private String shelfPatternCd;
+    private String shelfCd;
 
     private String priorityData;
 

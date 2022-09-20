@@ -95,7 +95,7 @@
     where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and deleteflg=0
   </select>
   <select id="getPatternOrProduct" resultType="com.trechina.planocycle.entity.dto.PriorityOrderMstDto">
-    SELECT mst.product_power_cd,mst.shelf_pattern_cd as shelfPatternCd,mst.attr_option
+    SELECT mst.product_power_cd,mst.shelf_pattern_cd as shelfPatternCd,mst.attr_option,mst.shelf_name_cd as shelfCd
     from priority.work_priority_order_mst  mst
     where mst.company_cd = #{companyCd} and mst.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>

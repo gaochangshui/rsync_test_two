@@ -146,7 +146,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
         List<PriorityOrderPattern> priorityOrderPatternList = new ArrayList<>();
         String[] shelfPatternList = priorityOrderDataDto.getShelfPatternCd().split(",");
-        String[] shelfNameList = priorityOrderDataDto.getShelfNameCd().split(",");
+        String[] shelfNameList = priorityOrderDataDto.getShelfCd().split(",");
         List<Map<String, Object>> shelfNameCd = priorityOrderPatternMapper.getShelfNameCd(companyCd, shelfPatternList);
         for (Map<String, Object> stringObjectMap : shelfNameCd) {
                 for (int i = 0; i < shelfNameList.length; i++) {
