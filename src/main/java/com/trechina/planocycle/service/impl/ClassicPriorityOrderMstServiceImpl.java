@@ -1316,7 +1316,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         }
                     }else{
                         if(ptsVersion == 1){
-                            if(repeatOldJan.containsKey(janOld)){
+                            if(repeatOldJan.containsKey(janCd)){
                                 janMap.put(MagicString.JAN, repeatOldJan.get(janOld));
                             }else{
                                 Map<String, Object> janNewMap = backupJan.get(usedIndex[0]++);
@@ -1332,6 +1332,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                     janMap.put(MagicString.JAN, janNewMap.get(MagicString.JAN));
                                     newList.add(janNewMap);
                                 }
+
+                                repeatOldJan.put(janCd, MapUtils.getString(janNewMap, MagicString.JAN));
                             }
                         }else{
                             janMap.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,MapUtils.getString(janMap, MagicString.JAN_OLD)));
