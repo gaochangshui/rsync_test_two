@@ -305,7 +305,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
      */
     @Override
     public Map<String, Object> getRankAttr(String companyCd, Integer productPowerCd) {
-        logger.info("優先順位テーブルrank属性の動的列の取得："+companyCd+","+productPowerCd);
+        logger.info("優先順位テーブルrank属性の動的列の取得：{},{}",companyCd,productPowerCd);
         Map<String,Object> result = new HashMap<>();
         commodityScoreMasterService.productPowerParamAttrName(companyCd, productPowerCd, result);
         return ResultMaps.result(ResultEnum.SUCCESS,result);
@@ -376,7 +376,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         String queryPath = resourceBundle.getString("TaskQuery");
         //taskIdを持っています，cgiに実行状態の取得を再度要求する
         ptsPath =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-        logger.info("ptsパスがデータを返す："+ptsPath);
+        logger.info("ptsパスがデータを返す：{}",ptsPath);
 
         String filePath = ptsPath.get("data").toString();
         if (filePath.length()>1) {
@@ -386,16 +386,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             try {
                 logger.info("ptsフルパス出力："+ptsDownPath+ptsPath.get("data").toString());
                 byte[] files = sshFtp.downLoafCgi(ptsDownPath+ptsPath.get("data").toString(),tokenInfo);
-                logger.info("files byte:"+files);
+                logger.info("files byte:{}",files);
                 response.setContentType("application/Octet-stream");
-                logger.info("finename:"+fileName[fileName.length-1]);
+                logger.info("finename:{}",fileName[fileName.length-1]);
                 response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName[fileName.length-1], "UTF-8"));
                 OutputStream outputStream = response.getOutputStream();
                 outputStream.write(files);
                 outputStream.close();
             } catch (IOException e) {
-//                e.printStackTrace();
-                logger.info("ptsファイルダウンロードエラーの取得"+e);
+                logger.info("ptsファイルダウンロードエラーの取得",e);
             }
         }
         logger.info("ダウンロード成功");
