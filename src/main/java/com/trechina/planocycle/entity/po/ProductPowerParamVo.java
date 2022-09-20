@@ -25,5 +25,6 @@ public class ProductPowerParamVo {
     private Integer janName2colNum;
     private Object prodAttrData;
     private Object singleJan;
+    private Integer showItemCheck;
 
 }

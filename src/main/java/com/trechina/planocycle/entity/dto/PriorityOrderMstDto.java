@@ -24,4 +24,6 @@ public class PriorityOrderMstDto {
 
     private Integer modeCheck;
 
+    private Integer setSpecialFlag;
+
 }

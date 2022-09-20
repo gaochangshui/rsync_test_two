@@ -50,4 +50,7 @@ public interface ProductPowerMstMapper {
     void deleteWork(String companyCd, Integer productPowerCd);
 
     String getCompanyName(String companyCd);
+
+    List<Integer> getBasicList(String companyCd, Integer productPowerCd);
+    List<Integer> getPriorityOrderList(String companyCd, Integer productPowerCd);
 }

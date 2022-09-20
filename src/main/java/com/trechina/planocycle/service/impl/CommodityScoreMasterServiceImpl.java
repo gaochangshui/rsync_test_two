@@ -290,6 +290,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setCompany(companyCd);
         powerParam.setProdAttrData(param.getProdAttrData());
         powerParam.setSingleJan(param.getSingleJan());
+        powerParam.setShowItemCheck(param.getShowItemCheck());
         List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(productPowerNo, companyCd);
         List<Object> dataAll = new ArrayList();
         dataAll.add(returnDataAttr);

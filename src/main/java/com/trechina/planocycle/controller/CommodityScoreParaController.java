@@ -75,7 +75,6 @@ public class CommodityScoreParaController {
      */
     @GetMapping("rankCalculateForTaskId")
     public Map<String,Object> rankCalculateForTaskId(String taskID) {
-
         return commodityScoreParaService.rankCalculateForTaskId(taskID);
     }
 
