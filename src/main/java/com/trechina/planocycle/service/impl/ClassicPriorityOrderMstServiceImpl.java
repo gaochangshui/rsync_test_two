@@ -819,19 +819,19 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         paramData.put("company",company);
         LinkedHashMap<String,Object> mapColHeader = new LinkedHashMap<>();
         mapColHeader.put("jan_old","旧JAN");
-        mapColHeader.put("jan_new","新JAN");
+        mapColHeader.put(MagicString.JAN_NEW,"新JAN");
         mapColHeader.put("sku","SKU");
-        mapColHeader.put("branch_amount_upd","店@金額(円)");
+        mapColHeader.put(MagicString.BRANCH_AMOUNT_UPD,"店@金額(円)");
         mapColHeader.put("pos_amount","POS金額(円)");
         mapColHeader.put("unit_price","単価");
         mapColHeader.put("branch_amount","店@金額(円)");
         mapColHeader.put("branch_num","定番 店舗数");
-        mapColHeader.put("branch_num_upd","定番 店舗数");
+        mapColHeader.put(MagicString.BRANCH_NUM_UPD,"定番 店舗数");
         mapColHeader.put("difference","配荷差");
         mapColHeader.put("sale_forecast","売上増減 予測(千円)");
         mapColHeader.put("rank","Rank");
         mapColHeader.put("rank_prop","Rank");
-        mapColHeader.put("rank_upd","Rank");
+        mapColHeader.put(MagicString.RANK_UPD,"Rank");
         String colSort = "jan_old,jan_new,sku";
         for (LinkedHashMap<String, Object> linkedHashMap : attrForName) {
             mapColHeader.put(linkedHashMap.get("sort").toString(),linkedHashMap.get("name"));
@@ -932,7 +932,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             AtomicInteger maxSkuNum = new AtomicInteger(skuNumInit);
             List<String> commodityNotJansCd = new ArrayList<>();
             if(branch!=null){
-                commodityNotJansCd = commodityNotJans.stream().map(map->map.get("jan_new").toString()).collect(Collectors.toList());
+                commodityNotJansCd = commodityNotJans.stream().map(map->map.get(MagicString.JAN_NEW).toString()).collect(Collectors.toList());
             }
 
             List<String> finalCommodityNotJansCd = commodityNotJansCd;
@@ -941,15 +941,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
             if(branch!=null){
                 //must jan first
-                List<String> commodityMustJansCd = commodityMustJans.stream().map(map->map.get("jan_new").toString()).collect(Collectors.toList());
+                List<String> commodityMustJansCd = commodityMustJans.stream().map(map->map.get(MagicString.JAN_NEW).toString()).collect(Collectors.toList());
                 List<String> finalCommodityNotJansCdList = commodityNotJansCd;
                 resultDataByAttr = resultDataByAttr.stream().map(map->{
                     String janNew = map.get(MagicString.JAN).toString();
-                    int rank = Integer.parseInt(map.get("rank_upd").toString());
+                    int rank = Integer.parseInt(map.get(MagicString.RANK_UPD).toString());
                     if (commodityMustJansCd.contains(janNew) && rank>maxSkuNum.get()) {
                         maxSkuNum.getAndDecrement();
                         map.put("rank_upd_original", MapUtils.getString(map, MagicString.RANK_UPD));
-                        map.put("rank_upd", "0");
+                        map.put(MagicString.RANK_UPD, "0");
                     }
 
                     if (finalCommodityNotJansCdList.contains(janNew) && rank<=maxSkuNum.get()) {
@@ -1012,8 +1012,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                 if (oldJanMap.isPresent()) {
                                     Map<String, Object> oldJan = oldJanMap.get();
                                     Map<String, Object> newCopyJanMap = new HashMap<>(oldJan);
-                                    newCopyJanMap.put("branch_num_upd", oldJan.get("branch_num_upd"));
-                                    newCopyJanMap.put("branch_amount_upd", oldJan.get("branch_amount_upd"));
+                                    newCopyJanMap.put(MagicString.BRANCH_NUM_UPD, oldJan.get(MagicString.BRANCH_NUM_UPD));
+                                    newCopyJanMap.put(MagicString.BRANCH_AMOUNT_UPD, oldJan.get(MagicString.BRANCH_AMOUNT_UPD));
                                     newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
                                     newCopyJanMap.put(MagicString.PTS_NAME, fileName);
                                     newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(oldJan, MagicString.RANK_UPD));
@@ -1060,8 +1060,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                 if (oldJanMap.isPresent()) {
                                     Map<String, Object> oldJan = oldJanMap.get();
                                     Map<String, Object> newCopyJanMap = new HashMap<>(oldJan);
-                                    newCopyJanMap.put("branch_num_upd", oldJan.get("branch_num_upd"));
-                                    newCopyJanMap.put("branch_amount_upd", oldJan.get("branch_amount_upd"));
+                                    newCopyJanMap.put(MagicString.BRANCH_NUM_UPD, oldJan.get(MagicString.BRANCH_NUM_UPD));
+                                    newCopyJanMap.put(MagicString.BRANCH_AMOUNT_UPD, oldJan.get(MagicString.BRANCH_AMOUNT_UPD));
                                     newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
                                     newCopyJanMap.put(MagicString.PTS_NAME, fileName);
                                     newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(oldJan, MagicString.RANK_UPD));
@@ -1076,8 +1076,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                     .noneMatch(map-> finalNewJan.equals(map.get(MagicString.JAN).toString()))){
                                 Map<String, Object> newJanMap = notInPtsJanList.get(newJanIndex);
                                 Map<String, Object> newCopyJanMap = new HashMap<>(newJanMap);
-                                newCopyJanMap.put("branch_num_upd", newJanMap.get("branch_num_upd"));
-                                newCopyJanMap.put("branch_amount_upd", newJanMap.get("branch_amount_upd"));
+                                newCopyJanMap.put(MagicString.BRANCH_NUM_UPD, newJanMap.get(MagicString.BRANCH_NUM_UPD));
+                                newCopyJanMap.put(MagicString.BRANCH_AMOUNT_UPD, newJanMap.get(MagicString.BRANCH_AMOUNT_UPD));
                                 newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
                                 newCopyJanMap.put(MagicString.PTS_NAME, fileName);
                                 newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(newJanMap, MagicString.RANK_UPD));
@@ -1472,9 +1472,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     colIndex++;
                 }
 
-                row.createCell(colIndex++).setCellValue(newJan.get("rank_upd").toString());
-                row.createCell(colIndex++).setCellValue(newJan.get("branch_num_upd").toString());
-                row.createCell(colIndex++).setCellValue(newJan.get("branch_amount_upd").toString());
+                row.createCell(colIndex++).setCellValue(newJan.get(MagicString.RANK_UPD).toString());
+                row.createCell(colIndex++).setCellValue(newJan.get(MagicString.BRANCH_NUM_UPD).toString());
+                row.createCell(colIndex++).setCellValue(newJan.get(MagicString.BRANCH_AMOUNT_UPD).toString());
                 rowIndex++;
             }
 
@@ -1527,10 +1527,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             for (File f : Objects.requireNonNull(file.listFiles())) {
                 try(FileInputStream fis = new FileInputStream(f)) {
                     zos.putNextEntry(new ZipEntry(f.getName()));
-//                    if(f.getName().endsWith("csv")){
-//                        byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-//                        zos.write(bom);
-//                    }
 
                     byte[] bytes = new byte[1024];
                     int len;
