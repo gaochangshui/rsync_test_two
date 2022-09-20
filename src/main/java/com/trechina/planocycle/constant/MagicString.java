@@ -126,6 +126,11 @@ public class MagicString {
     public static final String BIG_LAST_INDEX = "bigLastIndex";
 
     public static final String BRANCH_NUM = "branch_num";
+    public static final String BRANCH = "branch";
+
+    public static final String PATTERN_NAME = "pattern_name";
+
+    public static final String PATTERN_NAME_TEXT = "棚パターン名";
     public static final String BRANCH_AMOUNT = "branch_amount";
 
     public static final String TANAPOSITION_CD = "tanaposition_cd";
