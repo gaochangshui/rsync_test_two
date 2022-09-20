@@ -7,10 +7,13 @@
         <foreach collection="list" item="item" separator=",">
             (#{priorityOrderCd},#{shelfPatternCd},#{group}, #{item.jan}, #{branch},#{item.rank_upd},#{item.branch_num_upd},#{item.branch_amount_upd})
         </foreach>
-        on conflict do nothing
+        on conflict(priority_order_cd, shelf_pattern_cd, jan, branch)  do update set rank_upd=excluded.rank_upd,branch_num_upd=excluded.branch_num_upd,branch_amount_upd=excluded.branch_amount_upd
     </insert>
     <delete id="deleteBackupJan">
         delete from priority.priority_order_pts_backup_jan where create_time &lt; current_date::timestamp - INTERVAL '1 day'
+    </delete>
+    <delete id="deleteBackupJanByCd">
+        delete from priority.priority_order_pts_backup_jan where priority_order_cd=#{priorityOrderCd}
     </delete>
     <select id="selectBackupJan" resultType="map">
         select "group", jan, rank_upd from priority.priority_order_pts_backup_jan backupjan where priority_order_cd=#{priorityOrderCd} and branch=#{branch}

@@ -19,4 +19,7 @@
             (<foreach collection="newPtsJanCdList" item="item" separator=",">#{item} </foreach>)
         </where>
     </select>
+    <delete id="deletePtsPatternNameByCd">
+        delete from priority.priority_order_pts_pattern_name where priority_order_cd=#{priorityOrderCd}
+    </delete>
 </mapper>

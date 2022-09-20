@@ -12,4 +12,6 @@ public interface PriorityOrderPtsPatternNameMapper {
     int deletePtsPatternName();
 
     List<String> selectExistPatternJan(Integer priorityOrderCd, Integer shelfNameCd, List<String> newPtsJanCdList);
+
+    void deletePtsPatternNameByCd(Integer priorityOrderCd);
 }

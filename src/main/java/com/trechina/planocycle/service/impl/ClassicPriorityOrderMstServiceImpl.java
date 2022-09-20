@@ -571,6 +571,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         }
 
         try {
+            ptsBackupJanMapper.deleteBackupJanByCd(priorityOrderCd);
+            ptsPatternNameMapper.deletePtsPatternNameByCd(priorityOrderCd);
+
             List<Map<String, Object>> patternCommonPartsData = patternMstMapper.selectPatternCommonPartsData(priorityOrderCd);
 
             //pts foreach
@@ -1300,8 +1303,10 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 String janOld = MapUtils.getString(janMap, MagicString.JAN_OLD);
                 String janCd = MapUtils.getString(janMap, MagicString.JAN);
                 if(existOtherPatternJan.contains(MapUtils.getString(janMap, MagicString.JAN))){
-                    if (deleteList.stream().noneMatch(map-> MapUtils.getString(map, MagicString.JAN).equals(janOld))) {
+                    if (janOld.equals(janCd)) {
                         deleteList.add(janMap);
+                    }else{
+                        newList.removeIf(map->map.get(MagicString.JAN).equals(janCd));
                     }
 
                     if(backupJan.isEmpty() || usedIndex[0]>=backupJan.size()){

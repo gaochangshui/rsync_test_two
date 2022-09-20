@@ -12,4 +12,6 @@ public interface PriorityOrderPtsBackupJanMapper {
     int deleteBackupJan();
 
     List<Map<String, Object>> selectBackupJan(Integer priorityOrderCd, Integer shelfPatternCd, Integer shelfNameCd,String branch);
+
+    void deleteBackupJanByCd(Integer priorityOrderCd);
 }
