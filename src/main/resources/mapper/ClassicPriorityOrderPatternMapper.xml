@@ -30,10 +30,11 @@
     delete from priority.priority_order_pattern where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
   <select id="selectPattern" resultType="com.trechina.planocycle.entity.dto.ShelfPtsDataDto">
-    select id, pattern.shelf_pattern_cd,shelf_pattern_name from priority.priority_order_pattern pattern
+    select pts_data.id, pattern.shelf_pattern_cd,shelf_pattern_name,patternmst.shelf_name_cd shelf_name_cd from priority.priority_order_pattern pattern
     inner join planocycle.shelf_pattern_mst patternmst on patternmst.shelf_pattern_cd=pattern.shelf_pattern_cd and pattern.company_cd=patternmst.company_cd
+    inner join planocycle.shelf_name_mst shelfname on shelfname.id=patternmst.shelf_name_cd
     inner join planocycle.shelf_pts_data pts_data on pts_data.shelf_pattern_cd=pattern.shelf_pattern_cd  and pts_data.company_cd=patternmst.company_cd
-    where priority_order_cd=#{priorityOrderCd} and pattern.company_cd=#{companyCd}
+    where priority_order_cd=#{priorityOrderCd} and pattern.company_cd=#{companyCd} order by sort
   </select>
   <select id="getShelfName" resultType="java.lang.String">
     select DISTINCT namemst.shelf_name

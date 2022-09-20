@@ -1,8 +1,6 @@
 package com.trechina.planocycle.utils;
 
-import com.trechina.planocycle.mapper.LogMapper;
-import com.trechina.planocycle.mapper.MstBranchMapper;
-import com.trechina.planocycle.mapper.ProductPowerDataMapper;
+import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.MstBranchService;
 import com.trechina.planocycle.service.MstJanService;
 import com.trechina.planocycle.service.TableTransferService;
@@ -20,6 +18,10 @@ public class ScheduleTask {
     Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private TableTransferService tableTransferService;
+    @Autowired
+    private PriorityOrderPtsBackupJanMapper ptsBackupJanMapper;
+    @Autowired
+    private PriorityOrderPtsPatternNameMapper patternNameMapper;
     @Autowired
     private LogMapper logMapper;
     @Autowired
@@ -48,6 +50,8 @@ public class ScheduleTask {
 
     @Scheduled(cron = "0 5 0 * * ?")
     public void doDelLog(){
+        ptsBackupJanMapper.deleteBackupJan();
+        patternNameMapper.deletePtsPatternName();
         logMapper.deleteLog();
         List<String> workTableName = productPowerDataMapper.getWorkTableName();
         for (String s : workTableName) {
