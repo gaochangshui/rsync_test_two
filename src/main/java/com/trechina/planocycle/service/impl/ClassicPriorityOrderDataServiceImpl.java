@@ -194,8 +194,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<Map<String,Object>> listAttr = new ArrayList<>();
         Map<String,Object> listTableName = new HashMap<>();
         LinkedHashMap<String,Object> mapColHeader = new LinkedHashMap<>();
-        mapColHeader.put("jan_old","旧JAN");
-        mapColHeader.put("jan_new","新JAN");
+        mapColHeader.put(MagicString.JAN_OLD,"旧JAN");
+        mapColHeader.put(MagicString.JAN_NEW,"新JAN");
         mapColHeader.put("sku","SKU");
 
         int i = 1;
@@ -220,12 +220,12 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             mapColHeader.put("branch_amount_upd","店@金額(円)");
             mapColHeader.put("pos_amount","POS金額(円)");
             mapColHeader.put("unit_price","単価");
-            mapColHeader.put("branch_amount","店@金額(円)");
-            mapColHeader.put("branch_num","定番 店舗数");
+            mapColHeader.put(MagicString.BRANCH_AMOUNT,"店@金額(円)");
+            mapColHeader.put(MagicString.BRANCH_NUM,"定番 店舗数");
             mapColHeader.put("branch_num_upd","定番 店舗数");
             mapColHeader.put("difference","配荷差");
             mapColHeader.put("sale_forecast","売上増減 予測(千円)");
-            mapColHeader.put("rank","Rank");
+            mapColHeader.put(MagicString.RANK,"Rank");
             mapColHeader.put("rank_prop","Rank");
             mapColHeader.put("rank_upd","Rank");
             List<Map<String, Object>> initialExtraction = new ArrayList<>();
@@ -250,13 +250,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             branch_amount_upd = branch_amount_upd.setScale(0,RoundingMode.HALF_UP);
             data.put("branch_amount_upd",branch_amount_upd);
 
-            BigDecimal branch_amount = BigDecimal.valueOf(Double.parseDouble(data.get("branch_amount").toString()));
-            branch_amount = branch_amount.setScale(0,RoundingMode.HALF_UP);
-            data.put("branch_amount",branch_amount);
+            BigDecimal branchAmount = BigDecimal.valueOf(Double.parseDouble(data.get("branch_amount").toString()));
+            branchAmount = branchAmount.setScale(0,RoundingMode.HALF_UP);
+            data.put("branch_amount",branchAmount);
 
-            BigDecimal unit_price = BigDecimal.valueOf(Double.parseDouble(data.get("unit_price").toString()));
-            unit_price = unit_price.setScale(0,RoundingMode.HALF_UP);
-            data.put("unit_price",unit_price);
+            BigDecimal unitPrice = BigDecimal.valueOf(Double.parseDouble(data.get("unit_price").toString()));
+            unitPrice = unitPrice.setScale(0,RoundingMode.HALF_UP);
+            data.put("unit_price",unitPrice);
         }
 
         priorityOrderDataMapper.deleteWorkData(companyCd,priorityPowerCd);
@@ -264,7 +264,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         for (Map<String, Object> data : datas) {
             data.remove("goods_rank");
             if (Integer.parseInt(data.get("rank").toString())==99999998){
-                data.put("rank","_");
+                data.put(MagicString.RANK,"_");
                 data.put("rank_upd","_");
                 data.put("rank_prop","_");
             }
