@@ -606,10 +606,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 Integer shelfPatternCd = pattern.getShelfPatternCd();
                 List<Map<String, Object>> patternBranches = shelfPatternBranchMapper.selectAllPatternBranch(priorityOrderCd, companyCd, tenTableName, shelfPatternCd);
                 branchs.addAll(patternBranches);
-                //pattern link branches
-//                List<Map<String, Object>> patternBranches = branchs.stream()
-//                        .filter(map -> map.get("shelf_pattern_cd").toString().equals(shelfPatternCd.toString()))
-//                        .collect(Collectors.toList());
 
                 List<String> patternBranchCd = patternBranches.stream().map(map->map.get("branch").toString()).collect(Collectors.toList());
                 List<Map<String, Object>> commodityMustJans = null;
@@ -1185,7 +1181,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             Map<String, Object> compressJan = smallListSortByRank.get(smallList.size() - 1);
             //縮attr's last rank index
             int smallsIndex = 0;
-            String smallJan = MapUtils.getString(compressJan, MagicString.JAN_OLD);
+            String smallJan = MapUtils.getString(compressJan, MagicString.JAN);
             for (int i = 0; i < smallList.size(); i++) {
                 if (MapUtils.getString(smallList.get(i), MagicString.JAN).equals(smallJan)){
                     smallsIndex = i;
