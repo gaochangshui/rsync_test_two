@@ -1460,7 +1460,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         .collect(Collectors.toMap(attr -> attr.split(":")[0], attr -> attr.split(":")[1]));
 
                 for (Map.Entry<String, String> entry : mstAttrSortDtoMap.entrySet()) {
-                    row.createCell(colIndex).setCellValue(attrArrMap.get("attr"+entry.getKey()));
+                    row.createCell(colIndex).setCellValue(attrArrMap.get(entry.getKey()));
                     colIndex++;
                 }
 
