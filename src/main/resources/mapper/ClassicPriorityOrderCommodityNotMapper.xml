@@ -87,7 +87,7 @@
                   split_part( "1", '_', 2 ) else "1" end
 
     from ${tableName}
-      <if test="company = '1000'">
+      <if test="company == '1000'">
         where split_part("1", '_', 1) = #{companyCd}
       </if>
     limit 1

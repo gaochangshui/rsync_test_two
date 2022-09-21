@@ -137,6 +137,6 @@
     order by patternmst.shelf_pattern_cd
   </select>
   <select id="getMakerCol" resultType="java.lang.String">
-    select "3" from ${tableName} where "1" = 'maker'
+    select maker from planocycle.sku_name_config where company_cd = #{company} and class = #{classCd}
   </select>
 </mapper>

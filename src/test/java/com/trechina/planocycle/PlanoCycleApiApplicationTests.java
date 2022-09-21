@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -169,14 +168,6 @@ class PlanoCycleApiApplicationTests {
 
     @Test
     public  void test8()  {
-        List<Integer> list = new ArrayList<>();
-        list.add(1);
-        list.add(5);
-        list.add(3);
-        list.add(2);
-        int min = Collections.min(list);
-        int max = Collections.max(list);
-        System.out.println("最小值: " + min);
-        System.out.println("最大值: " + max);
+
     }
 }
