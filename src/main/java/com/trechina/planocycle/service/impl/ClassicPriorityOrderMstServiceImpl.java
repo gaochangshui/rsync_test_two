@@ -899,7 +899,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             branchCd = branch.get(MagicString.BRANCH).toString();
         }
 
-        String fileName = shelfPtsHeaderDto.getFileName().replace(".csv", "")+ (Strings.isNullOrEmpty(branchName)?"":"_"+branchName)+".csv";
+        String branchNames = String.join("_", Lists.newArrayList(branchCd,branchName));
+        String fileName = shelfPtsHeaderDto.getFileName().replace(".csv", "")+ (Strings.isNullOrEmpty(branchNames)?"":"_"+branchNames)+".csv";
 
         //old pts have repeat jan
         Map<String, String> repeatOldJan = new HashMap<>();
