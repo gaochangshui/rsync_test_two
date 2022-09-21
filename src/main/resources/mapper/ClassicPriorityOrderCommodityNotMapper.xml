@@ -83,10 +83,15 @@
     and nots.priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER} and nots.flag = 1
   </select>
   <select id="selectBranchCDForCalcLength" resultType="java.lang.String">
-    select branch_cd
-    from masterdb.branchs
-    where company_cd =#{companyCd,jdbcType=VARCHAR}
+    select case when  "char_length"(split_part("1", '_', 2))  > 0 then
+                  split_part( "1", '_', 2 ) else "1" end
+
+    from ${tableName}
+      <if test="company = '1000'">
+        where split_part("1", '_', 1) = #{companyCd}
+      </if>
     limit 1
+
   </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderCommodityNot">
     insert into priority.work_priority_order_commodity_not (company_cd, priority_order_cd, branch,
@@ -178,6 +183,6 @@
             left join ${table2} company_branchs
             on  nots.branch = company_branchs."1"
           </if>
-    where priority_order_cd=#{priorityOrderCd} and jan_new=#{jan} order by nots.shelf_pattern_cd, branchs."1";
+    where priority_order_cd=#{priorityOrderCd} and jan_new=#{jan} order by nots.shelf_pattern_cd;
   </select>
 </mapper>

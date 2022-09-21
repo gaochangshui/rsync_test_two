@@ -152,7 +152,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     public Map<String, Object> setPriorityOrderCommodityMust(List<PriorityOrderCommodityMust> priorityOrderCommodityMust) {
         logger.info("必須商品リストパラメータを保存する：{}",priorityOrderCommodityMust);
 //取得したパラメータは1行目に企業と順位テーブルcdがあるだけで、パラメータを巡回し、すべての行に値を割り当てる必要があります。
-        try{
+//        try{
             String companyCd = priorityOrderCommodityMust.get(0).getCompanyCd();
             Integer priorityOrderCd = priorityOrderCommodityMust.get(0).getPriorityOrderCd();
             dataConverUtils dataConverUtil = new dataConverUtils();
@@ -166,7 +166,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             if (mustList.isEmpty()){
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
-            String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd);
+            PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+            ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
+            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+            String proInfoTable = commonTableName.getProInfoTable();
+            String storeInfoTable = commonTableName.getStoreInfoTable();
+            String storeIsCore = commonTableName.getStoreIsCore();
+            String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd,storeInfoTable,storeIsCore);
             int branchLen = branchCd.length();
             // notを巡回して店cdに0を補充する
             mustList.forEach(item->{
@@ -186,10 +192,6 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             logger.info("必須商品の店補0後の結菓を保存する{}",mustList);
 
             // jancheck
-            PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
-            ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
-            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
-            String proInfoTable = commonTableName.getProInfoTable();
             List<String> janList = mustList.stream().map(PriorityOrderCommodityMust::getJan).collect(Collectors.toList());
             List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList,priorityOrderCd);
             List<String> notExistJan = ListDisparityUtils.getListDisparitStr(janList,existJan);
@@ -237,11 +239,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
            else{
                 return ResultMaps.result(ResultEnum.SUCCESS);
            }
-        } catch (Exception e) {
-            logger.error("保存必須商品リスト：",e);
-            logAspect.setTryErrorLog(e,new Object[]{priorityOrderCommodityMust});
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        //} catch (Exception e) {
+        //    logger.error("保存必須商品リスト：",e);
+        //    logAspect.setTryErrorLog(e,new Object[]{priorityOrderCommodityMust});
+        //    return ResultMaps.result(ResultEnum.FAILURE);
+        //}
     }
 
 
@@ -275,8 +277,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
             GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
             String proInfoTable = commonTableName.getProInfoTable();
+            String storeInfoTable = commonTableName.getStoreInfoTable();
+            String storeIsCore = commonTableName.getStoreIsCore();
             // 査詢企業的店cd是几位数
-            String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd);
+            String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd,storeInfoTable,storeIsCore);
             int branchLen = branchCd.length();
             // 遍暦not 給店cd補0
             not.forEach(item->{
