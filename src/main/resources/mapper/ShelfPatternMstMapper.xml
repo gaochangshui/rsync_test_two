@@ -154,7 +154,9 @@
       select
         shelf.shelf_name_cd, name.shelf_name as shelfName
            , shelf.shelf_pattern_cd,shelf.common_parts_data as storeIsCore
-           , concat(name.shelf_name, '-' , shelf.shelf_pattern_name) as shelfPatternName
+           ,  shelf.shelf_pattern_name as shelfPatternName
+           ,name.id as shelfCd
+           ,name.shelf_name as shelfName
            ,string_agg(branch.branch, ',') filter(
             where <foreach collection="map" index="index" separator="or">
                     "${index}"."100" = '0'
@@ -172,14 +174,14 @@
             on "${index}"."1" = branch.branch and "${index}"."100" = '0'
         </foreach>
       where   shelf.deleteflg=0  and shelf.company_cd = #{companyCd}
-      group by   shelf.shelf_name_cd,name.shelf_name, shelf.shelf_pattern_cd,  shelf.shelf_pattern_name,storeIsCore
+      group by   shelf.shelf_name_cd,name.shelf_name, shelf.shelf_pattern_cd,  shelf.shelf_pattern_name,storeIsCore,name.id
       having string_agg(branch.branch, ',')
        filter(
         where <foreach collection="map" index="index" separator="or">
         "${index}"."100" = '0'
     </foreach>
         ) is not null
-      order by shelf.shelf_pattern_cd desc
+      order by name.id desc,shelf.shelf_pattern_cd desc
     </select>
     <delete id="deleteByPrimaryKey" parameterType="map">
         delete from planocycle.shelf_pattern_mst

@@ -33,7 +33,7 @@ public class ExcelUtils {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
             XSSFSheet sheet1 = workbook.createSheet("抽出条件");
             XSSFSheet sheet = workbook.createSheet("商品明細");
-            Pattern numberPattern = Pattern.compile("-?[0-9]+(\\.[0-9]+)?%?");
+            Pattern numberPattern = Pattern.compile("-?\\d+(\\.\\d+)?%?");
 
             //最初の行の索引
             int colIndex=0;
@@ -261,7 +261,12 @@ public class ExcelUtils {
         sizeList.add(((List<String>)paramMap.get("channelNm")).size());
         sizeList.add(((List<String>)paramMap.get("placeNm")).size());
         sizeList.add(janList.size());
-        Integer integer = sizeList.stream().max(Integer::compare).get();
+        int integer = 0;
+        Optional<Integer> max = sizeList.stream().max(Integer::compare);
+        if (max.isPresent()){
+             integer =  max.get();
+        }
+
         for (int i = 0; i < integer; i++) {
             row = sheet1.createRow(colIndex);
             cell = row.createCell(headerColIndex = 0);
@@ -379,19 +384,22 @@ public class ExcelUtils {
             XSSFSheet sheet = workbook.getSheetAt(0);
             String[] data;
             int rows = sheet.getPhysicalNumberOfRows();
+            int cols = sheet.getRow(0).getPhysicalNumberOfCells();
             for(int i=0;i<rows;i++) {
                 XSSFRow row = sheet.getRow(i);
                 if(row==null) {
                     break;
                 }
-                data=new String[row.getPhysicalNumberOfCells()];
-                for(int j=0;j<row.getPhysicalNumberOfCells();j++) {//16384
+                data=new String[cols];
+                for(int j=0;j<cols;j++) {//16384
                     XSSFCell cell = row.getCell(j);
                     if(cell!=null) {
                         cell.setCellType(CellType.STRING);
                         String cellValue = getStringVal(cell);
 
                         data[j]=cellValue;
+                    }else{
+                        data[j]="";
                     }
                 }
                 excelList.add(data);
@@ -405,7 +413,6 @@ public class ExcelUtils {
     }
 
     public static String getStringVal(XSSFCell cell) {
-        CellType cellType=cell.getCellType();
         //if(cellType==CellType.BOOLEAN) {
         //    return cell.getBooleanCellValue() ? "TRUE" : "FALSE";
         //}else if(cellType==CellType.FORMULA) {
@@ -602,9 +609,10 @@ public class ExcelUtils {
             List<Integer> listSize = new ArrayList<>();
             listSize.add(((List<String>)paramData.get("attrName")).size());
             listSize.add(((List<String>)paramData.get("shelfPatternName")).size());
-            Integer integer = 0;
-            if (listSize.stream().max(Integer::compare).isPresent()) {
-                integer = listSize.stream().max(Integer::compare).get();
+            int integer = 0;
+            Optional<Integer> max = listSize.stream().max(Integer::compare);
+            if (max.isPresent()){
+                integer =  max.get();
             }
 
             colIndex = 4;

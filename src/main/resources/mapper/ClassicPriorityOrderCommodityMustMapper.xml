@@ -242,7 +242,7 @@
             left join ${table2} company_branchs
             on  must.branch = company_branchs."1"
           </if>
-    where priority_order_cd=#{priorityOrderCd} and jan_new=#{jan} order by must.shelf_pattern_cd, branchs."1";
+    where priority_order_cd=#{priorityOrderCd} and jan_new=#{jan} order by must.shelf_pattern_cd;
   </select>
   <select id="getGroupCompany" resultType="java.lang.String">
     select company_cd from  masterdb.group_company where group_cd = #{companyCd}

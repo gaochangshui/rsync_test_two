@@ -6,12 +6,13 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ClassicPriorityOrderPatternMapper {
     int deleteByPrimaryKey(@Param("priorityOrderCd") Integer priorityOrderCd, @Param("companyCd") String companyCd, @Param("shelfPatternCd") Integer shelfPatternCd);
 
-    int insert(@Param("lists") List<PriorityOrderPattern> record);
+    int insertForFinal(@Param("priorityOrderCd") Integer priorityOrderCd, @Param("companyCd") String companyCd);
 
     int selectByPriorityOrderName(String companyCd,String priorityOrderName,Integer priorityOrderCd);
 
@@ -26,4 +27,7 @@ public interface ClassicPriorityOrderPatternMapper {
     int insertWork(@Param("lists") List<PriorityOrderPattern> record);
 
     void insertWorkForFinal(String companyCd, Integer priorityOrderCd, Integer newPriorityOrderCd);
+
+    List<Map<String,Object>> getShelfNameCd(String companyCd, String[] shelfPatternList);
+
 }

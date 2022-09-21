@@ -10,5 +10,7 @@ public class PriorityOrderPattern {
 
     private Integer shelfPatternCd;
 
+    private Integer sort;
+
 
 }

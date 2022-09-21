@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.po.Branchs;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -220,6 +219,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String singleJan = new Gson().toJson(map.get("singleJan"));
         productPowerParamMstMapper.deleteWork(companyCd,productPowerCd);
         productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr,prodAttrData,singleJan);
+        map.put("basketFlg",Integer.parseInt(map.get("showItemCheck").toString()) == 1?1:0);
+        map.remove("showItemCheck");
         if (paramCount >0){
             map.put("changeFlag","1");
         }else {
@@ -346,6 +347,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     if (map1.get("data")!=null) {
                         Map<Object, Object> customerCondition = (Map<Object, Object>) map.get("customerCondition");
                         if (!customerCondition.isEmpty()) {
+                            map.put("basketFlg",0);
                             logger.info("顧客パラメータ{}", map);
                             logger.info("顧客開始時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
                             String groupResult = cgiUtil.postCgi(productPowerData, map, tokenInfo, smartPath);

@@ -18,22 +18,15 @@
     and priority_order_name = #{priorityOrderName,jdbcType=VARCHAR}
     and priority_order_cd != #{priorityOrderCd,jdbcType=INTEGER}
   </select>
-  <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderPattern">
-    insert into priority.priority_order_pattern (priority_order_cd, company_cd, shelf_pattern_cd
-      )
-    values
-    <foreach collection="lists" item="list" separator=",">
-     (#{list.priorityOrderCd,jdbcType=INTEGER}, #{list.companyCd,jdbcType=VARCHAR}, #{list.shelfPatternCd,jdbcType=INTEGER})
-    </foreach>
-  </insert>
   <delete id="deleteforid">
     delete from priority.priority_order_pattern where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </delete>
   <select id="selectPattern" resultType="com.trechina.planocycle.entity.dto.ShelfPtsDataDto">
-    select id, pattern.shelf_pattern_cd,shelf_pattern_name from priority.priority_order_pattern pattern
+    select pts_data.id, pattern.shelf_pattern_cd,shelf_pattern_name,patternmst.shelf_name_cd shelf_name_cd from priority.priority_order_pattern pattern
     inner join planocycle.shelf_pattern_mst patternmst on patternmst.shelf_pattern_cd=pattern.shelf_pattern_cd and pattern.company_cd=patternmst.company_cd
+    inner join planocycle.shelf_name_mst shelfname on shelfname.id=patternmst.shelf_name_cd
     inner join planocycle.shelf_pts_data pts_data on pts_data.shelf_pattern_cd=pattern.shelf_pattern_cd  and pts_data.company_cd=patternmst.company_cd
-    where priority_order_cd=#{priorityOrderCd} and pattern.company_cd=#{companyCd}
+    where priority_order_cd=#{priorityOrderCd} and pattern.company_cd=#{companyCd} order by sort
   </select>
   <select id="getShelfName" resultType="java.lang.String">
     select DISTINCT namemst.shelf_name
@@ -45,12 +38,21 @@
     where priority_order_cd = #{priorityOrderCd}
     limit 1
   </select>
+  <select id="getShelfNameCd" resultType="java.util.Map">
+    select shelf_pattern_cd as "shelfPatternCd",shelf_name_cd as "shelfNameCd" from planocycle.shelf_pattern_mst
+                                           where shelf_pattern_cd in
+                                           <foreach collection="shelfPatternList" item="item" open="(" close=")" separator=",">
+                                             #{item} ::integer
+                                           </foreach>
+    and company_cd = #{companyCd}
+  </select>
   <insert id="insertWork">
-    insert into priority.work_priority_order_pattern (priority_order_cd, company_cd, shelf_pattern_cd
+    insert into priority.work_priority_order_pattern (priority_order_cd, company_cd, shelf_pattern_cd,sort
     )
     values
     <foreach collection="lists" item="list" separator=",">
-      (#{list.priorityOrderCd,jdbcType=INTEGER}, #{list.companyCd,jdbcType=VARCHAR}, #{list.shelfPatternCd,jdbcType=INTEGER})
+      (#{list.priorityOrderCd,jdbcType=INTEGER}, #{list.companyCd,jdbcType=VARCHAR}, #{list.shelfPatternCd,jdbcType=INTEGER}
+      ,#{list.sort,jdbcType=INTEGER})
     </foreach>
   </insert>
   <insert id="insertWorkForFinal">
@@ -58,6 +60,11 @@
       select #{newPriorityOrderCd}, company_cd, shelf_pattern_cd
     from priority.priority_order_pattern
     where priority_order_cd = #{priorityOrderCd}
+  </insert>
+  <insert id="insertForFinal">
+    insert into priority.priority_order_pattern
+    select * from priority.work_priority_order_pattern
+    where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
   </insert>
   <delete id="deleteWork">
     delete from priority.work_priority_order_pattern where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}

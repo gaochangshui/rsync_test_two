@@ -19,7 +19,7 @@ public interface ClassicPriorityOrderCommodityNotMapper {
 
     List<PriorityOrderCommodityVO> selectNotInfo(String companyCd, Integer priorityOrderCd,String table1,String table2,String janInfoTable,List<String>groupCompany);
 
-    String selectBranchCDForCalcLength(String companyCd);
+    String selectBranchCDForCalcLength(String companyCd,String tableName,String company);
 
     int setFinalForWork(String companyCd, Integer priorityOrderCd);
 

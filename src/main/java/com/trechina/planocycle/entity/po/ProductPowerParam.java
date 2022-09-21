@@ -28,6 +28,7 @@ public class ProductPowerParam {
     private Integer isCover;
     private Object prodAttrData;
     private Object singleJan;
+    private Integer showItemCheck;
 
 
 }

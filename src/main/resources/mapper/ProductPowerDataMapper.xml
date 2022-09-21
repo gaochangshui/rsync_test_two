@@ -162,7 +162,8 @@
                                                            customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,customer_store_item05,customer_store_item06,customer_store_item07,
                                                            customer_store_item08,customer_store_item09,customer_store_item10,customer_item01,customer_item02,customer_item03,customer_item04,customer_item05,customer_item06,
                                                            customer_item07,customer_item08,customer_item09,customer_item10,customer_item11,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,intage_item06,
-                                                           intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,branch_num )
+                                                           intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,branch_num
+                                                            ,pos_item12,pos_item13)
         select #{companyCd},#{productPowerCd},#{authorCd},s.jan,yobi.item1,yobi.item2,yobi.item3,yobi.item4,yobi.item5,yobi.item6,yobi.item7,yobi.item8,yobi.item9,yobi.item10,
                pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,
                pos_store_item01,pos_store_item02,pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,
@@ -176,7 +177,8 @@
                customer_store_item01,customer_store_item02,customer_store_item03,customer_store_item04,customer_store_item05,customer_store_item06,customer_store_item07,
                customer_store_item08,customer_store_item09,customer_store_item10,customer_item01,customer_item02,customer_item03,customer_item04,customer_item05,customer_item06,
                customer_item07,customer_item08,customer_item09,customer_item10,customer_item11,intage_item01,intage_item02,intage_item03,intage_item04,intage_item05,intage_item06,
-               intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,coalesce (branchs."branchCount",0)
+               intage_item07,intage_item08,intage_store_item01,intage_store_item02,intage_compare_item01,intage_compare_item02,intage_compare_store_item01,intage_compare_store_item02,coalesce (branchs."branchCount",0),
+               pos_item12,pos_item13
         from  planocycle.work_product_power_syokika s
             left join planocycle.work_product_power_kokyaku k
                     on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd and s.product_power_cd = k.product_power_cd
@@ -536,7 +538,7 @@
     <select id="getParam" resultType="com.trechina.planocycle.entity.po.ProductPowerParamVo">
         select company_cd as company,product_power_cd as productPowerNo,customer_condition,prd_cd,rank_weight,recently_end_time,recently_flag,recently_st_time,
                season_end_time,season_flag,season_st_time,store_cd,year_flag,common_parts_data,project,shelf_pattern_cd,channel_nm,place_nm,jan_name2col_num
-                ,prod_attr_data,single_jan
+                ,prod_attr_data,single_jan,show_item_check
         from planocycle.product_power_param_mst
         where company_cd=#{companyCd} and product_power_cd = #{productPowerCd} and deleteflg=0
 
