@@ -5,7 +5,7 @@
         insert into priority.priority_order_pts_backup_jan(priority_order_cd, shelf_pattern_cd, "group", jan, branch, rank_upd,
         branch_num_upd,branch_amount_upd, sku) values
         <foreach collection="list" item="item" separator=",">
-            (#{priorityOrderCd},#{shelfPatternCd},#{group}, #{item.jan}, #{branch},#{item.rank_upd}::integer,
+            (#{priorityOrderCd},#{shelfPatternCd},#{group}, #{item.jan}, #{branch},#{item.rank_upd, jdbcType=INTEGER}::integer,
             #{item.branch_num_upd},#{item.branch_amount_upd},#{item.sku})
         </foreach>
         on conflict(priority_order_cd, shelf_pattern_cd, jan, branch)
