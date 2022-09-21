@@ -33,7 +33,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.util.StopWatch;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
@@ -43,9 +42,9 @@ import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
@@ -449,10 +448,9 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 isCompanyCd = companyCd;
             }
 
-            getCommonPartsDataDto.setStoreIsCore(storeIsCore);
+            getCommonPartsDataDto.setStoreIsCore(isCompanyCd);
             getCommonPartsDataDto.setStoreMstClass(storeMstClass);
             getCommonPartsDataDto.setStoreInfoTable(MessageFormat.format("\"{0}\".ten_{1}_ten_info", isCompanyCd, storeMstClass));
-//            getCommonPartsDataDto.setStoreKaisouTable(MessageFormat.format("\"{0}\".ten_{1}_ten_kaisou_header_sys", isCompanyCd, storeMstClass));
         }
 
         return getCommonPartsDataDto;

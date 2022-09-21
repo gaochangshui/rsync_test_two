@@ -100,7 +100,7 @@
                 left join planocycle.shelf_pts_data_jandata jandata on resultdata.jan_new = jandata.jan
                 left join planocycle.shelf_pts_data ptsdata on jandata.pts_cd = ptsdata.id
                 left join planocycle.shelf_pattern_branch branch on ptsdata.shelf_pattern_cd = branch.shelf_pattern_cd
-                left join "1000".ten_0000_ten_info teninfo on (teninfo."1" = branch.branch or split_part(teninfo."1",'_',2) = branch.branch) and split_part(teninfo."1",'_',1) = #{item.companyCd}
+                left join ${tableName} teninfo on (teninfo."1" = branch.branch or split_part(teninfo."1",'_',2) = branch.branch) and split_part(teninfo."1",'_',1) = #{item.companyCd}
 
         where
             priority_order_cd = #{item.priorityOrderCd}

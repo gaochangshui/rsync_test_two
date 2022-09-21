@@ -585,14 +585,14 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
-        String makerCol = classicPriorityOrderMstMapper.getMakerCol(commonTableName.getProAttrTable());
+        String makerCol = classicPriorityOrderMstMapper.getMakerCol(commonTableName.getStoreIsCore(),commonTableName.getStoreMstClass());
         List<Map<String, Object>> janName = classicPriorityOrderDataMapper.getJanName(starReadingTableDto.getJanList(),priorityOrderCd,makerCol,commonTableName.getProInfoTable());
         if (starReadingTableDto.getModeCheck() == 1) {
             List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
             groupCompany.add(companyCd);
             List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
             branchList=branchList.stream().filter(map -> starReadingTableDto.getExpressItemList().contains(map.get("sort"))).collect(Collectors.toList());
-            List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList);
+            List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList,tableName);
 
             if (!autoBranch.isEmpty()){
                 for (Map<String, Object> branch : autoBranch) {
@@ -690,7 +690,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
-        String makerCol = classicPriorityOrderMstMapper.getMakerCol(commonTableName.getProAttrTable());
+        String makerCol = classicPriorityOrderMstMapper.getMakerCol(commonTableName.getStoreIsCore(),commonTableName.getStoreMstClass());
         Integer modeCheck = priorityOrderMstMapper.getModeCheck(priorityOrderCd);
         Boolean isModeCheck = true;
         if (modeCheck == null){
