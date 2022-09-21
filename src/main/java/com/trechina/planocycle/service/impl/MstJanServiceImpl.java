@@ -761,7 +761,8 @@ public class MstJanServiceImpl implements MstJanService {
         Object msg = cacheUtil.get(taskId + ",exception");
         cacheUtil.remove(taskId+",data");
         cacheUtil.remove(taskId+",exception");
-        return ResultMaps.result(ResultEnum.FAILURE, msg);
+
+        return ResultMaps.result(ResultEnum.FAILURE.getCode(), String.valueOf(msg));
     }
 
     /**
