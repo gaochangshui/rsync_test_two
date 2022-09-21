@@ -384,19 +384,22 @@ public class ExcelUtils {
             XSSFSheet sheet = workbook.getSheetAt(0);
             String[] data;
             int rows = sheet.getPhysicalNumberOfRows();
+            int cols = sheet.getRow(0).getPhysicalNumberOfCells();
             for(int i=0;i<rows;i++) {
                 XSSFRow row = sheet.getRow(i);
                 if(row==null) {
                     break;
                 }
-                data=new String[row.getPhysicalNumberOfCells()];
-                for(int j=0;j<row.getPhysicalNumberOfCells();j++) {//16384
+                data=new String[cols];
+                for(int j=0;j<cols;j++) {//16384
                     XSSFCell cell = row.getCell(j);
                     if(cell!=null) {
                         cell.setCellType(CellType.STRING);
                         String cellValue = getStringVal(cell);
 
                         data[j]=cellValue;
+                    }else{
+                        data[j]="";
                     }
                 }
                 excelList.add(data);
