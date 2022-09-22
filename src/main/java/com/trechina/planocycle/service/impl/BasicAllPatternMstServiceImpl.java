@@ -241,6 +241,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         return 0;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void autoDetect(String companyCd,Integer priorityAllCd,Integer shelfPatternCd,Integer priorityOrderCd,String aud) {
@@ -517,40 +518,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             }
         }
         return allRelationsList;
-    }
-
-    /**
-     * 基本パターンの制約により各パターンの制約一覧を作成
-     * @param pattern
-     * @param priorityAllCd
-     * @param companyCd
-     * @param authorCd
-     * @param priorityOrderCd
-     * @return
-     */
-    private int makeWKRestrictList(PriorityAllPatternListVO pattern
-            , Integer priorityAllCd
-            , String companyCd, String  authorCd,Integer priorityOrderCd) {
-        workPriorityAllRestrictMapper.deleteBasicPatternResult(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
-        // 全パターンRelationテーブル更新
-        return 1;
-    }
-
-    /**
-     *
-     * @param pattern
-     * @param priorityAllCd
-     * @param companyCd
-     * @param authorCd
-     * @param priorityOrderCd
-     * @return
-     */
-    private int makeWKRelationList(PriorityAllPatternListVO pattern
-            , Integer priorityAllCd
-            , String companyCd, String  authorCd,Integer priorityOrderCd){
-        workPriorityAllRestrictRelationMapper.deleteBasicPatternRelation(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
-        return 1;
-
     }
 
     private int makeWKResultDataList(PriorityAllPatternListVO pattern, Integer priorityAllCd, String companyCd, String authorCd, Integer priorityOrderCd) {
