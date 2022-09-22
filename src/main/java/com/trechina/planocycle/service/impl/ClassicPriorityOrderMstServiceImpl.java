@@ -978,6 +978,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             for (int i = 0; i < adoptPtsJanList.size(); i++) {
                 Map<String, Object> ptsJan = adoptPtsJanList.get(i);
                 String jan = ptsJan.get(MagicString.JAN).toString();
+                String janOld = ptsJan.get(MagicString.JAN_OLD).toString();
                 String rankUpd = MapUtils.getInteger(ptsJan, MagicString.RANK_UPD)+"";
                 String curAttrList = ptsJan.get(MagicString.ATTR_LIST).toString();
 
@@ -993,8 +994,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         newJanList.removeIf(map->Objects.equals(MapUtils.getString(map, MagicString.JAN), jan));
                         deleteJanList.add(oldJanMap);
                     }else {
-                        if(janReplaceMap.containsKey(jan)) {
-                            String newJan = MapUtils.getString(janReplaceMap, jan);
+                        if(janReplaceMap.containsKey(janOld)) {
+                            String newJan = MapUtils.getString(janReplaceMap, janOld);
                             List<String> newRankJan = resultData.stream().filter(data -> MapUtils.getString(data, MagicString.JAN).equals(repeatOldJan.get(jan))).map(data -> MapUtils.getString(data, MagicString.RANK_UPD)).collect(Collectors.toList());
 
                             //old pts not exists and jan replace
@@ -1043,8 +1044,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         String newJan = notInPtsJanList.get(newJanIndex).get(MagicString.JAN).toString();
                         Integer newJanRank = MapUtils.getInteger(notInPtsJanList.get(newJanIndex), MagicString.RANK_UPD);
 
-                        if(janReplaceMap.containsKey(jan) && newJanRank > Integer.parseInt(rankUpd)){
-                            newJan = MapUtils.getString(janReplaceMap, jan);
+                        if(janReplaceMap.containsKey(janOld) && newJanRank > Integer.parseInt(rankUpd)){
+                            newJan = MapUtils.getString(janReplaceMap, janOld);
                             //old pts not exists and jan replace
                             String finalNewJan = newJan;
                             if (ptsJanDtoList.stream().noneMatch(map->MapUtils.getString(map, MagicString.JAN).equals(finalNewJan))&&
