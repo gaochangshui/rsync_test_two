@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.PriorityOrderPtsPatternNameMapper">
     <insert id="insertPtsPatternName">
-        insert into priority.priority_order_pts_pattern_name(priority_order_cd, shelf_name_cd, jan)
+        insert into priority.priority_order_pts_pattern_name(priority_order_cd, shelf_name_cd, jan, shelf_pattern_cd, branch_list)
         values
         <foreach collection="newJanList" item="item" separator=",">
-            (#{priorityOrderCd}, #{shelfNameCd}, #{item.jan})
+            (#{priorityOrderCd}, #{shelfNameCd}, #{item.jan},#{patternCd},#{branchList}::jsonb)
         </foreach>
         on conflict do nothing
     </insert>
@@ -17,6 +17,7 @@
         <where>
             priority_order_cd=#{priorityOrderCd} and shelf_name_cd!=#{shelfNameCd} and jan in
             (<foreach collection="newPtsJanCdList" item="item" separator=",">#{item} </foreach>)
+            and branch_list ${branchList}
         </where>
     </select>
     <delete id="deletePtsPatternNameByCd">
