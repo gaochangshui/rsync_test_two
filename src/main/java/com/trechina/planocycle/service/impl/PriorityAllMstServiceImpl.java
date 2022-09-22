@@ -1,17 +1,11 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Joiner;
 import com.trechina.planocycle.aspect.LogAspect;
-import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
-import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
 import com.trechina.planocycle.entity.po.ProductPowerNumGenerator;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderMst;
-import com.trechina.planocycle.entity.po.ZokuseiMst;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.exception.BusinessException;
@@ -19,7 +13,6 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
-import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +26,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
@@ -104,7 +96,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> addPriorityAllData(JSONObject jsonObject) {
-        //try{
 
             String authorCd = session.getAttribute("aud").toString();
             String companyCd = jsonObject.get("companyCd").toString();
@@ -130,7 +121,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 newPriorityAllCd = p.getId();
 
             }
-            //「companyCd、priorityAllCd、Author_cd」によりWKテーブルをクリア
+            //companyCd、priorityAllCd、Author_cdによりWKテーブルをクリア
             priorityAllMstMapper.deleteWKTableMst(companyCd, newPriorityAllCd, authorCd);
             priorityAllMstMapper.deleteWKTableShelfs(companyCd, newPriorityAllCd, authorCd);
             priorityAllMstMapper.deleteWKTableRestrict(companyCd, newPriorityAllCd, authorCd);
@@ -174,10 +165,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 map.put("allPatternData",allPatternData.get("data"));
                 return ResultMaps.result(ResultEnum.SUCCESS,map);
 
-        //} catch (Exception ex) {
-        //    logAspect.setTryErrorLog(ex,new Object[]{});
-        //    return ResultMaps.result(ResultEnum.FAILURE, "新規作成失敗しました。");
-        //}
     }
 
     /**
@@ -225,37 +212,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         result.put("ptsInfo", info);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
-
-    ///**
-    // * 自動計算する前にデータを一時テーブルに保存
-    // *
-    // * @param priorityAllSaveDto@return
-    // */
-    //@Transactional(rollbackFor = Exception.class)
-    //@Override
-    //public Integer saveWKAllPatternData(PriorityAllSaveDto priorityAllSaveDto) {
-    //    String authorCd = session.getAttribute("aud").toString();
-    //    // mstテーブル
-    //    try {
-    //        priorityAllMstMapper.deleteWKTableMst(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-    //        // shelfsテーブル
-    //        priorityAllMstMapper.deleteWKTableShelfs(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-    //        workPriorityAllRestrictMapper.deleteWKTableRestrict(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd());
-    //        workPriorityAllRestrictRelationMapper.deleteWKTableRelation(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-    //        priorityAllMstMapper.insertWKTableMst(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd, priorityAllSaveDto.getPriorityOrderCd());
-    //        priorityAllMstMapper.insertWKTableShelfs(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd, priorityAllSaveDto.getPatterns());
-    //        priorityAllMstMapper.delWKTablePtsTai(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-    //        priorityAllMstMapper.delWKTablePtsTana(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-    //        priorityAllMstMapper.delWKTablePtsJans(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-    //        priorityAllMstMapper.delWKTablePtsData(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-    //        priorityAllMstMapper.delWKTablePtsVersion(priorityAllSaveDto.getCompanyCd(), priorityAllSaveDto.getPriorityAllCd(), authorCd);
-    //    } catch (Exception e) {
-    //        logger.error("全patternの保存に失敗しました:{}",e.getMessage());
-    //        logAspect.setTryErrorLog(e,new Object[]{priorityAllSaveDto});
-    //        return 1;
-    //    }
-    //    return 0;
-    //}
 
 
 
@@ -319,9 +275,9 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 priorityAllMstMapper.setFinalTableRestrictResultData(companyCd,priorityAllCd);
                 return ResultMaps.result(ResultEnum.SUCCESS,priorityAllCd);
 
-        }catch (Exception ex){
-            logger.error("全patternの保存に失敗しました:", ex);
-            throw new BusinessException(ex.getMessage());
+        }catch (Exception e){
+            logger.error("全patternの保存に失敗しました", e);
+            throw new BusinessException(e.getMessage());
         }
 
 
@@ -368,21 +324,5 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    /**
-     * 基本パターンの制約により各パターンの制約一覧を作成
-     * @param pattern
-     * @param priorityAllCd
-     * @param companyCd
-     * @param authorCd
-     * @param priorityOrderCd
-     * @return
-     */
-    private int makeWKRestrictList(PriorityAllPatternListVO pattern
-            , Integer priorityAllCd
-            , String companyCd, String  authorCd,Integer priorityOrderCd) {
-        workPriorityAllRestrictMapper.deleteBasicPatternResult(companyCd,priorityAllCd,authorCd,pattern.getShelfPatternCd());
-        // 全パターンRelationテーブル更新
-        return 1;
-    }
 
 }

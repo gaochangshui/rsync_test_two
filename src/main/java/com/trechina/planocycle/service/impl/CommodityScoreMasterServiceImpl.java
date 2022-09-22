@@ -3,6 +3,7 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
@@ -65,7 +66,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     @Override
     public Map<String,Object> getEnterpriseInfo() {
         String authorCd = session.getAttribute("aud").toString();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
 
         String companys = session.getAttribute("inCharge").toString();
         List<String> companyList = Arrays.asList(companys.split(","));
@@ -224,8 +224,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         cdList.addAll(yobi);
         String coreCompany = sysConfigMapper.selectSycConfig("core_company");
         JSONObject jsonObject = JSON.parseObject(param.getCommonPartsData());
-        String prodMstClass = jsonObject.get("prodMstClass").toString();
-        String prodIsCore = jsonObject.get("prodIsCore").toString();
+        String prodMstClass = jsonObject.get(MagicString.PROD_MST_CLASS).toString();
+        String prodIsCore = jsonObject.get(MagicString.PROD_IS_CORE).toString();
         String isCompanyCd = null;
         if ("1".equals(prodIsCore)) {
             isCompanyCd = coreCompany;
@@ -235,9 +235,9 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         Integer janName2colNum = param.getJanName2colNum();
         Integer colNum = 2;
         if (janName2colNum == 1){
-            colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+            colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
         }else if(janName2colNum==3){
-            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
         }
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
@@ -294,11 +294,11 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setSingleJan(param.getSingleJan());
         powerParam.setShowItemCheck(param.getShowItemCheck());
         List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(productPowerNo, companyCd);
-        List<Object> dataAll = new ArrayList();
+        List<Object> dataAll = new ArrayList<>();
         dataAll.add(returnDataAttr);
         dataAll.add(returnDataItem);
         dataAll.add(allDataRank);
-        List<Object> list = new ArrayList();
+        List<Object> list = new ArrayList<>();
         list.add(dataAll);
         list.add(powerParam);
         list.add(reserve);
@@ -308,7 +308,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
 
     @Override
     public Map<String, Object> getPrefectureAndChanelInfo() {
-        List list = new ArrayList();
+        List<List<String>> list = new ArrayList<>();
         List<String> placeList = placeListMapper.getPlaceList();
         List<String> channelList = channelListMapper.getChannelList();
         list.add(placeList);

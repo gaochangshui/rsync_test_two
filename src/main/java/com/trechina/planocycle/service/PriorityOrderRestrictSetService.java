@@ -13,14 +13,4 @@ public interface PriorityOrderRestrictSetService {
      */
     Map<String,Object> setPriorityOrderRestrict( PriorityOderAttrSet priorityOderAttrSet);
 
-    ///**
-    // * 各ステージ/セグメントに対応するプロパティの取得
-    // * @param companyCd
-    // * @param priorityOrderCd
-    // * @return
-    // * @throws NoSuchMethodException
-    // * @throws InvocationTargetException
-    // * @throws IllegalAccessException
-    // */
-    //Map<String,Object> getAttrDisplay(String companyCd,Integer priorityOrderCd) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 }

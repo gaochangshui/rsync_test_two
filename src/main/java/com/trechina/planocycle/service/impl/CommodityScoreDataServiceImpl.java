@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
@@ -60,6 +61,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Autowired
     private ShelfPatternMstMapper shelfPatternMstMapper;
     @Autowired
+    private CommodityScoreDataService commodityScoreDataService;
+    @Autowired
     private MstJanMapper mstJanMapper;
     @Autowired
     private cgiUtils cgiUtil;
@@ -107,7 +110,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     if ("ok".equals(vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()).toString())) {
                         log.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()));
                         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
-                        JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
+                        JSONObject jsonObject = JSON.parseObject(commonPartsData);
                         String prodMstClass = jsonObject.get("prodMstClass").toString();
                         String prodIsCore = jsonObject.get("prodIsCore").toString();
                         String isCompanyCd = null;
@@ -217,7 +220,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String prodAttrData = map.get("prodAttrData").toString();
         String singleJan = new Gson().toJson(map.get("singleJan"));
 
-        this.setProductParam(map,productPowerCd,companyCd,authorCd,customerConditionStr,prodAttrData,singleJan);
+        commodityScoreDataService.setProductParam(map,productPowerCd,companyCd,authorCd,customerConditionStr,prodAttrData,singleJan);
         map.put("basketFlg",Integer.parseInt(map.get("showItemCheck").toString()) == 1?1:0);
         map.remove("showItemCheck");
         if (paramCount >0){
@@ -249,7 +252,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             map.put("company_kokigyou",companyCd+"_"+companyCd);
         }
         //マスタ設定
-        JSONObject jsonObject = JSONObject.parseObject(commonPartsData);
+        JSONObject jsonObject = JSON.parseObject(commonPartsData);
         String storeIsCore = jsonObject.get("storeIsCore").toString();
         String prodIsCore = jsonObject.get("prodIsCore").toString();
         String dateIsCore  = jsonObject.get("dateIsCore").toString();
@@ -428,7 +431,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     }
 
     private String attrList(Map<String,Object> map) {
-        String finalValue = "";
+        StringBuilder finalValue = new StringBuilder();
 
         List list = (ArrayList) map.get("prodAttrData");
 
@@ -440,19 +443,19 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     String id = proMap.get("id").toString().split("_")[2];
 
                     String join = Joiner.on("$|^").join(value);
-                    Boolean flag = (Boolean) proMap.get("flag");
+                    boolean flag = (boolean) proMap.get("flag");
                     String eq = flag ? "!~":"~";
-                    if (finalValue.equals("")){
-                        finalValue += "$"+id+eq+"/^"+join+"$/ ";
+                    if (finalValue.toString().equals("")){
+                        finalValue.append("$").append(id).append(eq).append("/^").append(join).append("$/ ");
                     }else {
-                        finalValue +="&& $"+id+eq+"/^"+join+"$/ ";
+                        finalValue.append("&& $").append(id).append(eq).append("/^").append(join).append("$/ ");
                     }
 
                 }
             }
         }
 
-        return finalValue.equals("")?null:finalValue;
+        return finalValue.toString().equals("")?null: finalValue.toString();
     }
 
     /**

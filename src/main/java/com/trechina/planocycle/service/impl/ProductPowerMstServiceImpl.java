@@ -390,7 +390,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         if (!Strings.isNullOrEmpty(param.getPrdCd())) {
             List<String> list = Arrays.asList(param.getPrdCd().split(","));
 
-            List<Map<String,Object>>  janClassifyList = new ArrayList();
+            List<Map<String,Object>>  janClassifyList = new ArrayList<>();
             for (String s : list) {
                 Map<String,Object> janClassCd = new HashMap<>();
                 String s1 = s.split("-")[1];

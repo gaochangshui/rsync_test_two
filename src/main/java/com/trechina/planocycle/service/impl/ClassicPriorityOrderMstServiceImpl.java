@@ -34,7 +34,6 @@ import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.ServletOutputStream;
@@ -261,16 +260,16 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         if (wirteReadFlag.equals("write")){
             priorityOrderDataForCgiDto.setDataArray(res);
         }
-        logger.info("cgiに優先順位テーブルのパラメータを保存します"+priorityOrderDataForCgiDto);
+        logger.info("cgiに優先順位テーブルのパラメータを保存します{}",priorityOrderDataForCgiDto);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         String path = resourceBundle.getString("PriorityOrderData");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         Map<String,Object> resultCgi = new HashMap<>();
         String result = cgiUtil.postCgi(path,priorityOrderDataForCgiDto,tokenInfo);
-        logger.info("taskId："+result);
+        logger.info("taskId：{}",result);
         String queryPath = resourceBundle.getString("TaskQuery");
         resultCgi =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-        logger.info("優先順位テーブル結菓の保存："+resultCgi);
+        logger.info("優先順位テーブル結菓の保存：{}",resultCgi);
         return resultCgi;
 
     }
@@ -313,7 +312,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Override
     public Map<String, Object> getPtsFileDownLoad(PriorityOrderPtsDownDto priorityOrderPtsDownDto, HttpServletResponse response,String ptsDownPath) {
 
-        logger.info("pts出力パラメータを取得する:"+priorityOrderPtsDownDto);
+        logger.info("pts出力パラメータを取得する:{}",priorityOrderPtsDownDto);
         // 从cgiつかむ取数据
         String uuid = UUID.randomUUID().toString();
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
@@ -376,7 +375,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
             sshFtpUtils sshFtp = new sshFtpUtils();
             try {
-                logger.info("ptsフルパス出力："+ptsDownPath+ptsPath.get("data").toString());
+                logger.info("ptsフルパス出力：{}",ptsDownPath+ptsPath.get("data").toString());
                 byte[] files = sshFtp.downLoafCgi(ptsDownPath+ptsPath.get("data").toString(),tokenInfo);
                 logger.info("files byte:{}",files);
                 response.setContentType("application/Octet-stream");
@@ -390,7 +389,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             }
         }
         logger.info("ダウンロード成功");
-        return null;
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
@@ -488,7 +487,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         if (!goodsRank.isEmpty()) {
             priorityOrderDataMapper.updateGoodsRank(goodsRank, companyCd, priorityOrderCd);
         }
-        if (priorityOrderMstDto.getSetSpecialFlag() == 1) {
+        if (priorityOrderMstDto.getSetSpecialFlag() != null) {
             List<Map<String, Object>> attrSpecialList = classicPriorityOrderMstAttrSortMapper.getAttrSpecialList(companyCd, priorityOrderCd);
             if (!attrSpecialList.isEmpty()){
                 HashMap<String, Object> objectObjectHashMap = new HashMap<>();
@@ -978,6 +977,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             for (int i = 0; i < adoptPtsJanList.size(); i++) {
                 Map<String, Object> ptsJan = adoptPtsJanList.get(i);
                 String jan = ptsJan.get(MagicString.JAN).toString();
+                String janOld = ptsJan.get(MagicString.JAN_OLD).toString();
                 String rankUpd = MapUtils.getInteger(ptsJan, MagicString.RANK_UPD)+"";
                 String curAttrList = ptsJan.get(MagicString.ATTR_LIST).toString();
 
@@ -993,8 +993,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         newJanList.removeIf(map->Objects.equals(MapUtils.getString(map, MagicString.JAN), jan));
                         deleteJanList.add(oldJanMap);
                     }else {
-                        if(janReplaceMap.containsKey(jan)) {
-                            String newJan = MapUtils.getString(janReplaceMap, jan);
+                        if(janReplaceMap.containsKey(janOld)) {
+                            String newJan = MapUtils.getString(janReplaceMap, janOld);
                             List<String> newRankJan = resultData.stream().filter(data -> MapUtils.getString(data, MagicString.JAN).equals(repeatOldJan.get(jan))).map(data -> MapUtils.getString(data, MagicString.RANK_UPD)).collect(Collectors.toList());
 
                             //old pts not exists and jan replace
@@ -1043,8 +1043,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         String newJan = notInPtsJanList.get(newJanIndex).get(MagicString.JAN).toString();
                         Integer newJanRank = MapUtils.getInteger(notInPtsJanList.get(newJanIndex), MagicString.RANK_UPD);
 
-                        if(janReplaceMap.containsKey(jan) && newJanRank > Integer.parseInt(rankUpd)){
-                            newJan = MapUtils.getString(janReplaceMap, jan);
+                        if(janReplaceMap.containsKey(janOld) && newJanRank > Integer.parseInt(rankUpd)){
+                            newJan = MapUtils.getString(janReplaceMap, janOld);
                             //old pts not exists and jan replace
                             String finalNewJan = newJan;
                             if (ptsJanDtoList.stream().noneMatch(map->MapUtils.getString(map, MagicString.JAN).equals(finalNewJan))&&

@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
-import com.trechina.planocycle.entity.dto.PriorityOrderDataForCgiDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanProposal;
 import com.trechina.planocycle.entity.po.ProductPowerParamVo;
@@ -26,8 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,36 +94,6 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
         return ResultMaps.result(ResultEnum.SUCCESS,priorityOrderJanProposals);
     }
 
-    /**
-     * jan変情報の保存エラーcgiからjan変提案listデータをpostgreに書く
-     * @throws IOException
-     */
-    public void janProposalData(String companyCd,Integer productPowerNo,String shelfPatternNo,Integer priorityOrderCd)  {
-            PriorityOrderDataForCgiDto priorityOrderDataForCgiDto = new PriorityOrderDataForCgiDto();
-            // 調用cgi拿jan變提案list的数据
-            String uuids = UUID.randomUUID().toString();
-            priorityOrderDataForCgiDto.setMode("priority_jan_motion");
-            priorityOrderDataForCgiDto.setGuid(uuids);
-            priorityOrderDataForCgiDto.setCompany(companyCd);
-            priorityOrderDataForCgiDto.setProductPowerNo(productPowerNo);
-            priorityOrderDataForCgiDto.setShelfPatternNo(shelfPatternNo);
-            logger.info("从cgi拿jan變提案list数据参数"+priorityOrderDataForCgiDto);
-            String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-            ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-            String path = resourceBundle.getString("PriorityOrderData");
-            String queryPath = resourceBundle.getString("TaskQuery");
-
-            String resultJan = cgiUtil.postCgi(path, priorityOrderDataForCgiDto, tokenInfo);
-            logger.info("taskId返回：" + resultJan);
-
-            Map<String, Object> dataJan = cgiUtil.postCgiLoop(queryPath, resultJan, tokenInfo);
-            logger.info("jan變提案list cgi返回数据：" + dataJan);
-            if (!dataJan.get("data").equals("[ ]")) {
-                JSONArray datasJan = (JSONArray) JSON.parse(dataJan.get("data").toString());
-
-                priorityOrderJanProposalService.savePriorityOrderJanProposal(datasJan,companyCd,priorityOrderCd);
-            }
-    }
 
     /**
      * from db

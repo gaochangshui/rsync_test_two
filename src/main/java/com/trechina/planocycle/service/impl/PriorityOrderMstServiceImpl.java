@@ -1,6 +1,5 @@
 package com.trechina.planocycle.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -35,9 +34,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -167,21 +163,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
 
 
 
-    ///**
-    // * 優先順位表cdに基づいて商品力点数表cdを取得する
-    // *
-    // * @param priorityOrderCd
-    // * @return
-    // */
-    //@Override
-    //public Map<String, Object> getProductPowerCdForPriority(Integer priorityOrderCd) {
-    //    logger.info("根据優先順位表cdつかむ取商品力点数表cd的参数{}", priorityOrderCd);
-    //    Map<String, Object> productPowerCd = priorityOrderMstMapper.selectProductPowerCd(priorityOrderCd);
-    //    logger.info("根据優先順位表cdつかむ取商品力点数表cd的返回値{}", priorityOrderCd);
-    //    return ResultMaps.result(ResultEnum.SUCCESS, productPowerCd);
-    //}
-
-
     /**
      * Productpowercdクエリに関連付けられた優先順位テーブルcd
      *
@@ -195,20 +176,6 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
     }
 
 
-
-    /**
-     * オブジェクトの重量除去に使用
-     *
-     * @param keyExtractor デウェイトが必要なプロパティ
-     * @param <T>
-     * @return
-     */
-    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        //既存のオブジェクトまたは属性を記録
-        ConcurrentSkipListMap<Object, Boolean> skipListMap = new ConcurrentSkipListMap<>();
-        //だからシーケンス化は性能を消耗するがもっと良い方法はない。
-        return t -> skipListMap.putIfAbsent(JSON.toJSONString(keyExtractor.apply(t)), Boolean.TRUE) == null;
-    }
 
 
 
@@ -260,22 +227,22 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         List<Map<String,Object>> newJanReorder = workPriorityOrderResultDataMapper.getNewJanProductReorder(companyCd, authorCd,
                 workPriorityOrderMst.getProductPowerCd(), priorityOrderCd,tableName,proTableName,zokuseiMsts,allCdList);
         Map<String, List<Map<String, Object>>> ptsJan = reorder.stream().collect(Collectors.groupingBy(map -> {
-            String attrKey = "";
+            StringBuilder attrKey = new StringBuilder();
             for (Map<String, Object> col : attrCol) {
-                attrKey += map.get("zokusei" + col.get("zokusei_col"));
+                attrKey.append(map.get("zokusei" + col.get("zokusei_col")));
             }
 
-            return attrKey;
+            return attrKey.toString();
         }));
         Map<String, List<Map<String, Object>>> newJan = newJanReorder.stream().collect(Collectors.groupingBy(map -> {
-            String attrKey = "";
+            StringBuilder attrKey = new StringBuilder();
             for (Map<String, Object> col : attrCol) {
-                attrKey += map.get("zokusei" + col.get("zokusei_col"));
+                attrKey.append(map.get("zokusei" + col.get("zokusei_col")));
             }
 
-            return attrKey;
+            return attrKey.toString();
         }));
-        Set<Map<String,Object>> set = new HashSet();
+        Set<Map<String,Object>> set = new HashSet<>();
         for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : ptsJan.entrySet()) {
             for (Map.Entry<String, List<Map<String, Object>>> listEntry : newJan.entrySet()) {
                 if (stringListEntry.getKey().equals(listEntry.getKey())){
@@ -529,16 +496,16 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
             String zokuseiNm = Joiner.on(",").join(attrList1.stream().map(map3 -> MapUtils.getString(map3, "zokusei_nm")).collect(Collectors.toList()));
             String janHeader = ptsDetailData.getJanHeader()+",商品名,"+zokuseiNm+",幅,高,奥行";
             ptsDetailData.setJanHeader(janHeader);
-            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu" ;
+            StringBuilder s = new StringBuilder("taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu");
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
-                s = s+",faceDisplayflg,facePosition,depthDisplayNum";
+                s.append(",faceDisplayflg,facePosition,depthDisplayNum");
             }
-            s+=",janName";
+            s.append(",janName");
             for (Map<String, Object> map1 : attrCol) {
-                s=s+","+map1.get("zokusei_colcd");
+                s.append(",").append(map1.get("zokusei_colcd"));
             }
-            s = s + ",plano_width,plano_height,plano_depth";
-            ptsDetailData.setJanColumns(s);
+            s.append(",plano_width,plano_height,plano_depth");
+            ptsDetailData.setJanColumns(s.toString());
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
             ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(workPriorityOrderMst.getShelfPatternCd().intValue()));
@@ -641,9 +608,9 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
         if(orderNameCount>0){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
-        Map<String, Object> objectMap = priorityOrderMstService.saveAllWorkPriorityOrder(priorityOrderMstVO);
+        return priorityOrderMstService.saveAllWorkPriorityOrder(priorityOrderMstVO);
 
-        return objectMap;
+
     }
 
     /**

@@ -35,4 +35,6 @@ public interface CommodityScoreDataService {
                                                     String[] customerCd);
 
     Map<String, Object> getJanAttrValueList(String attrList);
+
+     void setProductParam(Map<String, Object> map, Integer productPowerCd, String companyCd, String authorCd, String customerConditionStr, String prodAttrData, String singleJan);
 }

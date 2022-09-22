@@ -43,7 +43,6 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -152,7 +151,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 zokuseiMsts, cdList, sizeAndIrisuMap, proInfoTb);
         classifyList = this.updateJanSizeByMap(classifyList);
         classifyList.forEach(item->{
-            item.put("width", MapUtils.getLong(item,"width", MagicString.DEFAULT_WIDTH)*MapUtils.getInteger(item, "faceCount", 1));
+            item.put(MagicString.WIDTH, MapUtils.getLong(item,MagicString.WIDTH, MagicString.DEFAULT_WIDTH)*MapUtils.getInteger(item, "faceCount", 1));
         });
 
         basicMapperMapper.delete(priorityOrderCd, companyCd);
@@ -199,7 +198,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             List<Map<String, Object>> newJans = new ArrayList<>();
             for (int i = 0; i < jans.size(); i++) {
                 Map<String, Object> janMap = jans.get(i);
-                double width = MapUtils.getDouble(janMap, "width");
+                double width = MapUtils.getDouble(janMap, MagicString.WIDTH);
                 StringBuilder key = new StringBuilder();
                 for (Integer zokusei : zokuseiList) {
                     if(key.length()>0){
@@ -254,7 +253,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             }
 
             newJans.stream().forEach(map->{
-                map.put("tanaPosition", index[0]);
+                map.put(MagicString.TANA_POSITION, index[0]);
                 index[0]++;
             });
             if(!newJans.isEmpty()){
@@ -350,8 +349,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 if (Objects.equals(MapUtils.getInteger(priorityOrderResultDataDto, "faceKaiten", 0), MapUtils.getInteger(map,"faceKaiten")) &&
                         Objects.equals(MapUtils.getInteger(priorityOrderResultDataDto, "faceMen", 1), MapUtils.getInteger(map,"faceMen"))
                 ){
-                    priorityOrderResultDataDto.put("width", priorityOrderResultDataDto.get("plano"+
-                            map.getOrDefault("planoWidth", "width").toString().substring(0,1).toUpperCase()+map.getOrDefault("planoWidth", "width").toString().substring(1)));
+                    priorityOrderResultDataDto.put(MagicString.WIDTH, priorityOrderResultDataDto.get("plano"+
+                            map.getOrDefault("planoWidth", MagicString.WIDTH).toString().substring(0,1).toUpperCase()+map.getOrDefault("planoWidth", MagicString.WIDTH).toString().substring(1)));
                     priorityOrderResultDataDto.put("height", priorityOrderResultDataDto.get("plano"+
                             map.getOrDefault("planoHeight", "height").toString().substring(0,1).toUpperCase()+map.getOrDefault("planoHeight", "height").toString().substring(1)));
                     priorityOrderResultDataDto.put("depth", priorityOrderResultDataDto.get("plano"+
@@ -373,7 +372,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             Future future = (Future) o;
             future.cancel(true);
             vehicleNumCache.remove(taskKey);
-            if(future.isCancelled()){
+            if(future.isCancelled() || future.isDone()){
                 String cgiKey = MessageFormat.format(MagicString.TASK_KEY_CGI, taskId);
                 if(vehicleNumCache.get(cgiKey)!=null){
                     Future f = (Future) vehicleNumCache.get(taskKey+"2");
@@ -518,7 +517,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 itemMap.put("groupCd",groupCd);
                 itemMap.put("groupName",groupName);
                 itemMap.remove("json");
-                itemMap.put("tanaPosition", MapUtils.getString(itemMap, "areaPosition"));
+                itemMap.put(MagicString.TANA_POSITION, MapUtils.getString(itemMap, "areaPosition"));
                 itemMap.put(MagicString.RESTRICT_CD, MapUtils.getInteger(itemMap, MagicString.RESTRICT_CD, MagicString.NO_RESTRICT_CD.intValue()));
                 groups.add(itemMap);
                 resultMap.put("groups", groups);
@@ -536,7 +535,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     public Map<String, Object> autoCalculation(String companyCd, Integer priorityOrderCd, Integer partition, Integer heightSpace,
                                                Integer tanaWidthCheck) {
         String authorCd = session.getAttribute("aud").toString();
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         String uuid = UUID.randomUUID().toString();
         Integer finalHeightSpace = heightSpace;
         Future<?> future = executor.submit(() -> {
@@ -651,14 +649,11 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 logger.error("auto calculation is error", e);
                 vehicleNumCache.put(uuid,2);
                 vehicleNumCache.put(uuid+"-error",JSON.toJSONString(e));
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             }
         });
         vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, uuid),future);
-        try {
             return ResultMaps.result(ResultEnum.SUCCESS,uuid);
-        } catch (CancellationException e) {
-            return ResultMaps.result(202, "canceled");
-        }
     }
 
     private boolean interruptThread(String taskId, String step){
@@ -688,7 +683,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
             newRelationMap.addAll(relationMapList);
         }
-        newRelationMap = newRelationMap.stream().sorted(Comparator.comparing(map->MapUtils.getInteger(map, "tanaPosition")))
+        newRelationMap = newRelationMap.stream().sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TANA_POSITION)))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TANA_CD)))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TAI_CD))).collect(Collectors.toList());
         String s = JSON.toJSONString(relationMap);
@@ -749,7 +744,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     }
 
     @Override
-    public Map<String, Object> autoTaskId(String taskId) throws InterruptedException {
+    public Map<String, Object> autoTaskId(String taskId) {
         final Map<String, Object>[] resultMap = new Map[]{null};
         LocalDateTime now = LocalDateTime.now();
         while (true) {
@@ -804,7 +799,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         return resultMap[0];
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> preCalculation(String companyCd, Long patternCd, Integer priorityOrderCd) {
         Integer unused = restrictRelationMapper.selectUnusedTaiTana(priorityOrderCd);
@@ -856,7 +850,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
         if (this.interruptThread(uuid, "7")) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return;
         }
     }
 }
