@@ -241,7 +241,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         return 0;
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void autoDetect(String companyCd,Integer priorityAllCd,Integer shelfPatternCd,Integer priorityOrderCd,String aud) {
