@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -162,7 +163,7 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderJanProposal(List<PriorityOrderJanProposal> priorityOrderJanProposal) {
-        logger.info("jan変提案listのパラメータを修正する："+priorityOrderJanProposal);
+        logger.info("jan変提案listのパラメータを修正する：{}",priorityOrderJanProposal);
         try {
             dataConverUtils dataConverUtil = new dataConverUtils();
             String companyCd = priorityOrderJanProposal.get(0).getCompanyCd();
@@ -170,15 +171,12 @@ public class ClassicPriorityOrderJanProposalServiceImpl implements ClassicPriori
 
             List<PriorityOrderJanProposal> proposals = dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderJanProposal.class,
                     priorityOrderJanProposal,companyCd,priorityOrderCd);
-            logger.info("jan変提案listの処理完了後のパラメータを修正する："+proposals);
+            logger.info("jan変提案listの処理完了後のパラメータを修正する：{}",proposals);
             priorityOrderJanProposalMapper.updateByPrimaryKey(proposals);
-
-            // 変更後にメインテーブルに反映
-            //priorityOrderDataMapper.updatePriorityOrderDataForProp(companyCd,priorityOrderCd,
-            //        "public.priorityorder"+session.getAttribute("aud").toString());
             return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
-            logger.info("jan変更提案listエラーの修正："+e);
+            logger.info("jan変更提案listエラーの修正：",e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultMaps.result(ResultEnum.FAILURE);
         }
     }

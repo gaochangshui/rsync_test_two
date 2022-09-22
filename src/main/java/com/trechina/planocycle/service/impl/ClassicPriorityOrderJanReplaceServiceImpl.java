@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
-import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanCard;
-import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanReplace;
 import com.trechina.planocycle.entity.po.PriorityOrderJanReplace;
 import com.trechina.planocycle.entity.po.ProductPowerParamVo;
 import com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanReplaceVO;
@@ -16,7 +14,6 @@ import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.dataConverUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +23,6 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorityOrderJanReplaceService {
@@ -84,7 +80,7 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderJanInfo(List<PriorityOrderJanReplace> priorityOrderJanReplace) {
-        logger.info("jan変の情報パラメータを保存する："+priorityOrderJanReplace);
+        logger.info("jan変の情報パラメータを保存する：{}",priorityOrderJanReplace);
         // 取得したパラメータは1行目に企業と順位テーブルcdがあるだけで、パラメータを巡回し、すべての行に値を割り当てる必要があります。
         try{
             String companyCd = priorityOrderJanReplace.get(0).getCompanyCd();
@@ -94,7 +90,7 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
             List<PriorityOrderJanReplace> jan =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderJanReplace.class,priorityOrderJanReplace,
                     companyCd ,priorityOrderCd);
 
-            logger.info("jan変の情報を保存して処理した後のパラメータ："+jan);
+            logger.info("jan変の情報を保存して処理した後のパラメータ：{}",jan);
             // check
 
             PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
@@ -139,40 +135,7 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
         }
     }
 
-    private List<String> checkIsJanOldReplace(List<ClassicPriorityOrderJanReplace> priorityOrderJanReplace, String companyCd, Integer priorityOrderCd){
-        List<ClassicPriorityOrderJanCard> priorityOrderJanCardList = priorityOrderJanReplace.stream().map(jan -> {
-            ClassicPriorityOrderJanCard priorityOrderJanCard = new ClassicPriorityOrderJanCard();
-            BeanUtils.copyProperties(jan, priorityOrderJanCard);
-            return priorityOrderJanCard;
-        }).collect(Collectors.toList());
-        List<String> janOldList = priorityOrderJanReplace.stream().map(ClassicPriorityOrderJanReplace::getJanOld).collect(Collectors.toList());
 
-        List<String> existJanNew = priorityOrderJanCardMapper.checkJanNew(priorityOrderJanCardList);
-        List<String> existJanReplace =  priorityOrderJanReplaceMapper.existJanNew(janOldList, companyCd);
-        List<String> existJanMust = priorityOrderJanCardMapper.checkJanMust(priorityOrderJanCardList);
-
-        List<String> existJan = new ArrayList<>();
-        existJan.addAll(existJanNew);
-        existJan.addAll(existJanReplace);
-        existJan.addAll(existJanMust);
-
-        return existJan;
-    }
-
-    private List<String> checkIsJanNewReplace(List<PriorityOrderJanReplace> priorityOrderJanReplace, String companyCd, Integer priorityOrderCd){
-        List<String> janNewList = priorityOrderJanReplace.stream().map(PriorityOrderJanReplace::getJanNew).collect(Collectors.toList());
-
-        List<String> existJanNew = priorityOrderJanCardMapper.existJan(janNewList, companyCd, priorityOrderCd);
-        List<String> existJanReplace =  priorityOrderJanReplaceMapper.existJanNew(janNewList, companyCd);
-        List<String> existJanNot = priorityOrderCommodityNotMapper.existJan(janNewList, companyCd, priorityOrderCd);
-
-        List<String> existJan = new ArrayList<>();
-        existJan.addAll(existJanNew);
-        existJan.addAll(existJanReplace);
-        existJan.addAll(existJanNot);
-
-        return existJan;
-    }
     @Override
     public String getJanInfo(String proInfoTable) {
         return priorityOrderJanReplaceMapper.selectJanDistinct(proInfoTable);

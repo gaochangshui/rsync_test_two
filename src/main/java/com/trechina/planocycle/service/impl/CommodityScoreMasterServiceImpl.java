@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
@@ -65,7 +66,6 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
     public Map<String,Object> getEnterpriseInfo() {
         String authorCd = session.getAttribute("aud").toString();
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("CompanyList");
 
         String companys = session.getAttribute("inCharge").toString();
         List<String> companyList = Arrays.asList(companys.split(","));
@@ -154,6 +154,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean delSmartData(ProductPowerParamMst productPowerParamMst) {
         String authorCd = session.getAttribute("aud").toString();
         String authorName = (String) session.getAttribute("aud");
@@ -175,6 +176,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
             productPowerDataMapper.deleteRankData(productPowerParamMst.getConpanyCd(),productPowerParamMst.getProductPowerCd(),authorCd);
         } catch (Exception e) {
             logger.error("削除に失敗しました");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
         return true;
 
