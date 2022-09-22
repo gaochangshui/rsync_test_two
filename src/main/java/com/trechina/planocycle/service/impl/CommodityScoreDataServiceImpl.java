@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
@@ -151,6 +152,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                                 janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd,shelfPts,storeCd);
                         List<Map<String, Object>> resultData = new ArrayList<>();
 
+
+
                         resultData.add(colMap);
                         resultData.addAll(allData);
 
@@ -178,7 +181,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         if("9".equals(vehicleNumCache.get(taskID))){
             List<Map<String, Object>> o = (List<Map<String, Object>>) vehicleNumCache.get(taskID + ",data");
-            if (o.isEmpty()){
+            if (o.size()<=1){
                 return ResultMaps.result(ResultEnum.SIZEISZERO);
             }
 
@@ -208,17 +211,13 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String companyCd = map.get("company").toString();
         String commonPartsData = map.get("commonPartsData").toString();
         Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
-        //mst
-        Date date = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
-        productPowerMstMapper.deleteWork(companyCd,productPowerCd);
-        productPowerMstMapper.setWork(productPowerCd,companyCd,authorCd,simpleDateFormat.format(date));
+
         //param
         String customerConditionStr = map.get("customerCondition").toString();
         String prodAttrData = map.get("prodAttrData").toString();
         String singleJan = new Gson().toJson(map.get("singleJan"));
-        productPowerParamMstMapper.deleteWork(companyCd,productPowerCd);
-        productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr,prodAttrData,singleJan);
+
+        this.setProductParam(map,productPowerCd,companyCd,authorCd,customerConditionStr,prodAttrData,singleJan);
         map.put("basketFlg",Integer.parseInt(map.get("showItemCheck").toString()) == 1?1:0);
         map.remove("showItemCheck");
         if (paramCount >0){
@@ -239,13 +238,13 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         map.put("filterJanlist",janList.get("listDisparitStr"));
         map.put("excjanFlg",janList.get("janExclude"));
         map.remove("singleJan");
-        String company_kokigyou = planocycleKigyoListMapper.getGroupInfo(companyCd);
+        String companyKokigyou = planocycleKigyoListMapper.getGroupInfo(companyCd);
         if (map.get("prdCd").equals("")) {
             map.put("prdCd",null);
         }
         //グループ企業かどうかを判断する
-        if (company_kokigyou!=null){
-            map.put("company_kokigyou",company_kokigyou);
+        if (companyKokigyou!=null){
+            map.put("company_kokigyou",companyKokigyou);
         }else {
             map.put("company_kokigyou",companyCd+"_"+companyCd);
         }
@@ -305,13 +304,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("調用cgiつかむ取data的参数：{}", map);
 
-        //yobi
-        productPowerDataMapper.deleteWKYobiiitern(authorCd, companyCd,productPowerCd);
-        productPowerDataMapper.deleteWKYobiiiternData(authorCd, companyCd,productPowerCd);
-        //顧客データ
-        productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd,productPowerCd);
-        productPowerDataMapper.deleteWKSyokika(companyCd, authorCd,productPowerCd);
-        productPowerDataMapper.deleteWKIntage(companyCd, authorCd,productPowerCd);
+
 
         uuid1 = UUID.randomUUID().toString();
         Map<String,Object> posMap = new HashMap();
@@ -396,6 +389,24 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         logger.info("taskId返回：{}", result);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void setProductParam(Map<String, Object> map, Integer productPowerCd, String companyCd, String authorCd, String customerConditionStr, String prodAttrData, String singleJan) {
+        //mst
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        productPowerMstMapper.deleteWork(companyCd,productPowerCd);
+        productPowerMstMapper.setWork(productPowerCd,companyCd,authorCd,simpleDateFormat.format(date));
+        productPowerParamMstMapper.deleteWork(companyCd,productPowerCd);
+        productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr,prodAttrData,singleJan);
+        //yobi
+        productPowerDataMapper.deleteWKYobiiitern(authorCd, companyCd,productPowerCd);
+        productPowerDataMapper.deleteWKYobiiiternData(authorCd, companyCd,productPowerCd);
+        //顧客データ
+        productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd,productPowerCd);
+        productPowerDataMapper.deleteWKSyokika(companyCd, authorCd,productPowerCd);
+        productPowerDataMapper.deleteWKIntage(companyCd, authorCd,productPowerCd);
     }
 
     private Map<String, Object> janList(Map<String, Object> map) {

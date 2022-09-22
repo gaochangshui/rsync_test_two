@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
@@ -139,6 +140,7 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
         } catch (Exception e) {
             logger.info("保存card商品list報錯：",e);
             logAspect.setTryErrorLog(e,new Object[]{priorityOrderJanCard});
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultMaps.result(ResultEnum.FAILURE);
         }
 

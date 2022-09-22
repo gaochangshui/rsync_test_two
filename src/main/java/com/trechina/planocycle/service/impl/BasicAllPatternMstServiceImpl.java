@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
@@ -49,10 +50,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     @Autowired
     private ShelfPtsDataMapper shelfPtsDataMapper;
     @Autowired
-    private PriorityOrderRestrictResultMapper priorityOrderRestrictResultMapper;
-    @Autowired
-    private ShelfPtsDataTanamstMapper shelfPtsDataTanamstMapper;
-    @Autowired
     private WorkPriorityAllRestrictRelationMapper workPriorityAllRestrictRelationMapper;
     @Value("${skuPerPattan}")
     private Long skuCountPerPattan;
@@ -62,8 +59,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     private ProductPowerMstMapper productPowerMstMapper;
     @Autowired
     private WorkPriorityAllRestrictMapper workPriorityAllRestrictMapper;
-    @Autowired
-    private PriorityOrderMstService priorityOrderMstService;
     @Autowired
     private PriorityAllPtsService priorityAllPtsService;
     @Autowired
@@ -81,8 +76,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
     @Autowired
     private WorkPriorityAllRestrictRelationMapper restrictRelationMapper;
-    @Autowired
-    private WorkPriorityOrderMstMapper workPriorityOrderMstMapper;
     @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
@@ -242,12 +235,14 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         } catch (Exception e) {
             logger.error("全patternの保存に失敗しました:{}",e.getMessage());
             logAspect.setTryErrorLog(e,new Object[]{priorityAllSaveDto});
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return 1;
         }
         return 0;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void autoDetect(String companyCd,Integer priorityAllCd,Integer shelfPatternCd,Integer priorityOrderCd,String aud) {
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrListFinal(companyCd, priorityOrderCd);
         PriorityOrderAttrDto priorityOrderAttrDto = priorityOrderMstMapper.getCommonPartsData(companyCd, priorityOrderCd);
