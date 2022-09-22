@@ -24,8 +24,4 @@ public class MstJanParamController {
         return mstJanParamService.getAttributeTree(janParamVO);
     }
 
-    @PostMapping("/getMaintenanceItem")
-    public Map<String,Object> getMaintenanceItem(){
-        return mstJanParamService.getMaintenanceItem();
-    }
 }

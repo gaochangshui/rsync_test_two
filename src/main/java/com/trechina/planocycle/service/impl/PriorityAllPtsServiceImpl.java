@@ -140,7 +140,9 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
                     finalPositionResultData.addAll(changeJanList);
                 }
 
-                int currentTai=0, currentTana=0, currentTanaPosition=1;
+                int currentTai=0;
+                int currentTana=0;
+                int currentTanaPosition=1;
                 for (int i = 0; i < finalPositionResultData.size(); i++) {
                     PriorityOrderResultDataDto positionResultDatum = finalPositionResultData.get(i);
 
@@ -180,18 +182,18 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             String zokuseiNm = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "zokusei_nm")).collect(Collectors.toList()));
             String janHeader = ptsDetailData.getJanHeader()+","+"備考"+",商品名,"+zokuseiNm+",幅,高,奥行";
             ptsDetailData.setJanHeader(janHeader);
-            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu" ;
+            StringBuilder s = new StringBuilder("taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu");
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
-                s = s+",faceDisplayflg,facePosition,depthDisplayNum,remarks";
+                s.append(",faceDisplayflg,facePosition,depthDisplayNum,remarks");
             }else {
-                s = s+",remarks";
+                s.append(",remarks");
             }
-            s += ",janName";
+            s.append(",janName");
             for (Map<String, Object> map : attrCol) {
-                s=s+","+map.get("zokusei_colcd");
+                s.append(",").append(map.get("zokusei_colcd"));
             }
-            s = s + ",plano_width,plano_height,plano_depth";
-            ptsDetailData.setJanColumns(s);
+            s.append(",plano_width,plano_height,plano_depth");
+            ptsDetailData.setJanColumns(s.toString());
             ptsDetailData.setTanaHeader(ptsDetailData.getTanaHeader()+","+"備考");
 
             String proTableName = MessageFormat.format(MagicString.PROD_JAN_INFO, MagicString.SPECIAL_SCHEMA_CD, MagicString.FIRST_CLASS_CD);

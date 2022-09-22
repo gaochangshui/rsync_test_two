@@ -115,15 +115,15 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             String[] ptsKeyList = shelfPtsData.getFileName().split("_");
             logger.info("戻るptskey：{}", ptsKeyList);
 
-            String ptsKey = "";
+            StringBuilder ptsKey = new StringBuilder();
             if (ptsKeyList.length > 3) {
                 for (int i = 0; i < 4; i++) {
-                    ptsKey += ptsKeyList[i] + "_";
+                    ptsKey.append(ptsKeyList[i]).append("_");
                 }
             } else {
-                ptsKey = "__";
+                ptsKey = new StringBuilder("__");
             }
-            logger.info("手動で組み合わせたptskey：{}", ptsKey);
+            logger.info("手動で組み合わせたptskey：{}", ptsKey.toString());
             List<Integer> patternIdList = shelfPatternService.getpatternIdOfFilename(shelfPtsDto.getFileName(),shelfPtsDto.getCompanyCd());
             logger.info("組み合わせのptskeyによってpatternidを探します：{}", patternIdList);
             if (!patternIdList.isEmpty()) {
@@ -364,16 +364,16 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             String zokuseiNm = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "zokusei_nm","")).collect(Collectors.toList()));
             String janHeader = ptsDetailData.getJanHeader()+",商品名,"+zokuseiNm+",幅,高,奥行";
             ptsDetailData.setJanHeader(janHeader);
-            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu" ;
+            StringBuilder s = new StringBuilder("taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu");
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
-                s = s+",faceDisplayflg,facePosition,depthDisplayNum";
+                s.append(",faceDisplayflg,facePosition,depthDisplayNum");
             }
-            s+=",janName";
+            s.append(",janName");
             for (Map<String, Object> map : attrCol) {
-                s=s+","+map.get("zokusei_colcd");
+                s.append(",").append(map.get("zokusei_colcd"));
             }
-            s = s + ",plano_width,plano_height,plano_depth";
-            ptsDetailData.setJanColumns(s);
+            s.append(",plano_width,plano_height,plano_depth");
+            ptsDetailData.setJanColumns(s.toString());
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getTaiNum(patternCd));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getTanaNum(patternCd));
             ptsDetailData.setFaceNum(shelfPtsDataMapper.getFaceNum(patternCd));
@@ -483,11 +483,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(fileName, "utf-8"));
         response.setHeader("Content-Disposition", format);
 
-        //EXcelが文字化けしを開く問題を解決するために
-//        byte[] bom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-//        writer.write(new String(bom));
-//        writer.flush();
-
         this.generateCsv(shelfPtsDataVersion, shelfPtsDataTaimst, shelfPtsDataTanamst, shelfPtsDataJandata, writer);
     }
 
@@ -527,57 +522,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         } catch (IOException e) {
             logger.error("", e);
         }
-    }
-    /**
-     * ptsデータを一時テーブルに保存
-     * @param companyCd
-     * @param authorCd
-     * @param priorityOrderCd
-     */
-    @Override
-    public void saveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, int isReOrder) {
-//        WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-//        Long shelfPatternCd = workPriorityOrderMst.getShelfPatternCd();
-//
-//        //採用された商品をすべて検索し、棚順に並べ替え、棚上の商品の位置をマークする
-//        List<WorkPriorityOrderResultDataDto> workPriorityOrderResultData = workPriorityOrderResultDataMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
-//        List<WorkPriorityOrderResultDataDto> positionResultData = commonMstService.calculateTanaPosition(workPriorityOrderResultData, isReOrder);
-//
-//        //既存の新しいptsを検出し,削除してから保存する
-//        //新しいptsにデータがあるptsCd
-//        ShelfPtsData shelfPtsData = shelfPtsDataMapper.selectWorkPtsCdByAuthorCd(companyCd, authorCd, priorityOrderCd, shelfPatternCd);
-//        //テンポラリ・テーブルのptscd
-//        Integer ptsCd = shelfPtsDataMapper.getPtsCd(shelfPatternCd.intValue());
-//
-//        PriorityOrderPtsDataDto priorityOrderPtsDataDto = PriorityOrderPtsDataDto.PriorityOrderPtsDataDtoBuilder.aPriorityOrderPtsDataDto()
-//                .withPriorityOrderCd(priorityOrderCd)
-//                .withOldPtsCd(ptsCd)
-//                .withCompanyCd(companyCd)
-//                .withAuthorCd(authorCd).build();
-//
-//        if(Optional.ofNullable(shelfPtsData).isPresent()){
-//            Integer oldPtsCd = shelfPtsData.getId();
-//            shelfPtsDataMapper.deletePtsData(oldPtsCd);
-//            shelfPtsDataMapper.deletePtsTaimst(oldPtsCd);
-//            shelfPtsDataMapper.deletePtsTanamst(oldPtsCd);
-//            shelfPtsDataMapper.deletePtsVersion(oldPtsCd);
-//            shelfPtsDataMapper.deletePtsDataJandata(oldPtsCd);
-//        }
-//
-//        ShelfPtsDataVersion shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
-//        String modeName = shelfPtsDataVersion.getModename();
-//        //modeNameはptsをダウンロードするファイル名として
-//        priorityOrderPtsDataDto.setFileName(modeName+"_new.csv");
-//        //既存のptsからデータをクエリーする
-//        shelfPtsDataMapper.insertPtsData(priorityOrderPtsDataDto);
-//        Integer id = priorityOrderPtsDataDto.getId();
-//        shelfPtsDataMapper.insertPtsTaimst(ptsCd, id, authorCd);
-//        shelfPtsDataMapper.insertPtsTanamst(ptsCd, id, authorCd);
-//        shelfPtsDataMapper.insertPtsVersion(ptsCd, id, authorCd);
-//
-//        if (!positionResultData.isEmpty()) {
-//            shelfPtsDataMapper.insertPtsDataJandata(positionResultData, id, companyCd, authorCd);
-//        }
     }
 
     @Override
@@ -625,7 +569,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                     finalPositionResultData.addAll(changeJanList);
                 }
 
-                int currentTai=0, currentTana=0, currentTanaPosition=1;
+                int currentTai=0;
+                int currentTana=0;
+                int currentTanaPosition=1;
                 for (int i = 0; i < finalPositionResultData.size(); i++) {
                     PriorityOrderResultDataDto positionResultDatum = finalPositionResultData.get(i);
 
@@ -766,18 +712,18 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             String zokuseiNm = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "zokusei_nm")).collect(Collectors.toList()));
             String janHeader = ptsDetailData.getJanHeader()+","+"備考"+",商品名,"+zokuseiNm+",幅,高,奥行";
             ptsDetailData.setJanHeader(janHeader);
-            String s = "taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu," ;
+            StringBuilder s = new StringBuilder("taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu,");
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
-               s = s+"faceDisplayflg,facePosition,depthDisplayNum,remarks";
+               s.append("faceDisplayflg,facePosition,depthDisplayNum,remarks");
             }else {
-                s = s+"remarks";
+                s.append("remarks");
             }
-            s+= ",janName";
+            s.append(",janName");
             for (Map<String, Object> map : attrCol) {
-                s=s+","+map.get("zokusei_colcd");
+                s.append(",").append(map.get("zokusei_colcd"));
             }
-            s = s + ",plano_width,plano_height,plano_depth";
-            ptsDetailData.setJanColumns(s);
+            s.append(",plano_width,plano_height,plano_depth");
+            ptsDetailData.setJanColumns(s.toString());
             ptsDetailData.setTanaHeader(ptsDetailData.getTanaHeader()+","+"備考");
             ptsDetailData.setTaiNum(shelfPtsDataMapper.getNewTaiNum(priorityOrderCd));
             ptsDetailData.setTanaNum(shelfPtsDataMapper.getNewTanaNum(priorityOrderCd));

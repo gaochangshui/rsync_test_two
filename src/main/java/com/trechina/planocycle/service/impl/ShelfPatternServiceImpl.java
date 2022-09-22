@@ -4,11 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Sets;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
-import com.trechina.planocycle.entity.dto.ShelfPatternBranchDto;
 import com.trechina.planocycle.entity.dto.ShelfPatternDto;
 import com.trechina.planocycle.entity.po.ShelfPatternBranch;
 import com.trechina.planocycle.entity.po.ShelfPatternMst;
-import com.trechina.planocycle.entity.vo.*;
+import com.trechina.planocycle.entity.vo.ShelfNamePatternVo;
+import com.trechina.planocycle.entity.vo.ShelfPatternBranchVO;
+import com.trechina.planocycle.entity.vo.ShelfPatternNameVO;
+import com.trechina.planocycle.entity.vo.ShelfPatternTreeVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.ShelfNameMstMapper;
@@ -19,20 +21,13 @@ import com.trechina.planocycle.service.ShelfPatternAreaService;
 import com.trechina.planocycle.service.ShelfPatternService;
 import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,7 +56,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     public Map<String, Object> getShelfPatternInfo(String companyCd) {
         logger.info("棚pattern情報のパラメータの取得：{}",companyCd);
         List<ShelfPatternMst> resultInfo = shelfPatternMstMapper.selectByPrimaryKey(companyCd);
-        List<String> commonPartsDataList = resultInfo.stream().distinct().map(map -> map.getCommonPartsData()).collect(Collectors.toList());
+        List<String> commonPartsDataList = resultInfo.stream().distinct().map(ShelfPatternMst::getCommonPartsData).collect(Collectors.toList());
         List<String> list = new ArrayList<>();
         for (String s : commonPartsDataList) {
             GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(s, companyCd);
@@ -145,7 +140,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         logger.info("棚pattern情報のパラメータの変更：{}",shelfPatternDto);
         // 名称check 同一个棚名称棚パータン名唯一
         Integer resultNum = shelfPatternMstMapper.selectDistinctName(shelfPatternDto);
-        if (!shelfPatternDto.getShelfPatternCd().equals(resultNum)){
+        if (!shelfPatternDto.getShelfPatternCd().equals(resultNum) && resultNum != null){
             return ResultMaps.result(ResultEnum.NAMEISEXISTS);
         }
         //削除するコレクション
@@ -316,7 +311,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> delShelfPatternInfo(JSONObject jsonObject) {
-        logger.info("削除棚pattern的参数：{}",jsonObject.toString());
+        logger.info("削除棚pattern的参数：{}",jsonObject);
         if (((Map) jsonObject.get("param")).get("id")!=null ){
             Integer id = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("id")));
             //作成者cdの取得
@@ -387,7 +382,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
 
         String authorCd = session.getAttribute("aud").toString();
         shelfPatternMstMapper.setPatternList(shelfPatternDto,companyCd,authorCd);
-        List<ShelfPatternBranch> branchList = new ArrayList();
+        List<ShelfPatternBranch> branchList = new ArrayList<>();
         for (ShelfPatternDto patternDto : shelfPatternDto) {
             ShelfPatternBranch shelfPatternBranch= null;
             for (String cd : patternDto.getStoreCd()) {
@@ -430,106 +425,4 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
     }
 
 
-    void excelUtil(List<ShelfPatternMst> patternDataList,List<ShelfPatternBranch> patternBranch,List<ShelfNameDataVO> shelfNameList ,List<ShelfPatternBranchDto> BranchList ,HttpServletResponse response){
-        int rowIndex = 0;
-        String[] patternHeader = {"ID","棚パターン名称","ptskey","棚名称ID","棚名称","1","2"};
-        String[] relevancyBranchHeader = {"棚パターン名称","店舗番号"};
-        String [] shelfName = {"棚名称ID","棚名称"};
-        String [] branchHeader = {"店舗番号","店舗名"};
-
-        try(XSSFWorkbook workbook = new XSSFWorkbook()){
-            XSSFCellStyle cellStyle = workbook.createCellStyle();
-            cellStyle.setLocked(true);
-            XSSFSheet sheet1 = workbook.createSheet();
-            sheet1.protectSheet("123");
-            XSSFSheet sheet2 = workbook.createSheet();
-
-            XSSFSheet sheet3 = workbook.createSheet();
-            XSSFSheet sheet4 = workbook.createSheet();
-            workbook.setSheetName(0,"棚パターン");
-            workbook.setSheetName(1,"棚パターン&店舗");
-            workbook.setSheetName(2,"棚名称");
-            workbook.setSheetName(3,"店舗");
-
-            //棚パターン
-            if (rowIndex == 0) {
-                XSSFRow row = sheet1.createRow(rowIndex);
-                for (int i = 0; i < patternHeader.length; i++) {
-                    row.createCell(i).setCellValue(patternHeader[i]);
-
-                }
-                rowIndex++;
-            }
-            for (ShelfPatternMst patternMst : patternDataList) {
-                XSSFRow row = sheet1.createRow(rowIndex);
-                int sellIndex = 0;
-
-                row.createCell(sellIndex++).setCellValue(patternMst.getShelfPatternCd());
-                row.createCell(sellIndex++).setCellValue(patternMst.getShelfPatternName());
-                row.createCell(sellIndex++).setCellValue(patternMst.getPtsRelationID());
-                row.createCell(sellIndex++).setCellValue(patternMst.getShelfName());
-                row.createCell(sellIndex++).setCellValue(patternMst.getShelfNameCd());
-                row.createCell(sellIndex++).setCellValue(patternMst.getAuthorCd());
-                row.createCell(sellIndex++).setCellValue(patternMst.getCreateTime());
-                rowIndex++;
-            }
-            //棚パターン&店舗
-            rowIndex = 0;
-            XSSFRow row = sheet2.createRow(rowIndex);
-            for (int i = 0; i < relevancyBranchHeader.length; i++) {
-                row.createCell(i).setCellValue(relevancyBranchHeader[i]);
-                rowIndex++;
-            }
-            for (ShelfPatternBranch branch : patternBranch) {
-                int sellIndex = 0;
-                row = sheet2.createRow(rowIndex);
-                row.createCell(sellIndex++).setCellValue(branch.getShelfPatternCd());
-                row.createCell(sellIndex++).setCellValue(branch.getBranch());
-                rowIndex++;
-            }
-            rowIndex = 0;
-            //棚名称
-             row = sheet3.createRow(rowIndex);
-            for (int i = 0; i < shelfName.length; i++) {
-
-                row.createCell(i).setCellValue(shelfName[i]);
-            }
-            rowIndex ++;
-            for (ShelfNameDataVO shelfNameDataVO : shelfNameList) {
-                int sellIndex = 0;
-
-                 row = sheet3.createRow(rowIndex);
-                row.createCell(sellIndex++).setCellValue(shelfNameDataVO.getId());
-                row.createCell(sellIndex++).setCellValue(shelfNameDataVO.getShelfName());
-                rowIndex++;
-            }
-            rowIndex = 0;
-            //店舗
-            row = sheet4.createRow(rowIndex);
-            for (int i = 0; i < branchHeader.length; i++) {
-                row.createCell(i).setCellValue(branchHeader[i]);
-            }
-            rowIndex++;
-            for (ShelfPatternBranchDto shelfPatternBranchDto : BranchList) {
-                int sellIndex = 0;
-                 row = sheet4.createRow(rowIndex);
-                row.createCell(sellIndex++).setCellValue(shelfPatternBranchDto.getId());
-                row.createCell(sellIndex++).setCellValue(shelfPatternBranchDto.getName());
-                rowIndex++;
-            }
-
-
-            try {
-                ServletOutputStream outputStream = response.getOutputStream();
-                workbook.write(outputStream);
-                outputStream.flush();
-            } catch (IOException e) {
-                logger.error("io閉じる異常", e);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 }

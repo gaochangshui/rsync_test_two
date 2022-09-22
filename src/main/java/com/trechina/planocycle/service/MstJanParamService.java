@@ -8,6 +8,5 @@ public interface MstJanParamService {
 
     Map<String, Object> getAttributeTree(JanParamVO janParamVO);
 
-    Map<String, Object> getMaintenanceItem();
 
 }

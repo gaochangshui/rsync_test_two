@@ -135,7 +135,7 @@ public class ShelfNameServiceImpl implements ShelfNameService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> delShelfNameInfo(JSONObject jsonObject) {
-        logger.info("削除棚名称Name的参数：{}",jsonObject.toString());
+        logger.info("削除棚名称Name的参数：{}",jsonObject);
         //作成者cdの取得
         String authorCd = session.getAttribute("aud").toString();
         // 小屋名の削除
