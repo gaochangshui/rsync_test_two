@@ -247,6 +247,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         return 0;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void autoDetect(String companyCd,Integer priorityAllCd,Integer shelfPatternCd,Integer priorityOrderCd,String aud) {
         List<String> attrList = priorityOrderMstAttrSortMapper.getAttrListFinal(companyCd, priorityOrderCd);
