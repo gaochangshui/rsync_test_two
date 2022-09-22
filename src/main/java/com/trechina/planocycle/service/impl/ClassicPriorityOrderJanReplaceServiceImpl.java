@@ -103,20 +103,20 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
 
             priorityOrderJanReplaceMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             List<PriorityOrderJanReplace> exists = new ArrayList<>();
-            String notExists = "";
+            StringBuilder notExists = new StringBuilder();
             for (int i = 0; i < jan.size(); i++) {
                 if(jan.get(i).getJanNew()==null && jan.get(i).getJanOld()==null){
                     continue;
                 }
                 boolean existJanInfo = isExistJanInfo(proInfoTable, jan.get(i).getJanOld(),priorityOrderCd);
                 if (!existJanInfo){
-                    notExists += jan.get(i).getJanOld()+",";
+                    notExists.append(jan.get(i).getJanOld()).append(",");
                 }else {
                     exists.add(jan.get(i));
                 }
             }
             logger.info("存在するjan情報{}",exists);
-            logger.info("存在しないjan情報{}",notExists);
+            logger.info("存在しないjan情報{}", notExists);
             //データベースへの書き込み
             if (!exists.isEmpty()) {
                 priorityOrderJanReplaceMapper.insert(exists);

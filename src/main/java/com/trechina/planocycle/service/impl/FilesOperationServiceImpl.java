@@ -22,10 +22,6 @@ import com.trechina.planocycle.service.ShelfPtsService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -361,76 +355,6 @@ public class FilesOperationServiceImpl implements FilesOperationService {
         shelfPtsDataJandataMapper.insertAll(dataJandataList);
     }
 
-    ///**
-    // * csvはexcelを回転して、そしてダウンロードします
-    // *
-    // * @param multipartFile
-    // * @return
-    // */
-    //@Override
-    //public Map<String, Object> csvConvertExcelDowlLoad(MultipartFile multipartFile, String productDownPath, HttpServletResponse response) {
-    //    logger.info("a{}", multipartFile.getSize());
-    //    // パスが作成されません
-    //    judgeExistsPath(productDownPath);
-    //    String files = productDownPath + "productFile.csv";
-    //    String excelFiles = productDownPath + "productExcel.xlsx";
-    //    InputStream is = null;
-    //    //ファイルを保存
-    //    try(DataInputStream in = new DataInputStream(new FileInputStream(files));
-    //        InputStreamReader inputStreamReader = new InputStreamReader(in, StandardCharsets.UTF_8);
-    //        BufferedReader reader = new BufferedReader(inputStreamReader);
-    //        XSSFWorkbook workbook = new XSSFWorkbook();
-    //        OutputStream outputStream = response.getOutputStream();
-    //        FileOutputStream fos = new FileOutputStream(excelFiles)) {
-    //        excelPutPath(multipartFile, files);
-    //        //csv書き込みexcelの読み取り
-    //        String line = null;
-    //        XSSFSheet sheet = workbook.createSheet("商品力点数表");
-    //        XSSFRow row = null;
-    //        XSSFCell cell = null;
-    //        for (int i = 0; (line = reader.readLine()) != null; i++) {
-    //            row = sheet.createRow(i);
-    //            if (i == 0) {
-    //                line = line.replace("\"", "");
-    //                line = line.substring(1);
-    //            }
-    //            String[] item = line.split(",");
-    //            for (int j = 0; j < item.length; j++) {
-    //                cell = row.createCell(j);
-    //                cell.setCellValue(item[j]);
-    //            }
-    //        }
-    //        workbook.write(fos);
-    //        response.setContentType("application/Octet-stream");
-    //        response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode("商品力点数表", "UTF-8") + ".xlsx");
-    //        File fileExcel = new File(excelFiles);
-    //        is = new FileInputStream(fileExcel);
-    //        byte[] buffer = new byte[1024];
-    //        int len = 0;
-    //        while ((len = is.read(buffer)) != -1) {
-    //            outputStream.write(buffer, 0, len);
-    //            outputStream.flush();
-    //        }
-    //        File fileCsv = new File(files);
-    //        if (!fileCsv.delete()) {
-    //            logger.info("文件削除失敗");
-    //        }
-    //        if (!fileExcel.delete()) {
-    //            logger.info("文件削除失敗");
-    //        }
-    //    } catch (IOException e) {
-    //        logger.info("csv轉excel報錯2:{}", e.getMessage());
-    //    } finally {
-    //        if (is!=null) {
-    //            try {
-    //                is.close();
-    //            } catch (IOException e) {
-    //                logger.error("io close error", e);
-    //            }
-    //        }
-    //    }
-    //    return Collections.emptyMap();
-    //}
 
     /**
      * ファイルをサーバに保存

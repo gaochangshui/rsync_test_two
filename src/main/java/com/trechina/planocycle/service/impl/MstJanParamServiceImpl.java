@@ -21,7 +21,7 @@ public class MstJanParamServiceImpl implements MstJanParamService {
 private  MstJanParamMapper mstJanParamMapper;
 
     public static List listToTree(List arr, String id, String pid, String child){
-        List r = new ArrayList();
+        List<Object> r = new ArrayList<>();
         Map<String,Object> hash = new HashMap<>();
         //配列をObject形式に変換し、keyは配列中のid
         for(int i=0;i<arr.size();i++){
@@ -42,7 +42,7 @@ private  MstJanParamMapper mstJanParamMapper;
                     ch.add(aVal);
                     hashVP.put(child, ch);
                 }else{
-                    List ch = new ArrayList();
+                    List ch = new ArrayList<>();
                     ch.add(aVal);
                     hashVP.put(child, ch);
                 }
@@ -69,9 +69,4 @@ private  MstJanParamMapper mstJanParamMapper;
         return ResultMaps.result(ResultEnum.SUCCESS,jsonArray);
     }
 
-    @Override
-    public Map<String, Object> getMaintenanceItem() {
-        //mstJanParamMapper.getBasisItem();
-        return null;
-    }
 }

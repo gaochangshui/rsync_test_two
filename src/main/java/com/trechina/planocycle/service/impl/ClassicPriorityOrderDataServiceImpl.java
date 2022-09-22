@@ -246,9 +246,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             return ResultMaps.result(ResultEnum.SIZEISZERO);
         }
         for (Map<String, Object> data : datas) {
-            BigDecimal branch_amount_upd = BigDecimal.valueOf(Double.parseDouble(data.get("branch_amount_upd").toString()));
-            branch_amount_upd = branch_amount_upd.setScale(0,RoundingMode.HALF_UP);
-            data.put("branch_amount_upd",branch_amount_upd);
+            BigDecimal branchAmountUpd = BigDecimal.valueOf(Double.parseDouble(data.get("branch_amount_upd").toString()));
+            branchAmountUpd = branchAmountUpd.setScale(0,RoundingMode.HALF_UP);
+            data.put("branch_amount_upd",branchAmountUpd);
 
             BigDecimal branchAmount = BigDecimal.valueOf(Double.parseDouble(data.get("branch_amount").toString()));
             branchAmount = branchAmount.setScale(0,RoundingMode.HALF_UP);
@@ -1150,27 +1150,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         return ResultMaps.result(ResultEnum.SUCCESS, uploadJanList);
     }
 
-    private JSONArray priorityOrderData(JSONArray datas) {
-        // 一時テーブルとしてのデータの保存
-        List<Map<String, String>> keyNameList = new ArrayList<>();
-        //表に出す
-        colNameList(datas, keyNameList);
-        logger.info("打印創建臨時表前的表頭{}", keyNameList);
-
-
-        //一時保存データのエンティティテーブルpriorityorder+社員番号
-        String tablename = "public.priorityorder" + session.getAttribute("aud").toString();
-        logger.info("創建的表名{}",tablename);
-
-        priorityOrderDataMapper.dropTempData(tablename);
-        priorityOrderDataMapper.updateTempData(keyNameList, tablename);
-
-
-        priorityOrderDataMapper.insert(datas, keyNameList, tablename);
-
-        return datas;
-    }
-
 
     /**
      * rank属性ソート+優先順位表反応ボタン抽出データ
@@ -1424,24 +1403,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 finalResultList.addAll(this.reOrder(resultJanList));
             }
         }
-   /*     Comparator<Map<String, Object>> attrCompare = null;
-        for (int i = 0; i < colNameList.size(); i++) {
-            if(i==0){
-                int finalI = i;
-                attrCompare = Comparator.comparing(map->map.get(colNameList.get(finalI)).toString());
-            }else{
-                int finalI1 = i;
-                attrCompare.thenComparing(map->map.get(colNameList.get(finalI1)).toString());
-            }
-        }
-        if(attrCompare!=null){
-            attrCompare.thenComparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()));
-        }else{
-            attrCompare = Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()));
-        }
-
-        finalResultList.sort(attrCompare);*/
-
         return finalResultList;
     }
 

@@ -34,11 +34,7 @@ public class ClassicPriorityOrderMstAttrSortServiceImpl implements ClassicPriori
         List<Map<String,Object>> result = new ArrayList<>();
         resultInfo.forEach(item->{
             Map<String,Object> maps = new HashMap<>();
-//            if (item.getCd()==13 && item.getValue() == resultInfo.size()){
-//                maps.put("value","mulit_attr");
-//            } else {
-                maps.put("value",item.getValue().toString());
-//            }
+                maps.put("value",item.getValue());
             maps.put("cd",item.getCd().toString());
             maps.put("sort",item.getSort());
             result.add(maps);
@@ -55,7 +51,7 @@ public class ClassicPriorityOrderMstAttrSortServiceImpl implements ClassicPriori
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityAttrSort(List<PriorityOrderMstAttrSort> priorityOrderMstAttrSort) {
-        logger.info("優先順位テーブルソートのパラメータを保存する"+priorityOrderMstAttrSort);
+        logger.info("優先順位テーブルソートのパラメータを保存する{}",priorityOrderMstAttrSort);
         if (!priorityOrderMstAttrSort.isEmpty()) {
             priorityOrderMstAttrSortMapper.deleteByPrimaryKey(priorityOrderMstAttrSort.get(0).getCompanyCd(), priorityOrderMstAttrSort.get(0).getPriorityOrderCd());
             priorityOrderMstAttrSortMapper.insert(priorityOrderMstAttrSort);

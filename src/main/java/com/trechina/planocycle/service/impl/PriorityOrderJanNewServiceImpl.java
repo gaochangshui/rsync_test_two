@@ -107,7 +107,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
 
         List<Map<String,Object>> priorityOrderJanNewVOList = priorityOrderJanNewMapper.getDynamicJanNameClassify(priorityOrderCd,
                 zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,janCd,model);
-        List<String> listNew = new ArrayList();
+        List<String> listNew = new ArrayList<>();
         for (Map<String,Object> priorityOrderJanNewVO : priorityOrderJanNewVOList) {
             listNew.add( priorityOrderJanNewVO.get("janCd").toString());
         }
@@ -172,12 +172,12 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                 }
             }
             Map<String, List<Map<String, Object>>> janGroup = datas.stream().collect(Collectors.groupingBy(map -> {
-                String attrKey = "";
+                StringBuilder attrKey = new StringBuilder();
                 for (Integer col : attrList) {
-                    attrKey += map.get("zokusei" + col);
+                    attrKey.append(map.get("zokusei" + col));
                 }
 
-                return attrKey;
+                return attrKey.toString();
             }));
             for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
                 Map<String,Object> map = new HashMap<>();
@@ -185,7 +185,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                 map.put("priorityOrderCd",priorityOrderCd);
                 map.put("data",stringListEntry.getValue());
                 Map<String, Object> similarity = this.getSimilarity(map);
-                List list = (List) similarity.get("data");
+                List<Object> list = (List<Object>) similarity.get("data");
                List<Map<String,Object>>maps = (List<Map<String,Object>>)list.get(1);
                 for (Map<String, Object> objectMap : maps) {
                     for (PriorityOrderJanNew orderJanNew : priorityOrderJanNew) {
@@ -237,7 +237,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         }
 
         List<Map<String,Object>> list = new ArrayList<>();
-        List<Integer> attrList = new ArrayList();
+        List<Integer> attrList = new ArrayList<>();
 
         for (Map.Entry<String, Object> stringObjectEntry : mapAttr.entrySet()) {
             Map<String,Object> newMap = new HashMap<>();
@@ -287,7 +287,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
             }
             productPowerData.addAll(data);
         }
-        List list1 = new ArrayList();
+        List<Object> list1 = new ArrayList<>();
         list1.add(data);
         list1.add(productPowerData);
 

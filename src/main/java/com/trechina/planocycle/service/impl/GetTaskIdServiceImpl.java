@@ -28,7 +28,7 @@ public class GetTaskIdServiceImpl implements GetTaskIdService {
      */
     @Override
     public Map<String, Object> getTaskId(Map<String, Object> para) {
-        logger.info("つかむ取taskid共同方法接收到的参数：{}",para.toString());
+        logger.info("つかむ取taskid共同方法接收到的参数：{}",para);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
         // modeはpathアドレスのkeyです
         String path = resourceBundle.getString(para.get("mode").toString());

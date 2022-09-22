@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
-import com.trechina.planocycle.entity.dto.WorkPriorityOrderResultDataDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
 import com.trechina.planocycle.entity.vo.PtsCsvVO;
 import com.trechina.planocycle.entity.vo.PtsTanaVo;
@@ -43,7 +42,6 @@ public interface ShelfPtsService {
      * @param priorityOrderCd
      */
 
-    void saveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, int isReOrder);
 
     void basicSaveWorkPtsData(String companyCd, String authorCd, Integer priorityOrderCd, List<PriorityOrderResultDataDto> resultData,
                               int isReOrder);

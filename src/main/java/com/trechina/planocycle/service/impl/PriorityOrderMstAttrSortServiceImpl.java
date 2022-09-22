@@ -3,7 +3,6 @@ package com.trechina.planocycle.service.impl;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
-import com.trechina.planocycle.entity.po.WorkPriorityOrderRestrictSet;
 import com.trechina.planocycle.entity.vo.PriorityOrderAttrListVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
@@ -12,13 +11,11 @@ import com.trechina.planocycle.utils.ResultMaps;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -106,9 +103,8 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         Integer id = Integer.parseInt(newTanaWidth.get("id").toString());
         Integer width = Integer.parseInt(newTanaWidth.get("width").toString());
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
-        logger.info("スタート：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
         Map<String,Object> map = new HashMap<>();
-        List list = new ArrayList();
+        List<Object> list = new ArrayList<>();
         for (int j = 0; j  < attrCol.size(); j++) {
             String prodMstClass = commonTableName.getProdMstClass();
             String prodIsCore = commonTableName.getProdIsCore();
@@ -124,7 +120,6 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         List<String> attrName = attrCol.stream().map(attrMap -> MapUtils.getString(attrMap,"zokusei_colname")).collect(Collectors.toList());
         map.put("data",list);
         map.put("attrName",attrName);
-        logger.info("終了：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
@@ -164,47 +159,25 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
             newRestrictList.add(newObjectMap);
         }
         attrCol = attrCol.stream().sorted(Comparator.comparing(map-> MapUtils.getInteger(map,"sort"))).collect(Collectors.toList());
-        String groupHeader = "";
-        String groupColumns = "";
+        StringBuilder groupHeader = new StringBuilder();
+        StringBuilder groupColumns = new StringBuilder();
         for (Map<String, Object> map : attrCol) {
-            if (groupHeader.equals("")){
-                groupHeader += map.get("zokusei_nm");
-                groupColumns += map.get("zokusei_colname");
+            if (groupHeader.toString().equals("")){
+                groupHeader.append(map.get("zokusei_nm"));
+                groupColumns.append(map.get("zokusei_colname"));
             }else {
-                groupHeader += ","+map.get("zokusei_nm");
-                groupColumns += ","+map.get("zokusei_colname");
+                groupHeader.append(",").append(map.get("zokusei_nm"));
+                groupColumns.append(",").append(map.get("zokusei_colname"));
             }
         }
         Map<String,Object> map = new HashMap<>();
-        map.put("groupHeader",groupHeader);
-        map.put("groupColumns",groupColumns);
+        map.put("groupHeader", groupHeader.toString());
+        map.put("groupColumns", groupColumns.toString());
         map.put("data",newRestrictList);
         return ResultMaps.result(ResultEnum.SUCCESS, map);
     }
 
 
-
-
-    private List<WorkPriorityOrderRestrictSet> packageRestrict(int begin, int end, Integer[] tanaCdArray, Integer taiCd, WorkPriorityOrderRestrictSet tmpRestrictSet) {
-        List<WorkPriorityOrderRestrictSet> restrictSetList = new ArrayList<>();
-        WorkPriorityOrderRestrictSet restrictSet = null;
-        if (begin < end) {
-            for (int i = begin; i < end; i++) {
-                restrictSet = new WorkPriorityOrderRestrictSet();
-                BeanUtils.copyProperties(tmpRestrictSet, restrictSet);
-                restrictSet.setTaiCd(taiCd);
-                restrictSet.setTanaCd(tanaCdArray[i]);
-                restrictSetList.add(restrictSet);
-            }
-        } else {
-            restrictSet = new WorkPriorityOrderRestrictSet();
-            BeanUtils.copyProperties(tmpRestrictSet, restrictSet);
-            restrictSet.setTaiCd(taiCd);
-            restrictSet.setTanaCd(0);
-            restrictSetList.add(restrictSet);
-        }
-        return restrictSetList;
-    }
 
 
 }

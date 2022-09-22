@@ -46,6 +46,8 @@ public class MagicString {
 
     public static final String TANA_POSITION_CD = "tanaPositionCd";
 
+    public static final String TANA_POSITION = "tanaPosition";
+
     public static final String SET_ZOKUSEI = "setZokusei";
 
     public static final String RESTRICT_CD = "restrictCd";
@@ -183,6 +185,7 @@ public class MagicString {
     public static final Long DEFAULT_HEIGHT = 240L;
 
     public static final String WIDTH_NAME="plano_width";
+    public static final String WIDTH="width";
 
     /**
      * ファイルをアップロードメッセージ
@@ -214,4 +217,14 @@ public class MagicString {
     public static final String TASK_KEY_SET_JAN_HEIGHT_ERROR="setJanHeightError:{0}";
 
     public static final String CGI_KILL_PROCESS="PLANOCYCLE.KILLPROCESS.CGI";
+
+    public static final String TABLE1="table1";
+    public static final String TABLE2="table2";
+    public static final String JANINFOTABLE="janInfoTable";
+
+    public static final String area="area";
+
+    public static final String sort="sort";
+
+
 }
