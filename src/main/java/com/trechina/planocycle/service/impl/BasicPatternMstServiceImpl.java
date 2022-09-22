@@ -372,7 +372,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             Future future = (Future) o;
             future.cancel(true);
             vehicleNumCache.remove(taskKey);
-            if(future.isCancelled()){
+            if(future.isCancelled() || future.isDone()){
                 String cgiKey = MessageFormat.format(MagicString.TASK_KEY_CGI, taskId);
                 if(vehicleNumCache.get(cgiKey)!=null){
                     Future f = (Future) vehicleNumCache.get(taskKey+"2");
