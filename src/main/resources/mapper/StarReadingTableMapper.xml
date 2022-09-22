@@ -45,11 +45,13 @@
                  from planocycle.shelf_pattern_branch branch
                           left join ${tableName} teninfo
                                     on (teninfo."1" = branch.branch or
-                                        split_part(teninfo."1", '_', 2) = branch.branch) and
-                                       split_part(teninfo."1", '_', 1) in
+                                        (split_part(teninfo."1", '_', 2) = branch.branch
+                                    and
+                                    split_part(teninfo."1", '_', 1) in
                                     <foreach collection="groupCompany" item="item" separator="," open="(" close=")">
                                         #{item}
                                     </foreach>
+                                            ))
                  where branch.shelf_pattern_cd in
                        (select shelf_pattern_cd
                         from priority.work_priority_order_pattern
@@ -100,7 +102,13 @@
                 left join planocycle.shelf_pts_data_jandata jandata on resultdata.jan_new = jandata.jan
                 left join planocycle.shelf_pts_data ptsdata on jandata.pts_cd = ptsdata.id
                 left join planocycle.shelf_pattern_branch branch on ptsdata.shelf_pattern_cd = branch.shelf_pattern_cd
-                left join ${tableName} teninfo on (teninfo."1" = branch.branch or split_part(teninfo."1",'_',2) = branch.branch) and split_part(teninfo."1",'_',1) = #{item.companyCd}
+                left join ${tableName} teninfo on (teninfo."1" = branch.branch or (split_part(teninfo."1",'_',2) = branch.branch
+                                        and
+                                        split_part(teninfo."1", '_', 1) in
+                                        <foreach collection="groupCompany" item="item" separator="," open="(" close=")">
+                                            #{item}
+                                        </foreach>
+                                                    ))
 
         where
             priority_order_cd = #{item.priorityOrderCd}
