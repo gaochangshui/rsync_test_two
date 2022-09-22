@@ -592,7 +592,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             groupCompany.add(companyCd);
             List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
             branchList=branchList.stream().filter(map -> starReadingTableDto.getExpressItemList().contains(map.get("sort"))).collect(Collectors.toList());
-            List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList,tableName);
+            List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList,tableName,groupCompany);
 
             if (!autoBranch.isEmpty()){
                 for (Map<String, Object> branch : autoBranch) {
@@ -692,7 +692,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
         String makerCol = classicPriorityOrderMstMapper.getMakerCol(commonTableName.getStoreIsCore(),commonTableName.getStoreMstClass());
         Integer modeCheck = priorityOrderMstMapper.getModeCheck(priorityOrderCd);
-        Boolean isModeCheck = true;
+        boolean isModeCheck = true;
         if (modeCheck == null){
             modeCheck =1;
             isModeCheck = false;
@@ -1088,7 +1088,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 table2 = list.get(0).getStoreInfoTable();
             }
         }else {
-            if (list.get(0).getStoreIsCore().equals("1")){
+            if (list.get(0).getStoreIsCore().equals("1000")){
                 table1 = list.get(0).getStoreInfoTable();
             }else {
                 table2 = list.get(0).getStoreInfoTable();
