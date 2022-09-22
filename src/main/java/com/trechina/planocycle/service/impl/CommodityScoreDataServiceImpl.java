@@ -61,6 +61,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Autowired
     private ShelfPatternMstMapper shelfPatternMstMapper;
     @Autowired
+    private CommodityScoreDataService commodityScoreDataService;
+    @Autowired
     private MstJanMapper mstJanMapper;
     @Autowired
     private cgiUtils cgiUtil;
@@ -218,7 +220,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String prodAttrData = map.get("prodAttrData").toString();
         String singleJan = new Gson().toJson(map.get("singleJan"));
 
-        this.setProductParam(map,productPowerCd,companyCd,authorCd,customerConditionStr,prodAttrData,singleJan);
+        commodityScoreDataService.setProductParam(map,productPowerCd,companyCd,authorCd,customerConditionStr,prodAttrData,singleJan);
         map.put("basketFlg",Integer.parseInt(map.get("showItemCheck").toString()) == 1?1:0);
         map.remove("showItemCheck");
         if (paramCount >0){
