@@ -240,39 +240,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     }
 
 
-    /**
-     * リードライトpriorityorderData
-     * @param priorityOrderMstDto
-     * @param res
-     * @param wirteReadFlag
-     * @return
-     */
-    @Override
-    public Map<String, Object> priorityDataWRFlag(PriorityOrderMstDto priorityOrderMstDto, String[] res, String wirteReadFlag) {
-        PriorityOrderDataForCgiDto priorityOrderDataForCgiDto = new PriorityOrderDataForCgiDto();
-        priorityOrderDataForCgiDto.setCompany(priorityOrderMstDto.getCompanyCd());
-        String uuid = UUID.randomUUID().toString();
-        priorityOrderDataForCgiDto.setGuid(uuid);
-        priorityOrderDataForCgiDto.setMode("priority_data");
-        priorityOrderDataForCgiDto.setPriorityNO(priorityOrderMstDto.getPriorityOrderCd());
-        priorityOrderDataForCgiDto.setWriteReadFlag(wirteReadFlag);
-        priorityOrderDataForCgiDto.setAttributeCd(priorityOrderMstDto.getAttributeCd());
-        if (wirteReadFlag.equals("write")){
-            priorityOrderDataForCgiDto.setDataArray(res);
-        }
-        logger.info("cgiに優先順位テーブルのパラメータを保存します{}",priorityOrderDataForCgiDto);
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("PriorityOrderData");
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        Map<String,Object> resultCgi = new HashMap<>();
-        String result = cgiUtil.postCgi(path,priorityOrderDataForCgiDto,tokenInfo);
-        logger.info("taskId：{}",result);
-        String queryPath = resourceBundle.getString("TaskQuery");
-        resultCgi =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-        logger.info("優先順位テーブル結菓の保存：{}",resultCgi);
-        return resultCgi;
-
-    }
 
 
     /**
@@ -302,95 +269,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         return ResultMaps.result(ResultEnum.SUCCESS,result);
     }
 
-    /**
-     * ptsファイルのダウンロードを取得する
-     *
-     * @param priorityOrderPtsDownDto
-     * @param response
-     * @return
-     */
-    @Override
-    public Map<String, Object> getPtsFileDownLoad(PriorityOrderPtsDownDto priorityOrderPtsDownDto, HttpServletResponse response,String ptsDownPath) {
-
-        logger.info("pts出力パラメータを取得する:{}",priorityOrderPtsDownDto);
-        // 从cgiつかむ取数据
-        String uuid = UUID.randomUUID().toString();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("PriorityOrderData");
-        priorityOrderPtsDownDto.setGuid(uuid);
-        // rankAttributeCd
-        List<Map<String, Object>> array = (List<Map<String, Object>>) JSON.parse(priorityOrderPtsDownDto.getRankAttributeList());
-        logger.info("rankAttributeCdList:{}",array);
-        String rankInfo = "";
-        String attrInfo = "";
-        String rankInfoMulit = "";
-        String attrInfoMulit = "";
-        String sortStr = "";
-        String sort = "";
-        for (int i = 1; i <= array.size(); i++) {
-            for (int j = 0; j < array.size(); j++) {
-                sortStr = String.valueOf(array.get(j).get("sort"));
-                if(sortStr.equals("")){
-                    sort="0";
-                } else {
-                    sort=sortStr;
-                }
-                if (String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i ==array.size()){
-                    rankInfoMulit += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
-                    attrInfoMulit += "13,";
-                }else {
-                    if (!String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i == Integer.parseInt(String.valueOf(array.get(j).get("value")))){
-                        rankInfo += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
-                        attrInfo += array.get(j).get("cd")+",";
-                    }
-                }
-            }
-        }
-        rankInfo = rankInfo+rankInfoMulit;
-        attrInfo = attrInfo+attrInfoMulit;
-        String rankFinalInfo = rankInfo.substring(0,rankInfo.length()-1);
-        String attrFinalInfo = attrInfo.substring(0,attrInfo.length()-1);
-        logger.info("處理完的rankAttributeCd:{}",rankFinalInfo);
-        priorityOrderPtsDownDto.setAttributeCd(attrFinalInfo);
-        priorityOrderPtsDownDto.setRankAttributeCd(rankFinalInfo);
-        // shelfPatternNoNm
-        String resultShelf=shelfPatternService.getShePatternNoNm(priorityOrderPtsDownDto.getShelfPatternNo());
-        logger.info("抽出完的shelfPatternNoNm:{}",resultShelf);
-        priorityOrderPtsDownDto.setShelfPatternNoNm(resultShelf.replaceAll(" ","*"));
-        logger.info("つかむ取處理完的pts出力参数:{}",priorityOrderPtsDownDto);
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        Map<String,Object> ptsPath;
-        //cgiを再帰的に呼び出し、まずtaskidに行きます。
-
-        String result = cgiUtil.postCgi(path,priorityOrderPtsDownDto,tokenInfo);
-        logger.info("taskIdリターン：{}",result);
-        String queryPath = resourceBundle.getString("TaskQuery");
-        //taskIdを持っています，cgiに実行状態の取得を再度要求する
-        ptsPath =cgiUtil.postCgiLoop(queryPath,result,tokenInfo);
-        logger.info("ptsパスがデータを返す：{}",ptsPath);
-
-        String filePath = ptsPath.get("data").toString();
-        if (filePath.length()>1) {
-            String[] fileName = filePath.split("/");
-
-            sshFtpUtils sshFtp = new sshFtpUtils();
-            try {
-                logger.info("ptsフルパス出力：{}",ptsDownPath+ptsPath.get("data").toString());
-                byte[] files = sshFtp.downLoafCgi(ptsDownPath+ptsPath.get("data").toString(),tokenInfo);
-                logger.info("files byte:{}",files);
-                response.setContentType("application/Octet-stream");
-                logger.info("finename:{}",fileName[fileName.length-1]);
-                response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName[fileName.length-1], "UTF-8"));
-                OutputStream outputStream = response.getOutputStream();
-                outputStream.write(files);
-                outputStream.close();
-            } catch (IOException e) {
-                logger.info("ptsファイルダウンロードエラーの取得",e);
-            }
-        }
-        logger.info("ダウンロード成功");
-        return ResultMaps.result(ResultEnum.SUCCESS);
-    }
 
     /**
      * 優先順位テーブルcdに基づく商品力点数テーブルcdの取得

@@ -8,6 +8,7 @@ import com.trechina.planocycle.service.ClassicPriorityOrderAttributeClassifyServ
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -52,6 +53,7 @@ public class ClassicPriorityOrderAttributeClassifyServiceImpl implements Classic
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> setClassifyList(List<PriorityOrderAttributeClassify> classifyList) {
 
         Integer priorityOrderCd = classifyList.get(0).getPriorityOrderCd();

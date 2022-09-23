@@ -206,6 +206,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> rankCalculate(Map<String,Object> map) {
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = map.get("companyCd").toString();

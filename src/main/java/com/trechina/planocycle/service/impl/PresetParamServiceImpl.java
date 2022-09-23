@@ -10,6 +10,7 @@ import com.trechina.planocycle.service.PresetParamService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -23,6 +24,7 @@ public class PresetParamServiceImpl implements PresetParamService {
     @Autowired
     private HttpSession session;
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> setPresetParam(PresetParam presetParam) {
         String authorCd = session.getAttribute("aud").toString();
         presetParamMapper.deleteByAuthorCd(authorCd);
@@ -39,6 +41,7 @@ public class PresetParamServiceImpl implements PresetParamService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> setPresetParamForProduct(PresetAttribute presetAttribute) {
         String authorCd = session.getAttribute("aud").toString();
 

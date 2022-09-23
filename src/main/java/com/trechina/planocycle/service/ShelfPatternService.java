@@ -28,13 +28,6 @@ public interface ShelfPatternService {
      * @return
      */
     Map<String,Object> updateShelfPatternInfo(ShelfPatternDto shelfPatternDto);
-    /**
-     * 通を過ぎて棚名称棚pattern
-     * @param companyCd
-     * @param shelfNameCd
-     * @return
-     */
-    List<Integer> getShelfPattern(String companyCd,Integer shelfNameCd);
 
 
     /**
@@ -71,26 +64,14 @@ public interface ShelfPatternService {
      */
     Map<String, Object> delShelfPatternInfo(JSONObject jsonObject);
 
-    /**
-     * つかむ取shelfPattern 1@棚パータン名称１,2@棚パータン名称2 格式的字符串
-     * @param shelfPatternNo
-     * @return
-     */
-    String getShePatternNoNm(String shelfPatternNo);
 
-    /**
-     * ptsKeyによるpatternidの取得
-     * @param ptsKey
-     * @return
-     */
-    List<Integer> getpatternIdOfPtsKey(String ptsKey);
 
     List<Integer> getpatternIdOfFilename(String fileName, String companyCd);
 
     /**
      * areaに基づいて棚名と棚patternを取得
      * @param companyCd
-     * @param areaCds
+     * @param
      * @return
      */
      Map<String,Object> getShelfPatternForArea(String companyCd);

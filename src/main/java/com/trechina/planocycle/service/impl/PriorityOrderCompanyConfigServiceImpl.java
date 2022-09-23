@@ -7,6 +7,7 @@ import com.trechina.planocycle.service.PriorityOrderCompanyConfigService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
@@ -18,6 +19,7 @@ public class PriorityOrderCompanyConfigServiceImpl implements PriorityOrderCompa
     @Autowired
     private HttpSession session;
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> saveUserCompany(CompanyConfig companyConfig) {
         try {
             String companyCd = companyConfig.getCompanyCd();
