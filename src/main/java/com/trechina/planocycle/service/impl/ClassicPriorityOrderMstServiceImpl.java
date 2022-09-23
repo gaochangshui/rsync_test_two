@@ -947,7 +947,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                             && !finalCommodityNotJansCd.contains(s.get(MagicString.JAN).toString()))
                     .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()))).collect(Collectors.toList());
             List<Map<String, Object>> bkResultData = resultDataByAttr.stream()
-                    .filter(s->!finalCommodityNotJansCd.contains(s.get(MagicString.JAN).toString()))
+                    .filter(s->!finalCommodityNotJansCd.contains(s.get(MagicString.JAN).toString())
+                    && !janReplaceMap.containsValue(s.get(MagicString.JAN).toString()))
                     .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()))).collect(Collectors.toList());
             List<Map<String, Object>> notInPtsJanList = bkResultData.stream()
                     .filter(map -> Integer.parseInt(map.get(MagicString.RANK_UPD).toString()) > finalSkuNum
@@ -1032,7 +1033,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         String newJan = notInPtsJanList.get(newJanIndex).get(MagicString.JAN).toString();
                         Integer newJanRank = MapUtils.getInteger(notInPtsJanList.get(newJanIndex), MagicString.RANK_UPD);
 
-                        if(janReplaceMap.containsKey(janOld) && newJanRank > Integer.parseInt(rankUpd)){
+                        if(janReplaceMap.containsKey(janOld)){
                             newJan = MapUtils.getString(janReplaceMap, janOld);
                             //old pts not exists and jan replace
                             String finalNewJan = newJan;
