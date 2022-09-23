@@ -339,7 +339,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     rankInfoMulit += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
                     attrInfoMulit += "13,";
                 }else {
-                    if (!String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i == Integer.valueOf(String.valueOf(array.get(j).get("value")))){
+                    if (!String.valueOf(array.get(j).get("value")).equals("mulit_attr") && i == Integer.parseInt(String.valueOf(array.get(j).get("value")))){
                         rankInfo += array.get(j).get("cd") + "_" + i + "_" + sort + ",";
                         attrInfo += array.get(j).get("cd")+",";
                     }
@@ -444,17 +444,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    /**
-     * productpowercdによる関連優先順位テーブルcdのクエリ
-     *
-     * @param companyCd
-     * @param productPowerCd
-     * @return
-     */
-    @Override
-    public String selPriorityOrderCdForProdCd(String companyCd, Integer productPowerCd) {
-        return priorityOrderMstMapper.selectPriorityOrderCdForProdCd(companyCd,productPowerCd);
-    }
 
     @Transactional(rollbackFor = Exception.class)
     @Override

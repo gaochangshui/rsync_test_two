@@ -68,13 +68,6 @@ public interface ClassicPriorityOrderMstService {
      */
     Map<String, Object> delPriorityOrderAllInfo(PriorityOrderPrimaryKeyVO primaryKeyVO);
 
-    /**
-     * productpowercdによる関連優先順位テーブルcdのクエリ
-     * @param companyCd
-     * @param productPowerCd
-     * @return
-     */
-    String selPriorityOrderCdForProdCd(String companyCd,Integer productPowerCd);
 
     Map<String, Object> setWorkPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto);
 
