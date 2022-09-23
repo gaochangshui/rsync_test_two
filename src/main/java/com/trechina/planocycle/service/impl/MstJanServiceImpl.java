@@ -595,19 +595,21 @@ public class MstJanServiceImpl implements MstJanService {
                 List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(finalCompanyCd, prodMstClass);
                 List<String> janInfoCol = mstJanMapper.getJanInfoCol();
 
-                List<LinkedHashMap<String, Object>> janInfoData = janData.stream()
+                List<LinkedHashMap<Object, Object>> janInfoData = janData.stream()
                         .map(map -> map.entrySet().stream().filter(infoMap -> !janInfoCol.contains(infoMap.getKey()))
-                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new)))
+                                .collect(LinkedHashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()), LinkedHashMap::putAll))
                         .collect(Collectors.toList());
 
-                List<LinkedHashMap<String, Object>> janSpecialData = janData.stream()
+
+                List<LinkedHashMap<Object, Object>> janSpecialData = janData.stream()
                         .map(map -> map.entrySet().stream().filter(infoMap -> janInfoCol.contains(infoMap.getKey()) || "1".equals(infoMap.getKey()))
-                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new)))
+                                .collect(LinkedHashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()), LinkedHashMap::putAll))
                         .collect(Collectors.toList());
+
                 int batchSize = 1000;
                 int janDataNum = (int) Math.ceil(janInfoData.size() / 1000.0);
                 for (int i = 0; i < janDataNum; i++) {
-                    int end = batchSize*(i+1) >= janInfoData.size()?janInfoData.size():batchSize*(i+1);
+                    int end = Math.min(batchSize * (i + 1), janInfoData.size());
                     int i1 = mstJanMapper.insertJanList(tableNameInfo, janInfoData.subList(batchSize * i, end), dateStr, authorCd);
                     mstJanMapper.insertJanSpecialList(janSpecialData.subList(batchSize * i, end));
 

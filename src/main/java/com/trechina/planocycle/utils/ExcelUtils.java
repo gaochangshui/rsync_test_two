@@ -399,7 +399,7 @@ public class ExcelUtils {
 
                         data[j]=cellValue;
                     }else{
-                        data[j]="";
+                        data[j]=null;
                     }
                 }
                 excelList.add(data);
