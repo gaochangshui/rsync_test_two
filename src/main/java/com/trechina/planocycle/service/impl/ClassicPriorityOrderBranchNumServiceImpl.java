@@ -526,6 +526,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> saveCommodityNotBranchList(String companyCd, Integer priorityOrderCd, String jan, String commodityNot) {
         List<Map<String, Object>> commodityNotList = new Gson().fromJson(commodityNot, new TypeToken<List<Map<String, Object>>>(){}.getType());
         priorityOrderCommodityNotMapper.updateFlag(companyCd, priorityOrderCd, jan, commodityNotList);
@@ -537,6 +538,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> saveCommodityMustBranchList(String companyCd, Integer priorityOrderCd, String jan, String commodityMust) {
         List<Map<String, Object>> commodityNotList = new Gson().fromJson(commodityMust, new TypeToken<List<Map<String, Object>>>(){}.getType());
         priorityOrderCommodityMustMapper.updateFlag(companyCd, priorityOrderCd, jan, commodityNotList);
@@ -806,6 +808,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> setStarReadingData(StarReadingVo starReadingVo) {
         String save = "save";
         if (starReadingVo.getTaskID()!=null){

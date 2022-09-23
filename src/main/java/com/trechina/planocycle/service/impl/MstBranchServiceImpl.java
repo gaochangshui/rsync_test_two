@@ -56,6 +56,7 @@ public class MstBranchServiceImpl implements MstBranchService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> setBranchInfo(List<BranchList> branchList) {
         String companyCd = "1000";
         String groupCd = "";

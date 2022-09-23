@@ -336,6 +336,7 @@
         on conflict("1")
         do update set
         <foreach collection="janData[0]" index="index" separator=",">
+
             "${index}" = EXCLUDED."${index}"
         </foreach>
     </insert>

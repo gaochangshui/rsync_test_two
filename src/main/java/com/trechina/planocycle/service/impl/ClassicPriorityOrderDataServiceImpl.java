@@ -134,6 +134,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> getPriorityOrderData(PriorityOrderDataDto priorityOrderDataDto) {
         String companyCd = priorityOrderDataDto.getCompanyCd();
         Integer priorityPowerCd = priorityOrderDataDto.getPriorityOrderCd();
@@ -548,6 +549,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void setPtsClassify(List<String> colNameList, String shelfPatternCd, String companyCd, Integer priorityOrderCd) {
         logger.info("pts classifyパラメータの保存:{},{},{}",colNameList,shelfPatternCd,priorityOrderCd);
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, shelfPatternCd);
@@ -1158,6 +1160,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> getPriorityOrderDataUpd(List<String> colNameList, Integer priorityOrderCd,String companyCd,Integer delFlg) {
         String authorCd = session.getAttribute("aud").toString();
         claasicPriorityOrderAttributeClassifyMapper.delete(priorityOrderCd);

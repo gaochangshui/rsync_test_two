@@ -184,16 +184,6 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    /**通を過ぎて棚名称棚pattern
-     * @param companyCd
-     * @param shelfNameCd
-     * @return
-     */
-    @Override
-    public List<Integer> getShelfPattern(String companyCd, Integer shelfNameCd) {
-        return  shelfPatternMstMapper.getShelfPattern(companyCd,shelfNameCd);
-
-    }
 
     /**
      * 棚pattern関連店cdを取得
@@ -331,28 +321,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    /**
-     * つかむ取shelfPattern 1@棚パータン名称１,2@棚パータン名称2 格式的字符串
-     *
-     * @param shelfPatternNo
-     * @return
-     */
-    @Override
-    public String getShePatternNoNm(String shelfPatternNo) {
 
-        return shelfPatternMstMapper.selectByShePatternNoNm(shelfPatternNo);
-    }
-
-    /**
-     * 根据ptsKeyつかむ取patternid
-     *
-     * @param ptsKey
-     * @return
-     */
-    @Override
-    public List<Integer> getpatternIdOfPtsKey(String ptsKey) {
-        return shelfPatternMstMapper.getpatternIdOfPtsKey(ptsKey);
-    }
 
     @Override
     public List<Integer> getpatternIdOfFilename(String fileName, String companyCd) {

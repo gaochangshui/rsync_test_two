@@ -588,6 +588,7 @@ public class PriorityOrderMstServiceImpl implements PriorityOrderMstService {
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> checkOrderName(PriorityOrderMstVO priorityOrderMstVO) {
         String priorityOrderName = priorityOrderMstVO.getPriorityOrderName();
         Integer priorityOrderCd = priorityOrderMstVO.getPriorityOrderCd();

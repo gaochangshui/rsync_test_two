@@ -138,7 +138,6 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
 
             String companyCd = String.valueOf(((HashMap) jsonArray.get(0)).get("companyCd"));
             Integer priorityOrderCd = Integer.parseInt(((HashMap) jsonArray.get(0)).get("priorityOrderCd").toString());
-
             priorityOrderCatepakMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
             priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
             jsonArray.forEach(item -> {

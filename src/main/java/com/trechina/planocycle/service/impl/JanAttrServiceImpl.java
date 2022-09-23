@@ -11,6 +11,7 @@ import com.trechina.planocycle.utils.ResultMaps;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
 import java.util.LinkedHashMap;
@@ -28,6 +29,7 @@ public class JanAttrServiceImpl implements JanAttrService {
     private ZokuseiMstMapper zokuseiMstMapper;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> saveProductItem(ProductItemVO productItemVO){
 
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", "9999", "0000");
@@ -63,6 +65,7 @@ public class JanAttrServiceImpl implements JanAttrService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> delProductItem(ProductItemVO productItemVO) {
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", "9999", "0000");
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", "9999", "0000");
@@ -78,6 +81,7 @@ public class JanAttrServiceImpl implements JanAttrService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> updateAttrInfo(ProductItemVO productItemVO) {
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", "9999", "0000");
         String nameExist = mstJanMapper.getNameExist(productItemVO.getName(), tableNameAttr);

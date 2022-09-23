@@ -7,6 +7,7 @@ import com.trechina.planocycle.service.PresetAttributeService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
@@ -24,6 +25,7 @@ public class PresetAttributeServiceImpl implements PresetAttributeService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> setPresetAttribute(PresetAttribute presetAttribute) {
         String aud = session.getAttribute("aud").toString();
         presetAttributeMapper.deleteByAuthorCd(aud);

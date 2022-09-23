@@ -342,6 +342,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> setFaceNumAndPositionForData(Map<String,Object> map) {
         Integer id = shelfPtsDataMapper.getId(map.get("companyCd").toString(), Integer.parseInt(map.get("priorityOrderCd").toString()));
         if (Integer.parseInt(map.get("flag").toString()) == 0){
