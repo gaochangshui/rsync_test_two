@@ -207,13 +207,13 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         ptsInfoTemp.put("skuNum",newSkuNum);
         ptsInfoTemp.put("commonPartsData",commonPartsData);
         Map<String,Object> optionSet = new HashMap<>();
-        Boolean check = workPriorityOrderMst.getPartitionFlag()!=0?true:false;
+        Boolean check = workPriorityOrderMst.getPartitionFlag() != 0;
         Short value = workPriorityOrderMst.getPartitionVal()!=null?workPriorityOrderMst.getPartitionVal():0;
         optionSet.put("hSpace",new HashMap(){{
             put("check",check);
             put("value",value);
         }});
-        Boolean thickneCheck = workPriorityOrderMst.getTopPartitionFlag()!=0?true:false;
+        Boolean thickneCheck = workPriorityOrderMst.getTopPartitionFlag() != 0;
         Short thickneValue = workPriorityOrderMst.getTopPartitionVal()!=null?workPriorityOrderMst.getTopPartitionVal().shortValue():0;
         optionSet.put("thickne",new HashMap(){{
             put("check",thickneCheck);
