@@ -788,4 +788,15 @@
            where ptsData.priority_order_cd=#{priorityOrderCd}
            group by jan) jans
   </select>
+  <select id="getIdCommon" resultType="java.lang.Integer">
+    select id
+    from ${tableName}
+    where company_cd = #{companyCd}
+      <if test="ptsFlag == 0">
+        and priority_order_cd = #{priorityOrderCd}
+      </if>
+    <if test="ptsFlag == 1">
+      and priority_all_cd = #{priorityOrderCd} and shelf_pattern_cd = #{patternCd}
+    </if>
+  </select>
 </mapper>

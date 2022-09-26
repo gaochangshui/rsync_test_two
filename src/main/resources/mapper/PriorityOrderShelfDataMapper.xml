@@ -2,7 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.PriorityOrderShelfDataMapper">
     <insert id="insertPosition">
-        insert into planocycle.work_priority_order_pts_data_jandata(company_cd,pts_cd,tai_cd,tana_cd,tanaposition_cd,jan,face_count,face_men
+        insert into ${tableName}(company_cd,pts_cd,tai_cd,tana_cd,tanaposition_cd,
+                                <if test="ptsFlag == 0">
+                                    jan
+                                </if>
+                                <if test="ptsFlag == 1">
+                                    jan_cd
+                                </if>
+                                 ,face_count,face_men
         ,face_kaiten,tumiagesu,zaikosu)
         values
         <foreach collection="list" item="item" separator="," >
@@ -11,7 +18,7 @@
         </foreach>
     </insert>
     <update id="updateFaceNum">
-        update planocycle.work_priority_order_pts_data_jandata set face_count = #{item.faceCount} ,tumiagesu = #{item.tumiagesu},
+        update ${tableName} set face_count = #{item.faceCount} ,tumiagesu = #{item.tumiagesu},
                                                                    face_men = #{item.faceMen},face_kaiten = #{item.faceKaiten}
         where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd} and tanaposition_cd = #{item.tanapositionCd} and pts_cd = #{id}
     </update>
@@ -26,10 +33,10 @@
         where pts_cd = #{id}
     </update>
     <delete id="delJan">
-        delete from planocycle.work_priority_order_pts_data_jandata where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd} and tanaposition_cd = #{item.tanapositionCd} and pts_cd = #{id}
+        delete from ${tableName} where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd} and tanaposition_cd = #{item.tanapositionCd} and pts_cd = #{id}
     </delete>
     <delete id="delTana">
-        delete from planocycle.work_priority_order_pts_data_jandata where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd} and pts_cd = #{id}
+        delete from ${tableName} where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd} and pts_cd = #{id}
     </delete>
     <select id="getPlatformShedData" resultType="com.trechina.planocycle.entity.dto.PriorityOrderPlatformShedDto">
 
@@ -109,8 +116,14 @@
     </select>
     <select id="getAlikeTana" resultType="map">
         select tai_cd as "taiCd",tana_cd as "tanaCd",tanaposition_cd as "tanapositionCd",row_number() over(order by tai_cd,tana_cd,tanaposition_cd) "newPos"
-        ,jan,face_count as "faceCount",face_men as "faceMen" ,face_kaiten as "faceKaiten",tumiagesu,zaikosu,company_cd as "companyCd"
-               from  planocycle.work_priority_order_pts_data_jandata
+        <if test="ptsFlag == 1">
+            ,jan_cd as jan
+        </if>
+        <if test="ptsFlag == 0">
+            ,jan
+        </if>
+             ,face_count as "faceCount",face_men as "faceMen" ,face_kaiten as "faceKaiten",tumiagesu,zaikosu,company_cd as "companyCd"
+               from  ${tableName}
         where pts_cd = #{id} and tai_cd = #{item.taiCd} and tana_Cd = #{item.tanaCd}
     </select>
 </mapper>

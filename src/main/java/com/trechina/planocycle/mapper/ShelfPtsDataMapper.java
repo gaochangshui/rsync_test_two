@@ -171,6 +171,8 @@ public interface ShelfPtsDataMapper {
 
 
     Integer getId(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
+    Integer getIdCommon(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd,@Param("tableName")String tableName
+                        ,@Param("ptsFlag")int ptsFlag,@Param("patternCd")Integer patternCd);
     Integer getNewId(@Param("companyCd")String companyCd,@Param("priorityOrderCd")Integer priorityOrderCd);
 
 

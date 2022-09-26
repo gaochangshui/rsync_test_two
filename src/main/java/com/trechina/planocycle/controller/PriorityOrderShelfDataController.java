@@ -84,6 +84,7 @@ public class PriorityOrderShelfDataController {
      */
     @PostMapping("setFaceNumAndPositionForData")
     public Map<String,Object> setFaceNumAndPositionForData(@RequestBody Map<String,Object> map) {
+        map.put("ptsFlag",0);
         return  priorityOrderShelfDataService.setFaceNumAndPositionForData(map);
     }
 
