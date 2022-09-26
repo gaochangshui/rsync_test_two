@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableMap;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
@@ -208,16 +209,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         Map<String,Object> optionSet = new HashMap<>();
         Boolean thickneCheck = workPriorityOrderMst.getPartitionFlag() != 0;
         Short thickneValue = workPriorityOrderMst.getPartitionVal()!=null?workPriorityOrderMst.getPartitionVal():0;
-        optionSet.put("thickne",new HashMap(){{
-            put("check",thickneCheck);
-            put("value",thickneValue);
-        }});
+        optionSet.put("thickne", ImmutableMap.of("check",thickneCheck, "value",thickneValue));
         Boolean hSpaceCheck = workPriorityOrderMst.getTopPartitionFlag() != 0;
         Short hSpaceValue = workPriorityOrderMst.getTopPartitionVal()!=null?workPriorityOrderMst.getTopPartitionVal().shortValue():0;
-        optionSet.put("hSpace",new HashMap(){{
-            put("check",hSpaceCheck);
-            put("value",hSpaceValue);
-        }});
+        optionSet.put("hSpace",ImmutableMap.of("check",hSpaceCheck,"value",hSpaceValue));
         optionSet.put("backOpacity",0.25);
         ptsInfoTemp.put("optionSet",optionSet);
         Map<String, Object> result = new HashMap<>();
