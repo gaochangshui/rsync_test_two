@@ -189,7 +189,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
      */
     @Override
     public Map<String, Object> getAllPatternData(String companyCd, Integer priorityAllCd, Integer priorityOrderCd) {
-        String authorCd = session.getAttribute("aud").toString();
         // 基本パターンに紐付け棚パターンCDをもらう
         Integer patternCd = priorityAllMstMapper.getPatternCdBYPriorityCd(companyCd, priorityOrderCd);
         // 棚パターンのPTS基本情報をもらう
@@ -207,17 +206,17 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         ptsInfoTemp.put("skuNum",newSkuNum);
         ptsInfoTemp.put("commonPartsData",commonPartsData);
         Map<String,Object> optionSet = new HashMap<>();
-        Boolean check = workPriorityOrderMst.getPartitionFlag() != 0;
-        Short value = workPriorityOrderMst.getPartitionVal()!=null?workPriorityOrderMst.getPartitionVal():0;
-        optionSet.put("hSpace",new HashMap(){{
-            put("check",check);
-            put("value",value);
-        }});
-        Boolean thickneCheck = workPriorityOrderMst.getTopPartitionFlag() != 0;
-        Short thickneValue = workPriorityOrderMst.getTopPartitionVal()!=null?workPriorityOrderMst.getTopPartitionVal().shortValue():0;
+        Boolean thickneCheck = workPriorityOrderMst.getPartitionFlag() != 0;
+        Short thickneValue = workPriorityOrderMst.getPartitionVal()!=null?workPriorityOrderMst.getPartitionVal():0;
         optionSet.put("thickne",new HashMap(){{
             put("check",thickneCheck);
             put("value",thickneValue);
+        }});
+        Boolean hSpaceCheck = workPriorityOrderMst.getTopPartitionFlag() != 0;
+        Short hSpaceValue = workPriorityOrderMst.getTopPartitionVal()!=null?workPriorityOrderMst.getTopPartitionVal().shortValue():0;
+        optionSet.put("hSpace",new HashMap(){{
+            put("check",hSpaceCheck);
+            put("value",hSpaceValue);
         }});
         optionSet.put("backOpacity",0.25);
         ptsInfoTemp.put("optionSet",optionSet);
