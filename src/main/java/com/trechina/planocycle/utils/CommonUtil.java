@@ -11,16 +11,6 @@ import java.util.stream.Collectors;
 public class CommonUtil {
     private CommonUtil(){}
 
-    public static List<String> getZokuseiList(Integer zokuseiCount, String prefix){
-        List<String> zokuseiList = new ArrayList<>();
-
-        for (Integer integer = 1; integer <= zokuseiCount; integer++) {
-            zokuseiList.add(prefix+integer);
-        }
-
-        return zokuseiList;
-    }
-
     /**
      * sort
      * @param ptsJanList
