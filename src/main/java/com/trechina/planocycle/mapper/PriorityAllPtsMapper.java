@@ -69,4 +69,10 @@ public interface PriorityAllPtsMapper {
     Integer getNewTaiNum(Integer ptsCd);
 
     Integer getNewTanaNum(Integer ptsCd);
+
+    Integer getNewId(String companyCd,Integer priorityAllCd,Integer patternCd);
+
+    List<Map<String, Object>> selectNewJanZokusei(Integer priorityOrderCd, Integer ptsCd, List<ZokuseiMst> attrList
+            , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName,List<Map<String, Object>> janSizeCol);
 }
+
