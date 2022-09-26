@@ -222,9 +222,9 @@ public class MagicString {
     public static final String TABLE2="table2";
     public static final String JANINFOTABLE="janInfoTable";
 
-    public static final String area="area";
+    public static final String AREA ="area";
 
-    public static final String sort="sort";
+    public static final String SORT ="sort";
 
     public static final String BASIC_PATTERN_PTS_TABLE_NAME="planocycle.work_priority_order_pts_data";
     public static final String BASIC_PATTERN_PTS_DATA_TABLE_NAME="planocycle.work_priority_order_pts_data_jandata";

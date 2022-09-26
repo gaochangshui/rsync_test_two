@@ -593,14 +593,14 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
             groupCompany.add(companyCd);
             List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
-            branchList=branchList.stream().filter(map -> starReadingTableDto.getExpressItemList().contains(map.get(MagicString.sort))).collect(Collectors.toList());
+            branchList=branchList.stream().filter(map -> starReadingTableDto.getExpressItemList().contains(map.get(MagicString.SORT))).collect(Collectors.toList());
             List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList,tableName,groupCompany);
 
             if (!autoBranch.isEmpty()){
                 for (Map<String, Object> branch : autoBranch) {
                     for (Map<String, Object> objectMap : branchList) {
-                        if (branch.get(MagicString.area).equals(objectMap.get(MagicString.area))){
-                            branch.put(MagicString.sort,objectMap.get(MagicString.sort));
+                        if (branch.get(MagicString.AREA).equals(objectMap.get(MagicString.AREA))){
+                            branch.put(MagicString.SORT,objectMap.get(MagicString.SORT));
                         }
                     }
                 }
@@ -614,7 +614,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 map.put("maker",janMap.get("maker"));
                 map.put("total","");
                 for (Map<String, Object> objectMap : branchList) {
-                    map.put(objectMap.get(MagicString.sort)+"_"+objectMap.get("branchCd").toString(),"☓");
+                    map.put(objectMap.get(MagicString.SORT)+"_"+objectMap.get("branchCd").toString(),"☓");
                 }
                 list.add(map);
             }
@@ -624,16 +624,16 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 for (Map<String, Object> map : stringListEntry.getValue()) {
                     for (Map<String, Object> stringObjectMap : list) {
                         if (stringObjectMap.get(MagicString.JAN).equals(stringListEntry.getKey())){
-                                stringObjectMap.put(map.get(MagicString.sort)+"_"+map.get("branchCd"),map.get("flag"));
+                                stringObjectMap.put(map.get(MagicString.SORT)+"_"+map.get("branchCd"),map.get("flag"));
                         }
                     }
                 }
 
             }
             for (Map<String, Object> objectMap : branchList) {
-                column.append(",").append(objectMap.get(MagicString.sort)).append("_").append(objectMap.get("branchCd"));
+                column.append(",").append(objectMap.get(MagicString.SORT)).append("_").append(objectMap.get("branchCd"));
                 header.append(",").append(objectMap.get("branchCd")).append("<br />").append(objectMap.get("branchName"));
-                group.put( objectMap.get(MagicString.sort).toString(), objectMap.get(MagicString.area));
+                group.put( objectMap.get(MagicString.SORT).toString(), objectMap.get(MagicString.AREA));
             }
             mapResult.put("column", column.toString());
             mapResult.put("header", header.toString());
@@ -743,7 +743,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 for (Map<String, Object> objectMap : branchList) {
                     for (Map<String, Object> stringObjectMap : stringListEntry.getValue()) {
                         if (objectMap.get("branchCd").equals(stringObjectMap.get("branchCd"))){
-                            map.put(objectMap.get(MagicString.sort)+"_"+objectMap.get("branchCd"),stringObjectMap.get("flag"));
+                            map.put(objectMap.get(MagicString.SORT)+"_"+objectMap.get("branchCd"),stringObjectMap.get("flag"));
                         }
                     }
                 }
@@ -751,9 +751,9 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             }
 
             for (Map<String, Object> objectMap : branchList) {
-                column.append(",").append(objectMap.get(MagicString.sort)).append("_").append(objectMap.get("branchCd"));
+                column.append(",").append(objectMap.get(MagicString.SORT)).append("_").append(objectMap.get("branchCd"));
                 header.append(",").append(objectMap.get("branchCd")).append("<br />").append(objectMap.get("branchName"));
-                group.put( objectMap.get("sort").toString(), objectMap.get(MagicString.area));
+                group.put( objectMap.get("sort").toString(), objectMap.get(MagicString.AREA));
             }
             mapResult.put("column", column.toString());
             mapResult.put("header", header.toString());
@@ -864,7 +864,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                             }
                             for (Map.Entry<String, Object> objectEntry : finalStarReadingVo.getGroup().entrySet()) {
                                 if (objectEntry.getKey().equals(stringObjectEntry.getKey().split("_")[0])) {
-                                    map.put(MagicString.area, objectEntry.getValue());
+                                    map.put(MagicString.AREA, objectEntry.getValue());
                                 }
                             }
                             list.add(map);
@@ -1008,7 +1008,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 }else {
                     map.put("branch", header.get(i));
                 }
-                map.put(MagicString.area, group.get(columnList.get(i).split("_")[0]));
+                map.put(MagicString.AREA, group.get(columnList.get(i).split("_")[0]));
                 map.put("branchCd", columnList.get(i).split("_")[1]);
                 map.put("areaCd", columnList.get(i).split("_")[0]);
                 for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
