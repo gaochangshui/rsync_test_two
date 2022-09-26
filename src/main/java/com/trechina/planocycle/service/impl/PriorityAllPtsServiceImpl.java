@@ -179,6 +179,10 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
 
         if(ptsDetailData != null){
             Integer id = ptsDetailData.getId();
+            ptsDetailData.setSkuNum(priorityAllPtsMapper.getNewSkuNum(ptsDetailData.getId()));
+            ptsDetailData.setFaceNum(priorityAllPtsMapper.getNewFaceNum(ptsDetailData.getId()));
+            ptsDetailData.setTaiNum(priorityAllPtsMapper.getNewTaiNum(ptsDetailData.getId()));
+            ptsDetailData.setTanaNum(priorityAllPtsMapper.getNewTanaNum(ptsDetailData.getId()));
             String zokuseiNm = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "zokusei_nm")).collect(Collectors.toList()));
             String janHeader = ptsDetailData.getJanHeader()+","+"備考"+",商品名,"+zokuseiNm+",幅,高,奥行";
             ptsDetailData.setJanHeader(janHeader);

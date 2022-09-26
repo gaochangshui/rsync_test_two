@@ -63,4 +63,10 @@ public interface PriorityAllPtsMapper {
     List<Map<String, Object>> selectTanaMstByPatternCd(Integer priorityAllCd, Integer patternCd);
 
     Integer getPtsCd();
+
+    Integer getNewFaceNum(Integer ptsCd);
+    Integer getNewSkuNum(Integer ptsCd);
+    Integer getNewTaiNum(Integer ptsCd);
+
+    Integer getNewTanaNum(Integer ptsCd);
 }
