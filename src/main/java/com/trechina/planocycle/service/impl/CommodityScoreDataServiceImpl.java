@@ -3,7 +3,6 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
-import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
@@ -213,14 +211,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = map.get("company").toString();
         String commonPartsData = map.get("commonPartsData").toString();
-        Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
-
-        //param
-        String customerConditionStr = map.get("customerCondition").toString();
-        String prodAttrData = map.get("prodAttrData").toString();
-        String singleJan = new Gson().toJson(map.get("singleJan"));
-
-        commodityScoreDataService.setProductParam(map,productPowerCd,companyCd,authorCd,customerConditionStr,prodAttrData,singleJan);
         map.put("basketFlg",Integer.parseInt(map.get("showItemCheck").toString()) == 1?1:0);
         map.remove("showItemCheck");
         if (paramCount >0){
@@ -394,7 +384,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         return ResultMaps.result(ResultEnum.SUCCESS, result);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void setProductParam(Map<String, Object> map, Integer productPowerCd, String companyCd, String authorCd, String customerConditionStr, String prodAttrData, String singleJan) {
         //mst
         Date date = new Date();
@@ -410,6 +399,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd,productPowerCd);
         productPowerDataMapper.deleteWKSyokika(companyCd, authorCd,productPowerCd);
         productPowerDataMapper.deleteWKIntage(companyCd, authorCd,productPowerCd);
+
     }
 
     private Map<String, Object> janList(Map<String, Object> map) {

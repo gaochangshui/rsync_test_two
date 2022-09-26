@@ -29,44 +29,6 @@ public class cgiUtils {
      * @throws IOException
      */
     ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-    public  String getCgi(String path,String tokenInfo) {
-        InputStream in = null;
-        InputStream buffer = null;
-        BufferedReader reader = null;
-
-        try {
-            URL url =new URL(smartPath+path);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
-            in =connection.getInputStream();
-            buffer =new BufferedInputStream(in);
-            reader =new BufferedReader(new InputStreamReader(buffer));
-            String read;
-            StringBuilder builder = new StringBuilder();
-            while ((read = reader.readLine()) !=null){
-                builder.append(read);
-            }
-            return builder.toString();
-        }catch (Exception e){
-            logger.error("io異常", e);
-        }finally {
-            try {
-                if(Objects.nonNull(in)){
-                    in.close();
-                }
-                if(Objects.nonNull(buffer)){
-                    buffer.close();
-                }
-                if(Objects.nonNull(reader)){
-                    reader.close();
-                }
-            }catch (Exception e){
-                logger.error("io閉じる異常", e);
-            }
-        }
-
-        return "";
-    }
 
     /**
      * post調用cgi
@@ -82,10 +44,10 @@ public class cgiUtils {
         BufferedReader reader = null;
         InputStream in = null;
         InputStream buffer = null;
-
+        HttpURLConnection connection =null;
         try{
             URL url =new URL(smartPath+path);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
@@ -122,6 +84,9 @@ public class cgiUtils {
 
                 if(Objects.nonNull(os)){
                     os.close();
+                }
+                if (Objects.nonNull(connection)){
+                    connection.disconnect();
                 }
             } catch (IOException e) {
                 logger.error("io閉じる異常", e);
@@ -143,10 +108,11 @@ public class cgiUtils {
         BufferedReader reader = null;
         InputStream in = null;
         InputStream buffer = null;
+        HttpURLConnection connection =null;
 
         try{
             URL url =new URL(smartPath+path);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
@@ -183,6 +149,9 @@ public class cgiUtils {
 
                 if(Objects.nonNull(os)){
                     os.close();
+                }
+                if (Objects.nonNull(connection)){
+                    connection.disconnect();
                 }
             } catch (IOException e) {
                 logger.error("io閉じる異常", e);
@@ -208,11 +177,11 @@ public class cgiUtils {
         InputStream buffer = null;
         BufferedReader reader = null;
         InputStreamReader inputStreamReader = null;
-
+        HttpURLConnection connection = null;
         try{
             StringBuilder builder = null;
             URL url =new URL(smartPath+path);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
@@ -274,6 +243,9 @@ public class cgiUtils {
 
                 if(Objects.nonNull(reader)){
                     reader.close();
+                }
+                if (Objects.nonNull(connection)){
+                    connection.disconnect();
                 }
             } catch (IOException e) {
                 logger.info("io閉じる異常：",e);
@@ -292,11 +264,11 @@ public class cgiUtils {
         InputStream buffer = null;
         BufferedReader reader = null;
         InputStreamReader inputStreamReader = null;
-
+        HttpURLConnection connection = null;
         try{
             StringBuilder builder = null;
             URL url =new URL(smartPath+path);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
@@ -358,6 +330,9 @@ public class cgiUtils {
 
                 if(Objects.nonNull(reader)){
                     reader.close();
+                }
+                if (Objects.nonNull(connection)){
+                    connection.disconnect();
                 }
             } catch (IOException e) {
                 logger.info("io閉じる異常：",e);
@@ -382,14 +357,14 @@ public class cgiUtils {
         InputStream in = null;
         InputStream buffer = null;
         BufferedReader reader = null;
-
+        HttpURLConnection connection =null;
         try{
             URL url =new URL(smartPath+path);
             Boolean result  = true;
             StringBuilder builder = null;
             while (result) {
                 Thread.sleep(10*1_000L);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
                 connection.setRequestMethod("POST");
                 connection.setDoOutput(true);
@@ -453,6 +428,9 @@ public class cgiUtils {
 
                 if(Objects.nonNull(reader)){
                     reader.close();
+                }
+                if (Objects.nonNull(connection)){
+                    connection.disconnect();
                 }
             }catch (Exception e){
                 logger.error("io閉じる異常", e);

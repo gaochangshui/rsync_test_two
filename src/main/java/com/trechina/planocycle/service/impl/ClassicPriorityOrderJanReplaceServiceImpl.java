@@ -100,7 +100,6 @@ public class ClassicPriorityOrderJanReplaceServiceImpl implements ClassicPriorit
 
 
             //削除
-
             priorityOrderJanReplaceMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
             List<PriorityOrderJanReplace> exists = new ArrayList<>();
             StringBuilder notExists = new StringBuilder();

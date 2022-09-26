@@ -1,10 +1,12 @@
 package com.trechina.planocycle.controller;
 
+import com.google.gson.Gson;
 import com.trechina.planocycle.entity.vo.ShowDataVO;
 import com.trechina.planocycle.service.CommodityScoreDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 @RestController
@@ -12,6 +14,8 @@ import java.util.Map;
 public class CommodityScoreDataController {
     @Autowired
     private CommodityScoreDataService commodityScoreDataService;
+    @Autowired
+    private HttpSession session;
 
     /**
      * 商品力点数表の基本データの取得
@@ -34,6 +38,15 @@ public class CommodityScoreDataController {
 
     @PostMapping("/getCommodityScoreTaskId")
     public Map<String, Object> getCommodityScoreTaskId(@RequestBody Map<String,Object> map) {
+        //smtデータソースを教える
+        String authorCd = session.getAttribute("aud").toString();
+        String companyCd = map.get("company").toString();
+        Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
+        //param
+        String customerConditionStr = map.get("customerCondition").toString();
+        String prodAttrData = map.get("prodAttrData").toString();
+        String singleJan = new Gson().toJson(map.get("singleJan"));
+        commodityScoreDataService.setProductParam(map,productPowerCd,companyCd,authorCd,customerConditionStr,prodAttrData,singleJan);
         return commodityScoreDataService.getCommodityScoreTaskId(map);
     }
 
