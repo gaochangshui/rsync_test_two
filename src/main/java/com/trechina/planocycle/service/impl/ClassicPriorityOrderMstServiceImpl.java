@@ -40,6 +40,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -797,6 +798,12 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             List<String> finalCommodityNotJansCd = commodityNotJansCd;
             List<Map<String, Object>> resultDataByAttr = resultDataList.stream()
                     .filter(s -> s.get(MagicString.ATTR_LIST).toString().equals(group)).collect(Collectors.toList());
+            List<String> catePakSmallAttrList = catePakList.stream().map(PriorityOrderCatePakVO::getSmalls).collect(Collectors.toList());
+            for (String smallAttr : catePakSmallAttrList) {
+                if(smallAttr.equals(group)){
+                    maxSkuNum.getAndDecrement();
+                }
+            }
 
             if(branch!=null){
                 //must jan first
@@ -808,7 +815,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     if (commodityMustJansCd.contains(janNew) && rank>maxSkuNum.get()) {
                         maxSkuNum.getAndDecrement();
                         map.put("rank_upd_original", MapUtils.getString(map, MagicString.RANK_UPD));
-                        map.put(MagicString.RANK_UPD, "0");
+                        map.put(MagicString.RANK_UPD, 0);
+                        map.put(MagicString.JAN_OLD, map.get(MagicString.JAN));
                     }
 
                     if (finalCommodityNotJansCdList.contains(janNew) && rank<=maxSkuNum.get()) {
@@ -1034,8 +1042,15 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 continue;
             }
 
-            List<Map<String, Object>> smallListSortByRank = smallList.stream().sorted(Comparator.comparing(map -> MapUtils.getInteger(map, MagicString.RANK_UPD))).collect(Collectors.toList());
-            Map<String, Object> compressJan = smallListSortByRank.get(smallList.size() - 1);
+            List<String> commodityMustJansCd = new ArrayList<>();
+            if(commodityMustJans!=null && !commodityMustJans.isEmpty()){
+                commodityMustJansCd = commodityMustJans.stream().map(map->map.get(MagicString.JAN_NEW).toString()).collect(Collectors.toList());
+            }
+            List<String> finalCommodityMustJansCd = commodityMustJansCd;
+            List<Map<String, Object>> smallListSortByRank = smallList.stream()
+                    .filter(map->!finalCommodityMustJansCd.contains(MapUtils.getString(map, MagicString.JAN)))
+                    .sorted(Comparator.comparing(map -> MapUtils.getInteger(map, MagicString.RANK_UPD))).collect(Collectors.toList());
+            Map<String, Object> compressJan = smallListSortByRank.get(smallListSortByRank.size() - 1);
             //縮attr's last rank index
             int smallsIndex = 0;
             String smallJan = MapUtils.getString(compressJan, MagicString.JAN);
