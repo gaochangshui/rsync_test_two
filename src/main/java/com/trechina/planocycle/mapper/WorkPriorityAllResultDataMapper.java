@@ -42,4 +42,5 @@ public interface WorkPriorityAllResultDataMapper {
     void setSortRank(@Param("list") List<WorkPriorityOrderResultData> reorder, @Param("companyCd") String companyCd,@Param("authorCd") String authorCd
             ,@Param("priorityOrderCd") Integer priorityOrderCd,@Param("priorityAllCd")Integer priorityAllCd,@Param("patternCd")Integer patternCd);
 
+    List<Map<String, Object>> selectGroup(Integer priorityAllCd, Integer patternCd, List<Map<String, Object>> list);
 }

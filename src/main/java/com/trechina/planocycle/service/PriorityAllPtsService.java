@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.po.BasicAllPts;
 import com.trechina.planocycle.entity.vo.PriorityAllVO;
 
 import javax.servlet.http.HttpServletResponse;
@@ -20,4 +21,5 @@ public interface PriorityAllPtsService {
     void batchDownloadPtsData(PriorityAllVO priorityAllVO, HttpServletResponse response) throws IOException;
 
 
+    Map<String, Object> getBasicAllPlatformShedJans(BasicAllPts basicAllPts);
 }

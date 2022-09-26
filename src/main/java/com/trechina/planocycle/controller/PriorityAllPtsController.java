@@ -1,5 +1,6 @@
 package com.trechina.planocycle.controller;
 
+import com.trechina.planocycle.entity.po.BasicAllPts;
 import com.trechina.planocycle.entity.vo.PriorityAllVO;
 import com.trechina.planocycle.service.PriorityAllPtsService;
 import com.trechina.planocycle.service.PriorityOrderShelfDataService;
@@ -45,5 +46,14 @@ public class PriorityAllPtsController {
     public Map<String,Object> setFaceNumAndPositionForData(@RequestBody Map<String,Object> map) {
         map.put("ptsFlag",1);
         return  priorityOrderShelfDataService.setFaceNumAndPositionForData(map);
+    }
+
+
+    /**
+     * 基本パタン台棚別詳細
+     */
+    @PostMapping("getBasicAllPlatformShedJans")
+    public Map<String,Object> getBasicAllPlatformShedJans(@RequestBody BasicAllPts basicAllPts) {
+        return  priorityAllPtsService.getBasicAllPlatformShedJans(basicAllPts);
     }
 }

@@ -175,6 +175,25 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
     and priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
   </select>
+  <select id="getAttrColForNameForFinal" resultType="java.util.Map">
+    select value,zokusei_nm,
+           case when kaisou."3" is null then COALESCE(attr."1", proattr."1") else concat('zokuseiName',(zokusei_col :: INTEGER+1)) end as zokusei_colname
+            ,
+           case when kaisou."3" is null then COALESCE(attr."1", proattr."1") else concat('zokusei',(zokusei_col :: INTEGER+1)) end as zokusei_colcd
+            ,case when kaisou."3" is null then zokuseimst.zokusei_col :: integer else (zokusei_col :: INTEGER+1) end as zokusei_col
+            ,sort+1 as sort,zokuseimst.zokusei_id zokusei_id, case when value is null then 0 else 1 end is_exist
+    from  planocycle.priority_order_mst_attrsort attrsort
+    left join masterdb.planocycle_zokusei_mst zokuseimst
+    on zokuseimst.zokusei_id = attrsort.value and
+    concat(zokuseimst.company_cd, '_', zokuseimst.class_cd) in (concat(#{company}, '_', #{classCd}), '9999_0000')
+    left join "${company}".prod_${classCd}_jan_kaisou_header_sys kaisou
+    on kaisou."3" = trim(zokuseimst.zokusei_col :: VARCHAR)
+    left join "${company}".prod_${classCd}_jan_attr_header_sys attr
+    on attr."3" = trim(zokuseimst.zokusei_col :: VARCHAR)
+    left join "9999".prod_0000_jan_attr_header_sys proattr on proattr."3"=trim(zokuseimst.zokusei_col :: VARCHAR)
+    where attrsort.company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+    order by sort
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from priority.priority_order_mst_attrsort
     where company_cd = #{companyCd,jdbcType=VARCHAR}
