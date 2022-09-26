@@ -281,7 +281,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                     String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
                     String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
 
-                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
+                    if(Objects.equals(restrictKey, zokuseiKey)){
                         equalsCount++;
                     }
                 }

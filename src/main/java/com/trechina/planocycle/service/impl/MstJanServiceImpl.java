@@ -3,6 +3,7 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
@@ -426,7 +427,8 @@ public class MstJanServiceImpl implements MstJanService {
             if (s.contains("zokusei")){
                 Integer zokuseiId = Integer.parseInt(s.replace("zokusei", ""))-1;
                 setInfoMap.put(zokuseiId+"",map.get(s));
-                if (map.get(s) != null && !map.get(s).equals("")){
+                // map.get(s)!= null && !map.get(s).equals("")
+                if (!Strings.isNullOrEmpty(MapUtils.getString(map, s))){
                     list.add(s.replace("zokusei", ""));
                     getKaisouNameMap.put(zokuseiId+"",map.get(s));
                 }else {

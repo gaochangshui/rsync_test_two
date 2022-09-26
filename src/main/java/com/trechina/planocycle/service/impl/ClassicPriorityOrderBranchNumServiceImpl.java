@@ -159,7 +159,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             // 共通メソッドを呼び出し、データを処理する
             List<PriorityOrderCommodityMust> mustList =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderCommodityMust.class,priorityOrderCommodityMust,
                     companyCd ,priorityOrderCd);
-            mustList = mustList.stream().filter(map -> map.getJan() != null && !"".equals(map.getJan())).collect(Collectors.toList());
+            // map.getJan() != null&& !"".equals(map.getJan())
+            mustList = mustList.stream().filter(map -> !Strings.isNullOrEmpty(map.getJan())).collect(Collectors.toList());
             logger.info("必須商品リストの処理後のパラメータを保存する：{}",mustList);
             //削除
             priorityOrderCommodityMustMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
@@ -204,7 +205,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 PriorityOrderCommodityMust must = existJanList.get(i);
                     String branch = must.getBranch();
                     List<Integer> patternCdList = priorityOrderCommodityMustMapper.selectPatternByBranch(priorityOrderCd, companyCd, branch);
-                    if(patternCdList.isEmpty()&& ! "".equals(must.getBranchOrigin()) &&  must.getBranchOrigin() != null){
+                    //! "".equals() &&  must.getBranchOrigin() != null
+                    if(patternCdList.isEmpty()&& !Strings.isNullOrEmpty(must.getBranchOrigin())){
                         notBranchExists.add(must.getBranchOrigin()+"");
                     }
                     for (Integer patternCd : patternCdList) {
@@ -261,7 +263,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             // 調用共同方法，處理数据
             List<PriorityOrderCommodityNot> not =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderCommodityNot.class,priorityOrderCommodityNot,
                     companyCd ,priorityOrderCd);
-            not = not.stream().filter(map -> map.getJan() != null && !"".equals(map.getJan())).collect(Collectors.toList());
+//            not = not.stream().filter(map -> map.getJan() != null && !"".equals(map.getJan())).collect(Collectors.toList());
+            not = not.stream().filter(map -> !Strings.isNullOrEmpty(map.getJan())).collect(Collectors.toList());
             logger.info("不可商品リスト処理後のパラメータを保存する：{}",not);
             //削除
             priorityOrderCommodityNotMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
@@ -307,7 +310,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 PriorityOrderCommodityNot commodityNot = existJanList.get(i);
                     String branch = commodityNot.getBranch();
                     List<Integer> patternCdList = priorityOrderCommodityMustMapper.selectPatternByBranch(priorityOrderCd, companyCd, branch);
-                    if(patternCdList.isEmpty() && ! "".equals(commodityNot.getBranchOrigin()) &&  commodityNot.getBranchOrigin() != null ){
+//                       if(patternCdList.isEmpty() && ! "".equals(commodityNot.getBranchOrigin()) &&  commodityNot.getBranchOrigin() != null ){
+                    if(patternCdList.isEmpty() && !Strings.isNullOrEmpty(commodityNot.getBranchOrigin()) ){
                         notBranchExists.add(commodityNot.getBranchOrigin()+"");
                     }
                     for (Integer  patternCd : patternCdList) {
@@ -336,9 +340,9 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 return ResultMaps.result(ResultEnum.JANNOTESISTS,Joiner.on(",").join(notExistJan));
             }else if(!notBranchExists.isEmpty()){
                 return ResultMaps.result(ResultEnum.BRANCHNOTESISTS,Joiner.on(",").join(notBranchExists));
-            }else{
-                return ResultMaps.result(ResultEnum.SUCCESS);
             }
+
+            return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
             logger.error("不可商品リストの保存：",e);
             logAspect.setTryErrorLog(e,new Object[]{priorityOrderCommodityNot});

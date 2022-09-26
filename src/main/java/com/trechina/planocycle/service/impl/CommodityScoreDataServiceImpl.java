@@ -3,6 +3,7 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
@@ -14,6 +15,7 @@ import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
 import com.trechina.planocycle.utils.cgiUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -351,7 +353,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             logger.info("顧客終了時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
                         }
                         //市場データ
-                        if (map.get("channelNm") != null && !"".equals(map.get("channelNm"))) {
+//                        if (map.get("channelNm") != null && !"".equals(map.get("channelNm"))) {
+                        if (!Strings.isNullOrEmpty(MapUtils.getString(map, "channelNm"))) {
                             uuid = UUID.randomUUID().toString();
                             map.put("mode", "market_data");
                             map.put("guid", uuid);

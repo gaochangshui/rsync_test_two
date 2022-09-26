@@ -285,7 +285,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                     String restrictKey = MapUtils.getString(restrict,  map.get("zokusei_colcd").toString());
                     String zokuseiKey = MapUtils.getString(zokusei,   map.get("zokusei_colcd").toString());
 
-                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
+                    if(Objects.equals(restrictKey,zokuseiKey)){
                         equalsCount++;
                     }
                 }
@@ -457,7 +457,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                     String restrictKey = MapUtils.getString(restrict,  map.get("zokusei_colcd").toString());
                     String zokuseiKey = MapUtils.getString(zokusei,  map.get("zokusei_colcd").toString());
 
-                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
+                    if(Objects.equals(restrictKey,zokuseiKey)){
                         equalsCount++;
                     }
                 }
@@ -499,7 +499,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                     String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + map.get("zokusei_colcd"));
                     String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + map.get("zokusei_colcd"));
 
-                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
+                    if(Objects.equals(restrictKey,zokuseiKey)){
                         equalsCount++;
                     }
                 }

@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.google.common.base.Strings;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
@@ -93,7 +94,8 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                     result.put("rank", item.getRank());
                     result.put("branchNum", item.getBranchNum());
                     // big可以為空，需要判断一下
-                    if (item.getBigs() != null && !item.getBigs().equals("")) {
+//                    if (item.getBigs() != null && !item.getBigs().equals("")) {
+                    if (!Strings.isNullOrEmpty(item.getBigs())) {
                         attrBig = item.getBigs().split(",");
                         for (int i = 0; i < attrBig.length; i++) {
                             valList = attrBig[i].split(":");
