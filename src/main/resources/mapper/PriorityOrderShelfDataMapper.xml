@@ -23,7 +23,7 @@
         where tai_cd = #{item.taiCd} and tana_cd = #{item.tanaCd} and tanaposition_cd = #{item.tanapositionCd} and pts_cd = #{id}
     </update>
     <update id="updatePositionCd">
-        update planocycle.work_priority_order_pts_data_jandata
+        update ${tableName}
         set tanaposition_cd =
         case concat(tai_cd,tana_cd,tanaposition_cd)
         <foreach collection="list" item="item" >

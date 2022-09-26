@@ -370,7 +370,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         }else if (Integer.parseInt(map.get("flag").toString()) == 1){
             priorityOrderShelfDataMapper.delJan(map,id,tableName);
             List<Map<String, Object>> alikeTana = priorityOrderShelfDataMapper.getAlikeTana(map, id,tableName,ptsFlag);
-            priorityOrderShelfDataMapper.updatePositionCd(alikeTana,id);
+            priorityOrderShelfDataMapper.updatePositionCd(alikeTana,id,tableName);
         }else {
             List<Map<String, Object>> alikeTana = priorityOrderShelfDataMapper.getAlikeTana(map, id,tableName,ptsFlag);
             if (Integer.parseInt(map.get("tanapositionCd").toString())-1>=alikeTana.size()){

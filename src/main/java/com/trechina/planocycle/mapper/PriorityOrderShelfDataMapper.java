@@ -27,7 +27,7 @@ public interface PriorityOrderShelfDataMapper {
 
     List<Map<String,Object>> getAlikeTana(@Param("item") Map<String, Object> map,@Param("id")Integer id,@Param("tableName")String tableName,@Param("ptsFlag")Integer ptsFlag);
 
-    void updatePositionCd(@Param("list") List<Map<String, Object>> alikeTana,@Param("id") Integer id);
+    void updatePositionCd(@Param("list") List<Map<String, Object>> alikeTana,@Param("id") Integer id,@Param("tableName")String tableName);
 
     void insertPosition(@Param("list") List<Map<String, Object>> alikeTana,@Param("id") Integer id,@Param("tableName")String tableName
     ,@Param("ptsFlag")Integer ptsFlag);
