@@ -292,13 +292,13 @@
   </select>
   <select id="selectJanByPatternCd" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
     select jan "janCd", dense_rank() over (partition by "restrictCd" order by sku_rank) sku_rank,"restrictCd",face,tai_cd "taiCd",
-    tana_cd "tanaCd", tanaposition_cd "tanapositionCd",tumiagesu,zaikosu,face_displayflg,face_position,
+    tana_cd "tanaCd", tanaposition_cd "tanapositionCd",tumiagesu,zaikosu,face_displayflg,face_position,face_men,face_kaiten,depth_display_num,
     case when jancut.jan_cd is null then 0 else 1 end as cutFlag
     <foreach collection="attrHeaderList" open="," item="item" separator=",">
       coalesce(janpromst."${item.attrVal}", '67') as "${item.attr}"
     </foreach>
     from (select coalesce(jan_new, jandata.jan) jan, sku_rank, restrict_cd "restrictCd", face,tai_cd,tana_cd,tanaposition_cd,
-    tumiagesu,zaikosu,face_displayflg,face_position,
+    tumiagesu,zaikosu,face_displayflg,face_position,face_men,face_kaiten,depth_display_num,
     ROW_NUMBER() over(PARTITION by jan_new,restrict_cd,tai_cd,tana_cd,tanaposition_cd) rowNum
     from(select *,ROW_NUMBER() over(PARTITION by jan) row_num from planocycle.shelf_pts_data ptsdata
     inner JOIN planocycle.shelf_pts_data_jandata jandata ON ptsdata.ID = jandata.pts_cd
@@ -318,12 +318,12 @@
   </select>
   <select id="selectJanByPatternCdByAll" resultType="com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto">
     select jan "janCd", dense_rank() over (partition by "restrictCd" order by sku_rank) sku_rank,"restrictCd",face,tai_cd "taiCd",
-    tana_cd "tanaCd", tanaposition_cd "tanapositionCd",tumiagesu,zaikosu,face_displayflg,face_position
+    tana_cd "tanaCd", tanaposition_cd "tanapositionCd",tumiagesu,zaikosu,face_displayflg,face_position,face_men,face_kaiten,depth_display_num
     <foreach collection="attrHeaderList" open="," item="item" separator=",">
       coalesce(janpromst."${item.attrVal}", '0') as "${item.attr}"
     </foreach>
     from (select coalesce(jan_new, jandata.jan) jan, sku_rank, restrict_cd "restrictCd", face,tai_cd,tana_cd,tanaposition_cd,
-    tumiagesu,zaikosu,face_displayflg,face_position,
+    tumiagesu,zaikosu,face_displayflg,face_position,face_men,face_kaiten,depth_display_num,
     ROW_NUMBER() over(PARTITION by jan_new,restrict_cd,tai_cd,tana_cd,tanaposition_cd) rowNum
     from(select *,ROW_NUMBER() over(PARTITION by jan) row_num from planocycle.shelf_pts_data ptsdata
     inner JOIN planocycle.shelf_pts_data_jandata jandata ON ptsdata.ID = jandata.pts_cd

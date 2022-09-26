@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,6 +97,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     private JanInfoMapper janInfoMapper;
     @Autowired
     private PriorityOrderSortMapper priorityOrderSortMapper;
+    @Autowired
+    private ApplicationContext applicationContext;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -124,8 +127,9 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 // 全パターンのList
                 List<PriorityAllPatternListVO> checkedInfo = info.stream().filter(vo->vo.getCheckFlag()==1).collect(Collectors.toList());
                 int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
+                BasicAllPatternMstService basicAllPatternMstService = applicationContext.getBean(BasicAllPatternMstService.class);
                 for(PriorityAllPatternListVO pattern : checkedInfo) {
-                    autoDetect(companyCd,priorityAllCd,pattern.getShelfPatternCd(),priorityOrderCd,authorCd);
+                    basicAllPatternMstService.autoDetect(companyCd,priorityAllCd,pattern.getShelfPatternCd(),priorityOrderCd,authorCd);
 
                     makeWKResultDataList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
 
