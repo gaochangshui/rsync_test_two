@@ -173,4 +173,16 @@
     <select id="getPtsCd" resultType="java.lang.Integer">
         select nextval('planocycle.priority_all_pts_data_id_seq'::regclass)
     </select>
+    <select id="getNewFaceNum" resultType="java.lang.Integer">
+        SELECT sum(face_count) from planocycle.work_priority_all_pts_jans where pts_cd = #{ptsCd}
+    </select>
+    <select id="getNewSkuNum" resultType="java.lang.Integer">
+        SELECT distinct count(jan_cd) from planocycle.work_priority_all_pts_jans where pts_cd = #{ptsCd}
+    </select>
+    <select id="getNewTaiNum" resultType="java.lang.Integer">
+        SELECT distinct count(1) from planocycle.work_priority_all_pts_tai where pts_cd = #{ptsCd}
+    </select>
+    <select id="getNewTanaNum" resultType="java.lang.Integer">
+        SELECT distinct count(1) from planocycle.work_priority_all_pts_tana where pts_cd = #{ptsCd}
+    </select>
 </mapper>

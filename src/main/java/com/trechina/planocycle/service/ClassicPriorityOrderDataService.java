@@ -76,4 +76,7 @@ public interface ClassicPriorityOrderDataService {
     void setPtsClassify(List<String> colNameList, String shelfPatternCd, String companyCd, Integer priorityOrderCd);
 
     Map<String, Object> getBranchNum(List<Map<String, Object>> map);
+
+     void deleteWorkData(String companyCd, Integer newPriorityOrderCd);
+
 }

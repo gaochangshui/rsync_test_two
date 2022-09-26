@@ -382,7 +382,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             map.put("a"+i,commonTableName.getStoreInfoTable());
         }
         if (commonPartsData.isEmpty()){
-            return ResultMaps.result(ResultEnum.PATTERN_NOT_EXIST);
+            return ResultMaps.result(ResultEnum.SUCCESS,new ArrayList<>());
         }
         List<ShelfPatternNameVO> patternForStorel = shelfPatternMstMapper.getPatternForStorel(storeIsCore, companyCd,map);
         for (ShelfPatternNameVO shelfPatternNameVO : patternForStorel) {

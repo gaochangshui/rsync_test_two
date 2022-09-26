@@ -7,6 +7,7 @@ import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
 import com.trechina.planocycle.entity.po.ProductPowerNumGenerator;
 import com.trechina.planocycle.entity.vo.PriorityAllPatternListVO;
+import com.trechina.planocycle.entity.vo.WorkPriorityOrderMstEditVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
@@ -197,12 +198,28 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         Integer newTanaNum = shelfPtsDataMapper.getNewTanaNumFinal(priorityOrderCd);
         Integer newSkuNum = shelfPtsDataMapper.getNewSkuNumFinal(priorityOrderCd);
         PriorityOrderAttrDto priorityOrderAttrDto = priorityOrderMstMapper.getCommonPartsData(companyCd, priorityOrderCd);
+        WorkPriorityOrderMstEditVo workPriorityOrderMst = workPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
         String commonPartsData = priorityOrderAttrDto.getCommonPartsData();
         ptsInfoTemp.put("taiNum",newTaiNum);
         ptsInfoTemp.put("tanaNum",newTanaNum);
         ptsInfoTemp.put("faceNum",newFaceNum);
         ptsInfoTemp.put("skuNum",newSkuNum);
         ptsInfoTemp.put("commonPartsData",commonPartsData);
+        Map<String,Object> optionSet = new HashMap<>();
+        Boolean thickneCheck = workPriorityOrderMst.getPartitionFlag() != 0;
+        Short thickneValue = workPriorityOrderMst.getPartitionVal()!=null?workPriorityOrderMst.getPartitionVal():0;
+        optionSet.put("thickne",new HashMap(){{
+            put("check",thickneCheck);
+            put("value",thickneValue);
+        }});
+        Boolean hSpaceCheck = workPriorityOrderMst.getTopPartitionFlag() != 0;
+        Short hSpaceValue = workPriorityOrderMst.getTopPartitionVal()!=null?workPriorityOrderMst.getTopPartitionVal().shortValue():0;
+        optionSet.put("hSpace",new HashMap(){{
+            put("check",hSpaceCheck);
+            put("value",hSpaceValue);
+        }});
+        optionSet.put("backOpacity",0.25);
+        ptsInfoTemp.put("optionSet",optionSet);
         Map<String, Object> result = new HashMap<>();
         result.put("tanaInfo", ptsInfoTemp);
 
