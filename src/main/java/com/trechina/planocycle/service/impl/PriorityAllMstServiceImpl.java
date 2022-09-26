@@ -219,6 +219,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
             put("check",thickneCheck);
             put("value",thickneValue);
         }});
+        optionSet.put("backOpacity",0.25);
         ptsInfoTemp.put("optionSet",optionSet);
         Map<String, Object> result = new HashMap<>();
         result.put("tanaInfo", ptsInfoTemp);
