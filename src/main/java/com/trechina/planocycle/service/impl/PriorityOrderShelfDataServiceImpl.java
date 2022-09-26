@@ -54,6 +54,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
+    private PriorityAllPtsMapper priorityAllPtsMapper;
+    @Autowired
     private HttpSession session;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
@@ -344,15 +346,33 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> setFaceNumAndPositionForData(Map<String,Object> map) {
-        Integer id = shelfPtsDataMapper.getId(map.get("companyCd").toString(), Integer.parseInt(map.get("priorityOrderCd").toString()));
+        String companyCd = map.get("companyCd").toString();
+        int priorityOrderCd = 0;
+        String ptsTableName="";
+        String tableName ="";
+        Integer patternCd = 0;
+        int ptsFlag = Integer.parseInt(map.get("ptsFlag").toString());
+        if ( ptsFlag == 0) {
+
+            priorityOrderCd = Integer.parseInt(map.get("priorityOrderCd").toString());
+             ptsTableName = MagicString.BASIC_PATTERN_PTS_TABLE_NAME;
+             tableName = MagicString.BASIC_PATTERN_PTS_DATA_TABLE_NAME;
+        }else if (ptsFlag == 1){
+            patternCd = Integer.parseInt(map.get("patternCd").toString());
+            priorityOrderCd = Integer.parseInt(map.get("priorityAllCd").toString());
+            ptsTableName = MagicString.BASIC_ALL_PTS_TABLE_NAME;
+            tableName = MagicString.BASIC_ALL_PTS_DATA_TABLE_NAME;
+        }
+
+        Integer id = shelfPtsDataMapper.getIdCommon(companyCd,priorityOrderCd,ptsTableName,ptsFlag,patternCd);
         if (Integer.parseInt(map.get("flag").toString()) == 0){
-            priorityOrderShelfDataMapper.updateFaceNum(map,id);
+            priorityOrderShelfDataMapper.updateFaceNum(map,id,tableName);
         }else if (Integer.parseInt(map.get("flag").toString()) == 1){
-            priorityOrderShelfDataMapper.delJan(map,id);
-            List<Map<String, Object>> alikeTana = priorityOrderShelfDataMapper.getAlikeTana(map, id);
-            priorityOrderShelfDataMapper.updatePositionCd(alikeTana,id);
+            priorityOrderShelfDataMapper.delJan(map,id,tableName);
+            List<Map<String, Object>> alikeTana = priorityOrderShelfDataMapper.getAlikeTana(map, id,tableName,ptsFlag);
+            priorityOrderShelfDataMapper.updatePositionCd(alikeTana,id,tableName);
         }else {
-            List<Map<String, Object>> alikeTana = priorityOrderShelfDataMapper.getAlikeTana(map, id);
+            List<Map<String, Object>> alikeTana = priorityOrderShelfDataMapper.getAlikeTana(map, id,tableName,ptsFlag);
             if (Integer.parseInt(map.get("tanapositionCd").toString())-1>=alikeTana.size()){
                 alikeTana.add(map);
             }else {
@@ -362,12 +382,16 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             for (Map<String, Object> stringObjectMap : alikeTana) {
                 stringObjectMap.put("tanapositionCd",i++);
             }
-            priorityOrderShelfDataMapper.delTana(map,id);
-            priorityOrderShelfDataMapper.insertPosition(alikeTana,id);
+            priorityOrderShelfDataMapper.delTana(map,id,tableName);
+            priorityOrderShelfDataMapper.insertPosition(alikeTana,id,tableName,ptsFlag);
         }
         Map<String,Object> map1 = new HashMap<>();
-        map1.put("faceNum",shelfPtsDataMapper.getNewFaceNum(Integer.parseInt(map.get("priorityOrderCd").toString())));
-        map1.put("skuNum",shelfPtsDataMapper.getNewSkuNum(Integer.parseInt(map.get("priorityOrderCd").toString())));
+        if (ptsFlag == 0) {
+            map1.put("faceNum",shelfPtsDataMapper.getNewFaceNum(priorityOrderCd));
+            map1.put("skuNum",shelfPtsDataMapper.getNewSkuNum(priorityOrderCd));
+        }else if (ptsFlag == 1){
+            return ResultMaps.result(ResultEnum.SUCCESS);
+        }
         return ResultMaps.result(ResultEnum.SUCCESS,map1);
     }
 

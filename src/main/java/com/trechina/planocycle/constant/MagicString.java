@@ -226,5 +226,11 @@ public class MagicString {
 
     public static final String sort="sort";
 
+    public static final String BASIC_PATTERN_PTS_TABLE_NAME="planocycle.work_priority_order_pts_data";
+    public static final String BASIC_PATTERN_PTS_DATA_TABLE_NAME="planocycle.work_priority_order_pts_data_jandata";
+
+    public static final String BASIC_ALL_PTS_TABLE_NAME="planocycle.work_priority_all_pts_data";
+
+    public static final String BASIC_ALL_PTS_DATA_TABLE_NAME="planocycle.work_priority_all_pts_jans";
 
 }

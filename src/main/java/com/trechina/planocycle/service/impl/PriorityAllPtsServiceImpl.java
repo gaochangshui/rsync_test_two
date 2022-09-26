@@ -312,6 +312,8 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         }
     }
 
+
+
     private void writeZip(String filePath, ZipOutputStream zos, String fileName){
         try(FileInputStream fis = new FileInputStream(filePath)) {
             zos.putNextEntry(new ZipEntry(fileName));

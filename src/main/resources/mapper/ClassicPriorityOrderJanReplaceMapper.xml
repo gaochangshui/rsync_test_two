@@ -44,7 +44,7 @@
     where company_cd = #{companyCd,jdbcType=VARCHAR}
   </delete>
   <select id="selectJanInfo" resultType="com.trechina.planocycle.entity.vo.ClassicPriorityOrderJanReplaceVO">
-    select jan_old as janOld,jan_new as janNew,"${janNameCol}" as janName
+    select jan_old as janOld,jan.jan_new as janNew,"${janNameCol}" as janName
     from priority.priority_order_jan_replace jan
     left join ${tableName} mst
     on jan.jan_old  = mst."${janCdCol}"
@@ -54,10 +54,11 @@
     select array_to_string(array_agg("1"),',') from ${proInfoTable}
   </select>
   <select id="selectJanDistinctByJan" resultType="string">
-    select "1" from ${proInfoTable} where "1" in
+    select jan_old from priority.work_priority_order_result_data where jan_old in
     <foreach collection="jan" item="item" open="(" close=")" separator=",">
       #{item}
     </foreach>
+    and  priority_order_cd = #{priorityOrderCd}
     union
     SELECT jan_new from priority.work_priority_order_jan_new
     where  priority_order_cd = #{priorityOrderCd} and jan_new in

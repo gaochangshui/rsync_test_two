@@ -19,17 +19,18 @@ public interface PriorityOrderShelfDataMapper {
 
     List<PriorityOrderRestrictJanDto> getPlatformShedJans(@Param("item")PriorityOrderPlatformShedDto priorityOrderPlatformShedDto,@Param("authorCd")String authorCd);
 
-    void updateFaceNum(@Param("item")  Map<String,Object> map,@Param("id")Integer id);
+    void updateFaceNum(@Param("item")  Map<String,Object> map,@Param("id")Integer id,@Param("tableName")String tableName);
 
     Integer selectRegclass();
 
-    void delJan(@Param("item") Map<String, Object> map,@Param("id")Integer id);
+    void delJan(@Param("item") Map<String, Object> map,@Param("id")Integer id,@Param("tableName")String tableName);
 
-    List<Map<String,Object>> getAlikeTana(@Param("item") Map<String, Object> map,@Param("id")Integer id);
+    List<Map<String,Object>> getAlikeTana(@Param("item") Map<String, Object> map,@Param("id")Integer id,@Param("tableName")String tableName,@Param("ptsFlag")Integer ptsFlag);
 
-    void updatePositionCd(@Param("list") List<Map<String, Object>> alikeTana,@Param("id") Integer id);
+    void updatePositionCd(@Param("list") List<Map<String, Object>> alikeTana,@Param("id") Integer id,@Param("tableName")String tableName);
 
-    void insertPosition(@Param("list") List<Map<String, Object>> alikeTana,@Param("id") Integer id);
+    void insertPosition(@Param("list") List<Map<String, Object>> alikeTana,@Param("id") Integer id,@Param("tableName")String tableName
+    ,@Param("ptsFlag")Integer ptsFlag);
 
-    void delTana(@Param("item") Map<String, Object> map,@Param("id")Integer id);
+    void delTana(@Param("item") Map<String, Object> map,@Param("id")Integer id,@Param("tableName")String tableName);
 }
