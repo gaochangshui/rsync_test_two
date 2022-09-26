@@ -19,6 +19,7 @@ public interface WorkPriorityOrderMstMapper {
     ,@Param("newPriorityOrderCd")Integer newPriorityOrderCd);
 
     WorkPriorityOrderMstEditVo getWorkPriorityOrderMst(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd, @Param("authorCd")String authorCd);
+    WorkPriorityOrderMstEditVo getPriorityOrderMst(@Param("companyCd") String companyCd, @Param("priorityOrderCd") Integer priorityOrderCd);
     //跟据shelfPatternCd找name
     Integer getShelfName(@Param("shelfPattern")Integer shelfPattern);
 
