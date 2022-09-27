@@ -169,11 +169,10 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
         List<String> janReplaceOldList = priorityOrderJanCardMapper.checkJanReplaceOld(priorityOrderJanCard);
         if (!janReplaceList.isEmpty() || !janReplaceOldList.isEmpty()){
             janReplaceList.addAll(janReplaceOldList);
-            for (String jan : janReplaceList) {
+            janReplaceList.forEach(jan->{
                 if(Strings.isNullOrEmpty(errorJan.getOrDefault(jan, ""))) {
-                    errorJan.put(jan, "すでにJAN変商品として入力済みです。");
-                }
-            }
+                errorJan.put(jan, "すでにJAN変商品として入力済みです。");
+            }});
         }
 
         List<String> janProposalList = priorityOrderJanCardMapper.checkJanProposal(priorityOrderJanCard);
@@ -182,20 +181,20 @@ public class ClassicPriorityOrderJanCardServiceImpl implements ClassicPriorityOr
             janProposalList.addAll(janProposalOldList);
             janProposalList = janProposalList.stream().distinct().collect(Collectors.toList());
 
-            for (String jan : janProposalList) {
+            janProposalList.forEach(jan->{
                 if(Strings.isNullOrEmpty(errorJan.getOrDefault(jan, ""))){
                     errorJan.put(jan, "すでにJAN変商品として入力済みです。");
                 }
-            }
+            });
         }
 
         List<String> janNewList = priorityOrderJanCardMapper.checkJanNew(priorityOrderJanCard);
         if (!janNewList.isEmpty()){
-            for (String jan : janNewList) {
+            janNewList.forEach(jan->{
                 if(Strings.isNullOrEmpty(errorJan.getOrDefault(jan, ""))){
                     errorJan.put(jan, "すでに新規商品として入力済みです。");
                 }
-            }
+            });
         }
 
         return errorJan;
