@@ -326,14 +326,9 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
                  tableName = String.format("\"%s\".prod_0000_jan_info", "1000");
             }
             List<Jans> janNewMst = priorityOrderJanNewMapper.getJanNewMst(janNews, companyCd,tableName);
-            if (!janNews.isEmpty()) {
-                for (Jans jans : janNewMst) {
-                    for (ClassicPriorityOrderJanNew priorityOrderJanNew : janNewList) {
-                        if (jans.getJan().equals(priorityOrderJanNew.getJanNew())) {
-                            priorityOrderJanNew.setNameNew(jans.getJanname());
-                        }
-                    }
-                }
+            for (ClassicPriorityOrderJanNew priorityOrderJanNew : janNewList) {
+                Optional<Jans> any = janNewMst.stream().filter(jans -> jans.getJan().equals(priorityOrderJanNew.getJanNew())).findAny();
+                any.ifPresent(jans -> priorityOrderJanNew.setNameNew(jans.getJanname()));
             }
         }
 

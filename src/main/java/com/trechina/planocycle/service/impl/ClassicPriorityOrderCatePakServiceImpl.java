@@ -64,10 +64,10 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
             Map<String, String> smallMap = new LinkedHashMap<>(attrMap.size());
             Map<String, String> bigMap = new LinkedHashMap<>(attrMap.size());
 
-            for (Map.Entry<String, String> entry : attrMap.entrySet()) {
-                smallMap.put(MagicString.ATTR_SMALL + entry.getKey().replace("attr", ""), entry.getValue());
-                bigMap.put(MagicString.ATTR_BIG + entry.getKey().replace("attr", ""), entry.getValue());
-            }
+            attrMap.forEach((key, value) -> {
+                smallMap.put(MagicString.ATTR_SMALL + key.replace("attr", ""), value);
+                bigMap.put(MagicString.ATTR_BIG + key.replace("attr", ""), value);
+            });
 
             colMap.putAll(smallMap);
             colMap.put("rank", "RANK");
@@ -83,28 +83,31 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                 // 遍暦結果集，拆分動態列
                 priorityOrderCatePakVOS.forEach(item -> {
                     Map<String, Object> result = new HashMap<>();
-                    String[] attrSmall = item.getSmalls().split(",");
-                    String[] attrBig;
-                    String[] valList;
-                    // 遍暦small
-                    for (int i = 0; i < attrSmall.length; i++) {
-                        valList = attrSmall[i].split(":");
-                        result.put(MagicString.ATTR_SMALL + valList[0], valList[1]);
-                    }
+//                    String[] attrSmall = item.getSmalls().split(",");
+//                    String[] attrBig;
+//                    String[] valList;
+//                    // 遍暦small
+//                    for (int i = 0; i < attrSmall.length; i++) {
+//                        valList = attrSmall[i].split(":");
+//                        result.put(MagicString.ATTR_SMALL + valList[0], valList[1]);
+//                    }
+                    this.splitCatePakAttr(item.getSmalls(), result, MagicString.ATTR_SMALL);
                     result.put("rank", item.getRank());
                     result.put("branchNum", item.getBranchNum());
                     // big可以為空，需要判断一下
 //                    if (item.getBigs() != null && !item.getBigs().equals("")) {
                     if (!Strings.isNullOrEmpty(item.getBigs())) {
-                        attrBig = item.getBigs().split(",");
-                        for (int i = 0; i < attrBig.length; i++) {
-                            valList = attrBig[i].split(":");
-                            if (valList.length == 1) {
-                                result.put(MagicString.ATTR_BIG + valList[0], "");
-                            } else {
-                                result.put(MagicString.ATTR_BIG + valList[0], valList[1]);
-                            }
-                        }
+                        this.splitCatePakAttr(item.getBigs(), result, MagicString.ATTR_BIG);
+
+//                        attrBig = item.getBigs().split(",");
+//                        for (int i = 0; i < attrBig.length; i++) {
+//                            valList = attrBig[i].split(":");
+//                            if (valList.length == 1) {
+//                                result.put(MagicString.ATTR_BIG + valList[0], "");
+//                            } else {
+//                                result.put(MagicString.ATTR_BIG + valList[0], valList[1]);
+//                            }
+//                        }
                     }
                     //写入jsonArray
                     jsonArray.add(result);
@@ -123,6 +126,19 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
             logger.info("つかむ取カテパケ拡縮失敗：", e);
             logAspect.setTryErrorLog(e,new Object[]{companyCd,priorityOrderCd});
             return ResultMaps.result(ResultEnum.FAILURE);
+        }
+    }
+
+    private void splitCatePakAttr(String attrs, Map<String, Object> result, String attrKey){
+        String[] valList;
+        String[] attr = attrs.split(",");
+        for (int i = 0; i < attr.length; i++) {
+            valList = attr[i].split(":");
+            if (valList.length == 1) {
+                result.put(attrKey + valList[0], "");
+            } else {
+                result.put(attrKey + valList[0], valList[1]);
+            }
         }
     }
 
