@@ -424,10 +424,10 @@ public class MstJanServiceImpl implements MstJanService {
         if ("0".equals(commonPartsDto.get(MagicString.PROD_IS_CORE))) {
             companyCd = map.get("companyCd").toString();
         }
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd,
+        String tableNameAttr = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, companyCd,
                 commonPartsDto.get(MagicString.PROD_MST_CLASS));
 
-        String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd,
+        String janInfoTableName = MessageFormat.format(MagicString.PROD_JAN_INFO, companyCd,
                 commonPartsDto.get(MagicString.PROD_MST_CLASS));
 
         LinkedHashMap <String,Object> setInfoMap = new LinkedHashMap<>();
@@ -528,10 +528,10 @@ public class MstJanServiceImpl implements MstJanService {
         if ("1".equals(prodIsCore)) {
             companyCd = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         }
-        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", companyCd, prodMstClass);
-        String tableNameKaisou = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", companyCd, prodMstClass);
-        String tableNameInfo = MessageFormat.format("\"{0}\".prod_{1}_jan_info", companyCd, prodMstClass);
-        String tableNameKaisouData = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou", companyCd, prodMstClass);
+        String tableNameAttr = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
+        String tableNameKaisou = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS, companyCd, prodMstClass);
+        String tableNameInfo = MessageFormat.format(MagicString.PROD_JAN_INFO, companyCd, prodMstClass);
+        String tableNameKaisouData = MessageFormat.format(MagicString.PROD_JAN_KAISOU, companyCd, prodMstClass);
         String[] header = excelData.get(0);
         Optional<String> optional = Stream.of(header).filter(MagicString.JAN::equalsIgnoreCase).findAny();
         if (!optional.isPresent()) {
