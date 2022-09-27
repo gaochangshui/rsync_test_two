@@ -206,7 +206,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             }
             s.append(",janName");
             for (Map<String, Object> map : attrCol) {
-                s.append(",").append(map.get("zokusei_colcd"));
+                s.append(",").append(map.get(MagicString.ZOUKUSEI_COLCD));
             }
             s.append(",plano_width,plano_height,plano_depth");
             ptsDetailData.setJanColumns(s.toString());
@@ -334,16 +334,16 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         String commonPartsData = priorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
         List<Map<String, Object>> ptsGroup = this.getBasicAllPtsGroup(companyCd, priorityOrderCd,priorityAllCd,patternCd);
-        ptsGroup= ptsGroup.stream().filter(map->map.get("taiCd").toString().equals(basicAllPts.getTaiCd()+"")&&
-                        map.get("tanaCd").toString().equals(basicAllPts.getTanaCd()+""))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank",0)))
+        ptsGroup= ptsGroup.stream().filter(map->map.get(MagicString.TAI_CD).toString().equals(basicAllPts.getTaiCd()+"")&&
+                        map.get(MagicString.TANA_CD).toString().equals(basicAllPts.getTanaCd()+""))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,MagicString.RANK,0)))
                 .collect(Collectors.toList());
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForNameForFinal(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         Map<String,Object> mapHeader = new HashMap<>();
         String groupColumns = "janCd,janName";
         String groupHeader = "JAN,商品名";
         for (Map<String, Object> map : attrCol) {
-            groupColumns += ","+map.get("zokusei_colcd");
+            groupColumns += ","+map.get(MagicString.ZOUKUSEI_COLCD);
             groupHeader += ","+map.get("zokusei_nm");
         }
         groupColumns += ",plano_width,plano_height,plano_depth,rank,faceNum";
@@ -361,10 +361,10 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         }
         mapHeader.put("newData",ptsGroup);
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
-        List<Map<String, Object>> ptsOldGroup = this.getBasicAllOldPtsGroup(companyCd, priorityOrderCd,priorityAllCd,patternCd,ptsCd);
-        ptsOldGroup= ptsOldGroup.stream().filter(map->map.get("taiCd").toString().equals(basicAllPts.getTaiCd()+"")&&
-                        map.get("tanaCd").toString().equals(basicAllPts.getTanaCd()+""))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank",0)))
+        List<Map<String, Object>> ptsOldGroup = this.getBasicAllOldPtsGroup(companyCd, priorityOrderCd,ptsCd);
+        ptsOldGroup= ptsOldGroup.stream().filter(map->map.get(MagicString.TAI_CD).toString().equals(basicAllPts.getTaiCd()+"")&&
+                        map.get(MagicString.TANA_CD).toString().equals(basicAllPts.getTanaCd()+""))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,MagicString.RANK,0)))
                 .collect(Collectors.toList());
         for (Map<String, Object> map : ptsOldGroup) {
             for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
@@ -391,11 +391,10 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         Integer id = priorityAllPtsMapper.getNewId(companyCd, priorityAllCd,patternCd);
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForNameForFinal(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
-        List<Map<String, Object>> zokuseiList = priorityAllPtsMapper.selectNewJanZokusei(priorityOrderCd, id, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),attrCol,janSizeCol);
-        return zokuseiList;
+        return priorityAllPtsMapper.selectNewJanZokusei(priorityOrderCd, id, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),attrCol,janSizeCol);
     }
 
-    private List<Map<String, Object>> getBasicAllOldPtsGroup(String companyCd, Integer priorityOrderCd,Integer priorityAllCd,Integer patternCd,Integer ptsCd) {
+    private List<Map<String, Object>> getBasicAllOldPtsGroup(String companyCd, Integer priorityOrderCd,Integer ptsCd) {
         List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKeyForFinal(companyCd, priorityOrderCd);
         List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
         WorkPriorityOrderMstEditVo priorityOrderMst = workPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
@@ -403,13 +402,10 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
         List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
-        Integer id = priorityAllPtsMapper.getNewId(companyCd, priorityAllCd,patternCd);
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForNameForFinal(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
-        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectOldJanZokuseiForFinal(priorityOrderCd,ptsCd , zokuseiMsts, allCdList,
+        return basicPatternRestrictResultMapper.selectOldJanZokuseiForFinal(priorityOrderCd,ptsCd , zokuseiMsts, allCdList,
                 commonTableName.getProInfoTable(),attrCol,janSizeCol,priorityOrderMst.getProductPowerCd());
-
-        return zokuseiList;
     }
     private void writeZip(String filePath, ZipOutputStream zos, String fileName){
         try(FileInputStream fis = new FileInputStream(filePath)) {
