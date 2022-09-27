@@ -923,13 +923,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             starReadingVo = (StarReadingVo) stringObjectMap.get("data");
             List<LinkedHashMap<String, Object>> data = starReadingVo.getData();
             for (LinkedHashMap<String, Object> datum : data) {
-                int total = 0;
-                for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
-                    if (stringObjectEntry.getValue().equals("◯")){
-                        total++;
-                    }
-
-                }
+                long total = datum.entrySet().stream().filter(entry->"◯".equals(entry.getValue())).count();
+//                for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
+//                    if (stringObjectEntry.getValue().equals("◯")){
+//                        total++;
+//                    }
+//
+//                }
                 datum.put("total",total);
             }
             starReadingVo.setData(data);
