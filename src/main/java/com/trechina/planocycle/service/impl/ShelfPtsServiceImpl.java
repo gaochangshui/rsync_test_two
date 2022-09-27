@@ -123,7 +123,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             } else {
                 ptsKey = new StringBuilder("__");
             }
-            logger.info("手動で組み合わせたptskey：{}", ptsKey.toString());
+            logger.info("手動で組み合わせたptskey：{}", ptsKey);
             List<Integer> patternIdList = shelfPatternService.getpatternIdOfFilename(shelfPtsDto.getFileName(),shelfPtsDto.getCompanyCd());
             logger.info("組み合わせのptskeyによってpatternidを探します：{}", patternIdList);
             if (!patternIdList.isEmpty()) {
@@ -666,7 +666,6 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             Integer taiCd = ptsTanaVoList.get(0).getTaiCd();
             shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
             Integer id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
-            WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd,authorCd, priorityOrderCd);
             for (PtsTanaVo ptsTanaVo : ptsTanaVoList) {
                 if (ptsTanaVo.getGroup().isEmpty()){
                     ArrayList<BasicPatternRestrictRelation> group = new ArrayList<>();
@@ -717,7 +716,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
                s.append("faceDisplayflg,facePosition,depthDisplayNum,remarks");
             }else {
-                s.append("remarks");
+                s.append(MagicString.REMARKS);
             }
             s.append(",janName");
             for (Map<String, Object> map : attrCol) {
@@ -759,35 +758,35 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                     .forEach(map -> map.setRemarks(MagicString.MSG_NEW_TANA));
             //商品変更：新規商品
             newJanData.stream()
-                    .filter(map -> janData.stream().noneMatch(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))
+                    .filter(map -> janData.stream().noneMatch(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))
                     ))
                     .forEach(map -> map.put("remarks",MagicString.MSG_NEW_JAN));
             //商品変更：位置変更
             newJanData.stream()
-                    .filter(map -> janData.stream().noneMatch(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))
+                    .filter(map -> janData.stream().noneMatch(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))
                             && MapUtils.getInteger(map1,MagicString.TAI_CD).equals(MapUtils.getInteger(map,MagicString.TAI_CD))
                             && MapUtils.getInteger(map1,MagicString.TANA_CD).equals(MapUtils.getInteger(map,MagicString.TANA_CD))
-                            && MapUtils.getInteger(map1,"tanapositionCd").equals(MapUtils.getInteger(map,"tanapositionCd")))
+                            && MapUtils.getInteger(map1,MagicString.TANAPOSITIONCD).equals(MapUtils.getInteger(map,MagicString.TANAPOSITIONCD)))
                     )
                     .forEach(map -> {
-                        if(!MagicString.MSG_NEW_JAN.equals(map.get("remarks"))){
-                            map.put("remarks",MagicString.MSG_TANA_POSITION_CHANGE);
+                        if(!MagicString.MSG_NEW_JAN.equals(map.get(MagicString.REMARKS))){
+                            map.put(MagicString.REMARKS,MagicString.MSG_TANA_POSITION_CHANGE);
                         }
                     });
             //商品変更：フェース変更
             newJanData.stream()
-                    .filter(map -> janData.stream().anyMatch(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))
+                    .filter(map -> janData.stream().anyMatch(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))
                             && MapUtils.getInteger(map1,MagicString.TAI_CD).equals(MapUtils.getInteger(map,MagicString.TAI_CD))
                             && MapUtils.getInteger(map1,MagicString.TANA_CD).equals(MapUtils.getInteger(map,MagicString.TANA_CD))
-                            && MapUtils.getInteger(map1,"tanapositionCd").equals(MapUtils.getInteger(map,"tanapositionCd"))
+                            && MapUtils.getInteger(map1,MagicString.TANAPOSITIONCD).equals(MapUtils.getInteger(map,MagicString.TANAPOSITIONCD))
                             && !MapUtils.getInteger(map1,MagicString.FACE_COUNT).equals(MapUtils.getInteger(map,MagicString.FACE_COUNT))
                     ))
-                    .forEach(map -> map.put("remarks",(StringUtils.hasLength(map.get("remarks").toString()) ? map.get("remarks").toString() + "," : "")
+                    .forEach(map -> map.put(MagicString.REMARKS,(StringUtils.hasLength(map.get(MagicString.REMARKS).toString()) ? map.get(MagicString.REMARKS).toString() + "," : "")
                             + MagicString.MSG_FACE_CHANGE
-                            + janData.stream().filter(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))
+                            + janData.stream().filter(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))
                                     && MapUtils.getInteger(map1,MagicString.TAI_CD).equals(MapUtils.getInteger(map,MagicString.TAI_CD))
                                     && MapUtils.getInteger(map1,MagicString.TANA_CD).equals(MapUtils.getInteger(map,MagicString.TANA_CD))
-                                    && MapUtils.getInteger(map1,"tanapositionCd").equals(MapUtils.getInteger(map,"tanapositionCd"))
+                                    && MapUtils.getInteger(map1,MagicString.TANAPOSITIONCD).equals(MapUtils.getInteger(map,MagicString.TANAPOSITIONCD))
                             ).findFirst().get().get(MagicString.FACE_COUNT)));
             ptsDetailData.setPtsTaiList(newTaiData);
             ptsDetailData.setPtsTanaVoList(newTanaData);
@@ -795,6 +794,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         }
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
+
 
     /**
      * 新ptsの棚高さの備考
