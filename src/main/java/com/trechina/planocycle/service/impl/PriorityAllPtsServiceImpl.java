@@ -206,7 +206,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             }
             s.append(",janName");
             for (Map<String, Object> map : attrCol) {
-                s.append(",").append(map.get("zokusei_colcd"));
+                s.append(",").append(map.get(MagicString.ZOUKUSEI_COLCD));
             }
             s.append(",plano_width,plano_height,plano_depth");
             ptsDetailData.setJanColumns(s.toString());
@@ -216,7 +216,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
 
             List<PtsTaiVo> newTaiData = priorityAllPtsMapper.getTaiData(id);
             List<PtsTanaVo> newTanaData = priorityAllPtsMapper.getTanaData(id);
-            List<LinkedHashMap> newJanData = priorityAllPtsMapper.getJanData(id,attrCol,commonTableName.getProInfoTable(),janSizeCol, proTableName);
+            List<LinkedHashMap<String,Object>> newJanData = priorityAllPtsMapper.getJanData(id,attrCol,commonTableName.getProInfoTable(),janSizeCol, proTableName);
 
 
             //既存台、棚、商品データ
@@ -241,30 +241,30 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
                     .forEach(map -> map.setRemarks(MagicString.MSG_NEW_TANA));
             //商品変更：新規商品
             newJanData.stream()
-                    .filter(map -> janData.stream().noneMatch(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))
+                    .filter(map -> janData.stream().noneMatch(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))
                     ))
-                    .forEach(map -> map.put("remarks",MagicString.MSG_NEW_JAN));
+                    .forEach(map -> map.put(MagicString.REMARKS,MagicString.MSG_NEW_JAN));
             //商品変更：位置変更
             newJanData.stream()
-                    .filter(map -> janData.stream().anyMatch(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))
-                            && (!MapUtils.getInteger(map1,"taiCd").equals(MapUtils.getInteger(map,"taiCd"))
-                            || !MapUtils.getInteger(map1,"tanaCd").equals(MapUtils.getInteger(map,"tanaCd"))
-                            || !MapUtils.getInteger(map1,"tanapositionCd").equals(MapUtils.getInteger(map,"tanapositionCd")))
+                    .filter(map -> janData.stream().anyMatch(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))
+                            && (!MapUtils.getInteger(map1,MagicString.TAI_CD).equals(MapUtils.getInteger(map,MagicString.TAI_CD))
+                            || !MapUtils.getInteger(map1,MagicString.TANA_CD).equals(MapUtils.getInteger(map,MagicString.TANA_CD))
+                            || !MapUtils.getInteger(map1,MagicString.TANAPOSITIONCD).equals(MapUtils.getInteger(map,MagicString.TANAPOSITION_CD)))
                     ))
                     .forEach(map -> {
-                        LinkedHashMap oldPtsJanDataVo = janData.stream().filter(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))).findFirst().get();
-                        map.put("remarks",MagicString.MSG_TANA_POSITION_CHANGE.replace("{tai}", String.valueOf(MapUtils.getInteger(oldPtsJanDataVo,"taiCd")))
-                                .replace("{tana}", String.valueOf(MapUtils.getInteger(oldPtsJanDataVo,"tanaCd")))
-                                .replace("{position}", String.valueOf(MapUtils.getInteger(oldPtsJanDataVo,"tanapositionCd"))));
+                        LinkedHashMap<String,Object> oldPtsJanDataVo = janData.stream().filter(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))).findFirst().get();
+                        map.put(MagicString.REMARKS,MagicString.MSG_TANA_POSITION_CHANGE.replace("{tai}", String.valueOf(MapUtils.getInteger(oldPtsJanDataVo,MagicString.TAI_CD)))
+                                .replace("{tana}", String.valueOf(MapUtils.getInteger(oldPtsJanDataVo,MagicString.TANA_CD)))
+                                .replace("{position}", String.valueOf(MapUtils.getInteger(oldPtsJanDataVo,MagicString.TANAPOSITION_CD))));
                     });
             //商品変更：フェース変更
             newJanData.stream()
-                    .filter(map -> janData.stream().anyMatch(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))
-                            && !MapUtils.getInteger(map1,"faceCount").equals(MapUtils.getInteger(map,"faceCount"))
+                    .filter(map -> janData.stream().anyMatch(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))
+                            && !MapUtils.getInteger(map1,MagicString.FACE_COUNT).equals(MapUtils.getInteger(map,MagicString.FACE_COUNT))
                     ))
-                    .forEach(map -> map.put("remarks",(StringUtils.hasLength(map.get("remarks").toString()) ? map.get("remarks").toString() + "," : "")
+                    .forEach(map -> map.put(MagicString.REMARKS,(StringUtils.hasLength(map.get(MagicString.REMARKS).toString()) ? map.get(MagicString.REMARKS).toString() + "," : "")
                             + MagicString.MSG_FACE_CHANGE
-                            + janData.stream().filter(map1 -> MapUtils.getString(map1,"jan").equals(MapUtils.getString(map,"jan"))).findFirst().get().get("faceCount")));
+                            + janData.stream().filter(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))).findFirst().get().get("faceCount")));
             logger.info("end,{}", System.currentTimeMillis());
             ptsDetailData.setPtsTaiList(newTaiData);
             ptsDetailData.setPtsTanaVoList(newTanaData);
@@ -329,28 +329,27 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         Integer priorityAllCd = basicAllPts.getPriorityAllCd();
         String companyCd = basicAllPts.getCompanyCd();
         Integer patternCd = basicAllPts.getPatternCd();
-        String authorCd = session.getAttribute("aud").toString();
         Integer priorityOrderCd = priorityAllMstMapper.getWorkPriorityOrderCd(priorityAllCd,companyCd);
         WorkPriorityOrderMstEditVo priorityOrderMst = workPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
         String commonPartsData = priorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
         List<Map<String, Object>> ptsGroup = this.getBasicAllPtsGroup(companyCd, priorityOrderCd,priorityAllCd,patternCd);
-        ptsGroup= ptsGroup.stream().filter(map->map.get("taiCd").toString().equals(basicAllPts.getTaiCd()+"")&&
-                        map.get("tanaCd").toString().equals(basicAllPts.getTanaCd()+""))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank",0)))
+        ptsGroup= ptsGroup.stream().filter(map->map.get(MagicString.TAI_CD).toString().equals(basicAllPts.getTaiCd()+"")&&
+                        map.get(MagicString.TANA_CD).toString().equals(basicAllPts.getTanaCd()+""))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,MagicString.RANK,0)))
                 .collect(Collectors.toList());
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForNameForFinal(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         Map<String,Object> mapHeader = new HashMap<>();
-        String groupColumns = "janCd,janName";
-        String groupHeader = "JAN,商品名";
+        StringBuilder groupColumns = new StringBuilder("janCd,janName");
+        StringBuilder groupHeader = new StringBuilder("JAN,商品名");
         for (Map<String, Object> map : attrCol) {
-            groupColumns += ","+map.get("zokusei_colcd");
-            groupHeader += ","+map.get("zokusei_nm");
+            groupColumns.append(",").append(map.get(MagicString.ZOUKUSEI_COLCD));
+            groupHeader.append(",").append(map.get("zokusei_nm"));
         }
-        groupColumns += ",plano_width,plano_height,plano_depth,rank,faceNum";
-        groupHeader += ",幅,高,奥行,RANK,フェース数";
-        mapHeader.put("groupColumns",groupColumns);
-        mapHeader.put("groupHeader",groupHeader);
+        groupColumns.append(",plano_width,plano_height,plano_depth,rank,faceNum");
+        groupHeader.append(",幅,高,奥行,RANK,フェース数");
+        mapHeader.put("groupColumns", groupColumns.toString());
+        mapHeader.put("groupHeader", groupHeader.toString());
         for (Map<String, Object> map : ptsGroup) {
             for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
                 for (Map<String, Object> objectMap : attrCol) {
@@ -362,10 +361,16 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         }
         mapHeader.put("newData",ptsGroup);
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(patternCd);
-        List<Map<String, Object>> ptsOldGroup = priorityOrderShelfDataService.getOldPtsGroup(companyCd, priorityOrderCd, "planocycle.shelf_pts_data_jandata",ptsCd);
-        ptsOldGroup= ptsOldGroup.stream().filter(map->map.get("taiCd").toString().equals(basicAllPts.getTaiCd()+"")&&
-                        map.get("tanaCd").toString().equals(basicAllPts.getTanaCd()+""))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank",0)))
+        List<Map<String, Object>> ptsOldGroup = this.getBasicAllOldPtsGroup(companyCd, priorityOrderCd,ptsCd);
+        ptsOldGroup = this.oldGroupHandle(ptsOldGroup, basicAllPts, attrCol);
+        mapHeader.put("oldData",ptsOldGroup);
+        return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
+    }
+
+    public List<Map<String, Object>>  oldGroupHandle(List<Map<String, Object>>  ptsOldGroup,BasicAllPts basicAllPts,List<Map<String, Object>> attrCol){
+        ptsOldGroup= ptsOldGroup.stream().filter(map->map.get(MagicString.TAI_CD).toString().equals(basicAllPts.getTaiCd()+"")&&
+                        map.get(MagicString.TANA_CD).toString().equals(basicAllPts.getTanaCd()+""))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,MagicString.RANK,0)))
                 .collect(Collectors.toList());
         for (Map<String, Object> map : ptsOldGroup) {
             for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
@@ -376,9 +381,10 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
                 }
             }
         }
-        mapHeader.put("oldData",ptsOldGroup);
-        return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
+        return ptsOldGroup;
     }
+
+
 
     private List<Map<String, Object>> getBasicAllPtsGroup(String companyCd, Integer priorityOrderCd,Integer priorityAllCd,Integer patternCd) {
         List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKeyForFinal(companyCd, priorityOrderCd);
@@ -390,13 +396,11 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
         Integer id = priorityAllPtsMapper.getNewId(companyCd, priorityAllCd,patternCd);
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForNameForFinal(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
-        List<Map<String, Object>> restrictResult = workPriorityAllResultDataMapper.selectGroup(priorityAllCd,patternCd,attrCol);
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
-        List<Map<String, Object>> zokuseiList = priorityAllPtsMapper.selectNewJanZokusei(priorityOrderCd, id, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),attrCol,janSizeCol);
-        return zokuseiList;
+        return priorityAllPtsMapper.selectNewJanZokusei(priorityOrderCd, id, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),attrCol,janSizeCol);
     }
 
-    private List<Map<String, Object>> getBasicAllOldPtsGroup(String companyCd, Integer priorityOrderCd,Integer priorityAllCd,Integer patternCd,Integer ptsCd) {
+    private List<Map<String, Object>> getBasicAllOldPtsGroup(String companyCd, Integer priorityOrderCd,Integer ptsCd) {
         List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKeyForFinal(companyCd, priorityOrderCd);
         List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
         WorkPriorityOrderMstEditVo priorityOrderMst = workPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
@@ -404,13 +408,10 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
         List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
-        Integer id = priorityAllPtsMapper.getNewId(companyCd, priorityAllCd,patternCd);
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForNameForFinal(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
-        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectOldJanZokuseiForFinal(priorityOrderCd,ptsCd , zokuseiMsts, allCdList,
+        return basicPatternRestrictResultMapper.selectOldJanZokuseiForFinal(priorityOrderCd,ptsCd , zokuseiMsts, allCdList,
                 commonTableName.getProInfoTable(),attrCol,janSizeCol,priorityOrderMst.getProductPowerCd());
-
-        return zokuseiList;
     }
     private void writeZip(String filePath, ZipOutputStream zos, String fileName){
         try(FileInputStream fis = new FileInputStream(filePath)) {

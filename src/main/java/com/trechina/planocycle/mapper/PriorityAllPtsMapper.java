@@ -43,7 +43,7 @@ public interface PriorityAllPtsMapper {
 
     List<PtsTanaVo> getTanaData(Integer id);
 
-    List<LinkedHashMap> getJanData(@Param("id") Integer id, @Param("attrList")List<Map<String,Object>> attrList
+    List<LinkedHashMap<String,Object>> getJanData(@Param("id") Integer id, @Param("attrList")List<Map<String,Object>> attrList
             , @Param("tableName")String tableName, @Param("janSizeCol")List<Map<String,Object>>janSizeCol, String proTableName);
 
     PtsDetailDataVo getPtsDetailData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd);
