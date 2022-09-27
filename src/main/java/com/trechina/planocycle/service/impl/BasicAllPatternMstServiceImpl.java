@@ -455,17 +455,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         for (int i = 0; i < zokuseiList.size(); i++) {
             Map<String, Object> zokusei = zokuseiList.get(i);
             for (Map<String, Object> restrict : newRestrictResult) {
-                int equalsCount = 0;
-                for (Integer integer : attrList) {
-                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
-                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
-
-                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
-                        equalsCount++;
-                    }
-                }
-
-                if(equalsCount == attrList.size()){
+                if(this.groupEquals(attrList, restrict, zokusei)){
                     int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
                     zokusei.put(MagicString.RESTRICT_CD, restrictCd);
                 }
@@ -475,5 +465,19 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         }
         zokuseiList = zokuseiList.stream().filter(map->MapUtils.getInteger(map, MagicString.RESTRICT_CD)!=null).collect(Collectors.toList());
         return zokuseiList;
+    }
+
+    private boolean groupEquals(List<Integer> attrList, Map<String, Object> restrict, Map<String, Object> zokusei){
+        int equalsCount = 0;
+        for (Integer integer : attrList) {
+            String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
+            String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
+
+            if(Objects.equals(restrictKey, zokuseiKey)){
+                equalsCount++;
+            }
+        }
+
+        return equalsCount == attrList.size();
     }
 }

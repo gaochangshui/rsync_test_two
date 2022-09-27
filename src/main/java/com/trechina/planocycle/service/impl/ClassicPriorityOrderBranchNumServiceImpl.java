@@ -96,7 +96,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     private MstBranchMapper mstBranchMapper;
 
 
-    public static final Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+    public static final Pattern pattern = Pattern.compile("^[-\\+]?\\d*$");
 
     /**
      * 必須商品リストの取得
@@ -278,15 +278,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             // 遍暦not 給店cd補0
             not.forEach(item->{
                 item.setBranchOrigin(item.getBranch());
-                if (!Strings.isNullOrEmpty(item.getBranch())) {
-                    if(pattern.matcher(item.getBranch()).matches()){
-                        item.setBranch(Strings.padStart(item.getBranch(), branchLen, '0'));
-                    }
+                if (!Strings.isNullOrEmpty(item.getBranch()) && pattern.matcher(item.getBranch()).matches()) {
+                    item.setBranch(Strings.padStart(item.getBranch(), branchLen, '0'));
                 }
             });
             logger.info("不可商品list店が0を補充した結菓を保存します{}",not);
-
-
 
             List<String> janList = not.stream().map(PriorityOrderCommodityNot::getJan).collect(Collectors.toList());
             List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList,priorityOrderCd);
@@ -298,32 +294,29 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 PriorityOrderCommodityNot commodityNot = existJanList.get(i);
                     String branch = commodityNot.getBranch();
                     List<Integer> patternCdList = priorityOrderCommodityMustMapper.selectPatternByBranch(priorityOrderCd, companyCd, branch);
-//                       if(patternCdList.isEmpty() && ! "".equals(commodityNot.getBranchOrigin()) &&  commodityNot.getBranchOrigin() != null ){
+
                     if(patternCdList.isEmpty() && !Strings.isNullOrEmpty(commodityNot.getBranchOrigin()) ){
                         notBranchExists.add(commodityNot.getBranchOrigin()+"");
                     }
                     for (Integer  patternCd : patternCdList) {
                         PriorityOrderCommodityNot newNot = new PriorityOrderCommodityNot();
+                        newNot.setBeforeFlag(0);
+                        newNot.setFlag(0);
+
                         BeanUtils.copyProperties(commodityNot, newNot);
                         int result = priorityOrderCommodityMustMapper.selectExistJan(patternCd, newNot.getJan());
                         if(result>0){
                             newNot.setBeforeFlag(1);
-                        }else{
-                            newNot.setBeforeFlag(0);
                         }
                         if(patternCd!=null){
                             newNot.setFlag(1);
-                        }else{
-                            newNot.setFlag(0);
                         }
                         newNot.setShelfPatternCd(patternCd);
                         exists.add(newNot);
                     }
             }
-            if (!exists.isEmpty()){
-                //写入数据庫
-                priorityOrderCommodityNotMapper.insert(exists);
-            }
+            //写入数据庫
+            priorityOrderCommodityNotMapper.insert(exists);
             if (!notExistJan.isEmpty()){
                 return ResultMaps.result(ResultEnum.JANNOTESISTS,Joiner.on(",").join(notExistJan));
             }else if(!notBranchExists.isEmpty()){
