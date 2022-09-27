@@ -1,13 +1,5 @@
 package com.trechina.planocycle.constant;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.utils.ResultMaps;
-
-import java.util.List;
-import java.util.Map;
-
 public class MagicString {
     public static final String HEIGHT_NAME = "plano_height";
     public static final String DEPTH_NAME = "plano_depth";
@@ -22,6 +14,7 @@ public class MagicString {
     public static final String SPECIAL_SCHEMA_CD = "9999";
 
     public static final String JAN_HEADER_JAN_CD_COL = "jan_cd";
+    public static final String JAN_CD = "janCd";
     public static final String JAN_HEADER_JAN_NAME_COL = "jan_name";
 
     public static final String TASK_ID = "taskID";
@@ -272,4 +265,9 @@ public class MagicString {
     public static final String PLANO_HEIGHT = "planoHeight";
 
     public static final String PLANO_DEPTH = "planoDepth";
+    public static final String COLOR = "color";
+
+    public static final String ERROR_MSG = "errMsg";
+    public static final String DEL_ERROR_MSG = "現状棚に並んでいる可能性がありますので削除してください。";
+
 }
