@@ -150,9 +150,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         List<Map<String, Object>> classifyList = janInfoMapper.selectJanClassify(commonTableName.getProInfoTable(), shelfPatternCd,
                 zokuseiMsts, cdList, sizeAndIrisuMap, proInfoTb);
         classifyList = this.updateJanSizeByMap(classifyList);
-        classifyList.forEach(item->{
-            item.put(MagicString.WIDTH, MapUtils.getLong(item,MagicString.WIDTH, MagicString.DEFAULT_WIDTH)*MapUtils.getInteger(item, "faceCount", 1));
-        });
+        classifyList.forEach(item-> item.put(MagicString.WIDTH, MapUtils.getLong(item,MagicString.WIDTH, MagicString.DEFAULT_WIDTH)*MapUtils.getInteger(item, "faceCount", 1)));
 
         basicMapperMapper.delete(priorityOrderCd, companyCd);
 
@@ -553,7 +551,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 List<Map<String, Object>> newRestrictResult = new ArrayList<>();
                 for (Map<String, Object> map : restrictResult) {
                     Map<String, Object> newMap = new HashMap<>();
-                    newMap.put("restrict_cd", MapUtils.getLong(map,"restrict_cd"));
+                    newMap.put(MagicString.RESTRICT_CD_UNDERLINE, MapUtils.getLong(map,MagicString.RESTRICT_CD_UNDERLINE));
                     newMap.put("author_cd", MapUtils.getString(map,"author_cd"));
                     newMap.put("priority_order_cd", MapUtils.getInteger(map,"priority_order_cd"));
                     
@@ -669,7 +667,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     private List<Map<String, Object>> scaleTaiTanaWidth(List<Map<String, Object>> relationMap, Integer tanaWidthCheck){
         List<Map<String, Object>> newRelationMap = new ArrayList<>();
         Map<String, List<Map<String, Object>>> relationMapByTana = relationMap.stream().collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.TAI_CD) + "_" + MapUtils.getString(map, MagicString.TANA_CD)));
-        for (String taiTana : relationMapByTana.keySet()) {
+        for (Map.Entry<String, List<Map<String, Object>>> entry : relationMapByTana.entrySet()) {
+            String taiTana = entry.getKey();
             double area = relationMapByTana.get(taiTana).stream().collect(Collectors.summarizingDouble(map -> MapUtils.getDouble(map, "area"))).getSum();
             // <100%
             List<Map<String, Object>> relationMapList = relationMapByTana.get(taiTana);
@@ -686,10 +685,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         newRelationMap = newRelationMap.stream().sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TANA_POSITION)))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TANA_CD)))
                 .sorted(Comparator.comparing(map->MapUtils.getInteger(map, MagicString.TAI_CD))).collect(Collectors.toList());
-        String s = JSON.toJSONString(relationMap);
-        String s1 = JSON.toJSONString(newRelationMap);
-
-        System.out.println("s:"+s+",s1:"+s1);
 
         return newRelationMap;
     }
@@ -834,7 +829,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 }
 
                 if(equalsCount == attrList.size()){
-                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
+                    int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
                     zokusei.put(MagicString.RESTRICT_CD, restrictCd);
                 }
             }

@@ -52,6 +52,8 @@ public class MagicString {
 
     public static final String RESTRICT_CD = "restrictCd";
 
+    public static final String RESTRICT_CD_UNDERLINE = "restrict_cd";
+
     public static final Long NO_RESTRICT_CD = 9999L;
     /**
      * 棚変更：高さ変更

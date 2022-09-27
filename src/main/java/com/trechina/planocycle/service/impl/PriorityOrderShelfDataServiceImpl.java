@@ -291,7 +291,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                 }
 
                 if(equalsCount == attrList.size()){
-                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
+                    int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
                     zokusei.put("restrictCd", restrictCd);
                 }
             }
@@ -463,7 +463,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                 }
 
                 if(equalsCount == attrList.size()){
-                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
+                    int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
                     zokusei.put("restrictCd", restrictCd);
                 }
             }
@@ -505,8 +505,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
                 }
 
                 if(equalsCount == attrList.size()){
-                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
-                    zokusei.put("restrictCd", restrictCd);
+                    int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
+                    zokusei.put(MagicString.RESTRICT_CD, restrictCd);
                 }
             }
 

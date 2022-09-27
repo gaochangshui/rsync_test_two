@@ -219,25 +219,25 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
         List<Map<String, Object>> list = CommonUtil.janSort(catePakSimilarity, janNewList, "rank");
         int i = 1;
         for (Map<String, Object> objectMap : list) {
-            objectMap.put("jan_new", objectMap.get("janNew"));
-            objectMap.put("jan_old", i++);
+            objectMap.put(MagicString.JAN_NEW, objectMap.get("janNew"));
+            objectMap.put(MagicString.JAN_OLD, i++);
             objectMap.put("companyCd", companyCd);
             objectMap.put("priorityOrderCd", priorityOrderCd);
-            objectMap.put("rank_upd", objectMap.get("rank"));
+            objectMap.put(MagicString.RANK_UPD, objectMap.get("rank"));
 
         }
         List<Map<String, Object>> branchNum = (List<Map<String, Object>>) classicPriorityOrderDataService.getBranchNum(list).get("data");
         for (Map<String, Object> objectMap : list) {
             for (Map<String, Object> stringObjectMap : branchNum) {
-                if (objectMap.get("janNew").equals(stringObjectMap.get("jan_new")) && objectMap.get("jan_old") == stringObjectMap.get("jan_old")) {
+                if (objectMap.get("janNew").equals(stringObjectMap.get(MagicString.JAN_NEW)) && objectMap.get(MagicString.JAN_OLD) == stringObjectMap.get(MagicString.JAN_OLD)) {
                     objectMap.put("branchNum", stringObjectMap.get("branch_num_upd"));
-                    objectMap.put("rank", objectMap.get("rank_upd"));
+                    objectMap.put("rank", objectMap.get(MagicString.RANK_UPD));
                     objectMap.put("branchAccount", Double.valueOf(objectMap.get("branchAccount").toString()));
-                    objectMap.remove("jan_new");
-                    objectMap.remove("jan_old");
+                    objectMap.remove(MagicString.JAN_NEW);
+                    objectMap.remove(MagicString.JAN_OLD);
                     objectMap.remove("companyCd");
                     objectMap.remove("priorityOrderCd");
-                    objectMap.remove("rank_upd");
+                    objectMap.remove(MagicString.RANK_UPD);
                 }
             }
         }
