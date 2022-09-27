@@ -160,13 +160,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 zokuseiMsts, aud, (long) autoDetectVO.getPriorityOrderCd());
 
         restrictResultMapper.deleteByPriorityCd(autoDetectVO.getPriorityOrderCd(), companyCd);
-        long restrictCd = 1;
-        for (Map.Entry<String, BasicPatternRestrictResult> entry : classify.entrySet()) {
-            BasicPatternRestrictResult value = entry.getValue();
-            value.setRestrictCd(restrictCd);
-            classify.put(entry.getKey(), value);
-            restrictCd++;
-        }
+        classify = this.generateRestrictCd(classify);
         List<BasicPatternRestrictResult> basicPatternRestrictResults = new ArrayList<>(classify.values());
         BasicPatternRestrictResult result = new BasicPatternRestrictResult();
         result.setRestrictCd(MagicString.NO_RESTRICT_CD);
@@ -186,8 +180,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             Integer tanaCd = tanamst.getTanaCd();
             Integer tanaWidth = tanamst.getTanaWidth();
 
-            List<Map<String, Object>> jans = classifyList.stream().filter(map -> MapUtils.getInteger(map, MagicString.TAI_CD).equals(taiCd) &&
-                    MapUtils.getInteger(map, MagicString.TANA_CD).equals(tanaCd)).collect(Collectors.toList());
+            List<Map<String, Object>> jans = classifyList.stream().filter(map -> taiTanaEquals(MapUtils.getInteger(map, MagicString.TAI_CD), taiCd,
+                    MapUtils.getInteger(map, MagicString.TANA_CD),tanaCd)).collect(Collectors.toList());
 
             logger.info("taiCd:{},tanaCd:{}, jans:{}", taiCd, tanaCd,jans);
             double areaWidth = 0;
@@ -199,21 +193,14 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             for (int i = 0; i < jans.size(); i++) {
                 Map<String, Object> janMap = jans.get(i);
                 double width = MapUtils.getDouble(janMap, MagicString.WIDTH);
-                StringBuilder key = new StringBuilder();
-                for (Integer zokusei : zokuseiList) {
-                    if(key.length()>0){
-                        key.append(",");
-                    }
-                    String val = MapUtils.getString(janMap, zokusei + "", MagicString.DEFAULT_VALUE);
-                    key.append(Strings.isNullOrEmpty(val)?MagicString.DEFAULT_VALUE: val);
-                }
+                String key = getClassifyKey(zokuseiList, janMap);
 
-                if(lastKey.equals(key.toString()) && (i+1)==jans.size()){
+                if(isLastAndEqualsToLastKey(key, lastKey, i+1, jans.size())){
                     areaWidth += width;
                     janCount++;
                 }
 
-                if(!"".equals(lastKey) && (!lastKey.equals(key.toString()) || (i+1)==jans.size())){
+                if(!"".equals(lastKey) && (!lastKey.equals(key) || (i+1)==jans.size())){
                     double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 5, RoundingMode.HALF_UP)
                             .multiply(BigDecimal.valueOf(100)).doubleValue();
                     Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
@@ -233,14 +220,14 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 }
 
                 //If the last grouping is independent, it should be handled separately
-                if(!lastKey.equals(key.toString()) && (i+1)==jans.size()){
+                if(isLastAndNotEqualsToLastKey(key, lastKey, i+1, jans.size())){
                     areaWidth = width;
                     janCount = 1;
-                    int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
-                            .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
+                    int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, RoundingMode.HALF_UP)
+                            .multiply(BigDecimal.valueOf(100)).setScale(0, RoundingMode.HALF_UP).intValue();
                     Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
                             new TypeToken<Map<String, Object>>(){}.getType());
-                    map.put(MagicString.RESTRICT_CD, classify.get(key.toString()).getRestrictCd());
+                    map.put(MagicString.RESTRICT_CD, classify.get(key).getRestrictCd());
                     map.put("area", percent);
                     map.put("janCount", janCount);
                     map.put("priorityOrderCd", priorityOrderCd);
@@ -249,19 +236,55 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     newJans.add(map);
                 }
                 
-                lastKey = key.toString();
+                lastKey = key;
             }
 
-            newJans.stream().forEach(map->{
+            newJans.forEach(map->{
                 map.put(MagicString.TANA_POSITION, index[0]);
                 index[0]++;
             });
-            if(!newJans.isEmpty()){
-                restrictRelationMapper.insertBatch(newJans);
-            }
+
+            restrictRelationMapper.insertBatch(newJans);
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    private boolean isLastAndEqualsToLastKey(String key, String lastKey, int size, int currentIndex){
+        return !lastKey.equals(key) && (currentIndex+1)==size;
+    }
+
+    private boolean isLastAndNotEqualsToLastKey(String key, String lastKey, int size, int currentIndex){
+        return lastKey.equals(key) && (currentIndex+1)==size;
+    }
+
+    private String getClassifyKey(List<Integer> zokuseiList, Map<String, Object> janMap){
+        StringBuilder key = new StringBuilder();
+        for (Integer zokusei : zokuseiList) {
+            if(key.length()>0){
+                key.append(",");
+            }
+            String val = MapUtils.getString(janMap, zokusei + "", MagicString.DEFAULT_VALUE);
+            key.append(Strings.isNullOrEmpty(val)?MagicString.DEFAULT_VALUE: val);
+        }
+
+        return key.toString();
+    }
+
+    private Map<String, BasicPatternRestrictResult> generateRestrictCd(Map<String, BasicPatternRestrictResult> classify){
+        long restrictCd = 1;
+        for (Map.Entry<String, BasicPatternRestrictResult> entry : classify.entrySet()) {
+            BasicPatternRestrictResult value = entry.getValue();
+            value.setRestrictCd(restrictCd);
+            classify.put(entry.getKey(), value);
+            restrictCd++;
+        }
+
+        return classify;
+    }
+
+    private boolean taiTanaEquals(Integer taiCd1, Integer tanaCd1,Integer taiCd2, Integer tanaCd2){
+        return Objects.equals(taiCd1, taiCd2) && Objects.equals(tanaCd1, tanaCd2);
     }
 
     @Override
