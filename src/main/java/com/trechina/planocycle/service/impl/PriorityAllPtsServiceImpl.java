@@ -72,6 +72,8 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
     @Autowired
     private PriorityOrderShelfDataServiceImpl priorityOrderShelfDataService;
     @Autowired
+    private BasicPatternRestrictResultMapper basicPatternRestrictResultMapper;
+    @Autowired
     private ZokuseiMapper zokuseiMapper;
     private final Logger logger = LoggerFactory.getLogger(PriorityAllPtsServiceImpl.class);
 
@@ -391,30 +393,25 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         List<Map<String, Object>> restrictResult = workPriorityAllResultDataMapper.selectGroup(priorityAllCd,patternCd,attrCol);
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
         List<Map<String, Object>> zokuseiList = priorityAllPtsMapper.selectNewJanZokusei(priorityOrderCd, id, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),attrCol,janSizeCol);
-        for (int i = 0; i < zokuseiList.size(); i++) {
-            Map<String, Object> zokusei = zokuseiList.get(i);
-            for (Map<String, Object> restrict : restrictResult) {
-                int equalsCount = 0;
-                for (Map<String,Object>  map : attrCol) {
-                    String restrictKey = MapUtils.getString(restrict,  map.get("zokusei_colcd").toString());
-                    String zokuseiKey = MapUtils.getString(zokusei,   map.get("zokusei_colcd").toString());
-
-                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
-                        equalsCount++;
-                    }
-                }
-
-                if(equalsCount == attrList.size()){
-                    int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
-                    zokusei.put("restrictCd", restrictCd);
-                }
-            }
-            zokuseiList.set(i, zokusei);
-        }
         return zokuseiList;
     }
 
+    private List<Map<String, Object>> getBasicAllOldPtsGroup(String companyCd, Integer priorityOrderCd,Integer priorityAllCd,Integer patternCd,Integer ptsCd) {
+        List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKeyForFinal(companyCd, priorityOrderCd);
+        List<Integer> attrList = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
+        WorkPriorityOrderMstEditVo priorityOrderMst = workPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+        String commonPartsData = priorityOrderMst.getCommonPartsData();
+        GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+        List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
+        List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
+        Integer id = priorityAllPtsMapper.getNewId(companyCd, priorityAllCd,patternCd);
+        List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForNameForFinal(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
+        List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
+        List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.selectOldJanZokuseiForFinal(priorityOrderCd,ptsCd , zokuseiMsts, allCdList,
+                commonTableName.getProInfoTable(),attrCol,janSizeCol,priorityOrderMst.getProductPowerCd());
 
+        return zokuseiList;
+    }
     private void writeZip(String filePath, ZipOutputStream zos, String fileName){
         try(FileInputStream fis = new FileInputStream(filePath)) {
             zos.putNextEntry(new ZipEntry(fileName));
