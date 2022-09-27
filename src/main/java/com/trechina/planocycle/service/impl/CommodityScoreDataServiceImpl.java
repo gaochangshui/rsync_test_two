@@ -76,39 +76,40 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     public Map<String, Object> getCommodityScoreData(Map<String,Object> taskIdMap) throws InterruptedException {
 
         String taskID = taskIdMap.get(MagicString.TASK_ID).toString();
-        String commonPartsData = taskIdMap.get("commonPartsData").toString();
+        String commonPartsData = taskIdMap.get(MagicString.COMMON_PARTS_DATA).toString();
         Integer productPowerCd = Integer.valueOf(taskIdMap.get("productPowerCd").toString());
         String companyCd = taskIdMap.get("companyCd").toString();
         String authorCd = session.getAttribute("aud").toString();
 
         if (taskID.equals("")){
-            logger.info("getCommodityScoreData:{}", 1);
+            logger.info(MagicString.GET_COMMODITY_SCORE_DATA, 1);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
 
         if("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))){
-            logger.info("getCommodityScoreData:{}", 2);
+            logger.info(MagicString.GET_COMMODITY_SCORE_DATA, 2);
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
 
-        if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()+"Exception")!=null){
-            logger.info("getCommodityScoreData:{}", 3);
+        if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()+MagicString.EXCEPTION)!=null){
+            logger.info(MagicString.GET_COMMODITY_SCORE_DATA, 3);
             return ResultMaps.result(ResultEnum.CGIERROR);
         }
         if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString())==null){
-            logger.info("getCommodityScoreData:{}", 4);
+            logger.info(MagicString.GET_COMMODITY_SCORE_DATA, 4);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
 
-        Future future = (Future) vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID)+"2");
+        Future<?> future = (Future<?>) vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID)+"2");
         if(future==null){
             future = executor.submit(()->{
+
                 while (true){
                     if ("ok".equals(vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()).toString())) {
                         log.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()));
                         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
                         JSONObject jsonObject = JSON.parseObject(commonPartsData);
-                        String prodMstClass = jsonObject.get("prodMstClass").toString();
+                        String prodMstClass = jsonObject.get(MagicString.PROD_MST_CLASS).toString();
                         String prodIsCore = jsonObject.get("prodIsCore").toString();
                         String isCompanyCd = null;
                         if ("1".equals(prodIsCore)) {
@@ -116,12 +117,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         } else {
                             isCompanyCd = companyCd;
                         }
-                        int janName2colNum = Integer.parseInt(taskIdMap.get("janName2colNum").toString());
+                        int janName2colNum = Integer.parseInt(taskIdMap.get(MagicString.JAN_NAME2COL_NUM).toString());
                         int colNum = 2;
                         if (janName2colNum == 2){
-                            colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+                            colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
                         }else if(janName2colNum==3){
-                            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+                            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
                         }
 
                         if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
@@ -209,22 +210,22 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = map.get("company").toString();
-        String commonPartsData = map.get("commonPartsData").toString();
+        String commonPartsData = map.get(MagicString.COMMON_PARTS_DATA).toString();
 
         map = this.dateChange(map,companyCd);
         String uuid1 = UUID.randomUUID().toString();
         String attrCondition =  this.attrList(map);
         map.put("attrCondition",attrCondition);
         Map<String,Object> janList =  this.janList(map);
-        map.put("filterJanlist",janList.get("listDisparitStr"));
-        map.put("excjanFlg",janList.get("janExclude"));
+        map.put("filterJanlist",janList.get(MagicString.LIST_DISPARIT_STR));
+        map.put("excjanFlg",janList.get(MagicString.JAN_EXCLUDE));
         map.remove("singleJan");
 
         map.put("guid",uuid1);
         map.put("mode","shoki_data");
         map.put("usercd",authorCd);
 
-        map.put("tableName","planocycle.work_product_power_kokyaku");
+        map.put(MagicString.TABLE_NAME,"planocycle.work_product_power_kokyaku");
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         logger.info("調用cgiつかむ取data的参数：{}", map);
 
@@ -236,16 +237,16 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         posMap.put("mode","shoki_data");
         posMap.put("guid",uuid1);
         posMap.remove("customerCondition");
-        posMap.put("tableName","planocycle.work_product_power_syokika");
+        posMap.put(MagicString.TABLE_NAME,"planocycle.work_product_power_syokika");
         //posデータ
         logger.info("posパラメータ{}",posMap);
         String taskQuery = cgiUtil.setPath("TaskQuery");
         String productPowerData = cgiUtil.setPath("ProductPowerData");
         String posResult = cgiUtil.postCgi(productPowerData, posMap, tokenInfo,smartPath);
-        String smartPath = this.smartPath;
+
 
         Map<String, Object> finalMap = map;
-        Future future = executor.submit(() -> {
+        Future<?> future = executor.submit(() -> {
                 List<String> taskIdList = new ArrayList<>();
                 taskIdList.add(posResult);
 
@@ -255,7 +256,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         map1 = cgiUtil.postCgiOfWeb(taskQuery, posResult, tokenInfo,smartPath);
                         if (!"9".equals(map1.get("data"))) {
                             if (map1.get("data")==null){
-                                vehicleNumCache.put(posResult+"Exception",map1.get("msg"));
+                                vehicleNumCache.put(posResult+MagicString.EXCEPTION,map1.get("msg"));
                             }
                             break;
                         }
@@ -290,7 +291,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 Map<String, Object> map2 = cgiUtil.postCgiOfWeb(taskQuery, groupResult, tokenInfo,smartPath);
                 if (!"9".equals(map2.get("data"))) {
                     if (map2.get("data") == null) {
-                        vehicleNumCache.put(posResult + "Exception", "error");
+                        vehicleNumCache.put(posResult + MagicString.EXCEPTION, "error");
                     }
                     break;
                 }
@@ -305,7 +306,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             String  uuid = UUID.randomUUID().toString();
             finalMap.put("mode", "market_data");
             finalMap.put("guid", uuid);
-            finalMap.put("tableName", "planocycle.work_product_power_intage");
+            finalMap.put(MagicString.TABLE_NAME, "planocycle.work_product_power_intage");
             logger.info("市場パラメータ{}", finalMap);
             String intergeResult = cgiUtil.postCgi(productPowerData, finalMap, tokenInfo, smartPath);
             taskIdList.add(intergeResult);
@@ -315,7 +316,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 Map<String, Object> map2 = cgiUtil.postCgiOfWeb(taskQuery, intergeResult, tokenInfo, smartPath);
                 if (!"9".equals(map2.get("data"))) {
                     if (map2.get("data") == null) {
-                        vehicleNumCache.put(posResult + "Exception", "error");
+                        vehicleNumCache.put(posResult + MagicString.EXCEPTION, "error");
                     }
                     break;
                 }
@@ -370,7 +371,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String dateIsCore  = jsonObject.get("dateIsCore").toString();
 
         map.put("selected_tenpo",jsonObject.get("storeMstClass").toString());
-        map.put("selected_shouhin",jsonObject.get("prodMstClass").toString());
+        map.put("selected_shouhin",jsonObject.get(MagicString.PROD_MST_CLASS).toString());
         map.put("storeLevel",jsonObject.get("storeLevel").toString());
         if ("1".equals(dateIsCore)){
             map.put("date_mst","date_core_mst");
@@ -389,18 +390,18 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }else {
             map.put("tenpo_kaisou_mst","tenpo_kaisou_kigyomst");
         }
-        map.remove("commonPartsData");
+        map.remove(MagicString.COMMON_PARTS_DATA);
 
         //選択した品名を判断する
-        Integer janName2colNum = Integer.valueOf(map.get("janName2colNum").toString());
+        Integer janName2colNum = Integer.valueOf(map.get(MagicString.JAN_NAME2COL_NUM).toString());
         if (janName2colNum == 2){
-            Integer prodMstClass = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
-            map.put("janName2colNum",prodMstClass);
+            Integer prodMstClass = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            map.put(MagicString.JAN_NAME2COL_NUM,prodMstClass);
         }else if(janName2colNum == 3){
-            Integer prodMstClass = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
-            map.put("janName2colNum",prodMstClass);
+            Integer prodMstClass = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            map.put(MagicString.JAN_NAME2COL_NUM,prodMstClass);
         }else {
-            map.put("janName2colNum","_");
+            map.put(MagicString.JAN_NAME2COL_NUM,"_");
         }
         return map;
     }
@@ -429,14 +430,14 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         if (!singleJan.isEmpty()) {
             List<String> filterJanList = (List<String>) singleJan.get("filterJanList");
             List<String> noSelectedJanListAll = (List<String>) singleJan.get("noSelectedJanListAll");
-            boolean janExclude = (boolean) singleJan.get("janExclude");
+            boolean janExclude = (boolean) singleJan.get(MagicString.JAN_EXCLUDE);
             List<String> listDisparitStr = ListDisparityUtils.getListDisparitStr(filterJanList, noSelectedJanListAll);
 
-            resultMap.put("janExclude", janExclude ? 1 : 0);
-            resultMap.put("listDisparitStr", Joiner.on(",").join(listDisparitStr));
+            resultMap.put(MagicString.JAN_EXCLUDE, janExclude ? 1 : 0);
+            resultMap.put(MagicString.LIST_DISPARIT_STR, Joiner.on(",").join(listDisparitStr));
         }else {
-            resultMap.put("janExclude", null);
-            resultMap.put("listDisparitStr", null);
+            resultMap.put(MagicString.JAN_EXCLUDE, null);
+            resultMap.put(MagicString.LIST_DISPARIT_STR, null);
         }
         return resultMap;
     }
