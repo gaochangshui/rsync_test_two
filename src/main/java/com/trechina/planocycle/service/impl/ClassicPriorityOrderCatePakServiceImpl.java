@@ -71,7 +71,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
 
             colMap.putAll(smallMap);
             colMap.put("rank", "RANK");
-            colMap.put("branchNum", "店舗数");
+            colMap.put(MagicString.BRANCHNUM, "店舗数");
             colMap.putAll(bigMap);
 
             logger.info("つかむ取カテパケ拡縮参数：{},{}", companyCd, priorityOrderCd);
@@ -93,7 +93,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
 //                    }
                     this.splitCatePakAttr(item.getSmalls(), result, MagicString.ATTR_SMALL);
                     result.put("rank", item.getRank());
-                    result.put("branchNum", item.getBranchNum());
+                    result.put(MagicString.BRANCHNUM, item.getBranchNum());
                     // big可以為空，需要判断一下
 //                    if (item.getBigs() != null && !item.getBigs().equals("")) {
                     if (!Strings.isNullOrEmpty(item.getBigs())) {
@@ -154,15 +154,15 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
         try {
             logger.info("保存カテパケ拡縮参数:{}", jsonArray);
 
-            String companyCd = String.valueOf(((HashMap) jsonArray.get(0)).get("companyCd"));
-            Integer priorityOrderCd = Integer.parseInt(((HashMap) jsonArray.get(0)).get("priorityOrderCd").toString());
+            String companyCd = String.valueOf(((HashMap) jsonArray.get(0)).get(MagicString.COMPANY_CD));
+            Integer priorityOrderCd = Integer.parseInt(((HashMap) jsonArray.get(0)).get(MagicString.PRIORITY_ORDER_CD).toString());
             priorityOrderCatepakMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
             priorityOrderCatepakAttributeMapper.deleteByPrimaryKey(companyCd, priorityOrderCd);
             jsonArray.forEach(item -> {
 
                 if (((HashMap) item).containsKey("rank") && ((HashMap) item).get("rank") != null && !"".equals(((HashMap) item).get("rank"))) {
                     PriorityOrderCatepak priorityOrderCatepak = new PriorityOrderCatepak();
-                    if ("".equals(((HashMap<?, ?>) item).get("branchNum"))) {
+                    if ("".equals(((HashMap<?, ?>) item).get(MagicString.BRANCHNUM))) {
                         priorityOrderCatepak.setBranchNum(null);
                     }
                     priorityOrderCatepak.setCompanyCd(companyCd);
@@ -209,10 +209,10 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
 
     @Override
     public Map<String, Object> getCatePakSimilarity(Map<String, Object> map) {
-        String companyCd = map.get("companyCd").toString();
-        Integer priorityOrderCd = Integer.parseInt(map.get("priorityOrderCd").toString());
-        map.remove("companyCd");
-        map.remove("priorityOrderCd");
+        String companyCd = map.get(MagicString.COMPANY_CD).toString();
+        Integer priorityOrderCd = Integer.parseInt(map.get(MagicString.PRIORITY_ORDER_CD).toString());
+        map.remove(MagicString.COMPANY_CD);
+        map.remove(MagicString.PRIORITY_ORDER_CD);
         Map<String, Object> maps = new HashMap<>();
         for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
             String[] attrSmalls = stringObjectEntry.getKey().split(MagicString.ATTR_SMALL);
@@ -226,8 +226,8 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
         Iterator<Map<String, Object>> iterator = catePakSimilarity.iterator();
         while (iterator.hasNext()) {
             Map<String, Object> next = iterator.next();
-            String janNew = next.get("janNew").toString();
-            if (janNewList.stream().anyMatch(map1 -> map1.get("janNew").equals(janNew))) {
+            String janNew = next.get(MagicString.JANNEW).toString();
+            if (janNewList.stream().anyMatch(map1 -> map1.get(MagicString.JANNEW).equals(janNew))) {
                 iterator.remove();
             }
         }
@@ -235,24 +235,24 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
         List<Map<String, Object>> list = CommonUtil.janSort(catePakSimilarity, janNewList, "rank");
         int i = 1;
         for (Map<String, Object> objectMap : list) {
-            objectMap.put(MagicString.JAN_NEW, objectMap.get("janNew"));
+            objectMap.put(MagicString.JAN_NEW, objectMap.get(MagicString.JANNEW));
             objectMap.put(MagicString.JAN_OLD, i++);
-            objectMap.put("companyCd", companyCd);
-            objectMap.put("priorityOrderCd", priorityOrderCd);
+            objectMap.put(MagicString.COMPANY_CD, companyCd);
+            objectMap.put(MagicString.PRIORITY_ORDER_CD, priorityOrderCd);
             objectMap.put(MagicString.RANK_UPD, objectMap.get("rank"));
 
         }
         List<Map<String, Object>> branchNum = (List<Map<String, Object>>) classicPriorityOrderDataService.getBranchNum(list).get("data");
         for (Map<String, Object> objectMap : list) {
             for (Map<String, Object> stringObjectMap : branchNum) {
-                if (objectMap.get("janNew").equals(stringObjectMap.get(MagicString.JAN_NEW)) && objectMap.get(MagicString.JAN_OLD) == stringObjectMap.get(MagicString.JAN_OLD)) {
-                    objectMap.put("branchNum", stringObjectMap.get("branch_num_upd"));
+                if (objectMap.get(MagicString.JANNEW).equals(stringObjectMap.get(MagicString.JAN_NEW)) && objectMap.get(MagicString.JAN_OLD) == stringObjectMap.get(MagicString.JAN_OLD)) {
+                    objectMap.put(MagicString.BRANCHNUM, stringObjectMap.get("branch_num_upd"));
                     objectMap.put("rank", objectMap.get(MagicString.RANK_UPD));
                     objectMap.put("branchAccount", Double.valueOf(objectMap.get("branchAccount").toString()));
                     objectMap.remove(MagicString.JAN_NEW);
                     objectMap.remove(MagicString.JAN_OLD);
-                    objectMap.remove("companyCd");
-                    objectMap.remove("priorityOrderCd");
+                    objectMap.remove(MagicString.COMPANY_CD);
+                    objectMap.remove(MagicString.PRIORITY_ORDER_CD);
                     objectMap.remove(MagicString.RANK_UPD);
                 }
             }
@@ -269,7 +269,7 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
      * @param item
      * @param priorityOrderCatepak
      */
-    private void catePakAttr(String companyCd, Integer priorityOrderCd, HashMap item, PriorityOrderCatepak priorityOrderCatepak) {
+    private void catePakAttr(String companyCd, Integer priorityOrderCd, Map item, PriorityOrderCatepak priorityOrderCatepak) {
         List<PriorityOrderCatepakAttribute> attributeList = new ArrayList<>();
 
         List<String> colValueList = new ArrayList<>();

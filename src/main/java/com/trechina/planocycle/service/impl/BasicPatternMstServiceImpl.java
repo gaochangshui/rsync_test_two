@@ -308,7 +308,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                         }
                     }
                 } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    logger.error("",e);
                 }
                 result.setCompanyCd(companyCd);
                 result.setAuthorCd(authorCd);
@@ -376,12 +376,12 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 if (Objects.equals(MapUtils.getInteger(priorityOrderResultDataDto, MagicString.FACE_KAITEN, 0), MapUtils.getInteger(map,MagicString.FACE_KAITEN)) &&
                         Objects.equals(MapUtils.getInteger(priorityOrderResultDataDto, MagicString.FACE_MEN, 1), MapUtils.getInteger(map,MagicString.FACE_MEN))
                 ){
-                    priorityOrderResultDataDto.put(MagicString.WIDTH, priorityOrderResultDataDto.get("plano"+
+                    priorityOrderResultDataDto.put(MagicString.WIDTH, priorityOrderResultDataDto.get(MagicString.PLANO+
                             map.getOrDefault(MagicString.PLANO_WIDTH, MagicString.WIDTH).toString().substring(0,1).toUpperCase()+map.getOrDefault(MagicString.PLANO_WIDTH, MagicString.WIDTH).toString().substring(1)));
-                    priorityOrderResultDataDto.put("height", priorityOrderResultDataDto.get("plano"+
-                            map.getOrDefault(MagicString.PLANO_HEIGHT, "height").toString().substring(0,1).toUpperCase()+map.getOrDefault(MagicString.PLANO_HEIGHT, "height").toString().substring(1)));
-                    priorityOrderResultDataDto.put("depth", priorityOrderResultDataDto.get("plano"+
-                            map.getOrDefault(MagicString.PLANO_DEPTH, "depth").toString().substring(0,1).toUpperCase()+map.getOrDefault(MagicString.PLANO_DEPTH, "depth").toString().substring(1)));
+                    priorityOrderResultDataDto.put(MagicString.HEIGHT, priorityOrderResultDataDto.get(MagicString.PLANO+
+                            map.getOrDefault(MagicString.PLANO_HEIGHT, MagicString.HEIGHT).toString().substring(0,1).toUpperCase()+map.getOrDefault(MagicString.PLANO_HEIGHT, MagicString.HEIGHT).toString().substring(1)));
+                    priorityOrderResultDataDto.put(MagicString.DEPTH, priorityOrderResultDataDto.get(MagicString.PLANO+
+                            map.getOrDefault(MagicString.PLANO_DEPTH, MagicString.DEPTH).toString().substring(0,1).toUpperCase()+map.getOrDefault(MagicString.PLANO_DEPTH, MagicString.DEPTH).toString().substring(1)));
                 }
             }
         });
