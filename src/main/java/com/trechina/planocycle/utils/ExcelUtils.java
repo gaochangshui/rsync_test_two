@@ -438,7 +438,7 @@ public class ExcelUtils {
         //}
     }
 
-    public static void starReadingExcel(List<String> header, List<String> column, LinkedHashMap<String, Object> group, List<LinkedHashMap<String, Object>> data, ServletOutputStream outputStream) {
+    public static void starReadingExcel(List<String> column, LinkedHashMap<String, Object> group, List<LinkedHashMap<String, Object>> data, ServletOutputStream outputStream) {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
             XSSFSheet sheet = workbook.createSheet();
             //最初の行の索引
@@ -516,7 +516,7 @@ public class ExcelUtils {
             XSSFSheet sheet = workbook.createSheet("商品明細");
             sheet.autoSizeColumn(10);
             sheet.autoSizeColumn(10,true);
-            Pattern numberPattern = Pattern.compile("-?[0-9]+(\\.[0-9]+)?%?");
+            Pattern numberPattern = Pattern.compile("-?\\d+(\\.\\d+)?%?");
             sheet1.setDisplayGridlines(false);
             //スタイルの設定
             XSSFCellStyle cellStyle = workbook.createCellStyle();

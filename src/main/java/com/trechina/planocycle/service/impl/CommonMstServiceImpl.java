@@ -317,9 +317,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             }
 
             Map<String, Integer> skuRankMap = reorderByJan.stream().collect(Collectors.toMap(WorkPriorityOrderResultData::getJanCd, WorkPriorityOrderResultData::getResultRank));
-            backupJans.forEach(janItem->{
-                janItem.setSkuRank(MapUtils.getLong(skuRankMap, janItem.getJanCd(), 9999L));
-            });
+            backupJans.forEach(janItem-> janItem.setSkuRank(MapUtils.getLong(skuRankMap, janItem.getJanCd(), 9999L)));
         }
 
         Map<Long, List<PriorityOrderResultDataDto>> backupJansByRestrict = backupJans.stream().collect(Collectors.groupingBy(PriorityOrderResultDataDto::getRestrictCd));
@@ -678,9 +676,9 @@ public class CommonMstServiceImpl implements CommonMstService {
             }
             PriorityOrderResultDataDto newJanDto = new PriorityOrderResultDataDto();
 
-            Long width = Optional.ofNullable(jan.getPlanoWidth()).orElse(MagicString.DEFAULT_WIDTH);
-            Long face = jan.getFace();
-            Long janWidth = width + partitionValue;
+            Long width;
+            Long face;
+            Long janWidth;
             String janOld = jan.getJanCd();
 
             jan.setOldTaiCd(jan.getTaiCd());
@@ -802,6 +800,7 @@ public class CommonMstServiceImpl implements CommonMstService {
     }
 
     /**
+     * @deprecated don't cut face
      * cut face数で置けるかどうか
      * ろんり：最初のステップ：先に置く商品に対してface数-1を行います
      *          1.face数*商品幅が置けば置いて、実際に保管しているface数をメモします

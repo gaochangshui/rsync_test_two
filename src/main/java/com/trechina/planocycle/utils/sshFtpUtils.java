@@ -1,8 +1,6 @@
 package com.trechina.planocycle.utils;
 
 
-import ch.ethz.ssh2.SCPInputStream;
-import ch.ethz.ssh2.SCPOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,19 +9,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 public class sshFtpUtils {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-    private String ip = resourceBundle.getString("ServiceIP");
-    private String user = resourceBundle.getString("ServiceUser");
-    private String pw = resourceBundle.getString("ServicePW");
-    private SCPOutputStream os = null;
-    private SCPInputStream is = null;
-
-    
 
     /**
      * 下載url方式的文件

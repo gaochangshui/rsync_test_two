@@ -957,7 +957,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             response.setHeader("Content-Disposition", format);
             outputStream = response.getOutputStream();
 
-            ExcelUtils.starReadingExcel(header,columns, linkedHashMap,starReadingVo.getData() ,outputStream);
+            ExcelUtils.starReadingExcel(columns, linkedHashMap,starReadingVo.getData() ,outputStream);
             outputStream.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -977,7 +977,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             StringBuilder header1 = new StringBuilder();
             StringBuilder header2 = new StringBuilder();
             StringBuilder header3 = new StringBuilder();
-            StringBuilder header4 = new StringBuilder();
+            StringBuilder header4;
             if (starReadingVo.getModeCheck() == 1) {
                  header4 = new StringBuilder("エリア,店舗CD,店舗名");
             }else {

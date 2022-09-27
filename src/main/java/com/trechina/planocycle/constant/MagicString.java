@@ -111,6 +111,7 @@ public class MagicString {
     public static final String RANK = "rank";
 
     public static final String BRANCH_NUM_UPD = "branch_num_upd";
+    public static final String FACE_NUM = "faceNum";
     public static final String BRANCH_AMOUNT_UPD = "branch_amount_upd";
     public static final String COLUMN_INDEX_JANINFO_COLUMN = "3";
     public static final String COLUMN_INDEX_KAISOU_COLUMN = "4";
@@ -133,8 +134,6 @@ public class MagicString {
     public static final String BIG_LAST_INDEX = "bigLastIndex";
 
     public static final String BRANCH_NUM = "branch_num";
-
-    public static final String FACE_NUM = "faceNum";
     public static final String BRANCH = "branch";
 
     public static final String PATTERN_NAME = "pattern_name";
@@ -254,4 +253,15 @@ public class MagicString {
 
 
 
+    public static final String FACE_KAITEN = "faceKaiten";
+
+    public static final String FACE_MEN = "faceMen";
+
+    public static final String PLANO_PREFIX = "getPlano";
+
+    public static final String PLANO_WIDTH = "planoWidth";
+
+    public static final String PLANO_HEIGHT = "planoHeight";
+
+    public static final String PLANO_DEPTH = "planoDepth";
 }

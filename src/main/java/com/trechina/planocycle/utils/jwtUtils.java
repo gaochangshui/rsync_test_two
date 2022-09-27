@@ -36,7 +36,7 @@ public class jwtUtils {
         try {
             json = new JSONObject(new String(decoder.decode(temp[1]), StandardCharsets.UTF_8));
         } catch (Exception e) {
-            logger.error("getJwtInto error ：" + e);
+            logger.error("getJwtInto error ：{}",e);
         }
         return json;
     }
@@ -45,9 +45,6 @@ public class jwtUtils {
         jwtUtils util= new jwtUtils();
         String jwt="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxNjMyMjcwOTUzMzQwIiwiaXNzIjoiU3BhY2Vnb3VyZC5KV1QiLCJzdWIiOiJvYXV0aCIsImF1ZCI6IjEwMTIwMjQyIiwiaWF0IjoxNjMyMjcwOTUzLCJleHAiOjE2MzIzMjI3OTMsIm5iZiI6MTYzMjI3MDk1Mywic3lzdGVtcyI6IkNST1NTQUJDLFNXSVRDSElORyxTRVZFTkRBWVNUUkVORCxDVVNUT01FUkdST1VQLFRSSUFMUkVQRUFULEhNTCxUQU5QSU5SRVBFQVQsQ1VTVE9NRVJTRUdNRU5ULFVSRUJVTktBSU5FVyxkZGQsQ1VTVE9NRVIsTURMSU5LTUFOQUdFLElEUE9TLENPTlRJTlVFUkFURSxNYXN0ZXIsVVJFQlVOS0FJLENEVCxIRUlCQUksVGFuYVdhcmksUmVwb3J0IiwiaW5jaGFyZ2UiOiIwcGs2ajQsZjE3b3J6LDg3YzZmNCxoazc1cmUsMmVhYTMxLGFhZmVjMyw2NDMzMmUsZHQzcjRzLHN2OTVyMyJ9.i2y7ExifY-llpMEP6h5DOuefjpW5C-Zjsffo5fXIR_g";
         JSONObject c=util.getJwtInfo(jwt);
-        System.out.println(c);
-        Integer a = Integer.valueOf((c.get("aud").toString()));
-        System.out.println(c.get("aud"));
 
     }
 }
