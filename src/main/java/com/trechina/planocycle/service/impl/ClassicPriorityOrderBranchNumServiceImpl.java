@@ -182,13 +182,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             mustList.forEach(item->{
                 item.setBranchOrigin(item.getBranch());
                 if (!Strings.isNullOrEmpty(item.getBranch()) && pattern.matcher(item.getBranch()).matches()){
-                    int length = item.getBranch().length();
-                    StringBuilder branchStr = new StringBuilder();
-                    int diff = branchLen - length;
-                    for (int i = 0; i < diff; i++) {
-                        branchStr.append("0");
-                    }
-                    item.setBranch(branchStr +item.getBranch());
+                    item.setBranch( Strings.padStart(item.getBranch(), branchLen, '0'));
                 }
             });
             logger.info("必須商品の店補0後の結菓を保存する{}",mustList);
@@ -239,9 +233,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
            }else if (!notBranchExists.isEmpty()){
                return ResultMaps.result(ResultEnum.BRANCHNOTESISTS, Joiner.on(",").join(notBranchExists));
            }
-           else{
-                return ResultMaps.result(ResultEnum.SUCCESS);
-           }
+
+        return ResultMaps.result(ResultEnum.SUCCESS);
 
     }
 
@@ -287,13 +280,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 item.setBranchOrigin(item.getBranch());
                 if (!Strings.isNullOrEmpty(item.getBranch())) {
                     if(pattern.matcher(item.getBranch()).matches()){
-                        int length = item.getBranch().length();
-                        StringBuilder branchStr = new StringBuilder();
-                        int diff = branchLen - length;
-                        for (int i = 0; i < diff; i++) {
-                            branchStr.append("0");
-                        }
-                        item.setBranch(branchStr +item.getBranch());
+                        item.setBranch(Strings.padStart(item.getBranch(), branchLen, '0'));
                     }
                 }
             });
