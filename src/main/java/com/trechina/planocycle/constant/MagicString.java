@@ -275,4 +275,31 @@ public class MagicString {
 
     public static final String DATE_CD = "data_cd";
 
+    public static final String TABLE_NAME = "tableName";
+
+    public static final String JAN_EXCLUDE = "janExclude";
+
+    public static final String LIST_DISPARIT_STR = "listDisparitStr";
+
+    public static final String JAN_NAME2COL_NUM = "janName2colNum";
+
+    public static final String EXCEPTION = "Exception";
+
+    public static final String GET_COMMODITY_SCORE_DATA = "getCommodityScoreData:{}";
+
+    public static final String DATA_STR = ",data";
+
+    public static final String STATUS_STR = ",status";
+
+    public static final String FLAG_STR = ",flag";
+
+    public static final String RETURN_STR = ",returnVal";
+
+    public static final String FILEPATH_STR = ",filepath";
+
+    public static final String COMPANY_CD = "companyCd";
+    public static final String PRODUCT_POWER_CD = "productPowerCd";
+
+    public static final String PARAM = "param";
+
 }

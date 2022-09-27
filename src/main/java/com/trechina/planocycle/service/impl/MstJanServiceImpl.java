@@ -123,22 +123,22 @@ public class MstJanServiceImpl implements MstJanService {
             return ResultMaps.result(ResultEnum.FAILURE, "taskId not exists");
         }
 
-        if(MagicString.TASK_STATUS_PROCESSING.equals(cacheUtil.get(downFlagVO.getTaskID()+",status"))){
+        if(MagicString.TASK_STATUS_PROCESSING.equals(cacheUtil.get(downFlagVO.getTaskID()+MagicString.STATUS_STR))){
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", "9");
             returnJson.put("taskId", downFlagVO.getTaskID());
             return ResultMaps.result(ResultEnum.SUCCESS, returnJson);
-        }else if(MagicString.TASK_STATUS_EXCEPTION.equals(cacheUtil.get(downFlagVO.getTaskID()+",status"))){
+        }else if(MagicString.TASK_STATUS_EXCEPTION.equals(cacheUtil.get(downFlagVO.getTaskID()+MagicString.STATUS_STR))){
             return ResultMaps.result(ResultEnum.FAILURE);
-        }else if(MagicString.TASK_STATUS_SUCCESS.equals(cacheUtil.get(downFlagVO.getTaskID()+",status"))){
+        }else if(MagicString.TASK_STATUS_SUCCESS.equals(cacheUtil.get(downFlagVO.getTaskID()+MagicString.STATUS_STR))){
             JSONObject json = new JSONObject();
             json.put("taskId", downFlagVO.getTaskID());
             return ResultMaps.result(ResultEnum.SUCCESS, json);
         }
 
-        cacheUtil.put(downFlagVO.getTaskID()+",status", MagicString.TASK_STATUS_PROCESSING);
-        cacheUtil.put(downFlagVO.getTaskID()+",flag", downFlagVO.getDownFlag());
-        Future futureTask = executor.submit(()->{
+        cacheUtil.put(downFlagVO.getTaskID()+MagicString.STATUS_STR, MagicString.TASK_STATUS_PROCESSING);
+        cacheUtil.put(downFlagVO.getTaskID()+MagicString.FLAG_STR, downFlagVO.getDownFlag());
+        Future<?> futureTask = executor.submit(()->{
             try {
                 JSONObject json =JSON.parseObject(cacheUtil.get(downFlagVO.getTaskID()).toString());
                 JanParamVO janParamVO = JSON.parseObject(json.getString("janParamVO"),JanParamVO.class);
@@ -181,16 +181,16 @@ public class MstJanServiceImpl implements MstJanService {
                      }
 
                      ExcelUtils.generateNormalExcelToFile(excelData, filePath);
-                     cacheUtil.put(downFlagVO.getTaskID() + ",status", MagicString.TASK_STATUS_SUCCESS);
-                     cacheUtil.put(downFlagVO.getTaskID() + ",filepath", fileName);
+                     cacheUtil.put(downFlagVO.getTaskID() + MagicString.STATUS_STR, MagicString.TASK_STATUS_SUCCESS);
+                     cacheUtil.put(downFlagVO.getTaskID() + MagicString.FILEPATH_STR, fileName);
                  }else{
-                     cacheUtil.put(downFlagVO.getTaskID() + ",status", MagicString.TASK_STATUS_SUCCESS);
-                     cacheUtil.put(downFlagVO.getTaskID() + ",returnVal", janInfoVO);
+                     cacheUtil.put(downFlagVO.getTaskID() + MagicString.STATUS_STR, MagicString.TASK_STATUS_SUCCESS);
+                     cacheUtil.put(downFlagVO.getTaskID() + MagicString.RETURN_STR, janInfoVO);
                 }
             }catch (Exception e){
                 logger.error("", e);
-                cacheUtil.put(downFlagVO.getTaskID()+",status", MagicString.TASK_STATUS_EXCEPTION);
-                cacheUtil.remove(downFlagVO.getTaskID()+",status");
+                cacheUtil.put(downFlagVO.getTaskID()+MagicString.STATUS_STR, MagicString.TASK_STATUS_EXCEPTION);
+                cacheUtil.remove(downFlagVO.getTaskID()+MagicString.STATUS_STR);
             }
         });
 
@@ -204,11 +204,11 @@ public class MstJanServiceImpl implements MstJanService {
         } catch(InterruptedException e ){
             Thread.currentThread().interrupt();
             logger.error("", e);
-            cacheUtil.remove(downFlagVO.getTaskID()+",status");
+            cacheUtil.remove(downFlagVO.getTaskID()+MagicString.STATUS_STR);
             return ResultMaps.result(ResultEnum.FAILURE);
         } catch (ExecutionException e){
             logger.error("", e);
-            cacheUtil.remove(downFlagVO.getTaskID()+",status");
+            cacheUtil.remove(downFlagVO.getTaskID()+MagicString.STATUS_STR);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
 
@@ -260,35 +260,35 @@ public class MstJanServiceImpl implements MstJanService {
             }
 
         }
-        if (janInfoMap == null || janInfoMap.get("sync").equals("") || janInfoMap.get("sync").equals("1")){
+        if ( janInfoMap.get("sync").equals("") || janInfoMap.get("sync").equals("1")){
             janInfoMap.put("sync",true);
         }else {
             janInfoMap.put("sync",false);
         }
         Map<String,Object> janInfo = new HashMap<>();
 
-       List janClass = new ArrayList();
+       List<Map<String,Object>> janClass = new ArrayList<>();
 
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janKaisouList) {
             Map<String,Object> janKaisouInfo = new HashMap<>();
             janKaisouInfo.put("name",stringObjectLinkedHashMap.get("2"));
             janKaisouInfo.put("id",janInfoList1!=null?janInfoList1.get((Integer.parseInt(stringObjectLinkedHashMap.get("3").toString())-1)+""):"");
-            janKaisouInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
-            janKaisouInfo.put("value","zokusei"+stringObjectLinkedHashMap.get("3"));
+            janKaisouInfo.put(MagicString.TITLE,janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
+            janKaisouInfo.put(MagicString.VALUE,"zokusei"+stringObjectLinkedHashMap.get("3"));
 
             janClass.add(janKaisouInfo);
 
         }
         janInfo.put("janClass",janClass);
-        List janAttr = new ArrayList();
+        List<Object> janAttr = new ArrayList<>();
 
-        List group1 = new ArrayList();
+        List<Object> group1 = new ArrayList<>();
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup1) {
             Map<String,Object> janAttrInfo = new HashMap<>();
             janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
-            janAttrInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
+            janAttrInfo.put(MagicString.TITLE,janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
-            janAttrInfo.put("value",stringObjectLinkedHashMap.get("1"));
+            janAttrInfo.put(MagicString.VALUE,stringObjectLinkedHashMap.get("1"));
             if (stringObjectLinkedHashMap.get("11").equals("6")) {
                 janAttrInfo.put("isDelete",1);
             }else {
@@ -305,13 +305,13 @@ public class MstJanServiceImpl implements MstJanService {
 
         }
         janAttr.add(group1);
-        List group2 = new ArrayList();
+        List<Object> group2 = new ArrayList<>();
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup3) {
             Map<String,Object> janAttrInfo = new HashMap<>();
             janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
-            janAttrInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
+            janAttrInfo.put(MagicString.TITLE,janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
-            janAttrInfo.put("value",stringObjectLinkedHashMap.get("1"));
+            janAttrInfo.put(MagicString.VALUE,stringObjectLinkedHashMap.get("1"));
             if (stringObjectLinkedHashMap.get("13").equals("0")) {
                 janAttrInfo.put("type","number");
             }else {
@@ -326,15 +326,15 @@ public class MstJanServiceImpl implements MstJanService {
         janInfo.put("janAttr",janAttr);
         janInfoMap.put("janInfo",janInfo);
 
-        List janBulk = new ArrayList();
+        List<Object> janBulk = new ArrayList<>();
         janBulk.add(null);
-        List janBulk1 = new ArrayList();
+        List<Object> janBulk1 = new ArrayList<>();
 
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup2) {
             Map<String,Object> janAttrInfo = new HashMap<>();
             janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
-            janAttrInfo.put("value",stringObjectLinkedHashMap.get("1"));
-            janAttrInfo.put("title",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
+            janAttrInfo.put(MagicString.VALUE,stringObjectLinkedHashMap.get("1"));
+            janAttrInfo.put(MagicString.TITLE,janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
 
             if (stringObjectLinkedHashMap.get("13").equals("0")) {
@@ -420,7 +420,7 @@ public class MstJanServiceImpl implements MstJanService {
         LinkedHashMap <String,Object> setInfoMap = new LinkedHashMap<>();
         LinkedHashMap <String,Object> getKaisouNameMap = new LinkedHashMap<>();
         String jan = map.get(MagicString.JAN).toString();
-        List<String> list = new ArrayList();
+        List<String> list = new ArrayList<>();
         for (String s : map.keySet()) {
             if (s.contains("zokusei")){
                 Integer zokuseiId = Integer.parseInt(s.replace("zokusei", ""))-1;
@@ -461,8 +461,10 @@ public class MstJanServiceImpl implements MstJanService {
         setInfoMap.put("2", map.get(MagicString.JAN_NAME).toString());
         setInfoMap.putAll(kaiSouName);
         List<String> janInfoCol = mstJanMapper.getJanInfoCol();
-        LinkedHashMap<String,Object> janInfoData= setInfoMap.entrySet().stream().filter(infoMap->!janInfoCol.contains(infoMap.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,(k1,k2)->k1,LinkedHashMap ::new));
-        LinkedHashMap<String,Object> janSpecialData= setInfoMap.entrySet().stream().filter(Special->janInfoCol.contains(Special.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,(k1,k2)->k1,LinkedHashMap ::new));
+        LinkedHashMap<String,Object> janInfoData= setInfoMap.entrySet().stream()
+                .filter(infoMap->!janInfoCol.contains(infoMap.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,(k1,k2)->k1,LinkedHashMap ::new));
+        LinkedHashMap<String,Object> janSpecialData= setInfoMap.entrySet().stream()
+                .filter(special->janInfoCol.contains(special.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,(k1,k2)->k1,LinkedHashMap ::new));
         if (!janInfoData.isEmpty()) {
             mstJanMapper.setJanInfo(janInfoData, jan, janInfoTableName);
         }
@@ -496,7 +498,7 @@ public class MstJanServiceImpl implements MstJanService {
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> uploadJanData(MultipartFile file, String fileName, String classCd,
                                              String commonPartsData, String companyCd) {
-        Pattern numberPattern = Pattern.compile("[0-9]+");
+        Pattern numberPattern = Pattern.compile("\\d+");
         AtomicInteger count = new AtomicInteger();
         if (!fileName.endsWith(".xlsx")) {
             return ResultMaps.result(ResultEnum.FAILURE.getCode(), MagicString.MSG_UPLOAD_CORRECT_FILE);
@@ -526,7 +528,7 @@ public class MstJanServiceImpl implements MstJanService {
         String taskId = UUID.randomUUID().toString();
         String finalCompanyCd = companyCd;
         String authorCd = session.getAttribute("aud").toString();
-        cacheUtil.put(taskId+",status", MagicString.TASK_STATUS_PROCESSING);
+        cacheUtil.put(taskId+MagicString.STATUS_STR, MagicString.TASK_STATUS_PROCESSING);
         executor.execute(()->{
             Map<String, String> headerNameIndex = new HashMap<>();
             for (JanHeaderAttr headerAttr : janHeader) {
@@ -634,13 +636,13 @@ public class MstJanServiceImpl implements MstJanService {
                     zokuseiMstMapper.setValBatch(zokuseiList, finalCompanyCd,prodMstClass);
                 }
 
-                cacheUtil.put(taskId+",status", MagicString.TASK_STATUS_SUCCESS);
+                cacheUtil.put(taskId+MagicString.STATUS_STR, MagicString.TASK_STATUS_SUCCESS);
                 cacheUtil.put(taskId+",data", count + MagicString.MSG_UPLOAD_SUCCESS);
             } catch (Exception e) {
                 logger.error("", e);
                 logAspect.setTryErrorLog(e,new Object[]{commonPartsData, finalCompanyCd,classCd});
                 cacheUtil.put(taskId+",exception", MagicString.MSG_ABNORMALITY_DATA);
-                cacheUtil.put(taskId+",status", MagicString.TASK_STATUS_EXCEPTION);
+                cacheUtil.put(taskId+MagicString.STATUS_STR, MagicString.TASK_STATUS_EXCEPTION);
             }
         });
 
@@ -699,15 +701,15 @@ public class MstJanServiceImpl implements MstJanService {
 
     @Override
     public JanInfoVO getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response) throws IOException {
-        if (MagicString.TASK_STATUS_SUCCESS.equals(cacheUtil.get(downFlagVO.getTaskID()+",status"))) {
-            if (Objects.equals(cacheUtil.get(downFlagVO.getTaskID()+",flag"), 1)) {
+        if (MagicString.TASK_STATUS_SUCCESS.equals(cacheUtil.get(downFlagVO.getTaskID()+MagicString.STATUS_STR))) {
+            if (Objects.equals(cacheUtil.get(downFlagVO.getTaskID()+MagicString.FLAG_STR), 1)) {
                 response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
                 String format = MessageFormat.format("attachment;filename={0};",  UriUtils.encode(String.format("商品明細-%s.xlsx",
                         LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS))), "utf-8"));
                 response.setHeader("Content-Disposition", format);
                 ServletOutputStream outputStream = response.getOutputStream();
 
-                Object o = cacheUtil.get(downFlagVO.getTaskID() + ",filepath");
+                Object o = cacheUtil.get(downFlagVO.getTaskID() + MagicString.FILEPATH_STR);
                 if(o!=null){
                     ApplicationHome h = new ApplicationHome(this.getClass());
                     File jarF = h.getSource();
@@ -725,19 +727,19 @@ public class MstJanServiceImpl implements MstJanService {
                         logger.error("",e);
                     }finally {
                         Files.deleteIfExists(new File(filePath).toPath());
-                        cacheUtil.remove(downFlagVO.getTaskID()+",status");
-                        cacheUtil.remove(downFlagVO.getTaskID()+",flag");
-                        cacheUtil.remove(downFlagVO.getTaskID()+",filepath");
+                        cacheUtil.remove(downFlagVO.getTaskID()+MagicString.STATUS_STR);
+                        cacheUtil.remove(downFlagVO.getTaskID()+MagicString.FLAG_STR);
+                        cacheUtil.remove(downFlagVO.getTaskID()+MagicString.FILEPATH_STR);
                     }
                 }
 
                 outputStream.flush();
                 return null;
             }else{
-                JanInfoVO janInfoVO = (JanInfoVO) cacheUtil.get(downFlagVO.getTaskID() + ",returnVal");
-                cacheUtil.remove(downFlagVO.getTaskID()+",status");
-                cacheUtil.remove(downFlagVO.getTaskID()+",flag");
-                cacheUtil.remove(downFlagVO.getTaskID()+",returnVal");
+                JanInfoVO janInfoVO = (JanInfoVO) cacheUtil.get(downFlagVO.getTaskID() + MagicString.RETURN_STR);
+                cacheUtil.remove(downFlagVO.getTaskID()+MagicString.STATUS_STR);
+                cacheUtil.remove(downFlagVO.getTaskID()+MagicString.FLAG_STR);
+                cacheUtil.remove(downFlagVO.getTaskID()+MagicString.RETURN_STR);
 
                 return janInfoVO;
             }
@@ -747,11 +749,11 @@ public class MstJanServiceImpl implements MstJanService {
 
     @Override
     public Map<String, Object> getUploadJanDataResult(String taskId) {
-        Object o = cacheUtil.get(taskId + ",status");
+        Object o = cacheUtil.get(taskId + MagicString.STATUS_STR);
         if (Objects.equals(o.toString(), MagicString.TASK_STATUS_SUCCESS)) {
             String data = cacheUtil.get(taskId + ",data").toString();
             cacheUtil.remove(taskId+",data");
-            cacheUtil.remove(taskId+",status");
+            cacheUtil.remove(taskId+MagicString.STATUS_STR);
             Map<String, Object> result = ResultMaps.result(ResultEnum.SUCCESS.getCode(), data);
             result.put("data", data);
             return result;
