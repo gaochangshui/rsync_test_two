@@ -235,4 +235,15 @@ public class MagicString {
 
     public static final String BASIC_ALL_PTS_DATA_TABLE_NAME="planocycle.work_priority_all_pts_jans";
 
+    public static final String FACE_KAITEN = "faceKaiten";
+
+    public static final String FACE_MEN = "faceMen";
+
+    public static final String PLANO_PREFIX = "getPlano";
+
+    public static final String PLANO_WIDTH = "planoWidth";
+
+    public static final String PLANO_HEIGHT = "planoHeight";
+
+    public static final String PLANO_DEPTH = "planoDepth";
 }

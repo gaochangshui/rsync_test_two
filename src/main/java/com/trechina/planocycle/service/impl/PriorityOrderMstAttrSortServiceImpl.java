@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
@@ -149,11 +150,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
                 for (int i = 0; i < attrCol.size(); i++) {
 
                     String sort = attrSortList.get(i);
-                    if (objectMap.get("zokusei"+sort ).equals(map.get("val"))){
+                    if (objectMap.get(MagicString.ZOKUSEI_PREFIX+sort ).equals(map.get("val"))){
                         newObjectMap.put(attrCol.get(i).get("zokusei_colname").toString(),map.get("nm"));
                     }
-                    newObjectMap.put(attrCol.get(i).get("zokusei_colcd").toString(), objectMap.get("zokusei"+sort));
-                    newObjectMap.putIfAbsent(attrCol.get(i).get("zokusei_colname").toString(),objectMap.get("zokusei"+sort));
+                    newObjectMap.put(attrCol.get(i).get("zokusei_colcd").toString(), objectMap.get(MagicString.ZOKUSEI_PREFIX+sort));
+                    newObjectMap.putIfAbsent(attrCol.get(i).get("zokusei_colname").toString(),objectMap.get(MagicString.ZOKUSEI_PREFIX+sort));
                 }
             }
             newRestrictList.add(newObjectMap);

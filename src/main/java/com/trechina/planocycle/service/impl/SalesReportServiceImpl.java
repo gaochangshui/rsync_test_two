@@ -60,7 +60,7 @@ public class SalesReportServiceImpl implements SalesReportService {
         ResourceBundle resourceBundle = ResourceBundle.getBundle(FINAL_PATH_CONFIG);
         String path = resourceBundle.getString(FINAL_TASK_QUERY);
         Map<String,Object> result = cgiUtil.postCgiOfWeb(path,taskID,tokenInfo);
-        logger.info("つかむ取棚別実際数据参数cgi返回数据：{}",result.toString());
+        logger.info("つかむ取棚別実際数据参数cgi返回数据：{}",result);
         if(!"9".equals(result.get("data"))){
             result.put("data",JSON.parseArray(result.get("data").toString().replaceAll(" ", "")));
         }
@@ -80,7 +80,7 @@ public class SalesReportServiceImpl implements SalesReportService {
         ResourceBundle resourceBundle = ResourceBundle.getBundle(FINAL_PATH_CONFIG);
         String path = resourceBundle.getString(FINAL_TASK_QUERY);
         Map<String,Object> result =  cgiUtil.postCgiOfWeb(path,taskID,tokenInfo);
-        logger.info("つかむ取単jan別実際数据参数cgi返回数据：{}",result.toString());
+        logger.info("つかむ取単jan別実際数据参数cgi返回数据：{}",result);
         if(!"9".equals(result.get("data"))){
             JSONArray jsonArray = JSON.parseArray(result.get("data").toString().replaceAll(" ", ""));
             if (!jsonArray.isEmpty()) {

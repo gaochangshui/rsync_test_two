@@ -268,7 +268,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         Map<String, BasicPatternRestrictResult> classify = new HashMap<>();
 
         List<Integer> zokuseiList = zokuseiMst.stream().map(ZokuseiMst::getZokuseiId).collect(Collectors.toList());
-        classifyList.stream().forEach(map->{
+        classifyList.forEach(map->{
             StringBuilder classifyId = new StringBuilder();
             for (Integer id : zokuseiList) {
                 if(classifyId.length()>0){
@@ -318,12 +318,12 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         Class<PriorityOrderResultDataDto> clazz = PriorityOrderResultDataDto.class;
         for (PriorityOrderResultDataDto priorityOrderResultDataDto : priorityOrderResultDataDtoList) {
             for (Map<String, Object> map : janPlacementList) {
-                if (priorityOrderResultDataDto.getFaceKaiten().intValue() == MapUtils.getInteger(map,"faceKaiten") &&
-                        priorityOrderResultDataDto.getFaceMen().intValue() == MapUtils.getInteger(map,"faceMen")
+                if (priorityOrderResultDataDto.getFaceKaiten().intValue() == MapUtils.getInteger(map,MagicString.FACE_KAITEN) &&
+                        priorityOrderResultDataDto.getFaceMen().intValue() == MapUtils.getInteger(map,MagicString.FACE_MEN)
                 ){
-                    Method getPlanoWidth = clazz.getMethod("getPlano" + map.get("planoWidth").toString().substring(0, 1).toUpperCase() + map.get("planoWidth").toString().substring(1));
-                    Method getPlanoHeight = clazz.getMethod("getPlano" + map.get("planoHeight").toString().substring(0, 1).toUpperCase() + map.get("planoHeight").toString().substring(1));
-                    Method getPlanoDepth = clazz.getMethod("getPlano" + map.get("planoDepth").toString().substring(0, 1).toUpperCase() + map.get("planoDepth").toString().substring(1));
+                    Method getPlanoWidth = clazz.getMethod(MagicString.PLANO_PREFIX + map.get(MagicString.PLANO_WIDTH).toString().substring(0, 1).toUpperCase() + map.get(MagicString.PLANO_WIDTH).toString().substring(1));
+                    Method getPlanoHeight = clazz.getMethod(MagicString.PLANO_PREFIX + map.get(MagicString.PLANO_HEIGHT).toString().substring(0, 1).toUpperCase() + map.get(MagicString.PLANO_HEIGHT).toString().substring(1));
+                    Method getPlanoDepth = clazz.getMethod(MagicString.PLANO_PREFIX + map.get(MagicString.PLANO_DEPTH).toString().substring(0, 1).toUpperCase() + map.get(MagicString.PLANO_DEPTH).toString().substring(1));
                     planoWidth = (long)getPlanoWidth.invoke(priorityOrderResultDataDto);
                     planoHeight = (long)getPlanoHeight.invoke(priorityOrderResultDataDto);
                     planoDepth = (long)getPlanoDepth.invoke(priorityOrderResultDataDto);
@@ -344,15 +344,15 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
         priorityOrderResultDataDtoList.forEach(priorityOrderResultDataDto->{
             for (Map<String, Object> map : janPlacementList) {
-                if (Objects.equals(MapUtils.getInteger(priorityOrderResultDataDto, "faceKaiten", 0), MapUtils.getInteger(map,"faceKaiten")) &&
-                        Objects.equals(MapUtils.getInteger(priorityOrderResultDataDto, "faceMen", 1), MapUtils.getInteger(map,"faceMen"))
+                if (Objects.equals(MapUtils.getInteger(priorityOrderResultDataDto, MagicString.FACE_KAITEN, 0), MapUtils.getInteger(map,MagicString.FACE_KAITEN)) &&
+                        Objects.equals(MapUtils.getInteger(priorityOrderResultDataDto, MagicString.FACE_MEN, 1), MapUtils.getInteger(map,MagicString.FACE_MEN))
                 ){
                     priorityOrderResultDataDto.put(MagicString.WIDTH, priorityOrderResultDataDto.get("plano"+
-                            map.getOrDefault("planoWidth", MagicString.WIDTH).toString().substring(0,1).toUpperCase()+map.getOrDefault("planoWidth", MagicString.WIDTH).toString().substring(1)));
+                            map.getOrDefault(MagicString.PLANO_WIDTH, MagicString.WIDTH).toString().substring(0,1).toUpperCase()+map.getOrDefault(MagicString.PLANO_WIDTH, MagicString.WIDTH).toString().substring(1)));
                     priorityOrderResultDataDto.put("height", priorityOrderResultDataDto.get("plano"+
-                            map.getOrDefault("planoHeight", "height").toString().substring(0,1).toUpperCase()+map.getOrDefault("planoHeight", "height").toString().substring(1)));
+                            map.getOrDefault(MagicString.PLANO_HEIGHT, "height").toString().substring(0,1).toUpperCase()+map.getOrDefault(MagicString.PLANO_HEIGHT, "height").toString().substring(1)));
                     priorityOrderResultDataDto.put("depth", priorityOrderResultDataDto.get("plano"+
-                            map.getOrDefault("planoDepth", "depth").toString().substring(0,1).toUpperCase()+map.getOrDefault("planoDepth", "depth").toString().substring(1)));
+                            map.getOrDefault(MagicString.PLANO_DEPTH, "depth").toString().substring(0,1).toUpperCase()+map.getOrDefault(MagicString.PLANO_DEPTH, "depth").toString().substring(1)));
                 }
             }
         });
@@ -479,8 +479,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             List<Map<String, Object>> groups = new ArrayList<>();
 
             for (Map<String, Object> itemMap : entry.getValue()) {
-                String groupCd = "";
-                String groupName = "";
+                StringBuilder groupCd = new StringBuilder();
+                StringBuilder groupName = new StringBuilder();
                 for (Map<String,Object> zokuseiId : attrCol) {
                     if (itemMap.containsKey(zokuseiId.get("zokusei_colcd"))) {
                         String attrCd = MapUtils.getString(itemMap, zokuseiId.get("zokusei_colcd").toString());
@@ -503,17 +503,17 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                         colname = MagicString.DEFAULT_VALUE;
                     }
 
-                    if (groupCd.equals("")){
-                        groupCd += itemMap.get(zokuseiId.get("zokusei_colcd").toString());
-                        groupName += colname;
+                    if (groupCd.toString().equals("")){
+                        groupCd.append(itemMap.get(zokuseiId.get("zokusei_colcd").toString()));
+                        groupName.append(colname);
                     }else {
-                        groupCd +="->"+ itemMap.get(zokuseiId.get("zokusei_colcd").toString());
-                        groupName += "->" + colname;
+                        groupCd.append("->").append(itemMap.get(zokuseiId.get("zokusei_colcd").toString()));
+                        groupName.append("->").append(colname);
                     }
 
                 }
-                itemMap.put("groupCd",groupCd);
-                itemMap.put("groupName",groupName);
+                itemMap.put("groupCd",groupCd.toString());
+                itemMap.put("groupName",groupName.toString());
                 itemMap.remove("json");
                 itemMap.put(MagicString.TANA_POSITION, MapUtils.getString(itemMap, "areaPosition"));
                 itemMap.put(MagicString.RESTRICT_CD, MapUtils.getInteger(itemMap, MagicString.RESTRICT_CD, MagicString.NO_RESTRICT_CD.intValue()));
@@ -816,19 +816,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         for (int i = 0; i < zokuseiList.size(); i++) {
             Map<String, Object> zokusei = zokuseiList.get(i);
             for (Map<String, Object> restrict : restrictResult) {
-                int equalsCount = 0;
-                for (Integer integer : attrList) {
-                    String restrictKeyVal = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
-                    String restrictKey = Strings.isNullOrEmpty(restrictKeyVal)?MagicString.DEFAULT_VALUE:restrictKeyVal;
-                    String zokuseiKeyVal = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
-                    String zokuseiKey = Strings.isNullOrEmpty(zokuseiKeyVal)?MagicString.DEFAULT_VALUE: zokuseiKeyVal;
-
-                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
-                        equalsCount++;
-                    }
-                }
-
-                if(equalsCount == attrList.size()){
+                if(this.zokuseiEquals(attrList, restrict, zokusei)){
                     int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
                     zokusei.put(MagicString.RESTRICT_CD, restrictCd);
                 }
@@ -846,5 +834,21 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         if (this.interruptThread(uuid, "7")) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
+    }
+
+    private boolean zokuseiEquals(List<Integer> attrList, Map<String, Object> restrict, Map<String, Object> zokusei){
+        int equalsCount = 0;
+        for (Integer integer : attrList) {
+            String restrictKeyVal = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
+            String restrictKey = Strings.isNullOrEmpty(restrictKeyVal)?MagicString.DEFAULT_VALUE:restrictKeyVal;
+            String zokuseiKeyVal = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
+            String zokuseiKey = Strings.isNullOrEmpty(zokuseiKeyVal)?MagicString.DEFAULT_VALUE: zokuseiKeyVal;
+
+            if(Objects.equals(restrictKey, zokuseiKey)){
+                equalsCount++;
+            }
+        }
+
+        return equalsCount == attrList.size();
     }
 }

@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.google.common.base.Joiner;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
@@ -174,7 +175,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
             Map<String, List<Map<String, Object>>> janGroup = datas.stream().collect(Collectors.groupingBy(map -> {
                 StringBuilder attrKey = new StringBuilder();
                 for (Integer col : attrList) {
-                    attrKey.append(map.get("zokusei" + col));
+                    attrKey.append(map.get(MagicString.ZOKUSEI_PREFIX + col));
                 }
 
                 return attrKey.toString();
@@ -230,7 +231,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         Map<String,Object> mapAttr = new HashMap<>();
         for (Map.Entry<String, Object> stringObjectEntry : data.get(0).entrySet()) {
             for (Integer integer : attrList1) {
-                if (stringObjectEntry.getKey().equals("zokusei"+integer)){
+                if (stringObjectEntry.getKey().equals(MagicString.ZOKUSEI_PREFIX+integer)){
                     mapAttr.put(stringObjectEntry.getKey(),stringObjectEntry.getValue());
                 }
             }
@@ -241,10 +242,10 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
 
         for (Map.Entry<String, Object> stringObjectEntry : mapAttr.entrySet()) {
             Map<String,Object> newMap = new HashMap<>();
-           newMap.put("zokuseiId",stringObjectEntry.getKey().split("zokusei")[1]);
+           newMap.put("zokuseiId",stringObjectEntry.getKey().split(MagicString.ZOKUSEI_PREFIX)[1]);
            newMap.put("zokuseiValue",stringObjectEntry.getValue());
            list.add(newMap);
-           attrList.add(Integer.valueOf(stringObjectEntry.getKey().split("zokusei")[1]));
+           attrList.add(Integer.valueOf(stringObjectEntry.getKey().split(MagicString.ZOKUSEI_PREFIX)[1]));
         }
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
         for (Map<String, Object> objectMap : list) {
