@@ -549,10 +549,12 @@ public class MstJanServiceImpl implements MstJanService {
         cacheUtil.put(taskId+MagicString.STATUS_STR, MagicString.TASK_STATUS_PROCESSING);
         executor.execute(()->{
             Map<String, String> headerNameIndex = new HashMap<>();
-            for (JanHeaderAttr headerAttr : janHeader) {
+            janHeader.forEach(headerAttr->{
                 headerNameIndex.put(headerAttr.getAttrVal(), headerAttr.getSort());
-            }
+            });
+
             List<String> columnHeader = new ArrayList<>();
+
             for (String column : header) {
                 columnHeader.add(headerNameIndex.get(column));
             }

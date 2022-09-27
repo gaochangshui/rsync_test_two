@@ -214,9 +214,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         List<Map<String,Object>> data = (List<Map<String,Object>>)map.get("data");
         String aud = session.getAttribute("aud").toString();
         //
-        for (Map<String, Object> datum : data) {
-            datum.putIfAbsent("rank",1);
-        }
+        data.forEach(datum-> datum.putIfAbsent("rank",1));
+
         data = data.stream().sorted(Comparator.comparing(map1 -> MapUtils.getString(map1,MagicString.JAN_CD),Comparator.nullsFirst(String::compareTo).reversed()))
                 .sorted(Comparator.comparing(map1 -> MapUtils.getInteger(map1,"rank"),Comparator.nullsFirst(Integer::compareTo))).collect(Collectors.toList());
         List<String> errorMsgJan = priorityOrderJanNewMapper.getErrorMsgJan(companyCd, priorityOrderCd);
@@ -229,62 +228,55 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         List<Integer> attrList1 = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
         Map<String,Object> mapAttr = new HashMap<>();
         for (Map.Entry<String, Object> stringObjectEntry : data.get(0).entrySet()) {
-            for (Integer integer : attrList1) {
+            attrList1.forEach(integer->{
                 if (stringObjectEntry.getKey().equals(MagicString.ZOKUSEI_PREFIX+integer)){
                     mapAttr.put(stringObjectEntry.getKey(),stringObjectEntry.getValue());
                 }
-            }
+            });
         }
 
         List<Map<String,Object>> list = new ArrayList<>();
         List<Integer> attrList = new ArrayList<>();
-
-        for (Map.Entry<String, Object> stringObjectEntry : mapAttr.entrySet()) {
+        mapAttr.entrySet().forEach(stringObjectEntry->{
             Map<String,Object> newMap = new HashMap<>();
-           newMap.put("zokuseiId",stringObjectEntry.getKey().split(MagicString.ZOKUSEI_PREFIX)[1]);
-           newMap.put("zokuseiValue",stringObjectEntry.getValue());
-           list.add(newMap);
-           attrList.add(Integer.valueOf(stringObjectEntry.getKey().split(MagicString.ZOKUSEI_PREFIX)[1]));
-        }
+            newMap.put("zokuseiId",stringObjectEntry.getKey().split(MagicString.ZOKUSEI_PREFIX)[1]);
+            newMap.put("zokuseiValue",stringObjectEntry.getValue());
+            list.add(newMap);
+            attrList.add(Integer.valueOf(stringObjectEntry.getKey().split(MagicString.ZOKUSEI_PREFIX)[1]));
+        });
+      
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
-        for (Map<String, Object> objectMap : list) {
-            for (Map<String, Object> stringObjectMap : zokuseiCol) {
-                if (objectMap.get("zokuseiId").equals(stringObjectMap.get("zokusei_id")+"")){
-                    objectMap.put("zokuseiCol",stringObjectMap.get("zokusei_col"));
-                }
+        list.forEach(objectMap-> zokuseiCol.forEach(stringObjectMap->{
+            if (objectMap.get("zokuseiId").equals(stringObjectMap.get("zokusei_id")+"")){
+                objectMap.put("zokuseiCol",stringObjectMap.get("zokusei_col"));
             }
-        }
+        }));
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
         List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
 
 
         List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(priorityOrderCd,
                 zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,shelfPatternCd,productPowerCd,mapAttr);
-
-        for (Map<String, Object> datum : data) {
+        data.forEach(datum->{
             if (errorMsgJan.contains(datum.get(MagicString.JAN_CD).toString())){
                 datum.put(MagicString.ERROR_MSG,MagicString.DEL_ERROR_MSG);
             }else {
                 datum.put(MagicString.ERROR_MSG,"");
             }
-        }
-        for (Map<String, Object> productPowerDatum : productPowerData) {
-            for (Map<String, Object> datum : data) {
-                if (productPowerDatum.get(MagicString.JAN_CD).toString().equals(datum.get(MagicString.JAN_CD))){
-                    datum.put(MagicString.ERROR_MSG,"pts棚に並んでいる可能性がありますので削除してください。");
-                }
-
+        });
+        List<Map<String, Object>> finalData = data;
+        productPowerData.forEach(productPowerDatum-> finalData.forEach(datum->{
+            if (productPowerDatum.get(MagicString.JAN_CD).toString().equals(datum.get(MagicString.JAN_CD))){
+                datum.put(MagicString.ERROR_MSG,"pts棚に並んでいる可能性がありますので削除してください。");
             }
-        }
+        }));
         
         if (!productPowerData.isEmpty()) {
             productPowerData = CommonUtil.janSort(productPowerData, data, "rank");
         }else {
             data = data.stream().sorted(Comparator.comparing(map1->MapUtils.getInteger(map1,"rank"))).collect(Collectors.toList());
-            int j = 1;
-            for (Map<String, Object> datum : data) {
-                datum.put("rank",j++);
-            }
+            final int[] j = {1};
+            data.forEach(datum-> datum.put("rank", j[0]++));
             productPowerData.addAll(data);
         }
         List<Object> list1 = new ArrayList<>();
