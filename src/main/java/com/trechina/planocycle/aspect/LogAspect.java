@@ -39,9 +39,8 @@ public class LogAspect {
     //定義切入点
     //只要加了MonitorLog注解的方法，就是切入点
     @Pointcut("execution(public * com.trechina.planocycle.service..*.*(..))")
-    public void point(){
-
-    }
+    public void point(){ // default implementation ignored
+         }
 
     //定義通知
     @AfterThrowing(pointcut = "point()",throwing = "ex")
