@@ -129,28 +129,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
                         .sorted(Comparator.comparing(PriorityOrderResultDataDto::getTanaCd))
                         .sorted(Comparator.comparing(PriorityOrderResultDataDto::getTaiCd)).collect(Collectors.toList());
 
-                List<PriorityOrderResultDataDto> finalPositionResultData = new ArrayList<>();
-                Map<String, List<PriorityOrderResultDataDto>> positionResultDataByTaiTana = positionResultData.stream().collect(Collectors.groupingBy(data -> data.getTaiCd() + "_" + data.getTanaCd()));
-                for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : positionResultDataByTaiTana.entrySet()) {
-                    List<PriorityOrderResultDataDto> value = entry.getValue();
-                    List<PriorityOrderResultDataDto> noChangeJanList = value.stream().filter(data ->
-                            Joiner.on("_").join(Lists.newArrayList(data.getOldTaiCd()+"", data.getOldTanaCd()+"", data.getOldTanapositionCd()+""))
-                                    .equals(Joiner.on("_").join(Lists.newArrayList(data.getTaiCd(), data.getTanaCd(), data.getTanapositionCd())))).collect(Collectors.toList());
-                    List<PriorityOrderResultDataDto> changeJanList = value.stream()
-                            .filter(data ->!Joiner.on("_").join(Lists.newArrayList(data.getOldTaiCd()+"", data.getOldTanaCd()+"", data.getOldTanapositionCd()+""))
-                                    .equals(Joiner.on("_").join(Lists.newArrayList(data.getTaiCd(), data.getTanaCd(), data.getTanapositionCd())))).collect(Collectors.toList());
-
-                    for (PriorityOrderResultDataDto dataDto : noChangeJanList) {
-                        Integer tanapositionCd = dataDto.getTanapositionCd();
-                        if (tanapositionCd<=changeJanList.size()) {
-                            changeJanList.add(tanapositionCd-1, dataDto);
-                        }else{
-                            changeJanList.add(dataDto);
-                        }
-                    }
-
-                    finalPositionResultData.addAll(changeJanList);
-                }
+                List<PriorityOrderResultDataDto> finalPositionResultData = this.ptsPositionProcessing(positionResultData);
 
                 int currentTai=0;
                 int currentTana=0;
@@ -176,7 +155,31 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
             }
         }
     }
+    public List<PriorityOrderResultDataDto> ptsPositionProcessing(List<PriorityOrderResultDataDto> positionResultData){
+        List<PriorityOrderResultDataDto> finalPositionResultData = new ArrayList<>();
+        Map<String, List<PriorityOrderResultDataDto>> positionResultDataByTaiTana = positionResultData.stream().collect(Collectors.groupingBy(data -> data.getTaiCd() + "_" + data.getTanaCd()));
+        for (Map.Entry<String, List<PriorityOrderResultDataDto>> entry : positionResultDataByTaiTana.entrySet()) {
+            List<PriorityOrderResultDataDto> value = entry.getValue();
+            List<PriorityOrderResultDataDto> noChangeJanList = value.stream().filter(data ->
+                    Joiner.on("_").join(Lists.newArrayList(data.getOldTaiCd()+"", data.getOldTanaCd()+"", data.getOldTanapositionCd()+""))
+                            .equals(Joiner.on("_").join(Lists.newArrayList(data.getTaiCd(), data.getTanaCd(), data.getTanapositionCd())))).collect(Collectors.toList());
+            List<PriorityOrderResultDataDto> changeJanList = value.stream()
+                    .filter(data ->!Joiner.on("_").join(Lists.newArrayList(data.getOldTaiCd()+"", data.getOldTanaCd()+"", data.getOldTanapositionCd()+""))
+                            .equals(Joiner.on("_").join(Lists.newArrayList(data.getTaiCd(), data.getTanaCd(), data.getTanapositionCd())))).collect(Collectors.toList());
 
+            for (PriorityOrderResultDataDto dataDto : noChangeJanList) {
+                Integer tanapositionCd = dataDto.getTanapositionCd();
+                if (tanapositionCd<=changeJanList.size()) {
+                    changeJanList.add(tanapositionCd-1, dataDto);
+                }else{
+                    changeJanList.add(dataDto);
+                }
+            }
+
+            finalPositionResultData.addAll(changeJanList);
+        }
+        return finalPositionResultData;
+    }
     @Override
     public Map<String, Object> getPtsDetailData(Integer patternCd, String companyCd, Integer priorityAllCd) {
         String authorCd = session.getAttribute("aud").toString();

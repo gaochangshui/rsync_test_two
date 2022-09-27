@@ -244,7 +244,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
             list.add(newMap);
             attrList.add(Integer.valueOf(stringObjectEntry.getKey().split(MagicString.ZOKUSEI_PREFIX)[1]));
         });
-      
+
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
         list.forEach(objectMap-> zokuseiCol.forEach(stringObjectMap->{
             if (objectMap.get("zokuseiId").equals(stringObjectMap.get("zokusei_id")+"")){
