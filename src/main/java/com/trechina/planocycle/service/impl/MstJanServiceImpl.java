@@ -117,7 +117,7 @@ public class MstJanServiceImpl implements MstJanService {
      * @return
      */
     @Override
-    public Map<String, Object> getJanList(DownFlagVO downFlagVO) throws Exception {
+    public Map<String, Object> getJanList(DownFlagVO downFlagVO) {
         JanInfoVO janInfoVO = new JanInfoVO();
         if (cacheUtil.get(downFlagVO.getTaskID()) == null) {
             return ResultMaps.result(ResultEnum.FAILURE, "taskId not exists");
@@ -125,14 +125,14 @@ public class MstJanServiceImpl implements MstJanService {
 
         if(MagicString.TASK_STATUS_PROCESSING.equals(cacheUtil.get(downFlagVO.getTaskID()+MagicString.STATUS_STR))){
             JSONObject returnJson = new JSONObject();
-            returnJson.put("status", "9");
-            returnJson.put("taskId", downFlagVO.getTaskID());
+            returnJson.put(MagicString.STATUS, "9");
+            returnJson.put(MagicString.TASKID, downFlagVO.getTaskID());
             return ResultMaps.result(ResultEnum.SUCCESS, returnJson);
         }else if(MagicString.TASK_STATUS_EXCEPTION.equals(cacheUtil.get(downFlagVO.getTaskID()+MagicString.STATUS_STR))){
             return ResultMaps.result(ResultEnum.FAILURE);
         }else if(MagicString.TASK_STATUS_SUCCESS.equals(cacheUtil.get(downFlagVO.getTaskID()+MagicString.STATUS_STR))){
             JSONObject json = new JSONObject();
-            json.put("taskId", downFlagVO.getTaskID());
+            json.put(MagicString.TASKID, downFlagVO.getTaskID());
             return ResultMaps.result(ResultEnum.SUCCESS, json);
         }
 
@@ -140,53 +140,7 @@ public class MstJanServiceImpl implements MstJanService {
         cacheUtil.put(downFlagVO.getTaskID()+MagicString.FLAG_STR, downFlagVO.getDownFlag());
         Future<?> futureTask = executor.submit(()->{
             try {
-                JSONObject json =JSON.parseObject(cacheUtil.get(downFlagVO.getTaskID()).toString());
-                JanParamVO janParamVO = JSON.parseObject(json.getString("janParamVO"),JanParamVO.class);
-                String janInfoTable = json.getString("janInfoTable");
-                String janInfoTablePlanoCycle = json.getString("janInfoTablePlanoCycle");
-                String tableNameAttr = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, janParamVO.getCompanyCd(),
-                        janParamVO.getCommonPartsData().getProdMstClass());
-                String tableNameKaisou = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS, janParamVO.getCompanyCd(),
-                        janParamVO.getCommonPartsData().getProdMstClass());
-                String tableNamePlanoCycle = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS,
-                        MagicString.PLANO_CYCLE_COMPANY_CD,MagicString.FIRST_CLASS_CD);
-                String janColumn = json.getString("janColumn");
-                List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr, tableNameKaisou,tableNamePlanoCycle, janColumn);
-                List<JanHeaderAttr> janHeaderSort = new ArrayList<>();
-                for (String column : janColumn.split(",")) {
-                    Optional<JanHeaderAttr> optional = janHeader.stream().filter(e->column.equals(e.getAttr())).findFirst();
-                    optional.ifPresent(janHeaderSort::add);
-                }
-                janHeader = janHeaderSort;
-                //SQL文の列： a."1" "jan_cd",a."2" "jan_name",a."21" "kikaku",b."104" "planoWidth"
-                String column = janHeader.stream().map(map -> "COALESCE(" + ("5".equals(map.getType()) ||"6".equals(map.getType()) ? "b" : "a") + ".\""
-                        + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
-                        .collect(Collectors.joining(","));
-                janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTable, janInfoTablePlanoCycle, column));
-                janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
-                        .collect(Collectors.joining(",")));
-                janInfoVO.setJanColumn(dataConverUtils.camelize(janColumn));
-                if(Integer.valueOf(1).equals(downFlagVO.getDownFlag())) {
-                     List<String[]> excelData = new ArrayList<>();
-                     excelData.add(janInfoVO.getJanHeader().split(","));
-                     String fileName = String.format("商品明細-%s.xlsx",
-                             LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS)));
-                    ApplicationHome h = new ApplicationHome(this.getClass());
-                    File jarF = h.getSource();
-                    String path = jarF.getParentFile().toString();
-                    String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
-
-                     for (LinkedHashMap<String, Object> map : janInfoVO.getJanDataList()) {
-                         excelData.add(map.values().stream().map(Object::toString).toArray(String[]::new));
-                     }
-
-                     ExcelUtils.generateNormalExcelToFile(excelData, filePath);
-                     cacheUtil.put(downFlagVO.getTaskID() + MagicString.STATUS_STR, MagicString.TASK_STATUS_SUCCESS);
-                     cacheUtil.put(downFlagVO.getTaskID() + MagicString.FILEPATH_STR, fileName);
-                 }else{
-                     cacheUtil.put(downFlagVO.getTaskID() + MagicString.STATUS_STR, MagicString.TASK_STATUS_SUCCESS);
-                     cacheUtil.put(downFlagVO.getTaskID() + MagicString.RETURN_STR, janInfoVO);
-                }
+               this.janHandle(janInfoVO,downFlagVO);
             }catch (Exception e){
                 logger.error("", e);
                 cacheUtil.put(downFlagVO.getTaskID()+MagicString.STATUS_STR, MagicString.TASK_STATUS_EXCEPTION);
@@ -198,8 +152,8 @@ public class MstJanServiceImpl implements MstJanService {
             futureTask.get(MagicString.TASK_TIME_OUT, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             JSONObject returnJson = new JSONObject();
-            returnJson.put("status", "9");
-            returnJson.put("taskId", downFlagVO.getTaskID());
+            returnJson.put(MagicString.STATUS, "9");
+            returnJson.put(MagicString.TASKID, downFlagVO.getTaskID());
             return ResultMaps.result(ResultEnum.SUCCESS, returnJson);
         } catch(InterruptedException e ){
             Thread.currentThread().interrupt();
@@ -213,10 +167,59 @@ public class MstJanServiceImpl implements MstJanService {
         }
 
         JSONObject json = new JSONObject();
-        json.put("taskId", downFlagVO.getTaskID());
+        json.put(MagicString.TASKID, downFlagVO.getTaskID());
         return ResultMaps.result(ResultEnum.SUCCESS, json);
     }
 
+    public void janHandle(JanInfoVO janInfoVO, DownFlagVO downFlagVO){
+        JSONObject json =JSON.parseObject(cacheUtil.get(downFlagVO.getTaskID()).toString());
+        JanParamVO janParamVO = JSON.parseObject(json.getString("janParamVO"),JanParamVO.class);
+        String janInfoTable = json.getString("janInfoTable");
+        String janInfoTablePlanoCycle = json.getString("janInfoTablePlanoCycle");
+        String tableNameAttr = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, janParamVO.getCompanyCd(),
+                janParamVO.getCommonPartsData().getProdMstClass());
+        String tableNameKaisou = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS, janParamVO.getCompanyCd(),
+                janParamVO.getCommonPartsData().getProdMstClass());
+        String tableNamePlanoCycle = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS,
+                MagicString.PLANO_CYCLE_COMPANY_CD,MagicString.FIRST_CLASS_CD);
+        String janColumn = json.getString("janColumn");
+        List<JanHeaderAttr> janHeader = mstJanMapper.getJanHeader(tableNameAttr, tableNameKaisou,tableNamePlanoCycle, janColumn);
+        List<JanHeaderAttr> janHeaderSort = new ArrayList<>();
+        for (String column : janColumn.split(",")) {
+            Optional<JanHeaderAttr> optional = janHeader.stream().filter(e->column.equals(e.getAttr())).findFirst();
+            optional.ifPresent(janHeaderSort::add);
+        }
+        janHeader = janHeaderSort;
+        //SQL文の列： a."1" "jan_cd",a."2" "jan_name",a."21" "kikaku",b."104" "planoWidth"
+        String column = janHeader.stream().map(map -> "COALESCE(" + ("5".equals(map.getType()) ||"6".equals(map.getType()) ? "b" : "a") + ".\""
+                        + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
+                .collect(Collectors.joining(","));
+        janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTable, janInfoTablePlanoCycle, column));
+        janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
+                .collect(Collectors.joining(",")));
+        janInfoVO.setJanColumn(dataConverUtils.camelize(janColumn));
+        if(Integer.valueOf(1).equals(downFlagVO.getDownFlag())) {
+            List<String[]> excelData = new ArrayList<>();
+            excelData.add(janInfoVO.getJanHeader().split(","));
+            String fileName = String.format("商品明細-%s.xlsx",
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER_SS)));
+            ApplicationHome h = new ApplicationHome(this.getClass());
+            File jarF = h.getSource();
+            String path = jarF.getParentFile().toString();
+            String filePath = Joiner.on(File.separator).join(Lists.newArrayList(path, fileName));
+
+            for (LinkedHashMap<String, Object> map : janInfoVO.getJanDataList()) {
+                excelData.add(map.values().stream().map(Object::toString).toArray(String[]::new));
+            }
+
+            ExcelUtils.generateNormalExcelToFile(excelData, filePath);
+            cacheUtil.put(downFlagVO.getTaskID() + MagicString.STATUS_STR, MagicString.TASK_STATUS_SUCCESS);
+            cacheUtil.put(downFlagVO.getTaskID() + MagicString.FILEPATH_STR, fileName);
+        }else{
+            cacheUtil.put(downFlagVO.getTaskID() + MagicString.STATUS_STR, MagicString.TASK_STATUS_SUCCESS);
+            cacheUtil.put(downFlagVO.getTaskID() + MagicString.RETURN_STR, janInfoVO);
+        }
+    }
     @Override
     public Map<String, Object> getJanListInfo(JanInfoList janInfoList) {
         String companyCd = "1000";
@@ -246,9 +249,53 @@ public class MstJanServiceImpl implements MstJanService {
         if (janInfoList1 == null && !"".equals(janInfoList.getJan())){
             return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
         }
+        Map<String, Object> janInfoMap = this.janInfoHandle(janInfoList1, update);
+
+        Map<String,Object> janInfo = new HashMap<>();
+       List<Map<String,Object>> janClass = new ArrayList<>();
+
+       janKaisouList.stream().forEach(stringObjectLinkedHashMap->{
+           Map<String,Object> janKaisouInfo = new HashMap<>();
+           janKaisouInfo.put("name",stringObjectLinkedHashMap.get("2"));
+           janKaisouInfo.put("id",janInfoList1!=null?janInfoList1.get((Integer.parseInt(stringObjectLinkedHashMap.get("3").toString())-1)+""):"");
+           janKaisouInfo.put(MagicString.TITLE,janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
+           janKaisouInfo.put(MagicString.VALUE,MagicString.ZOKUSEI_PREFIX+stringObjectLinkedHashMap.get("3"));
+
+           janClass.add(janKaisouInfo);
+       });
+
+        janInfo.put("janClass",janClass);
+        List<Object> janAttr = this.janAttrHandle(janAttrGroup1, janAttrGroup3, janInfoList1);
+        janInfo.put("janAttr",janAttr);
+        janInfoMap.put("janInfo",janInfo);
+
+        List<Object> janBulk = new ArrayList<>();
+        janBulk.add(null);
+        List<Object> janBulk1 = new ArrayList<>();
+            janAttrGroup2.forEach(stringObjectLinkedHashMap->{
+                Map<String,Object> janAttrInfo = new HashMap<>();
+                janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
+                janAttrInfo.put(MagicString.VALUE,stringObjectLinkedHashMap.get("1"));
+                janAttrInfo.put(MagicString.TITLE,janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
+                janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
+
+                if (stringObjectLinkedHashMap.get("13").equals("0")) {
+                    janAttrInfo.put("type",MagicString.NUMBER);
+                }else {
+                    janAttrInfo.put("type",MagicString.STRING);
+                }
+                janBulk1.add(janAttrInfo);
+            });
+
+        janBulk.add(janBulk1);
+        janInfoMap.put("janBulk",janBulk);
+        return ResultMaps.result(ResultEnum.SUCCESS,janInfoMap);
+    }
+
+    public Map<String,Object> janInfoHandle(Map<String, Object> janInfoList1, List<LinkedHashMap<String, Object>> update){
         Map<String,Object> janInfoMap = new HashMap<>();
-            janInfoMap.put(MagicString.JAN, janInfoList1!=null?janInfoList1.getOrDefault("1", ""):"");
-            janInfoMap.put(MagicString.JAN_NAME, janInfoList1!=null?janInfoList1.getOrDefault("2", ""):"");
+        janInfoMap.put(MagicString.JAN, janInfoList1!=null?janInfoList1.getOrDefault("1", ""):"");
+        janInfoMap.put(MagicString.JAN_NAME, janInfoList1!=null?janInfoList1.getOrDefault("2", ""):"");
 
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : update) {
             if (stringObjectLinkedHashMap.get("1").toString().equals("update_time")){
@@ -265,25 +312,13 @@ public class MstJanServiceImpl implements MstJanService {
         }else {
             janInfoMap.put("sync",false);
         }
-        Map<String,Object> janInfo = new HashMap<>();
+        return janInfoMap;
+    }
 
-       List<Map<String,Object>> janClass = new ArrayList<>();
-
-        for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janKaisouList) {
-            Map<String,Object> janKaisouInfo = new HashMap<>();
-            janKaisouInfo.put("name",stringObjectLinkedHashMap.get("2"));
-            janKaisouInfo.put("id",janInfoList1!=null?janInfoList1.get((Integer.parseInt(stringObjectLinkedHashMap.get("3").toString())-1)+""):"");
-            janKaisouInfo.put(MagicString.TITLE,janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
-            janKaisouInfo.put(MagicString.VALUE,"zokusei"+stringObjectLinkedHashMap.get("3"));
-
-            janClass.add(janKaisouInfo);
-
-        }
-        janInfo.put("janClass",janClass);
+    public List<Object> janAttrHandle(List<LinkedHashMap<String, Object>> janAttrGroup1, List<LinkedHashMap<String, Object>> janAttrGroup3, Map<String, Object> janInfoList1){
         List<Object> janAttr = new ArrayList<>();
-
         List<Object> group1 = new ArrayList<>();
-        for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup1) {
+        janAttrGroup1.stream().forEach(stringObjectLinkedHashMap->{
             Map<String,Object> janAttrInfo = new HashMap<>();
             janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
             janAttrInfo.put(MagicString.TITLE,janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
@@ -295,60 +330,38 @@ public class MstJanServiceImpl implements MstJanService {
                 janAttrInfo.put("isDelete",0);
             }
             if (stringObjectLinkedHashMap.get("13").equals("0")) {
-                janAttrInfo.put("type","number");
+                janAttrInfo.put("type",MagicString.NUMBER);
             }else {
-                janAttrInfo.put("type","string");
+                janAttrInfo.put("type",MagicString.STRING);
             }
 
             group1.add(janAttrInfo);
+        });
 
-
-        }
         janAttr.add(group1);
-        List<Object> group2 = new ArrayList<>();
-        for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup3) {
-            Map<String,Object> janAttrInfo = new HashMap<>();
-            janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
-            janAttrInfo.put(MagicString.TITLE,janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
-            janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
-            janAttrInfo.put(MagicString.VALUE,stringObjectLinkedHashMap.get("1"));
-            if (stringObjectLinkedHashMap.get("13").equals("0")) {
-                janAttrInfo.put("type","number");
-            }else {
-                janAttrInfo.put("type","string");
-            }
 
-            group2.add(janAttrInfo);
-
-
-        }
+        List<Object> group2 = this.janAttrGroup2Handle(janAttrGroup3,janInfoList1);
         janAttr.add(group2);
-        janInfo.put("janAttr",janAttr);
-        janInfoMap.put("janInfo",janInfo);
-
-        List<Object> janBulk = new ArrayList<>();
-        janBulk.add(null);
-        List<Object> janBulk1 = new ArrayList<>();
-
-        for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrGroup2) {
-            Map<String,Object> janAttrInfo = new HashMap<>();
-            janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
-            janAttrInfo.put(MagicString.VALUE,stringObjectLinkedHashMap.get("1"));
-            janAttrInfo.put(MagicString.TITLE,janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
-            janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
-
-            if (stringObjectLinkedHashMap.get("13").equals("0")) {
-                janAttrInfo.put("type","number");
-            }else {
-                janAttrInfo.put("type","string");
-            }
-            janBulk1.add(janAttrInfo);
-        }
-        janBulk.add(janBulk1);
-        janInfoMap.put("janBulk",janBulk);
-        return ResultMaps.result(ResultEnum.SUCCESS,janInfoMap);
+        return janAttr;
     }
 
+    public List<Object> janAttrGroup2Handle(List<LinkedHashMap<String, Object>> janAttrGroup3, Map<String, Object> janInfoList1){
+        List<Object> group2 = new ArrayList<>();
+        janAttrGroup3.stream().forEach(stringObjectLinkedHashMap->{
+            Map<String,Object> janAttrInfo = new HashMap<>();
+            janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
+            janAttrInfo.put(MagicString.TITLE,janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
+            janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
+            janAttrInfo.put(MagicString.VALUE,stringObjectLinkedHashMap.get("1"));
+            if (stringObjectLinkedHashMap.get("13").equals("0")) {
+                janAttrInfo.put("type",MagicString.NUMBER);
+            }else {
+                janAttrInfo.put("type",MagicString.STRING);
+            }
+            group2.add(janAttrInfo);
+        });
+        return group2;
+    }
     /**
      * 表示項目設定の取得
      * @param janPresetAttribute
@@ -422,12 +435,12 @@ public class MstJanServiceImpl implements MstJanService {
         String jan = map.get(MagicString.JAN).toString();
         List<String> list = new ArrayList<>();
         for (String s : map.keySet()) {
-            if (s.contains("zokusei")){
-                Integer zokuseiId = Integer.parseInt(s.replace("zokusei", ""))-1;
+            if (s.contains(MagicString.ZOKUSEI_PREFIX)){
+                Integer zokuseiId = Integer.parseInt(s.replace(MagicString.ZOKUSEI_PREFIX, ""))-1;
                 setInfoMap.put(zokuseiId+"",map.get(s));
                 // map.get(s)!= null && !map.get(s).equals("")
                 if (!Strings.isNullOrEmpty(MapUtils.getString(map, s))){
-                    list.add(s.replace("zokusei", ""));
+                    list.add(s.replace(MagicString.ZOKUSEI_PREFIX, ""));
                     getKaisouNameMap.put(zokuseiId+"",map.get(s));
                 }else {
                     setInfoMap.put(zokuseiId+"","9999");
@@ -441,15 +454,21 @@ public class MstJanServiceImpl implements MstJanService {
              kaiSouName = mstJanMapper.getKaiSouName(getKaisouNameMap, janInfoTableName, list);
         }
 
+       this.setJanInfo(tableNameAttr,authorCd,setInfoMap,map,kaiSouName,jan,janInfoTableName,companyCd,commonPartsDto);
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    public void setJanInfo(String tableNameAttr, String authorCd, Map<String, Object> setInfoMap, Map<String, Object> map, Map<String, Object> kaiSouName, String jan, String janInfoTableName, String companyCd, Map<String, Object> commonPartsDto){
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
         List<LinkedHashMap<String,Object>> janAttrList = mstJanMapper.getJanAttrList(tableNameAttr);
         for (LinkedHashMap<String, Object> stringObjectLinkedHashMap : janAttrList) {
-            for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+            map.entrySet().stream().forEach(stringObjectEntry->{
                 if (stringObjectLinkedHashMap.get("1").equals(stringObjectEntry.getKey())){
                     setInfoMap.put(stringObjectLinkedHashMap.get("3").toString(),stringObjectEntry.getValue());
                 }
-            }
+            });
+
             if ("update_time".equals(stringObjectLinkedHashMap.get("1"))){
                 setInfoMap.put(stringObjectLinkedHashMap.get("3").toString(),simpleDateFormat.format(date));
             }
@@ -476,15 +495,14 @@ public class MstJanServiceImpl implements MstJanService {
         List<Map<String, Object>> zokuseiIdAndCol = zokuseiMstMapper.getZokuseiIdAndCol(companyCd, commonPartsDto.get(MagicString.PROD_MST_CLASS).toString());
         LinkedHashMap<String,Object> maps = new LinkedHashMap<>();
         for (Map<String, Object> objectMap : zokuseiIdAndCol) {
-            for (Map.Entry<String, Object> stringObjectEntry : setInfoMap.entrySet()) {
-                if (objectMap.get("zokusei_col").equals(stringObjectEntry.getKey())){
-                    maps.put(objectMap.get("zokusei_id").toString(),stringObjectEntry.getValue());
+            setInfoMap.entrySet().stream().forEach(stringObjectEntry->{
+                if (objectMap.get(MagicString.ZOKUSEI_COL).equals(stringObjectEntry.getKey())){
+                    maps.put(objectMap.get(MagicString.ZOKUSEI_ID).toString(),stringObjectEntry.getValue());
                 }
-            }
+            });
         }
         zokuseiMstMapper.setVal(maps,companyCd,commonPartsDto.get(MagicString.PROD_MST_CLASS).toString());
 
-        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
@@ -618,14 +636,14 @@ public class MstJanServiceImpl implements MstJanService {
                     count.addAndGet(i1);
                 }
 
-                Set zokuseiList = new HashSet();
+                Set<Map<String,Object>> zokuseiList = new HashSet<>();
                 for (LinkedHashMap<String, Object> janDatum : janData) {
                     for (Map.Entry<String, Object> stringObjectEntry : janDatum.entrySet()) {
                         for (Map<String, Object> map : zokuseiIdAndCol) {
-                            if (stringObjectEntry.getKey().equals(map.get("zokusei_col"))) {
+                            if (stringObjectEntry.getKey().equals(map.get(MagicString.ZOKUSEI_COL))) {
                                 Map <String,Object> zokuseiMap = new HashMap<>();
-                                zokuseiMap.put("zokusei_id",map.get("zokusei_id"));
-                                zokuseiMap.put("zokusei_col",map.get("zokusei_col"));
+                                zokuseiMap.put(MagicString.ZOKUSEI_ID,map.get(MagicString.ZOKUSEI_ID));
+                                zokuseiMap.put(MagicString.ZOKUSEI_COL,map.get(MagicString.ZOKUSEI_COL));
                                 zokuseiMap.put("zokusei_nm",stringObjectEntry.getValue());
                                 zokuseiList.add(zokuseiMap);
                             }
@@ -637,7 +655,7 @@ public class MstJanServiceImpl implements MstJanService {
                 }
 
                 cacheUtil.put(taskId+MagicString.STATUS_STR, MagicString.TASK_STATUS_SUCCESS);
-                cacheUtil.put(taskId+",data", count + MagicString.MSG_UPLOAD_SUCCESS);
+                cacheUtil.put(taskId+MagicString.DATA_STR, count + MagicString.MSG_UPLOAD_SUCCESS);
             } catch (Exception e) {
                 logger.error("", e);
                 logAspect.setTryErrorLog(e,new Object[]{commonPartsData, finalCompanyCd,classCd});
@@ -647,7 +665,7 @@ public class MstJanServiceImpl implements MstJanService {
         });
 
         JSONObject json = new JSONObject();
-        json.put("taskId", taskId);
+        json.put(MagicString.TASKID, taskId);
         return ResultMaps.result(ResultEnum.SUCCESS, json);
     }
 
@@ -751,21 +769,21 @@ public class MstJanServiceImpl implements MstJanService {
     public Map<String, Object> getUploadJanDataResult(String taskId) {
         Object o = cacheUtil.get(taskId + MagicString.STATUS_STR);
         if (Objects.equals(o.toString(), MagicString.TASK_STATUS_SUCCESS)) {
-            String data = cacheUtil.get(taskId + ",data").toString();
-            cacheUtil.remove(taskId+",data");
+            String data = cacheUtil.get(taskId + MagicString.DATA_STR).toString();
+            cacheUtil.remove(taskId+MagicString.DATA_STR);
             cacheUtil.remove(taskId+MagicString.STATUS_STR);
             Map<String, Object> result = ResultMaps.result(ResultEnum.SUCCESS.getCode(), data);
             result.put("data", data);
             return result;
         }else if(Objects.equals(o.toString(), MagicString.TASK_STATUS_PROCESSING)){
             JSONObject returnJson = new JSONObject();
-            returnJson.put("status", "9");
-            returnJson.put("taskId", taskId);
+            returnJson.put(MagicString.STATUS, "9");
+            returnJson.put(MagicString.TASKID, taskId);
             return ResultMaps.result(ResultEnum.SUCCESS, returnJson);
         }
 
         Object msg = cacheUtil.get(taskId + ",exception");
-        cacheUtil.remove(taskId+",data");
+        cacheUtil.remove(taskId+MagicString.DATA_STR);
         cacheUtil.remove(taskId+",exception");
 
         return ResultMaps.result(ResultEnum.FAILURE.getCode(), String.valueOf(msg));

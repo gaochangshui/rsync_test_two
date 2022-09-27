@@ -290,6 +290,7 @@ public class MagicString {
     public static final String DATA_STR = ",data";
 
     public static final String STATUS_STR = ",status";
+    public static final String STATUS = "status";
 
     public static final String FLAG_STR = ",flag";
 
@@ -301,5 +302,13 @@ public class MagicString {
     public static final String PRODUCT_POWER_CD = "productPowerCd";
 
     public static final String PARAM = "param";
+    public static final String TASKID = "taskId";
+
+    public static final String NUMBER = "number";
+
+    public static final String STRING = "string";
+
+    public static final String ZOKUSEI_COL = "zokusei_col";
+    public static final String ZOKUSEI_ID = "zokusei_id";
 
 }
