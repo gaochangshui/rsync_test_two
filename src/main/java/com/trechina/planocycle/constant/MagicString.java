@@ -269,5 +269,10 @@ public class MagicString {
 
     public static final String ERROR_MSG = "errMsg";
     public static final String DEL_ERROR_MSG = "現状棚に並んでいる可能性がありますので削除してください。";
+    public static final String SEASON_FLAG = "seasonFlag";
+
+    public static final String RECENTLY_FLAG = "recentlyFlag";
+
+    public static final String DATE_CD = "data_cd";
 
 }
