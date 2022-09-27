@@ -47,6 +47,7 @@ public class MagicString {
     public static final String TANA_POSITION_CD = "tanaPositionCd";
 
     public static final String TANA_POSITION = "tanaPosition";
+    public static final String TANAPOSITIONCD = "tanapositionCd";
 
     public static final String SET_ZOKUSEI = "setZokusei";
 
@@ -236,7 +237,11 @@ public class MagicString {
     public static final String BASIC_ALL_PTS_DATA_TABLE_NAME="planocycle.work_priority_all_pts_jans";
 
     public static final String ZOUKUSEI_COLCD="zokusei_colcd";
-    public static final String ZOUKUSEI_COLNAME="planocycle.work_priority_all_pts_jans";
+
+    public static final String ZOUKUSEI_COLNAME="zokusei_colname";
+
+    public static final String REMARKS="remarks";
+
 
 
 
