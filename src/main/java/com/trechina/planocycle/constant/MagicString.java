@@ -133,6 +133,8 @@ public class MagicString {
     public static final String BIG_LAST_INDEX = "bigLastIndex";
 
     public static final String BRANCH_NUM = "branch_num";
+
+    public static final String FACE_NUM = "faceNum";
     public static final String BRANCH = "branch";
 
     public static final String PATTERN_NAME = "pattern_name";
@@ -240,7 +242,14 @@ public class MagicString {
 
     public static final String ZOUKUSEI_COLNAME="zokusei_colname";
 
+    public static final String ZOUKUSEI_NM="zokusei_nm";
+
     public static final String REMARKS="remarks";
+    public static final String GROUP_HEADER="groupHeader";
+    public static final String GROUP_COLUMNS="groupColumns";
+
+    public static final String NEW_DATA="newData";
+    public static final String OLD_DATA="oldData";
 
 
 

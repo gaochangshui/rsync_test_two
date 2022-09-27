@@ -66,55 +66,55 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
     @Override
     public Map<String, Object> getRestrictData(String companyCd,Integer priorityOrderCd)  {
         String authorCd = session.getAttribute("aud").toString();
-        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd,"planocycle.work_priority_order_pts_data_jandata");
+        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd,MagicString.BASIC_PATTERN_PTS_DATA_TABLE_NAME);
         logger.info("ptsGroup：{}",ptsGroup);
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         String commonPartsData = workPriorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         Map<String, List<Map<String, Object>>> listMap = ptsGroup.stream().collect(Collectors.groupingBy(map -> {
-            String attrKey = "";
+            StringBuilder attrKey = new StringBuilder();
             for (Map<String,Object> col : attrCol) {
-                    attrKey += map.get( col.get("zokusei_colcd"));
+                    attrKey.append(map.get(col.get(MagicString.ZOUKUSEI_COLCD)));
             }
 
-            return attrKey;
+            return attrKey.toString();
 
         }));
-        String colHeader = "";
-        String janColumns = "";
+        StringBuilder colHeader = new StringBuilder();
+        StringBuilder janColumns = new StringBuilder();
         for (Map<String,Object> col : attrCol) {
-            if (colHeader.equals("")) {
-                janColumns +=  col.get("zokusei_colname");
-                colHeader +=col.get("zokusei_nm");
+            if (colHeader.toString().equals("")) {
+                janColumns.append(col.get(MagicString.ZOUKUSEI_COLNAME));
+                colHeader.append(col.get(MagicString.ZOUKUSEI_NM));
             }else {
-                janColumns += "," + col.get("zokusei_colname");
-                colHeader +=","+col.get("zokusei_nm");
+                janColumns.append(",").append(col.get(MagicString.ZOUKUSEI_COLNAME));
+                colHeader.append(",").append(col.get(MagicString.ZOUKUSEI_NM));
             }
         }
-        colHeader+=",SKU数,フェース数";
-        janColumns+=",skuNum,faceNum";
+        colHeader.append(",SKU数,フェース数");
+        janColumns.append(",skuNum,faceNum");
         List<Map<String,Object>> list = new ArrayList<>();
         Map<String,Object> mapHeader = new HashMap<>();
-        mapHeader.put("groupHeader",colHeader);
-        mapHeader.put("groupColumns",janColumns);
+        mapHeader.put(MagicString.GROUP_HEADER, colHeader.toString());
+        mapHeader.put(MagicString.GROUP_COLUMNS, janColumns.toString());
         for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : listMap.entrySet()) {
             Map<String,Object> map = new HashMap<>();
             for (Map<String,Object> col : attrCol) {
-                map.put( col.get("zokusei_colname").toString(),stringListEntry.getValue().get(0).getOrDefault(col.get("zokusei_colname"),""));
+                map.put( col.get(MagicString.ZOUKUSEI_COLNAME).toString(),stringListEntry.getValue().get(0).getOrDefault(col.get(MagicString.ZOUKUSEI_COLNAME),""));
             }
 
-            map.put("restrictCd",stringListEntry.getValue().get(0).get("restrictCd"));
+            map.put(MagicString.RESTRICT_CD,stringListEntry.getValue().get(0).get(MagicString.RESTRICT_CD));
             int face = 0;
             int sku =stringListEntry.getValue().size();
             for (Map<String, Object> objectMap : stringListEntry.getValue()) {
-            face = face + Integer.parseInt(objectMap.get("faceNum").toString());
+            face = face + Integer.parseInt(objectMap.get(MagicString.FACE_NUM).toString());
             }
-            map.put("faceNum",face);
+            map.put(MagicString.FACE_NUM,face);
             map.put("skuNum",sku);
             list.add(map);
         }
-        list= list.stream().sorted(Comparator.comparing(map7->MapUtils.getInteger(map7,"restrictCd",99))).collect(Collectors.toList());
+        list= list.stream().sorted(Comparator.comparing(map7->MapUtils.getInteger(map7,MagicString.RESTRICT_CD,99))).collect(Collectors.toList());
         mapHeader.put("group",list);
         return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
     }
@@ -137,17 +137,17 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
             List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
 
-            List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd,"planocycle.work_priority_order_pts_data_jandata");
-            ptsGroup= ptsGroup.stream().filter(map->map.get("restrictCd").toString().equals(priorityOrderRestDto.getRestrictCd()+""))
-                    .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank")))
-                    .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanaCd")))
-                    .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd")))
+            List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd,MagicString.BASIC_PATTERN_PTS_DATA_TABLE_NAME);
+            ptsGroup= ptsGroup.stream().filter(map->map.get(MagicString.RESTRICT_CD).toString().equals(priorityOrderRestDto.getRestrictCd()+""))
+                    .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,MagicString.RANK)))
+                    .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,MagicString.TANA_CD)))
+                    .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,MagicString.TAI_CD)))
                     .collect(Collectors.toList());
             Map<String,Object> mapHeader = new HashMap<>();
             String groupColumns = "taiCd,tanaCd,tanapositionCd,janCd,janName,plano_width,plano_height,plano_depth,rank,faceNum";
             String groupHeader = "台番号,棚段番号,棚位置,JAN,商品名,幅,高,奥行,RANK,フェース数";
-            mapHeader.put("groupColumns",groupColumns);
-            mapHeader.put("groupHeader",groupHeader);
+            mapHeader.put(MagicString.GROUP_COLUMNS,groupColumns);
+            mapHeader.put(MagicString.GROUP_HEADER,groupHeader);
         ptsGroup = this.ptsProcessing(ptsGroup,zokuseiCol);
 
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(workPriorityOrderMst.getShelfPatternCd().intValue());
@@ -165,11 +165,11 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         }).collect(Collectors.toList());
         ptsOldGroup = this.ptsProcessing(ptsOldGroup,zokuseiCol);
         ptsOldGroup = ptsOldGroup.stream()
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanapositionCd")))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"tanaCd")))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"taiCd"))).collect(Collectors.toList());
-        mapHeader.put("newData",ptsGroup);
-        mapHeader.put("oldData",ptsOldGroup);
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,MagicString.TANAPOSITIONCD)))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,MagicString.TANA_CD)))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,MagicString.TAI_CD))).collect(Collectors.toList());
+        mapHeader.put(MagicString.NEW_DATA,ptsGroup);
+        mapHeader.put(MagicString.OLD_DATA,ptsOldGroup);
         return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
     }
 
@@ -201,51 +201,55 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         WorkPriorityOrderMst workPriorityOrderMst = workPriorityOrderMstMapper.selectByAuthorCd(companyCd, authorCd, priorityOrderCd);
         String commonPartsData = workPriorityOrderMst.getCommonPartsData();
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
-        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd,"planocycle.work_priority_order_pts_data_jandata");
-        ptsGroup= ptsGroup.stream().filter(map->map.get("taiCd").toString().equals(priorityOrderPlatformShedDto.getTaiCd()+"")&&
-                map.get("tanaCd").toString().equals(priorityOrderPlatformShedDto.getTanaCd()+""))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank",0)))
+        List<Map<String, Object>> ptsGroup = this.getPtsGroup(companyCd, priorityOrderCd,MagicString.BASIC_PATTERN_PTS_DATA_TABLE_NAME);
+        ptsGroup= ptsGroup.stream().filter(map->map.get(MagicString.TAI_CD).toString().equals(priorityOrderPlatformShedDto.getTaiCd()+"")&&
+                map.get(MagicString.TANA_CD).toString().equals(priorityOrderPlatformShedDto.getTanaCd()+""))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,MagicString.RANK,0)))
                 .collect(Collectors.toList());
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         Map<String,Object> mapHeader = new HashMap<>();
-        String groupColumns = "janCd,janName";
-        String groupHeader = "JAN,商品名";
+        StringBuilder groupColumns = new StringBuilder("janCd,janName");
+        StringBuilder groupHeader = new StringBuilder("JAN,商品名");
         for (Map<String, Object> map : attrCol) {
-            groupColumns += ","+map.get("zokusei_colcd");
-            groupHeader += ","+map.get("zokusei_nm");
+            groupColumns.append(",").append(map.get(MagicString.ZOUKUSEI_COLCD));
+            groupHeader.append(",").append(map.get(MagicString.ZOUKUSEI_NM));
         }
-        groupColumns += ",plano_width,plano_height,plano_depth,rank,faceNum";
-        groupHeader += ",幅,高,奥行,RANK,フェース数";
+        groupColumns.append(",plano_width,plano_height,plano_depth,rank,faceNum");
+        groupHeader.append(",幅,高,奥行,RANK,フェース数");
 
-        mapHeader.put("groupColumns",groupColumns);
-        mapHeader.put("groupHeader",groupHeader);
+        mapHeader.put(MagicString.GROUP_COLUMNS, groupColumns.toString());
+        mapHeader.put(MagicString.GROUP_HEADER, groupHeader.toString());
         for (Map<String, Object> map : ptsGroup) {
             for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
                 for (Map<String, Object> objectMap : attrCol) {
-                    if (objectMap.get("zokusei_colname").equals(stringObjectEntry.getKey())){
-                        map.put(objectMap.get("zokusei_colcd").toString(),stringObjectEntry.getValue());
+                    if (objectMap.get(MagicString.ZOUKUSEI_COLNAME).equals(stringObjectEntry.getKey())){
+                        map.put(objectMap.get(MagicString.ZOUKUSEI_COLCD).toString(),stringObjectEntry.getValue());
                     }
                 }
             }
         }
-        mapHeader.put("newData",ptsGroup);
+        mapHeader.put(MagicString.NEW_DATA,ptsGroup);
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(workPriorityOrderMst.getShelfPatternCd().intValue());
         List<Map<String, Object>> ptsOldGroup = this.getOldPtsGroup(companyCd, priorityOrderCd, "planocycle.shelf_pts_data_jandata",ptsCd);
-        ptsOldGroup= ptsOldGroup.stream().filter(map->map.get("taiCd").toString().equals(priorityOrderPlatformShedDto.getTaiCd()+"")&&
-                map.get("tanaCd").toString().equals(priorityOrderPlatformShedDto.getTanaCd()+""))
-                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,"rank",0)))
+        ptsOldGroup = this.oldGroupHandle(ptsOldGroup, priorityOrderPlatformShedDto, attrCol);
+        mapHeader.put(MagicString.OLD_DATA,ptsOldGroup);
+        return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
+    }
+    public List<Map<String, Object>>  oldGroupHandle(List<Map<String, Object>>  ptsOldGroup, PriorityOrderPlatformShedDto priorityOrderPlatformShedDto, List<Map<String, Object>> attrCol){
+        ptsOldGroup= ptsOldGroup.stream().filter(map->map.get(MagicString.TAI_CD).toString().equals(priorityOrderPlatformShedDto.getTaiCd()+"")&&
+                        map.get(MagicString.TANA_CD).toString().equals(priorityOrderPlatformShedDto.getTanaCd()+""))
+                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map,MagicString.RANK,0)))
                 .collect(Collectors.toList());
         for (Map<String, Object> map : ptsOldGroup) {
             for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
                 for (Map<String, Object> objectMap : attrCol) {
-                    if (objectMap.get("zokusei_colname").equals(stringObjectEntry.getKey())){
-                        map.put(objectMap.get("zokusei_colcd").toString(),stringObjectEntry.getValue());
+                    if (objectMap.get(MagicString.ZOUKUSEI_COLNAME).equals(stringObjectEntry.getKey())){
+                        map.put(objectMap.get(MagicString.ZOUKUSEI_COLCD).toString(),stringObjectEntry.getValue());
                     }
                 }
             }
         }
-        mapHeader.put("oldData",ptsOldGroup);
-        return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
+        return ptsOldGroup;
     }
     /**
      * faceNumの保存
@@ -282,8 +286,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             for (Map<String, Object> restrict : restrictResult) {
                 int equalsCount = 0;
                 for (Map<String,Object>  map : attrCol) {
-                    String restrictKey = MapUtils.getString(restrict,  map.get("zokusei_colcd").toString());
-                    String zokuseiKey = MapUtils.getString(zokusei,   map.get("zokusei_colcd").toString());
+                    String restrictKey = MapUtils.getString(restrict,  map.get(MagicString.ZOUKUSEI_COLCD).toString());
+                    String zokuseiKey = MapUtils.getString(zokusei,   map.get(MagicString.ZOUKUSEI_COLCD).toString());
 
                     if(Objects.equals(restrictKey,zokuseiKey)){
                         equalsCount++;
@@ -292,7 +296,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
                 if(equalsCount == attrList.size()){
                     int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
-                    zokusei.put("restrictCd", restrictCd);
+                    zokusei.put(MagicString.RESTRICT_CD, restrictCd);
                 }
             }
             zokuseiList.set(i, zokusei);
@@ -322,14 +326,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(commonTableName.getProAttrTable());
         String tableName ="";
         Integer id = null;
-        //if (flag == 0){
-        //    tableName = "planocycle.shelf_pts_data_jandata";
-        //    ShelfPtsData ptsData = shelfPtsDataMapper.selectPtsCdByPatternCd(companyCd, workPriorityOrderMst.getShelfPatternCd());
-        //    id = ptsData.getId();
-        //}else {
-             tableName = "planocycle.work_priority_order_pts_data_jandata";
+             tableName = MagicString.BASIC_PATTERN_PTS_DATA_TABLE_NAME;
              id = shelfPtsDataMapper.getId(companyCd, priorityOrderCd);
-        //}
 
         List<Map<String, Object>> zokuseiList = basicPatternRestrictResultMapper.getPtsJanInfo(priorityOrderCd, id, zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,tableName,janSizeCol);
         Map<String,Object> map = new HashMap<>();
@@ -337,7 +335,7 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         map.put("height","高さ");
         map.put("depth","奥行");
         for (Map<String, Object> objectMap : zokuseiCol) {
-            map.put("zokuseiName"+objectMap.get("zokusei_id").toString(),objectMap.get("zokusei_nm"));
+            map.put("zokuseiName"+objectMap.get("zokusei_id").toString(),objectMap.get(MagicString.ZOUKUSEI_NM));
         }
         zokuseiList.add(0,map);
         return ResultMaps.result(ResultEnum.SUCCESS,zokuseiList);
@@ -373,21 +371,21 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             priorityOrderShelfDataMapper.updatePositionCd(alikeTana,id,tableName);
         }else {
             List<Map<String, Object>> alikeTana = priorityOrderShelfDataMapper.getAlikeTana(map, id,tableName,ptsFlag);
-            if (Integer.parseInt(map.get("tanapositionCd").toString())-1>=alikeTana.size()){
+            if (Integer.parseInt(map.get(MagicString.TANAPOSITIONCD).toString())-1>=alikeTana.size()){
                 alikeTana.add(map);
             }else {
-                alikeTana.add(Integer.parseInt(map.get("tanapositionCd").toString()) - 1, map);
+                alikeTana.add(Integer.parseInt(map.get(MagicString.TANAPOSITIONCD).toString()) - 1, map);
             }
             int i = 1;
             for (Map<String, Object> stringObjectMap : alikeTana) {
-                stringObjectMap.put("tanapositionCd",i++);
+                stringObjectMap.put(MagicString.TANAPOSITIONCD,i++);
             }
             priorityOrderShelfDataMapper.delTana(map,id,tableName);
             priorityOrderShelfDataMapper.insertPosition(alikeTana,id,tableName,ptsFlag);
         }
         Map<String,Object> map1 = new HashMap<>();
         if (ptsFlag == 0) {
-            map1.put("faceNum",shelfPtsDataMapper.getNewFaceNum(priorityOrderCd));
+            map1.put(MagicString.FACE_NUM,shelfPtsDataMapper.getNewFaceNum(priorityOrderCd));
             map1.put("skuNum",shelfPtsDataMapper.getNewSkuNum(priorityOrderCd));
         }else if (ptsFlag == 1){
             return ResultMaps.result(ResultEnum.SUCCESS);
@@ -404,32 +402,32 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
         List<Map<String, Object>> newPtsGroup = this.getNewPtsGroup(companyCd, priorityOrderCd);
         List<Map<String, Object>> attrCol = attrSortMapper.getAttrColForName(companyCd, priorityOrderCd, commonTableName.getProdIsCore(),commonTableName.getProdMstClass());
         Map<String,Object> mapHeader = new HashMap<>();
-        String groupColumns = "";
-        String groupHeader = "";
+        StringBuilder groupColumns = new StringBuilder();
+        StringBuilder groupHeader = new StringBuilder();
         for (Map<String, Object> map : attrCol) {
-            if (groupColumns.equals("")){
-                    groupColumns += map.get("zokusei_colcd");
-                groupHeader += map.get("zokusei_nm");
+            if (groupColumns.toString().equals("")){
+                    groupColumns.append(map.get(MagicString.ZOUKUSEI_COLCD));
+                groupHeader.append(map.get(MagicString.ZOUKUSEI_NM));
             }else {
-                groupColumns += ","+map.get("zokusei_colcd");
-                groupHeader += ","+map.get("zokusei_nm");
+                groupColumns.append(",").append(map.get(MagicString.ZOUKUSEI_COLCD));
+                groupHeader.append(",").append(map.get(MagicString.ZOUKUSEI_NM));
             }
         }
-        groupColumns += ",janCd,janName,janFlag,rank,taiCd,tanaCd,tanapositionCd,faceNum,faceMen,faceKaiten,tumiagesu,plano_width,plano_height,plano_depth";
-        groupHeader += ",JAN,商品名,区分,RANK,台番号,棚段番号,棚位置,フェース数,フェース面,フェース回転,積上数,幅,高,奥行";
+        groupColumns.append(",janCd,janName,janFlag,rank,taiCd,tanaCd,tanapositionCd,faceNum,faceMen,faceKaiten,tumiagesu,plano_width,plano_height,plano_depth");
+        groupHeader.append(",JAN,商品名,区分,RANK,台番号,棚段番号,棚位置,フェース数,フェース面,フェース回転,積上数,幅,高,奥行");
 
-        mapHeader.put("groupColumns",groupColumns);
-        mapHeader.put("groupHeader",groupHeader);
+        mapHeader.put(MagicString.GROUP_COLUMNS, groupColumns.toString());
+        mapHeader.put(MagicString.GROUP_HEADER, groupHeader.toString());
         for (Map<String, Object> map : newPtsGroup) {
             for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
                 for (Map<String, Object> objectMap : attrCol) {
-                    if (objectMap.get("zokusei_colname").equals(stringObjectEntry.getKey())){
-                        map.put(objectMap.get("zokusei_colcd").toString(),stringObjectEntry.getValue());
+                    if (objectMap.get(MagicString.ZOUKUSEI_COLNAME).equals(stringObjectEntry.getKey())){
+                        map.put(objectMap.get(MagicString.ZOUKUSEI_COLCD).toString(),stringObjectEntry.getValue());
                     }
                 }
             }
         }
-        mapHeader.put("newData",newPtsGroup);
+        mapHeader.put(MagicString.NEW_DATA,newPtsGroup);
         return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
     }
 
@@ -454,8 +452,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             for (Map<String, Object> restrict : restrictResult) {
                 int equalsCount = 0;
                 for (Map<String,Object>  map : attrCol) {
-                    String restrictKey = MapUtils.getString(restrict,  map.get("zokusei_colcd").toString());
-                    String zokuseiKey = MapUtils.getString(zokusei,  map.get("zokusei_colcd").toString());
+                    String restrictKey = MapUtils.getString(restrict,  map.get(MagicString.ZOUKUSEI_COLCD).toString());
+                    String zokuseiKey = MapUtils.getString(zokusei,  map.get(MagicString.ZOUKUSEI_COLCD).toString());
 
                     if(Objects.equals(restrictKey,zokuseiKey)){
                         equalsCount++;
@@ -464,10 +462,9 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
 
                 if(equalsCount == attrList.size()){
                     int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
-                    zokusei.put("restrictCd", restrictCd);
+                    zokusei.put(MagicString.RESTRICT_CD, restrictCd);
                 }
             }
-
             zokuseiList.set(i, zokusei);
         }
         return zokuseiList;
@@ -496,8 +493,8 @@ public class PriorityOrderShelfDataServiceImpl implements PriorityOrderShelfData
             for (Map<String, Object> restrict : restrictResult) {
                 int equalsCount = 0;
                 for (Map<String,Object>  map : zokuseiCol) {
-                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + map.get("zokusei_colcd"));
-                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + map.get("zokusei_colcd"));
+                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + map.get(MagicString.ZOUKUSEI_COLCD));
+                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + map.get(MagicString.ZOUKUSEI_COLCD));
 
                     if(Objects.equals(restrictKey,zokuseiKey)){
                         equalsCount++;
