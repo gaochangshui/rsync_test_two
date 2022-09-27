@@ -195,7 +195,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 double width = MapUtils.getDouble(janMap, MagicString.WIDTH);
                 String key = getClassifyKey(zokuseiList, janMap);
 
-                if(isLastAndEqualsToLastKey(key, lastKey, i+1, jans.size())){
+                if(isLastAndEqualsToLastKey(key, lastKey, i, jans.size())){
                     areaWidth += width;
                     janCount++;
                 }
@@ -220,7 +220,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 }
 
                 //If the last grouping is independent, it should be handled separately
-                if(isLastAndNotEqualsToLastKey(key, lastKey, i+1, jans.size())){
+                if(isLastAndNotEqualsToLastKey(key, lastKey, i, jans.size())){
                     areaWidth = width;
                     janCount = 1;
                     int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, RoundingMode.HALF_UP)
@@ -250,11 +250,11 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    private boolean isLastAndEqualsToLastKey(String key, String lastKey, int size, int currentIndex){
+    private boolean isLastAndNotEqualsToLastKey(String key, String lastKey, int currentIndex, int size){
         return !lastKey.equals(key) && (currentIndex+1)==size;
     }
 
-    private boolean isLastAndNotEqualsToLastKey(String key, String lastKey, int size, int currentIndex){
+    private boolean isLastAndEqualsToLastKey(String key, String lastKey, int currentIndex, int size){
         return lastKey.equals(key) && (currentIndex+1)==size;
     }
 
@@ -283,7 +283,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         return classify;
     }
 
-    private boolean taiTanaEquals(Integer taiCd1, Integer tanaCd1,Integer taiCd2, Integer tanaCd2){
+    private boolean taiTanaEquals(Integer taiCd1, Integer taiCd2,Integer tanaCd1, Integer tanaCd2){
         return Objects.equals(taiCd1, taiCd2) && Objects.equals(tanaCd1, tanaCd2);
     }
 

@@ -94,15 +94,17 @@
 
   </select>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderCommodityNot">
-    insert into priority.work_priority_order_commodity_not (company_cd, priority_order_cd, branch,
+    <if test="!lists.isEmpty">
+      insert into priority.work_priority_order_commodity_not (company_cd, priority_order_cd, branch,
       jan_new,flag,shelf_pattern_cd, before_flag)
-    values
-     <foreach collection="lists" item="list" separator=",">
-       <if test="list.companyCd!=null and list.priorityOrderCd!=null and list.branch!=null and list.jan!=null">
-           (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.branch,jdbcType=VARCHAR},
-      #{list.jan,jdbcType=VARCHAR},#{list.flag},#{list.shelfPatternCd},#{list.beforeFlag})
-       </if>
-     </foreach>
+      values
+      <foreach collection="lists" item="list" separator=",">
+        <if test="list.companyCd!=null and list.priorityOrderCd!=null and list.branch!=null and list.jan!=null">
+          (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.branch,jdbcType=VARCHAR},
+          #{list.jan,jdbcType=VARCHAR},#{list.flag},#{list.shelfPatternCd},#{list.beforeFlag})
+        </if>
+      </foreach>
+    </if>
   </insert>
   <select id="selectNotJan" resultType="map">
     select branch,jan_new

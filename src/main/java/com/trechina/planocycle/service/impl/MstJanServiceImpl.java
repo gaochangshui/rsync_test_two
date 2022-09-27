@@ -155,9 +155,7 @@ public class MstJanServiceImpl implements MstJanService {
                 List<JanHeaderAttr> janHeaderSort = new ArrayList<>();
                 for (String column : janColumn.split(",")) {
                     Optional<JanHeaderAttr> optional = janHeader.stream().filter(e->column.equals(e.getAttr())).findFirst();
-                    if(optional.isPresent()){
-                        janHeaderSort.add(optional.get());
-                    }
+                    optional.ifPresent(janHeaderSort::add);
                 }
                 janHeader = janHeaderSort;
                 //SQL文の列： a."1" "jan_cd",a."2" "jan_name",a."21" "kikaku",b."104" "planoWidth"
