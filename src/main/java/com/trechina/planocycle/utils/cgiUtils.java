@@ -301,19 +301,19 @@ public class cgiUtils {
                 logger.info("cgiQueryTask statusCode,reqult：{},{}",statusCode,builder);
                 if(statusCode == 200) {
                     break;
-                } else  {
-                    if (builder.toString().equals("2")) {
-                        return ResultMaps.result(ResultEnum.CGITIEMOUT,null);
-                    }
-                    else if (builder.toString().equals("3")) {
-                        return ResultMaps.result(ResultEnum.CGICANCEL,null);
-                    }
-                    else if (builder.toString().equals("4")) {
-                        return ResultMaps.result(ResultEnum.CGIERROR,null);
-                    }
-                    else{
-                        return ResultMaps.result(ResultEnum.FAILURE,null);
-                    }
+                }
+
+                if (builder.toString().equals("2")) {
+                    return ResultMaps.result(ResultEnum.CGITIEMOUT,null);
+                }
+                else if (builder.toString().equals("3")) {
+                    return ResultMaps.result(ResultEnum.CGICANCEL,null);
+                }
+                else if (builder.toString().equals("4")) {
+                    return ResultMaps.result(ResultEnum.CGIERROR,null);
+                }
+                else{
+                    return ResultMaps.result(ResultEnum.FAILURE,null);
                 }
             }
             return ResultMaps.result(ResultEnum.SUCCESS,builder.toString());
