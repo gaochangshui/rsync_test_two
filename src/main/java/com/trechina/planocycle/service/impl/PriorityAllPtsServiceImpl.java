@@ -405,7 +405,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
                 }
 
                 if(equalsCount == attrList.size()){
-                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
+                    int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
                     zokusei.put("restrictCd", restrictCd);
                 }
             }

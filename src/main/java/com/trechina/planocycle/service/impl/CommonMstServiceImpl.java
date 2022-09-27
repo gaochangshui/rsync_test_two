@@ -273,7 +273,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             dto.setIrisu(MapUtils.getString(zokusei, MagicString.IRISU_NAME));
 
             for (Map<String, Object> restrict : restrictResult) {
-                if (Objects.equals(MapUtils.getLong(restrict, "restrict_cd"), MagicString.NO_RESTRICT_CD)) {
+                if (Objects.equals(MapUtils.getLong(restrict, MagicString.RESTRICT_CD_UNDERLINE), MagicString.NO_RESTRICT_CD)) {
                     continue;
                 }
                 int equalsCount = 0;
@@ -287,7 +287,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
 
                 if(equalsCount == attrList.size()){
-                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
+                    int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
                     dto.setRestrictCd((long)restrictCd);
                 }
             }

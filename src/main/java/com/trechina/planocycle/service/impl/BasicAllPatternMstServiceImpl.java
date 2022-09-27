@@ -348,8 +348,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 //If the last grouping is independent, it should be handled separately
                 if(!lastKey.equals(key.toString()) && (i+1)==jans.size()){
                     areaWidth = width;
-                    int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
-                            .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
+                    int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, RoundingMode.HALF_UP)
+                            .multiply(BigDecimal.valueOf(100)).setScale(0, RoundingMode.HALF_UP).intValue();
                     Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
                             new TypeToken<Map<String, Object>>(){}.getType());
                     map.put(MagicString.RESTRICT_CD, classify.get(key.toString()).getRestrictCd());
@@ -434,7 +434,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         for (Map<String, Object> map : restrictResult) {
             Map<String, Object> newHashMap = new HashMap<>();
             newHashMap.put("shelf_pattern_cd", map.get("shelf_pattern_cd"));
-            newHashMap.put("restrict_cd", map.get("restrict_cd"));
+            newHashMap.put(MagicString.RESTRICT_CD_UNDERLINE, map.get(MagicString.RESTRICT_CD_UNDERLINE));
             newHashMap.put("author_cd", map.get("author_cd"));
             newHashMap.put("priority_all_cd", map.get("priority_all_cd"));
             newHashMap.put("company_cd", map.get("company_cd"));
@@ -466,7 +466,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 }
 
                 if(equalsCount == attrList.size()){
-                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
+                    int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
                     zokusei.put(MagicString.RESTRICT_CD, restrictCd);
                 }
             }

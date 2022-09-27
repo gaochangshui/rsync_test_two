@@ -37,7 +37,10 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -178,16 +181,14 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             // notを巡回して店cdに0を補充する
             mustList.forEach(item->{
                 item.setBranchOrigin(item.getBranch());
-                if (!Strings.isNullOrEmpty(item.getBranch())){
-                    if(pattern.matcher(item.getBranch()).matches()){
-                        int length = item.getBranch().length();
-                        StringBuilder branchStr = new StringBuilder();
-                        int diff = branchLen - length;
-                        for (int i = 0; i < diff; i++) {
-                            branchStr.append("0");
-                        }
-                        item.setBranch(branchStr +item.getBranch());
+                if (!Strings.isNullOrEmpty(item.getBranch()) && pattern.matcher(item.getBranch()).matches()){
+                    int length = item.getBranch().length();
+                    StringBuilder branchStr = new StringBuilder();
+                    int diff = branchLen - length;
+                    for (int i = 0; i < diff; i++) {
+                        branchStr.append("0");
                     }
+                    item.setBranch(branchStr +item.getBranch());
                 }
             });
             logger.info("必須商品の店補0後の結菓を保存する{}",mustList);
