@@ -298,7 +298,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     if(patternCdList.isEmpty() && !Strings.isNullOrEmpty(commodityNot.getBranchOrigin()) ){
                         notBranchExists.add(commodityNot.getBranchOrigin()+"");
                     }
-                    for (Integer  patternCd : patternCdList) {
+                    patternCdList.forEach(patternCd->{
                         PriorityOrderCommodityNot newNot = new PriorityOrderCommodityNot();
                         newNot.setBeforeFlag(0);
                         newNot.setFlag(0);
@@ -313,7 +313,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                         }
                         newNot.setShelfPatternCd(patternCd);
                         exists.add(newNot);
-                    }
+                    });
             }
             //写入数据庫
             priorityOrderCommodityNotMapper.insert(exists);
@@ -965,7 +965,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             }
             StringBuilder column = new StringBuilder("area,branchCd,branch");
             List<LinkedHashMap<String, Object>> data = starReadingVo.getData().stream().sorted(Comparator.comparing(map -> MapUtils.getString(map, "jan"))).collect(Collectors.toList());
-            for (LinkedHashMap<String, Object> datum : data) {
+            data.forEach(datum->{
                 if (header1.toString().equals("")) {
                     header1.append(datum.get("maker"));
                     header2.append(datum.get("total"));
@@ -978,7 +978,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 }
                 header4.append(",").append(datum.get(MagicString.JAN_NAME));
                 column.append(",jan").append(datum.get(MagicString.JAN));
-            }
+            });
             headers.add(header1.toString());
             headers.add(header3.toString());
             headers.add(header4.toString());
