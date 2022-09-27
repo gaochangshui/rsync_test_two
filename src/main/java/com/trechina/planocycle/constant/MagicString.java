@@ -1,5 +1,13 @@
 package com.trechina.planocycle.constant;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.utils.ResultMaps;
+
+import java.util.List;
+import java.util.Map;
+
 public class MagicString {
     public static final String HEIGHT_NAME = "plano_height";
     public static final String DEPTH_NAME = "plano_depth";

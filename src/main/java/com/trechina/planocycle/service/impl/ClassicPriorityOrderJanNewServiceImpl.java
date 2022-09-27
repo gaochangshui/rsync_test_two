@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.trechina.planocycle.aspect.LogAspect;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.PriorityOrderMstAttrSortDto;
 import com.trechina.planocycle.entity.po.ClassicPriorityOrderJanNew;
 import com.trechina.planocycle.entity.po.Jans;
@@ -161,11 +162,11 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrSortList(companyCd, priorityOrderCd);
         List<Map<String, Object>> result = priorityOrderDataMapper.getDataNotExistNewJan(priorityOrderCd);
         for (Map<String, Object> objectMap : result) {
-            objectMap.put("janNew", objectMap.get("jan_new"));
+            objectMap.put("janNew", objectMap.get(MagicString.JAN_NEW));
         }
         for (Map<String, Object> item : janNew) {
-            item.put("jan_new",item.get("janNew"));
-            item.put("rank_upd",item.get("rank"));
+            item.put(MagicString.JAN_NEW,item.get("janNew"));
+            item.put(MagicString.RANK_UPD,item.get("rank"));
             item.put("rank",-1);
             result.add(item);
         }
@@ -173,27 +174,24 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         for (Map<String, Object> objectMap : result) {
             for (Map<String, Object> item : janNew) {
                 if (item.get("janNew").equals(objectMap.get("janNew")) && objectMap.get("rank").toString().equals("-1")){
-                    item.put("rank",objectMap.get("rank_upd"));
+                    item.put("rank",objectMap.get(MagicString.RANK_UPD));
                 }
             }
         }
 
-        for (Map<String, Object> jan : janNew) {
-            if (jan.get("janNew") != null) {
-
-                Map<String, Object> map = new HashMap();
-                map.put("jan_new", jan.get("janNew"));
-                jan.put("rank_upd", jan.get("rank"));
-                List<Integer> ptsCd = workPriorityOrderPtsClassifyMapper.getJanPtsCd(companyCd, priorityOrderCd, jan);
-                if (ptsCd.isEmpty()) {
-                    map.put("branch_num", 0);
-                } else {
-                    Integer branchNum = workPriorityOrderPtsClassifyMapper.getJanBranchNum(ptsCd, jan);
-                    map.put("branch_num", branchNum);
-                }
-                list.add(map);
+        janNew.stream().filter(jan->jan.get("janNew")!=null).forEach(jan->{
+            Map<String, Object> map = new HashMap();
+            map.put(MagicString.JAN_NEW, jan.get("janNew"));
+            jan.put(MagicString.RANK_UPD, jan.get("rank"));
+            List<Integer> ptsCd = workPriorityOrderPtsClassifyMapper.getJanPtsCd(companyCd, priorityOrderCd, jan);
+            if (ptsCd.isEmpty()) {
+                map.put(MagicString.BRANCH_NUM, 0);
+            } else {
+                Integer branchNum = workPriorityOrderPtsClassifyMapper.getJanBranchNum(ptsCd, jan);
+                map.put(MagicString.BRANCH_NUM, branchNum);
             }
-        }
+            list.add(map);
+        });
     }
 
     /**
