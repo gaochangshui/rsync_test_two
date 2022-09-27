@@ -120,14 +120,14 @@ public class ExcelUtils {
                     }
                 }
             }
-            ParamForExcel(sheet1,paramMap,workbook);
+            paramForExcel(sheet1,paramMap,workbook);
             workbook.write(outputStream);
         }catch (Exception e){
             logger.error("", e);
         }
     }
 
-    public static void ParamForExcel ( XSSFSheet sheet1,Map<String,Object> paramMap,XSSFWorkbook workbook){
+    public static void paramForExcel(XSSFSheet sheet1, Map<String,Object> paramMap, XSSFWorkbook workbook){
 
         sheet1.setDisplayGridlines(false);
         //スタイルの設定

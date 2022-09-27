@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListDisparityUtils {
+    private ListDisparityUtils() {}
     public static List<Integer> getListDisparit( List<Integer> t1,List<Integer> t2){
 
        ArrayList<Integer> t3 = new ArrayList<>();
