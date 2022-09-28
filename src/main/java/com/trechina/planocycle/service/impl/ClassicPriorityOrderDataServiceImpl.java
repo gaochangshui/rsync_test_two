@@ -1073,54 +1073,28 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             }
 
             if(rowIndex<startRowIndex){
-                if(rowIndex==0){
-                    String mode = csvRow.getField(1);
-                    if(!MagicString.PTS_VERSION.equals(mode)){
-                        return ResultMaps.result(ResultEnum.VERSION_ERROR);
-                    }
-                }else if(rowIndex==1){
-                    String modeName = csvRow.getField(0);
-                    if(!modeName.startsWith("変更後")){
-                        return ResultMaps.result(ResultEnum.UPDATE_RANK);
-                    }
+                Map<String, Object> stringObjectMap = this.checkVersionFormat(rowIndex, csvRow);
+                if (stringObjectMap != null){
+                    return stringObjectMap;
                 }
                 rowIndex++;
                 continue;
             }
             int fieldCount = csvRow.getFieldCount();
             //The PTS header is not check
-            if(fieldCount!=colCount){
-                logger.warn("列数エラー");
-                return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
-            }
-
-            //The tanaposition column contains non numbers, error
-            String tanaPosition = csvRow.getField(tanaPositionColIndex);
-            if(!numPattern.matcher(tanaPosition).matches()){
-                logger.warn("rankには非数値が含まれています");
-                return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
-            }
-
             downloadDto = new DownloadDto();
             downloadDto.setPriorityOrderCd(priorityOrderCd);
             downloadDto.setCompanyCd(company);
-
+            //The tanaposition column contains non numbers, error
+            String tanaPosition = csvRow.getField(tanaPositionColIndex);
             String taiField = csvRow.getField(taiCdColIndex);
-            if(!numPattern.matcher(taiField).matches()){
-                logger.warn("taiには非数値が含まれています");
-                return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
-            }
-
             String tanaField = csvRow.getField(tanaCdColIndex);
-            if(!numPattern.matcher(tanaField).matches()){
-                logger.warn("tanaには非数値が含まれています");
-                return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
-            }
             String janField = csvRow.getField(janCdColIndex).trim();
-            if(Strings.isNullOrEmpty(janField)){
-                logger.warn("janには空が含まれています");
-                return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
-            }
+
+            Map<String, Object> stringObjectMap = this.checkDataFormat(fieldCount,colCount,numPattern,tanaField,tanaPosition,taiField,janField);
+           if (stringObjectMap != null){
+               return stringObjectMap;
+           }
 
             downloadDto.setTaiCd(Integer.parseInt(taiField));
             downloadDto.setTanaCd(Integer.parseInt(tanaField));
@@ -1149,6 +1123,50 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS, uploadJanList);
+    }
+    public Map<String,Object> checkVersionFormat(int rowIndex, CsvRow csvRow){
+        if(rowIndex==0){
+            String mode = csvRow.getField(1);
+            if(!MagicString.PTS_VERSION.equals(mode)){
+                return ResultMaps.result(ResultEnum.VERSION_ERROR);
+            }
+        }else if(rowIndex==1){
+            String modeName = csvRow.getField(0);
+            if(!modeName.startsWith("変更後")){
+                return ResultMaps.result(ResultEnum.UPDATE_RANK);
+            }
+        }
+        return null;
+    }
+    public Map<String,Object> checkDataFormat(int fieldCount, int colCount, Pattern numPattern, String tanaField, String tanaPosition, String taiField, String janField){
+        if(fieldCount!=colCount){
+            logger.warn("列数エラー");
+            return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
+        }
+
+
+        if(!numPattern.matcher(tanaPosition).matches()){
+            logger.warn("rankには非数値が含まれています");
+            return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
+        }
+
+
+        if(!numPattern.matcher(taiField).matches()){
+            logger.warn("taiには非数値が含まれています");
+            return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
+        }
+
+
+        if(!numPattern.matcher(tanaField).matches()){
+            logger.warn("tanaには非数値が含まれています");
+            return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
+        }
+
+        if(Strings.isNullOrEmpty(janField)){
+            logger.warn("janには空が含まれています");
+            return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
+        }
+        return null;
     }
 
 
