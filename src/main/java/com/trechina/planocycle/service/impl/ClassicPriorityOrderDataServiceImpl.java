@@ -684,7 +684,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     public Map<String, Object> uploadPriorityOrderData(String taiCd, String tanaCd, MultipartFile file, String company, Integer priorityOrderCd,
                                                        String attrStr) {
         Map<String, Object> resultMap;
-        Pattern pattern = Pattern.compile("^_{1}$");
+        Pattern pattern = Pattern.compile("^_$");
 
         try {
             InputStream inputStream = file.getInputStream();
@@ -1074,7 +1074,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
             if(rowIndex<startRowIndex){
                 Map<String, Object> stringObjectMap = this.checkVersionFormat(rowIndex, csvRow);
-                if (stringObjectMap != null){
+                if (!stringObjectMap.isEmpty()){
                     return stringObjectMap;
                 }
                 rowIndex++;
@@ -1092,7 +1092,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             String janField = csvRow.getField(janCdColIndex).trim();
 
             Map<String, Object> stringObjectMap = this.checkDataFormat(fieldCount,colCount,numPattern,tanaField,tanaPosition,taiField,janField);
-           if (stringObjectMap != null){
+           if (!stringObjectMap.isEmpty()){
                return stringObjectMap;
            }
 
@@ -1136,7 +1136,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 return ResultMaps.result(ResultEnum.UPDATE_RANK);
             }
         }
-        return null;
+        return new HashMap<>();
     }
     public Map<String,Object> checkDataFormat(int fieldCount, int colCount, Pattern numPattern, String tanaField, String tanaPosition, String taiField, String janField){
         if(fieldCount!=colCount){
@@ -1166,7 +1166,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             logger.warn("janには空が含まれています");
             return ResultMaps.result(ResultEnum.FILECONTENTFAILURE);
         }
-        return null;
+        return new HashMap<>();
     }
 
 

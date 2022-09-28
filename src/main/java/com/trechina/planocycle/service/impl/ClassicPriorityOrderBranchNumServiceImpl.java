@@ -234,8 +234,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 //               return ResultMaps.result(ResultEnum.BRANCHNOTESISTS, Joiner.on(",").join(notBranchExists));
 //           }
 
-        //return ResultMaps.result(ResultEnum.SUCCESS);
-        return null;
+        return ResultMaps.result(ResultEnum.SUCCESS);
 
     }
 
@@ -328,9 +327,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         } catch (Exception e) {
             logger.error("不可商品リストの保存：",e);
             logAspect.setTryErrorLog(e,new Object[]{priorityOrderCommodityNot});
+
             return ResultMaps.result(ResultEnum.FAILURE);
-        }*/
-        return null;
+        } */
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
@@ -580,7 +580,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         }
         return ResultMaps.result(ResultEnum.SUCCESS,mapResult);
     }
-    public Map<String,Object> calculationPattern( Map<String, Object> mapResult, StarReadingTableDto starReadingTableDto, Integer priorityOrderCd, StringBuilder column, StringBuilder header, LinkedHashMap<String, Object> group, List<Map<String, Object>> janName){
+    public Map<String,Object> calculationPattern( Map<String, Object> mapResult, StarReadingTableDto starReadingTableDto, Integer priorityOrderCd, StringBuilder column, StringBuilder header, Map<String, Object> group, List<Map<String, Object>> janName){
         List<String> expressItemList = starReadingTableDto.getExpressItemList();
         List<String> pattern = expressItemList.stream().map(item -> item.split(MagicString.PATTERN)[1]).collect(Collectors.toList());
         List<Map<String, Object>> patternNameList = starReadingTableMapper.getPatternNameList(priorityOrderCd);
@@ -593,7 +593,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             map.put(MagicString.JAN_NAME,janMap.get(MagicString.JAN_NAME));
             map.put(MagicString.MAKER,janMap.get(MagicString.MAKER));
             map.put(MagicString.TOTAL,"");
-            patternNameList.forEach(objectMap-> map.put(objectMap.get("id")+"_"+objectMap.get("shelfPatternCd").toString(),"☓"));
+            patternNameList.forEach(objectMap-> map.put(objectMap.get("id")+"_"+objectMap.get(MagicString.SHELF_PATTERN_CD).toString(),"☓"));
 
             list.add(map);
         }
@@ -604,25 +604,25 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             for (Map<String, Object> map : stringListEntry.getValue()) {
                 list.forEach(stringObjectMap->{
                     if (stringObjectMap.get(MagicString.JAN).equals(stringListEntry.getKey())){
-                        stringObjectMap.put(map.get("id")+"_"+map.get("shelfPatternCd"),map.get("flag"));
+                        stringObjectMap.put(map.get("id")+"_"+map.get(MagicString.SHELF_PATTERN_CD),map.get("flag"));
                     }
                 });
             }
 
         }
         patternNameList.forEach(objectMap->{
-            column.append(",").append(objectMap.get("id")).append("_").append(objectMap.get("shelfPatternCd"));
+            column.append(",").append(objectMap.get("id")).append("_").append(objectMap.get(MagicString.SHELF_PATTERN_CD));
             header.append(",").append(objectMap.get(MagicString.SHELF_PATTERN_NAME));
             group.put( objectMap.get("id").toString(), objectMap.get("shelfName"));
         });
-        mapResult.put("column", column.toString());
-        mapResult.put("header", header.toString());
-        mapResult.put("group", group);
+        mapResult.put(MagicString.COLUMN, column.toString());
+        mapResult.put(MagicString.HEADER, header.toString());
+        mapResult.put(MagicString.GROUP, group);
         list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
         mapResult.put("data", list);
         return mapResult;
     }
-    public Map<String,Object> calculationBranch(String tableName, Map<String, Object> mapResult, StarReadingTableDto starReadingTableDto, String companyCd, Integer priorityOrderCd, StringBuilder column, StringBuilder header, LinkedHashMap<String, Object> group, List<Map<String, Object>> janName){
+    public Map<String,Object> calculationBranch(String tableName, Map<String, Object> mapResult, StarReadingTableDto starReadingTableDto, String companyCd, Integer priorityOrderCd, StringBuilder column, StringBuilder header, Map<String, Object> group, List<Map<String, Object>> janName){
         List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
         groupCompany.add(companyCd);
         List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
@@ -663,12 +663,12 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         }
         branchList.forEach(objectMap->{
             column.append(",").append(objectMap.get(MagicString.SORT)).append("_").append(objectMap.get(MagicString.BRANCH_CD));
-            header.append(",").append(objectMap.get(MagicString.BRANCH_CD)).append("<br />").append(objectMap.get(MagicString.BRANCH_NAME));
+            header.append(",").append(objectMap.get(MagicString.BRANCH_CD)).append(MagicString.BR).append(objectMap.get(MagicString.BRANCH_NAME));
             group.put( objectMap.get(MagicString.SORT).toString(), objectMap.get(MagicString.AREA));
         });
-        mapResult.put("column", column.toString());
-        mapResult.put("header", header.toString());
-        mapResult.put("group", group);
+        mapResult.put(MagicString.COLUMN, column.toString());
+        mapResult.put(MagicString.HEADER, header.toString());
+        mapResult.put(MagicString.GROUP, group);
         list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
         mapResult.put("data", list);
         return mapResult;
@@ -743,8 +743,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             patternMap.put(MagicString.TOTAL,"");
             for (Map<String, Object> map : stringListEntry.getValue()) {
                 for (Map<String, Object> stringObjectMap : patternNameList) {
-                    if (stringObjectMap.get("shelfPatternCd").equals(map.get("shelfPatternCd"))){
-                        patternMap.put(stringObjectMap.get("id")+"_"+map.get("shelfPatternCd"),map.get("flag"));
+                    if (stringObjectMap.get(MagicString.SHELF_PATTERN_CD).equals(map.get(MagicString.SHELF_PATTERN_CD))){
+                        patternMap.put(stringObjectMap.get("id")+"_"+map.get(MagicString.SHELF_PATTERN_CD),map.get("flag"));
                     }
                 }
             }
@@ -752,13 +752,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         }
 
         for (Map<String, Object> objectMap : patternNameList) {
-            column.append(",").append(objectMap.get("id")).append("_").append(objectMap.get("shelfPatternCd"));
+            column.append(",").append(objectMap.get("id")).append("_").append(objectMap.get(MagicString.SHELF_PATTERN_CD));
             header.append(",").append(objectMap.get(MagicString.SHELF_PATTERN_NAME));
             group.put( objectMap.get("id").toString(), objectMap.get("shelfName"));
         }
-        mapResult.put("column", column.toString());
-        mapResult.put("header", header.toString());
-        mapResult.put("group", group);
+        mapResult.put(MagicString.COLUMN, column.toString());
+        mapResult.put(MagicString.HEADER, header.toString());
+        mapResult.put(MagicString.GROUP, group);
         list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
         mapResult.put("data", list);
         return mapResult;
@@ -802,12 +802,12 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
         for (Map<String, Object> objectMap : branchList) {
             column.append(",").append(objectMap.get(MagicString.SORT)).append("_").append(objectMap.get(MagicString.BRANCH_CD));
-            header.append(",").append(objectMap.get(MagicString.BRANCH_CD)).append("<br />").append(objectMap.get(MagicString.BRANCH_NAME));
+            header.append(",").append(objectMap.get(MagicString.BRANCH_CD)).append(MagicString.BR).append(objectMap.get(MagicString.BRANCH_NAME));
             group.put( objectMap.get("sort").toString(), objectMap.get(MagicString.AREA));
         }
-        mapResult.put("column", column.toString());
-        mapResult.put("header", header.toString());
-        mapResult.put("group", group);
+        mapResult.put(MagicString.COLUMN, column.toString());
+        mapResult.put(MagicString.HEADER, header.toString());
+        mapResult.put(MagicString.GROUP, group);
         list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
         mapResult.put("data", list);
         return mapResult;
@@ -859,7 +859,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                                 &&!stringObjectEntry.getKey().equals(MagicString.MAKER)) {
                             Map<String, Object> map = new HashMap<>();
                             map.put(MagicString.JAN, jan);
-                            map.put("branch", stringObjectEntry.getKey().split("_")[1]);
+                            map.put(MagicString.BRANCH, stringObjectEntry.getKey().split("_")[1]);
                             map.put("flag", stringObjectEntry.getValue().equals("☓") ? -1 : stringObjectEntry.getValue().equals("") ? 0 : 1);
                             if (finalStarReadingVo.getModeCheck() == 0){
                                 map.put("patternNameCd",Integer.valueOf(stringObjectEntry.getKey().split("_")[0].split(MagicString.PATTERN)[1]));
@@ -899,9 +899,9 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         try {
             future.get(10, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            logger.error("", e);
         } catch (InterruptedException e){
-            logger.error("thread is interrupted", e);
+            logger.error("", e);
             Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
             Map<String,Object> map = new HashMap<>();
@@ -929,7 +929,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             }
             starReadingVo.setData(data);
         }
-        List<String> header = Arrays.asList(starReadingVo.getHeader().toString().replaceAll("<br />","_").split(","));
+        List<String> header = Arrays.asList(starReadingVo.getHeader().toString().replaceAll(MagicString.BR,"_").split(","));
         List<String>  column = Arrays.asList(starReadingVo.getColumn().split(","));
         List<String>  columns = new ArrayList<>(column);
         Map<String, Object> group = starReadingVo.getGroup();
@@ -955,7 +955,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             ExcelUtils.starReadingExcel(columns, linkedHashMap,starReadingVo.getData() ,outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error("", e);
         }
 
     }
@@ -1009,13 +1009,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         for (int i = 0; i < columnList.size(); i++) {
             LinkedHashMap<String, Object> map = new LinkedHashMap<>();
             if (starReadingVo.getModeCheck() == 1) {
-                map.put("branch", header.get(i).split("<br />")[1]);
+                map.put(MagicString.BRANCH, header.get(i).split(MagicString.BR)[1]);
             }else {
-                map.put("branch", header.get(i));
+                map.put(MagicString.BRANCH, header.get(i));
             }
             map.put(MagicString.AREA, group.get(columnList.get(i).split("_")[0]));
             map.put(MagicString.BRANCH_CD, columnList.get(i).split("_")[1]);
-            map.put("areaCd", columnList.get(i).split("_")[0]);
+            map.put(MagicString.AREA_CD, columnList.get(i).split("_")[0]);
 
             for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
                 map.put(MagicString.JAN + datum.get(MagicString.JAN), datum.get(columnList.get(i)));
@@ -1043,7 +1043,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             map.put(MagicString.MAKER,header1.get(i));
             map.put(MagicString.TOTAL,"");
             for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
-                map.put(datum.get("areaCd")+"_"+datum.get(MagicString.BRANCH_CD),datum.get(MagicString.JAN+header2.get(i)));
+                map.put(datum.get(MagicString.AREA_CD)+"_"+datum.get(MagicString.BRANCH_CD),datum.get(MagicString.JAN+header2.get(i)));
             }
 
             resultList.add(map);
@@ -1052,13 +1052,13 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         StringBuilder header = new StringBuilder("JAN,商品名,メーカー,合計");
         Map<String,Object> group = new LinkedHashMap<>();
         starReadingVo.getData().forEach(datum->{
-            column.append(",").append(datum.get("areaCd")).append("_").append(datum.get(MagicString.BRANCH_CD));
+            column.append(",").append(datum.get(MagicString.AREA_CD)).append("_").append(datum.get(MagicString.BRANCH_CD));
             if (starReadingVo.getModeCheck() == 1) {
-                header.append(",").append(datum.get(MagicString.BRANCH_CD)).append("<br />").append(datum.get("branch"));
+                header.append(",").append(datum.get(MagicString.BRANCH_CD)).append(MagicString.BR).append(datum.get(MagicString.BRANCH));
             }else {
-                header.append(",").append(datum.get("branch"));
+                header.append(",").append(datum.get(MagicString.BRANCH));
             }
-            group.putIfAbsent(datum.get("areaCd").toString(),datum.get("area"));
+            group.putIfAbsent(datum.get(MagicString.AREA_CD).toString(),datum.get("area"));
         });
 
         StarReadingVo starReadingVo1 = new StarReadingVo();

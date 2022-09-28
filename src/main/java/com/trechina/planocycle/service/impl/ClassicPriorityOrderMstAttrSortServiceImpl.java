@@ -43,22 +43,6 @@ public class ClassicPriorityOrderMstAttrSortServiceImpl implements ClassicPriori
     }
 
     /**
-     * 保存データのソート
-     *
-     * @param priorityOrderMstAttrSort
-     * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public Map<String, Object> setPriorityAttrSort(List<PriorityOrderMstAttrSort> priorityOrderMstAttrSort) {
-        logger.info("優先順位テーブルソートのパラメータを保存する{}",priorityOrderMstAttrSort);
-        if (!priorityOrderMstAttrSort.isEmpty()) {
-            priorityOrderMstAttrSortMapper.deleteByPrimaryKey(priorityOrderMstAttrSort.get(0).getCompanyCd(), priorityOrderMstAttrSort.get(0).getPriorityOrderCd());
-            priorityOrderMstAttrSortMapper.insert(priorityOrderMstAttrSort);
-        }
-        return ResultMaps.result(ResultEnum.SUCCESS);
-    }
-    /**
      * 削除データのソート
      * @param companyCd
      * @param priorityOrderCd

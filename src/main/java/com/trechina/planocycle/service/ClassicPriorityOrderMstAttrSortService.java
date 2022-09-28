@@ -1,8 +1,5 @@
 package com.trechina.planocycle.service;
 
-import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
-
-import java.util.List;
 import java.util.Map;
 
 public interface ClassicPriorityOrderMstAttrSortService {
@@ -14,14 +11,6 @@ public interface ClassicPriorityOrderMstAttrSortService {
      * @return
      */
     Map<String,Object> getPriorityAttrSort(String companyCd,Integer priorityOrderCd);
-
-
-    /**
-     * 保存データのソート
-     * @param priorityOrderMstAttrSort
-     * @return
-     */
-    Map<String,Object> setPriorityAttrSort(List<PriorityOrderMstAttrSort> priorityOrderMstAttrSort);
 
     /**
      * 削除データのソート

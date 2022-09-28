@@ -136,6 +136,7 @@ public class MagicString {
 
     public static final String BRANCH_NUM = "branch_num";
     public static final String BRANCH = "branch";
+    public static final String AREA_CD = "areaCd";
 
     public static final String PATTERN_NAME = "pattern_name";
 
@@ -303,6 +304,7 @@ public class MagicString {
     public static final String AUTHOR_CD_DB = "author_cd";
     public static final String PRODUCT_POWER_CD = "productPowerCd";
     public static final String PRIORITY_ORDER_CD = "priorityOrderCd";
+    public static final String SHELF_PATTERN_CD = "shelfPatternCd";
     public static final String PRIORITY_ORDER_CD_DB = "priority_order_cd";
 
     public static final String PARAM = "param";
@@ -319,6 +321,7 @@ public class MagicString {
     public static final String HEIGHT = "height";
     public static final String DEPTH = "depth";
     public static final String BRANCHNUM = "branchNum";
+    public static final String BRANCH_ACCOUNT = "branchAccount";
     public static final String JANNEW = "janNew";
 
     public static final String BRANCH_AMOUNT_NAME = "店@金額(円)";
@@ -335,6 +338,11 @@ public class MagicString {
     public static final String MAKER = "maker";
     public static final String TOTAL = "total";
     public static final String BRANCH_CD = "branchCd";
+    public static final String COLUMN = "column";
+    public static final String HEADER = "header";
+
+    public static final String GROUP = "group";
+    public static final String BR = "<br />";
 
     public static final String BRANCH_NUM_NAME = "定番 店舗数";
 

@@ -434,7 +434,8 @@ public class MstJanServiceImpl implements MstJanService {
         LinkedHashMap <String,Object> getKaisouNameMap = new LinkedHashMap<>();
         String jan = map.get(MagicString.JAN).toString();
         List<String> list = new ArrayList<>();
-        for (String s : map.keySet()) {
+        for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+            String s = stringObjectEntry.getKey();
             if (s.contains(MagicString.ZOKUSEI_PREFIX)){
                 Integer zokuseiId = Integer.parseInt(s.replace(MagicString.ZOKUSEI_PREFIX, ""))-1;
                 setInfoMap.put(zokuseiId+"",map.get(s));
@@ -549,9 +550,7 @@ public class MstJanServiceImpl implements MstJanService {
         cacheUtil.put(taskId+MagicString.STATUS_STR, MagicString.TASK_STATUS_PROCESSING);
         executor.execute(()->{
             Map<String, String> headerNameIndex = new HashMap<>();
-            janHeader.forEach(headerAttr->{
-                headerNameIndex.put(headerAttr.getAttrVal(), headerAttr.getSort());
-            });
+            janHeader.forEach(headerAttr-> headerNameIndex.put(headerAttr.getAttrVal(), headerAttr.getSort()));
 
             List<String> columnHeader = new ArrayList<>();
 
