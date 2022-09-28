@@ -248,7 +248,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderCommodityNot(List<PriorityOrderCommodityNot> priorityOrderCommodityNot) {
-        logger.info("不可商品リストパラメータの保存：{}",priorityOrderCommodityNot);
+      /*  logger.info("不可商品リストパラメータの保存：{}",priorityOrderCommodityNot);
         // 拿到的参数只有第一行有企業和順位表cd，需要遍暦参数，給所有行都賦
         try{
             String companyCd = priorityOrderCommodityNot.get(0).getCompanyCd();
@@ -328,7 +328,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             logger.error("不可商品リストの保存：",e);
             logAspect.setTryErrorLog(e,new Object[]{priorityOrderCommodityNot});
             return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        }*/
+        return null;
     }
 
     /**
