@@ -180,7 +180,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             Integer tanaCd = tanamst.getTanaCd();
             Integer tanaWidth = tanamst.getTanaWidth();
 
-            List<Map<String, Object>> jans = classifyList.stream().filter(map -> taiTanaEquals(MapUtils.getInteger(map, MagicString.TAI_CD), taiCd,
+            List<Map<String, Object>> jans = classifyList.stream().filter(map -> commonMstService.taiTanaEquals(MapUtils.getInteger(map, MagicString.TAI_CD), taiCd,
                     MapUtils.getInteger(map, MagicString.TANA_CD),tanaCd)).collect(Collectors.toList());
 
             logger.info("taiCd:{},tanaCd:{}, jans:{}", taiCd, tanaCd,jans);
@@ -283,9 +283,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         return classify;
     }
 
-    private boolean taiTanaEquals(Integer taiCd1, Integer taiCd2,Integer tanaCd1, Integer tanaCd2){
-        return Objects.equals(taiCd1, taiCd2) && Objects.equals(tanaCd1, tanaCd2);
-    }
 
     @Override
     public Map<String, BasicPatternRestrictResult> getJanInfoClassify(List<Map<String, Object>> classifyList,

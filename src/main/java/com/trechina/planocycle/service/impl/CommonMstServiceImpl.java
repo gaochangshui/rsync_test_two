@@ -963,4 +963,9 @@ public class CommonMstServiceImpl implements CommonMstService {
 
         return commonPartsDto;
     }
+
+    @Override
+    public boolean taiTanaEquals(Integer taiCd1, Integer taiCd2,Integer tanaCd1, Integer tanaCd2){
+        return Objects.equals(taiCd1, taiCd2) && Objects.equals(tanaCd1, tanaCd2);
+    }
 }

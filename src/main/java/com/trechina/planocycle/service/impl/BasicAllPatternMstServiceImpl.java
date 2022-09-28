@@ -295,7 +295,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             Integer tanaCd = tanamst.getTanaCd();
             Integer tanaWidth = tanamst.getTanaWidth();
 
-            List<Map<String, Object>> jans = classifyList.stream().filter(map -> taiTanaEquals(MapUtils.getInteger(map, MagicString.TAI_CD),
+            List<Map<String, Object>> jans = classifyList.stream().filter(map -> commonMstService.taiTanaEquals(MapUtils.getInteger(map, MagicString.TAI_CD),
                     taiCd, MapUtils.getInteger(map, MagicString.TANA_CD), tanaCd)).collect(Collectors.toList());
 
             logger.info("taiCd:{},tanaCd:{}, jans:{}", taiCd, tanaCd,jans);
@@ -390,10 +390,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
 
     private boolean isLastAndEqualsToLastKey(String key, String lastKey, int currentIndex, int size){
         return lastKey.equals(key) && (currentIndex+1)==size;
-    }
-
-    private boolean taiTanaEquals(Integer taiCd1, Integer taiCd2,Integer tanaCd1, Integer tanaCd2){
-        return Objects.equals(taiCd1, taiCd2) && Objects.equals(tanaCd1, tanaCd2);
     }
 
     private int makeWKResultDataList(PriorityAllPatternListVO pattern, Integer priorityAllCd, String companyCd, String authorCd, Integer priorityOrderCd) {

@@ -37,14 +37,16 @@
         where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
     </update>
     <update id="updateBranchNumByList">
-        update planocycle.work_priority_order_jan_new
-        set branch_num =
-        CASE jan_new
-        <foreach collection="list" item="item" >
-            WHEN trim(#{item.jan_new}) THEN #{item.branch_num}::integer
-        </foreach>
-        else 0 end
-        where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        <if test="!list.isEmpty">
+            update planocycle.work_priority_order_jan_new
+            set branch_num =
+            CASE jan_new
+            <foreach collection="list" item="item" >
+                WHEN trim(#{item.jan_new}) THEN #{item.branch_num}::integer
+            </foreach>
+            else 0 end
+            where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
+        </if>
     </update>
     <insert id="setWorkForFinal">
         insert into priority.work_priority_order_jan_new(company_cd,priority_order_cd,jan_new,rank,branch_num,branch_account,name_new)
