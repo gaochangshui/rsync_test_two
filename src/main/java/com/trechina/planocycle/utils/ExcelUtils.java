@@ -2,10 +2,9 @@ package com.trechina.planocycle.utils;
 
 
 import com.google.common.base.Strings;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -350,12 +349,12 @@ public class ExcelUtils {
      */
     public static String generateNormalExcelToFile(List<String[]> allData, String filePath){
         logger.info("start generate excel,now:{}, filename: {}", LocalDateTime.now(),filePath);
-
-        try(XSSFWorkbook workbook = new XSSFWorkbook();
+        try(SXSSFWorkbook workbook = new SXSSFWorkbook(1000);
             FileOutputStream fos = new FileOutputStream(filePath)){
-            XSSFSheet sheet = workbook.createSheet();
-            XSSFRow janRow;
-            XSSFCell janCell;
+            workbook.setCompressTempFiles(true);
+            Sheet sheet = workbook.createSheet();
+            Row janRow;
+            Cell janCell;
             for (int i = 0; i < allData.size(); i++) {
                 int columnIndex = 0;
                 janRow = sheet.createRow(i);
@@ -368,6 +367,7 @@ public class ExcelUtils {
                 }
             }
             workbook.write(fos);
+            workbook.dispose();
         }catch (Exception e){
             logger.error("", e);
         }
