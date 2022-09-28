@@ -39,4 +39,6 @@ public interface CommonMstService {
     CommonPartsDto getCommonPartsData(Integer productPowerCd, String companyCd);
 
     CommonPartsDto getPriorityCommonPartsData(Integer priorityOrderCd, String companyCd);
+
+    boolean taiTanaEquals(Integer taiCd1, Integer taiCd2, Integer tanaCd1, Integer tanaCd2);
 }
