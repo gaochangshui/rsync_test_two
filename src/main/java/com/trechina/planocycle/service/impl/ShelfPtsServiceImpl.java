@@ -755,7 +755,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             newJanData.stream()
                     .filter(map -> janData.stream().noneMatch(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))
                     ))
-                    .forEach(map -> map.put("remarks",MagicString.MSG_NEW_JAN));
+                    .forEach(map -> map.put(MagicString.REMARKS,MagicString.MSG_NEW_JAN));
             //商品変更：位置変更
             newJanData.stream()
                     .filter(map -> janData.stream().noneMatch(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))

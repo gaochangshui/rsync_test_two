@@ -249,26 +249,31 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
                     .forEach(map -> map.put(MagicString.REMARKS,MagicString.MSG_NEW_JAN));
             //商品変更：位置変更
             newJanData.stream()
-                    .filter(map -> janData.stream().anyMatch(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))
-                            && (!MapUtils.getInteger(map1,MagicString.TAI_CD).equals(MapUtils.getInteger(map,MagicString.TAI_CD))
-                            || !MapUtils.getInteger(map1,MagicString.TANA_CD).equals(MapUtils.getInteger(map,MagicString.TANA_CD))
-                            || !MapUtils.getInteger(map1,MagicString.TANAPOSITIONCD).equals(MapUtils.getInteger(map,MagicString.TANAPOSITION_CD)))
-                    ))
+                    .filter(map -> janData.stream().noneMatch(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))
+                            && MapUtils.getInteger(map1,MagicString.TAI_CD).equals(MapUtils.getInteger(map,MagicString.TAI_CD))
+                            && MapUtils.getInteger(map1,MagicString.TANA_CD).equals(MapUtils.getInteger(map,MagicString.TANA_CD))
+                            && MapUtils.getInteger(map1,MagicString.TANAPOSITIONCD).equals(MapUtils.getInteger(map,MagicString.TANAPOSITIONCD)))
+                    )
                     .forEach(map -> {
-                        LinkedHashMap<String,Object> oldPtsJanDataVo = janData.stream().filter(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))).findFirst().get();
-                        map.put(MagicString.REMARKS,MagicString.MSG_TANA_POSITION_CHANGE.replace("{tai}", String.valueOf(MapUtils.getInteger(oldPtsJanDataVo,MagicString.TAI_CD)))
-                                .replace("{tana}", String.valueOf(MapUtils.getInteger(oldPtsJanDataVo,MagicString.TANA_CD)))
-                                .replace("{position}", String.valueOf(MapUtils.getInteger(oldPtsJanDataVo,MagicString.TANAPOSITION_CD))));
+                        if(!MagicString.MSG_NEW_JAN.equals(map.get(MagicString.REMARKS))){
+                            map.put(MagicString.REMARKS,MagicString.MSG_TANA_POSITION_CHANGE);
+                        }
                     });
             //商品変更：フェース変更
             newJanData.stream()
                     .filter(map -> janData.stream().anyMatch(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))
+                            && MapUtils.getInteger(map1,MagicString.TAI_CD).equals(MapUtils.getInteger(map,MagicString.TAI_CD))
+                            && MapUtils.getInteger(map1,MagicString.TANA_CD).equals(MapUtils.getInteger(map,MagicString.TANA_CD))
+                            && MapUtils.getInteger(map1,MagicString.TANAPOSITIONCD).equals(MapUtils.getInteger(map,MagicString.TANAPOSITIONCD))
                             && !MapUtils.getInteger(map1,MagicString.FACE_COUNT).equals(MapUtils.getInteger(map,MagicString.FACE_COUNT))
                     ))
                     .forEach(map -> map.put(MagicString.REMARKS,(StringUtils.hasLength(map.get(MagicString.REMARKS).toString()) ? map.get(MagicString.REMARKS).toString() + "," : "")
                             + MagicString.MSG_FACE_CHANGE
-                            + janData.stream().filter(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))).findFirst().get().get("faceCount")));
-            logger.info("end,{}", System.currentTimeMillis());
+                            + janData.stream().filter(map1 -> MapUtils.getString(map1,MagicString.JAN).equals(MapUtils.getString(map,MagicString.JAN))
+                            && MapUtils.getInteger(map1,MagicString.TAI_CD).equals(MapUtils.getInteger(map,MagicString.TAI_CD))
+                            && MapUtils.getInteger(map1,MagicString.TANA_CD).equals(MapUtils.getInteger(map,MagicString.TANA_CD))
+                            && MapUtils.getInteger(map1,MagicString.TANAPOSITIONCD).equals(MapUtils.getInteger(map,MagicString.TANAPOSITIONCD))
+                    ).findFirst().get().get(MagicString.FACE_COUNT)));
             ptsDetailData.setPtsTaiList(newTaiData);
             ptsDetailData.setPtsTanaVoList(newTanaData);
             ptsDetailData.setPtsJanDataList(newJanData);

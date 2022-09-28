@@ -593,9 +593,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             map.put(MagicString.JAN_NAME,janMap.get(MagicString.JAN_NAME));
             map.put(MagicString.MAKER,janMap.get(MagicString.MAKER));
             map.put(MagicString.TOTAL,"");
-            patternNameList.forEach(objectMap->{
-                map.put(objectMap.get("id")+"_"+objectMap.get("shelfPatternCd").toString(),"☓");
-            });
+            patternNameList.forEach(objectMap-> map.put(objectMap.get("id")+"_"+objectMap.get("shelfPatternCd").toString(),"☓"));
 
             list.add(map);
         }

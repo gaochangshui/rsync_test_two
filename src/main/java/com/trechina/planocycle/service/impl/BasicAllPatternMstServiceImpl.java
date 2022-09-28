@@ -134,8 +134,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     makeWKResultDataList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
 
                     this.getNewReorder(companyCd,priorityOrderCd,authorCd,priorityAllCd,pattern.getShelfPatternCd());
-                 
-
 
                     priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
 

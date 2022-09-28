@@ -221,7 +221,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             List<Map<String, Object>> rankCalculate = productPowerDataMapper.getProductRankCalculate(map, companyCd, productPowerCd,authorCd);
             ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
             List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
-                storeCd.add("");
+
             List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
                 shelfPts.add(0);
             productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd,shelfPts,storeCd);
