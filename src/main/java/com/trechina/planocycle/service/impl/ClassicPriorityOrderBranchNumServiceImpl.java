@@ -1,7 +1,5 @@
 package com.trechina.planocycle.service.impl;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.trechina.planocycle.aspect.LogAspect;
@@ -19,11 +17,13 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderBranchNumService;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanReplaceService;
-import com.trechina.planocycle.utils.*;
+import com.trechina.planocycle.utils.ExcelUtils;
+import com.trechina.planocycle.utils.ResultMaps;
+import com.trechina.planocycle.utils.VehicleNumCache;
+import com.trechina.planocycle.utils.cgiUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -153,88 +153,89 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderCommodityMust(List<PriorityOrderCommodityMust> priorityOrderCommodityMust) {
-        logger.info("必須商品リストパラメータを保存する：{}",priorityOrderCommodityMust);
-//取得したパラメータは1行目に企業と順位テーブルcdがあるだけで、パラメータを巡回し、すべての行に値を割り当てる必要があります。
+//        logger.info("必須商品リストパラメータを保存する：{}",priorityOrderCommodityMust);
+////取得したパラメータは1行目に企業と順位テーブルcdがあるだけで、パラメータを巡回し、すべての行に値を割り当てる必要があります。
+//
+//            String companyCd = priorityOrderCommodityMust.get(0).getCompanyCd();
+//            Integer priorityOrderCd = priorityOrderCommodityMust.get(0).getPriorityOrderCd();
+//            dataConverUtils dataConverUtil = new dataConverUtils();
+//            // 共通メソッドを呼び出し、データを処理する
+//            List<PriorityOrderCommodityMust> mustList =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderCommodityMust.class,priorityOrderCommodityMust,
+//                    companyCd ,priorityOrderCd);
+//            // map.getJan() != null&& !"".equals(map.getJan())
+//            mustList = mustList.stream().filter(map -> !Strings.isNullOrEmpty(map.getJan())).collect(Collectors.toList());
+//            logger.info("必須商品リストの処理後のパラメータを保存する：{}",mustList);
+//            //削除
+//            priorityOrderCommodityMustMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
+//            if (mustList.isEmpty()){
+//                return ResultMaps.result(ResultEnum.SUCCESS);
+//            }
+//            PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+//            ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
+//            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+//            String proInfoTable = commonTableName.getProInfoTable();
+//            String storeInfoTable = commonTableName.getStoreInfoTable();
+//            String storeIsCore = commonTableName.getStoreIsCore();
+//            String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd,storeInfoTable,storeIsCore);
+//            int branchLen = branchCd.length();
+//            // notを巡回して店cdに0を補充する
+//            mustList.forEach(item->{
+//                item.setBranchOrigin(item.getBranch());
+//                if (!Strings.isNullOrEmpty(item.getBranch()) && pattern.matcher(item.getBranch()).matches()){
+//                    item.setBranch( Strings.padStart(item.getBranch(), branchLen, '0'));
+//                }
+//            });
+//            logger.info("必須商品の店補0後の結菓を保存する{}",mustList);
+//
+//            // jancheck
+//            List<String> janList = mustList.stream().map(PriorityOrderCommodityMust::getJan).collect(Collectors.toList());
+//            List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList,priorityOrderCd);
+//            List<String> notExistJan = ListDisparityUtils.getListDisparitStr(janList,existJan);
+//            List<PriorityOrderCommodityMust> existJanList = mustList.stream().filter(map -> existJan.contains(map.getJan())).collect(Collectors.toList());
+//
+//
+//            List<String> notBranchExists = new ArrayList<>();
+//            List<PriorityOrderCommodityMust> exists = new ArrayList<>();
+//            for (int i = 0; i < existJanList.size(); i++) {
+//                PriorityOrderCommodityMust must = existJanList.get(i);
+//                    String branch = must.getBranch();
+//                    List<Integer> patternCdList = priorityOrderCommodityMustMapper.selectPatternByBranch(priorityOrderCd, companyCd, branch);
+//                    //! "".equals() &&  must.getBranchOrigin() != null
+//                    if(patternCdList.isEmpty()&& !Strings.isNullOrEmpty(must.getBranchOrigin())){
+//                        notBranchExists.add(must.getBranchOrigin()+"");
+//                    }
+//                    for (Integer patternCd : patternCdList) {
+//                        PriorityOrderCommodityMust newMust = new PriorityOrderCommodityMust();
+//                        BeanUtils.copyProperties(must, newMust);
+//
+//                        int result = priorityOrderCommodityMustMapper.selectExistJan(patternCd, must.getJan());
+//                        if(result>0){
+//                            newMust.setBeforeFlag(1);
+//                        }else{
+//                            newMust.setBeforeFlag(0);
+//                        }
+//                        if(patternCd!=null){
+//                            newMust.setFlag(1);
+//                        }else{
+//                            newMust.setFlag(0);
+//                        }
+//                        newMust.setShelfPatternCd(patternCd);
+//                        exists.add(newMust);
+//                    }
+//
+//            }
+//            if (!exists.isEmpty()){
+//                //データベースへの書き込み
+//                priorityOrderCommodityMustMapper.insert(exists);
+//            }
+//           if (!notExistJan.isEmpty()){
+//               return ResultMaps.result(ResultEnum.BRANCHNOTESISTS, Joiner.on(",").join(notExistJan));
+//           }else if (!notBranchExists.isEmpty()){
+//               return ResultMaps.result(ResultEnum.BRANCHNOTESISTS, Joiner.on(",").join(notBranchExists));
+//           }
 
-            String companyCd = priorityOrderCommodityMust.get(0).getCompanyCd();
-            Integer priorityOrderCd = priorityOrderCommodityMust.get(0).getPriorityOrderCd();
-            dataConverUtils dataConverUtil = new dataConverUtils();
-            // 共通メソッドを呼び出し、データを処理する
-            List<PriorityOrderCommodityMust> mustList =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderCommodityMust.class,priorityOrderCommodityMust,
-                    companyCd ,priorityOrderCd);
-            // map.getJan() != null&& !"".equals(map.getJan())
-            mustList = mustList.stream().filter(map -> !Strings.isNullOrEmpty(map.getJan())).collect(Collectors.toList());
-            logger.info("必須商品リストの処理後のパラメータを保存する：{}",mustList);
-            //削除
-            priorityOrderCommodityMustMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-            if (mustList.isEmpty()){
-                return ResultMaps.result(ResultEnum.SUCCESS);
-            }
-            PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
-            ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
-            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
-            String proInfoTable = commonTableName.getProInfoTable();
-            String storeInfoTable = commonTableName.getStoreInfoTable();
-            String storeIsCore = commonTableName.getStoreIsCore();
-            String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd,storeInfoTable,storeIsCore);
-            int branchLen = branchCd.length();
-            // notを巡回して店cdに0を補充する
-            mustList.forEach(item->{
-                item.setBranchOrigin(item.getBranch());
-                if (!Strings.isNullOrEmpty(item.getBranch()) && pattern.matcher(item.getBranch()).matches()){
-                    item.setBranch( Strings.padStart(item.getBranch(), branchLen, '0'));
-                }
-            });
-            logger.info("必須商品の店補0後の結菓を保存する{}",mustList);
-
-            // jancheck
-            List<String> janList = mustList.stream().map(PriorityOrderCommodityMust::getJan).collect(Collectors.toList());
-            List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList,priorityOrderCd);
-            List<String> notExistJan = ListDisparityUtils.getListDisparitStr(janList,existJan);
-            List<PriorityOrderCommodityMust> existJanList = mustList.stream().filter(map -> existJan.contains(map.getJan())).collect(Collectors.toList());
-
-
-            List<String> notBranchExists = new ArrayList<>();
-            List<PriorityOrderCommodityMust> exists = new ArrayList<>();
-            for (int i = 0; i < existJanList.size(); i++) {
-                PriorityOrderCommodityMust must = existJanList.get(i);
-                    String branch = must.getBranch();
-                    List<Integer> patternCdList = priorityOrderCommodityMustMapper.selectPatternByBranch(priorityOrderCd, companyCd, branch);
-                    //! "".equals() &&  must.getBranchOrigin() != null
-                    if(patternCdList.isEmpty()&& !Strings.isNullOrEmpty(must.getBranchOrigin())){
-                        notBranchExists.add(must.getBranchOrigin()+"");
-                    }
-                    for (Integer patternCd : patternCdList) {
-                        PriorityOrderCommodityMust newMust = new PriorityOrderCommodityMust();
-                        BeanUtils.copyProperties(must, newMust);
-
-                        int result = priorityOrderCommodityMustMapper.selectExistJan(patternCd, must.getJan());
-                        if(result>0){
-                            newMust.setBeforeFlag(1);
-                        }else{
-                            newMust.setBeforeFlag(0);
-                        }
-                        if(patternCd!=null){
-                            newMust.setFlag(1);
-                        }else{
-                            newMust.setFlag(0);
-                        }
-                        newMust.setShelfPatternCd(patternCd);
-                        exists.add(newMust);
-                    }
-
-            }
-            if (!exists.isEmpty()){
-                //データベースへの書き込み
-                priorityOrderCommodityMustMapper.insert(exists);
-            }
-           if (!notExistJan.isEmpty()){
-               return ResultMaps.result(ResultEnum.BRANCHNOTESISTS, Joiner.on(",").join(notExistJan));
-           }else if (!notBranchExists.isEmpty()){
-               return ResultMaps.result(ResultEnum.BRANCHNOTESISTS, Joiner.on(",").join(notBranchExists));
-           }
-
-        return ResultMaps.result(ResultEnum.SUCCESS);
+        //return ResultMaps.result(ResultEnum.SUCCESS);
+        return null;
 
     }
 
