@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -771,25 +772,19 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     public Map<String, Object> autoTaskId(String taskId) {
         final Map<String, Object>[] resultMap = new Map[]{null};
         LocalDateTime now = LocalDateTime.now();
+        String cacheKey = "";
         while (true) {
-            String cacheKey = MessageFormat.format(MagicString.TASK_KEY_JAN_NOT_EXIST, taskId);
-            if (vehicleNumCache.get(cacheKey)!=null){
-                vehicleNumCache.remove(cacheKey);
-                resultMap[0] = ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
-                break;
+            Map<String, Object> reMap = this.exceptionWrapper(taskId);
+            if(!reMap.isEmpty()){
+                return reMap;
             }
-            cacheKey = MessageFormat.format(MagicString.TASK_KEY_PATTERN_NOT_EXIST, taskId);
-            if (vehicleNumCache.get(cacheKey)!=null){
-                vehicleNumCache.remove(cacheKey);
-                resultMap[0] = ResultMaps.error(ResultEnum.FAILURE, "PatternCdNotExist");
-                break;
-            }
+
             cacheKey = MessageFormat.format(MagicString.TASK_KEY_SET_JAN_HEIGHT_ERROR, taskId);
             if (vehicleNumCache.get(cacheKey)!=null){
                 Object o = vehicleNumCache.get(cacheKey);
                 vehicleNumCache.remove(cacheKey);
                 resultMap[0] = ResultMaps.result(ResultEnum.HEIGHT_NOT_ENOUGH, o);
-                break;
+                return resultMap[0];
             }
 
             if (vehicleNumCache.get(taskId) != null){
@@ -803,21 +798,34 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     vehicleNumCache.remove(taskId);
                     resultMap[0] = ResultMaps.result(ResultEnum.SUCCESS,"success");
                 }
-                break;
+                return resultMap[0];
             }
 
             cacheKey = MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskId);
             if (Objects.equals(vehicleNumCache.get(cacheKey), "1")){
                 resultMap[0] = ResultMaps.result(ResultEnum.SUCCESS);
-                break;
+                return resultMap[0];
             }
 
             if(Duration.between(now, LocalDateTime.now()).getSeconds() >MagicString.TASK_TIME_OUT_LONG){
                 return ResultMaps.result(ResultEnum.SUCCESS,"9");
             }
         }
+    }
 
-        return resultMap[0];
+    private Map<String, Object> exceptionWrapper(String taskId){
+        String cacheKey = MessageFormat.format(MagicString.TASK_KEY_JAN_NOT_EXIST, taskId);
+        if (vehicleNumCache.get(cacheKey)!=null){
+            vehicleNumCache.remove(cacheKey);
+            return ResultMaps.result(ResultEnum.JANCDINEXISTENCE);
+        }
+        cacheKey = MessageFormat.format(MagicString.TASK_KEY_PATTERN_NOT_EXIST, taskId);
+        if (vehicleNumCache.get(cacheKey)!=null){
+            vehicleNumCache.remove(cacheKey);
+            return ResultMaps.error(ResultEnum.FAILURE, "PatternCdNotExist");
+        }
+
+        return ImmutableMap.of();
     }
 
     @Override
