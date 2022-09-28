@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.CommonPartsDto;
@@ -967,5 +968,36 @@ public class CommonMstServiceImpl implements CommonMstService {
     @Override
     public boolean taiTanaEquals(Integer taiCd1, Integer taiCd2,Integer tanaCd1, Integer tanaCd2){
         return Objects.equals(taiCd1, taiCd2) && Objects.equals(tanaCd1, tanaCd2);
+    }
+
+    @Override
+    public String getClassifyKey(List<Integer> zokuseiList, Map<String, Object> janMap){
+        StringBuilder key = new StringBuilder();
+        for (Integer zokusei : zokuseiList) {
+            if(key.length()>0){
+                key.append(",");
+            }
+            String val = MapUtils.getString(janMap, zokusei + "", MagicString.DEFAULT_VALUE);
+            key.append(Strings.isNullOrEmpty(val)?MagicString.DEFAULT_VALUE: val);
+        }
+
+        return key.toString();
+    }
+
+    @Override
+    public boolean zokuseiEquals(List<Integer> attrList, Map<String, Object> restrict, Map<String, Object> zokusei){
+        int equalsCount = 0;
+        for (Integer integer : attrList) {
+            String restrictKeyVal = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
+            String restrictKey = Strings.isNullOrEmpty(restrictKeyVal)?MagicString.DEFAULT_VALUE:restrictKeyVal;
+            String zokuseiKeyVal = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
+            String zokuseiKey = Strings.isNullOrEmpty(zokuseiKeyVal)?MagicString.DEFAULT_VALUE: zokuseiKeyVal;
+
+            if(Objects.equals(restrictKey, zokuseiKey)){
+                equalsCount++;
+            }
+        }
+
+        return equalsCount == attrList.size();
     }
 }

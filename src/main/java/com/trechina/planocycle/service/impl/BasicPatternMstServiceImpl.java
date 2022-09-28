@@ -193,7 +193,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             for (int i = 0; i < jans.size(); i++) {
                 Map<String, Object> janMap = jans.get(i);
                 double width = MapUtils.getDouble(janMap, MagicString.WIDTH);
-                String key = getClassifyKey(zokuseiList, janMap);
+                String key = commonMstService.getClassifyKey(zokuseiList, janMap);
 
                 if(isLastAndEqualsToLastKey(key, lastKey, i, jans.size())){
                     areaWidth += width;
@@ -256,19 +256,6 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
 
     private boolean isLastAndEqualsToLastKey(String key, String lastKey, int currentIndex, int size){
         return lastKey.equals(key) && (currentIndex+1)==size;
-    }
-
-    private String getClassifyKey(List<Integer> zokuseiList, Map<String, Object> janMap){
-        StringBuilder key = new StringBuilder();
-        for (Integer zokusei : zokuseiList) {
-            if(key.length()>0){
-                key.append(",");
-            }
-            String val = MapUtils.getString(janMap, zokusei + "", MagicString.DEFAULT_VALUE);
-            key.append(Strings.isNullOrEmpty(val)?MagicString.DEFAULT_VALUE: val);
-        }
-
-        return key.toString();
     }
 
     private Map<String, BasicPatternRestrictResult> generateRestrictCd(Map<String, BasicPatternRestrictResult> classify){
@@ -847,7 +834,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         for (int i = 0; i < zokuseiList.size(); i++) {
             Map<String, Object> zokusei = zokuseiList.get(i);
             for (Map<String, Object> restrict : restrictResult) {
-                if(this.zokuseiEquals(attrList, restrict, zokusei)){
+                if(commonMstService.zokuseiEquals(attrList, restrict, zokusei)){
                     int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
                     zokusei.put(MagicString.RESTRICT_CD, restrictCd);
                 }
@@ -865,21 +852,5 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         if (this.interruptThread(uuid, "7")) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
-    }
-
-    private boolean zokuseiEquals(List<Integer> attrList, Map<String, Object> restrict, Map<String, Object> zokusei){
-        int equalsCount = 0;
-        for (Integer integer : attrList) {
-            String restrictKeyVal = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
-            String restrictKey = Strings.isNullOrEmpty(restrictKeyVal)?MagicString.DEFAULT_VALUE:restrictKeyVal;
-            String zokuseiKeyVal = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
-            String zokuseiKey = Strings.isNullOrEmpty(zokuseiKeyVal)?MagicString.DEFAULT_VALUE: zokuseiKeyVal;
-
-            if(Objects.equals(restrictKey, zokuseiKey)){
-                equalsCount++;
-            }
-        }
-
-        return equalsCount == attrList.size();
     }
 }

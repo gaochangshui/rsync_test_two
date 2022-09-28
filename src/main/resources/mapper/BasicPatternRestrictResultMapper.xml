@@ -495,7 +495,7 @@
         ,tai_cd as "taiCd",tana_cd as "tanaCd","row_number"() over(order by tai_cd,tana_cd, jan) as rank,
         "2" as "janName"
         from planocycle.shelf_pts_data_jandata jandata
-        inner join ${proInfoTable} janinfo on  janinfo."1"=jandata.jan
+        left join ${proInfoTable} janinfo on  janinfo."1"=jandata.jan
         left join ${proMstInfo} janproinfo on janinfo."1"=janproinfo."1"
         where pts_cd=#{ptsCd}
     </select>
