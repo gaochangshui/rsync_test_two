@@ -208,9 +208,7 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
                 s.append(",remarks");
             }
             s.append(",janName");
-            for (Map<String, Object> map : attrCol) {
-                s.append(",").append(map.get(MagicString.ZOUKUSEI_COLCD));
-            }
+            attrCol.forEach(map-> s.append(",").append(map.get(MagicString.ZOUKUSEI_COLCD)));
             s.append(",plano_width,plano_height,plano_depth");
             ptsDetailData.setJanColumns(s.toString());
             ptsDetailData.setTanaHeader(ptsDetailData.getTanaHeader()+","+"備考");
