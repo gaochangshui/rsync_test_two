@@ -282,6 +282,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             , String posResult, String smartPath){
         Map<Object, Object> customerCondition = (Map<Object, Object>) finalMap.get("customerCondition");
         if (!customerCondition.isEmpty()) {
+            String  uuid = UUID.randomUUID().toString();
+            finalMap.put("guid", uuid);
             finalMap.put("basketFlg",0);
             logger.info("顧客パラメータ{}", finalMap);
             String groupResult = cgiUtil.postCgi(productPowerData, finalMap, tokenInfo, smartPath);
