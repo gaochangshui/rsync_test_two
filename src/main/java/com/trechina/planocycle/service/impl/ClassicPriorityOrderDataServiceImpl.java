@@ -853,7 +853,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                     Optional<DownloadDto> first = newRankPoList.stream().filter(dto -> dto.getJan().equals(downloadDto.getJan())).findFirst();
                     if(first.isPresent()){
                         String branchNum = first.get().getBranchNum();
-                        Map<String, Object> map = new HashMap();
+                        Map<String, Object> map = new HashMap<>();
                         map.put(MagicString.JAN_NEW, downloadDto.getJan());
                         map.put(MagicString.BRANCH_NUM, branchNum);
                         map.put(MagicString.COMPANY_CD, company);
@@ -1337,7 +1337,6 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                         LinkedHashMap::new, Collectors.toList()));
         //既存Jan group by 階層
         Map<String, List<Map<String, Object>>> resultJanMap = new HashMap<>();
-
         for (String group : janNewMap.keySet()) {
             //start index
             int start = 0;
@@ -1353,37 +1352,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 continue;
             }
             List<Map<String, Object>> janListTmp = janMap.get(group);
-            for (int i = 0; i < janNewTmp.size(); i++) {
-                Map<String, Object> curJan = janNewTmp.get(i);
-                Integer curRank = Integer.valueOf(curJan.get(MagicString.RANK_UPD).toString());
-                if(curRank.equals(99999999)){
-                    resultJanList.add(janNewTmp.get(i));
-                    continue;
-                }
-
-                //How many elements can be inserted between two rank
-                int rangeNum = 0;
-                if(i == 0){
-                    rangeNum = curRank - start - 1;
-                }else{
-                    Map<String, Object> preJan = janNewTmp.get(i-1);
-                    Integer preRank = Integer.valueOf(preJan.get(MagicString.RANK_UPD).toString());
-                    rangeNum = curRank - preRank - 1;
-                }
-
-                //Prevent (oldIndex + rangeNum) > janListTmp.length and array out of bounds
-                if((oldIndex + rangeNum) > janListTmp.size()){
-                    rangeNum = janListTmp.size()-oldIndex;
-                }
-
-                int end = Math.min(oldIndex + rangeNum, janListTmp.size());
-                if(rangeNum<=janListTmp.size()){
-                    resultJanList.addAll(janListTmp.subList(oldIndex, end));
-                    //record the position index
-                }
-                oldIndex += rangeNum;
-                resultJanList.add(janNewTmp.get(i));
-            }
+            resultJanList = this.calGroupRank(janNewTmp,resultJanList,start,oldIndex,janListTmp);
 
             if(oldIndex < janListTmp.size()){
                 resultJanList.addAll(janListTmp.subList(oldIndex, janListTmp.size()));
@@ -1405,6 +1374,40 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         return finalResultList;
     }
 
+    public List<Map<String, Object>>  calGroupRank(List<Map<String, Object>> janNewTmp, List<Map<String, Object>> resultJanList, int start, int oldIndex, List<Map<String, Object>> janListTmp){
+        for (int i = 0; i < janNewTmp.size(); i++) {
+            Map<String, Object> curJan = janNewTmp.get(i);
+            Integer curRank = Integer.valueOf(curJan.get(MagicString.RANK_UPD).toString());
+            if(curRank.equals(99999999)){
+                resultJanList.add(janNewTmp.get(i));
+                continue;
+            }
+
+            //How many elements can be inserted between two rank
+            int rangeNum = 0;
+            if(i == 0){
+                rangeNum = curRank - start - 1;
+            }else{
+                Map<String, Object> preJan = janNewTmp.get(i-1);
+                Integer preRank = Integer.valueOf(preJan.get(MagicString.RANK_UPD).toString());
+                rangeNum = curRank - preRank - 1;
+            }
+
+            //Prevent (oldIndex + rangeNum) > janListTmp.length and array out of bounds
+            if((oldIndex + rangeNum) > janListTmp.size()){
+                rangeNum = janListTmp.size()-oldIndex;
+            }
+
+            int end = Math.min(oldIndex + rangeNum, janListTmp.size());
+            if(rangeNum<=janListTmp.size()){
+                resultJanList.addAll(janListTmp.subList(oldIndex, end));
+                //record the position index
+            }
+            oldIndex += rangeNum;
+            resultJanList.add(janNewTmp.get(i));
+        }
+        return resultJanList;
+    }
 
     private String getBranchNumWrapper(Map<String, Object> branchNum, Map<String, Object> tmpItem){
         String branchNumUpd = "0";

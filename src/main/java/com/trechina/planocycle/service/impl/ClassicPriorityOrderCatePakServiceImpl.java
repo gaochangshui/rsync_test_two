@@ -83,31 +83,12 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                 // 遍暦結果集，拆分動態列
                 priorityOrderCatePakVOS.forEach(item -> {
                     Map<String, Object> result = new HashMap<>();
-//                    String[] attrSmall = item.getSmalls().split(",");
-//                    String[] attrBig;
-//                    String[] valList;
-//                    // 遍暦small
-//                    for (int i = 0; i < attrSmall.length; i++) {
-//                        valList = attrSmall[i].split(":");
-//                        result.put(MagicString.ATTR_SMALL + valList[0], valList[1]);
-//                    }
                     this.splitCatePakAttr(item.getSmalls(), result, MagicString.ATTR_SMALL);
                     result.put("rank", item.getRank());
                     result.put(MagicString.BRANCHNUM, item.getBranchNum());
                     // big可以為空，需要判断一下
-//                    if (item.getBigs() != null && !item.getBigs().equals("")) {
                     if (!Strings.isNullOrEmpty(item.getBigs())) {
                         this.splitCatePakAttr(item.getBigs(), result, MagicString.ATTR_BIG);
-
-//                        attrBig = item.getBigs().split(",");
-//                        for (int i = 0; i < attrBig.length; i++) {
-//                            valList = attrBig[i].split(":");
-//                            if (valList.length == 1) {
-//                                result.put(MagicString.ATTR_BIG + valList[0], "");
-//                            } else {
-//                                result.put(MagicString.ATTR_BIG + valList[0], valList[1]);
-//                            }
-//                        }
                     }
                     //写入jsonArray
                     jsonArray.add(result);
