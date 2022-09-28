@@ -328,6 +328,13 @@ public class MagicString {
     public static final String SALE_FORECAST = "sale_forecast";
     public static final String RANK_PROP = "rank_prop";
     public static final String GOODS_RANK = "goods_rank";
+    public static final String PATTERN = "pattern";
+    public static final String CHILDREN = "__children";
+    public static final String SHELF_PATTERN_NAME = "shelfPatternName";
+    public static final String BRANCH_NAME = "branchName";
+    public static final String MAKER = "maker";
+    public static final String TOTAL = "total";
+    public static final String BRANCH_CD = "branchCd";
 
     public static final String BRANCH_NUM_NAME = "定番 店舗数";
 
