@@ -299,7 +299,11 @@ public class MagicString {
     public static final String FILEPATH_STR = ",filepath";
 
     public static final String COMPANY_CD = "companyCd";
+    public static final String COMPANY_CD_DB = "company_cd";
+    public static final String AUTHOR_CD_DB = "author_cd";
     public static final String PRODUCT_POWER_CD = "productPowerCd";
+    public static final String PRIORITY_ORDER_CD = "priorityOrderCd";
+    public static final String PRIORITY_ORDER_CD_DB = "priority_order_cd";
 
     public static final String PARAM = "param";
     public static final String TASKID = "taskId";
@@ -310,5 +314,23 @@ public class MagicString {
 
     public static final String ZOKUSEI_COL = "zokusei_col";
     public static final String ZOKUSEI_ID = "zokusei_id";
+
+    public static final String PLANO = "plano";
+    public static final String HEIGHT = "height";
+    public static final String DEPTH = "depth";
+    public static final String BRANCHNUM = "branchNum";
+    public static final String JANNEW = "janNew";
+
+    public static final String BRANCH_AMOUNT_NAME = "店@金額(円)";
+    public static final String POS_AMOUNT = "pos_amount";
+    public static final String UNIT_PRICE = "unit_price";
+    public static final String DIFFERENCE = "difference";
+    public static final String SALE_FORECAST = "sale_forecast";
+    public static final String RANK_PROP = "rank_prop";
+    public static final String GOODS_RANK = "goods_rank";
+
+    public static final String BRANCH_NUM_NAME = "定番 店舗数";
+
+
 
 }
