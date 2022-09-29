@@ -563,19 +563,18 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 List<Map<String, Object>> restrictResult = restrictResultMapper.selectByPrimaryKey(priorityOrderCd);
                 //zokuseiId convert to work_basic_pattern_restrict_result's zokuseiId
                 List<Map<String, Object>> newRestrictResult = new ArrayList<>();
-                for (Map<String, Object> map : restrictResult) {
+                restrictResult.forEach(map->{
                     Map<String, Object> newMap = new HashMap<>();
                     newMap.put(MagicString.RESTRICT_CD_UNDERLINE, MapUtils.getLong(map,MagicString.RESTRICT_CD_UNDERLINE));
                     newMap.put("author_cd", MapUtils.getString(map,"author_cd"));
                     newMap.put("priority_order_cd", MapUtils.getInteger(map,"priority_order_cd"));
-                    
-                    for (PriorityOrderMstAttrSort mstAttrSort : mstAttrSorts) {
+                    mstAttrSorts.forEach(mstAttrSort->{
                         String beforeZokuseiId = "zokusei" + (mstAttrSort.getSort() + 1);
                         String val = MapUtils.getString(map, beforeZokuseiId, "");
                         newMap.put("zokusei" + (mstAttrSort.getValue()), val);
-                    }
+                    });
                     newRestrictResult.add(newMap);
-                }
+                });
 
                 this.setPtsJandataByRestrictCd(priorityOrderCd, patternCd,companyCd, authorCd, attrList, zokuseiMsts,
                         commonTableName, allCdList,newRestrictResult, uuid);
