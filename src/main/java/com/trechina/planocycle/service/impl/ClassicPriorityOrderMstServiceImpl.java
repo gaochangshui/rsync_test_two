@@ -361,8 +361,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             priorityOrderDataMapper.updateGoodsRank(goodsRank, companyCd, priorityOrderCd);
         }
         linkedHashMaps.forEach(linkedHashMap -> {
-           if (linkedHashMap.get("jan_old").equals("_")){
-               linkedHashMap.put("jan_old",linkedHashMap.get("jan_new"));
+           if (linkedHashMap.get(MagicString.JAN_OLD).equals("_")){
+               linkedHashMap.put(MagicString.JAN_OLD,linkedHashMap.get(MagicString.JAN_NEW));
            }
         });
         if (priorityOrderMstDto.getSetSpecialFlag() != null) {
