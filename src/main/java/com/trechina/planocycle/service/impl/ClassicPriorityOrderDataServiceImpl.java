@@ -949,9 +949,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             item.put(taiCd, newJan.getAttr1());
             item.put(tanaCd, newJan.getAttr2());
 
-            for (int i = 0; i < allAttrSortList.size(); i++) {
-                item.put(allAttrSortList.get(i), "");
-            }
+            allAttrSortList.forEach(sort->item.put(sort, ""));
 
             datas.add(JSON.parseObject(new Gson().toJson(item)));
             maps.add(item);
@@ -964,17 +962,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 DownloadDto downloadDto = newJanList.get(i);
                 if (item.get(MagicString.JAN_NEW).equals(downloadDto.getJan())){
                     Map<String, Object> attrValMap = new HashMap<>();
-                    for (String attr : attrList.split(",")) {
-                        attrValMap.put(attr, item.getOrDefault(attr, ""));
-                    }
+                    Arrays.stream(attrList.split(",")).forEach(attr->attrValMap.put(attr, item.getOrDefault(attr, "")));
                     //The order cannot be changed, select only the checked attribute rank(value in attrList)
                     Integer branchNum = priorityOrderResultDataMapper.selectBranchNumByAttr(priorityOrderCd, company, attrValMap);
                     branchNum = Optional.ofNullable(branchNum).orElse(0);
                     item.put(MagicString.BRANCH_NUM, branchNum);
 
-                    for (String attr : allAttrSortList) {
-                        attrValMap.put(attr, item.getOrDefault(attr, ""));
-                    }
+                    allAttrSortList.forEach(attr-> attrValMap.put(attr, item.getOrDefault(attr, "")));
                     this.fillCommonParam(downloadDto, item);
                     downloadDto.setName(item.get("sku").toString());
                     downloadDto.setBranchNum(item.get(MagicString.BRANCH_NUM_UPD).toString());
@@ -991,7 +985,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                     if(janOpt.isPresent()){
                         DownloadDto jan = janOpt.get();
                         Optional<PriorityOrderAttributeClassify> attrOpt = classifyList.stream()
-                                .filter(classify -> classify.getTanaCd().equals(jan.getTanaCd()) && classify.getTaiCd().equals(jan.getTaiCd())).findFirst();
+                                .filter(classify -> commonMstService.taiTanaEquals(classify.getTaiCd(),jan.getTaiCd(),classify.getTanaCd(),jan.getTanaCd())).findFirst();
 
                         if (taiCd.equals(attr.toString())) {
                             //taiTana's first element is tai attr
