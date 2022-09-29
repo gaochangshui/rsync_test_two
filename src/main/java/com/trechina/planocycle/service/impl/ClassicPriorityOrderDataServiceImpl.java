@@ -402,7 +402,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 AttrHeaderSysDto attrHeaderSysDto = any.get();
                 attrHeaderSysDto.getColNum().put(colNum, entry.getKey());
             }else{
-                String itemHeaderTableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", attrArray[0], attrArray[1]);
+                if(attrArray[0].equals(MagicString.PLANO_CYCLE_COMPANY_CD)){
+                    continue;
+                }
+                String itemHeaderTableName = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS, attrArray[0], attrArray[1]);
                 List<Map<String, Object>> janClassify = janClassifyMapper.selectJanClassify(itemHeaderTableName);
                 if(janClassify.isEmpty()){
                     logger.warn("jan header table {} not exists", itemTableName);

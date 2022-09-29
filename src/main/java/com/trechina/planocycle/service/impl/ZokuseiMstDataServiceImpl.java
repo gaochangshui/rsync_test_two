@@ -7,6 +7,7 @@ import com.trechina.planocycle.service.ZokuseiMstDataService;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,10 @@ import java.util.stream.Collectors;
 public class ZokuseiMstDataServiceImpl implements ZokuseiMstDataService {
     @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
+    @Autowired
+    private ZokuseiMstDataService zokuseiMstDataService;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void syncZokuseiMstData(String companyCd, String classCd) {
         List<String> kaisouTableNameList = zokuseiMstMapper.selectAllKaisouTable(companyCd);
@@ -53,7 +57,7 @@ public class ZokuseiMstDataServiceImpl implements ZokuseiMstDataService {
                     zokusei.setZokuseiCol(colI);
 
                     zokuseiList.add(zokusei);
-                    this.setZokuseiData(companyCd, syncClassCd, zokusei.getZokuseiId(), colI, headerMap);
+                    zokuseiMstDataService.setZokuseiData(companyCd, syncClassCd, zokusei.getZokuseiId(), colI, headerMap);
                 }
 
                 colIndex++;
@@ -77,14 +81,15 @@ public class ZokuseiMstDataServiceImpl implements ZokuseiMstDataService {
                 zokusei.setZokuseiCol(colI);
 
                 attrZokuseiList.add(zokusei);
-                this.setZokuseiData(companyCd, syncClassCd, zokusei.getZokuseiCol(), colI, attrHeaderMap);
+                zokuseiMstDataService.setZokuseiData(companyCd, syncClassCd, zokusei.getZokuseiCol(), colI, attrHeaderMap);
                 colIndex++;
             }
             zokuseiMstMapper.insertBatch(companyCd, syncClassCd, attrZokuseiList);
         }
     }
 
-    public void setZokuseiData(String company,String classCd,Integer zokuseiId,Integer col, List<Map<String, Object>> headerMap){
+    @Override
+    public void setZokuseiData(String company, String classCd, Integer zokuseiId, Integer col, List<Map<String, Object>> headerMap){
         List<Integer> cdList = headerMap.stream().filter(map -> MapUtils.getString(map, "col").endsWith("_cd"))
                 .map(map->MapUtils.getInteger(map, "sort")).collect(Collectors.toList());
 
