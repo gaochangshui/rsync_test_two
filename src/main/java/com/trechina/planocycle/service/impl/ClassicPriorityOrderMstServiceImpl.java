@@ -11,13 +11,19 @@ import com.google.gson.reflect.TypeToken;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
-import com.trechina.planocycle.entity.po.*;
+import com.trechina.planocycle.entity.po.PriorityOrderMst;
+import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
+import com.trechina.planocycle.entity.po.ShelfPtsDataTaimst;
+import com.trechina.planocycle.entity.po.ShelfPtsDataTanamst;
 import com.trechina.planocycle.entity.vo.PriorityOrderCatePakVO;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
-import com.trechina.planocycle.utils.*;
+import com.trechina.planocycle.utils.CacheUtil;
+import com.trechina.planocycle.utils.ExcelUtils;
+import com.trechina.planocycle.utils.ResultMaps;
+import com.trechina.planocycle.utils.cgiUtils;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.poi.ss.usermodel.CellType;
@@ -40,7 +46,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -345,22 +350,27 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
         List<Map<String, Object>> linkedHashMaps = new Gson().fromJson(datas.toString(), new TypeToken<List<LinkedHashMap<String, Object>>>() {
         }.getType());
-        for (Map<String, Object> linkedHashMap : linkedHashMaps) {
+        linkedHashMaps.forEach(linkedHashMap -> {
             linkedHashMap.remove("priority_order_cd");
             linkedHashMap.remove("company_cd");
             linkedHashMap.remove("author_cd");
             linkedHashMap.remove("repeatFlg");
-        }
+        });
         priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,linkedHashMaps,authorCd);
         if (!goodsRank.isEmpty()) {
             priorityOrderDataMapper.updateGoodsRank(goodsRank, companyCd, priorityOrderCd);
         }
+        linkedHashMaps.forEach(linkedHashMap -> {
+           if (linkedHashMap.get("jan_old").equals("_")){
+               linkedHashMap.put("jan_old",linkedHashMap.get("jan_new"));
+           }
+        });
         if (priorityOrderMstDto.getSetSpecialFlag() != null) {
             List<Map<String, Object>> attrSpecialList = classicPriorityOrderMstAttrSortMapper.getAttrSpecialList(companyCd, priorityOrderCd);
             if (!attrSpecialList.isEmpty()){
                 HashMap<String, Object> objectObjectHashMap = new HashMap<>();
                 objectObjectHashMap.put("value","1");
-                objectObjectHashMap.put("sort",MagicString.JAN_NEW);
+                objectObjectHashMap.put("sort",MagicString.JAN_OLD);
                 attrSpecialList.add(objectObjectHashMap);
                 priorityOrderDataMapper.setSpecialName(linkedHashMaps,attrSpecialList);
 
