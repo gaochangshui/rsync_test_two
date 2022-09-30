@@ -174,6 +174,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         String prodIsCore = productPowerParamJson.getString("prodIsCore");
         //第数セット
         String prodMstClass = productPowerParamJson.getString("prodMstClass");
+        String coreCompany = companyCd;
 
         if("0".equals(prodIsCore)){
             //0-企業
@@ -181,7 +182,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             janInfoTableName = String.format("\"%s\".prod_%s_jan_info", companyCd, prodMstClass);
         }else{
             //自設company_cd
-            String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+            coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
             //1-自設
             tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", coreCompany, prodMstClass);
             janInfoTableName = String.format("\"%s\".prod_%s_jan_info", coreCompany, prodMstClass);
@@ -203,10 +204,10 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             //product name（品名2）
             janNameColIndex = Integer.parseInt(janName.get(0).get("sort").toString());
         }else if ( Objects.equals(janName2colNum, MagicString.PRODUCT_TYPE_ITEM)){
-            janNameColIndex = skuNameConfigMapper.getJanItem2colNum(companyCd, prodMstClass);
+            janNameColIndex = skuNameConfigMapper.getJanItem2colNum(coreCompany, prodMstClass);
         }else{
             //品名1
-            janNameColIndex = skuNameConfigMapper.getJanName2colNum(companyCd, prodMstClass);
+            janNameColIndex = skuNameConfigMapper.getJanName2colNum(coreCompany, prodMstClass);
         }
 
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, productPowerCd);
