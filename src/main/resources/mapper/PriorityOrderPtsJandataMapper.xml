@@ -55,19 +55,19 @@
         branch_num_upd=
         CASE concat(jan_old, jan_new)
         <foreach collection="ptsJanList" item="obj">
-            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN COALESCE(#{obj.branchNum}, 0)
+            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN COALESCE(#{obj.branchNumUpd}::integer, 0)
         </foreach>
         ELSE branch_num_upd END,
         difference=
         CASE concat(jan_old, jan_new)
         <foreach collection="ptsJanList" item="obj">
-            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN COALESCE(#{obj.difference}, 0)
+            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN COALESCE(#{obj.difference}::integer, 0)
         </foreach>
         ELSE difference END,
         sale_forecast=
         CASE concat(jan_old, jan_new)
         <foreach collection="ptsJanList" item="obj">
-            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN COALESCE(#{obj.saleForecast}, 0)
+            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN COALESCE(#{obj.saleForecast}::integer, 0)
         </foreach>
         ELSE sale_forecast END
         where rank_upd != 99999999 and priority_order_cd=#{priorityOrderCd}
