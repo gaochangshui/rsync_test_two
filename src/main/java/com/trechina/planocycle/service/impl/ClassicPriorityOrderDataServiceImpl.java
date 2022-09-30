@@ -760,14 +760,14 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                     dataMap.put(MagicString.GOODS_RANK,downloadDto.getTanapositionCd());
                     dataMap.put(MagicString.RANK_PROP,downloadDto.getTanapositionCd());
                     dataMap.put(MagicString.RANK_UPD,downloadDto.getTanapositionCd());
-                    dataMap.put(MagicString.BRANCH_AMOUNT,"_");
+                    dataMap.put(MagicString.BRANCH_AMOUNT,"0");
                     dataMap.put(MagicString.BRANCH_NUM,"0");
-                    dataMap.put(MagicString.UNIT_PRICE,"_");
+                    dataMap.put(MagicString.UNIT_PRICE,"0");
                     dataMap.put(MagicString.DIFFERENCE,Math.round(Double.parseDouble(pattern.matcher(downloadDto.getBranchNum()).replaceAll("0"))));
                     dataMap.put(MagicString.BRANCH_NUM_UPD,Math.round(Double.parseDouble(pattern.matcher(downloadDto.getBranchNum()).replaceAll( "0"))));
-                    dataMap.put("pos_amount_upd","_");
-                    dataMap.put("pos_before_rate","_");
-                    dataMap.put(MagicString.POS_AMOUNT,"_");
+                    dataMap.put("pos_amount_upd","0");
+                    dataMap.put("pos_before_rate","0");
+                    dataMap.put(MagicString.POS_AMOUNT,"0");
                     dataMap.put(MagicString.PRIORITY_ORDER_CD_DB, priorityOrderCd);
                     dataMap.put(MagicString.AUTHOR_CD_DB, authorCd);
                     dataMap.put(MagicString.COMPANY_CD_DB, company);
@@ -814,6 +814,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 itemMap.put(MagicString.JAN_NEW, map.getJan());
                 itemMap.put(MagicString.COMPANY_CD, company);
                 itemMap.put(MagicString.PRIORITY_ORDER_CD, priorityOrderCd);
+                itemMap.put(MagicString.BRANCH_NUM, map.getBranchNum());
+                itemMap.put(MagicString.BRANCH_NUM_UPD, map.getBranchNumUpd());
+                itemMap.put("difference", map.getDifference());
+                itemMap.put("sale_forecast", map.getSaleForecast());
                 this.splitAttrList(map.getAttrList(), itemMap);
 
                 return itemMap;
@@ -831,12 +835,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 downloadDto.setRankNow(Integer.parseInt(map.get("rank").toString()));
                 String branchNumUpd = getBranchNumWrapper(branchNumResult, map);
                 downloadDto.setRank(Integer.parseInt(map.get(MagicString.RANK_UPD).toString()));
-                downloadDto.setBranchNum(branchNumUpd);
-                downloadDto.setDifference(MapUtils.getString(map, MagicString.DIFFERENCE));
-                downloadDto.setSaleForecast(MapUtils.getString(map, MagicString.SALE_FORECAST));
+                downloadDto.setBranchNum(MapUtils.getString(map, MagicString.BRANCH_NUM));
+                downloadDto.setDifference(MapUtils.getString(map, "difference"));
+                downloadDto.setSaleForecast(MapUtils.getString(map, "sale_forecast"));
+                downloadDto.setBranchNumUpd(branchNumUpd);
                 return downloadDto;
             }).collect(Collectors.toList());
-            priorityOrderPtsJandataMapper.updateRankUpd(newRankList, taiCd, tanaCd, priorityOrderCd);
+            priorityOrderPtsJandataMapper.updateRankUpd(newRankPoList, taiCd, tanaCd, priorityOrderCd);
 
             List<Map<String, Object>> lists = new ArrayList<>();
             needJanNewList.forEach(downloadDto->{

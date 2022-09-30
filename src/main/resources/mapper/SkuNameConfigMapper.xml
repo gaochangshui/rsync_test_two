@@ -8,6 +8,6 @@
         select jan_item2col_num from planocycle.sku_name_config where company_cd = #{companyCd} and class = #{paragraph}
     </select>
     <select id="getKokyakuShow" resultType="java.util.Map">
-        select  COALESCE(kokyaku,0) as kokyaku ,COALESCE(intage,0) as intage from planocycle.sku_name_config where company_cd = #{companyCd} and class = #{paragraph}
+        select  COALESCE(kokyaku,0) as kokyaku ,COALESCE(intage,0) as intage,COALESCE(basket_price,0) as "basketPrice" from planocycle.sku_name_config where company_cd = #{companyCd} and class = #{paragraph}
     </select>
 </mapper>
