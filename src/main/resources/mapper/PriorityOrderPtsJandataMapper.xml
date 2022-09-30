@@ -33,7 +33,7 @@
         </where>
     </update>
     <select id="selectJanRank" resultType="com.trechina.planocycle.entity.dto.DownloadDto">
-        select jan_new jan,jan_old,  case "orderdata".rank when -1 then jandata.rank else ROW_NUMBER() OVER(PARTITION by
+        select jan_new jan,jan_old,branch_num,branch_num_upd,difference,sale_forecast,  case "orderdata".rank when -1 then jandata.rank else ROW_NUMBER() OVER(PARTITION by
         <foreach collection="sortList" item="obj" separator=",">${obj}</foreach>
          order by case "orderdata".rank when -1 then -1 else 0 end,jandata.rank,rank_prop, "orderdata".rank) end rank,
         "orderdata".rank rank_now,
@@ -55,19 +55,19 @@
         branch_num_upd=
         CASE concat(jan_old, jan_new)
         <foreach collection="ptsJanList" item="obj">
-            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN #{obj.branchNum}
+            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN COALESCE(#{obj.branchNum}, 0)
         </foreach>
         ELSE branch_num_upd END,
         difference=
         CASE concat(jan_old, jan_new)
         <foreach collection="ptsJanList" item="obj">
-            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN #{obj.difference}
+            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN COALESCE(#{obj.difference}, 0)
         </foreach>
         ELSE difference END,
         sale_forecast=
         CASE concat(jan_old, jan_new)
         <foreach collection="ptsJanList" item="obj">
-            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN #{obj.saleForecast}
+            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN COALESCE(#{obj.saleForecast}, 0)
         </foreach>
         ELSE sale_forecast END
         where rank_upd != 99999999 and priority_order_cd=#{priorityOrderCd}

@@ -402,7 +402,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 AttrHeaderSysDto attrHeaderSysDto = any.get();
                 attrHeaderSysDto.getColNum().put(colNum, entry.getKey());
             }else{
-                String itemHeaderTableName = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, attrArray[0], attrArray[1]);
+                if(attrArray[0].equals(MagicString.PLANO_CYCLE_COMPANY_CD)){
+                    continue;
+                }
+                String itemHeaderTableName = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS, attrArray[0], attrArray[1]);
                 List<Map<String, Object>> janClassify = janClassifyMapper.selectJanClassify(itemHeaderTableName);
                 if(janClassify.isEmpty()){
                     logger.warn("jan header table {} not exists", itemTableName);
@@ -813,6 +816,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 itemMap.put("jan_new", map.getJan());
                 itemMap.put("companyCd", company);
                 itemMap.put("priorityOrderCd", priorityOrderCd);
+                itemMap.put(MagicString.BRANCH_NUM, map.getBranchNum());
+                itemMap.put(MagicString.BRANCH_NUM_UPD, map.getBranchNumUpd());
+                itemMap.put("difference", map.getDifference());
+                itemMap.put("sale_forecast", map.getSaleForecast());
                 String[] attrArr = map.getAttrList().split(",");
                 for (String s : attrArr) {
                     String[] attrVal = s.split(":");
@@ -837,13 +844,14 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 downloadDto.setJanOld(map.get("jan_old").toString());
                 downloadDto.setRankNow(Integer.parseInt(map.get("rank").toString()));
                 String branchNumUpd = getBranchNumWrapper(branchNumResult, map);
-                downloadDto.setRank(Integer.parseInt(map.get("rank_upd").toString()));
-                downloadDto.setBranchNum(branchNumUpd);
+                downloadDto.setRank(Integer.parseInt(map.get(MagicString.RANK_UPD).toString()));
+                downloadDto.setBranchNum(MapUtils.getString(map, MagicString.BRANCH_NUM));
                 downloadDto.setDifference(MapUtils.getString(map, "difference"));
                 downloadDto.setSaleForecast(MapUtils.getString(map, "sale_forecast"));
+                downloadDto.setBranchNumUpd(branchNumUpd);
                 return downloadDto;
             }).collect(Collectors.toList());
-            priorityOrderPtsJandataMapper.updateRankUpd(newRankList, taiCd, tanaCd, priorityOrderCd);
+            priorityOrderPtsJandataMapper.updateRankUpd(newRankPoList, taiCd, tanaCd, priorityOrderCd);
 
             if(!needJanNewList.isEmpty()){
                 List<Map<String, Object>> lists = new ArrayList<>();
