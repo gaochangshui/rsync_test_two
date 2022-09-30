@@ -101,7 +101,11 @@
     <sql id="Base_Jan_List">
         select ${column} from ${tableName} a
         left join ${janInfoTablePlanoCycle} b on a."1" =b."1"
-        where "2" like concat(concat('%', #{janParamVO.fuzzyQuery}), '%')
+        where 1=1
+            <if test="janParamVO.fuzzyQuery != ''">
+                and  "2" like concat(concat('%', #{janParamVO.fuzzyQuery}), '%')
+            </if>
+
         <if test="janParamVO.janContain != null and janParamVO.janContain != ''">
             and a."1" in(
             <foreach collection="janParamVO.janContain.split(',')" item="items" separator=",">
