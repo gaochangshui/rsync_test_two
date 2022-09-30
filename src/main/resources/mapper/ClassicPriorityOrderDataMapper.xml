@@ -378,7 +378,7 @@
         <foreach collection="colSortNameList" item="list" separator=",">
                ${list}
         </foreach>
-                order by mst.branch_num desc ,pos_amount desc) end as rank,
+                order by mst.branch_num desc ,pos_amount ::integer desc) end as rank,
         case mst.rank_prop when 99999999 then mst.rank_prop else
         ROW_NUMBER() OVER (
         partition by
