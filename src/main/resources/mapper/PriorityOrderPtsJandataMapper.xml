@@ -55,7 +55,7 @@
         branch_num_upd=
         CASE concat(jan_old, jan_new)
         <foreach collection="ptsJanList" item="obj">
-            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN COALESCE(#{obj.branchNum}, 0)
+            WHEN concat(trim(#{obj.janOld}),trim(#{obj.jan})) THEN COALESCE(#{obj.branchNumUpd}, '0')
         </foreach>
         ELSE branch_num_upd END,
         difference=
