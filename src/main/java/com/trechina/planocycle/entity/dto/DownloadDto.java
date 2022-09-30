@@ -18,6 +18,7 @@ public class DownloadDto {
         private String name;
         private String difference;
         private String branchNum;
+        private String branchNumUpd;
         private String attrList;
         private Integer rankNow;
         private String saleForecast;
