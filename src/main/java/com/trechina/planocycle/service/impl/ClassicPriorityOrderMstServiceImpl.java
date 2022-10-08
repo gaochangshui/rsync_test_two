@@ -190,6 +190,16 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             });
             vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID), future);
         }else{
+            String cacheKey = MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID);
+            if (Objects.equals(vehicleNumCache.get(cacheKey), "1")){
+                return ResultMaps.result(ResultEnum.SUCCESS);
+            }
+
+            cacheKey = MessageFormat.format(MagicString.TASK_KEY_ERROR, taskID);
+            if(vehicleNumCache.get(cacheKey)!=null){
+                return ResultMaps.error(ResultEnum.FAILURE, vehicleNumCache.get(cacheKey).toString());
+            }
+
             future = (Future<?>) vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID));
         }
 
