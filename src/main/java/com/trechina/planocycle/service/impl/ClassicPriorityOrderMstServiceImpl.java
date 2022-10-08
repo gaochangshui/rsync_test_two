@@ -37,6 +37,7 @@ import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.ServletOutputStream;
@@ -206,10 +207,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         try {
             future.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
-            JSONObject json = new JSONObject();
-            json.put("status", "9");
-            json.put("taskId", taskID);
-            return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+            return ResultMaps.result(ResultEnum.SUCCESS, taskID);
         } catch(InterruptedException e ){
             Thread.currentThread().interrupt();
             logger.error("", e);
@@ -255,6 +253,10 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         priorityOrderCatepakMapper.deleteFinalByPrimaryKey(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
         priorityOrderCatepakMapper.insertFinalData(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
 
+        if(this.interruptThread(priorityOrderMstDto.getTaskID(), "1")){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return;
+        }
         //must 最終テーブルデータの保存
         priorityOrderCommodityMustMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
         priorityOrderCommodityMustMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
@@ -274,6 +276,12 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         // save sort
         priorityOrderMstAttrSortMapper.deleteAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
         priorityOrderMstAttrSortMapper.insertAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+
+        if(this.interruptThread(priorityOrderMstDto.getTaskID(), "2")){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return;
+        }
+
         // save group
         priorityOrderPtsClassifyMapper.deleteFinal(companyCd,priorityOrderCd);
         priorityOrderPtsClassifyMapper.setFinalForWork(companyCd,priorityOrderCd);
@@ -286,6 +294,16 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
         priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
         priorityOrderPatternMapper.insertForFinal(priorityOrderCd,companyCd);
+    }
+
+    public boolean interruptThread(String taskId, String step){
+        if(Thread.currentThread().isInterrupted()){
+            logger.info("taskId:{} interrupted, step:{}", taskId, step);
+            Thread.currentThread().interrupt();
+            return true;
+        }
+
+        return false;
     }
 
     /**
