@@ -113,4 +113,9 @@ public class ClassicPriorityOrderDataController {
     Map<String, Object> getPatternCompare(String companyCd ,Integer priorityOrderCd) {
         return priorityOrderDataService.getPatternCompare(companyCd,priorityOrderCd);
     }
+
+    @GetMapping("getAttrCompare")
+    Map<String, Object> getAttrCompare(String companyCd ,Integer priorityOrderCd,String attrList) {
+        return priorityOrderDataService.getAttrCompare(companyCd,priorityOrderCd,attrList);
+    }
 }

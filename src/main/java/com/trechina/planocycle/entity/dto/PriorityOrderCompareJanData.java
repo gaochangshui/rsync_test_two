@@ -16,5 +16,7 @@ public class PriorityOrderCompareJanData {
     private Integer faceOld;
     private Integer faceNew;
     private Integer faceCompare;
+    private String ptsOld = "PTS旧";
+    private String ptsNew = "PTS新";
 
 }

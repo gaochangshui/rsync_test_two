@@ -52,4 +52,92 @@
         from priority.priority_order_compare_jandata
         GROUP BY shelf_pattern_cd,flag
     </select>
+    <select id="getNewPtsAttrCompare" resultType="java.util.Map">
+        select
+            count(newdata.jan) "skuNum",sum(newdata.face_count) "faceNum",
+            <foreach collection="attr" item="item" separator=",">
+                "${item}"
+            </foreach>
+        from
+            priority.priority_order_pts_result_jandata newdata
+                left join "1000".prod_0000_jan_info janinfo
+                          on janinfo."1" = newdata.jan
+        where
+            newdata.priority_order_cd = 12345
+        GROUP BY
+            <foreach collection="attr" item="item" separator=",">
+                "${item}"
+            </foreach>
+    </select>
+    <select id="getOldPtsAttrCompare" resultType="java.util.Map">
+        select
+        count(olddata.jan) "skuNum",sum(olddata.face_count),
+        <foreach collection="attr" item="item" separator=",">
+            "${item}"
+        </foreach>
+        from
+            priority.priority_order_pattern pattern
+                left join
+            planocycle.shelf_pts_data ptsdata
+            on ptsdata.shelf_pattern_cd = pattern.shelf_pattern_cd
+                left join
+            planocycle.shelf_pts_data_jandata olddata
+            on olddata.pts_cd = ptsdata.id
+                left join "1000".prod_0000_jan_info janinfo
+                          on janinfo."1" = olddata.jan
+        where
+            pattern.priority_order_cd = 12345
+        GROUP BY
+        <foreach collection="attr" item="item" separator=",">
+            "${item}"
+        </foreach>
+    </select>
+    <select id="getAllCompare" resultType="map">
+        select
+        shelf_name_cd as "shelfCd",
+        shelf_name as "shelfName",   --棚名称
+        shelf_pattern_name as "shelfPatternName", --棚パターン
+        newdata.shelf_pattern_cd as "shelfPatternCd",
+        count ( DISTINCT newdata.jan ) "skuNew",
+        count ( DISTINCT olddata.jan ) "skuOld",
+        count ( DISTINCT newdata.jan ) - count ( DISTINCT olddata.jan ) "skuCompare",
+        sum ( DISTINCT newdata.face_count ) "faceNew",
+        sum ( DISTINCT olddata.face_count ) "faceOld",
+        sum ( DISTINCT newdata.face_count ) - sum ( DISTINCT olddata.face_count ) "faceCompare",
+        array_to_string(array_agg(DISTINCT concat(branch,'-',teninfo."2")),',') "branchNum", -- 配荷店舗数
+        sum(resultdata.sale_forecast) "saleForecast" ,  --売上増減予測
+        count(distinct cjandata.jan) as skuAdd,
+        count(distinct cjandata1.jan) as skuCut
+        from
+        priority.priority_order_pts_result_jandata newdata
+        left join planocycle.shelf_pts_data ptsdata on ptsdata.shelf_pattern_cd = newdata.shelf_pattern_cd
+        FULL outer join planocycle.shelf_pts_data_jandata olddata on newdata.jan = olddata.jan
+        and olddata.pts_cd = ptsdata.
+        id left join planocycle.shelf_pattern_branch branch on branch.shelf_pattern_cd = newdata.shelf_pattern_cd
+        LEFT join planocycle.shelf_pattern_mst patternmst on patternmst.shelf_pattern_cd = newdata.shelf_pattern_cd
+        LEFT join planocycle.shelf_name_mst namemst on patternmst.shelf_name_cd = namemst.id
+
+        left join priority.priority_order_result_data resultdata on  resultdata.priority_order_cd = 734 and resultdata.jan_new = newdata.jan
+        left join priority.priority_order_compare_jandata cjandata on cjandata.priority_order_cd =  newdata.priority_order_cd
+            and cjandata.shelf_pattern_cd = newdata.shelf_pattern_cd and cjandata.flag = '777'
+        left join priority.priority_order_compare_jandata cjandata1 on cjandata1.priority_order_cd =  newdata.priority_order_cd
+        and cjandata1.shelf_pattern_cd = newdata.shelf_pattern_cd and cjandata1.flag = '888'
+        left join ${tableName} teninfo
+        on (teninfo."1" = branch.branch or
+        (split_part(teninfo."1", '_', 2) = branch.branch
+        and
+        split_part(teninfo."1", '_', 1) in
+        <foreach collection="groupCompany" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        ))
+        where
+        newdata.priority_order_cd = 12345
+        GROUP BY
+        newdata.shelf_pattern_cd,
+        shelf_pattern_name,
+        shelf_name,
+        shelf_name_cd,
+        newdata.priority_order_cd
+    </select>
 </mapper>

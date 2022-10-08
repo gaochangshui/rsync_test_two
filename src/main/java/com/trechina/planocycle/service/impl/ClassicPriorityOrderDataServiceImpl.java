@@ -563,6 +563,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
         groupCompany.add(companyCd);
         List<PriorityOrderCompareJanData> patternCompare = classicPriorityOrderCompareJanDataMapper.getPatternCompare(companyCd,priorityOrderCd,tableName,groupCompany);
+        List<Map<String,Object>> allCompare = classicPriorityOrderCompareJanDataMapper.getAllCompare(companyCd,priorityOrderCd,tableName,groupCompany);
+        allCompare.forEach(map-> map.put(MagicString.BRANCHNUM,MapUtils.getString(map,MagicString.BRANCHNUM).split(",")));
         patternCompare
                 .forEach(map -> {
                     map.setBranchNum(map.getBranchNum().toString().split(","));
@@ -575,7 +577,21 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                         }
                     });
                 });
-        return ResultMaps.result(ResultEnum.SUCCESS,patternCompare);
+        List list = new ArrayList();
+        list.add(patternCompare);
+        list.add(allCompare);
+        return ResultMaps.result(ResultEnum.SUCCESS,list);
+    }
+
+    @Override
+    public Map<String, Object> getAttrCompare(String companyCd, Integer priorityOrderCd,String attrList) {
+        List<String> attr = Arrays.asList(attrList.split(","));
+        List<Map<String, Object>> newPtsAttrCompare = classicPriorityOrderCompareJanDataMapper.getNewPtsAttrCompare(attr, priorityOrderCd);
+        List<Map<String, Object>> oldPtsAttrCompare = classicPriorityOrderCompareJanDataMapper.getOldPtsAttrCompare(attr, priorityOrderCd);
+        int newSkuSum = newPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
+        int oldSkuSum = oldPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
+
+        return null;
     }
 
     @Override
