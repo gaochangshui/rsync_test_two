@@ -79,6 +79,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Autowired
     private ClassicPriorityOrderResultDataMapper priorityOrderResultDataMapper;
     @Autowired
+    private ClassicPriorityOrderCompareJanDataMapper classicPriorityOrderCompareJanDataMapper;
+    @Autowired
     private ClassicPriorityOrderDataService priorityOrderDataService;
     @Autowired
     private ClassicPriorityOrderJanAttributeMapper priorityOrderJanAttributeMapper;
@@ -92,6 +94,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     private ApplicationContext applicationContext;
     @Autowired
     private ClaasicPriorityOrderAttributeClassifyMapper priorityOrderMapper;
+    @Autowired
+    private ClassicPriorityOrderCommodityMustMapper priorityOrderCommodityMustMapper;
     @Autowired
     private ProductPowerMstMapper productPowerMstMapper;
     @Autowired
@@ -114,6 +118,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     private WorkPriorityOrderPtsClassifyMapper workPriorityOrderPtsClassify;
     @Autowired
     private ClassicPriorityOrderPatternMapper priorityOrderPatternMapper;
+    @Autowired
+    private ClassicPriorityOrderBranchNumServiceImpl classicPriorityOrderBranchNumService;
     @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
     @Autowired
@@ -541,6 +547,35 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         classicPriorityOrderMstAttrSortMapper.deleteAttrSortWK(companyCd, newPriorityOrderCd);
         starReadingTableMapper.deleteWorkByPattern(companyCd,newPriorityOrderCd);
         starReadingTableMapper.deleteWorkByBranch(companyCd,newPriorityOrderCd);
+    }
+
+    @Override
+    public Map<String, Object> getPatternCompare(String companyCd, Integer priorityOrderCd) {
+        //List<Integer> patternList = classicPriorityOrderCompareJanDataMapper.getPatternList(companyCd, priorityOrderCd);
+        List<Map<String, Object>> changeJan = classicPriorityOrderCompareJanDataMapper.getChangeJan(companyCd, priorityOrderCd);
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
+
+        if (existTableName == 0){
+            coreCompany = companyCd;
+        }
+        String tableName = MessageFormat.format("\"{0}\".ten_0000_ten_info", coreCompany);
+        List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
+        groupCompany.add(companyCd);
+        List<PriorityOrderCompareJanData> patternCompare = classicPriorityOrderCompareJanDataMapper.getPatternCompare(companyCd,priorityOrderCd,tableName,groupCompany);
+        patternCompare
+                .forEach(map -> {
+                    map.setBranchNum(map.getBranchNum().toString().split(","));
+                    changeJan.forEach(map1 ->{
+                        if(map.getShelfPatternCd().equals(MapUtils.getInteger(map1,MagicString.SHELF_PATTERN_CD)) && MapUtils.getString(map1,"flag").equals("777") ){
+                            map.setSkuAdd(MapUtils.getInteger(map1,MagicString.SKU_NUM));
+                        }
+                        if(map.getShelfPatternCd().equals(MapUtils.getInteger(map1,MagicString.SHELF_PATTERN_CD)) && MapUtils.getString(map1,"flag").equals("888") ){
+                            map.setSkuCut(MapUtils.getInteger(map1,MagicString.SKU_NUM));
+                        }
+                    });
+                });
+        return ResultMaps.result(ResultEnum.SUCCESS,patternCompare);
     }
 
     @Override

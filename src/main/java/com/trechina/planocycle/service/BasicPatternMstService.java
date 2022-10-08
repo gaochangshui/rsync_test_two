@@ -38,4 +38,5 @@ public interface BasicPatternMstService {
     Map<String, Object> cancelTask(String taskId);
 
     Map<String, Object> getCoreCompany();
+    
 }

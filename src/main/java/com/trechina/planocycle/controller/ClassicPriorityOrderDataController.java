@@ -108,4 +108,9 @@ public class ClassicPriorityOrderDataController {
     Map<String, Object> getBranchNum(@RequestBody List<Map<String, Object>> map) {
         return priorityOrderDataService.getBranchNum(map);
     }
+
+    @GetMapping("getPatternCompare")
+    Map<String, Object> getPatternCompare(String companyCd ,Integer priorityOrderCd) {
+        return priorityOrderDataService.getPatternCompare(companyCd,priorityOrderCd);
+    }
 }
