@@ -578,8 +578,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                     });
                 });
         List list = new ArrayList();
-        list.add(patternCompare);
         list.add(allCompare);
+        list.add(patternCompare);
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 
