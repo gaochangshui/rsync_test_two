@@ -516,7 +516,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         patternOrProduct.setPriorityOrderCd(newPriorityOrderCd);
         List<Map<String, Object>> workData = new ArrayList<>();
                 workData.add(map);
-                workData.addAll(priorityOrderDataMapper.getWorkData(companyCd, newPriorityOrderCd, attrList));
+                workData.addAll(priorityOrderDataMapper.getWorkData(companyCd, newPriorityOrderCd, attrList,attrSortList));
         list.add(attrSortList);
         list.add(patternOrProduct);
         list.add(workData);

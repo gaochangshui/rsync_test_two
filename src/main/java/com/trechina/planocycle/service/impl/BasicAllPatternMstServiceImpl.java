@@ -36,6 +36,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
@@ -106,7 +107,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
 
-        executor.execute(()->{
+        Future<?> future = executor.submit(() -> {
             Integer basicPatternCd;
 
             String companyCd = priorityAllSaveDto.getCompanyCd();
@@ -118,7 +119,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             // 全パターンの制約List
 
             // 全パターンのRelationList
-
             try {
                 PriorityOrderMstDto priorityOrderMst = priorityAllMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
                 basicPatternCd = Integer.parseInt(priorityOrderMst.getShelfPatternCd());
@@ -129,12 +129,17 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
                 BasicAllPatternMstService basicAllPatternMstService = applicationContext.getBean(BasicAllPatternMstService.class);
                 for(PriorityAllPatternListVO pattern : checkedInfo) {
+                    if(this.interruptThread(uuid, "1")){
+                        return;
+                    }
                     basicAllPatternMstService.autoDetect(companyCd,priorityAllCd,pattern.getShelfPatternCd(),priorityOrderCd,authorCd);
                     makeWKResultDataList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
                     this.getNewReorder(companyCd,priorityOrderCd,authorCd,priorityAllCd,pattern.getShelfPatternCd());
 
                     priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
-
+                    if(this.interruptThread(uuid, "1")){
+                        return;
+                    }
                     /**
                      * 商品を置く
                      */
@@ -163,7 +168,18 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 vehicleNumCache.put(uuid,1);
             }
         });
+        vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, uuid),future);
         return ResultMaps.result(ResultEnum.SUCCESS, uuid);
+    }
+
+    public boolean interruptThread(String taskId, String step){
+        if(Thread.currentThread().isInterrupted()){
+            logger.info("taskId:{} interrupted, step:{}", taskId, step);
+            Thread.currentThread().interrupt();
+            return true;
+        }
+
+        return false;
     }
 
     private Map<String, Object> allPatternCommSetJan(Integer patternCd, String companyCd, Integer priorityOrderCd,Integer priorityAllCd,
