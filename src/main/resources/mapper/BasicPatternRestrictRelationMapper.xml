@@ -258,4 +258,26 @@
         END
         where priority_order_cd=#{priorityOrderCd}
     </update>
+    <update id="updateArea">
+        <if test="!list.isEmpty">
+            update planocycle.work_basic_pattern_restrict_relation
+            SET
+            area =
+            CASE concat(tai_cd,tana_cd, tana_position, restrict_cd)
+            <foreach collection="list" item="obj">
+                WHEN concat(#{obj.taiCd}::integer,#{obj.tanaCd}::integer,#{obj.tanaPosition}::integer,#{obj.restrictCd}::integer) THEN #{obj.area}
+            </foreach>
+            ELSE area
+            END
+            where priority_order_cd=#{priorityOrderCd}
+        </if>
+    </update>
+    <update id="reorderTanaPosition">
+        update planocycle.work_basic_pattern_restrict_relation as relation
+        set tana_position=tmp.sort
+        from (select row_number() over (partition by tai_Cd, tana_cd order by tana_position) as sort,tai_Cd,tana_cd,tana_position,restrict_cd
+        from planocycle.work_basic_pattern_restrict_relation where priority_order_cd=#{priorityOrderCd}) tmp
+        where priority_order_cd=#{priorityOrderCd} and relation.tai_Cd = tmp.tai_Cd and relation.tana_cd=tmp.tana_cd and relation.tana_position=tmp.tana_position
+        and relation.restrict_cd = tmp.restrict_cd
+    </update>
 </mapper>

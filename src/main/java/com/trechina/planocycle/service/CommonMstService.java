@@ -45,4 +45,6 @@ public interface CommonMstService {
     String getClassifyKey(List<Integer> zokuseiList, Map<String, Object> janMap);
 
     boolean zokuseiEquals(List<Integer> attrList, Map<String, Object> restrict, Map<String, Object> zokusei);
+
+    List<Map<String, Object>> recalculationArea(List<PriorityOrderResultDataDto> workData, List<Map<String, Object>> tanaList);
 }

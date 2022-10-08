@@ -3,7 +3,9 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.CommonPartsDto;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
@@ -999,5 +1001,48 @@ public class CommonMstServiceImpl implements CommonMstService {
         }
 
         return equalsCount == attrList.size();
+    }
+
+    @Override
+    public List<Map<String, Object>> recalculationArea(List<PriorityOrderResultDataDto> workData, List<Map<String, Object>> tanaList){
+        Map<String, List<PriorityOrderResultDataDto>> dataByTaitana = workData.stream().sorted(Comparator.comparing(PriorityOrderResultDataDto::getTaiCd)
+                        .thenComparing(PriorityOrderResultDataDto::getTanaCd).thenComparing(PriorityOrderResultDataDto::getTanapositionCd))
+                .collect(Collectors.groupingBy(dto-> Joiner.on(",").join(Lists.newArrayList(dto.getTaiCd(), dto.getTanaCd()))));
+        Map<String, Map<String, Object>> areaList = new HashMap<>();
+        dataByTaitana.forEach((key, value) -> {
+            final long[] currentRestrictCd = {-1L};
+            final double[] area = {0.0};
+            String[] taiTana = key.split(",");
+            String taiCd = taiTana[0];
+            String tanaCd = taiTana[1];
+
+            Optional<Map<String, Object>> any = tanaList.stream().filter(map -> MapUtils.getString(map, MagicString.TAI_CD).equals(taiCd) && MapUtils.getString(map, MagicString.TANA_CD).equals(tanaCd)).findAny();
+            if (!any.isPresent()) {
+                return;
+            }
+
+            Integer tanaWidth = MapUtils.getInteger(any.get(), "tanaWidth");
+            final int[] tanaPosition = {0};
+            value.forEach(v->{
+                Map<String, Object> map = Maps.newHashMap();
+                if(!Objects.equals(currentRestrictCd[0], v.getRestrictCd())){
+                    area[0] = 0;
+                    tanaPosition[0]++;
+                }
+                area[0] += BigDecimal.valueOf(v.getPlanoWidth()*v.getFaceFact()).divide(BigDecimal.valueOf(tanaWidth), 5,RoundingMode.HALF_UP)
+                        .multiply(BigDecimal.valueOf(100)).doubleValue();
+
+                map.put(MagicString.TAI_CD, taiCd);
+                map.put(MagicString.TANA_CD, tanaCd);
+                map.put(MagicString.TANA_POSITION, tanaPosition[0]);
+                map.put(MagicString.RESTRICT_CD, v.getRestrictCd());
+                map.put("area", area[0]);
+
+                areaList.put(Joiner.on("_").join(Lists.newArrayList(taiCd, tanaCd, tanaPosition[0])), map);
+                currentRestrictCd[0] = v.getRestrictCd();
+            });
+        });
+
+        return Lists.newArrayList(areaList.values());
     }
 }
