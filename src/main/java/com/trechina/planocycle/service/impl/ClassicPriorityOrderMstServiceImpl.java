@@ -37,6 +37,7 @@ import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.ServletOutputStream;
@@ -179,6 +180,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         Future<?> future = null;
 
         if(Strings.isNullOrEmpty(taskID)){
+            taskID = UUID.randomUUID().toString();
             Integer count = priorityOrderPatternMapper.selectByPriorityOrderName(priorityOrderMstDto.getCompanyCd(),
                     priorityOrderMstDto.getPriorityOrderName(),
                     priorityOrderMstDto.getPriorityOrderCd());
@@ -189,6 +191,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 this.setPriorityOrderMstAndCalc(priorityOrderMstDto);
             });
             vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID), future);
+            return ResultMaps.result(ResultEnum.SUCCESS, taskID);
         }else{
             String cacheKey = MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID);
             if (Objects.equals(vehicleNumCache.get(cacheKey), "1")){
@@ -206,10 +209,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         try {
             future.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
-            JSONObject json = new JSONObject();
-            json.put("status", "9");
-            json.put("taskId", taskID);
-            return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+            return ResultMaps.result(ResultEnum.SUCCESS, taskID);
         } catch(InterruptedException e ){
             Thread.currentThread().interrupt();
             logger.error("", e);
@@ -255,6 +255,10 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         priorityOrderCatepakMapper.deleteFinalByPrimaryKey(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
         priorityOrderCatepakMapper.insertFinalData(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
 
+        if(this.interruptThread(priorityOrderMstDto.getTaskID(), "1")){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return;
+        }
         //must 最終テーブルデータの保存
         priorityOrderCommodityMustMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
         priorityOrderCommodityMustMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
@@ -274,6 +278,12 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         // save sort
         priorityOrderMstAttrSortMapper.deleteAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
         priorityOrderMstAttrSortMapper.insertAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+
+        if(this.interruptThread(priorityOrderMstDto.getTaskID(), "2")){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return;
+        }
+
         // save group
         priorityOrderPtsClassifyMapper.deleteFinal(companyCd,priorityOrderCd);
         priorityOrderPtsClassifyMapper.setFinalForWork(companyCd,priorityOrderCd);
@@ -286,6 +296,16 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
         priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
         priorityOrderPatternMapper.insertForFinal(priorityOrderCd,companyCd);
+    }
+
+    public boolean interruptThread(String taskId, String step){
+        if(Thread.currentThread().isInterrupted()){
+            logger.info("taskId:{} interrupted, step:{}", taskId, step);
+            Thread.currentThread().interrupt();
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -647,6 +667,169 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         cacheUtil.put(taskId, json.toJSONString());
         return ImmutableMap.of();
     }
+
+//    public void generateNewPtsData(){
+//        ptsBackupJanMapper.deleteBackupJanByCd(priorityOrderCd);
+//        ptsPatternNameMapper.deletePtsPatternNameByCd(priorityOrderCd);
+//
+//        List<Map<String, Object>> patternCommonPartsData = patternMstMapper.selectPatternCommonPartsData(priorityOrderCd);
+//
+//        //pts foreach
+//        List<ShelfPtsDataDto> patternList = patternMapper.selectPattern(companyCd, priorityOrderCd);
+//        List<Map<String, Object>> branchs = new ArrayList<>();
+//        List<Map<String, String>> janReplace = janReplaceMapper.selectJanReplace(companyCd, priorityOrderCd);
+//        Map<String, String> janReplaceMap = janReplace.stream().collect(Collectors.toMap(map->MapUtils.getString(map, MagicString.JAN_OLD), map->MapUtils.getString(map, MagicString.JAN_NEW)));
+//        List<Map<String, Object>> allNewJanList = new ArrayList<>();
+//        List<Map<String, Object>> allDeleteJanList = new ArrayList<>();
+//
+//        List<PriorityOrderMstAttrSort> rankAttr = mstAttrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
+//        rankAttr.sort(Comparator.comparing(PriorityOrderMstAttrSort::getValue));
+//        List<String> rankAttrList = rankAttr.stream().map(PriorityOrderMstAttrSort::getValue).collect(Collectors.toList());
+//
+//        Map<String, String> tenTableName = null;
+//
+//        List<Integer> transferRankAttr = rankAttr.stream().map(rank->Integer.parseInt(rank.getValue().replace("attr",""))).collect(Collectors.toList());
+//        List<PriorityOrderCatePakVO> catePakList = priorityOrderCatepakAttributeMapper.selectFinalByPrimaryKey(transferRankAttr, companyCd, priorityOrderCd);
+//
+//        for (ShelfPtsDataDto pattern : patternList) {
+//            boolean branchMustNot = true;
+//            tenTableName = new HashMap<>();
+//
+//            for (Map<String, Object> data : patternCommonPartsData) {
+//                String commonPartsData = MapUtils.getString(data, "common_parts_data");
+//                GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+//                tenTableName.put(commonTableName.getStoreInfoTable(), commonTableName.getStoreIsCore());
+//            }
+//
+//            Integer shelfPatternCd = pattern.getShelfPatternCd();
+//            List<Map<String, Object>> patternBranches = shelfPatternBranchMapper.selectAllPatternBranch(priorityOrderCd, companyCd, tenTableName, shelfPatternCd);
+//            branchs.addAll(patternBranches);
+//
+//            List<String> patternBranchCd = patternBranches.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
+//            List<Map<String, Object>> commodityMustJans = null;
+//            List<Map<String, Object>> commodityNotJans = null;
+//            List<Map<String, Object>> janMustNot = null;
+//
+//            if(Objects.equals(modeCheck, 1)){
+//                //branch
+//                janMustNot = starReadingTableMapper.selectJanForBranch(companyCd, priorityOrderCd, Joiner.on(",").join(patternBranchCd));
+//            }else{
+//                //pattern
+//                janMustNot = starReadingTableMapper.selectJanForPattern(companyCd, priorityOrderCd, shelfPatternCd);
+//            }
+//
+//            commodityMustJans = janMustNot.stream().filter(map->MapUtils.getInteger(map,"exist_flag").equals(MagicString.START_READING_STATUS_MUST)).collect(Collectors.toList());
+//            commodityNotJans = janMustNot.stream().filter(map->MapUtils.getInteger(map,"exist_flag").equals(MagicString.START_READING_STATUS_NOT)).collect(Collectors.toList());
+//
+//            if(commodityMustJans.isEmpty() && commodityNotJans.isEmpty()){
+//                branchMustNot = false;
+//                logger.info("patternCd:{} no exist commodity must and commodity not", shelfPatternCd);
+//            }
+//
+//            Integer ptsCd = pattern.getId();
+//            ShelfPtsHeaderDto shelfPtsHeaderDto = shelfPtsDataMapper.selectShelfPts(shelfPatternCd);
+//
+//            List<Map<String, Object>> ptsSkuNum = priorityOrderPtsClassifyMapper.getPtsSkuNum(companyCd, priorityOrderCd, ptsCd, rankAttrList);
+//            List<Map<String, Object>> ptsJanDtoList = shelfPtsDataMapper.selectClassifyPtsData(rankAttrList, shelfPatternCd, priorityOrderCd);
+//            Map<String, List<Map<String, Object>>> ptsJanDtoListByGroup = ptsJanDtoList.stream()
+//                    .collect(Collectors.groupingBy(s -> s.get(MagicString.ATTR_LIST).toString(), LinkedHashMap::new, Collectors.toList()));
+//            List<Map<String, Object>> resultDataList = priorityOrderResultDataMapper.selectFinalDataByAttr(priorityOrderCd, companyCd, rankAttrList);
+//            List<CompletableFuture<Map<String, List<Map<String, Object>>>>> tasks = new ArrayList<>();
+//
+//            List<String> allBranchList = shelfPatternBranchMapper.selectByPrimaryKey(shelfPatternCd)
+//                    .stream().map(shelfPattern->shelfPattern.getBranch().contains("_")?shelfPattern.getBranch().split("_")[1]:shelfPattern.getBranch()).collect(Collectors.toList());
+//            boolean isAllForMustNot = true;
+//            Set<String> mustNotBranch = new HashSet<>();
+//
+//            if(Objects.equals(modeCheck, 1)){
+//                //if all branch
+//                List<String> branchList = starReadingTableMapper.selectBranchMustNotJan(companyCd, priorityOrderCd);
+//                long count = Sets.intersection(Sets.newHashSet(allBranchList), Sets.newHashSet(branchList)).stream().count();
+//                isAllForMustNot = Objects.equals(count,branchList.size());
+//
+//                List<String> mustBranch = commodityMustJans.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
+//                List<String> notBranch = commodityNotJans.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
+//
+//                mustNotBranch.addAll(mustBranch);
+//                mustNotBranch.addAll(notBranch);
+//            }
+//
+//            //must and not only one branch, download a pts csv
+//            if((mustNotBranch.size()!=1 && !isAllForMustNot) || !branchMustNot){
+//                String json = new Gson().toJson(ptsJanDtoListByGroup);
+//                Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
+//                        new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
+//                //common compare
+//                CompletableFuture<Map<String, List<Map<String, Object>>>> commonFuture = CompletableFuture.supplyAsync(() -> doNewOldPtsCompare(finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
+//                        shelfPtsHeaderDto, ptsVersion, catePakList, companyCd, fileParentPath,
+//                        null, null, priorityOrderCd, null, janReplaceMap, ptsJanDtoList, patternBranchCd));
+//                tasks.add(commonFuture);
+//            }
+//
+//            if(branchMustNot || Objects.equals(0, modeCheck)){
+//                //commodity_must+commodity_not
+//                boolean finalIsAllForMustNot = isAllForMustNot;
+//                List<Map<String, Object>> finalCommodityMustJans = commodityMustJans;
+//                List<Map<String, Object>> finalCommodityNotJans = commodityNotJans;
+//
+//                CompletableFuture<Map<String, List<Map<String, Object>>>> mustNotFuture = CompletableFuture.supplyAsync(() -> {
+//                    Map<String, List<Map<String, Object>>> resultMap = new ConcurrentHashMap<>();
+//                    if(finalIsAllForMustNot){
+//                        String json = new Gson().toJson(ptsJanDtoListByGroup);
+//                        Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
+//                                new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
+//                        Map<String, List<Map<String, Object>>> tmpResultMap = doNewOldPtsCompare(finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
+//                                shelfPtsHeaderDto, ptsVersion, catePakList, companyCd, fileParentPath,
+//                                Maps.newHashMap(), finalCommodityMustJans, priorityOrderCd, finalCommodityNotJans, janReplaceMap, ptsJanDtoList,patternBranchCd);
+//
+//                        resultMap.put(MagicString.DELETE_LIST, tmpResultMap.getOrDefault(MagicString.DELETE_LIST, Lists.newArrayList()));
+//                        resultMap.put(MagicString.NEW_LIST, tmpResultMap.getOrDefault(MagicString.NEW_LIST, Lists.newArrayList()));
+//                    }else{
+//                        //must not != all branch
+//                        for (Map<String, Object> branch : patternBranches) {
+//                            String json = new Gson().toJson(ptsJanDtoListByGroup);
+//                            Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
+//                                    new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
+//                            String branchCd = branch.get(MagicString.BRANCH).toString();
+//                            List<Map<String, Object>> commodityMustBranchJans = finalCommodityMustJans.stream().filter(m -> m.get(MagicString.BRANCH).toString().equals(branchCd)).collect(Collectors.toList());
+//                            List<Map<String, Object>> commodityNotBranchJans = finalCommodityNotJans.stream().filter(m -> m.get(MagicString.BRANCH).toString().equals(branchCd)).collect(Collectors.toList());
+//
+//                            if(commodityMustBranchJans.isEmpty() && commodityNotBranchJans.isEmpty()){
+//                                logger.info("patternCd: {},branchCd:{} no commodityMust and commodityNot", pattern.getId(), branchCd);
+//                                continue;
+//                            }
+//
+//                            Map<String, List<Map<String, Object>>> tmpResultMap = doNewOldPtsCompare(finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
+//                                    shelfPtsHeaderDto, ptsVersion, catePakList, companyCd, fileParentPath,
+//                                    branch, commodityMustBranchJans, priorityOrderCd, commodityNotBranchJans, janReplaceMap, ptsJanDtoList, patternBranchCd);
+//
+//                            resultMap.put(MagicString.DELETE_LIST, tmpResultMap.getOrDefault(MagicString.DELETE_LIST, Lists.newArrayList()));
+//                            resultMap.put(MagicString.NEW_LIST, tmpResultMap.getOrDefault(MagicString.NEW_LIST, Lists.newArrayList()));
+//                        }
+//                    }
+//                    return resultMap;
+//                });
+//
+//                tasks.add(mustNotFuture);
+//            }
+//
+//            CompletableFuture futures = CompletableFuture.allOf(tasks.toArray(new CompletableFuture[tasks.size()])).whenComplete((unused, throwable) -> tasks.forEach(future-> {
+//                try {
+//                    Map<String, List<Map<String, Object>>> tmpResult = future.get();
+//                    allNewJanList.addAll(tmpResult.get(MagicString.NEW_LIST));
+//                    allDeleteJanList.addAll(tmpResult.get(MagicString.DELETE_LIST));
+//                } catch (InterruptedException e) {
+//                    logger.error("",e);
+//                    cacheUtil.put(taskId, "-1");
+//                    Thread.currentThread().interrupt();
+//                } catch (ExecutionException e){
+//                    logger.error("",e);
+//                    cacheUtil.put(taskId, "-1");
+//                }
+//            }));
+//            futures.join();
+//        }
+//    }
 
     @Override
     public Map<String, Object> downloadPtsTask(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg,
