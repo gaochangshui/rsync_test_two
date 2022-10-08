@@ -23,6 +23,8 @@ public interface ClassicPriorityOrderMstService {
      */
     Map<String,Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto);
 
+    void setPriorityOrderMstAndCalc(PriorityOrderMstDto priorityOrderMstDto);
+
     /**
      * この企業に優先順位テーブルがあるかどうかのログインを取得します。
      * @return

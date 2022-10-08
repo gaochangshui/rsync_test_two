@@ -20,10 +20,7 @@ import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
-import com.trechina.planocycle.utils.CacheUtil;
-import com.trechina.planocycle.utils.ExcelUtils;
-import com.trechina.planocycle.utils.ResultMaps;
-import com.trechina.planocycle.utils.cgiUtils;
+import com.trechina.planocycle.utils.*;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.poi.ss.usermodel.CellType;
@@ -151,6 +148,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     private PriorityOrderPtsBackupJanMapper ptsBackupJanMapper;
     @Autowired
     private PriorityOrderPtsPatternNameMapper ptsPatternNameMapper;
+    @Autowired
+    private VehicleNumCache vehicleNumCache;
 
     /**
      * 優先順位テーブルlistの取得
@@ -176,77 +175,108 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Override
     public Map<String, Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) {
         logger.info("優先順位テーブルパラメータの保存{}",priorityOrderMstDto);
+        String taskID = priorityOrderMstDto.getTaskID();
+        Future<?> future = null;
+
+        if(Strings.isNullOrEmpty(taskID)){
+            Integer count = priorityOrderPatternMapper.selectByPriorityOrderName(priorityOrderMstDto.getCompanyCd(),
+                    priorityOrderMstDto.getPriorityOrderName(),
+                    priorityOrderMstDto.getPriorityOrderCd());
+            if (count >0) {
+                return ResultMaps.result(ResultEnum.NAMEISEXISTS);
+            }
+            future = taskExecutor.submit(()->{
+                this.setPriorityOrderMstAndCalc(priorityOrderMstDto);
+            });
+            vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID), future);
+        }else{
+            future = (Future<?>) vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID));
+        }
+
+        try {
+            future.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            JSONObject json = new JSONObject();
+            json.put("status", "9");
+            json.put("taskId", taskID);
+            return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+        } catch(InterruptedException e ){
+            Thread.currentThread().interrupt();
+            logger.error("", e);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        } catch (ExecutionException e){
+            logger.error("", e);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
+
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void setPriorityOrderMstAndCalc(PriorityOrderMstDto priorityOrderMstDto){
         String authorCd = session.getAttribute("aud").toString();
         // チェック優先順位テーブル名
-        Integer count = priorityOrderPatternMapper.selectByPriorityOrderName(priorityOrderMstDto.getCompanyCd(),
-                                                            priorityOrderMstDto.getPriorityOrderName(),
-                                                            priorityOrderMstDto.getPriorityOrderCd());
-        if (count >0) {
-            return ResultMaps.result(ResultEnum.NAMEISEXISTS);
-        }
         Integer priorityOrderCd = priorityOrderMstDto.getPriorityOrderCd();
         String companyCd = priorityOrderMstDto.getCompanyCd();
         //パラメータを2つのテーブルのデータに処理するinsert
         priorityOrderMstDto.setSetSpecialFlag(1);
         priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
-            logger.info("優先順位テーブルパラメータの保存：{}",priorityOrderMstDto);
-            priorityOrderMstMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderMstMapper.insert(priorityOrderMstDto,authorCd);
-            //jannew最終テーブルデータの保存
-            priorityOrderJanNewMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderJanNewMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            //janAttribute最終テーブルデータの保存
-            priorityOrderJanAttributeMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderJanAttributeMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            //jancut 最終テーブルデータの保存
-            priorityOrderJanCardMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderJanCardMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            //janProposal 最終テーブルデータの保存
-            priorityOrderJanProposalMapper.deleteFinalByPrimaryKey(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderJanProposalMapper.insertFinalData(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            //CatepakAttribute 最終テーブルデータの保存
-            priorityOrderCatepakAttributeMapper.deleteFinalByPrimaryKey(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderCatepakAttributeMapper.insertFinalData(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            //Catepak 最終テーブルデータの保存
-            priorityOrderCatepakMapper.deleteFinalByPrimaryKey(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderCatepakMapper.insertFinalData(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        logger.info("優先順位テーブルパラメータの保存：{}",priorityOrderMstDto);
+        priorityOrderMstMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderMstMapper.insert(priorityOrderMstDto,authorCd);
+        //jannew最終テーブルデータの保存
+        priorityOrderJanNewMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderJanNewMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        //janAttribute最終テーブルデータの保存
+        priorityOrderJanAttributeMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderJanAttributeMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        //jancut 最終テーブルデータの保存
+        priorityOrderJanCardMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderJanCardMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        //janProposal 最終テーブルデータの保存
+        priorityOrderJanProposalMapper.deleteFinalByPrimaryKey(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderJanProposalMapper.insertFinalData(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        //CatepakAttribute 最終テーブルデータの保存
+        priorityOrderCatepakAttributeMapper.deleteFinalByPrimaryKey(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderCatepakAttributeMapper.insertFinalData(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        //Catepak 最終テーブルデータの保存
+        priorityOrderCatepakMapper.deleteFinalByPrimaryKey(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderCatepakMapper.insertFinalData(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
 
-            //must 最終テーブルデータの保存
-            priorityOrderCommodityMustMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderCommodityMustMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            //not 最終テーブルデータの保存
-            priorityOrderCommodityNotMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderCommodityNotMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            //classify 最終テーブルデータの保存
-            priorityOrderAttributeClassifyMapper.deleteFinal(priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderAttributeClassifyMapper.insertFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        //must 最終テーブルデータの保存
+        priorityOrderCommodityMustMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderCommodityMustMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        //not 最終テーブルデータの保存
+        priorityOrderCommodityNotMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderCommodityNotMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        //classify 最終テーブルデータの保存
+        priorityOrderAttributeClassifyMapper.deleteFinal(priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderAttributeClassifyMapper.insertFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
 
-            //save resultData
-            priorityOrderResultDataMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderResultDataMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd(),authorCd);
-            //save 屬性attr
-            priorityOrderMstAttrSortMapper.deleteAttrFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderMstAttrSortMapper.insertAttrFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            // save sort
-            priorityOrderMstAttrSortMapper.deleteAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderMstAttrSortMapper.insertAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
-            // save group
-            priorityOrderPtsClassifyMapper.deleteFinal(companyCd,priorityOrderCd);
-            priorityOrderPtsClassifyMapper.setFinalForWork(companyCd,priorityOrderCd);
-            //save 星取表 branch
-            starReadingTableMapper.deleteFinalByBranch(companyCd,priorityOrderCd);
-            starReadingTableMapper.setFinalForWorkByBranch(companyCd,priorityOrderCd);
-            //save 星取表 pattern
-            starReadingTableMapper.deleteFinalByPattern(companyCd,priorityOrderCd);
-            starReadingTableMapper.setFinalForWorkByPattern(companyCd,priorityOrderCd);
+        //save resultData
+        priorityOrderResultDataMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderResultDataMapper.setFinalForWork(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd(),authorCd);
+        //save 屬性attr
+        priorityOrderMstAttrSortMapper.deleteAttrFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderMstAttrSortMapper.insertAttrFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        // save sort
+        priorityOrderMstAttrSortMapper.deleteAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderMstAttrSortMapper.insertAttrSortFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+        // save group
+        priorityOrderPtsClassifyMapper.deleteFinal(companyCd,priorityOrderCd);
+        priorityOrderPtsClassifyMapper.setFinalForWork(companyCd,priorityOrderCd);
+        //save 星取表 branch
+        starReadingTableMapper.deleteFinalByBranch(companyCd,priorityOrderCd);
+        starReadingTableMapper.setFinalForWorkByBranch(companyCd,priorityOrderCd);
+        //save 星取表 pattern
+        starReadingTableMapper.deleteFinalByPattern(companyCd,priorityOrderCd);
+        starReadingTableMapper.setFinalForWorkByPattern(companyCd,priorityOrderCd);
 
-            priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
-            priorityOrderPatternMapper.insertForFinal(priorityOrderCd,companyCd);
-            return ResultMaps.result(ResultEnum.SUCCESS);
+        priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
+        priorityOrderPatternMapper.insertForFinal(priorityOrderCd,companyCd);
     }
-
-
-
 
     /**
      * この企業に優先順位テーブルがあるかどうかのログインを取得します。
@@ -644,7 +674,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         });
 
         try {
-            submit.get(10, TimeUnit.SECONDS);
+            submit.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             JSONObject json = new JSONObject();
             json.put("status", "9");
