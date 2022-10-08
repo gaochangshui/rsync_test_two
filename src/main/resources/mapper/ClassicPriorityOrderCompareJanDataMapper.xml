@@ -50,6 +50,7 @@
     <select id="getChangeJan" resultType="java.util.Map">
         select array_to_string(array_agg(DISTINCT jan),',') "janList",flag,count(distinct jan) "skuNum",shelf_pattern_cd as "shelfPatternCd"
         from priority.priority_order_compare_jandata
+        where priority_order_cd = 12345
         GROUP BY shelf_pattern_cd,flag
     </select>
     <select id="getNewPtsAttrCompare" resultType="java.util.Map">
@@ -92,12 +93,8 @@
             "${item}"
         </foreach>
     </select>
-    <select id="getAllCompare" resultType="map">
+    <select id="getAllCompare" resultType="com.trechina.planocycle.entity.dto.PriorityOrderCompareJanData">
         select
-        shelf_name_cd as "shelfCd",
-        shelf_name as "shelfName",   --棚名称
-        shelf_pattern_name as "shelfPatternName", --棚パターン
-        newdata.shelf_pattern_cd as "shelfPatternCd",
         count ( DISTINCT newdata.jan ) "skuNew",
         count ( DISTINCT olddata.jan ) "skuOld",
         count ( DISTINCT newdata.jan ) - count ( DISTINCT olddata.jan ) "skuCompare",
@@ -105,9 +102,7 @@
         sum ( DISTINCT olddata.face_count ) "faceOld",
         sum ( DISTINCT newdata.face_count ) - sum ( DISTINCT olddata.face_count ) "faceCompare",
         array_to_string(array_agg(DISTINCT concat(branch,'-',teninfo."2")),',') "branchNum", -- 配荷店舗数
-        sum(resultdata.sale_forecast) "saleForecast" ,  --売上増減予測
-        count(distinct cjandata.jan) as skuAdd,
-        count(distinct cjandata1.jan) as skuCut
+        sum(resultdata.sale_forecast) "saleForecast"   --売上増減予測
         from
         priority.priority_order_pts_result_jandata newdata
         left join planocycle.shelf_pts_data ptsdata on ptsdata.shelf_pattern_cd = newdata.shelf_pattern_cd
@@ -118,10 +113,6 @@
         LEFT join planocycle.shelf_name_mst namemst on patternmst.shelf_name_cd = namemst.id
 
         left join priority.priority_order_result_data resultdata on  resultdata.priority_order_cd = 734 and resultdata.jan_new = newdata.jan
-        left join priority.priority_order_compare_jandata cjandata on cjandata.priority_order_cd =  newdata.priority_order_cd
-            and cjandata.shelf_pattern_cd = newdata.shelf_pattern_cd and cjandata.flag = '777'
-        left join priority.priority_order_compare_jandata cjandata1 on cjandata1.priority_order_cd =  newdata.priority_order_cd
-        and cjandata1.shelf_pattern_cd = newdata.shelf_pattern_cd and cjandata1.flag = '888'
         left join ${tableName} teninfo
         on (teninfo."1" = branch.branch or
         (split_part(teninfo."1", '_', 2) = branch.branch
@@ -139,5 +130,11 @@
         shelf_name,
         shelf_name_cd,
         newdata.priority_order_cd
+    </select>
+    <select id="getChangeJanForAll" resultType="java.util.Map">
+        select array_to_string(array_agg(DISTINCT jan),',') "janList",flag,count(distinct jan) "skuNum"
+        from priority.priority_order_compare_jandata
+        where priority_order_cd = 12345
+        GROUP BY flag,priority_order_cd
     </select>
 </mapper>

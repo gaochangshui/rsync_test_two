@@ -6,6 +6,7 @@ import lombok.Data;
 public class PriorityOrderCompareJanData {
     private Integer shelfPatternCd;
     private String shelfPatternName;
+    private String shelfName;
     private Object branchNum;
     private Integer saleForecast;
     private Integer skuNew;
