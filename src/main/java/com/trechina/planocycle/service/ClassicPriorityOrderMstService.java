@@ -73,6 +73,9 @@ public interface ClassicPriorityOrderMstService {
 
     void packagePtsZip(String taskId, HttpServletResponse response) throws IOException;
 
+    Map<String, Object> generatePtsTask(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg,
+                                        Integer ptsVersion, HttpServletResponse response);
+
     Map<String, Object> getAttrInfo(String companyCd, Integer priorityOrderCd);
 
     void priorityOrderDataForExcel(PriorityOrderMstDto priorityOrderMstDto,HttpServletResponse response);

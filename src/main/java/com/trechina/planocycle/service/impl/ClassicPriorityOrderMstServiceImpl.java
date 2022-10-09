@@ -886,6 +886,95 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     }
 
     @Override
+    public Map<String, Object> generatePtsTask(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg,
+                                               Integer ptsVersion, HttpServletResponse response) {
+        if(Strings.isNullOrEmpty(taskId)){
+            taskId = priorityOrderCd+"_"+System.currentTimeMillis();
+        }
+
+        if (cacheUtil.get(taskId)!=null) {
+            String s = cacheUtil.get(taskId).toString();
+
+            if("-1".equals(s)){
+                return ResultMaps.result(ResultEnum.FAILURE);
+            }else if("1".equals(s)){
+                JSONObject json = new JSONObject();
+                json.put("status", "9");
+                json.put("taskId", taskId);
+                return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+            }else{
+                JSONObject json = new JSONObject();
+                json.put("taskId", taskId);
+                return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+            }
+
+        }
+
+        long currentTimeMillis = System.currentTimeMillis();
+        String fileParentPath = Joiner.on(File.separator).join(Lists.newArrayList("path", currentTimeMillis));
+        File file = new File(fileParentPath);
+        if (!file.exists()) {
+            boolean isMkdir = file.mkdirs();
+            logger.info("mkdir:{}",isMkdir);
+        }
+
+        Future<?> submit = taskExecutor.submit(() -> {
+            List<Map<String, Object>> allResultJandata = ptsResultJandataMapper.selectAllResultJandata(priorityOrderCd);
+            Map<String, List<Map<String, Object>>> allResultJandataByBranch =
+                    allResultJandata.stream().collect(Collectors.groupingBy(map -> MapUtils.getString(map, "shelf_pattern_cd") + "_" + MapUtils.getString(map, "branch_cd")));
+
+            List<Map<String, Object>> compareJandata = comparisonJanDataMapper.selectAllCompareJandata(priorityOrderCd);
+            Map<String, List<Map<String, Object>>> jandataByBranch = compareJandata.stream()
+                    .collect(Collectors.groupingBy(map -> MapUtils.getString(map, "shelf_pattern_cd") + "_" + MapUtils.getString(map, "branch_cd")));
+            List<Map<String, Object>> patternCommonPartsData = patternMstMapper.selectPatternCommonPartsData(priorityOrderCd);
+
+            allResultJandataByBranch.forEach((key, val)->{
+                String[] keyArr = key.split("_");
+                Integer patternCd = Integer.parseInt(keyArr[0]);
+                List<Map<String, Object>> jandata = jandataByBranch.get(key);
+
+                List<String> newJanList = jandata.stream().filter(map->MapUtils.getString(map, "flag").equals("777"))
+                        .map(map->MapUtils.getString(map, "jan")).collect(Collectors.toList());
+                List<String> deleteJanList = jandata.stream().filter(map->MapUtils.getString(map, "flag").equals("888"))
+                        .map(map->MapUtils.getString(map, "jan")).collect(Collectors.toList());
+
+                ShelfPtsHeaderDto shelfPtsHeaderDto = shelfPtsDataMapper.selectShelfPts(patternCd);
+                List<ShelfPtsDataTaimst> shelfPtsDataTaimst = shelfPtsDataMapper.selectShelfPtsTaiMst(patternCd);
+                List<ShelfPtsDataTanamst> shelfPtsDataTanamst = shelfPtsDataMapper.selectShelfPtsTanaMst(patternCd);
+                Map<String, String> tenTableName = new HashMap<>();
+                for (Map<String, Object> data : patternCommonPartsData) {
+                    String commonPartsData = MapUtils.getString(data, "common_parts_data");
+                    GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+                    tenTableName.put(commonTableName.getStoreInfoTable(), commonTableName.getStoreIsCore());
+                }
+
+                List<Map<String, Object>> patternBranches = shelfPatternBranchMapper.selectAllPatternBranch(priorityOrderCd, companyCd, tenTableName, patternCd);
+                generateCsv2File(newJanList, deleteJanList, fileParentPath, val, shelfPtsHeaderDto, shelfPtsDataTaimst, shelfPtsDataTanamst, "");
+            });
+        });
+
+        try {
+            submit.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            JSONObject json = new JSONObject();
+            json.put("status", "9");
+            json.put("taskId", taskId);
+            return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+        } catch(InterruptedException e ){
+            Thread.currentThread().interrupt();
+            logger.error("", e);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        } catch (ExecutionException e){
+            logger.error("", e);
+            return ResultMaps.result(ResultEnum.FAILURE);
+        }
+
+        JSONObject json = new JSONObject();
+        json.put("taskId", taskId);
+        return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+    }
+
+    @Override
     public Map<String, Object> getAttrInfo(String companyCd, Integer priorityOrderCd) {
         List<Map<String, Object>> attrInfo = workPriorityOrderPtsClassify.getAttrInfo(companyCd, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS,attrInfo);

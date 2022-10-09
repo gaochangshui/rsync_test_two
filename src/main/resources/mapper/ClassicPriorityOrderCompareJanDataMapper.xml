@@ -222,4 +222,7 @@
             </foreach>
         </if>
     </insert>
+    <select id="selectAllCompareJandata" resultType="map">
+        select shelf_pattern_cd,jan, branch_cd from priority.priority_order_compare_jandata where priority_order_cd=#{priorityOrderCd}
+    </select>
 </mapper>
