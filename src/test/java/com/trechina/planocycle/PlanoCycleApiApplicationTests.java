@@ -162,7 +162,7 @@ class PlanoCycleApiApplicationTests {
         Map<String, String> attrMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString()));
         Map<String, String> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString()));
         List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
-                janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", janClassifyList,authorCd,1,null,null);
+                janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", janClassifyList,authorCd,1,null,null,null);
     }
 
 

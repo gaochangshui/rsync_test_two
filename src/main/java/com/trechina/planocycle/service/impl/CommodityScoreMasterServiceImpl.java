@@ -239,6 +239,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
             colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
         }
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
+        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
         List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
         for (Map<String, Object> map : janClassifyList) {
@@ -248,10 +249,19 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         }
         LinkedHashMap<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1, k2)->k1, LinkedHashMap::new));
         Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
-
+        List<String> attr = new ArrayList<>();
+        prodAttrData.forEach(map->{
+            if ((Boolean) map.get("showFlag")) {
+                attr.add(map.get("id").toString().split("_")[2]);
+            }
+        });
+        List<Map<String, Object>> attrColName = productPowerDataMapper.getAttrColName(attr, tableNameAttr);
         List<LinkedHashMap<String, Object>> returnDataAttr = new ArrayList<>();
         List<LinkedHashMap<String, Object>> allDataAttr = productPowerDataMapper.getAllDataAttr(companyCd, productPowerNo
-                , cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName);
+                , cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName,attrColName);
+        attrColName.forEach(map->{
+            colMap.put(map.get("colCd").toString(),map.get("colName"));
+        });
         colMap.put("branchNum","定番店舗数");
         returnDataAttr.add(colMap);
         returnDataAttr.addAll(allDataAttr);

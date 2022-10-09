@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
@@ -132,6 +133,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         }
 
                         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
+                        String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
                         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
                         List<Map<String, Object>> janClassifyList = janClassifyMapper.getJanClassify(tableName);
                         for (Map<String, Object> map : janClassifyList) {
@@ -140,19 +142,35 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             }
                         }
                         Map<String, Object> colMap =janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("attr_val").toString(),(k1, k2)->k1, LinkedHashMap::new));
-                        colMap.put("branchNum","定番店舗数");
+
+
                         Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
 
                         ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
+                        List<Map<String, Object>> prodAttrData = new Gson().fromJson(workParam.getProdAttrData().toString(), new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
+                        List<String> attr = new ArrayList<>();
+                        prodAttrData.forEach(map->{
+                            if ((Boolean) map.get("showFlag")) {
+                                attr.add(map.get("id").toString().split("_")[2]);
+                            }
+                        });
+                        List<Map<String, Object>> attrColName = productPowerDataMapper.getAttrColName(attr, tableNameAttr);
+                        attrColName.forEach(map->{
+                            colMap.put(map.get("colCd").toString(),map.get("colName"));
+                        });
+
+                        colMap.put("branchNum","定番店舗数");
+
+
                         List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
                         List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
 
                         if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
                             break;
                         }
-
                         List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
-                                janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd,shelfPts,storeCd);
+                                janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd
+                                ,shelfPts,storeCd,attrColName);
                         List<Map<String, Object>> resultData = new ArrayList<>();
 
 
@@ -463,7 +481,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     String id = proMap.get("id").toString().split("_")[2];
 
                     String join = Joiner.on("$|^").join(value);
-                    boolean flag = (boolean) proMap.get("flag");
+                    boolean flag = (boolean) proMap.get("rmFlag");
                     String eq = flag ? "!~":"~";
                     if (finalValue.toString().equals("")){
                         finalValue.append("$").append(id).append(eq).append("/^").append(join).append("$/ ");

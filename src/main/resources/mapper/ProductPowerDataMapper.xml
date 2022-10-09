@@ -570,6 +570,9 @@
         <foreach collection="projects" index="index" item="item" open="," separator=",">
             power_mst."${item}", power_mst."${item}_rank"
         </foreach>
+        <foreach collection="attrList" item="item">
+            ,"${item.col}" as "${item.colCd}"
+        </foreach>
         ,rank_result,jan_info."${janNameColIndex}" jan_name,power_mst.branch_num as "branchNum"
         from planocycle.product_power_mst_data power_mst
         left join ${tableName} jan_info on power_mst.jan=jan_info.${janCdColName}
@@ -596,9 +599,7 @@
         <foreach collection="classify" index="index" item="item" separator=",">
             <if test="item.attr != 'jan'">
                  coalesce (jan_info."${item.sort}",'') as ${item.attr}
-
             </if>
-
         </foreach>
         <if test="ptsCd != null and ptsCd.size > 0">
             ,coalesce (branchs."branchCount",0)as "branchNum"
@@ -606,6 +607,9 @@
         <if test="ptsCd == null || ptsCd.size == 0">
             ,0 as "branchNum"
         </if>
+        <foreach collection="attrList" item="item">
+            ,"${item.col}" as "${item.colCd}"
+        </foreach>
         from planocycle.work_product_power_syokika power_syokika
         left join ${tableName} jan_info on power_syokika.jan=jan_info.${janCdColName}
         <if test="ptsCd != null  and ptsCd.size > 0">
@@ -707,6 +711,9 @@
             </if>
         </foreach>
         ,datas.branch_num as "branchNum"
+        <foreach collection="attrList" item="item">
+            ,"${item.col}" as "${item.colCd}"
+        </foreach>
         from planocycle.product_power_mst_data datas
         left join ${tableName} jan_info on datas.jan=jan_info.${janCdColName}
         where product_power_cd = #{productPowerCd} and company_cd = #{companyCd} and deleteflg=0
@@ -868,5 +875,13 @@
     </select>
     <select id="getItemCol" resultType="java.lang.String">
         select jan_item2col_num from planocycle.sku_name_config where company_cd = #{company} and class = #{classCd}
+    </select>
+    <select id="getAttrColName" resultType="java.util.Map">
+        select "1" "colCd","2" "colName" ,"3" "col"
+        from ${tableName}
+        where "3" in
+        <foreach collection="attr" separator="," open="(" item="item" close=")">
+            #{item}
+        </foreach>
     </select>
 </mapper>
