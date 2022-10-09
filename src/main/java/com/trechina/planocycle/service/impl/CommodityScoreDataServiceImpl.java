@@ -85,7 +85,9 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             logger.info(MagicString.GET_COMMODITY_SCORE_DATA, 1);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
-
+        if (vehicleNumCache.get(taskID + "Exception")!=null){
+            return ResultMaps.result(ResultEnum.DATAISTOOLARGE);
+        }
         if("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))){
             logger.info(MagicString.GET_COMMODITY_SCORE_DATA, 2);
             return ResultMaps.result(ResultEnum.SUCCESS);
