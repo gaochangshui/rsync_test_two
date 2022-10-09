@@ -2,10 +2,12 @@ package com.trechina.planocycle.service;
 
 import com.trechina.planocycle.entity.dto.PriorityOrderMstDto;
 import com.trechina.planocycle.entity.vo.PriorityOrderPrimaryKeyVO;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public interface ClassicPriorityOrderMstService {
 
@@ -21,9 +23,10 @@ public interface ClassicPriorityOrderMstService {
      * @param priorityOrderMstDto
      * @return
      */
-    Map<String,Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto);
+    Map<String,Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) throws ExecutionException, InterruptedException;
 
-    void setPriorityOrderMstAndCalc(PriorityOrderMstDto priorityOrderMstDto);
+    @Transactional(rollbackFor = Exception.class)
+    void setPriorityOrderMstAndCalc(PriorityOrderMstDto priorityOrderMstDto, String authorCd);
 
     /**
      * この企業に優先順位テーブルがあるかどうかのログインを取得します。
@@ -54,8 +57,8 @@ public interface ClassicPriorityOrderMstService {
     Map<String, Object> delPriorityOrderAllInfo(PriorityOrderPrimaryKeyVO primaryKeyVO);
 
 
-    Map<String, Object> setWorkPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto);
-
+    @Transactional(rollbackFor = Exception.class)
+    Map<String, Object> setWorkPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto, String authorCd);
 
     Map<String, Object> downloadPts(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg, Integer ptsVersion, HttpServletResponse response) throws IOException;
 
