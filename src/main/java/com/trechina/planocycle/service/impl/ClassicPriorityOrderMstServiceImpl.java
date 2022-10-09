@@ -979,7 +979,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     List<Map<String, Object>> newJanList = jandata.stream().filter(map->MapUtils.getString(map, "flag").equals("777")).collect(Collectors.toList());
                     newJanList.forEach(map->{
                         map.put(MagicString.PTS_NAME, fileName);
-                        map.put(MagicString.PATTERN_NAME, "");
+                        map.put(MagicString.PATTERN_NAME, v.get(0).get("shelf_pattern_name"));
                     });
                     List<String> newJanCdList = newJanList.stream()
                             .map(map->MapUtils.getString(map, "jan")).collect(Collectors.toList());
@@ -988,7 +988,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                             .collect(Collectors.toList());
                     deleteJanList.forEach(map->{
                         map.put(MagicString.PTS_NAME, fileName);
-                        map.put(MagicString.PATTERN_NAME, "");
+                        map.put(MagicString.PATTERN_NAME, v.get(0).get("shelf_pattern_name"));
                     });
 
                     List<String> deleteJanCdList = jandata.stream().filter(map->MapUtils.getString(map, "flag").equals("888"))
