@@ -35,7 +35,7 @@
                 </foreach>
                 ))
         where
-            newdata.priority_order_cd = 12345
+            newdata.priority_order_cd = #{priorityOrderCd} and newdata.branch_cd = ''
         GROUP BY
             newdata.shelf_pattern_cd,
             shelf_pattern_name,
@@ -50,31 +50,31 @@
     <select id="getChangeJan" resultType="java.util.Map">
         select array_to_string(array_agg(DISTINCT jan),',') "janList",flag,count(distinct jan) "skuNum",shelf_pattern_cd as "shelfPatternCd"
         from priority.priority_order_compare_jandata
-        where priority_order_cd = 12345
+        where priority_order_cd = #{priorityOrderCd} and branch_cd = ''
         GROUP BY shelf_pattern_cd,flag
     </select>
     <select id="getNewPtsAttrCompare" resultType="java.util.Map">
         select
-            count(newdata.jan) "skuNum",sum(newdata.face_count) "faceNum",'1' flag,
-            <foreach collection="attr" item="item" separator=",">
-                "${item}"
+            coalesce(count(newdata.jan),0) "skuNum",coalesce(sum(newdata.face_count),0) "faceNum",'1' flag,
+            <foreach collection="attrResultList" item="item" separator=",">
+                coalesce("${item.col}",'_') as ${item.name}
             </foreach>
         from
             priority.priority_order_pts_result_jandata newdata
                 left join "1000".prod_0000_jan_info janinfo
                           on janinfo."1" = newdata.jan
         where
-            newdata.priority_order_cd = 12345
+            newdata.priority_order_cd = #{priorityOrderCd} and newdata.branch_cd = ''
         GROUP BY
-            <foreach collection="attr" item="item" separator=",">
-                "${item}"
+            <foreach collection="attrResultList" item="item" separator=",">
+                "${item.col}"
             </foreach>
     </select>
     <select id="getOldPtsAttrCompare" resultType="java.util.Map">
         select
-        count(olddata.jan) "skuNum",sum(olddata.face_count) "faceNum",'0' flag,
-        <foreach collection="attr" item="item" separator=",">
-            "${item}"
+        coalesce(count(olddata.jan),0) "skuNum",coalesce(sum(olddata.face_count),0) "faceNum",'0' flag,
+        <foreach collection="attrResultList" item="item" separator=",">
+            coalesce("${item.col}",'_') as ${item.name}
         </foreach>
         from
             priority.priority_order_pattern pattern
@@ -87,10 +87,10 @@
                 left join "1000".prod_0000_jan_info janinfo
                           on janinfo."1" = olddata.jan
         where
-            pattern.priority_order_cd = 12345
+            pattern.priority_order_cd = #{priorityOrderCd}
         GROUP BY
-        <foreach collection="attr" item="item" separator=",">
-            "${item}"
+        <foreach collection="attrResultList" item="item" separator=",">
+            "${item.col}"
         </foreach>
     </select>
     <select id="getAllCompare" resultType="com.trechina.planocycle.entity.dto.PriorityOrderCompareJanData">
@@ -123,7 +123,7 @@
         </foreach>
         ))
         where
-        newdata.priority_order_cd = 12345
+        newdata.priority_order_cd = #{priorityOrderCd}  and newdata.branch_cd = ''
         GROUP BY
         newdata.shelf_pattern_cd,
         shelf_pattern_name,
@@ -134,7 +134,7 @@
     <select id="getChangeJanForAll" resultType="java.util.Map">
         select array_to_string(array_agg(DISTINCT jan),',') "janList",flag,count(distinct jan) "skuNum"
         from priority.priority_order_compare_jandata
-        where priority_order_cd = 12345
+        where priority_order_cd = #{priorityOrderCd} and branch_cd = ''
         GROUP BY flag,priority_order_cd
     </select>
     <select id="getAttrValue" resultType="java.util.Map">
