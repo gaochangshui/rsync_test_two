@@ -39,4 +39,6 @@ public interface CommonMstService {
     CommonPartsDto getCommonPartsData(Integer productPowerCd, String companyCd);
 
     CommonPartsDto getPriorityCommonPartsData(Integer priorityOrderCd, String companyCd);
+
+    List<Map<String, Object>> recalculationArea(List<PriorityOrderResultDataDto> workData, List<Map<String, Object>> tanaList);
 }
