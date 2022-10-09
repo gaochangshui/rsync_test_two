@@ -17,4 +17,6 @@ public interface ClassicPriorityOrderResultDataMapper {
     Integer selectBranchNumByAttr(Integer priorityOrderCd, String companyCd, Map<String, Object> attrValMap);
 
     List<Map<String, Object>> selectFinalDataByAttr(Integer priorityOrderCd, String companyCd,List<String> attrList);
+
+    List<Map<String, Object>> selectFinalDataByJan(Integer priorityOrderCd, String companyCd,List<String> attrList,List<String> janList);
 }
