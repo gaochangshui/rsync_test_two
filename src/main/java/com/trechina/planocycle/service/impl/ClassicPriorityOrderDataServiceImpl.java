@@ -553,6 +553,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     public Map<String, Object> getPatternCompare(String companyCd, Integer priorityOrderCd) {
         //List<Integer> patternList = classicPriorityOrderCompareJanDataMapper.getPatternList(companyCd, priorityOrderCd);
         List<Map<String, Object>> changeJan = classicPriorityOrderCompareJanDataMapper.getChangeJan(companyCd, priorityOrderCd);
+        List<Map<String, Object>> changeJanForAll = classicPriorityOrderCompareJanDataMapper.getChangeJanForAll(companyCd, priorityOrderCd);
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
 
@@ -563,9 +564,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
         groupCompany.add(companyCd);
         List<PriorityOrderCompareJanData> patternCompare = classicPriorityOrderCompareJanDataMapper.getPatternCompare(companyCd,priorityOrderCd,tableName,groupCompany);
+        List<PriorityOrderCompareJanData> allCompare = classicPriorityOrderCompareJanDataMapper.getAllCompare(companyCd,priorityOrderCd,tableName,groupCompany);
         patternCompare
                 .forEach(map -> {
-                    map.setBranchNum(map.getBranchNum().toString().split(","));
+                    String[] split = map.getBranchNum().toString().split(",");
+                    map.setBranchNum(split);
                     changeJan.forEach(map1 ->{
                         if(map.getShelfPatternCd().equals(MapUtils.getInteger(map1,MagicString.SHELF_PATTERN_CD)) && MapUtils.getString(map1,"flag").equals("777") ){
                             map.setSkuAdd(MapUtils.getInteger(map1,MagicString.SKU_NUM));
@@ -575,7 +578,46 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                         }
                     });
                 });
-        return ResultMaps.result(ResultEnum.SUCCESS,patternCompare);
+        changeJanForAll.forEach(map->{
+            if( MapUtils.getString(map,"flag").equals("777") ){
+                allCompare.get(0).setSkuAdd(MapUtils.getInteger(map,MagicString.SKU_NUM));
+            }
+            if( MapUtils.getString(map,"flag").equals("888") ){
+                allCompare.get(0).setSkuCut(MapUtils.getInteger(map,MagicString.SKU_NUM));
+            }
+        });
+        allCompare.get(0).setBranchNum(allCompare.get(0).getBranchNum().toString().split(","));
+
+        List list = new ArrayList();
+        list.add(allCompare);
+        list.add(patternCompare);
+        return ResultMaps.result(ResultEnum.SUCCESS,list);
+    }
+
+    @Override
+    public Map<String, Object> getAttrCompare(String companyCd, Integer priorityOrderCd,String attrList) {
+        List<String> attr = Arrays.asList(attrList.split(","));
+        List<Map<String, Object>> newPtsAttrCompare = classicPriorityOrderCompareJanDataMapper.getNewPtsAttrCompare(attr, priorityOrderCd);
+        List<Map<String, Object>> oldPtsAttrCompare = classicPriorityOrderCompareJanDataMapper.getOldPtsAttrCompare(attr, priorityOrderCd);
+        int newSkuSum = newPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
+        int oldSkuSum = oldPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
+        List<Map<String, Object>> resultAttrCompare = new ArrayList<>();
+        
+        //newPtsAttrCompare.addAll(oldPtsAttrCompare);
+        //Map<String, List<Map<String, Object>>> collect = newPtsAttrCompare.stream().collect(Collectors.groupingBy(map -> {
+        //    String a = "";
+        //    for (String s : attr) {
+        //        a += map.get(s);
+        //    }
+        //    return a;
+        //}));
+        //for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : collect.entrySet()) {
+        //    Map<String,Object> map = new HashMap<>();
+        //    if (stringListEntry.getValue().size()>1){
+        //        map.put("")
+        //    }
+        //}
+        return null;
     }
 
     @Override

@@ -10,8 +10,14 @@ import java.util.Map;
 public interface ClassicPriorityOrderCompareJanDataMapper {
 
     List<PriorityOrderCompareJanData> getPatternCompare(String companyCd,Integer priorityOrderCd,String tableName,List<String> groupCompany);
+    List<PriorityOrderCompareJanData> getAllCompare(String companyCd,Integer priorityOrderCd,String tableName,List<String> groupCompany);
 
     List<Integer> getPatternList(String companyCd, Integer priorityOrderCd);
 
+    List<Map<String,Object>> getChangeJanForAll(String companyCd, Integer priorityOrderCd);
     List<Map<String,Object>> getChangeJan(String companyCd, Integer priorityOrderCd);
+
+    List<Map<String,Object>> getNewPtsAttrCompare(List<String> attr, Integer priorityOrderCd);
+
+    List<Map<String, Object>> getOldPtsAttrCompare(List<String> attr, Integer priorityOrderCd);
 }
