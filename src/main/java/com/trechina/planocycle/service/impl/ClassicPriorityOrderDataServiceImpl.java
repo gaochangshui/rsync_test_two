@@ -603,6 +603,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Override
     public Map<String, Object> getAttrCompare(String companyCd, Integer priorityOrderCd,String attrList) {
         List<String> attr = Arrays.asList(attrList.split(","));
+        
         List<Map<String, Object>> newPtsAttrCompare = classicPriorityOrderCompareJanDataMapper.getNewPtsAttrCompare(attr, priorityOrderCd);
         List<Map<String, Object>> oldPtsAttrCompare = classicPriorityOrderCompareJanDataMapper.getOldPtsAttrCompare(attr, priorityOrderCd);
         int newSkuSum = newPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
