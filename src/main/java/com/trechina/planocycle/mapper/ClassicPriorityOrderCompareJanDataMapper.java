@@ -18,9 +18,9 @@ public interface ClassicPriorityOrderCompareJanDataMapper {
     List<Map<String,Object>> getChangeJanForAll(String companyCd, Integer priorityOrderCd);
     List<Map<String,Object>> getChangeJan(String companyCd, Integer priorityOrderCd);
 
-    List<Map<String,Object>> getNewPtsAttrCompare(List<Map<String,Object>> attrResultList, Integer priorityOrderCd);
+    List<Map<String,Object>> getNewPtsAttrCompare(List<Map<String,Object>> attrResultList,Map<String,Object> listTableName, Integer priorityOrderCd);
 
-    List<Map<String, Object>> getOldPtsAttrCompare(List<Map<String,Object>> attrResultList, Integer priorityOrderCd);
+    List<Map<String, Object>> getOldPtsAttrCompare(List<Map<String,Object>> attrResultList,Map<String,Object> listTableName, Integer priorityOrderCd);
 
     List<Map<String,Object>> getAttrValue(String companyCd, Integer priorityOrderCd);
 

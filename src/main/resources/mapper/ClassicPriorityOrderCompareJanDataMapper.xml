@@ -57,12 +57,14 @@
         select
             coalesce(count(newdata.jan),0) "skuNum",coalesce(sum(newdata.face_count),0) "faceNum",'1' flag,
             <foreach collection="attrResultList" item="item" separator=",">
-                coalesce("${item.col}",'_') as ${item.name}
+                coalesce(${item.tableName}."${item.col}",'_') as ${item.name}
             </foreach>
         from
             priority.priority_order_pts_result_jandata newdata
-                left join "1000".prod_0000_jan_info janinfo
-                          on janinfo."1" = newdata.jan
+        <foreach collection="listTableName" item="item" index="index">
+            left join ${item} as ${index}
+            on ${index}."1" = newdata.jan
+        </foreach>
         where
             newdata.priority_order_cd = #{priorityOrderCd} and newdata.branch_cd = ''
         GROUP BY
@@ -74,7 +76,7 @@
         select
         coalesce(count(olddata.jan),0) "skuNum",coalesce(sum(olddata.face_count),0) "faceNum",'0' flag,
         <foreach collection="attrResultList" item="item" separator=",">
-            coalesce("${item.col}",'_') as ${item.name}
+            coalesce(${item.tableName}."${item.col}",'_') as ${item.name}
         </foreach>
         from
             priority.priority_order_pattern pattern
@@ -84,8 +86,10 @@
                 left join
             planocycle.shelf_pts_data_jandata olddata
             on olddata.pts_cd = ptsdata.id
-                left join "1000".prod_0000_jan_info janinfo
-                          on janinfo."1" = olddata.jan
+        <foreach collection="listTableName" item="item" index="index">
+            left join ${item} as ${index}
+            on ${index}."1" = olddata.jan
+        </foreach>
         where
             pattern.priority_order_cd = #{priorityOrderCd}
         GROUP BY

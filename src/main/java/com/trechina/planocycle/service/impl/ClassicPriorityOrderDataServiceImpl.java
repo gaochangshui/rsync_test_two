@@ -603,14 +603,20 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     public Map<String, Object> getAttrCompare(String companyCd, Integer priorityOrderCd,String attrList) {
         List<String> attr = Arrays.asList(attrList.split(","));
         List<Map<String,Object>> attrResultList = new ArrayList<>();
+        Map<String,Object> listTableName = new HashMap<>();
         attr.forEach(map->{
             Map<String,Object> attrMap = new HashMap<>();
-            attrMap.put("col",map.split("_")[2]);
+            String[] s = map.split("_");
+            String tableNameInfo = MessageFormat.format("\"{0}\".prod_{1}_jan_info", s[0], s[1]);
+            attrMap.put("col",s[2]);
             attrMap.put("name","attr_"+map);
+            attrMap.put(MagicString.TABLE_NAME,"\""+s[0]+s[1]+"\"");
+            listTableName.put("\""+s[0]+s[1]+"\"",tableNameInfo);
             attrResultList.add(attrMap);
         });
-        List<Map<String, Object>> newPtsAttrCompare = classicPriorityOrderCompareJanDataMapper.getNewPtsAttrCompare(attrResultList, priorityOrderCd);
-        List<Map<String, Object>> oldPtsAttrCompare = classicPriorityOrderCompareJanDataMapper.getOldPtsAttrCompare(attrResultList, priorityOrderCd);
+
+        List<Map<String, Object>> newPtsAttrCompare = classicPriorityOrderCompareJanDataMapper.getNewPtsAttrCompare(attrResultList,listTableName, priorityOrderCd);
+        List<Map<String, Object>> oldPtsAttrCompare = classicPriorityOrderCompareJanDataMapper.getOldPtsAttrCompare(attrResultList,listTableName, priorityOrderCd);
         int newSkuSum = newPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
         int oldSkuSum = oldPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
         int newFaceSum = newPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.FACE_NUM)).sum();
