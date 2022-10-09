@@ -118,4 +118,14 @@ public class ClassicPriorityOrderDataController {
     Map<String, Object> getAttrCompare(String companyCd ,Integer priorityOrderCd,String attrList) {
         return priorityOrderDataService.getAttrCompare(companyCd,priorityOrderCd,attrList);
     }
+
+    @GetMapping("getPriorityOrderNewPts")
+    Map<String, Object> getPriorityOrderNewPts(String companyCd ,Integer priorityOrderCd,Integer shelfPatternCd) {
+        return priorityOrderDataService.getPriorityOrderNewPts(companyCd,priorityOrderCd,shelfPatternCd,1);
+    }
+
+    @GetMapping("getPriorityOrderOldPts")
+    Map<String, Object> getPriorityOrderOldPts(String companyCd ,Integer priorityOrderCd,Integer shelfPatternCd) {
+        return priorityOrderDataService.getPriorityOrderNewPts(companyCd,priorityOrderCd,shelfPatternCd,0);
+    }
 }
