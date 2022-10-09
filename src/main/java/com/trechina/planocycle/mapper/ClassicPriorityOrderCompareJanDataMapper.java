@@ -35,4 +35,6 @@ public interface ClassicPriorityOrderCompareJanDataMapper {
                                     String branchCd);
     void insertCompareNewJandata(List<Map<String, Object>> newJanList, String companyCd, Integer priorityOrderCd, Integer shelfPatternCd,
                                  String branchCd);
+
+    List<Map<String, Object>> selectAllCompareJandata(Integer priorityOrderCd);
 }

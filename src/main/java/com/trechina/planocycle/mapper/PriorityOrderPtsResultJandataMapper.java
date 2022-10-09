@@ -11,4 +11,6 @@ public interface PriorityOrderPtsResultJandataMapper {
                          String branchCd);
 
     void deletePtsJandata(Integer priorityOrderCd);
+
+    List<Map<String, Object>> selectAllResultJandata(Integer priorityOrderCd);
 }

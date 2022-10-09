@@ -8,8 +8,8 @@
             values
             <foreach collection="newPtsJanList" item="item" separator=",">
                 (#{companyCd},#{priorityOrderCd}, #{shelfPatternCd}, #{item.jan},#{item.taiCd},#{item.tanaCd},#{item.tanaPositionCd},
-                #{item.faceCount}, #{item.faceMen}, #{item.faceKaiten}, #{item.tumiagesu}, #{item.zaikosu}, #{item.faceDisplayflg},
-                #{item.facePosition}, #{item.depthDisplayNum}, #{branchCd})
+                #{item.face_count}, #{item.face_men}, #{item.face_kaiten}, #{item.tumiagesu}, #{item.zaikosu}, #{item.face_displayflg},
+                #{item.face_position}, #{item.depth_display_num}, #{branchCd})
             </foreach>
             on conflict do nothing
         </if>
@@ -17,4 +17,9 @@
     <delete id="deletePtsJandata">
         delete from priority.priority_order_pts_result_jandata where priority_order_cd=#{priorityOrderCd}
     </delete>
+    <select id="selectAllResultJandata" resultType="map">
+        select shelf_pattern_cd, jan, tai_cd, tana_cd, tanaposition_cd,
+        face_count, face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num, branch_cd from priority.priority_order_pts_result_jandata
+        where priority_order_cd=#{priorityOrderCd} order by shelf_pattern_cd,branch_cd,tai_cd, tana_cd, tanaposition_cd
+    </select>
 </mapper>

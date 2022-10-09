@@ -183,6 +183,10 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
 
         if("9".equals(vehicleNumCache.get(taskID))){
+            if (vehicleNumCache.get(taskID + "Exception")!=null){
+                return ResultMaps.result(ResultEnum.DATAISTOOLARGE);
+            }
+
             List<Map<String, Object>> o = (List<Map<String, Object>>) vehicleNumCache.get(taskID + ",data");
             if (o.size()<=1){
                 return ResultMaps.result(ResultEnum.SIZEISZERO);
