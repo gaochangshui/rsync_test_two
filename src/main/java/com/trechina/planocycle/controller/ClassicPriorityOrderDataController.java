@@ -128,4 +128,5 @@ public class ClassicPriorityOrderDataController {
     Map<String, Object> getPriorityOrderOldPts(String companyCd ,Integer priorityOrderCd,Integer shelfPatternCd) {
         return priorityOrderDataService.getPriorityOrderNewPts(companyCd,priorityOrderCd,shelfPatternCd,0);
     }
+
 }

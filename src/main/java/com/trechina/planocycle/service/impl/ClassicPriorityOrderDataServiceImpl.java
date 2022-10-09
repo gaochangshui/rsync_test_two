@@ -706,6 +706,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
 
+
     private Map<String,Object> compareNum(List<String> attr, int oldSkuSum, int oldFaceSum, int newSkuSum, int newFaceSum
             , Map<String, Object> newPts, Map<String, Object> oldPts){
         Map<String,Object> map = new HashMap<>();

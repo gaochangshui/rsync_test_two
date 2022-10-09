@@ -465,7 +465,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             shelfPtsDataTaimst = shelfPtsDataTaimstMapper.selectNewByPtsCd(companyCd, ptsCd);
             shelfPtsDataTanamst = shelfPtsDataTanamstMapper.selectNewByPtsCd(companyCd, ptsCd);
             shelfPtsDataJandata = shelfPtsDataJandataMapper.selectNewByPtsCd(companyCd, ptsCd);
-        }else{
+        }else if(type == 2){
             //新全パターン
             ShelfPtsData ptsData = priorityAllPtsMapper.selectPtsCdByAuthorCd(companyCd, authorCd, typeCd, shelfPatternCd);
             Integer ptsCd = ptsData.getId();
@@ -475,6 +475,14 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             shelfPtsDataTaimst = priorityAllPtsMapper.selectAllTaimstByPtsCd(companyCd, ptsCd);
             shelfPtsDataTanamst = priorityAllPtsMapper.selectAllTanamstByPtsCd(companyCd, ptsCd);
             shelfPtsDataJandata = priorityAllPtsMapper.selectAllJandataByPtsCd(companyCd, ptsCd);
+        }else {
+            ShelfPtsData ptsData = shelfPtsDataMapper.selectPtsCdByPatternCd(companyCd, shelfPatternCd);
+            Integer ptsCd = ptsData.getId();
+            fileName = ptsData.getFileName();
+            shelfPtsDataVersion = shelfPtsDataVersionMapper.selectByPrimaryKey(companyCd, ptsCd);
+            shelfPtsDataTaimst = shelfPtsDataTaimstMapper.selectByPtsCd(companyCd, ptsCd);
+            shelfPtsDataTanamst = shelfPtsDataTanamstMapper.selectByPtsCd(companyCd, ptsCd);
+            shelfPtsDataJandata = shelfPtsDataJandataMapper.selectPriorityOrderJanDataByPtsCd(companyCd,typeCd,shelfPatternCd);
         }
 
         response.setHeader(HttpHeaders.CONTENT_TYPE, "text/csv;charset=Shift_JIS");
