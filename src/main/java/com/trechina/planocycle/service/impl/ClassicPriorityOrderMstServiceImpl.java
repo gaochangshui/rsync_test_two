@@ -544,7 +544,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             Map<String, List<Map<String, Object>>> ptsJanDtoListByGroup = ptsJanDtoList.stream()
                     .collect(Collectors.groupingBy(s -> s.get(MagicString.ATTR_LIST).toString(), LinkedHashMap::new, Collectors.toList()));
             List<Map<String, Object>> resultDataList = priorityOrderResultDataMapper.selectFinalDataByAttr(priorityOrderCd, companyCd, rankAttrList);
-            List<CompletableFuture<Map<String, List<Map<String, Object>>>>> tasks = new ArrayList<>();
 
             List<String> allBranchList = shelfPatternBranchMapper.selectByPrimaryKey(shelfPatternCd)
                     .stream().map(shelfPattern->shelfPattern.getBranch().contains("_")?shelfPattern.getBranch().split("_")[1]:shelfPattern.getBranch()).collect(Collectors.toList());
@@ -1626,7 +1625,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     if (finalCommodityNotJansCdList.contains(janNew) && rank<=maxSkuNum.get()) {
                         maxSkuNum.getAndIncrement();
                     }
-
                     return map;
                 }).collect(Collectors.toList());
             }
