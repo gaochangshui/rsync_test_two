@@ -92,9 +92,11 @@ public class ClassicPriorityOrderMstController {
      */
     @PostMapping("/getPtsFileDownLoad")
     public Map<String,Object> getPtsFileDownLoad(@RequestBody PriorityOrderPtsDownDto priorityOrderPtsDownDto, HttpServletResponse response) {
-        return priorityOrderMstService.downloadPtsTask(priorityOrderPtsDownDto.getTaskId(), priorityOrderPtsDownDto.getCompany(),
-                priorityOrderPtsDownDto.getPriorityNo(),
-                priorityOrderPtsDownDto.getNewCutFlg(), priorityOrderPtsDownDto.getPtsVerison(), response);
+//        return priorityOrderMstService.downloadPtsTask(priorityOrderPtsDownDto.getTaskId(), priorityOrderPtsDownDto.getCompany(),
+//                priorityOrderPtsDownDto.getPriorityNo(),
+//                priorityOrderPtsDownDto.getNewCutFlg(), priorityOrderPtsDownDto.getPtsVerison(), response);
+        return priorityOrderMstService.generatePtsTask(priorityOrderPtsDownDto.getTaskId(),priorityOrderPtsDownDto.getCompany(),
+                priorityOrderPtsDownDto.getPriorityNo(),priorityOrderPtsDownDto.getNewCutFlg(), priorityOrderPtsDownDto.getPtsVerison(), response);
 //        return priorityOrderMstService.getPtsFileDownLoad(priorityOrderPtsDownDto,response,ptsDownPath);
     }
 

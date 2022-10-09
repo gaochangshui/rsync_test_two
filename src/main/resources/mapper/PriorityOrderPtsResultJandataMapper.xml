@@ -18,8 +18,11 @@
         delete from priority.priority_order_pts_result_jandata where priority_order_cd=#{priorityOrderCd}
     </delete>
     <select id="selectAllResultJandata" resultType="map">
-        select shelf_pattern_cd, jan, tai_cd, tana_cd, tanaposition_cd,
-        face_count, face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num, branch_cd from priority.priority_order_pts_result_jandata
+        select patternmst.shelf_pattern_cd shelf_pattern_cd, jan, tai_cd, tana_cd, tanaposition_cd,
+        face_count, face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num, branch_cd,
+        patternmst.shelf_pattern_name shelf_pattern_name
+        from priority.priority_order_pts_result_jandata jandata inner join planocycle.shelf_pattern_mst patternmst
+        on patternmst.shelf_pattern_cd=jandata.shelf_pattern_cd and jandata.company_cd=patternmst.company_cd
         where priority_order_cd=#{priorityOrderCd} order by shelf_pattern_cd,branch_cd,tai_cd, tana_cd, tanaposition_cd
     </select>
 </mapper>
