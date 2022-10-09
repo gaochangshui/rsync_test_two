@@ -602,6 +602,21 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         int newSkuSum = newPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
         int oldSkuSum = oldPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
         List<Map<String, Object>> resultAttrCompare = new ArrayList<>();
+        
+        //newPtsAttrCompare.addAll(oldPtsAttrCompare);
+        //Map<String, List<Map<String, Object>>> collect = newPtsAttrCompare.stream().collect(Collectors.groupingBy(map -> {
+        //    String a = "";
+        //    for (String s : attr) {
+        //        a += map.get(s);
+        //    }
+        //    return a;
+        //}));
+        //for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : collect.entrySet()) {
+        //    Map<String,Object> map = new HashMap<>();
+        //    if (stringListEntry.getValue().size()>1){
+        //        map.put("")
+        //    }
+        //}
         return null;
     }
 
