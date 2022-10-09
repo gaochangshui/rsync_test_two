@@ -20,4 +20,10 @@ public interface ClassicPriorityOrderCompareJanDataMapper {
     List<Map<String,Object>> getNewPtsAttrCompare(List<String> attr, Integer priorityOrderCd);
 
     List<Map<String, Object>> getOldPtsAttrCompare(List<String> attr, Integer priorityOrderCd);
+
+    int deleteCompareJandata(Integer priorityOrderCd);
+    void insertCompareDeleteJandata(List<Map<String, Object>> deleteJanList, String companyCd, Integer priorityOrderCd, Integer shelfPatternCd,
+                                    String branchCd);
+    void insertCompareNewJandata(List<Map<String, Object>> newJanList, String companyCd, Integer priorityOrderCd, Integer shelfPatternCd,
+                                 String branchCd);
 }

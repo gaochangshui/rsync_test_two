@@ -137,4 +137,26 @@
         where priority_order_cd = 12345
         GROUP BY flag,priority_order_cd
     </select>
+    <delete id="deleteCompareJandata">
+        delete from priority.priority_order_compare_jandata
+        where priority_order_cd=#{priorityOrderCd}
+    </delete>
+    <insert id="insertCompareDeleteJandata">
+        <if test="!deleteJanList.isEmpty">
+            insert into priority.priority_order_compare_jandata(company_cd,priority_order_cd, shelf_pattern_cd, jan, flag, branch_cd)
+            values
+            <foreach collection="deleteJanList" item="item" separator=",">
+                (#{companyCd},#{priorityOrderCd},#{shelfPatternCd},#{item.jan} , '888', #{branchCd})
+            </foreach>
+        </if>
+    </insert>
+    <insert id="insertCompareNewJandata">
+        <if test="!newJanList.isEmpty">
+            insert into priority.priority_order_compare_jandata(company_cd,priority_order_cd, shelf_pattern_cd, jan, flag, branch_cd)
+            values
+            <foreach collection="newJanList" item="item" separator=",">
+                (#{companyCd},#{priorityOrderCd}, #{shelfPatternCd},#{item.jan}, '777', #{branchCd})
+            </foreach>
+        </if>
+    </insert>
 </mapper>

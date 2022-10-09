@@ -2,12 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trechina.planocycle.mapper.PriorityOrderPtsPatternNameMapper">
     <insert id="insertPtsPatternName">
-        insert into priority.priority_order_pts_pattern_name(priority_order_cd, shelf_name_cd, jan, shelf_pattern_cd, branch_list)
-        values
-        <foreach collection="newJanList" item="item" separator=",">
-            (#{priorityOrderCd}, #{shelfNameCd}, #{item.jan},#{patternCd},#{branchList}::jsonb)
-        </foreach>
-        on conflict do nothing
+        <if test="!newJanList.isEmpty">
+            insert into priority.priority_order_pts_pattern_name(priority_order_cd, shelf_name_cd, jan, shelf_pattern_cd, branch_list)
+            values
+            <foreach collection="newJanList" item="item" separator=",">
+                (#{priorityOrderCd}, #{shelfNameCd}, #{item.jan},#{patternCd},#{branchList}::jsonb)
+            </foreach>
+            on conflict do nothing
+        </if>
     </insert>
     <delete id="deletePtsPatternName">
         delete from priority.priority_order_pts_pattern_name where create_time &lt; current_date::timestamp - INTERVAL '1 day'

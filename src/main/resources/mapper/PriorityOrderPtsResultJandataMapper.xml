@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderPtsResultJandataMapper">
+    <insert id="insertPtsJandata">
+        <if test="!newPtsJanList.isEmpty">
+            insert into priority.priority_order_pts_result_jandata(company_cd,priority_order_cd, shelf_pattern_cd, jan, tai_cd, tana_cd, tanaposition_cd,
+            face_count, face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num, branch_cd)
+            values
+            <foreach collection="newPtsJanList" item="item" separator=",">
+                (#{companyCd},#{priorityOrderCd}, #{shelfPatternCd}, #{item.jan},#{item.taiCd},#{item.tanaCd},#{item.tanaPositionCd},
+                #{item.faceCount}, #{item.faceMen}, #{item.faceKaiten}, #{item.tumiagesu}, #{item.zaikosu}, #{item.faceDisplayflg},
+                #{item.facePosition}, #{item.depthDisplayNum}, #{branchCd})
+            </foreach>
+            on conflict do nothing
+        </if>
+    </insert>
+    <delete id="deletePtsJandata">
+        delete from priority.priority_order_pts_result_jandata where priority_order_cd=#{priorityOrderCd}
+    </delete>
+</mapper>
