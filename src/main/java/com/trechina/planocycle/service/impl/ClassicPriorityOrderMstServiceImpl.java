@@ -174,10 +174,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) {
+    public Map<String, Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) throws ExecutionException, InterruptedException {
         logger.info("優先順位テーブルパラメータの保存{}",priorityOrderMstDto);
         String taskID = priorityOrderMstDto.getTaskID();
         Future<?> future = null;
+        String authorCd = session.getAttribute("aud").toString();
 
         if(Strings.isNullOrEmpty(taskID)){
             taskID = UUID.randomUUID().toString();
@@ -187,9 +188,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             if (count >0) {
                 return ResultMaps.result(ResultEnum.NAMEISEXISTS);
             }
-            future = taskExecutor.submit(()->{
-                this.setPriorityOrderMstAndCalc(priorityOrderMstDto);
-            });
+            priorityOrderMstDto.setTaskID(taskID);
+            future = taskExecutor.submit(()-> priorityOrderMstService.setPriorityOrderMstAndCalc(priorityOrderMstDto, authorCd));
             vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID), future);
             return ResultMaps.result(ResultEnum.SUCCESS, taskID);
         }else{
@@ -208,7 +208,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
         try {
             future.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
+        } catch (TimeoutException | CancellationException e) {
             return ResultMaps.result(ResultEnum.SUCCESS, taskID);
         } catch(InterruptedException e ){
             Thread.currentThread().interrupt();
@@ -219,20 +219,19 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             return ResultMaps.result(ResultEnum.FAILURE);
         }
 
-        return ResultMaps.result(ResultEnum.SUCCESS);
+        return ResultMaps.result(ResultEnum.SUCCESS.getCode(), "登録完了しました");
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void setPriorityOrderMstAndCalc(PriorityOrderMstDto priorityOrderMstDto){
-        String authorCd = session.getAttribute("aud").toString();
+    public void setPriorityOrderMstAndCalc(PriorityOrderMstDto priorityOrderMstDto, String authorCd){
         // チェック優先順位テーブル名
         Integer priorityOrderCd = priorityOrderMstDto.getPriorityOrderCd();
         String companyCd = priorityOrderMstDto.getCompanyCd();
         //パラメータを2つのテーブルのデータに処理するinsert
         priorityOrderMstDto.setSetSpecialFlag(1);
-        priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
+        priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto, authorCd);
         logger.info("優先順位テーブルパラメータの保存：{}",priorityOrderMstDto);
         priorityOrderMstMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
         priorityOrderMstMapper.insert(priorityOrderMstDto,authorCd);
@@ -257,7 +256,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
         if(this.interruptThread(priorityOrderMstDto.getTaskID(), "1")){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return;
+            return ;
         }
         //must 最終テーブルデータの保存
         priorityOrderCommodityMustMapper.deleteFinal(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
@@ -281,7 +280,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
         if(this.interruptThread(priorityOrderMstDto.getTaskID(), "2")){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return;
+            return ;
         }
 
         // save group
@@ -296,6 +295,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
         priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
         priorityOrderPatternMapper.insertForFinal(priorityOrderCd,companyCd);
+
+//        downloadPts();
     }
 
     public boolean interruptThread(String taskId, String step){
@@ -391,9 +392,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> setWorkPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) {
-
-        String authorCd = session.getAttribute("aud").toString();
+    public Map<String, Object> setWorkPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto, String authorCd) {
         String companyCd = priorityOrderMstDto.getCompanyCd();
         Integer priorityOrderCd = priorityOrderMstDto.getPriorityOrderCd();
         String priorityData = priorityOrderMstDto.getPriorityData();
@@ -668,7 +667,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         return ImmutableMap.of();
     }
 
-//    public void generateNewPtsData(){
+//    public void generateNewPtsData(String taskID, String companyCd, Integer priorityOrderCd, Integer ptsVersion){
+//        Integer modeCheck = priorityOrderMstMapper.selectModeCheck(priorityOrderCd);
+//
 //        ptsBackupJanMapper.deleteBackupJanByCd(priorityOrderCd);
 //        ptsPatternNameMapper.deletePtsPatternNameByCd(priorityOrderCd);
 //
