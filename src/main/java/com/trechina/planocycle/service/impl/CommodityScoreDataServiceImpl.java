@@ -555,7 +555,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             map.put("id",list);
             map.put("select","");
             map.put("value",new Object[]{});
-            map.put("flag",false);
+            map.put("rmFlag",false);
+            map.put("showFlag",false);
             List<String> attrValueList = mstJanMapper.getAttrValueList(list.split("_")[2], company, classCd);
             map.put("option",attrValueList);
             lists.add(map);
