@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.api.client.util.Strings;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -13,6 +14,9 @@ import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
 import com.trechina.planocycle.entity.po.*;
+import com.trechina.planocycle.entity.vo.PtsDetailDataVo;
+import com.trechina.planocycle.entity.vo.PtsTaiVo;
+import com.trechina.planocycle.entity.vo.PtsTanaVo;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
@@ -134,6 +138,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     private MstBranchMapper mstBranchMapper;
     @Autowired
     private CommonMstService commonMstService;
+    @Autowired
+    private ZokuseiMstMapper zokuseiMstMapper;
 
     /**
      * 初期取得優先順位テーブルデータ
@@ -601,23 +607,122 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<Map<String, Object>> oldPtsAttrCompare = classicPriorityOrderCompareJanDataMapper.getOldPtsAttrCompare(attr, priorityOrderCd);
         int newSkuSum = newPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
         int oldSkuSum = oldPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
+        int newFaceSum = newPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.FACE_NUM)).sum();
+        int oldFaceSum = oldPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.FACE_NUM)).sum();
         List<Map<String, Object>> resultAttrCompare = new ArrayList<>();
-        
-        //newPtsAttrCompare.addAll(oldPtsAttrCompare);
-        //Map<String, List<Map<String, Object>>> collect = newPtsAttrCompare.stream().collect(Collectors.groupingBy(map -> {
-        //    String a = "";
-        //    for (String s : attr) {
-        //        a += map.get(s);
-        //    }
-        //    return a;
-        //}));
-        //for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : collect.entrySet()) {
-        //    Map<String,Object> map = new HashMap<>();
-        //    if (stringListEntry.getValue().size()>1){
-        //        map.put("")
-        //    }
-        //}
-        return null;
+
+        newPtsAttrCompare.addAll(oldPtsAttrCompare);
+        Map<String, List<Map<String, Object>>> collect = newPtsAttrCompare.stream().collect(Collectors.groupingBy(map -> {
+            String a = "";
+            for (String s : attr) {
+                a += map.get(s);
+            }
+            return a;
+        }));
+        for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : collect.entrySet()) {
+            Map<String,Object> map = new HashMap<>();
+            if (stringListEntry.getValue().size()>1){
+                Map<String, Object> pts1 = stringListEntry.getValue().get(0);
+                Map<String, Object> pts2 = stringListEntry.getValue().get(1);
+                if (pts1.get("flag").equals("1")){
+                    map = this.compareNum(attr,oldSkuSum,oldFaceSum,newSkuSum,newFaceSum,pts1,pts2);
+                }else {
+                    map = this.compareNum(attr,oldSkuSum,oldFaceSum,newSkuSum,newFaceSum,pts2,pts1);
+                }
+            }else {
+                Map<String, Object> pts1 = stringListEntry.getValue().get(0);
+                if (pts1.get("flag").equals("1")){
+                    map = this.compareNum(attr,oldSkuSum,oldFaceSum,newSkuSum,newFaceSum,pts1,new HashMap<>());
+                }else {
+                    map = this.compareNum(attr,oldSkuSum,oldFaceSum,newSkuSum,newFaceSum,new HashMap<>(),pts1);
+                }
+            }
+            resultAttrCompare.add(map);
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS,resultAttrCompare);
+    }
+
+    @Override
+    public Map<String, Object> getPriorityOrderNewPts(String companyCd, Integer priorityOrderCd, Integer shelfPatternCd,Integer flag) {
+        List<Map<String, Object>> list = classicPriorityOrderCompareJanDataMapper.getAttrValue(companyCd, priorityOrderCd);
+
+        List<Map<String,Object>> attrList = new ArrayList<>();
+        Map<String,Object> listTableName = new HashMap<>();
+        list.forEach(map->{
+            Map<String,Object> attrMap = new HashMap<>();
+            String value = map.get(MagicString.VALUE).toString();
+            String name = map.get(MagicString.NAME).toString();
+            String sort = map.get(MagicString.SORT).toString();
+            String[] valueList = value.split("_");
+            String tableNameInfo = MessageFormat.format("\"{0}\".prod_{1}_jan_info", valueList[0], valueList[1]);
+            attrMap.put(MagicString.NAME,name);
+            attrMap.put(MagicString.SORT,sort);
+            attrMap.put("col",valueList[2]);
+            attrMap.put(MagicString.TABLE_NAME,"\""+valueList[0]+valueList[1]+"\"");
+            listTableName.put("\""+valueList[0]+valueList[1]+"\"",tableNameInfo);
+            attrList.add(attrMap);
+        });
+        List<Map<String, Object>> janSizeCol = zokuseiMstMapper.getJanSizeCol(null);
+        String name = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "name")).collect(Collectors.toList()));
+
+        PtsDetailDataVo ptsDetailData = shelfPtsDataMapper.getPtsDetailData(shelfPatternCd);
+        List<PtsTaiVo> taiData = shelfPtsDataMapper.getTaiData(shelfPatternCd);
+        List<PtsTanaVo> tanaData = shelfPtsDataMapper.getTanaData(shelfPatternCd);
+        ptsDetailData.setPtsTaiList(taiData);
+        ptsDetailData.setPtsTanaVoList(tanaData);
+        String janHeader = ptsDetailData.getJanHeader()+",商品名,"+name+",幅,高,奥行";
+        ptsDetailData.setJanHeader(janHeader);
+        StringBuilder s = new StringBuilder("taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu");
+        if ("V3.0".equals(ptsDetailData.getVersioninfo())){
+            s.append(",faceDisplayflg,facePosition,depthDisplayNum");
+        }
+        s.append(",janName,");
+        String col = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "sort")).collect(Collectors.toList()));
+        s.append(col+",plano_width,plano_height,plano_depth");
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
+
+        if (existTableName == 0){
+            coreCompany = companyCd;
+        }
+        String tableName = MessageFormat.format("\"{0}\".prod_0000_jan_info", coreCompany);
+        List<LinkedHashMap<String,Object>> janData = null;
+        if (flag == 0){
+             janData = classicPriorityOrderCompareJanDataMapper.getJanOldData(shelfPatternCd,attrList,listTableName
+                    ,janSizeCol,tableName);
+        }else {
+             janData = classicPriorityOrderCompareJanDataMapper.getJanNewData(shelfPatternCd,attrList,listTableName
+                    ,janSizeCol,tableName);
+        }
+
+        ptsDetailData.setPtsJanDataList(janData);
+        ptsDetailData.setJanColumns(s.toString());
+        return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
+    }
+
+    private Map<String,Object> compareNum(List<String> attr, int oldSkuSum, int oldFaceSum, int newSkuSum, int newFaceSum
+            , Map<String, Object> newPts, Map<String, Object> oldPts){
+        Map<String,Object> map = new HashMap<>();
+        for (String s : attr) {
+            map.put(s,newPts.get(s));
+        }
+        int skuOldArea = Math.round(Integer.parseInt(oldPts.getOrDefault("skuNum",0).toString())/ oldSkuSum*100);
+        int skuNewArea =  Math.round(Integer.parseInt(newPts.getOrDefault("skuNum",0).toString())/newSkuSum*100);
+        int faceOldArea = Math.round(Integer.parseInt(oldPts.getOrDefault("faceNum",0).toString())/oldFaceSum*100);
+        int faceNewArea = Math.round(Integer.parseInt(newPts.getOrDefault("faceNum",0).toString())/newFaceSum*100);
+        map.put("newSku",newPts.getOrDefault("skuNum",0));
+        map.put("oldSku",oldPts.getOrDefault("skuNum",0));
+        map.put("skuCompare",Integer.parseInt(newPts.getOrDefault("skuNum",0).toString())-Integer.parseInt(oldPts.getOrDefault("skuNum",0).toString()));
+        map.put("skuOldArea",skuOldArea);
+        map.put("skuNewArea",skuNewArea);
+        map.put("skuAreaCompare",skuNewArea-skuOldArea);
+        map.put("newFace",newPts.getOrDefault("faceNum",0));
+        map.put("oldFace",oldPts.getOrDefault("faceNum",0));
+        map.put("faceCompare",Integer.parseInt(newPts.getOrDefault("faceNum",0).toString())-Integer.parseInt(oldPts.getOrDefault("faceNum",0).toString()));
+        map.put("faceOldArea",faceOldArea);
+        map.put("faceNewArea",faceNewArea);
+        map.put("faceAreaCompare",faceNewArea-faceOldArea);
+        return map;
     }
 
     @Override

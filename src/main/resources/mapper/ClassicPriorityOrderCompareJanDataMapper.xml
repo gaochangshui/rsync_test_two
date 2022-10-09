@@ -55,7 +55,7 @@
     </select>
     <select id="getNewPtsAttrCompare" resultType="java.util.Map">
         select
-            count(newdata.jan) "skuNum",sum(newdata.face_count) "faceNum",
+            count(newdata.jan) "skuNum",sum(newdata.face_count) "faceNum",'1' flag,
             <foreach collection="attr" item="item" separator=",">
                 "${item}"
             </foreach>
@@ -72,7 +72,7 @@
     </select>
     <select id="getOldPtsAttrCompare" resultType="java.util.Map">
         select
-        count(olddata.jan) "skuNum",sum(olddata.face_count),
+        count(olddata.jan) "skuNum",sum(olddata.face_count) "faceNum",'0' flag,
         <foreach collection="attr" item="item" separator=",">
             "${item}"
         </foreach>
@@ -136,5 +136,68 @@
         from priority.priority_order_compare_jandata
         where priority_order_cd = 12345
         GROUP BY flag,priority_order_cd
+    </select>
+    <select id="getAttrValue" resultType="java.util.Map">
+        select attr.value ,attr.name,attr.sort
+
+        from priority.priority_order_mst_attrsort attrsort
+
+                 left join priority.priority_order_mst_attr attr
+                           on attrsort."value" = attr."sort" and attr.priority_order_cd = attrsort.priority_order_cd
+        where attrsort.priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getJanOldData" resultType="java.util.LinkedHashMap">
+        select
+        jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",jandata.tanaposition_cd as "tanapositionCd",jandata.jan as "jan",jandata.face_count as "faceCount"
+        ,jandata.face_men as "faceMen",jandata.face_kaiten as "faceKaiten",
+        jandata.tumiagesu as "tumiagesu",jandata.zaikosu as "zaikosu",jandata.face_displayflg as "faceDisplayflg"
+        ,jandata.face_position as "facePosition",jandata.depth_display_num as "depthDisplayNum",
+         janinfo1."2" as "janName"
+        <foreach collection="janSizeCol" item="item">
+            ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
+        </foreach>
+        ,
+        <foreach collection="attrList" separator="," item="item" >
+            coalesce(${item.tableName}."${item.col}",'_') as ${item.sort}
+        </foreach>
+        from
+        planocycle.shelf_pts_data ptsdata
+        left join planocycle.shelf_pts_data_jandata jandata
+            on jandata.pts_cd = ptsdata.id
+        left join "9999".prod_0000_jan_info janinfo
+            on  janinfo."1" = jandata.jan
+        left join ${tableName} janinfo1
+        on  janinfo1."1" = jandata.jan
+        <foreach collection="listTableName" item="item" index="index">
+            left join ${item} as ${index}
+            on ${index}."1" = jandata.jan
+        </foreach>
+        where ptsdata.shelf_pattern_cd = #{shelfPatternCd}
+    </select>
+    <select id="getJanNewData" resultType="java.util.LinkedHashMap">
+        select
+        jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",jandata.tanaposition_cd as "tanapositionCd",jandata.jan as "jan",jandata.face_count as "faceCount"
+        ,jandata.face_men as "faceMen",jandata.face_kaiten as "faceKaiten",
+        jandata.tumiagesu as "tumiagesu",jandata.zaikosu as "zaikosu",jandata.face_displayflg as "faceDisplayflg"
+        ,jandata.face_position as "facePosition",jandata.depth_display_num as "depthDisplayNum",
+        janinfo1."2" as "janName"
+        <foreach collection="janSizeCol" item="item">
+            ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
+        </foreach>
+        ,
+        <foreach collection="attrList" separator="," item="item" >
+            coalesce(${item.tableName}."${item.col}",'_') as ${item.sort}
+        </foreach>
+        from
+        priority.priority_order_pts_result_jandata jandata
+        left join "9999".prod_0000_jan_info janinfo
+        on  janinfo."1" = jandata.jan
+        left join ${tableName} janinfo1
+        on  janinfo1."1" = jandata.jan
+        <foreach collection="listTableName" item="item" index="index">
+            left join ${item} as ${index}
+            on ${index}."1" = jandata.jan
+        </foreach>
+        where jandata.shelf_pattern_cd = #{shelfPatternCd}
     </select>
 </mapper>
