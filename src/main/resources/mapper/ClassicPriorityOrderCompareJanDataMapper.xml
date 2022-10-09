@@ -176,7 +176,8 @@
             left join ${item} as ${index}
             on ${index}."1" = jandata.jan
         </foreach>
-        where ptsdata.shelf_pattern_cd = #{shelfPatternCd}
+        where ptsdata.shelf_pattern_cd = #{shelfPatternCd} and jandata.branch_cd = ''
+        order by jandata.tai_cd,jandata.tana_cd,jandata.tanaposition_cd
     </select>
     <select id="getJanNewData" resultType="java.util.LinkedHashMap">
         select
@@ -202,7 +203,8 @@
             left join ${item} as ${index}
             on ${index}."1" = jandata.jan
         </foreach>
-        where jandata.shelf_pattern_cd = #{shelfPatternCd}
+        where jandata.shelf_pattern_cd = #{shelfPatternCd} and jandata.branch_cd = ''
+        order by jandata.tai_cd,jandata.tana_cd,jandata.tanaposition_cd
     </select>
     <delete id="deleteCompareJandata">
         delete from priority.priority_order_compare_jandata

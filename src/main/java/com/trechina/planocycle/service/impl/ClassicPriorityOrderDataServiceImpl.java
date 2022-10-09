@@ -627,7 +627,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         Map<String, List<Map<String, Object>>> collect = newPtsAttrCompare.stream().collect(Collectors.groupingBy(map -> {
             String a = "";
             for (Map<String,Object> s : attrResultList) {
-                a += map.get(s.get("col"));
+                a += map.get(s.get("name"));
             }
             return a;
         }));
@@ -717,20 +717,20 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             , Map<String, Object> newPts, Map<String, Object> oldPts){
         Map<String,Object> map = new HashMap<>();
         for (String s : attr) {
-            map.put(s,newPts.get(s));
+            map.put(s,newPts.get("attr_"+s));
         }
         int skuOldArea = Math.round(Integer.parseInt(oldPts.getOrDefault("skuNum",0).toString())/ oldSkuSum*100);
         int skuNewArea =  Math.round(Integer.parseInt(newPts.getOrDefault("skuNum",0).toString())/newSkuSum*100);
         int faceOldArea = Math.round(Integer.parseInt(oldPts.getOrDefault("faceNum",0).toString())/oldFaceSum*100);
         int faceNewArea = Math.round(Integer.parseInt(newPts.getOrDefault("faceNum",0).toString())/newFaceSum*100);
-        map.put("newSku",newPts.getOrDefault("skuNum",0));
-        map.put("oldSku",oldPts.getOrDefault("skuNum",0));
+        map.put("skuNew",newPts.getOrDefault("skuNum",0));
+        map.put("skuOld",oldPts.getOrDefault("skuNum",0));
         map.put("skuCompare",Integer.parseInt(newPts.getOrDefault("skuNum",0).toString())-Integer.parseInt(oldPts.getOrDefault("skuNum",0).toString()));
         map.put("skuOldArea",skuOldArea);
         map.put("skuNewArea",skuNewArea);
         map.put("skuAreaCompare",skuNewArea-skuOldArea);
-        map.put("newFace",newPts.getOrDefault("faceNum",0));
-        map.put("oldFace",oldPts.getOrDefault("faceNum",0));
+        map.put("faceNew",newPts.getOrDefault("faceNum",0));
+        map.put("faceOld",oldPts.getOrDefault("faceNum",0));
         map.put("faceCompare",Integer.parseInt(newPts.getOrDefault("faceNum",0).toString())-Integer.parseInt(oldPts.getOrDefault("faceNum",0).toString()));
         map.put("faceOldArea",faceOldArea);
         map.put("faceNewArea",faceNewArea);
