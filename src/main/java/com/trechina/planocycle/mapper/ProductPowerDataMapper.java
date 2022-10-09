@@ -144,7 +144,8 @@ public interface ProductPowerDataMapper {
     ,@Param("newProductPowerCd")Integer newProductPowerCd);
 
     List<LinkedHashMap<String,Object>> getAllDataAttr(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("list")List<String> list
-            ,@Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify, @Param("tableName") String tableName);
+            ,@Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify, @Param("tableName") String tableName
+            ,@Param("attrList")List<Map<String, Object>> attrList);
 
 
     List<LinkedHashMap<String,Object>> getAllDataItem(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("list")List<String> list
@@ -164,10 +165,11 @@ public interface ProductPowerDataMapper {
 
     List<Map<String, Object>> getSyokikaAllData(@Param("companyCd") String companyCd, @Param("tableName") String tableName,
                                                 @Param("janCdColName") String janCdColName,@Param("classify") List<Map<String, Object>> classify
-            ,@Param("authorCd") String authorCd,@Param("productPowerCd") Integer productPowerCd,@Param("ptsCd")List<Integer> ptsCd,@Param("storeCd") List<String> storeCd);
+            ,@Param("authorCd") String authorCd,@Param("productPowerCd") Integer productPowerCd,@Param("ptsCd")List<Integer> ptsCd
+            ,@Param("storeCd") List<String> storeCd,@Param("attrList")List<Map<String,Object>> attrList);
     List<Map<String, Object>> getDynamicAllData(String companyCd, Integer productPowerCd, String tableName,
                                                 String janCdColName, List<Map<String, Object>> classify, String[] projects,
-                                                Integer janNameColIndex);
+                                                Integer janNameColIndex,List<Map<String, Object>> attrList);
 
     int setSyokikaAllData(@Param("lists") List<Map<String,Object>>lists);
 
@@ -208,4 +210,6 @@ public interface ProductPowerDataMapper {
     List<LinkedHashMap<String,Object>> getClassifyHeader(String tableName);
 
     String getItemCol(String company, String classCd);
+
+    List<Map<String,Object>> getAttrColName(List<String> attr, String tableName);
 }
