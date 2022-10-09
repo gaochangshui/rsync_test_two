@@ -8,8 +8,8 @@
             values
             <foreach collection="newPtsJanList" item="item" separator=",">
                 (#{companyCd},#{priorityOrderCd}, #{shelfPatternCd}, #{item.jan},#{item.taiCd},#{item.tanaCd},#{item.tanaPositionCd},
-                #{item.faceCount}, #{item.faceMen}, #{item.faceKaiten}, #{item.tumiagesu}, #{item.zaikosu}, #{item.faceDisplayflg},
-                #{item.facePosition}, #{item.depthDisplayNum}, #{branchCd})
+                #{item.face_count}, #{item.face_men}, #{item.face_kaiten}, #{item.tumiagesu}, #{item.zaikosu}, #{item.face_displayflg},
+                #{item.face_position}, #{item.depth_display_num}, #{branchCd})
             </foreach>
             on conflict do nothing
         </if>
