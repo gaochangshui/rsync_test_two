@@ -219,7 +219,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             return ResultMaps.result(ResultEnum.FAILURE);
         }
 
-        return ResultMaps.result(ResultEnum.SUCCESS, "登録完了しました");
+        return ResultMaps.result(ResultEnum.SUCCESS.getCode(), "登録完了しました");
     }
 
 
@@ -295,6 +295,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
         priorityOrderPatternMapper.deleteforid(priorityOrderMstDto.getPriorityOrderCd());
         priorityOrderPatternMapper.insertForFinal(priorityOrderCd,companyCd);
+
+//        downloadPts();
     }
 
     public boolean interruptThread(String taskId, String step){
@@ -665,7 +667,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         return ImmutableMap.of();
     }
 
-//    public void generateNewPtsData(){
+//    public void generateNewPtsData(String taskID, String companyCd, Integer priorityOrderCd, Integer ptsVersion){
+//        Integer modeCheck = priorityOrderMstMapper.selectModeCheck(priorityOrderCd);
+//
 //        ptsBackupJanMapper.deleteBackupJanByCd(priorityOrderCd);
 //        ptsPatternNameMapper.deletePtsPatternNameByCd(priorityOrderCd);
 //
