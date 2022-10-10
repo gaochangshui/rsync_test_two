@@ -1,5 +1,9 @@
 package com.trechina.planocycle.constant;
 
+import com.google.common.collect.ImmutableMap;
+
+import java.util.Map;
+
 public class MagicString {
     public static final String HEIGHT_NAME = "plano_height";
     public static final String DEPTH_NAME = "plano_depth";
@@ -347,6 +351,7 @@ public class MagicString {
 
     public static final String BRANCH_NUM_NAME = "定番 店舗数";
 
-
+    public static final Map<String, String> REASON_MAP = ImmutableMap.of("1", "rank_change", "2", "replace", "3",
+            "capepak", "4", "must_not", "5", "pattern_duplicate");
 
 }

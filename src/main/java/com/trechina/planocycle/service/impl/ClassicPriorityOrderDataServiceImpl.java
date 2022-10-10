@@ -50,6 +50,7 @@ import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -1580,9 +1581,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         Map<String, List<Map<String, Object>>> resultJanMap = new HashMap<>();
         for (String group : janNewMap.keySet()) {
             //start index
-            int start = 0;
+            Integer start = 0;
             //既存jan index,record the position traversed by the list(janList)
-            int oldIndex = 0;
+            AtomicInteger oldIndex = new AtomicInteger(0);
 
             List<Map<String, Object>> resultJanList = new ArrayList<>();
             List<Map<String, Object>> janNewTmp = janNewMap.get(group);
@@ -1595,8 +1596,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             List<Map<String, Object>> janListTmp = janMap.get(group);
             resultJanList = this.calGroupRank(janNewTmp,resultJanList,start,oldIndex,janListTmp);
 
-            if(oldIndex < janListTmp.size()){
-                resultJanList.addAll(janListTmp.subList(oldIndex, janListTmp.size()));
+            if(oldIndex.get() < janListTmp.size()){
+                resultJanList.addAll(janListTmp.subList(oldIndex.get(), janListTmp.size()));
             }
             resultJanMap.put(group, resultJanList);
         }
@@ -1615,7 +1616,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         return finalResultList;
     }
 
-    public List<Map<String, Object>>  calGroupRank(List<Map<String, Object>> janNewTmp, List<Map<String, Object>> resultJanList, int start, int oldIndex, List<Map<String, Object>> janListTmp){
+    public List<Map<String, Object>>  calGroupRank(List<Map<String, Object>> janNewTmp, List<Map<String, Object>> resultJanList, Integer start, AtomicInteger oldIndex, List<Map<String, Object>> janListTmp){
         for (int i = 0; i < janNewTmp.size(); i++) {
             Map<String, Object> curJan = janNewTmp.get(i);
             Integer curRank = Integer.valueOf(curJan.get(MagicString.RANK_UPD).toString());
@@ -1635,16 +1636,16 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             }
 
             //Prevent (oldIndex + rangeNum) > janListTmp.length and array out of bounds
-            if((oldIndex + rangeNum) > janListTmp.size()){
-                rangeNum = janListTmp.size()-oldIndex;
+            if((oldIndex.get() + rangeNum) > janListTmp.size()){
+                rangeNum = janListTmp.size()-oldIndex.get();
             }
 
-            int end = Math.min(oldIndex + rangeNum, janListTmp.size());
+            int end = Math.min(oldIndex.get() + rangeNum, janListTmp.size());
             if(rangeNum<=janListTmp.size()){
-                resultJanList.addAll(janListTmp.subList(oldIndex, end));
+                resultJanList.addAll(janListTmp.subList(oldIndex.get(), end));
                 //record the position index
             }
-            oldIndex += rangeNum;
+            oldIndex.set(oldIndex.get()+rangeNum);
             resultJanList.add(janNewTmp.get(i));
         }
         return resultJanList;

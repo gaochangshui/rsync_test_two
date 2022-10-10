@@ -261,7 +261,8 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
                 .sorted(Comparator.comparing(map1 -> Integer.parseInt(map1.get(MagicString.RANK_UPD).toString()))).collect(Collectors.toList());
         List<Map<String, Object>> list1 = priorityOrderDataService.calRank(similarity, new ArrayList<>());
         list1.forEach(objectMap->{
-            objectMap.put("rank",objectMap.get(MagicString.RANK_UPD));
+            Integer rankUpd = MapUtils.getInteger(objectMap, MagicString.RANK_UPD);
+            objectMap.put("rank",rankUpd);
             objectMap.remove(MagicString.RANK_UPD);
         });
 
