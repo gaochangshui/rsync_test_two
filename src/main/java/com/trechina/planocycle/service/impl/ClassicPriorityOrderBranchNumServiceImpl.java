@@ -740,7 +740,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             patternMap.put(MagicString.JAN,stringListEntry.getKey());
             patternMap.put(MagicString.JAN_NAME,stringListEntry.getValue().get(0).get(MagicString.JAN_NAME));
             patternMap.put(MagicString.MAKER,stringListEntry.getValue().get(0).get(MagicString.MAKER));
-            patternMap.put(MagicString.TOTAL,"");
+            long total = stringListEntry.getValue().stream().filter(map1 -> map1.get("flag").equals("◯")).count();
+            patternMap.put(MagicString.TOTAL,total);
             for (Map<String, Object> map : stringListEntry.getValue()) {
                 for (Map<String, Object> stringObjectMap : patternNameList) {
                     if (stringObjectMap.get(MagicString.SHELF_PATTERN_CD).equals(map.get(MagicString.SHELF_PATTERN_CD))){
@@ -789,7 +790,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             map.put(MagicString.JAN,stringListEntry.getValue().get(0).get(MagicString.JAN));
             map.put(MagicString.JAN_NAME,stringListEntry.getValue().get(0).get(MagicString.JAN_NAME));
             map.put(MagicString.MAKER,stringListEntry.getValue().get(0).get(MagicString.MAKER));
-            map.put(MagicString.TOTAL,"");
+            long total = stringListEntry.getValue().stream().filter(map1 -> map1.get("flag").equals("◯")).count();
+            map.put(MagicString.TOTAL,total);
             for (Map<String, Object> objectMap : branchList) {
                 for (Map<String, Object> stringObjectMap : stringListEntry.getValue()) {
                     if (objectMap.get(MagicString.BRANCH_CD).equals(stringObjectMap.get(MagicString.BRANCH_CD))){

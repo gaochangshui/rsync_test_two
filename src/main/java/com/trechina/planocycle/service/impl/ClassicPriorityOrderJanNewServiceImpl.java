@@ -212,7 +212,8 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         Integer priorityOrderCd = Integer.valueOf(map.get(MagicString.PRIORITY_ORDER_CD).toString());
         List<Map<String,Object>> data = (List<Map<String,Object>>)map.get("data");
         for (Map<String, Object> datum : data) {
-            datum.putIfAbsent("rank",1);
+            if (datum.get("rank") == null || datum.get("rank").equals(""))
+            datum.put("rank",1);
         }
         data = data.stream().sorted(Comparator.comparing(map1 -> MapUtils.getString(map1,MagicString.JANNEW),Comparator.nullsFirst(String::compareTo).reversed()))
                 .sorted(Comparator.comparing(map1 -> MapUtils.getInteger(map1,"rank"),Comparator.nullsFirst(Integer::compareTo))).collect(Collectors.toList());

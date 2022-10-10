@@ -10,8 +10,9 @@ import java.util.Map;
 @Mapper
 public interface ClassicPriorityOrderCompareJanDataMapper {
 
-    List<PriorityOrderCompareJanData> getPatternCompare(String companyCd,Integer priorityOrderCd,String tableName,List<String> groupCompany);
-    List<PriorityOrderCompareJanData> getAllCompare(String companyCd,Integer priorityOrderCd,String tableName,List<String> groupCompany);
+    List<PriorityOrderCompareJanData> getPatternNewCompare(String companyCd,Integer priorityOrderCd);
+    List<PriorityOrderCompareJanData> getAllNewCompare(String companyCd,Integer priorityOrderCd);
+    List<PriorityOrderCompareJanData> getAllOldCompare(String companyCd,Integer priorityOrderCd);
 
     List<Integer> getPatternList(String companyCd, Integer priorityOrderCd);
 
@@ -41,4 +42,6 @@ public interface ClassicPriorityOrderCompareJanDataMapper {
     List<Map<String,Object>> getPatternBranchList(String companyCd, Integer priorityOrderCd,String tableName,List<String> groupCompany);
 
     List<String> getAllBranchList(String companyCd, Integer priorityOrderCd,String tableName,List<String> groupCompany);
+
+    List<PriorityOrderCompareJanData> getPatternOldCompare(String companyCd, Integer priorityOrderCd);
 }

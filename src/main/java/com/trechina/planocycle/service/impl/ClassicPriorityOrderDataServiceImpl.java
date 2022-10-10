@@ -572,10 +572,20 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         groupCompany.add(companyCd);
         List<Map<String, Object>> patternBranchList = classicPriorityOrderCompareJanDataMapper.getPatternBranchList(companyCd, priorityOrderCd,tableName,groupCompany);
         List<String> allBranchList = classicPriorityOrderCompareJanDataMapper.getAllBranchList(companyCd, priorityOrderCd,tableName,groupCompany);
-        List<PriorityOrderCompareJanData> patternCompare = classicPriorityOrderCompareJanDataMapper.getPatternCompare(companyCd,priorityOrderCd,tableName,groupCompany);
-        List<PriorityOrderCompareJanData> allCompare = classicPriorityOrderCompareJanDataMapper.getAllCompare(companyCd,priorityOrderCd,tableName,groupCompany);
-        patternCompare
+        List<PriorityOrderCompareJanData> patternNewCompare = classicPriorityOrderCompareJanDataMapper.getPatternNewCompare(companyCd,priorityOrderCd);
+        List<PriorityOrderCompareJanData> patternOldCompare = classicPriorityOrderCompareJanDataMapper.getPatternOldCompare(companyCd,priorityOrderCd);
+        List<PriorityOrderCompareJanData> allNewCompare = classicPriorityOrderCompareJanDataMapper.getAllNewCompare(companyCd,priorityOrderCd);
+        List<PriorityOrderCompareJanData> allOldCompare = classicPriorityOrderCompareJanDataMapper.getAllOldCompare(companyCd,priorityOrderCd);
+        patternNewCompare
                 .forEach(map -> {
+                    patternOldCompare.forEach(oldPts->{
+                        if (oldPts.getShelfPatternCd().equals(map.getShelfPatternCd())){
+                            map.setFaceOld(oldPts.getFaceOld());
+                            map.setSkuOld(oldPts.getSkuOld());
+                            map.setFaceCompare(map.getFaceNew()-oldPts.getFaceOld());
+                            map.setSkuCompare(map.getSkuNew()-oldPts.getSkuOld());
+                        }
+                    });
                     patternBranchList.forEach(branch->{
                         if (branch.get(MagicString.SHELF_PATTERN_CD).equals(map.getShelfPatternCd())){
                             String branchs = branch.get(MagicString.BRANCHNUM).toString();
@@ -593,17 +603,20 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 });
         changeJanForAll.forEach(map->{
             if( MapUtils.getString(map,"flag").equals("777") ){
-                allCompare.get(0).setSkuAdd(MapUtils.getInteger(map,MagicString.SKU_NUM));
+                allNewCompare.get(0).setSkuAdd(MapUtils.getInteger(map,MagicString.SKU_NUM));
             }
             if( MapUtils.getString(map,"flag").equals("888") ){
-                allCompare.get(0).setSkuCut(MapUtils.getInteger(map,MagicString.SKU_NUM));
+                allNewCompare.get(0).setSkuCut(MapUtils.getInteger(map,MagicString.SKU_NUM));
             }
         });
-        allCompare.get(0).setBranchNum(allBranchList);
-
+        allNewCompare.get(0).setBranchNum(allBranchList);
+        allNewCompare.get(0).setFaceOld(allOldCompare.get(0).getFaceOld());
+        allNewCompare.get(0).setSkuOld(allOldCompare.get(0).getSkuOld());
+        allNewCompare.get(0).setFaceCompare(allNewCompare.get(0).getFaceNew()-allOldCompare.get(0).getFaceOld());
+        allNewCompare.get(0).setSkuCompare(allNewCompare.get(0).getSkuNew()-allOldCompare.get(0).getSkuOld());
         List list = new ArrayList();
-        list.add(allCompare);
-        list.add(patternCompare);
+        list.add(allNewCompare);
+        list.add(patternNewCompare);
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }
 
@@ -625,8 +638,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
         List<Map<String, Object>> newPtsAttrCompare = classicPriorityOrderCompareJanDataMapper.getNewPtsAttrCompare(attrResultList,listTableName, priorityOrderCd);
         List<Map<String, Object>> oldPtsAttrCompare = classicPriorityOrderCompareJanDataMapper.getOldPtsAttrCompare(attrResultList,listTableName, priorityOrderCd);
-        int newSkuSum = newPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
-        int oldSkuSum = oldPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
+        long newSkuSum = newPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
+        long oldSkuSum = oldPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.SKU_NUM)).sum();
         int newFaceSum = newPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.FACE_NUM)).sum();
         int oldFaceSum = oldPtsAttrCompare.stream().mapToInt(value -> MapUtils.getInteger(value, MagicString.FACE_NUM)).sum();
         List<Map<String, Object>> resultAttrCompare = new ArrayList<>();
@@ -721,16 +734,16 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     }
 
 
-    private Map<String,Object> compareNum(List<String> attr, int oldSkuSum, int oldFaceSum, int newSkuSum, int newFaceSum
+    private Map<String,Object> compareNum(List<String> attr, long oldSkuSum, int oldFaceSum, long newSkuSum, int newFaceSum
             , Map<String, Object> newPts, Map<String, Object> oldPts){
         Map<String,Object> map = new HashMap<>();
         for (String s : attr) {
             map.put("attr_"+s,newPts.get("attr_"+s));
         }
-        int skuOldArea = Math.round(Integer.parseInt(oldPts.getOrDefault("skuNum",0).toString())/ oldSkuSum*100);
-        int skuNewArea =  Math.round(Integer.parseInt(newPts.getOrDefault("skuNum",0).toString())/newSkuSum*100);
-        int faceOldArea = Math.round(Integer.parseInt(oldPts.getOrDefault("faceNum",0).toString())/oldFaceSum*100);
-        int faceNewArea = Math.round(Integer.parseInt(newPts.getOrDefault("faceNum",0).toString())/newFaceSum*100);
+        int skuOldArea =(int) Math.round(Double.parseDouble(oldPts.getOrDefault("skuNum",0).toString())/ oldSkuSum*100);
+        int skuNewArea = (int) Math.round(Double.parseDouble(newPts.getOrDefault("skuNum",0).toString())/newSkuSum*100);
+        int faceOldArea =(int) Math.round(Double.parseDouble(oldPts.getOrDefault("faceNum",0).toString())/oldFaceSum*100);
+        int faceNewArea = (int) Math.round(Double.parseDouble(newPts.getOrDefault("faceNum",0).toString())/newFaceSum*100);
         map.put("skuNew",newPts.getOrDefault("skuNum",0));
         map.put("skuOld",oldPts.getOrDefault("skuNum",0));
         map.put("skuCompare",Integer.parseInt(newPts.getOrDefault("skuNum",0).toString())-Integer.parseInt(oldPts.getOrDefault("skuNum",0).toString()));
