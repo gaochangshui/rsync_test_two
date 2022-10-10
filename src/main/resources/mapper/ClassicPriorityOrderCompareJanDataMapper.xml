@@ -186,19 +186,19 @@
     </delete>
     <insert id="insertCompareDeleteJandata">
         <if test="!deleteJanList.isEmpty">
-            insert into priority.priority_order_compare_jandata(company_cd,priority_order_cd, shelf_pattern_cd, jan, flag, branch_cd, compare_flag)
+            insert into priority.priority_order_compare_jandata(company_cd,priority_order_cd, shelf_pattern_cd, jan, flag, branch_cd, compare_flag,describe)
             values
             <foreach collection="deleteJanList" item="item" separator=",">
-                (#{companyCd},#{priorityOrderCd},#{shelfPatternCd},#{item.jan} , '888', #{branchCd}, #{compareFlag})
+                (#{companyCd},#{priorityOrderCd},#{shelfPatternCd},#{item.jan} , '888', #{branchCd}, #{compareFlag},#{item.reason})
             </foreach>
         </if>
     </insert>
     <insert id="insertCompareNewJandata">
         <if test="!newJanList.isEmpty">
-            insert into priority.priority_order_compare_jandata(company_cd,priority_order_cd, shelf_pattern_cd, jan, flag, branch_cd, compare_flag)
+            insert into priority.priority_order_compare_jandata(company_cd,priority_order_cd, shelf_pattern_cd, jan, flag, branch_cd, compare_flag,describe)
             values
             <foreach collection="newJanList" item="item" separator=",">
-                (#{companyCd},#{priorityOrderCd}, #{shelfPatternCd},#{item.jan}, '777', #{branchCd}, #{compareFlag})
+                (#{companyCd},#{priorityOrderCd}, #{shelfPatternCd},#{item.jan}, '777', #{branchCd}, #{compareFlag},#{item.reason})
             </foreach>
         </if>
     </insert>

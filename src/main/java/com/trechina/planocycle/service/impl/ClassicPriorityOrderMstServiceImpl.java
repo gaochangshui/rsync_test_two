@@ -43,6 +43,7 @@ import org.springframework.web.util.UriUtils;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.swing.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.text.MessageFormat;
@@ -575,7 +576,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 //common compare
                 priorityOrderMstService.doNewOldPtsCompare(taskID,finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
                         shelfPtsHeaderDto, ptsVersion, catePakList, companyCd,
-                        null, null, priorityOrderCd, null, janReplaceMap, ptsJanDtoList, patternBranchCd, 0);
+                        null, null, priorityOrderCd, null, janReplaceMap, ptsJanDtoList, patternBranchCd, 1);
             }
 
             if(branchMustNot || Objects.equals(0, modeCheck)){
@@ -618,7 +619,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
                         Map<String, List<Map<String, Object>>> tmpResultMap =  priorityOrderMstService.doNewOldPtsCompare(taskID,finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
                                 shelfPtsHeaderDto, ptsVersion, catePakList, companyCd,
-                                branch, commodityMustBranchJans, priorityOrderCd, commodityNotBranchJans, janReplaceMap, ptsJanDtoList, patternBranchCd, 1);
+                                branch, commodityMustBranchJans, priorityOrderCd, commodityNotBranchJans, janReplaceMap, ptsJanDtoList, patternBranchCd, 0);
 
                         resultMap.put(MagicString.DELETE_LIST, tmpResultMap.getOrDefault(MagicString.DELETE_LIST, Lists.newArrayList()));
                         resultMap.put(MagicString.NEW_LIST, tmpResultMap.getOrDefault(MagicString.NEW_LIST, Lists.newArrayList()));
@@ -1626,6 +1627,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         maxSkuNum.getAndDecrement();
                         map.put("rank_upd_original", MapUtils.getString(map, MagicString.RANK_UPD));
                         map.put(MagicString.RANK_UPD, 0);
+                        map.put("reason", MagicString.REASON_MAP.get("4"));
                         map.put(MagicString.JAN_OLD, map.get(MagicString.JAN));
                     }
 
@@ -1681,6 +1683,14 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         oldJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
                         oldJanMap.put(MagicString.PTS_NAME, fileName);
                         newJanList.removeIf(map->Objects.equals(MapUtils.getString(map, MagicString.JAN), jan));
+                        if(janReplaceMap.containsKey(janOld)){
+                            oldJanMap.put("reason", MagicString.REASON_MAP.get("2"));
+                        }else if(finalCommodityNotJansCd.contains(jan)){
+                            oldJanMap.put("reason", MagicString.REASON_MAP.get("4"));
+                        }else{
+                            oldJanMap.put("reason", MagicString.REASON_MAP.get("1"));
+                        }
+
                         deleteJanList.add(oldJanMap);
                     }else {
                         if(janReplaceMap.containsKey(janOld)) {
@@ -1703,6 +1713,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                     newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(oldJan, MagicString.RANK_UPD));
                                     deleteJanList.removeIf(map->Objects.equals(newJan, MapUtils.getString(map,MagicString.JAN)));
                                     //priority_order_data exist jan
+                                    newCopyJanMap.put("reason", MagicString.REASON_MAP.get("2"));
                                     newJanList.add(newCopyJanMap);
                                 }
 
@@ -1752,6 +1763,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                     newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(oldJan, MagicString.RANK_UPD));
                                     //priority_order_data exist jan
                                     deleteJanList.removeIf(map->finalNewJan.equals(MapUtils.getString(map,MagicString.JAN)));
+                                    newCopyJanMap.put("reason", MagicString.REASON_MAP.get("2"));
                                     newJanList.add(newCopyJanMap);
                                 }
 
@@ -1768,6 +1780,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                 newCopyJanMap.put(MagicString.PTS_NAME, fileName);
                                 newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(newJanMap, MagicString.RANK_UPD));
                                 deleteJanList.removeIf(map->finalNewJan.equals(MapUtils.getString(map,MagicString.JAN)));
+                                newCopyJanMap.put("reason", MagicString.REASON_MAP.get("1"));
                                 //priority_order_data exist jan
                                 newJanList.add(newCopyJanMap);
 
@@ -1886,6 +1899,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 oldJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
                 oldJanMap.put(MagicString.PTS_NAME, fileName);
                 newJanList.removeIf(map->Objects.equals(MapUtils.getString(map, MagicString.JAN), smallJan));
+                oldJanMap.put("reason", MagicString.REASON_MAP.get("3"));
                 deleteJanList.add(oldJanMap);
             }
 
@@ -1933,6 +1947,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
                     newCopyJanMap.put(MagicString.PTS_NAME, fileName);
                     deleteJanList.removeIf(map->Objects.equals(bigMap.get(MagicString.JAN), MapUtils.getString(map,MagicString.JAN)));
+                    newCopyJanMap.put("reason", MagicString.REASON_MAP.get("3"));
                     //priority_order_data exist jan
                     newJanList.add(newCopyJanMap);
                     repeatOldJan.put(smallJan, MapUtils.getString(bigMap, MagicString.JAN));
@@ -1992,6 +2007,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                             janMap.put(MagicString.PTS_NAME, fileName);
                             janMap.put(MagicString.PATTERN_NAME, shelfPtsDataDto.getShelfPatternName());
                             deleteList.removeIf(map-> Objects.equals(MapUtils.getString(map, MagicString.JAN), janOld));
+                            janMap.put("reason", MagicString.REASON_MAP.get("5"));
                             deleteList.add(janMap);
                         }else{
                             newList.removeIf(map->map.get(MagicString.JAN).equals(janCd));
