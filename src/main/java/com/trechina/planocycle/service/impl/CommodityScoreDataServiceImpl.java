@@ -151,7 +151,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         List<Map<String, Object>> prodAttrData = new Gson().fromJson(workParam.getProdAttrData().toString(), new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
                         List<String> attr = new ArrayList<>();
                         prodAttrData.forEach(map->{
-                            if ((Boolean) map.get("showFlag")) {
+                            if (map.get("showFlag")!=null && (Boolean) map.get("showFlag")) {
                                 attr.add(map.get("id").toString().split("_")[2]);
                             }
                         });
