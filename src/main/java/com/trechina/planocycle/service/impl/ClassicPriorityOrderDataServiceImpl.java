@@ -560,7 +560,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<Map<String, Object>> changeJan = classicPriorityOrderCompareJanDataMapper.getChangeJan(companyCd, priorityOrderCd);
         List<Map<String, Object>> changeJanForAll = classicPriorityOrderCompareJanDataMapper.getChangeJanForAll(companyCd, priorityOrderCd);
 
-        List<Map<String, Object>> patternBranchList = classicPriorityOrderCompareJanDataMapper.getPatternBranchList(companyCd, priorityOrderCd);
+
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
 
@@ -570,12 +570,18 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         String tableName = MessageFormat.format("\"{0}\".ten_0000_ten_info", coreCompany);
         List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
         groupCompany.add(companyCd);
+        List<Map<String, Object>> patternBranchList = classicPriorityOrderCompareJanDataMapper.getPatternBranchList(companyCd, priorityOrderCd,tableName,groupCompany);
+        List<String> allBranchList = classicPriorityOrderCompareJanDataMapper.getAllBranchList(companyCd, priorityOrderCd,tableName,groupCompany);
         List<PriorityOrderCompareJanData> patternCompare = classicPriorityOrderCompareJanDataMapper.getPatternCompare(companyCd,priorityOrderCd,tableName,groupCompany);
         List<PriorityOrderCompareJanData> allCompare = classicPriorityOrderCompareJanDataMapper.getAllCompare(companyCd,priorityOrderCd,tableName,groupCompany);
         patternCompare
                 .forEach(map -> {
-                    String[] split = map.getBranchNum().toString().split(",");
-                    map.setBranchNum(split);
+                    patternBranchList.forEach(branch->{
+                        if (branch.get(MagicString.SHELF_PATTERN_CD).equals(map.getShelfPatternCd())){
+                            String branchs = branch.get(MagicString.BRANCHNUM).toString();
+                            map.setBranchNum(Arrays.asList(branchs.split(",")));
+                        }
+                    });
                     changeJan.forEach(map1 ->{
                         if(map.getShelfPatternCd().equals(MapUtils.getInteger(map1,MagicString.SHELF_PATTERN_CD)) && MapUtils.getString(map1,"flag").equals("777") ){
                             map.setSkuAdd(MapUtils.getInteger(map1,MagicString.SKU_NUM));
@@ -593,7 +599,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 allCompare.get(0).setSkuCut(MapUtils.getInteger(map,MagicString.SKU_NUM));
             }
         });
-        allCompare.get(0).setBranchNum(allCompare.get(0).getBranchNum().toString().split(","));
+        allCompare.get(0).setBranchNum(allBranchList);
 
         List list = new ArrayList();
         list.add(allCompare);
