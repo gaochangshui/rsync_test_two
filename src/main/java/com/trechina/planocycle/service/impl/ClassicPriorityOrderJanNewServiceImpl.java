@@ -261,7 +261,6 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         List<Map<String, Object>> list1 = priorityOrderDataService.calRank(similarity, new ArrayList<>());
         list1.forEach(objectMap->{
             objectMap.put("rank",objectMap.get(MagicString.RANK_UPD));
-            objectMap.remove(MagicString.RANK_UPD);
         });
 
         List<Object> list2 = new ArrayList<>();
