@@ -4,12 +4,12 @@
     <insert id="insertPtsJandata">
         <if test="!newPtsJanList.isEmpty">
             insert into priority.priority_order_pts_result_jandata(company_cd,priority_order_cd, shelf_pattern_cd, jan, tai_cd, tana_cd, tanaposition_cd,
-            face_count, face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num, branch_cd)
+            face_count, face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num, branch_cd, compare_flag)
             values
             <foreach collection="newPtsJanList" item="item" separator=",">
                 (#{companyCd},#{priorityOrderCd}, #{shelfPatternCd}, #{item.jan},#{item.taiCd},#{item.tanaCd},#{item.tanaPositionCd},
                 #{item.face_count}, #{item.face_men}, #{item.face_kaiten}, #{item.tumiagesu}, #{item.zaikosu}, #{item.face_displayflg},
-                #{item.face_position}, #{item.depth_display_num}, #{branchCd})
+                #{item.face_position}, #{item.depth_display_num}, #{branchCd}, #{compareFlag})
             </foreach>
             on conflict do nothing
         </if>

@@ -178,9 +178,10 @@
         and branch_cd=any(string_to_array(#{branchList},',')) and exist_flag!=0
     </select>
     <select id="selectBranchMustNotJan" resultType="string">
-        select distinct branch_cd
-        from priority.priority_order_commodity_branch comm_branch
-        where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd} and exist_flag!=0
+        select distinct comm_branch.branch
+        from planocycle.shelf_pattern_branch comm_branch
+        inner join priority.priority_order_pattern pattern on comm_branch.shelf_pattern_cd=pattern.shelf_pattern_cd
+        where pattern.priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getJanOrName" resultType="java.util.Map">
         select jan_new,sku,COALESCE("${makerCol}",'_') as maker
