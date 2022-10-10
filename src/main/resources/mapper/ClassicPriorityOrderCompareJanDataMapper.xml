@@ -24,7 +24,7 @@
                 LEFT join planocycle.shelf_pattern_mst patternmst on patternmst.shelf_pattern_cd = newdata.shelf_pattern_cd
                 LEFT join planocycle.shelf_name_mst namemst on patternmst.shelf_name_cd = namemst.id
 
-                left join priority.priority_order_result_data resultdata on  resultdata.priority_order_cd = 734 and resultdata.jan_new = newdata.jan
+                left join priority.priority_order_result_data resultdata on  resultdata.priority_order_cd =  #{priorityOrderCd} and resultdata.jan_new = newdata.jan
                 left join ${tableName} teninfo
                 on (teninfo."1" = branch.branch or
                 (split_part(teninfo."1", '_', 2) = branch.branch
@@ -116,7 +116,7 @@
         LEFT join planocycle.shelf_pattern_mst patternmst on patternmst.shelf_pattern_cd = newdata.shelf_pattern_cd
         LEFT join planocycle.shelf_name_mst namemst on patternmst.shelf_name_cd = namemst.id
 
-        left join priority.priority_order_result_data resultdata on  resultdata.priority_order_cd = 734 and resultdata.jan_new = newdata.jan
+        left join priority.priority_order_result_data resultdata on  resultdata.priority_order_cd =  #{priorityOrderCd} and resultdata.jan_new = newdata.jan
         left join ${tableName} teninfo
         on (teninfo."1" = branch.branch or
         (split_part(teninfo."1", '_', 2) = branch.branch
@@ -129,10 +129,6 @@
         where
         newdata.priority_order_cd = #{priorityOrderCd}  and newdata.branch_cd = ''
         GROUP BY
-        newdata.shelf_pattern_cd,
-        shelf_pattern_name,
-        shelf_name,
-        shelf_name_cd,
         newdata.priority_order_cd
     </select>
     <select id="getChangeJanForAll" resultType="java.util.Map">
@@ -176,7 +172,7 @@
             left join ${item} as ${index}
             on ${index}."1" = jandata.jan
         </foreach>
-        where ptsdata.shelf_pattern_cd = #{shelfPatternCd} and jandata.branch_cd = ''
+        where ptsdata.shelf_pattern_cd = #{shelfPatternCd}
         order by jandata.tai_cd,jandata.tana_cd,jandata.tanaposition_cd
     </select>
     <select id="getJanNewData" resultType="java.util.LinkedHashMap">

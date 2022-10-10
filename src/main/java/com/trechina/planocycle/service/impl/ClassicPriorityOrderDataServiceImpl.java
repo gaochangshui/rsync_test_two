@@ -717,7 +717,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             , Map<String, Object> newPts, Map<String, Object> oldPts){
         Map<String,Object> map = new HashMap<>();
         for (String s : attr) {
-            map.put(s,newPts.get("attr_"+s));
+            map.put("attr_"+s,newPts.get("attr_"+s));
         }
         int skuOldArea = Math.round(Integer.parseInt(oldPts.getOrDefault("skuNum",0).toString())/ oldSkuSum*100);
         int skuNewArea =  Math.round(Integer.parseInt(newPts.getOrDefault("skuNum",0).toString())/newSkuSum*100);
