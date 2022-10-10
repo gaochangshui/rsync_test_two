@@ -32,9 +32,9 @@ public interface ClassicPriorityOrderCompareJanDataMapper {
 
     int deleteCompareJandata(Integer priorityOrderCd);
     void insertCompareDeleteJandata(List<Map<String, Object>> deleteJanList, String companyCd, Integer priorityOrderCd, Integer shelfPatternCd,
-                                    String branchCd);
+                                    String branchCd, Integer compareFlag);
     void insertCompareNewJandata(List<Map<String, Object>> newJanList, String companyCd, Integer priorityOrderCd, Integer shelfPatternCd,
-                                 String branchCd);
+                                 String branchCd, Integer compareFlag);
 
     List<Map<String, Object>> selectAllCompareJandata(Integer priorityOrderCd);
 

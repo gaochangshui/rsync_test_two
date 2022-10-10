@@ -84,7 +84,8 @@ public interface ClassicPriorityOrderMstService {
                                                               List<Map<String, Object>> resultDataList, List<Map<String, Object>> ptsSkuNum,
                                                               ShelfPtsDataDto pattern, ShelfPtsHeaderDto shelfPtsHeaderDto,
                                                               Integer ptsVersion, List<PriorityOrderCatePakVO> catePakList, String companyCd, Map<String, Object> branch, List<Map<String, Object>> commodityMustJans, Integer priorityOrderCd,
-                                                              List<Map<String, Object>> commodityNotJans, Map<String, String> janReplaceMap, List<Map<String, Object>> ptsJanDtoList, List<String> patternBranchCd);
+                                                              List<Map<String, Object>> commodityNotJans, Map<String, String> janReplaceMap,
+                                                              List<Map<String, Object>> ptsJanDtoList, List<String> patternBranchCd, Integer compareFlag);
 
     void pluralJan(Map<String, List<Map<String, Object>>> newPtsJanMap, Integer priorityOrderCd, ShelfPtsDataDto shelfPtsDataDto,
                    String branchCd, Integer ptsVersion, String companyCd, List<Map<String, Object>> deleteList,
