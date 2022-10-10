@@ -87,7 +87,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             logger.info("getCommodityScoreData:{}", 1);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
-        if (vehicleNumCache.get(taskID + "Exception")!=null){
+        if ("5".equals(vehicleNumCache.get(taskID + "Exception"))){
             return ResultMaps.result(ResultEnum.DATAISTOOLARGE);
         }
 
@@ -202,8 +202,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
 
         if("9".equals(vehicleNumCache.get(taskID))){
-            if (vehicleNumCache.get(taskID + "Exception")!=null){
+            if ("5".equals(vehicleNumCache.get(taskID + "Exception"))){
                 return ResultMaps.result(ResultEnum.DATAISTOOLARGE);
+            }
+
+            if(vehicleNumCache.get(taskID + "Exception")!=null){
+                return ResultMaps.result(ResultEnum.FAILURE);
             }
 
             List<Map<String, Object>> o = (List<Map<String, Object>>) vehicleNumCache.get(taskID + ",data");
@@ -350,6 +354,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         if (!"9".equals(map1.get("data"))) {
                             if (map1.get("data")==null){
                                 vehicleNumCache.put(posResult+"Exception",map1.get("msg"));
+                            }else if("5".equals(map1.get("data"))){
+                                vehicleNumCache.put(posResult + "Exception", "5");
                             }
                             break;
                         }
@@ -369,6 +375,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                                 if (!"9".equals(map2.get("data"))) {
                                     if (map2.get("data") == null) {
                                         vehicleNumCache.put(posResult + "Exception", "error");
+                                    }else if("5".equals(map2.get("data"))){
+                                        vehicleNumCache.put(posResult + "Exception", "5");
                                     }
                                     break;
                                 }
@@ -391,6 +399,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                                 if (!"9".equals(map2.get("data"))) {
                                     if (map2.get("data") == null) {
                                         vehicleNumCache.put(posResult + "Exception", "error");
+                                    }else if("5".equals(map2.get("data"))){
+                                        vehicleNumCache.put(posResult + "Exception", "5");
                                     }
                                     break;
                                 }
