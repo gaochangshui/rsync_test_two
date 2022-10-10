@@ -86,7 +86,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             logger.info(MagicString.GET_COMMODITY_SCORE_DATA, 1);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
-        if (vehicleNumCache.get(taskID + "Exception")!=null){
+        if ("5".equals(vehicleNumCache.get(taskID + "Exception"))){
             return ResultMaps.result(ResultEnum.DATAISTOOLARGE);
         }
         if("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))){
@@ -150,7 +150,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         List<Map<String, Object>> prodAttrData = new Gson().fromJson(workParam.getProdAttrData().toString(), new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
                         List<String> attr = new ArrayList<>();
                         prodAttrData.forEach(map->{
-                            if ((Boolean) map.get("showFlag")) {
+                            if (map.get("showFlag")!=null && (Boolean) map.get("showFlag")) {
                                 attr.add(map.get("id").toString().split("_")[2]);
                             }
                         });
@@ -201,8 +201,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }
 
         if("9".equals(vehicleNumCache.get(taskID))){
-            if (vehicleNumCache.get(taskID + "Exception")!=null){
+            if ("5".equals(vehicleNumCache.get(taskID + "Exception"))){
                 return ResultMaps.result(ResultEnum.DATAISTOOLARGE);
+            }
+
+            if(vehicleNumCache.get(taskID + "Exception")!=null){
+                return ResultMaps.result(ResultEnum.FAILURE);
             }
 
             List<Map<String, Object>> o = (List<Map<String, Object>>) vehicleNumCache.get(taskID + ",data");
@@ -281,6 +285,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         if (!"9".equals(map1.get("data"))) {
                             if (map1.get("data")==null){
                                 vehicleNumCache.put(posResult+MagicString.EXCEPTION,map1.get("msg"));
+                            }else if("5".equals(map1.get("data"))){
+                                vehicleNumCache.put(posResult + "Exception", "5");
                             }
                             break;
                         }
@@ -318,6 +324,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 if (!"9".equals(map2.get("data"))) {
                     if (map2.get("data") == null) {
                         vehicleNumCache.put(posResult + MagicString.EXCEPTION, "error");
+                    }else if("5".equals(map2.get("data"))){
+                        vehicleNumCache.put(posResult + "Exception", "5");
                     }
                     break;
                 }
@@ -343,6 +351,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 if (!"9".equals(map2.get("data"))) {
                     if (map2.get("data") == null) {
                         vehicleNumCache.put(posResult + MagicString.EXCEPTION, "error");
+                    }else if("5".equals(map2.get("data"))){
+                        vehicleNumCache.put(posResult + "Exception", "5");
                     }
                     break;
                 }
@@ -481,7 +491,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     String id = proMap.get("id").toString().split("_")[2];
 
                     String join = Joiner.on("$|^").join(value);
-                    boolean flag = (boolean) proMap.get("rmFlag");
+                    boolean flag = (boolean) proMap.getOrDefault("rmFlag", false);
                     String eq = flag ? "!~":"~";
                     if (finalValue.toString().equals("")){
                         finalValue.append("$").append(id).append(eq).append("/^").append(join).append("$/ ");

@@ -3,6 +3,7 @@ package com.trechina.planocycle.enums;
 public enum ProductPowerHeaderEnum {
     BASIC("", "basic"),
     CLASSIFY("商品分類", "classify"),
+    ATTR("商品属性", "attr"),
     POS("全体項目", "pos"),
     POS_RANK("全体項目Rank", "posRank"),
     CUSTOMER("顧客条件項目", "customer"),
