@@ -736,13 +736,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         map.put("skuCompare",Integer.parseInt(newPts.getOrDefault("skuNum",0).toString())-Integer.parseInt(oldPts.getOrDefault("skuNum",0).toString()));
         map.put("skuOldArea",skuOldArea);
         map.put("skuNewArea",skuNewArea);
-        map.put("skuAreaCompare",skuNewArea-skuOldArea);
+        map.put("skuCompareArea",skuNewArea-skuOldArea);
         map.put("faceNew",newPts.getOrDefault("faceNum",0));
         map.put("faceOld",oldPts.getOrDefault("faceNum",0));
         map.put("faceCompare",Integer.parseInt(newPts.getOrDefault("faceNum",0).toString())-Integer.parseInt(oldPts.getOrDefault("faceNum",0).toString()));
         map.put("faceOldArea",faceOldArea);
         map.put("faceNewArea",faceNewArea);
-        map.put("faceAreaCompare",faceNewArea-faceOldArea);
+        map.put("faceCompareArea",faceNewArea-faceOldArea);
         return map;
     }
 
