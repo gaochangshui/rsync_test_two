@@ -226,19 +226,15 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
         //表示するカラムに対応するフィールド名
         List<String> attr = classify.stream().map(map -> map.get("attr").toString()).collect(Collectors.toList());
-        attrColName.forEach(map->{
-            attr.add(map.get("colCd").toString());
-        });
+        List<String> attrColCdList = attrColName.stream().map(map -> map.get("colCd").toString()).collect(Collectors.toList());
         attr.add("branchNum");
-        Map<String, List<String>> columnsByClassify = this.initColumnClassify(attr);
+        Map<String, List<String>> columnsByClassify = this.initColumnClassify(attr, attrColCdList);
         //表示する列に対応するヘッダー
 
         List<String> attrName = classify.stream().map(map -> map.get("attr_val").toString()).collect(Collectors.toList());
-        attrColName.forEach(map->{
-            attrName.add(map.get("colName").toString());
-        });
+        List<String> attrColNameList = attrColName.stream().map(map -> map.get("colName").toString()).collect(Collectors.toList());
         attrName.add("定番店鋪数");
-        Map<String, List<String>> headersByClassify = this.initHeaderClassify(attrName);
+        Map<String, List<String>> headersByClassify = this.initHeaderClassify(attrName, attrColNameList);
 
         this.fillParamData(ProductPowerHeaderEnum.POS.getName(),
                 posValue,paramListByGroup.get(ProductPowerHeaderEnum.POS.getCode()), headersByClassify, columnsByClassify, weightKeys);
@@ -335,10 +331,11 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         }
     }
 
-    private Map<String, List<String>> initHeaderClassify(List<String> attrName){
+    private Map<String, List<String>> initHeaderClassify(List<String> kaisouName, List<String> attrName){
         Map<String, List<String>> headersByClassify = new LinkedHashMap<>(10);
         headersByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("JANコード", "商品名"));
-        headersByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), attrName);
+        headersByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), kaisouName);
+        headersByClassify.put(ProductPowerHeaderEnum.ATTR.getName(), attrName);
         headersByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
@@ -351,10 +348,11 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         return headersByClassify;
     }
 
-    private Map<String, List<String>> initColumnClassify(List<String> attr){
+    private Map<String, List<String>> initColumnClassify(List<String> kaisou, List<String> attr){
         Map<String, List<String>> columnsByClassify = new LinkedHashMap<>(10);
         columnsByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("jan", "jan_name"));
-        columnsByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), attr);
+        columnsByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), kaisou);
+        columnsByClassify.put(ProductPowerHeaderEnum.ATTR.getName(), attr);
         columnsByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
@@ -432,7 +430,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         if(!janAttrList.isEmpty()){
             for (Map<String, Object> objectMap : janAttrList) {
                 List<String> value= (List<String>)objectMap.get("value");
-                boolean flag= (boolean)objectMap.get("rmFlag");
+                boolean flag= (boolean)objectMap.getOrDefault("rmFlag", false);
                 String attrName = productPowerDataMapper.getAttrName(objectMap.get("id").toString().split("_")[2],commonTableName.getProAttrTable());
                 janAttr.put(attrName,value);
                 janAttrFlag.put(attrName+"区分",flag?"対象":"除外");
