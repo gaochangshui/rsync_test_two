@@ -109,21 +109,48 @@ public class ClassicPriorityOrderDataController {
         return priorityOrderDataService.getBranchNum(map);
     }
 
+    /**
+     * pattern比較
+     * @param companyCd
+     * @param priorityOrderCd
+     * @return
+     */
     @GetMapping("getPatternCompare")
     Map<String, Object> getPatternCompare(String companyCd ,Integer priorityOrderCd) {
         return priorityOrderDataService.getPatternCompare(companyCd,priorityOrderCd);
     }
 
+    /**
+     * 属性の比較
+     * @param companyCd
+     * @param priorityOrderCd
+     * @param attrList
+     * @return
+     */
     @GetMapping("getAttrCompare")
     Map<String, Object> getAttrCompare(String companyCd ,Integer priorityOrderCd,String attrList) {
         return priorityOrderDataService.getAttrCompare(companyCd,priorityOrderCd,attrList);
     }
 
+    /**
+     * 新pts詳細
+     * @param companyCd
+     * @param priorityOrderCd
+     * @param shelfPatternCd
+     * @return
+     */
     @GetMapping("getPriorityOrderNewPts")
     Map<String, Object> getPriorityOrderNewPts(String companyCd ,Integer priorityOrderCd,Integer shelfPatternCd) {
         return priorityOrderDataService.getPriorityOrderNewPts(companyCd,priorityOrderCd,shelfPatternCd,1);
     }
 
+    /**
+     * 旧pts詳細
+     * @param companyCd
+     * @param priorityOrderCd
+     * @param shelfPatternCd
+     * @return
+     */
     @GetMapping("getPriorityOrderOldPts")
     Map<String, Object> getPriorityOrderOldPts(String companyCd ,Integer priorityOrderCd,Integer shelfPatternCd) {
         return priorityOrderDataService.getPriorityOrderNewPts(companyCd,priorityOrderCd,shelfPatternCd,0);
