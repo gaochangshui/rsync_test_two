@@ -458,7 +458,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     String id = proMap.get("id").toString().split("_")[2];
 
                     String join = Joiner.on("$|^").join(value);
-                    boolean flag = (boolean) proMap.get("rmFlag");
+                    boolean flag = (boolean) proMap.getOrDefault("rmFlag", false);
                     String eq = flag ? "!~":"~";
                     if (finalValue.toString().equals("")){
                         finalValue.append("$").append(id).append(eq).append("/^").append(join).append("$/ ");
