@@ -877,11 +877,13 @@
         select jan_item2col_num from planocycle.sku_name_config where company_cd = #{company} and class = #{classCd}
     </select>
     <select id="getAttrColName" resultType="java.util.Map">
-        select "1" "colCd","2" "colName" ,"3" "col"
-        from ${tableName}
-        where "3" in
-        <foreach collection="attr" separator="," open="(" item="item" close=")">
-            #{item}
-        </foreach>
+        <if test="!attr.isEmpty">
+            select "1" "colCd","2" "colName" ,"3" "col"
+            from ${tableName}
+            where "3" in
+            <foreach collection="attr" separator="," open="(" item="item" close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
 </mapper>

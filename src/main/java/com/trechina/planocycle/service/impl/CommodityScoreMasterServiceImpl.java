@@ -251,7 +251,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         Map<String, Object> attrColumnMap = janClassifyList.stream().collect(Collectors.toMap(map -> map.get("attr").toString(), map -> map.get("sort").toString(),(k1,k2)->k1, LinkedHashMap::new));
         List<String> attr = new ArrayList<>();
         prodAttrData.forEach(map->{
-            if ((Boolean) map.get("showFlag")) {
+            if (map.get("showFlag")!=null && (Boolean) map.get("showFlag")) {
                 attr.add(map.get("id").toString().split("_")[2]);
             }
         });
