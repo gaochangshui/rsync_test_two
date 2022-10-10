@@ -726,7 +726,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                     ,janSizeCol,tableName);
         }else {
              janData = classicPriorityOrderCompareJanDataMapper.getJanNewData(shelfPatternCd,attrList,listTableName
-                    ,janSizeCol,tableName);
+                    ,janSizeCol,tableName,priorityOrderCd);
         }
 
         ptsDetailData.setPtsJanDataList(janData);

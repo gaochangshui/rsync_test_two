@@ -29,7 +29,7 @@ public interface ClassicPriorityOrderCompareJanDataMapper {
                                                    List<Map<String, Object>> janSizeCol,String tableName);
 
     List<LinkedHashMap<String, Object>> getJanNewData(Integer shelfPatternCd, List<Map<String, Object>> attrList, Map<String, Object> listTableName
-            , List<Map<String, Object>> janSizeCol, String tableName);
+            , List<Map<String, Object>> janSizeCol, String tableName,Integer priorityOrderCd);
 
     int deleteCompareJandata(Integer priorityOrderCd);
     void insertCompareDeleteJandata(List<Map<String, Object>> deleteJanList, String companyCd, Integer priorityOrderCd, Integer shelfPatternCd,

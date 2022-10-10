@@ -162,7 +162,7 @@
             left join ${item} as ${index}
             on ${index}."1" = jandata.jan
         </foreach>
-        where jandata.shelf_pattern_cd = #{shelfPatternCd} and jandata.compare_flag = 1
+        where jandata.shelf_pattern_cd = #{shelfPatternCd} and priority_order_cd = #{priorityOrderCd} and jandata.compare_flag = 1
         order by jandata.tai_cd,jandata.tana_cd,jandata.tanaposition_cd
     </select>
     <delete id="deleteCompareJandata">
