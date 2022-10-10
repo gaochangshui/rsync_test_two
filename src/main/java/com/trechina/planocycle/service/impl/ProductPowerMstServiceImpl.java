@@ -482,7 +482,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
                 boolean flag= (boolean)objectMap.getOrDefault("rmFlag", false);
                 String attrName = productPowerDataMapper.getAttrName(objectMap.get("id").toString().split("_")[2],commonTableName.getProAttrTable());
                 janAttr.put(attrName,value);
-                janAttrFlag.put(attrName+"区分",flag?"対象":"除外");
+                janAttrFlag.put(attrName+"区分",flag?"除外":"対象");
 
             }
         }

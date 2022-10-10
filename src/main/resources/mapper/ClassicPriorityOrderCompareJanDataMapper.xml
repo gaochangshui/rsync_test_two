@@ -10,9 +10,9 @@
             count ( DISTINCT newdata.jan ) "skuNew",
             count ( DISTINCT olddata.jan ) "skuOld",
             count ( DISTINCT newdata.jan ) - count ( DISTINCT olddata.jan ) "skuCompare",
-            sum ( DISTINCT newdata.face_count ) "faceNew",
-            sum ( DISTINCT olddata.face_count ) "faceOld",
-            sum ( DISTINCT newdata.face_count ) - sum ( DISTINCT olddata.face_count ) "faceCompare",
+            sum (  newdata.face_count ) "faceNew",
+            sum (  olddata.face_count ) "faceOld",
+            sum (  newdata.face_count ) - sum (  olddata.face_count ) "faceCompare",
             sum(resultdata.sale_forecast) "saleForecast"   --売上増減予測
         from
             priority.priority_order_pts_result_jandata newdata
@@ -25,7 +25,7 @@
                 left join priority.priority_order_result_data resultdata on  resultdata.priority_order_cd =  #{priorityOrderCd} and resultdata.jan_new = newdata.jan
 
         where
-            newdata.priority_order_cd = #{priorityOrderCd} and newdata.branch_cd = ''
+            newdata.priority_order_cd = #{priorityOrderCd} and newdata.compare_flag = 1
         GROUP BY
             newdata.shelf_pattern_cd,
             shelf_pattern_name,
@@ -41,7 +41,7 @@
     <select id="getChangeJan" resultType="java.util.Map">
         select array_to_string(array_agg(DISTINCT jan),',') "janList",flag,count(distinct jan) "skuNum",shelf_pattern_cd as "shelfPatternCd"
         from priority.priority_order_compare_jandata
-        where priority_order_cd = #{priorityOrderCd} and branch_cd = ''
+        where priority_order_cd = #{priorityOrderCd} and compare_flag = 1
         GROUP BY shelf_pattern_cd,flag
     </select>
     <select id="getNewPtsAttrCompare" resultType="java.util.Map">
@@ -57,7 +57,7 @@
             on ${index}."1" = newdata.jan
         </foreach>
         where
-            newdata.priority_order_cd = #{priorityOrderCd} and newdata.branch_cd = ''
+            newdata.priority_order_cd = #{priorityOrderCd} and newdata.compare_flag = 1
         GROUP BY
             <foreach collection="attrResultList" item="item" separator=",">
                 "${item.col}"
@@ -93,9 +93,9 @@
         count ( DISTINCT newdata.jan ) "skuNew",
         count ( DISTINCT olddata.jan ) "skuOld",
         count ( DISTINCT newdata.jan ) - count ( DISTINCT olddata.jan ) "skuCompare",
-        sum ( DISTINCT newdata.face_count ) "faceNew",
-        sum ( DISTINCT olddata.face_count ) "faceOld",
-        sum ( DISTINCT newdata.face_count ) - sum ( DISTINCT olddata.face_count ) "faceCompare",
+        sum (  newdata.face_count ) "faceNew",
+        sum (  olddata.face_count ) "faceOld",
+        sum (  newdata.face_count ) - sum (  olddata.face_count ) "faceCompare",
         sum(resultdata.sale_forecast) "saleForecast"   --売上増減予測
         from
         priority.priority_order_pts_result_jandata newdata
@@ -107,21 +107,19 @@
 
         left join priority.priority_order_result_data resultdata on  resultdata.priority_order_cd =  #{priorityOrderCd} and resultdata.jan_new = newdata.jan
         where
-        newdata.priority_order_cd = #{priorityOrderCd}  and newdata.branch_cd = ''
+        newdata.priority_order_cd = #{priorityOrderCd}  and newdata.compare_flag = 1
         GROUP BY
         newdata.priority_order_cd
     </select>
     <select id="getChangeJanForAll" resultType="java.util.Map">
         select array_to_string(array_agg(DISTINCT jan),',') "janList",flag,count(distinct jan) "skuNum"
         from priority.priority_order_compare_jandata
-        where priority_order_cd = #{priorityOrderCd} and branch_cd = ''
+        where priority_order_cd = #{priorityOrderCd} and compare_flag = 1
         GROUP BY flag,priority_order_cd
     </select>
     <select id="getAttrValue" resultType="java.util.Map">
         select attr.value ,attr.name,attr.sort
-
         from priority.priority_order_mst_attrsort attrsort
-
                  left join priority.priority_order_mst_attr attr
                            on attrsort."value" = attr."sort" and attr.priority_order_cd = attrsort.priority_order_cd
         where attrsort.priority_order_cd = #{priorityOrderCd}
@@ -179,7 +177,7 @@
             left join ${item} as ${index}
             on ${index}."1" = jandata.jan
         </foreach>
-        where jandata.shelf_pattern_cd = #{shelfPatternCd} and jandata.branch_cd = ''
+        where jandata.shelf_pattern_cd = #{shelfPatternCd} and jandata.compare_flag = 1
         order by jandata.tai_cd,jandata.tana_cd,jandata.tanaposition_cd
     </select>
     <delete id="deleteCompareJandata">
