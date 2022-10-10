@@ -37,4 +37,6 @@ public interface ClassicPriorityOrderCompareJanDataMapper {
                                  String branchCd);
 
     List<Map<String, Object>> selectAllCompareJandata(Integer priorityOrderCd);
+
+    List<Map<String,Object>> getPatternBranchList(String companyCd, Integer priorityOrderCd);
 }

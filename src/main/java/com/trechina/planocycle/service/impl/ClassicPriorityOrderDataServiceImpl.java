@@ -559,6 +559,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     public Map<String, Object> getPatternCompare(String companyCd, Integer priorityOrderCd) {
         List<Map<String, Object>> changeJan = classicPriorityOrderCompareJanDataMapper.getChangeJan(companyCd, priorityOrderCd);
         List<Map<String, Object>> changeJanForAll = classicPriorityOrderCompareJanDataMapper.getChangeJanForAll(companyCd, priorityOrderCd);
+
+        List<Map<String, Object>> patternBranchList = classicPriorityOrderCompareJanDataMapper.getPatternBranchList(companyCd, priorityOrderCd);
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
 

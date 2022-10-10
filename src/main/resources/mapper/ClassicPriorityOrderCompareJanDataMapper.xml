@@ -227,4 +227,17 @@
     <select id="selectAllCompareJandata" resultType="map">
         select shelf_pattern_cd,jan, branch_cd,flag from priority.priority_order_compare_jandata where priority_order_cd=#{priorityOrderCd}
     </select>
+    <select id="getPatternBranchList" resultType="java.util.Map">
+        select
+            pattern.shelf_pattern_cd "shelfPatternCd",array_to_string(array_agg(DISTINCT concat(branch,'-',teninfo."2")),',') "branchNum"
+        from
+            priority.priority_order_pattern pattern
+                left join planocycle.shelf_pattern_branch branch
+                          on branch.shelf_pattern_cd = pattern.shelf_pattern_cd
+                left join "1000".ten_0000_ten_info teninfo
+                          on teninfo."1" = branch.branch
+        where
+            priority_order_cd = #{priorityOrderCd}
+        GROUP BY pattern.shelf_pattern_cd
+    </select>
 </mapper>
