@@ -748,15 +748,15 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         map.put("skuNew",newPts.getOrDefault(MagicString.SKU_NUM,0));
         map.put("skuOld",oldPts.getOrDefault(MagicString.SKU_NUM,0));
         map.put("skuCompare",Integer.parseInt(newPts.getOrDefault(MagicString.SKU_NUM,0).toString())-Integer.parseInt(oldPts.getOrDefault(MagicString.SKU_NUM,0).toString()));
-        map.put("skuOldArea",skuOldArea);
-        map.put("skuNewArea",skuNewArea);
-        map.put("skuCompareArea",skuNewArea-skuOldArea);
+        map.put("skuOldArea",skuOldArea+MagicString.PERCENTAGE);
+        map.put("skuNewArea",skuNewArea+MagicString.PERCENTAGE);
+        map.put("skuCompareArea",skuNewArea-skuOldArea+MagicString.PERCENTAGE);
         map.put("faceNew",newPts.getOrDefault(MagicString.FACE_NUM,0));
         map.put("faceOld",oldPts.getOrDefault(MagicString.FACE_NUM,0));
         map.put("faceCompare",Integer.parseInt(newPts.getOrDefault(MagicString.FACE_NUM,0).toString())-Integer.parseInt(oldPts.getOrDefault(MagicString.FACE_NUM,0).toString()));
-        map.put("faceOldArea",faceOldArea);
-        map.put("faceNewArea",faceNewArea);
-        map.put("faceCompareArea",faceNewArea-faceOldArea);
+        map.put("faceOldArea",faceOldArea+MagicString.PERCENTAGE);
+        map.put("faceNewArea",faceNewArea+MagicString.PERCENTAGE);
+        map.put("faceCompareArea",faceNewArea-faceOldArea+MagicString.PERCENTAGE);
         return map;
     }
 
