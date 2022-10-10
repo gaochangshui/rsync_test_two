@@ -430,7 +430,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         if(!janAttrList.isEmpty()){
             for (Map<String, Object> objectMap : janAttrList) {
                 List<String> value= (List<String>)objectMap.get("value");
-                boolean flag= (boolean)objectMap.get("rmFlag");
+                boolean flag= (boolean)objectMap.getOrDefault("rmFlag", false);
                 String attrName = productPowerDataMapper.getAttrName(objectMap.get("id").toString().split("_")[2],commonTableName.getProAttrTable());
                 janAttr.put(attrName,value);
                 janAttrFlag.put(attrName+"区分",flag?"対象":"除外");
