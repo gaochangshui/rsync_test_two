@@ -299,6 +299,7 @@ public class MagicString {
     public static final String STATUS = "status";
 
     public static final String FLAG_STR = ",flag";
+    public static final String FLAG = "flag";
 
     public static final String RETURN_STR = ",returnVal";
 
@@ -350,6 +351,9 @@ public class MagicString {
     public static final String BR = "<br />";
 
     public static final String BRANCH_NUM_NAME = "定番 店舗数";
+
+    public static final String DEFAULT_TABLE = "prod_0000_jan_info";
+    public static final String  PERCENTAGE = "%";
 
     public static final Map<String, String> REASON_MAP = ImmutableMap.of("1", "rank_change", "2", "replace", "3",
             "capepak", "4", "must_not", "5", "pattern_duplicate");

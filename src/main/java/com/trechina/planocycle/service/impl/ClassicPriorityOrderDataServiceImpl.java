@@ -185,7 +185,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         // 初期化データ
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, priorityOrderDataDto.getShelfPatternCd());
         //ただの用品名2
-        int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", "1000");
+        int existTableName = mstBranchMapper.checkTableExist(MagicString.DEFAULT_TABLE, "1000");
         String tableName ="";
         if (existTableName == 1){
              tableName = "\"1000\".prod_0000_jan_info";
@@ -563,7 +563,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
 
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
-        int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
+        int existTableName = mstBranchMapper.checkTableExist(MagicString.DEFAULT_TABLE, coreCompany);
 
         if (existTableName == 0){
             coreCompany = companyCd;
@@ -594,19 +594,19 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                         }
                     });
                     changeJan.forEach(map1 ->{
-                        if(map.getShelfPatternCd().equals(MapUtils.getInteger(map1,MagicString.SHELF_PATTERN_CD)) && MapUtils.getString(map1,"flag").equals("777") ){
+                        if(map.getShelfPatternCd().equals(MapUtils.getInteger(map1,MagicString.SHELF_PATTERN_CD)) && MapUtils.getString(map1,MagicString.FLAG).equals("777") ){
                             map.setSkuAdd(MapUtils.getInteger(map1,MagicString.SKU_NUM));
                         }
-                        if(map.getShelfPatternCd().equals(MapUtils.getInteger(map1,MagicString.SHELF_PATTERN_CD)) && MapUtils.getString(map1,"flag").equals("888") ){
+                        if(map.getShelfPatternCd().equals(MapUtils.getInteger(map1,MagicString.SHELF_PATTERN_CD)) && MapUtils.getString(map1,MagicString.FLAG).equals("888") ){
                             map.setSkuCut(MapUtils.getInteger(map1,MagicString.SKU_NUM));
                         }
                     });
                 });
         changeJanForAll.forEach(map->{
-            if( MapUtils.getString(map,"flag").equals("777") ){
+            if( MapUtils.getString(map,MagicString.FLAG).equals("777") ){
                 allNewCompare.get(0).setSkuAdd(MapUtils.getInteger(map,MagicString.SKU_NUM));
             }
-            if( MapUtils.getString(map,"flag").equals("888") ){
+            if( MapUtils.getString(map,MagicString.FLAG).equals("888") ){
                 allNewCompare.get(0).setSkuCut(MapUtils.getInteger(map,MagicString.SKU_NUM));
             }
         });
@@ -615,7 +615,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         allNewCompare.get(0).setSkuOld(allOldCompare.get(0).getSkuOld());
         allNewCompare.get(0).setFaceCompare(allNewCompare.get(0).getFaceNew()-allOldCompare.get(0).getFaceOld());
         allNewCompare.get(0).setSkuCompare(allNewCompare.get(0).getSkuNew()-allOldCompare.get(0).getSkuOld());
-        List list = new ArrayList();
+        List<List<PriorityOrderCompareJanData>> list = new ArrayList<>();
         list.add(allNewCompare);
         list.add(patternNewCompare);
         return ResultMaps.result(ResultEnum.SUCCESS,list);
@@ -631,7 +631,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             String[] s = map.split("_");
             String tableNameInfo = MessageFormat.format("\"{0}\".prod_{1}_jan_info", s[0], s[1]);
             attrMap.put("col",s[2]);
-            attrMap.put("name","attr_"+map);
+            attrMap.put(MagicString.NAME,"attr_"+map);
             attrMap.put(MagicString.TABLE_NAME,"\""+s[0]+s[1]+"\"");
             listTableName.put("\""+s[0]+s[1]+"\"",tableNameInfo);
             attrResultList.add(attrMap);
@@ -647,25 +647,25 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
         newPtsAttrCompare.addAll(oldPtsAttrCompare);
         Map<String, List<Map<String, Object>>> collect = newPtsAttrCompare.stream().collect(Collectors.groupingBy(map -> {
-            String a = "";
+            StringBuilder a = new StringBuilder();
             for (Map<String,Object> s : attrResultList) {
-                a += map.get(s.get("name"));
+                a.append(map.get(s.get(MagicString.NAME)));
             }
-            return a;
+            return a.toString();
         }));
         for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : collect.entrySet()) {
             Map<String,Object> map = new HashMap<>();
             if (stringListEntry.getValue().size()>1){
                 Map<String, Object> pts1 = stringListEntry.getValue().get(0);
                 Map<String, Object> pts2 = stringListEntry.getValue().get(1);
-                if (pts1.get("flag").equals("1")){
+                if (pts1.get(MagicString.FLAG).equals("1")){
                     map = this.compareNum(attr,oldSkuSum,oldFaceSum,newSkuSum,newFaceSum,pts1,pts2);
                 }else {
                     map = this.compareNum(attr,oldSkuSum,oldFaceSum,newSkuSum,newFaceSum,pts2,pts1);
                 }
             }else {
                 Map<String, Object> pts1 = stringListEntry.getValue().get(0);
-                if (pts1.get("flag").equals("1")){
+                if (pts1.get(MagicString.FLAG).equals("1")){
                     map = this.compareNum(attr,oldSkuSum,oldFaceSum,newSkuSum,newFaceSum,pts1,new HashMap<>());
                 }else {
                     map = this.compareNum(attr,oldSkuSum,oldFaceSum,newSkuSum,newFaceSum,new HashMap<>(),pts1);
@@ -714,7 +714,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         String col = Joiner.on(",").join(attrList.stream().map(map -> MapUtils.getString(map, "sort")).collect(Collectors.toList()));
         s.append(col+",plano_width,plano_height,plano_depth");
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
-        int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
+        int existTableName = mstBranchMapper.checkTableExist(MagicString.DEFAULT_TABLE, coreCompany);
 
         if (existTableName == 0){
             coreCompany = companyCd;
@@ -741,22 +741,22 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         for (String s : attr) {
             map.put("attr_"+s,newPts.get("attr_"+s));
         }
-        int skuOldArea =(int) Math.round(Double.parseDouble(oldPts.getOrDefault("skuNum",0).toString())/ oldSkuSum*100);
-        int skuNewArea = (int) Math.round(Double.parseDouble(newPts.getOrDefault("skuNum",0).toString())/newSkuSum*100);
-        int faceOldArea =(int) Math.round(Double.parseDouble(oldPts.getOrDefault("faceNum",0).toString())/oldFaceSum*100);
-        int faceNewArea = (int) Math.round(Double.parseDouble(newPts.getOrDefault("faceNum",0).toString())/newFaceSum*100);
-        map.put("skuNew",newPts.getOrDefault("skuNum",0));
-        map.put("skuOld",oldPts.getOrDefault("skuNum",0));
-        map.put("skuCompare",Integer.parseInt(newPts.getOrDefault("skuNum",0).toString())-Integer.parseInt(oldPts.getOrDefault("skuNum",0).toString()));
-        map.put("skuOldArea",skuOldArea);
-        map.put("skuNewArea",skuNewArea);
-        map.put("skuCompareArea",skuNewArea-skuOldArea);
-        map.put("faceNew",newPts.getOrDefault("faceNum",0));
-        map.put("faceOld",oldPts.getOrDefault("faceNum",0));
-        map.put("faceCompare",Integer.parseInt(newPts.getOrDefault("faceNum",0).toString())-Integer.parseInt(oldPts.getOrDefault("faceNum",0).toString()));
-        map.put("faceOldArea",faceOldArea);
-        map.put("faceNewArea",faceNewArea);
-        map.put("faceCompareArea",faceNewArea-faceOldArea);
+        int skuOldArea =(int) Math.round(Double.parseDouble(oldPts.getOrDefault(MagicString.SKU_NUM,0).toString())/ oldSkuSum*100);
+        int skuNewArea = (int) Math.round(Double.parseDouble(newPts.getOrDefault(MagicString.SKU_NUM,0).toString())/newSkuSum*100);
+        int faceOldArea =(int) Math.round(Double.parseDouble(oldPts.getOrDefault(MagicString.FACE_NUM,0).toString())/oldFaceSum*100);
+        int faceNewArea = (int) Math.round(Double.parseDouble(newPts.getOrDefault(MagicString.FACE_NUM,0).toString())/newFaceSum*100);
+        map.put("skuNew",newPts.getOrDefault(MagicString.SKU_NUM,0));
+        map.put("skuOld",oldPts.getOrDefault(MagicString.SKU_NUM,0));
+        map.put("skuCompare",Integer.parseInt(newPts.getOrDefault(MagicString.SKU_NUM,0).toString())-Integer.parseInt(oldPts.getOrDefault(MagicString.SKU_NUM,0).toString()));
+        map.put("skuOldArea",skuOldArea+MagicString.PERCENTAGE);
+        map.put("skuNewArea",skuNewArea+MagicString.PERCENTAGE);
+        map.put("skuCompareArea",skuNewArea-skuOldArea+MagicString.PERCENTAGE);
+        map.put("faceNew",newPts.getOrDefault(MagicString.FACE_NUM,0));
+        map.put("faceOld",oldPts.getOrDefault(MagicString.FACE_NUM,0));
+        map.put("faceCompare",Integer.parseInt(newPts.getOrDefault(MagicString.FACE_NUM,0).toString())-Integer.parseInt(oldPts.getOrDefault(MagicString.FACE_NUM,0).toString()));
+        map.put("faceOldArea",faceOldArea+MagicString.PERCENTAGE);
+        map.put("faceNewArea",faceNewArea+MagicString.PERCENTAGE);
+        map.put("faceCompareArea",faceNewArea-faceOldArea+MagicString.PERCENTAGE);
         return map;
     }
 

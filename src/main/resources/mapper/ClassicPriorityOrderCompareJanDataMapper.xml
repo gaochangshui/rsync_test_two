@@ -39,7 +39,7 @@
         select
             coalesce(count(DISTINCT newdata.jan),0) "skuNum",coalesce(sum(newdata.face_count),0) "faceNum",'1' flag,
             <foreach collection="attrResultList" item="item" separator=",">
-                coalesce(${item.tableName}."${item.col}",'_') as ${item.name}
+                coalesce(${item.tableName}."${item.col}",'_') as "${item.name}"
             </foreach>
         from
             priority.priority_order_pts_result_jandata newdata
@@ -51,14 +51,14 @@
             newdata.priority_order_cd = #{priorityOrderCd} and newdata.compare_flag = 1
         GROUP BY
             <foreach collection="attrResultList" item="item" separator=",">
-                "${item.col}"
+                ${item.tableName}."${item.col}"
             </foreach>
     </select>
     <select id="getOldPtsAttrCompare" resultType="java.util.Map">
         select
         coalesce(count(DISTINCT olddata.jan),0) "skuNum",coalesce(sum(olddata.face_count),0) "faceNum",'0' flag,
         <foreach collection="attrResultList" item="item" separator=",">
-            coalesce(${item.tableName}."${item.col}",'_') as ${item.name}
+            coalesce(${item.tableName}."${item.col}",'_') as "${item.name}"
         </foreach>
         from
             priority.priority_order_pattern pattern
@@ -76,7 +76,7 @@
             pattern.priority_order_cd = #{priorityOrderCd}
         GROUP BY
         <foreach collection="attrResultList" item="item" separator=",">
-            "${item.col}"
+            ${item.tableName}."${item.col}"
         </foreach>
     </select>
     <select id="getAllNewCompare" resultType="com.trechina.planocycle.entity.dto.PriorityOrderCompareJanData">
