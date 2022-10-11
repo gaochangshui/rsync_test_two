@@ -60,10 +60,12 @@ public interface BasicPatternRestrictRelationMapper {
 
     void updateAreaPosition(List<Map<String, Object>> list, Integer priorityOrderCd);
 
-    void updateArea(List<Map<String, Object>> list, Integer priorityOrderCd);
+    void updateArea(List<Map<String, Object>> list, Integer priorityOrderCd, String companyCd, String authorCd);
 
     void reorderTanaPosition(Integer priorityOrderCd);
 
     Map<String,Object> getTanaInfo(@Param("item") BasicPatternRestrictRelation basicPatternRestrictRelation);
+
+    int deleteArea(Integer priorityOrderCd);
 
 }

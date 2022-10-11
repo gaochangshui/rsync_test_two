@@ -1012,6 +1012,7 @@ public class CommonMstServiceImpl implements CommonMstService {
         dataByTaitana.forEach((key, value) -> {
             final long[] currentRestrictCd = {-1L};
             final double[] area = {0.0};
+            final int[] janCount = {0};
             String[] taiTana = key.split(",");
             String taiCd = taiTana[0];
             String tanaCd = taiTana[1];
@@ -1028,15 +1029,18 @@ public class CommonMstServiceImpl implements CommonMstService {
                 if(!Objects.equals(currentRestrictCd[0], v.getRestrictCd())){
                     area[0] = 0;
                     tanaPosition[0]++;
+                    janCount[0] = 0;
                 }
                 area[0] += BigDecimal.valueOf(v.getPlanoWidth()*v.getFaceFact()).divide(BigDecimal.valueOf(tanaWidth), 5,RoundingMode.HALF_UP)
                         .multiply(BigDecimal.valueOf(100)).doubleValue();
+                janCount[0]++;
 
                 map.put(MagicString.TAI_CD, taiCd);
                 map.put(MagicString.TANA_CD, tanaCd);
                 map.put(MagicString.TANA_POSITION, tanaPosition[0]);
                 map.put(MagicString.RESTRICT_CD, v.getRestrictCd());
                 map.put("area", area[0]);
+                map.put("janCount", janCount[0]);
 
                 areaList.put(Joiner.on("_").join(Lists.newArrayList(taiCd, tanaCd, tanaPosition[0])), map);
                 currentRestrictCd[0] = v.getRestrictCd();
