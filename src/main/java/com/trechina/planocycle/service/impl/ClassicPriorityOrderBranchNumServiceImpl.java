@@ -739,7 +739,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     map.put(MagicString.JAN,stringListEntry.getValue().get(0).get(MagicString.JAN));
                     map.put(MagicString.JAN_NAME,stringListEntry.getValue().get(0).get(MagicString.JAN_NAME));
                     map.put("maker",stringListEntry.getValue().get(0).get("maker"));
-                    map.put("total","");
+                    long total = stringListEntry.getValue().stream().filter(map1 -> map1.get("flag").equals("◯")).count();
+                    map.put("total",total);
                     for (Map<String, Object> objectMap : branchList) {
                         for (Map<String, Object> stringObjectMap : stringListEntry.getValue()) {
                             if (objectMap.get("branchCd").equals(stringObjectMap.get("branchCd"))){
@@ -776,7 +777,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                     patternMap.put(MagicString.JAN, stringListEntry.getKey());
                     patternMap.put(MagicString.JAN_NAME, stringListEntry.getValue().get(0).get(MagicString.JAN_NAME));
                     patternMap.put("maker", stringListEntry.getValue().get(0).get("maker"));
-                    patternMap.put("total", "");
+                    long total = stringListEntry.getValue().stream().filter(map1 -> map1.get("flag").equals("◯")).count();
+                    patternMap.put("total", total);
                     for (Map<String, Object> map : stringListEntry.getValue()) {
                         for (Map<String, Object> stringObjectMap : patternNameList) {
                             if (stringObjectMap.get("shelfPatternCd").equals(map.get("shelfPatternCd"))) {
