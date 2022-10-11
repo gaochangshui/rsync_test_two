@@ -389,7 +389,7 @@ public class ExcelUtils {
                 for(int j=0;j<cols;j++) {//16384
                     XSSFCell cell = row.getCell(j);
                     if(cell!=null) {
-                        cell.setCellType(CellType.STRING);
+                        //cell.setCellType(CellType.STRING);
                         String cellValue = getStringVal(cell);
 
                         data[j]=cellValue;
