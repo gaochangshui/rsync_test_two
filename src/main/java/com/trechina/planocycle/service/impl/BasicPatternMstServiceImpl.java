@@ -656,8 +656,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     vehicleNumCache.put(uuid,1);
                     //recalculation area
                     List<Map<String, Object>> areaList = commonMstService.recalculationArea(workData, tanaList);
-                    restrictRelationMapper.reorderTanaPosition(priorityOrderCd);
-                    restrictRelationMapper.updateArea(areaList, priorityOrderCd);
+                    restrictRelationMapper.deleteArea(priorityOrderCd);
+                    restrictRelationMapper.updateArea(areaList, priorityOrderCd, companyCd, authorCd);
                 }
                 logger.info("taskId:{} auto calculate end", uuid);
             }catch (Exception e){

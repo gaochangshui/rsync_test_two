@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -43,7 +44,6 @@ import org.springframework.web.util.UriUtils;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.swing.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.text.MessageFormat;
@@ -1740,6 +1740,18 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         }else{
                             ptsJan.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,jan));
                         }
+                    }else if(janReplaceMap.containsKey(janOld)){
+                        deleteJanList.removeIf(map->Objects.equals(janOld, MapUtils.getString(map,MagicString.JAN)));
+                        Map<String, Object> oldPtsJan = ObjectUtil.cloneByStream(ptsJan);
+                        oldPtsJan.put("reason", MagicString.REASON_MAP.get("2"));
+                        deleteJanList.add(oldPtsJan);
+
+                        String janNew = janReplaceMap.get(janOld);
+                        ptsJan.put(MagicString.JAN, janNew);
+                        oldPtsJan = ObjectUtil.cloneByStream(ptsJan);
+                        newJanList.removeIf(map->janNew.equals(map.get("jan")));
+                        oldPtsJan.put("reason", MagicString.REASON_MAP.get("2"));
+                        newJanList.add(oldPtsJan);
                     }else if(newJanIndex < notInPtsJanList.size()){
                         String newJan = notInPtsJanList.get(newJanIndex).get(MagicString.JAN).toString();
                         Integer newJanRank = MapUtils.getInteger(notInPtsJanList.get(newJanIndex), MagicString.RANK_UPD);
@@ -1894,14 +1906,13 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
             Map<String, Object> ptsJanMap = smallList.get(smallsIndex);
 
-            if(deleteJanList.stream().noneMatch(map->smallJan.equals(map.get(MagicString.JAN_OLD).toString())) && !repeatOldJan.containsKey(smallJan)){
-                Map<String, Object> oldJanMap = new HashMap<>(ptsJanMap);
-                oldJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
-                oldJanMap.put(MagicString.PTS_NAME, fileName);
-                newJanList.removeIf(map->Objects.equals(MapUtils.getString(map, MagicString.JAN), smallJan));
-                oldJanMap.put("reason", MagicString.REASON_MAP.get("3"));
-                deleteJanList.add(oldJanMap);
-            }
+            Map<String, Object> delOldJanMap = new HashMap<>(ptsJanMap);
+            delOldJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
+            delOldJanMap.put(MagicString.PTS_NAME, fileName);
+            newJanList.removeIf(map->Objects.equals(MapUtils.getString(map, MagicString.JAN), smallJan));
+            delOldJanMap.put("reason", MagicString.REASON_MAP.get("3"));
+            deleteJanList.removeIf(jan->Objects.equals(MapUtils.getString(jan, MagicString.JAN), smallJan));
+            deleteJanList.add(delOldJanMap);
 
             if(notInPtsJanList.isEmpty() || bigLastIndex>= notInPtsJanList.size()){
                 //no jan can 拡
@@ -1915,6 +1926,13 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 }else{
                     smallList = smallList.stream().map(map-> {
                         if (MapUtils.getString(map, MagicString.JAN).equals(smallJan)) {
+                            newJanList.removeIf(jan->Objects.equals(MapUtils.getString(jan, MagicString.JAN), smallJan));
+                            if(MapUtils.getString(map, MagicString.JAN_OLD).equals(smallJan)){
+                                Map<String, Object> oldJanMap = ObjectUtil.cloneByStream(compressJan);
+                                oldJanMap.put("reason", MagicString.REASON_MAP.get("3"));
+                                deleteJanList.removeIf(jan->Objects.equals(MapUtils.getString(jan, MagicString.JAN), smallJan));
+                                deleteJanList.add(oldJanMap);
+                            }
                             map.put(MagicString.DEL_FLAG, "1");
                         }
                         return map;
@@ -1934,24 +1952,30 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 }else{
                     smallList = smallList.stream().map(map->{
                         if(MapUtils.getString(map, MagicString.JAN).equals(smallJan)){
+                            deleteJanList.removeIf(jan->Objects.equals(MapUtils.getString(jan, MagicString.JAN), smallJan));
+                            String janOld = MapUtils.getString(map, MagicString.JAN_OLD);
+                            deleteJanList.removeIf(jan->Objects.equals(MapUtils.getString(jan, MagicString.JAN), janOld));
+                            Map<String, Object> janOldMap = ObjectUtil.cloneByStream(map);
+                            janOldMap.put(MagicString.JAN, janOld);
+                            janOldMap.put("reason", MagicString.REASON_MAP.get("3"));
+                            deleteJanList.add(janOldMap);
                             map.put(MagicString.JAN, MapUtils.getString(bigMap,MagicString.JAN));
                         }
                         return map;
                     }).collect(Collectors.toList());
                 }
 
-                if (newJanList.stream().noneMatch(map->map.get(MagicString.JAN).toString().equals(bigMap.get(MagicString.JAN)))) {
-                    Map<String, Object> newCopyJanMap = new HashMap<>(bigMap);
-                    newCopyJanMap.put(MagicString.BRANCH_NUM, bigMap.get(MagicString.BRANCH_NUM));
-                    newCopyJanMap.put(MagicString.BRANCH_AMOUNT, bigMap.get(MagicString.BRANCH_AMOUNT));
-                    newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
-                    newCopyJanMap.put(MagicString.PTS_NAME, fileName);
-                    deleteJanList.removeIf(map->Objects.equals(bigMap.get(MagicString.JAN), MapUtils.getString(map,MagicString.JAN)));
-                    newCopyJanMap.put("reason", MagicString.REASON_MAP.get("3"));
-                    //priority_order_data exist jan
-                    newJanList.add(newCopyJanMap);
-                    repeatOldJan.put(smallJan, MapUtils.getString(bigMap, MagicString.JAN));
-                }
+                Map<String, Object> newCopyJanMap = new HashMap<>(bigMap);
+                newCopyJanMap.put(MagicString.BRANCH_NUM, bigMap.get(MagicString.BRANCH_NUM));
+                newCopyJanMap.put(MagicString.BRANCH_AMOUNT, bigMap.get(MagicString.BRANCH_AMOUNT));
+                newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
+                newCopyJanMap.put(MagicString.PTS_NAME, fileName);
+                deleteJanList.removeIf(map->Objects.equals(bigMap.get(MagicString.JAN), MapUtils.getString(map,MagicString.JAN)));
+                newCopyJanMap.put("reason", MagicString.REASON_MAP.get("3"));
+                newJanList.removeIf(map->Objects.equals(bigMap.get(MagicString.JAN), MapUtils.getString(map,MagicString.JAN)));
+                //priority_order_data exist jan
+                newJanList.add(newCopyJanMap);
+                repeatOldJan.put(smallJan, MapUtils.getString(bigMap, MagicString.JAN));
             }
 
             newPtsJanMap.put(attrSmalls, smallList);
