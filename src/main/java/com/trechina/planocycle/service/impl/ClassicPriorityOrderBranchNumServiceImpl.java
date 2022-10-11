@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.regex.Pattern;
@@ -685,6 +686,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
     @Override
     public Map<String, Object> getStarReadingParam(String companyCd,Integer priorityOrderCd) {
+        logger.info("start:{}",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
         PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
@@ -712,9 +714,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
         List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
         groupCompany.add(companyCd);
+
         if (modeCheck == 1){
             janInfoTableName = "priority.work_priority_order_commodity_branch";
-
+            logger.info("branch:{}",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
             List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
             List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
             List<Map<String, Object>> janOrName = starReadingTableMapper.getJanOrName(companyCd, priorityOrderCd,commonTableName.getProInfoTable(),makerCol);
@@ -793,6 +796,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
             mapResult.put("data", list);
         }
+        logger.info("branch end:{}",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
         List<Map<String, Object>> areaList = starReadingTableMapper.getAreaList(priorityOrderCd,groupCompany,tableName);
         List<Map<String, Object>>  patternList =  starReadingTableMapper.getPatternList(priorityOrderCd);
         expressItemList.addAll(areaList);
@@ -804,6 +808,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         map.put("janList",janList);
         map.put("modeCheck",modeCheck);
         map.put("data",!isModeCheck?null:mapResult);
+        logger.info("end:{}",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 
