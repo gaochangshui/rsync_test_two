@@ -27,7 +27,7 @@
           left join priority.work_priority_order_catepak_attribute  attrs
           on pak.id = attrs.catepak_cd
           and attrs.flg = 0
-          group by pak.id,pak.rank,pak.branch_num
+          group by pak.id,pak.rank,pak.branch_num,pak.priority_order_cd
       ) sm
       left join
       (select
@@ -85,7 +85,7 @@
   </insert>
   <insert id="setWorkForFinal">
     insert into priority.work_priority_order_catepak(id,company_cd,priority_order_cd,rank,branch_num)
-    select #{id},company_cd,#{newPriorityOrderCd},rank,branch_num
+    select id,company_cd,#{newPriorityOrderCd},rank,branch_num
     from priority.priority_order_catepak
     where company_cd=#{companyCd} and priority_order_cd=#{priorityOrderCd}
   </insert>
