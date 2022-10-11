@@ -681,10 +681,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
         String makerCol = classicPriorityOrderMstMapper.getMakerCol(commonTableName.getStoreIsCore(),commonTableName.getStoreMstClass());
         Integer modeCheck = priorityOrderMstMapper.getModeCheck(priorityOrderCd);
-        boolean isModeCheck = true;
         if (modeCheck == null){
             modeCheck =1;
-            isModeCheck = false;
         }
 
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
@@ -722,13 +720,16 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         map.put("expressItemList",expressItemList);
         map.put("janList",janList);
         map.put("modeCheck",modeCheck);
-        map.put("data",!isModeCheck?null:mapResult);
+        map.put("data",mapResult.isEmpty()?null:mapResult);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
     public Map<String,Object> getDepositPattern( Integer priorityOrderCd, Map<String, Object> mapResult
             , String makerCol, StringBuilder column, StringBuilder header, GetCommonPartsDataDto commonTableName
             , Map<String, Object> group){
         List<Map<String, Object>> patternDiff = starReadingTableMapper.getPatterndiff(priorityOrderCd,commonTableName.getProInfoTable(),makerCol);
+        if (patternDiff.isEmpty()){
+            return mapResult;
+        }
         List<Map<String, Object>> patternNameList = starReadingTableMapper.getPatternNameList(priorityOrderCd);
         List<String> shelfNameCd = patternDiff.stream().map(map -> MagicString.PATTERN+map.get("shelfNameCd").toString()).collect(Collectors.toList());
         patternNameList = patternNameList.stream().filter(map->shelfNameCd.contains(map.get("id").toString())).collect(Collectors.toList());
@@ -768,8 +769,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             , String makerCol, StringBuilder column, StringBuilder header, GetCommonPartsDataDto commonTableName, List<String> groupCompany
             , Map<String, Object> group){
 
-
         List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
+        if (branchDiff.isEmpty()){
+            return mapResult;
+        }
         List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
         List<Map<String, Object>> janOrName = starReadingTableMapper.getJanOrName(companyCd, priorityOrderCd,commonTableName.getProInfoTable(),makerCol);
         List<Object> branchCd = branchDiff.stream().map(map -> map.get(MagicString.BRANCH_CD)).collect(Collectors.toList());
