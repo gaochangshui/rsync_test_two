@@ -136,7 +136,7 @@
     WHERE
     mst.deleteflg = 0
 <!--    and exists (select deleteflg from planocycle.shelf_pattern_branch as br where pattern.shelf_pattern_cd=br.shelf_pattern_cd and deleteflg = 0 )-->
-<!--          AND mst.company_cd = #{companyCd,jdbcType=VARCHAR}-->
+        AND mst.company_cd = #{companyCd,jdbcType=VARCHAR}
       </select>
         <select id="getExcelForPattern" resultType="java.util.Map">
 
