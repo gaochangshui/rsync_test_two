@@ -373,6 +373,14 @@ public class PriorityAllPtsServiceImpl implements PriorityAllPtsService {
         return ResultMaps.result(ResultEnum.SUCCESS,mapHeader);
     }
 
+    @Override
+    public Map<String, Object> setFaceNumForPriorityAll(List<PriorityAllFaceVo> priorityAllFaceVo) {
+        Integer priorityAllCd = priorityAllFaceVo.get(0).getPriorityAllCd();
+        Integer patternCd = priorityAllFaceVo.get(0).getPatternCd();
+        priorityAllPtsMapper.setFaceNum(priorityAllFaceVo,priorityAllCd,patternCd);
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
     public List<Map<String, Object>>  oldGroupHandle(List<Map<String, Object>>  ptsOldGroup,BasicAllPts basicAllPts,List<Map<String, Object>> attrCol){
         ptsOldGroup= ptsOldGroup.stream().filter(map->map.get(MagicString.TAI_CD).toString().equals(basicAllPts.getTaiCd()+"")&&
                         map.get(MagicString.TANA_CD).toString().equals(basicAllPts.getTanaCd()+""))
