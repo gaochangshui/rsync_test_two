@@ -719,82 +719,85 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             janInfoTableName = "priority.work_priority_order_commodity_branch";
             logger.info("branch:{}",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
             List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
-            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
-            List<Map<String, Object>> janOrName = starReadingTableMapper.getJanOrName(companyCd, priorityOrderCd,commonTableName.getProInfoTable(),makerCol);
-            List<Object> branchCd = branchDiff.stream().map(map -> map.get("branchCd")).collect(Collectors.toList());
-            branchList=branchList.stream().filter(map ->branchCd.contains(map.get("branchCd"))).collect(Collectors.toList());
-            Map<String, List<Map<String, Object>>> janGroup = branchDiff.stream()
-                    .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.JAN)));
+            if (!branchDiff.isEmpty()){
+                List<Map<String, Object>> janOrName = starReadingTableMapper.getJanOrName(companyCd, priorityOrderCd,commonTableName.getProInfoTable(),makerCol);
+                List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
+                List<Object> branchCd = branchDiff.stream().map(map -> map.get("branchCd")).collect(Collectors.toList());
+                branchList=branchList.stream().filter(map ->branchCd.contains(map.get("branchCd"))).collect(Collectors.toList());
+                Map<String, List<Map<String, Object>>> janGroup = branchDiff.stream()
+                        .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.JAN)));
 
-            List<Map<String, Object>> list = new ArrayList();
-            for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
-                for (Map<String, Object> stringObjectMap : janOrName) {
-                    if (stringListEntry.getKey().equals(stringObjectMap.get("jan_new"))){
-                        stringListEntry.getValue().get(0).put(MagicString.JAN_NAME,stringObjectMap.get("sku"));
-                        stringListEntry.getValue().get(0).put("maker",stringObjectMap.get("maker"));
-                    }
-                }
-                Map<String,Object> map = new HashMap<>();
-                map.put(MagicString.JAN,stringListEntry.getValue().get(0).get(MagicString.JAN));
-                map.put(MagicString.JAN_NAME,stringListEntry.getValue().get(0).get(MagicString.JAN_NAME));
-                map.put("maker",stringListEntry.getValue().get(0).get("maker"));
-                map.put("total","");
-                for (Map<String, Object> objectMap : branchList) {
-                    for (Map<String, Object> stringObjectMap : stringListEntry.getValue()) {
-                        if (objectMap.get("branchCd").equals(stringObjectMap.get("branchCd"))){
-                            map.put(objectMap.get(MagicString.sort)+"_"+objectMap.get("branchCd"),stringObjectMap.get("flag"));
+                List<Map<String, Object>> list = new ArrayList();
+                for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
+                    for (Map<String, Object> stringObjectMap : janOrName) {
+                        if (stringListEntry.getKey().equals(stringObjectMap.get("jan_new"))){
+                            stringListEntry.getValue().get(0).put(MagicString.JAN_NAME,stringObjectMap.get("sku"));
+                            stringListEntry.getValue().get(0).put("maker",stringObjectMap.get("maker"));
                         }
                     }
+                    Map<String,Object> map = new HashMap<>();
+                    map.put(MagicString.JAN,stringListEntry.getValue().get(0).get(MagicString.JAN));
+                    map.put(MagicString.JAN_NAME,stringListEntry.getValue().get(0).get(MagicString.JAN_NAME));
+                    map.put("maker",stringListEntry.getValue().get(0).get("maker"));
+                    map.put("total","");
+                    for (Map<String, Object> objectMap : branchList) {
+                        for (Map<String, Object> stringObjectMap : stringListEntry.getValue()) {
+                            if (objectMap.get("branchCd").equals(stringObjectMap.get("branchCd"))){
+                                map.put(objectMap.get(MagicString.sort)+"_"+objectMap.get("branchCd"),stringObjectMap.get("flag"));
+                            }
+                        }
+                    }
+                    list.add(map);
                 }
-                list.add(map);
-            }
 
-            for (Map<String, Object> objectMap : branchList) {
-                column.append(",").append(objectMap.get(MagicString.sort)).append("_").append(objectMap.get("branchCd"));
-                header.append(",").append(objectMap.get("branchCd")).append("<br />").append(objectMap.get("branchName"));
-                group.put( objectMap.get("sort").toString(), objectMap.get(MagicString.area));
+                for (Map<String, Object> objectMap : branchList) {
+                    column.append(",").append(objectMap.get(MagicString.sort)).append("_").append(objectMap.get("branchCd"));
+                    header.append(",").append(objectMap.get("branchCd")).append("<br />").append(objectMap.get("branchName"));
+                    group.put( objectMap.get("sort").toString(), objectMap.get(MagicString.area));
+                }
+                mapResult.put("column", column.toString());
+                mapResult.put("header", header.toString());
+                mapResult.put("group", group);
+                list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
+                mapResult.put("data", list);
             }
-            mapResult.put("column", column.toString());
-            mapResult.put("header", header.toString());
-            mapResult.put("group", group);
-            list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
-            mapResult.put("data", list);
-
         }else if (modeCheck == 0){
             janInfoTableName = "priority.work_priority_order_commodity_pattern";
-            List<Map<String, Object>> patternDiff = starReadingTableMapper.getPatterndiff(priorityOrderCd,commonTableName.getProInfoTable(),makerCol);
-            List<Map<String, Object>> patternNameList = starReadingTableMapper.getPatternNameList(priorityOrderCd);
-            List<String> shelfNameCd = patternDiff.stream().map(map -> "pattern"+map.get("shelfNameCd").toString()).collect(Collectors.toList());
-            patternNameList = patternNameList.stream().filter(map->shelfNameCd.contains(map.get("id").toString())).collect(Collectors.toList());
-            List<Map<String, Object>> list = new ArrayList();
-            Map<String, List<Map<String, Object>>> janGroup = patternDiff.stream()
-                    .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.JAN)));
-            for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
-                Map<String,Object> patternMap = new HashMap<>();
-                patternMap.put(MagicString.JAN,stringListEntry.getKey());
-                patternMap.put(MagicString.JAN_NAME,stringListEntry.getValue().get(0).get(MagicString.JAN_NAME));
-                patternMap.put("maker",stringListEntry.getValue().get(0).get("maker"));
-                patternMap.put("total","");
-                for (Map<String, Object> map : stringListEntry.getValue()) {
-                    for (Map<String, Object> stringObjectMap : patternNameList) {
-                        if (stringObjectMap.get("shelfPatternCd").equals(map.get("shelfPatternCd"))){
-                            patternMap.put(stringObjectMap.get("id")+"_"+map.get("shelfPatternCd"),map.get("flag"));
+            List<Map<String, Object>> patternDiff = starReadingTableMapper.getPatterndiff(priorityOrderCd, commonTableName.getProInfoTable(), makerCol);
+            if (!patternDiff.isEmpty()) {
+                List<Map<String, Object>> patternNameList = starReadingTableMapper.getPatternNameList(priorityOrderCd);
+                List<String> shelfNameCd = patternDiff.stream().map(map -> "pattern" + map.get("shelfNameCd").toString()).collect(Collectors.toList());
+                patternNameList = patternNameList.stream().filter(map -> shelfNameCd.contains(map.get("id").toString())).collect(Collectors.toList());
+                List<Map<String, Object>> list = new ArrayList();
+                Map<String, List<Map<String, Object>>> janGroup = patternDiff.stream()
+                        .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.JAN)));
+                for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
+                    Map<String, Object> patternMap = new HashMap<>();
+                    patternMap.put(MagicString.JAN, stringListEntry.getKey());
+                    patternMap.put(MagicString.JAN_NAME, stringListEntry.getValue().get(0).get(MagicString.JAN_NAME));
+                    patternMap.put("maker", stringListEntry.getValue().get(0).get("maker"));
+                    patternMap.put("total", "");
+                    for (Map<String, Object> map : stringListEntry.getValue()) {
+                        for (Map<String, Object> stringObjectMap : patternNameList) {
+                            if (stringObjectMap.get("shelfPatternCd").equals(map.get("shelfPatternCd"))) {
+                                patternMap.put(stringObjectMap.get("id") + "_" + map.get("shelfPatternCd"), map.get("flag"));
+                            }
                         }
                     }
+                    list.add(patternMap);
                 }
-                list.add(patternMap);
-            }
 
-            for (Map<String, Object> objectMap : patternNameList) {
-                column.append(",").append(objectMap.get("id")).append("_").append(objectMap.get("shelfPatternCd"));
-                header.append(",").append(objectMap.get("shelfPatternName"));
-                group.put( objectMap.get("id").toString(), objectMap.get("shelfName"));
+                for (Map<String, Object> objectMap : patternNameList) {
+                    column.append(",").append(objectMap.get("id")).append("_").append(objectMap.get("shelfPatternCd"));
+                    header.append(",").append(objectMap.get("shelfPatternName"));
+                    group.put(objectMap.get("id").toString(), objectMap.get("shelfName"));
+                }
+                mapResult.put("column", column.toString());
+                mapResult.put("header", header.toString());
+                mapResult.put("group", group);
+                list = list.stream().sorted(Comparator.comparing(map -> MapUtils.getString(map, MagicString.JAN))).collect(Collectors.toList());
+                mapResult.put("data", list);
             }
-            mapResult.put("column", column.toString());
-            mapResult.put("header", header.toString());
-            mapResult.put("group", group);
-            list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
-            mapResult.put("data", list);
         }
         logger.info("branch end:{}",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
         List<Map<String, Object>> areaList = starReadingTableMapper.getAreaList(priorityOrderCd,groupCompany,tableName);
