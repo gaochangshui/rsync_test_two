@@ -346,12 +346,11 @@ public class ExcelUtils {
      */
     public static String generateNormalExcelToFile(List<String[]> allData, String filePath){
         logger.info("start generate excel,now:{}, filename: {}", LocalDateTime.now(),filePath);
-        try(SXSSFWorkbook workbook = new SXSSFWorkbook(1000);
+        try(XSSFWorkbook workbook = new XSSFWorkbook();
             FileOutputStream fos = new FileOutputStream(filePath)){
-            workbook.setCompressTempFiles(true);
-            Sheet sheet = workbook.createSheet();
-            Row janRow;
-            Cell janCell;
+            XSSFSheet sheet = workbook.createSheet();
+            XSSFRow janRow;
+            XSSFCell janCell;
             for (int i = 0; i < allData.size(); i++) {
                 int columnIndex = 0;
                 janRow = sheet.createRow(i);
@@ -364,7 +363,6 @@ public class ExcelUtils {
                 }
             }
             workbook.write(fos);
-            workbook.dispose();
         }catch (Exception e){
             logger.error("", e);
         }
