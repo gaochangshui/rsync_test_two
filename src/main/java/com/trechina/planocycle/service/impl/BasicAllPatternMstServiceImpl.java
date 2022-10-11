@@ -154,7 +154,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                         List<PriorityOrderResultDataDto> workData = new Gson().fromJson(new Gson().toJson(tmpData), new TypeToken<List<PriorityOrderResultDataDto>>() {
                         }.getType());
                         priorityAllPtsService.saveWorkPtsJanData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd(), workData, isReOrder);
-                        vehicleNumCache.put(uuid,1);
+                        //vehicleNumCache.put(uuid,1);
                     }
                 }
 
