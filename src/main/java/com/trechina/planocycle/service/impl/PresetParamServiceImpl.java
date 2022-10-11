@@ -60,8 +60,8 @@ public class PresetParamServiceImpl implements PresetParamService {
         for (PresetAttribute attribute : presetParam) {
             JSONObject jsonObject1 = JSON.parseObject(attribute.getCommonPartsData());
 
-            if (jsonObject.get("storeIsCore").equals(jsonObject1.get("storeIsCore"))
-                    && jsonObject.get("storeMstClass").equals(jsonObject1.get("storeMstClass"))){
+            if (jsonObject.get("prodIsCore").equals(jsonObject1.get("prodIsCore"))
+                    && jsonObject.get("prodMstClass").equals(jsonObject1.get("prodMstClass"))){
                 return ResultMaps.result(ResultEnum.SUCCESS,attribute);
             }
         }

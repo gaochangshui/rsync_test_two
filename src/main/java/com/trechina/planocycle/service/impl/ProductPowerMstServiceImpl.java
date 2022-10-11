@@ -166,6 +166,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         }
 
         String tableName = "";
+        String tableNameAttr = "";
         String janInfoTableName = "";
 
         ProductPowerParamVo productPowerParam = productPowerDataMapper.getParam(companyCd, productPowerCd);
@@ -174,16 +175,19 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         String prodIsCore = productPowerParamJson.getString("prodIsCore");
         //第数セット
         String prodMstClass = productPowerParamJson.getString("prodMstClass");
+        String coreCompany = companyCd;
 
         if("0".equals(prodIsCore)){
             //0-企業
             tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", companyCd, prodMstClass);
+            tableNameAttr = String.format("\"%s\".prod_%s_jan_attr_header_sys", coreCompany, prodMstClass);
             janInfoTableName = String.format("\"%s\".prod_%s_jan_info", companyCd, prodMstClass);
         }else{
             //自設company_cd
-            String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+            coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
             //1-自設
             tableName = String.format("\"%s\".prod_%s_jan_kaisou_header_sys", coreCompany, prodMstClass);
+            tableNameAttr = String.format("\"%s\".prod_%s_jan_attr_header_sys", coreCompany, prodMstClass);
             janInfoTableName = String.format("\"%s\".prod_%s_jan_info", coreCompany, prodMstClass);
         }
 
@@ -203,24 +207,34 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             //product name（品名2）
             janNameColIndex = Integer.parseInt(janName.get(0).get("sort").toString());
         }else if ( Objects.equals(janName2colNum, MagicString.PRODUCT_TYPE_ITEM)){
-            janNameColIndex = skuNameConfigMapper.getJanItem2colNum(companyCd, prodMstClass);
+            janNameColIndex = skuNameConfigMapper.getJanItem2colNum(coreCompany, prodMstClass);
         }else{
             //品名1
-            janNameColIndex = skuNameConfigMapper.getJanName2colNum(companyCd, prodMstClass);
+            janNameColIndex = skuNameConfigMapper.getJanName2colNum(coreCompany, prodMstClass);
         }
-
+        List<Map<String, Object>> prodAttrData = new Gson().fromJson(param.getProdAttrData().toString(), new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
+        List<String> attrList = new ArrayList<>();
+        prodAttrData.forEach(map->{
+            if ((Boolean) map.get("showFlag")) {
+                attrList.add(map.get("id").toString().split("_")[2]);
+            }
+        });
+        List<Map<String, Object>> attrColName = productPowerDataMapper.getAttrColName(attrList, tableNameAttr);
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, productPowerCd);
         List<Map<String, Object>> allData = productPowerDataMapper.getDynamicAllData(companyCd, productPowerCd,
-                janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", classify, project, janNameColIndex);
+                janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", classify, project, janNameColIndex,attrColName);
 
         //表示するカラムに対応するフィールド名
         List<String> attr = classify.stream().map(map -> map.get("attr").toString()).collect(Collectors.toList());
+        List<String> attrColCdList = attrColName.stream().map(map -> map.get("colCd").toString()).collect(Collectors.toList());
         attr.add("branchNum");
-        Map<String, List<String>> columnsByClassify = this.initColumnClassify(attr);
+        Map<String, List<String>> columnsByClassify = this.initColumnClassify(attr, attrColCdList);
         //表示する列に対応するヘッダー
+
         List<String> attrName = classify.stream().map(map -> map.get("attr_val").toString()).collect(Collectors.toList());
+        List<String> attrColNameList = attrColName.stream().map(map -> map.get("colName").toString()).collect(Collectors.toList());
         attrName.add("定番店鋪数");
-        Map<String, List<String>> headersByClassify = this.initHeaderClassify(attrName);
+        Map<String, List<String>> headersByClassify = this.initHeaderClassify(attrName, attrColNameList);
 
         this.fillParamData(ProductPowerHeaderEnum.POS.getName(),
                 posValue,paramListByGroup.get(ProductPowerHeaderEnum.POS.getCode()), headersByClassify, columnsByClassify, weightKeys);
@@ -317,10 +331,11 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         }
     }
 
-    private Map<String, List<String>> initHeaderClassify(List<String> attrName){
+    private Map<String, List<String>> initHeaderClassify(List<String> kaisouName, List<String> attrName){
         Map<String, List<String>> headersByClassify = new LinkedHashMap<>(10);
         headersByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("JANコード", "商品名"));
-        headersByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), attrName);
+        headersByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), kaisouName);
+        headersByClassify.put(ProductPowerHeaderEnum.ATTR.getName(), attrName);
         headersByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
         headersByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
@@ -333,10 +348,11 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         return headersByClassify;
     }
 
-    private Map<String, List<String>> initColumnClassify(List<String> attr){
+    private Map<String, List<String>> initColumnClassify(List<String> kaisou, List<String> attr){
         Map<String, List<String>> columnsByClassify = new LinkedHashMap<>(10);
         columnsByClassify.put(ProductPowerHeaderEnum.BASIC.getName(), Lists.newArrayList("jan", "jan_name"));
-        columnsByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), attr);
+        columnsByClassify.put(ProductPowerHeaderEnum.CLASSIFY.getName(), kaisou);
+        columnsByClassify.put(ProductPowerHeaderEnum.ATTR.getName(), attr);
         columnsByClassify.put(ProductPowerHeaderEnum.POS.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.CUSTOMER.getName(), Lists.newArrayList());
         columnsByClassify.put(ProductPowerHeaderEnum.PREPARE.getName(), Lists.newArrayList());
@@ -414,7 +430,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         if(!janAttrList.isEmpty()){
             for (Map<String, Object> objectMap : janAttrList) {
                 List<String> value= (List<String>)objectMap.get("value");
-                boolean flag= (boolean)objectMap.get("flag");
+                boolean flag= (boolean)objectMap.getOrDefault("rmFlag", false);
                 String attrName = productPowerDataMapper.getAttrName(objectMap.get("id").toString().split("_")[2],commonTableName.getProAttrTable());
                 janAttr.put(attrName,value);
                 janAttrFlag.put(attrName+"区分",flag?"対象":"除外");

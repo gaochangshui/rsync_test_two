@@ -643,6 +643,10 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                     }.getType());
                     shelfPtsService.basicSaveWorkPtsData(companyCd, authorCd, priorityOrderCd, workData, isReOrder);
                     vehicleNumCache.put(uuid,1);
+                    //recalculation area
+                    List<Map<String, Object>> areaList = commonMstService.recalculationArea(workData, tanaList);
+                    restrictRelationMapper.reorderTanaPosition(priorityOrderCd);
+                    restrictRelationMapper.updateArea(areaList, priorityOrderCd);
                 }
                 logger.info("taskId:{} auto calculate end", uuid);
             }catch (Exception e){

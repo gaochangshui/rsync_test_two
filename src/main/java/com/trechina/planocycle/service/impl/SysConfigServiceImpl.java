@@ -61,9 +61,11 @@ public class SysConfigServiceImpl implements SysConfigService {
         if (kokyakuShow.isEmpty()){
             resultMap.put("kokyakuFlag",0);
             resultMap.put("intageFlag",0);
+            resultMap.put("basketPrice",0);
         }else {
             resultMap.put("kokyakuFlag",Integer.parseInt(kokyakuShow.get("kokyaku").toString())==1?1:0);
             resultMap.put("intageFlag",Integer.parseInt(kokyakuShow.get("intage").toString())==1?1:0);
+            resultMap.put("basketPriceFlag",Integer.parseInt(kokyakuShow.get("basketPrice").toString())==1?1:0);
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS, resultMap);
