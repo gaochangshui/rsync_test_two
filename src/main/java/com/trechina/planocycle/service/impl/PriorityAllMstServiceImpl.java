@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.aspect.LogAspect;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.dto.TableNameDto;
@@ -23,6 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.text.MessageFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -234,21 +238,45 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
     @Override
     public Map<String, Object> returnAutoCalculationState(String taskId) {
-        if (vehicleNumCache.get("janIsNull"+taskId)!=null){
-            vehicleNumCache.remove("janIsNull"+taskId);
-            return ResultMaps.result(ResultEnum.JANNOTESISTS);
+       // if (vehicleNumCache.get("janIsNull"+taskId)!=null){
+       //     vehicleNumCache.remove("janIsNull"+taskId);
+       //     return ResultMaps.result(ResultEnum.JANNOTESISTS);
+       // }
+       // if (vehicleNumCache.get("IO"+taskId)!=null){
+       //     vehicleNumCache.remove("IO"+taskId);
+       //     String error = vehicleNumCache.get("IOError" + taskId).toString();
+       //     vehicleNumCache.remove("IOError"+taskId);
+       //     return ResultMaps.error(ResultEnum.FAILURE, error);
+       // }
+       //if (vehicleNumCache.get(taskId) != null){
+       //     vehicleNumCache.remove(taskId);
+       //    return ResultMaps.result(ResultEnum.SUCCESS,"success");
+       //}
+       // return ResultMaps.result(ResultEnum.SUCCESS,"9");
+        LocalDateTime now = LocalDateTime.now();
+        while (true) {
+
+            if (vehicleNumCache.get("janIsNull" + taskId) != null) {
+                vehicleNumCache.remove("janIsNull" + taskId);
+                return ResultMaps.result(ResultEnum.JANNOTESISTS);
+            }
+            if (vehicleNumCache.get("IO" + taskId) != null) {
+                vehicleNumCache.remove("IO" + taskId);
+                String error = vehicleNumCache.get("IOError" + taskId).toString();
+                vehicleNumCache.remove("IOError" + taskId);
+                return ResultMaps.error(ResultEnum.FAILURE, error);
+            }
+            if (vehicleNumCache.get(taskId) != null) {
+                vehicleNumCache.remove(taskId);
+                return ResultMaps.result(ResultEnum.SUCCESS, "success");
+            }
+            if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskId)))) {
+                return ResultMaps.result(ResultEnum.SUCCESS,"success");
+            }
+            if (Duration.between(now, LocalDateTime.now()).getSeconds() > MagicString.TASK_TIME_OUT_LONG) {
+                return ResultMaps.result(ResultEnum.SUCCESS, taskId);
+            }
         }
-        if (vehicleNumCache.get("IO"+taskId)!=null){
-            vehicleNumCache.remove("IO"+taskId);
-            String error = vehicleNumCache.get("IOError" + taskId).toString();
-            vehicleNumCache.remove("IOError"+taskId);
-            return ResultMaps.error(ResultEnum.FAILURE, error);
-        }
-       if (vehicleNumCache.get(taskId) != null){
-            vehicleNumCache.remove(taskId);
-           return ResultMaps.result(ResultEnum.SUCCESS,"success");
-       }
-        return ResultMaps.result(ResultEnum.SUCCESS,"9");
     }
 
     /**
