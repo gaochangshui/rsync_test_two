@@ -157,4 +157,8 @@ public interface MstJanMapper {
     List<String>  getJanKaisouColWK(String tableName);
 
     List<String> getJanInfoHeader(String tableNameAttr, String tableNameKaisou);
+
+    void createJanHeader(String tableNameHeader, String tableNameHeaderWK);
+
+    void addJanHeaderCol(String tableNameHeader);
 }

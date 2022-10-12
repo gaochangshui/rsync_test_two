@@ -344,6 +344,19 @@
             "${index}" = EXCLUDED."${index}"
         </foreach>
     </insert>
+    <insert id="createJanHeader">
+        create table IF NOT EXISTS ${tableNameHeader} as select
+            *
+            from
+            ${tableNameHeaderWK}
+            where
+            1 = 2
+            limit 1;
+
+    </insert>
+    <insert id="addJanHeaderCol">
+        alter table "0001".prod_0000_jan_attr_header_sys1 add column "11" varchar, add column "12" varchar ,add column "13" varchar;
+    </insert>
 
     <select id="getJanAttrColWK" resultType="java.lang.String">
         select "3" from ${tableNameHeaderWK}
