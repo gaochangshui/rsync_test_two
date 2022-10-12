@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -60,7 +61,7 @@ public class MstBranchServiceImpl implements MstBranchService {
     public Map<String, Object> setBranchInfo(List<BranchList> branchList) {
         String companyCd = "1000";
         String groupCd = "";
-        branchList = branchList.stream().filter(map-> !Strings.isNullOrEmpty(map.getBranchCd())).collect(Collectors.toList());
+
         if ("0".equals(branchList.get(0).getCommonPartsData().getStoreIsCore())) {
             companyCd = branchList.get(0).getCompanyCd();
         }else {
@@ -68,6 +69,7 @@ public class MstBranchServiceImpl implements MstBranchService {
             groupCd = branchList.get(0).getGroupCd();
 
         }
+        branchList = branchList.stream().filter(map-> !Strings.isNullOrEmpty(map.getBranchCd())).collect(Collectors.toList());
         String branchInfoTableName = MessageFormat.format("\"{0}\".ten_{1}_ten_info", companyCd,
                 branchList.get(0).getCommonPartsData().getStoreMstClass());
         List<String> groupCompany = classicPriorityOrderCommodityMustMapper.getGroupCompany(groupCd);
@@ -86,6 +88,7 @@ public class MstBranchServiceImpl implements MstBranchService {
 
     @Transactional
     @Override
+    @PostConstruct
     public Map<String, Object> syncTenData() {
         String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
         String[] companyList = syncCompanyList.split(",");
