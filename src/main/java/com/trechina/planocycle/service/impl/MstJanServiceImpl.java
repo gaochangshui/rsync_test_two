@@ -37,14 +37,19 @@ import org.springframework.web.util.UriUtils;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -661,6 +666,7 @@ public class MstJanServiceImpl implements MstJanService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
+    //@PostConstruct
     public Map<String, Object> syncJanData() {
         String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
         String[] companyList = syncCompanyList.split(",");
@@ -692,7 +698,6 @@ public class MstJanServiceImpl implements MstJanService {
                 }
 
                 syncJanKaisou(companyCd, prodMstClass);
-
                 mstJanMapper.syncJanHeader(tableNameHeader,tableNameHeaderWK);
                 janAttrList = mstJanMapper.getJanAttrColWK(tableNameHeaderWK, tableNameKaisouHeader);
                 column =janAttrList.stream().collect(Collectors.joining(","));
