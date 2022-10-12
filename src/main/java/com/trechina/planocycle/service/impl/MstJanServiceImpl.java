@@ -698,8 +698,6 @@ public class MstJanServiceImpl implements MstJanService {
                 }
 
                 syncJanKaisou(companyCd, prodMstClass);
-                //mstJanMapper.createJanHeader(tableNameHeader,tableNameHeaderWK);
-                //mstJanMapper.addJanHeaderCol(tableNameHeader);
                 mstJanMapper.syncJanHeader(tableNameHeader,tableNameHeaderWK);
                 janAttrList = mstJanMapper.getJanAttrColWK(tableNameHeaderWK, tableNameKaisouHeader);
                 column =janAttrList.stream().collect(Collectors.joining(","));
