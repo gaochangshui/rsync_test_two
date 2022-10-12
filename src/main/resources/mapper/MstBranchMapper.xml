@@ -84,6 +84,25 @@
             "${item}" = EXCLUDED."${item}"
         </foreach>
     </insert>
+    <insert id="creatTenData">
+        create table IF NOT EXISTS ${tableNameInfo} as select
+            *
+            from
+            ${tableNameInfoWK}
+            where
+            1 = 2
+            limit 1;
+        alter table ${tableNameInfo} add column  "100" varchar default '0'
+            ,ADD CONSTRAINT "${tableNameInfoPkey}" PRIMARY KEY ("1");
+    </insert>
+    <insert id="creatMasterTen">
+        create table IF NOT EXISTS ${masterTenTb} as select
+            *
+            from
+            ${masterTenTbWk};
+        alter table ${masterTenTb} add column  "3" bool default true
+            ,ADD CONSTRAINT "${masterTenTbPkey}" PRIMARY KEY ("1");
+    </insert>
     <select id="getTenHeader" resultType="java.util.LinkedHashMap">
         select "1","2","3" from ${tableName} where "1" not in ('jan_name','jan_cd')   order by "3"
     </select>
@@ -95,6 +114,12 @@
     </select>
     <select id="checkSchemaExist" resultType="int">
         select count(*) from information_schema.tables where table_schema=#{schemaCd}
+    </select>
+    <select id="selectTableNameExist" resultType="java.lang.String">
+        select "table_name" from information_schema.tables where "table_name" = 'ten_${classCd}_ten_info' and "table_schema" = '${companyCd}'
+    </select>
+    <select id="selectMasterTenExist" resultType="java.lang.String">
+        select "table_name" from information_schema.tables where "table_name" = 'master_ten' and "table_schema" = '${companyCd}'
     </select>
     <delete id="deleteNotExistMst">
         delete from ${tableName} where "1"=#{classCd}

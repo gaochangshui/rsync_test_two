@@ -90,18 +90,28 @@ public class MstBranchServiceImpl implements MstBranchService {
         String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
         String[] companyList = syncCompanyList.split(",");
         String tableNameInfo;
+        String tableNameInfoPkey;
         String masterTenTb;
+        String masterTenTbPkey;
+        String masterTenTbWk;
         String tableNameInfoWK;
         String tableNameHeaderInfo;
 
         List<LinkedHashMap<String,Object>> tenList;
         String column;
         for (String companyCd : companyList) {
-            masterTenTb = MessageFormat.format(MagicString.WK_MASTER_TEN, companyCd);
+            masterTenTb = MessageFormat.format(MagicString.MASTER_TEN, companyCd);
+            masterTenTbWk = MessageFormat.format(MagicString.WK_MASTER_TEN, companyCd);
+            masterTenTbPkey = MessageFormat.format(MagicString.MASTER_TEN_PKEY, companyCd);
+            String masterTenExist = mstBranchMapper.selectMasterTenExist(companyCd);
+            if (Strings.isNullOrEmpty(masterTenExist)){
+                mstBranchMapper.creatMasterTen(masterTenTb,masterTenTbWk,masterTenTbPkey);
+            }
             List<String> tenClass = mstBranchMapper.getMasterTenClass(masterTenTb);
-
             for (String classCd : tenClass) {
+                String tableNameExist = mstBranchMapper.selectTableNameExist(companyCd,classCd);
                 tableNameInfo = MessageFormat.format(MagicString.PROD_TEN_INFO, companyCd, classCd);
+                tableNameInfoPkey = MessageFormat.format(MagicString.PROD_TEN_INFO_PKEY, classCd);
                 tableNameInfoWK = MessageFormat.format(MagicString.WK_PROD_TEN_INFO, companyCd, classCd);
                 tableNameHeaderInfo = MessageFormat.format(MagicString.WK_PROD_TEN_INFO_HEADER, companyCd, classCd);
 
@@ -115,7 +125,9 @@ public class MstBranchServiceImpl implements MstBranchService {
 
                 tenList = mstBranchMapper.getTenHeader(tableNameHeaderInfo);
                 column = tenList.stream().map(e->e.get("3").toString()).collect(Collectors.joining(","));
-
+                if (Strings.isNullOrEmpty(tableNameExist)) {
+                    mstBranchMapper.creatTenData(tableNameInfo, tableNameInfoWK, tableNameInfoPkey);
+                }
                 mstBranchMapper.syncTenData(tableNameInfo, tableNameInfoWK, column);
             }
         }

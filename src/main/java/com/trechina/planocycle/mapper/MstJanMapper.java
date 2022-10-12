@@ -157,4 +157,24 @@ public interface MstJanMapper {
     List<String>  getJanKaisouColWK(String tableName);
 
     List<String> getJanInfoHeader(String tableNameAttr, String tableNameKaisou);
+
+    void createJanHeader(String tableNameHeader, String tableNameHeaderWK);
+
+    void addJanHeaderCol(String tableNameHeader,String tableNameHeaderPkey);
+
+    void janHeaderAddFlag(String tableNameHeader);
+
+    void janHeaderAddUpdater(String tableNameHeader);
+
+    void createJanData(String tableNameInfo, String tableNameInfoWK);
+
+    void addJanDataCol(String tableNameHeader, String tableNameHeaderPkey);
+
+    void createMasterSyohin(String companyCd);
+
+    String selectTableExist(String companyCd);
+
+    void deleteJanIsNull(String tableNameInfoWK);
+
+    void createJanPreset(String companyCd,String classCd);
 }

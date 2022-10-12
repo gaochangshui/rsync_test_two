@@ -38,14 +38,19 @@ import org.springframework.web.util.UriUtils;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -685,18 +690,26 @@ public class MstJanServiceImpl implements MstJanService {
         List<CommoditySyncSet> commoditySyncSetList;
         String prodMstClass;
         String tableNameHeader;
+        String tableNameHeaderPkey;
         String tableNameInfo;
+        String tableNameInfoPkey;
         String tableNameHeaderWK;
         String tableNameInfoWK;
         List<String> janAttrList;
         String column;
         for (String companyCd : companyList) {
+            String existTable = mstJanMapper.selectTableExist(companyCd);
+            if (Strings.isNullOrEmpty(existTable)){
+                mstJanMapper.createMasterSyohin(companyCd);
+            }
             mstCommodityService.syncCommodityMaster(companyCd);
             commoditySyncSetList = mstCommodityService.getCommodityList(companyCd);
             for (CommoditySyncSet commoditySyncSet : commoditySyncSetList) {
                 prodMstClass = commoditySyncSet.getProdMstClass();
                 tableNameHeader = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
+                tableNameHeaderPkey = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS_PKEY, prodMstClass);
                 tableNameInfo = MessageFormat.format(MagicString.PROD_JAN_INFO, companyCd, prodMstClass);
+                tableNameInfoPkey = MessageFormat.format(MagicString.PROD_JAN_INFO_PKEY, prodMstClass);
                 tableNameHeaderWK = MessageFormat.format(MagicString.WK_PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
                 String tableNameKaisouHeader = MessageFormat.format(MagicString.WK_PROD_JAN_KAISOU_HEADER_SYS, companyCd, prodMstClass);
                 tableNameInfoWK = MessageFormat.format(MagicString.WK_PROD_JAN_INFO, companyCd, prodMstClass);
@@ -708,10 +721,22 @@ public class MstJanServiceImpl implements MstJanService {
                     mstBranchMapper.deleteNotExistMst(prodMstClass, mstSyohin);
                     continue;
                 }
-
+                mstJanMapper.deleteJanIsNull(tableNameInfoWK);
                 syncJanKaisou(companyCd, prodMstClass);
-
+                mstJanMapper.createJanPreset(companyCd,prodMstClass);
+                if (Strings.isNullOrEmpty(existTable)) {
+                    mstJanMapper.createJanHeader(tableNameHeader, tableNameHeaderWK);
+                    mstJanMapper.addJanHeaderCol(tableNameHeader, tableNameHeaderPkey);
+                }
                 mstJanMapper.syncJanHeader(tableNameHeader,tableNameHeaderWK);
+                if (Strings.isNullOrEmpty(existTable)) {
+                    mstJanMapper.janHeaderAddFlag(tableNameHeader);
+                    mstJanMapper.janHeaderAddUpdater(tableNameHeader);
+                }
+                if (Strings.isNullOrEmpty(existTable)) {
+                    mstJanMapper.createJanData(tableNameInfo, tableNameInfoWK);
+                    mstJanMapper.addJanDataCol(tableNameInfo, tableNameInfoPkey);
+                }
                 janAttrList = mstJanMapper.getJanAttrColWK(tableNameHeaderWK, tableNameKaisouHeader);
                 column =janAttrList.stream().collect(Collectors.joining(","));
                 deleteMultipleJan(companyCd, prodMstClass, tableNameInfoWK);

@@ -35,4 +35,11 @@ public interface MstBranchMapper {
     int checkSchemaExist(String schemaCd);
 
     int checkTableExist(String tableName, String schema);
+
+    void creatTenData(String tableNameInfo, String tableNameInfoWK,String tableNameInfoPkey);
+
+    String selectTableNameExist(String companyCd,String classCd);
+    String selectMasterTenExist(String companyCd);
+
+    void creatMasterTen(String masterTenTb, String masterTenTbWk,String masterTenTbPkey);
 }

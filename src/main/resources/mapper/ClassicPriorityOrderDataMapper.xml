@@ -312,14 +312,17 @@
         where jan_new = #{janNew} and company_cd=#{company} and priority_order_cd=#{priorityOrderCd}
     </select>
     <select id="downloadForCsv" resultType="com.trechina.planocycle.entity.dto.DownloadDto">
-        select datas.${tai} as taiValue,datas.${tana} as tanaValue,datas.rank_prop,datas.rank,datas.jan_new as jan,classify.tai_cd as taiCd,classify.tana_cd as tanaCd,row_number() over(PARTITION by classify.tai_cd,classify.tana_cd order by datas.rank_upd,datas.goods_rank ) as tanapositionCd
+        select datas.${tai} as taiValue,datas.${tana} as tanaValue,datas.rank_prop,datas.rank,datas.jan_new as jan,classify.tai_cd as taiCd,classify.tana_cd as tanaCd,row_number() over(PARTITION by classify.tai_cd,classify.tana_cd order by datas.${colName},datas.goods_rank ) as tanapositionCd
         from (select * from priority.work_priority_order_result_data t1
-                 where not exists(select * from priority.work_priority_order_result_data t2 where t1.jan_new=t2.jan_new and t1.rank_upd>t2.rank_upd
+                 where not exists(select * from priority.work_priority_order_result_data t2 where t1.jan_new=t2.jan_new and t1.${colName}>t2.${colName}
                  and priority_order_cd=#{priorityOrderCd}) and priority_order_cd=#{priorityOrderCd}
              ) datas
                  left join priority.work_priority_order_attribute_classify classify
                            on  classify.attr1 = datas.${tai} and classify.attr2 = datas.${tana} and classify.priority_order_cd = #{priorityOrderCd}
-            where rank_upd != 99999999
+        where   ${colName} != -1
+        <if test="colName != 'rank'">
+            and rank_upd != 99999999
+        </if>
     </select>
     <select id="downloadSavedForCsv" resultType="com.trechina.planocycle.entity.dto.DownloadDto">
         select datas.${tai},datas.${tana},datas.rank_prop,datas.rank,datas.jan_new as jan,a.taiCd,c.tanaCd,row_number() over(PARTITION by datas.${tai},datas.${tana} order by datas.rank_prop,datas.rank ) as tanapositionCd

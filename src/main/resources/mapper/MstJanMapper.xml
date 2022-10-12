@@ -314,6 +314,13 @@
             "${index}" = #{item}
         </foreach>
     </update>
+    <update id="janHeaderAddFlag">
+        update ${tableNameHeader} set "11"=1 where "1" in('jan_cd', 'jan_name');
+        update ${tableNameHeader} set "11"=3 where "11" is null;
+        update ${tableNameHeader} set "13"=1 where "13" is null;
+        update ${tableNameHeader} set "12"=1 where "1" in('jan_cd');
+
+    </update>
 
     <delete id="deleteKaisou">
         delete from ${tableName}
@@ -344,6 +351,59 @@
             "${index}" = EXCLUDED."${index}"
         </foreach>
     </insert>
+    <insert id="createJanHeader">
+        create table IF NOT EXISTS ${tableNameHeader} as select
+            *
+            from
+            ${tableNameHeaderWK}
+            where
+            1 = 2
+            limit 1;
+    </insert>
+    <insert id="addJanHeaderCol">
+        alter table ${tableNameHeader} add column "11" varchar
+            , add column "12" varchar
+            ,add column "13" varchar
+            ,ADD CONSTRAINT "${tableNameHeaderPkey}" PRIMARY KEY ("1");
+    </insert>
+    <insert id="janHeaderAddUpdater">
+        INSERT INTO ${tableNameHeader} ("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13")
+        VALUES ('sync', '同期Flg', '101', '101', '1', NULL, '1', '4', NULL, '0', '4', NULL, '0'),
+        ('update_time', '更新時間', '102', '102', '1', NULL, '1', '4', NULL, '1', '4', NULL, '1'),
+          ('updater', '更新者', '103', '103', '1', NULL, '1', '4', NULL, '1', '4', NULL, '1');
+    </insert>
+    <insert id="createJanData">
+        create table IF NOT EXISTS ${tableNameInfo} as select
+            *
+            from
+            ${tableNameInfoWK}
+            where
+            1 = 2
+            limit 1;
+    </insert>
+    <insert id="addJanDataCol">
+        alter table ${tableNameHeader} add column "100" varchar
+            , add column "101" varchar
+            ,add column "102" varchar
+            ,add column "103" varchar
+            ,ADD CONSTRAINT "${tableNameHeaderPkey}" PRIMARY KEY ("1");
+    </insert>
+    <insert id="createMasterSyohin">
+        create table IF NOT EXISTS "${companyCd}".master_syohin as select
+            *
+            from
+            "${companyCd}".wk_master_syohin
+            where
+            1 = 2
+            limit 1;
+        alter table "${companyCd}".master_syohin add column  "3" bool default true
+            ,ADD CONSTRAINT "master_syohin_pkey" PRIMARY KEY ("1");
+    </insert>
+    <insert id="createJanPreset">
+        create table IF NOT EXISTS "${companyCd}".prod_${classCd}_jan_preset_param(
+                                         "author_cd" varchar COLLATE "pg_catalog"."default",
+                                         "item_cd" varchar COLLATE "pg_catalog"."default");
+    </insert>
 
     <select id="getJanAttrColWK" resultType="java.lang.String">
         select "3" from ${tableNameHeaderWK}
@@ -373,6 +433,9 @@
         ,ROW_NUMBER() over (partition by "1") as num from ${tableNameInfoWK})b where
         b.num>1)
     </delete>
+    <delete id="deleteJanIsNull">
+        delete from  ${tableNameInfoWK} where "1" is null
+    </delete>
 
     <select id="getJanKaisouColWK" resultType="java.lang.String">
         select "3" from ${tableName} where "1" like '%_cd' order by "3"
@@ -381,6 +444,9 @@
         select "3" from ${tableNameAttr} where "3" not in ('1','2')
         union
         select "3" from ${tableNameKaisou} where "3" not in ('1','2')
+    </select>
+    <select id="selectTableExist" resultType="string">
+        select "table_name" from information_schema.tables where "table_name" = 'master_syohin' and "table_schema" = '${tableName}'
     </select>
 
 </mapper>

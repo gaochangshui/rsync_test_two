@@ -159,12 +159,16 @@ public class MagicString {
     public static final String MASTER_SYOHIN = "\"{0}\".master_syohin";
     public static final String WK_MASTER_SYOHIN = "\"{0}\".wk_master_syohin";
     public static final String PROD_JAN_ATTR_HEADER_SYS = "\"{0}\".prod_{1}_jan_attr_header_sys";
+    public static final String PROD_JAN_ATTR_HEADER_SYS_PKEY = "prod_{0}_jan_attr_header_sys_pkey";
     public static final String PROD_JAN_INFO ="\"{0}\".prod_{1}_jan_info";
+
+    public static final String PROD_JAN_INFO_PKEY ="prod_{0}_jan_info_pkey";
     public static final String PROD_JAN_KAISOU_HEADER_SYS = "\"{0}\".prod_{1}_jan_kaisou_header_sys";
     public static final String PROD_JAN_KAISOU = "\"{0}\".prod_{1}_jan_kaisou";
     public static final String PROD_JAN_PRESET_PARAM = "\"{0}\".prod_{1}_jan_preset_param";
 
     public static final String PROD_TEN_INFO = "\"{0}\".ten_{1}_ten_info";
+    public static final String PROD_TEN_INFO_PKEY = "ten_{0}_ten_info_pkey";
 
 
     public static final String WK_PROD_JAN_ATTR_HEADER_SYS = "\"{0}\".wk_prod_{1}_jan_attr_header_sys";
@@ -176,7 +180,9 @@ public class MagicString {
 
     public static final String WK_PROD_TEN_INFO_HEADER = "\"{0}\".ten_{1}_ten_kaisou_header_sys";
 
-    public static final String WK_MASTER_TEN = "\"{0}\".master_ten";
+    public static final String MASTER_TEN = "\"{0}\".master_ten";
+    public static final String MASTER_TEN_PKEY = "master_ten_pkey";
+    public static final String WK_MASTER_TEN = "\"{0}\".wk_master_ten";
 
     /**
      * 必須区分
