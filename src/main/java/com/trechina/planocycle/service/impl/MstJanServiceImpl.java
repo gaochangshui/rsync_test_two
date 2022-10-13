@@ -1,11 +1,13 @@
 package com.trechina.planocycle.service.impl;
 
+import cn.hutool.extra.mail.MailAccount;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.aspect.LogAspect;
+import com.trechina.planocycle.config.MailConfig;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.CommoditySyncSet;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
@@ -19,14 +21,12 @@ import com.trechina.planocycle.mapper.ZokuseiMstMapper;
 import com.trechina.planocycle.service.MstCommodityService;
 import com.trechina.planocycle.service.MstJanService;
 import com.trechina.planocycle.service.ZokuseiMstDataService;
-import com.trechina.planocycle.utils.CacheUtil;
-import com.trechina.planocycle.utils.ExcelUtils;
-import com.trechina.planocycle.utils.ResultMaps;
-import com.trechina.planocycle.utils.dataConverUtils;
+import com.trechina.planocycle.utils.*;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -79,6 +79,10 @@ public class MstJanServiceImpl implements MstJanService {
     private MstCommodityService mstCommodityService;
     @Autowired
     private MstBranchMapper mstBranchMapper;
+    @Autowired
+    private MstJanService mstJanService;
+    @Value("${projectIds}")
+    private String projectIds;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -683,11 +687,40 @@ public class MstJanServiceImpl implements MstJanService {
      *
      * @return
      */
+    public Map<String, Object> syncJanData(String env) {
+        int sum = 0;
+        try{
+            String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
+            String[] companyList = syncCompanyList.split(",");
+            List<CommoditySyncSet> commoditySyncSetList;
+
+            for (String companyCd : companyList) {
+                String existTable = mstJanMapper.selectTableExist(companyCd);
+                if (Strings.isNullOrEmpty(existTable)){
+                    mstJanMapper.createMasterSyohin(companyCd);
+                }
+                mstCommodityService.syncCommodityMaster(companyCd);
+                commoditySyncSetList = mstCommodityService.getCommodityList(companyCd);
+                for (CommoditySyncSet commoditySyncSet : commoditySyncSetList) {
+                    int i = mstJanService.perSyncJanData(companyCd, commoditySyncSet, existTable);
+                    sum+=i;
+                }
+            }
+
+            return ResultMaps.result(ResultEnum.SUCCESS.getCode(),sum+"");
+        }catch (Exception e){
+            MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"));
+            String title = MessageFormat.format("「{0}」同期发生异常:不明なエラーが発生しました", env);
+            String content = String.format(MailConfig.MAIL_EXCEPTION_TEMPLATE, "syncJanData", e.getMessage());
+            MailUtils.sendEmail(account, "10218504chen_ke@cn.tre-inc.com", title, content);
+        }
+
+        return ResultMaps.result(ResultEnum.FAILURE.getCode(),"janinfo同期失败しました");
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> syncJanData() {
-        String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
-        String[] companyList = syncCompanyList.split(",");
-        List<CommoditySyncSet> commoditySyncSetList;
+    public int perSyncJanData(String companyCd, CommoditySyncSet commoditySyncSet, String existTable){
         String prodMstClass;
         String tableNameHeader;
         String tableNameHeaderPkey;
@@ -697,53 +730,43 @@ public class MstJanServiceImpl implements MstJanService {
         String tableNameInfoWK;
         List<String> janAttrList;
         String column;
-        for (String companyCd : companyList) {
-            String existTable = mstJanMapper.selectTableExist(companyCd);
-            if (Strings.isNullOrEmpty(existTable)){
-                mstJanMapper.createMasterSyohin(companyCd);
-            }
-            mstCommodityService.syncCommodityMaster(companyCd);
-            commoditySyncSetList = mstCommodityService.getCommodityList(companyCd);
-            for (CommoditySyncSet commoditySyncSet : commoditySyncSetList) {
-                prodMstClass = commoditySyncSet.getProdMstClass();
-                tableNameHeader = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
-                tableNameHeaderPkey = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS_PKEY, prodMstClass);
-                tableNameInfo = MessageFormat.format(MagicString.PROD_JAN_INFO, companyCd, prodMstClass);
-                tableNameInfoPkey = MessageFormat.format(MagicString.PROD_JAN_INFO_PKEY, prodMstClass);
-                tableNameHeaderWK = MessageFormat.format(MagicString.WK_PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
-                String tableNameKaisouHeader = MessageFormat.format(MagicString.WK_PROD_JAN_KAISOU_HEADER_SYS, companyCd, prodMstClass);
-                tableNameInfoWK = MessageFormat.format(MagicString.WK_PROD_JAN_INFO, companyCd, prodMstClass);
 
-                int i = mstBranchMapper.checkTableExist(tableNameInfoWK.split("\\.")[1], companyCd);
-                if(i<1){
-                    //if jan_info not exist, delete from master_syohin
-                    String mstSyohin = MessageFormat.format(MagicString.MASTER_SYOHIN, companyCd);
-                    mstBranchMapper.deleteNotExistMst(prodMstClass, mstSyohin);
-                    continue;
-                }
-                mstJanMapper.deleteJanIsNull(tableNameInfoWK);
-                syncJanKaisou(companyCd, prodMstClass);
-                mstJanMapper.createJanPreset(companyCd,prodMstClass);
-                if (Strings.isNullOrEmpty(existTable)) {
-                    mstJanMapper.createJanHeader(tableNameHeader, tableNameHeaderWK);
-                    mstJanMapper.addJanHeaderCol(tableNameHeader, tableNameHeaderPkey);
-                }
-                mstJanMapper.syncJanHeader(tableNameHeader,tableNameHeaderWK);
-                if (Strings.isNullOrEmpty(existTable)) {
-                    mstJanMapper.janHeaderAddFlag(tableNameHeader);
-                    mstJanMapper.janHeaderAddUpdater(tableNameHeader);
-                }
-                if (Strings.isNullOrEmpty(existTable)) {
-                    mstJanMapper.createJanData(tableNameInfo, tableNameInfoWK);
-                    mstJanMapper.addJanDataCol(tableNameInfo, tableNameInfoPkey);
-                }
-                janAttrList = mstJanMapper.getJanAttrColWK(tableNameHeaderWK, tableNameKaisouHeader);
-                column =janAttrList.stream().collect(Collectors.joining(","));
-                deleteMultipleJan(companyCd, prodMstClass, tableNameInfoWK);
-                mstJanMapper.syncJanData(tableNameInfo, tableNameInfoWK, column);
-            }
+        prodMstClass = commoditySyncSet.getProdMstClass();
+        tableNameHeader = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
+        tableNameHeaderPkey = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS_PKEY, prodMstClass);
+        tableNameInfo = MessageFormat.format(MagicString.PROD_JAN_INFO, companyCd, prodMstClass);
+        tableNameInfoPkey = MessageFormat.format(MagicString.PROD_JAN_INFO_PKEY, prodMstClass);
+        tableNameHeaderWK = MessageFormat.format(MagicString.WK_PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
+        String tableNameKaisouHeader = MessageFormat.format(MagicString.WK_PROD_JAN_KAISOU_HEADER_SYS, companyCd, prodMstClass);
+        tableNameInfoWK = MessageFormat.format(MagicString.WK_PROD_JAN_INFO, companyCd, prodMstClass);
+
+        int i = mstBranchMapper.checkTableExist(tableNameInfoWK.split("\\.")[1], companyCd);
+        if(i<1){
+            //if jan_info not exist, delete from master_syohin
+            String mstSyohin = MessageFormat.format(MagicString.MASTER_SYOHIN, companyCd);
+            mstBranchMapper.deleteNotExistMst(prodMstClass, mstSyohin);
+            return 0;
         }
-        return ResultMaps.result(ResultEnum.SUCCESS.getCode(),"同期完了しました");
+        mstJanMapper.deleteJanIsNull(tableNameInfoWK);
+        syncJanKaisou(companyCd, prodMstClass);
+        mstJanMapper.createJanPreset(companyCd,prodMstClass);
+        if (Strings.isNullOrEmpty(existTable)) {
+            mstJanMapper.createJanHeader(tableNameHeader, tableNameHeaderWK);
+            mstJanMapper.addJanHeaderCol(tableNameHeader, tableNameHeaderPkey);
+        }
+        mstJanMapper.syncJanHeader(tableNameHeader,tableNameHeaderWK);
+        if (Strings.isNullOrEmpty(existTable)) {
+            mstJanMapper.janHeaderAddFlag(tableNameHeader);
+            mstJanMapper.janHeaderAddUpdater(tableNameHeader);
+        }
+        if (Strings.isNullOrEmpty(existTable)) {
+            mstJanMapper.createJanData(tableNameInfo, tableNameInfoWK);
+            mstJanMapper.addJanDataCol(tableNameInfo, tableNameInfoPkey);
+        }
+        janAttrList = mstJanMapper.getJanAttrColWK(tableNameHeaderWK, tableNameKaisouHeader);
+        column =janAttrList.stream().collect(Collectors.joining(","));
+        deleteMultipleJan(companyCd, prodMstClass, tableNameInfoWK);
+        return mstJanMapper.syncJanData(tableNameInfo, tableNameInfoWK, column);
     }
 
     @Override

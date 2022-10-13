@@ -9,7 +9,7 @@ public class MailUtils {
     private static Logger logger = LoggerFactory.getLogger(MailUtils.class);
 
     public static void sendEmail(MailAccount account, String to, String title, String content){
-        String send = MailUtil.send(account, to, title, content, false);
+        String send = MailUtil.send(account, to, title, content, true);
         logger.info("to:{}, title:{}, send result:{}", to, title, send);
     }
 }

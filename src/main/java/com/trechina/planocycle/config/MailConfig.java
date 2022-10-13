@@ -7,14 +7,14 @@ import org.apache.commons.collections4.MapUtils;
 import java.util.Map;
 
 public class MailConfig {
-    class LocalMailConfig{
+    static class LocalMailConfig{
         public static final String MAIL = "10218504chen_ke@cn.tre-inc.com";
         public static final String PASS = "chTRE10218504";
         public static final String SMTP = "cn.tre-inc.com";
         public static final boolean IS_SSL = false;
     }
 
-    class CloudMailConfig{
+    static class CloudMailConfig{
         public final static String MAIL = "planocycle.retailai@gmail.com";
         public static final String PASS = "planocycleqdtre";
         public static final String SMTP = "smtp.gmail.com";
@@ -30,6 +30,31 @@ public class MailConfig {
         return ImmutableMap.of("MAIL", LocalMailConfig.MAIL, "PASS", LocalMailConfig.PASS,
                 "SMTP", LocalMailConfig.SMTP,"IS_SSL", LocalMailConfig.IS_SSL);
     }
+
+    public static final String MAIL_EXCEPTION_TEMPLATE = "<!DOCTYPE html>" +
+            "<html><body><p>方法名：%s</p>" +
+            //"<p>参数：%s</p>" +
+            //"<p>用户：%s</p>" +
+            //"<p>Cookie：%s</p>" +
+            //"<p>浏览器：%s</p>" +
+            //"<p>请求者IP:%s</p>" +
+            "<p>异常信息：%s</p>" +
+            "</body>" +
+            "</html>";
+    public static final String MAIL_SUCCESS_TEMPLATE = "<!DOCTYPE html>" +
+            "<html><body><p>方法名：%s</p>" +
+            //"<p>参数：%s</p>" +
+            //"<p>用户：%s</p>" +
+            //"<p>Cookie：%s</p>" +
+            //"<p>浏览器：%s</p>" +
+            //"<p>请求者IP:%s</p>" +
+            "<p>商品轴マスター：%s,%s条</p>" +
+            "<p>店铺轴マスター：%s,%s条</p>" +
+            "<p>开始时间：%s</p>" +
+            "<p>结束时间：%s</p>" +
+            "<p>同期用时：%s毫秒</p>" +
+            "</body>" +
+            "</html>";
 
     public static MailAccount getMailAccount(boolean isCloud){
         MailAccount account = new MailAccount();

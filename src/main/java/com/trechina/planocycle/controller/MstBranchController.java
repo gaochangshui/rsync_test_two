@@ -1,6 +1,7 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.po.BranchList;
+import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.MstBranchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,8 @@ public class MstBranchController {
 
     @Autowired
     private MstBranchService mstBranchService;
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
 
     /**
      * 店舗詳細抽出
@@ -36,6 +39,7 @@ public class MstBranchController {
 
     @GetMapping("syncTenInfo")
     public Map<String,Object> syncTenInfo(){
-        return mstBranchService.syncTenData();
+        String env = sysConfigMapper.selectSycConfig("env");
+        return mstBranchService.syncTenData(env);
     }
 }

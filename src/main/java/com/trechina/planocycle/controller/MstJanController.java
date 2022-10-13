@@ -3,8 +3,10 @@ package com.trechina.planocycle.controller;
 import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.mapper.MstJanMapper;
+import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.JanAttrService;
 import com.trechina.planocycle.service.MstJanService;
+import org.apache.tomcat.util.security.PrivilegedGetTccl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +26,8 @@ public class MstJanController {
     private JanAttrService janAttrService;
     @Autowired
     private MstJanMapper mstJanMapper;
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
 
     /**
      * janデータのチェック
@@ -142,6 +146,7 @@ public class MstJanController {
      */
     @GetMapping("/syncJanData")
     public Map<String, Object> syncJanData(){
-        return mstJanService.syncJanData();
+        String env = sysConfigMapper.selectSycConfig("env");
+        return mstJanService.syncJanData(env);
     }
 }

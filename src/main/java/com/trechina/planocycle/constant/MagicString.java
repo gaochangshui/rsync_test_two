@@ -364,4 +364,6 @@ public class MagicString {
     public static final Map<String, String> REASON_MAP = ImmutableMap.of("1", "rank_change", "2", "replace", "3",
             "capepak", "4", "must_not", "5", "pattern_duplicate");
 
+    public static final String TO_MAIL = "planocyclesystem@cn.tre-inc.com";
+
 }

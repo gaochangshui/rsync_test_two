@@ -20,7 +20,7 @@ public interface MstBranchMapper {
     Integer getBranchExist(String branchInfoTableName, List<String> branchCdList);
 
 
-    void syncTenData(@Param("tableName") String tableNameInfo, @Param("tableNameWK") String tableNameInfoWK, String column);
+    int syncTenData(@Param("tableName") String tableNameInfo, @Param("tableNameWK") String tableNameInfoWK, String column);
 
     List<LinkedHashMap<String, Object>> getTenHeader(String tableNameHeaderInfo);
 
