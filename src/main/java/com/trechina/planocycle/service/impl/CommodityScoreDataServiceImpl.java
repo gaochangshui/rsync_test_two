@@ -489,7 +489,10 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 List<Object> value = (List<Object>)proMap.get("value");
                 if (!value.isEmpty()){
                     String id = proMap.get("id").toString().split("_")[2];
-
+                    value.forEach(str->{
+                        str.toString().replace("(","\\(");
+                        str.toString().replace(")","\\)");
+                    });
                     String join = Joiner.on("$|^").join(value);
                     boolean flag = (boolean) proMap.getOrDefault("rmFlag", false);
                     String eq = flag ? "!~":"~";
