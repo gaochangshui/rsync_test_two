@@ -244,6 +244,18 @@
         and tana_cd = #{item.tanaCd} and  area_position = #{item.tanaPosition}
         GROUP BY restrict_cd
     </select>
+    <select id="getTana" resultType="java.util.Map">
+        select tai_cd "taiCd",tana_cd "tanaCd" from
+        planocycle.work_priority_order_pts_data ptsdata
+        left join
+        planocycle.work_priority_order_pts_data_tanamst tanamst
+        on ptsdata."id" = tanamst.pts_cd
+        where priority_order_cd = #{priorityOrderCd}
+        and  concat(tai_cd,'_',tana_cd) not in
+        <foreach collection="resultList" item="item" separator="," open="(" close=")">
+            '${item.taiCd}_${item.tanaCd}'
+        </foreach>
+    </select>
     <update id="updateAreaPosition">
         update planocycle.work_basic_pattern_restrict_relation
         SET

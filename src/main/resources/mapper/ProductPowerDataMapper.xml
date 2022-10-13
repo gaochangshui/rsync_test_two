@@ -443,6 +443,16 @@
         )
         where company_cd = #{companyCd} and product_power_cd = #{productPowerCd} and tmp.jan =mstdata.jan
     </update>
+    <insert id="setIntageJanForSyokika">
+        insert into planocycle.work_product_power_syokika (company_cd,product_power_cd,author_cd,jan)
+        select
+            intage.company_cd,intage.product_power_cd,intage.author_cd,intage.jan from planocycle.work_product_power_intage intage
+             left join planocycle.work_product_power_syokika syokika on intage.jan = syokika.jan
+            and intage.product_power_cd = syokika.product_power_cd
+        where
+            intage.product_power_cd = #{productPowerCd}
+          and syokika.jan is null
+    </insert>
     <select id="selectShowData" resultType="map">
         select
         syokika.jan jan
