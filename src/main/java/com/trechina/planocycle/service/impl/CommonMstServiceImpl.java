@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
@@ -400,47 +401,18 @@ public class CommonMstServiceImpl implements CommonMstService {
                 }
 
                 List<PriorityOrderResultDataDto> notAdoptBackupJansList = backupJansList;
-                /*if(areaFlag==0 && !notAdoptBackupJansList.isEmpty()){
-                    //jancount
-                    notAdoptBackupJansList = backupJansList.stream().filter(dto -> !Objects.equals(dto.getAdoptFlag(), 1)).collect(Collectors.toList());
-                    int usedIndex = 0;
-                    for (int i = 0; i < adoptJan.size(); i++) {
-                        PriorityOrderResultDataDto jan = adoptJan.get(i);
-                        if(tanaCd.equals(jan.getTanaCd()+"") && taiCd.equals(jan.getTaiCd()+"")
-                                && restrictCd.equals(jan.getRestrictCd()) && Objects.equals(1, jan.getCutFlag())){
-                            PriorityOrderResultDataDto currentJan = notAdoptBackupJansList.get(usedIndex);
-
-                            if(repeatJanMap.containsKey(jan.getJanCd())){
-                                Optional<PriorityOrderResultDataDto> any = backupJansList.stream()
-                                        .filter(item -> item.getJanCd().equals(repeatJanMap.get(jan.getJanCd()))).findAny();
-                                if(any.isPresent()){
-                                    currentJan = any.get();
-                                }
-                            }
-
-                            jan.setJanCd(currentJan.getJanCd());
-                            jan.setTaiCd(Integer.valueOf(taiCd));
-                            jan.setTanaCd(Integer.valueOf(tanaCd));
-                            jan.setTanapositionCd(null);
-                            jan.setFace(currentJan.getFace());
-                            jan.setFaceFact(currentJan.getFace());
-
-                            PriorityOrderResultDataDto copyCurrentJan = new PriorityOrderResultDataDto();
-                            BeanUtils.copyProperties(jan, copyCurrentJan);
-                            copyCurrentJan.setCutFlag(0);
-                            currentJan.setAdoptFlag(1);
-
-                            notAdoptBackupJansList.set(usedIndex++, currentJan);
-                            adoptJan.set(i, copyCurrentJan);
-                        }
+                if(janResultByRestrictCd.containsKey(restrictCd)){
+                    List<PriorityOrderResultDataDto> notAdoppList = janResultByRestrictCd.get(restrictCd).stream().filter(dto -> !Objects.equals(dto.getAdoptFlag(), 1)).collect(Collectors.toList());
+                    if (!notAdoppList.isEmpty()) {
+                        backupJansList.addAll(notAdoppList);
                     }
-                }*/
+                }
 
                 if(areaFlag==1 && !notAdoptBackupJansList.isEmpty()){
                     //area
                     double groupArea = BigDecimal.valueOf(tanaWidth * area / 100.0).setScale(3, RoundingMode.CEILING).doubleValue();
                     double usedArea = adoptJan.stream().filter(dto -> restrictCd.equals(dto.getRestrictCd()) &&
-                                    taiCd.equals(dto.getTaiCd() + "") && tanaCd.equals(dto.getTanaCd() + ""))
+                                    taiCd.equals(dto.getTaiCd() + "") && tanaCd.equals(dto.getTanaCd() + "")&& Objects.equals(1, dto.getAdoptFlag()))
                             .collect(Collectors.summarizingDouble(dto -> dto.getPlanoWidth() * dto.getFace())).getSum();
 
                     notAdoptBackupJansList = notAdoptBackupJansList.stream().filter(dto -> !Objects.equals(dto.getAdoptFlag(), 1)).collect(Collectors.toList());
