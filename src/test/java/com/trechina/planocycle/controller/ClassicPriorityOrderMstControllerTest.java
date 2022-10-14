@@ -96,7 +96,7 @@ public class ClassicPriorityOrderMstControllerTest {
                                 .andDo(result -> {
                                     String header = result.getResponse().getHeader(HttpHeaders.CONTENT_DISPOSITION);
                                     String fileName = header.replaceAll("^attachment;filename=|;$", "");
-                                    //保存为文件
+
                                     File file = new File(this.getClass().getResource("/").getPath() + fileName);
                                     file.delete();
                                     FileOutputStream fout = new FileOutputStream(file);
