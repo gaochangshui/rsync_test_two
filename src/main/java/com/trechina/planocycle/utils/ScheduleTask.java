@@ -16,9 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -52,8 +50,6 @@ public class ScheduleTask {
     private SysConfigMapper sysConfigMapper;
 
     @Scheduled(cron = "0 0 7 * * ?")
-    @PostConstruct
-    //@Scheduled(cron = "0 16 09 * * ?")
     public void MasterInfoSync(){
 //        logger.info("定時調度任務--attr表同期開始");
 //        tableTransferService.getAttrTransfer();

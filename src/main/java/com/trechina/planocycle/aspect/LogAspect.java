@@ -117,4 +117,58 @@ public class LogAspect {
         MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"));
         MailUtils.sendEmail(account, addressee,title ,msg);
     }
+
+    public  Map<String,Object> errInfo(){
+        Map<String,Object> map = new HashMap<>();
+        Cookie[] cookies = httpServletRequest.getCookies();
+        Map<String,Object> cookieList = new HashMap<>();
+        String env = sysConfigMapper.selectSycConfig("env");
+        //3，ブラウザ情報の取得
+        String browser = httpServletRequest.getHeader("User-Agent");
+        String url = httpServletRequest.getRequestURI();
+        String ip = ServletUtil.getClientIP(httpServletRequest);
+        String authorCd = session.getAttribute("aud").toString();
+        String addressee = MessageFormat.format("planocyclesystem{0}cn.tre-inc.com","@");
+        for (Cookie cookie : cookies) {
+            cookieList.put(cookie.getName(),cookie.getValue());
+        }
+        map.put("url",url);
+        map.put("authorCd",authorCd);
+        map.put("cookieList",cookieList);
+        map.put("browser",browser);
+        map.put("ip",ip);
+        map.put("env",env);
+        map.put("addressee",addressee);
+        return map;
+    }
+
+
+    public  void errInfoForEmail(Map<String,Object>map ,Exception e, Object[] o){
+        String url = map.get("url").toString();
+        String authorCd = map.get("authorCd").toString();
+        String cookieList = map.get("cookieList").toString();
+        String browser = map.get("browser").toString();
+        String ip = map.get("ip").toString();
+        String env = map.get("env").toString();
+        String addressee = map.get("addressee").toString();
+        String errMsg = e.getMessage();
+        String method = e.getStackTrace()[0].getMethodName();
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.addAll(Arrays.asList(o));
+        String params = jsonArray.toString();
+        String msg = MessageFormat.format(
+                "エラーコード：500\nパス：{0}\nメソッド名：{1}\n パラメータ:{2}\n ユーザー：{3}\n Cookie:{4}\n ブラウザ：{5}\n" +
+                        "ユーザーIP:{6}\n 異常メッセージ：{7}",
+                url//url
+                ,method//method
+                ,params//params
+                ,authorCd, //user
+                cookieList,//cookie
+                browser,//browser
+                ip//userIP
+                ,errMsg);//errInfo
+        String title = MessageFormat.format("「{0}」異常発生",env);
+        MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"));
+        MailUtils.sendEmail(account, addressee,title ,msg);
+    }
 }

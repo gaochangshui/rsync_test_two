@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
@@ -64,6 +65,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     private MstJanMapper mstJanMapper;
     @Autowired
     private cgiUtils cgiUtil;
+    @Autowired
+    private LogAspect logAspect;
 
     @Value("${smartUrlPath}")
     public String smartPath;
@@ -193,6 +196,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             future.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
             logger.error("", e);
+            logAspect.setTryErrorLog(e,new Object[]{taskIdMap});
             return ResultMaps.result(ResultEnum.FAILURE);
         } catch (TimeoutException e) {
             return ResultMaps.result(ResultEnum.SUCCESS,"9");
@@ -568,6 +572,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             return ResultMaps.result(ResultEnum.SUCCESS, returnData);
         } catch (Exception e) {
             logger.error("",e);
+            logAspect.setTryErrorLog(e,new Object[]{productPowerCd,companyCd});
             return ResultMaps.result(ResultEnum.FAILURE);
 
         }
