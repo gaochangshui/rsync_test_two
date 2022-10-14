@@ -27,4 +27,5 @@ public interface PriorityOrderCatepakMapper {
     List<Map<String, Object>> getCatePakSimilarity(Integer priorityOrderCd, Map<String, Object> maps);
 
     Integer getWorkCatepakId();
+
 }
