@@ -114,7 +114,7 @@ public class LogAspect {
                 ip//userIP
                 ,errMsg);//errInfo
         String title = MessageFormat.format("「{0}」異常発生",env);
-        MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"),"sender");
+        MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"));
         MailUtils.sendEmail(account, addressee,title ,msg);
     }
 }

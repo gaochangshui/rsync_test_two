@@ -24,7 +24,7 @@ public class MailConfig {
         public static final boolean IS_SSL = true;
     }
 
-    static Map<String, Object> getMailConfig(boolean isCloud ,String sender){
+    static Map<String, Object> getMailConfig(boolean isCloud){
         if (isCloud) {
             return ImmutableMap.of("MAIL", CloudMailConfig.MAIL1+"@"+CloudMailConfig.MAIL2, "PASS", CloudMailConfig.PASS,
                     "SMTP", CloudMailConfig.SMTP,"IS_SSL", CloudMailConfig.IS_SSL);
@@ -34,9 +34,9 @@ public class MailConfig {
                 "SMTP", LocalMailConfig.SMTP,"IS_SSL", LocalMailConfig.IS_SSL);
     }
 
-    public static MailAccount getMailAccount(boolean isCloud,String sender){
+    public static MailAccount getMailAccount(boolean isCloud){
         MailAccount account = new MailAccount();
-        Map<String, Object> mailMap = MailConfig.getMailConfig(isCloud, sender);
+        Map<String, Object> mailMap = MailConfig.getMailConfig(isCloud);
         account.setAuth(true);
         account.setDebug(true);
         account.setSslEnable(MapUtils.getBoolean(mailMap, "IS_SSL"));
