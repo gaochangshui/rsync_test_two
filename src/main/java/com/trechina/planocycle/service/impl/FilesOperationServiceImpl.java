@@ -1,11 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import com.trechina.planocycle.entity.dto.GetPtsCsvCgiDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.po.ShelfPtsDataJandata;
@@ -31,11 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -61,40 +55,39 @@ public class FilesOperationServiceImpl implements FilesOperationService {
     /**
      * 単一ファイルのアップロード
      *
-     * @param multipartFile
-     * @param path
+     *
      * @return
      */
-    @Override
-    public Map<String, Object> csvUpload(MultipartFile multipartFile, String path, String companyCd, String filename,
-                                         String projectIds, String bucketNames) {
-        try {
-            String fileName = filename;
-            if (!multipartFile.isEmpty()) {
-                String names = "";
-                if (multipartFile.getOriginalFilename() != null) {
-                    names = multipartFile.getOriginalFilename();
-                }
-                if (names != null && names.indexOf(".csv") > -1) {
-                    // パスが作成されません
-                    judgeExistsPath(path);
-                    //ファイルを保存
-                    excelPutPath(multipartFile, path + fileName);
-                    ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-                    fileSaveRemote(path, companyCd, fileName, resourceBundle.getString("ProductCsvPath"),
-                            projectIds, bucketNames);
-                    return ResultMaps.result(ResultEnum.SUCCESS);
-                } else {
-                    return ResultMaps.result(ResultEnum.FAILURE);
-                }
-
-            } else {
-                return ResultMaps.result(ResultEnum.FAILURE);
-            }
-        } catch (IOException | NullPointerException e) {
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
-    }
+    //@Override
+    //public Map<String, Object> csvUpload(MultipartFile multipartFile, String path, String companyCd, String filename,
+    //                                     String projectIds, String bucketNames) {
+    //    try {
+    //        String fileName = filename;
+    //        if (!multipartFile.isEmpty()) {
+    //            String names = "";
+    //            if (multipartFile.getOriginalFilename() != null) {
+    //                names = multipartFile.getOriginalFilename();
+    //            }
+    //            if (names != null && names.indexOf(".csv") > -1) {
+    //                // パスが作成されません
+    //                judgeExistsPath(path);
+    //                //ファイルを保存
+    //                excelPutPath(multipartFile, path + fileName);
+    //                ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+    //                fileSaveRemote(path, companyCd, fileName, resourceBundle.getString("ProductCsvPath"),
+    //                        projectIds, bucketNames);
+    //                return ResultMaps.result(ResultEnum.SUCCESS);
+    //            } else {
+    //                return ResultMaps.result(ResultEnum.FAILURE);
+    //            }
+    //
+    //        } else {
+    //            return ResultMaps.result(ResultEnum.FAILURE);
+    //        }
+    //    } catch (IOException | NullPointerException e) {
+    //        return ResultMaps.result(ResultEnum.FAILURE);
+    //    }
+    //}
 
     private List<ShelfPtsDataTaimst> convertArrayToTaimstList(List<String[]> datas, Integer ptsCd, String companyCd, String authorCd, Date createTime) {
         List<ShelfPtsDataTaimst> result = new ArrayList<>();
@@ -365,29 +358,29 @@ public class FilesOperationServiceImpl implements FilesOperationService {
      * @param fileName
      * @throws IOException
      */
-    private void fileSaveRemote(String path, String companyCd, String fileName, String remotePaths, String projectIds,
-                                String bucketNames) throws IOException {
-        String remotePath = remotePaths;
-        remotePath = remotePath.replace("COMPANYCD", companyCd);
-        // ファイルの保存--バケツのバージョン
-        // The ID of your GCP project
-        String projectId = projectIds;
-        // The ID of your GCS bucket
-        String bucketName = bucketNames;
-        // The ID of your GCS object
-        String objectName = fileName;
-        // The path to your file to upload
-        String filePath = path + fileName;
-        File jsonKey = new File("/secrets/.gcp-credientials.json");
-        Storage storage = StorageOptions.newBuilder().setProjectId(projectId).setCredentials(GoogleCredentials.fromStream(new FileInputStream(jsonKey))).build().getService();
-        BlobId blobId = BlobId.of(bucketName, remotePath + objectName);
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
-        storage.create(blobInfo, Files.readAllBytes(Paths.get(filePath)));
-        File delFile = new File(path + fileName);
-        if (!delFile.delete()) {
-            logger.info("削除文件失敗");
-        }
-    }
+    //private void fileSaveRemote(String path, String companyCd, String fileName, String remotePaths, String projectIds,
+    //                            String bucketNames) throws IOException {
+    //    String remotePath = remotePaths;
+    //    remotePath = remotePath.replace("COMPANYCD", companyCd);
+    //    // ファイルの保存--バケツのバージョン
+    //    // The ID of your GCP project
+    //    String projectId = projectIds;
+    //    // The ID of your GCS bucket
+    //    String bucketName = bucketNames;
+    //    // The ID of your GCS object
+    //    String objectName = fileName;
+    //    // The path to your file to upload
+    //    String filePath = path + fileName;
+    //    File jsonKey = new File("/secrets/.gcp-credientials.json");
+    //    Storage storage = StorageOptions.newBuilder().setProjectId(projectId).setCredentials(GoogleCredentials.fromStream(new FileInputStream(jsonKey))).build().getService();
+    //    BlobId blobId = BlobId.of(bucketName, remotePath + objectName);
+    //    BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+    //    storage.create(blobInfo, Files.readAllBytes(Paths.get(filePath)));
+    //    File delFile = new File(path + fileName);
+    //    if (!delFile.delete()) {
+    //        logger.info("削除文件失敗");
+    //    }
+    //}
 
     /**
      * ファイルパスが存在するかどうかを判断

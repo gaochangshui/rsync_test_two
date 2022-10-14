@@ -35,14 +35,14 @@ public class FilesOperationController {
      * @return
      * @throws IOException
      */
-    @PostMapping("/CsvUpload")
-    public Map<String,Object> csvUpload(@RequestParam("file")MultipartFile multipartFile,
-            @RequestParam("item")String filename,@RequestParam("companyCd") String companyCd) throws IOException {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("csvPathCommodityPower")+session.getAttribute("aud").toString()+File.separator;
-
-        return filesOperationService.csvUpload(multipartFile,path,companyCd,filename,projectIds,bucketNames);
-    }
+    //@PostMapping("/CsvUpload")
+    //public Map<String,Object> csvUpload(@RequestParam("file")MultipartFile multipartFile,
+    //        @RequestParam("item")String filename,@RequestParam("companyCd") String companyCd) throws IOException {
+    //    ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
+    //    String path = resourceBundle.getString("csvPathCommodityPower")+session.getAttribute("aud").toString()+File.separator;
+    //
+    //    return filesOperationService.csvUpload(multipartFile,path,companyCd,filename,projectIds,bucketNames);
+    //}
 
     /**
      * 複数のcsvファイルをアップロード
