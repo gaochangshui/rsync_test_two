@@ -225,6 +225,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         result.put("tanaInfo", ptsInfoTemp);
 
         // 同一棚名称の棚パータンListを取得
+
         List<PriorityAllPatternListVO> info = priorityAllMstMapper.getAllPatternData(companyCd, priorityAllCd, priorityOrderCd, patternCd);
         result.put("ptsInfo", info);
         return ResultMaps.result(ResultEnum.SUCCESS, result);
@@ -255,10 +256,9 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 return ResultMaps.result(ResultEnum.SUCCESS,"success");
             }
             if (Duration.between(now, LocalDateTime.now()).getSeconds() > MagicString.TASK_TIME_OUT_LONG) {
-                return ResultMaps.result(ResultEnum.SUCCESS, "9");
+                return ResultMaps.result(ResultEnum.SUCCESS, taskId);
             }
         }
-
     }
 
     /**
