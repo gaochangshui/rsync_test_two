@@ -255,7 +255,7 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
                 return ResultMaps.result(ResultEnum.SUCCESS,"success");
             }
             if (Duration.between(now, LocalDateTime.now()).getSeconds() > MagicString.TASK_TIME_OUT_LONG) {
-                return ResultMaps.result(ResultEnum.SUCCESS, "9");
+                return ResultMaps.result(ResultEnum.SUCCESS, taskId);
             }
         }
 

@@ -636,11 +636,13 @@ public class MstJanServiceImpl implements MstJanService {
                         .map(map -> map.entrySet().stream().filter(infoMap -> janInfoCol.contains(infoMap.getKey()) || "1".equals(infoMap.getKey()))
                                 .collect(LinkedHashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()), LinkedHashMap::putAll))
                         .collect(Collectors.toList());
+
                 janSpecialData.forEach(map->map.entrySet().forEach(field->{
                     if (field.getValue().equals("")){
                         field.setValue(null);
                     }
                 }));
+
                 int batchSize = 1000;
                 int janDataNum = (int) Math.ceil(janInfoData.size() / 1000.0);
                 for (int i = 0; i < janDataNum; i++) {

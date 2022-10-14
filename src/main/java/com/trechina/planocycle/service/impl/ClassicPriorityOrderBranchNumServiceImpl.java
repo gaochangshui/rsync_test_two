@@ -1,5 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.trechina.planocycle.aspect.LogAspect;
@@ -24,6 +26,7 @@ import com.trechina.planocycle.utils.cgiUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -36,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -676,6 +680,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
 
     @Override
     public Map<String, Object> getStarReadingParam(String companyCd,Integer priorityOrderCd) {
+        logger.info("start:{}",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
         PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
@@ -701,6 +706,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
         List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
         groupCompany.add(companyCd);
+
         if (modeCheck == 1){
             janInfoTableName = "priority.work_priority_order_commodity_branch";
           this.getDepositBranch(companyCd,priorityOrderCd,tableName,mapResult,makerCol,column,header,commonTableName,groupCompany,group);
