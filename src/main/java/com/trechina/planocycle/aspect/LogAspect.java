@@ -103,8 +103,15 @@ public class LogAspect {
             cookieList.put(cookie.getName(),cookie.getValue());
         }
         String msg = MessageFormat.format(
-                "エラーコード：500\nパス：{0}\nメソッド名：{1}\n パラメータ:{2}\n ユーザー：{3}\n Cookie:{4}\n ブラウザ：{5}\n" +
-                        "ユーザーIP:{6}\n 異常メッセージ：{7}",
+                "<p>エラーコード：500</p>" +
+                        "<p>パス：{0}</p>" +
+                        "<p>メソッド名：{1}</p>" +
+                        "<p> パラメータ:{2}</p>" +
+                        "<p> ユーザー：{3}</p>" +
+                        " <p>Cookie:{4}</p>" +
+                        "<p> ブラウザ：{5}</p>" +
+                        "<p>ユーザーIP:{6}</p>" +
+                        "<p> 異常メッセージ：{7}</p>",
                 url//url
                 ,method//method
                 ,params//params
@@ -157,8 +164,15 @@ public class LogAspect {
         jsonArray.addAll(Arrays.asList(o));
         String params = jsonArray.toString();
         String msg = MessageFormat.format(
-                "エラーコード：500\nパス：{0}\nメソッド名：{1}\n パラメータ:{2}\n ユーザー：{3}\n Cookie:{4}\n ブラウザ：{5}\n" +
-                        "ユーザーIP:{6}\n 異常メッセージ：{7}",
+                "<p>エラーコード：500</p>" +
+                        "<p>パス：{0}</p>" +
+                        "<p>メソッド名：{1}</p>" +
+                        "<p> パラメータ:{2}</p>" +
+                        "<p> ユーザー：{3}</p>" +
+                        " <p>Cookie:{4}</p>" +
+                        "<p> ブラウザ：{5}</p>" +
+                        "<p>ユーザーIP:{6}</p>" +
+                        "<p> 異常メッセージ：{7}</p>",
                 url//url
                 ,method//method
                 ,params//params
