@@ -57,7 +57,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     }
 
-    private void returnJson(HttpServletResponse response, Map<String,Object> result) throws Exception{
+    private void returnJson(HttpServletResponse response, Map<String,Object> result) {
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/json;charset=utf-8");
         response.setStatus(200);

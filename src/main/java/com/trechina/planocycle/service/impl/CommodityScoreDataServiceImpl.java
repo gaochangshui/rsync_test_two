@@ -3,18 +3,18 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreDataService;
-import com.trechina.planocycle.utils.ListDisparityUtils;
-import com.trechina.planocycle.utils.ResultMaps;
-import com.trechina.planocycle.utils.VehicleNumCache;
-import com.trechina.planocycle.utils.cgiUtils;
+import com.trechina.planocycle.utils.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +65,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     private MstJanMapper mstJanMapper;
     @Autowired
     private cgiUtils cgiUtil;
+    @Autowired
+    private LogAspect logAspect;
 
     @Value("${smartUrlPath}")
     public String smartPath;
@@ -78,42 +80,42 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     public Map<String, Object> getCommodityScoreData(Map<String,Object> taskIdMap) throws InterruptedException {
 
         String taskID = taskIdMap.get(MagicString.TASK_ID).toString();
-        String commonPartsData = taskIdMap.get("commonPartsData").toString();
+        String commonPartsData = taskIdMap.get(MagicString.COMMON_PARTS_DATA).toString();
         Integer productPowerCd = Integer.valueOf(taskIdMap.get("productPowerCd").toString());
         String companyCd = taskIdMap.get("companyCd").toString();
         String authorCd = session.getAttribute("aud").toString();
 
         if (taskID.equals("")){
-            logger.info("getCommodityScoreData:{}", 1);
+            logger.info(MagicString.GET_COMMODITY_SCORE_DATA, 1);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
         if ("5".equals(vehicleNumCache.get(taskID + "Exception"))){
             return ResultMaps.result(ResultEnum.DATAISTOOLARGE);
         }
-
         if("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))){
-            logger.info("getCommodityScoreData:{}", 2);
+            logger.info(MagicString.GET_COMMODITY_SCORE_DATA, 2);
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
 
-        if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()+"Exception")!=null){
-            logger.info("getCommodityScoreData:{}", 3);
+        if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()+MagicString.EXCEPTION)!=null){
+            logger.info(MagicString.GET_COMMODITY_SCORE_DATA, 3);
             return ResultMaps.result(ResultEnum.CGIERROR);
         }
         if (vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString())==null){
-            logger.info("getCommodityScoreData:{}", 4);
+            logger.info(MagicString.GET_COMMODITY_SCORE_DATA, 4);
             return ResultMaps.result(ResultEnum.FAILURE);
         }
 
-        Future future = (Future) vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID)+"2");
+        Future<?> future = (Future<?>) vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID)+"2");
         if(future==null){
             future = executor.submit(()->{
+
                 while (true){
                     if ("ok".equals(vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()).toString())) {
                         log.info("taskID state:{}",vehicleNumCache.get(taskIdMap.get(MagicString.TASK_ID).toString()));
                         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
                         JSONObject jsonObject = JSON.parseObject(commonPartsData);
-                        String prodMstClass = jsonObject.get("prodMstClass").toString();
+                        String prodMstClass = jsonObject.get(MagicString.PROD_MST_CLASS).toString();
                         String prodIsCore = jsonObject.get("prodIsCore").toString();
                         String isCompanyCd = null;
                         if ("1".equals(prodIsCore)) {
@@ -121,12 +123,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         } else {
                             isCompanyCd = companyCd;
                         }
-                        int janName2colNum = Integer.parseInt(taskIdMap.get("janName2colNum").toString());
+                        int janName2colNum = Integer.parseInt(taskIdMap.get(MagicString.JAN_NAME2COL_NUM).toString());
                         int colNum = 2;
                         if (janName2colNum == 2){
-                            colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+                            colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
                         }else if(janName2colNum==3){
-                            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
+                            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
                         }
 
                         if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
@@ -169,12 +171,11 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
                             break;
                         }
+                        productPowerDataMapper.setIntageJanForSyokika(companyCd,productPowerCd);
                         List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
                                 janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd
                                 ,shelfPts,storeCd,attrColName);
                         List<Map<String, Object>> resultData = new ArrayList<>();
-
-
 
                         resultData.add(colMap);
                         resultData.addAll(allData);
@@ -193,6 +194,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             future.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
             logger.error("", e);
+            logAspect.setTryErrorLog(e,new Object[]{taskIdMap});
             return ResultMaps.result(ResultEnum.FAILURE);
         } catch (TimeoutException e) {
             return ResultMaps.result(ResultEnum.SUCCESS,"9");
@@ -236,12 +238,135 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Override
     public Map<String, Object> getCommodityScoreTaskId( Map<String,Object> map) {
         //smtデータソースを教える
-        Integer paramCount = productPowerDataMapper.getParamCount(map);
+
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = map.get("company").toString();
-        String commonPartsData = map.get("commonPartsData").toString();
+        String commonPartsData = map.get(MagicString.COMMON_PARTS_DATA).toString();
+
+        map = this.dateChange(map,companyCd);
+        String uuid1 = UUID.randomUUID().toString();
+        String attrCondition =  this.attrList(map);
+        map.put("attrCondition",attrCondition);
+        Map<String,Object> janList =  this.janList(map);
+        map.put("filterJanlist",janList.get(MagicString.LIST_DISPARIT_STR));
+        map.put("excjanFlg",janList.get(MagicString.JAN_EXCLUDE));
+        map.remove("singleJan");
+
+        map.put("guid",uuid1);
+        map.put("mode","shoki_data");
+        map.put("usercd",authorCd);
+
+        map.put(MagicString.TABLE_NAME,"planocycle.work_product_power_kokyaku");
+        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
+        logger.info("調用cgiつかむ取data的参数：{}", map);
+
+        map = this.companyChange(map,companyCd,commonPartsData);
+
+        uuid1 = UUID.randomUUID().toString();
+        Map<String,Object> posMap = new HashMap<>();
+        posMap.putAll(map);
+        posMap.put("mode","shoki_data");
+        posMap.put("guid",uuid1);
+        posMap.remove("customerCondition");
+        posMap.put(MagicString.TABLE_NAME,"planocycle.work_product_power_syokika");
+        //posデータ
+        logger.info("posパラメータ{}",posMap);
+        String taskQuery = cgiUtil.setPath("TaskQuery");
+        String productPowerData = cgiUtil.setPath("ProductPowerData");
+        String posResult = cgiUtil.postCgi(productPowerData, posMap, tokenInfo,smartPath);
+
+
+        Map<String, Object> finalMap = map;
+        Future<?> future = executor.submit(() -> {
+                List<String> taskIdList = new ArrayList<>();
+                taskIdList.add(posResult);
+
+                Map<String, Object> map1 = null;
+                vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_CGI, posResult), Joiner.on(",").join(taskIdList));
+                    while (true) {
+                        map1 = cgiUtil.postCgiOfWeb(taskQuery, posResult, tokenInfo,smartPath);
+                        if (!"9".equals(map1.get("data"))) {
+                            if (map1.get("data")==null){
+                                vehicleNumCache.put(posResult+MagicString.EXCEPTION,map1.get("msg"));
+                            }else if("5".equals(map1.get("data"))){
+                                vehicleNumCache.put(posResult + "Exception", "5");
+                            }
+                            break;
+                        }
+                    }
+
+                    if (map1.get("data")!=null) {
+                        //顧客パラメータ
+                       this.callKokyaku(finalMap,productPowerData,tokenInfo,taskIdList,taskQuery,posResult,smartPath);
+                        //市場データ
+                        this.callIntage(finalMap,productPowerData,tokenInfo,taskIdList,taskQuery,posResult,smartPath);
+                    }
+            vehicleNumCache.put(posResult,"ok");
+                });
+        String result =  posResult;
+
+        vehicleNumCache.put(posResult, "1");
+        vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, posResult), future);
+
+        logger.info("taskId返回：{}", result);
+        return ResultMaps.result(ResultEnum.SUCCESS, result);
+    }
+    public void callKokyaku(Map<String, Object> finalMap, String productPowerData, String tokenInfo, List<String> taskIdList, String taskQuery
+            , String posResult, String smartPath){
+        Map<Object, Object> customerCondition = (Map<Object, Object>) finalMap.get("customerCondition");
+        if (!customerCondition.isEmpty()) {
+            String  uuid = UUID.randomUUID().toString();
+            finalMap.put("guid", uuid);
+            finalMap.put("basketFlg",0);
+            logger.info("顧客パラメータ{}", finalMap);
+            String groupResult = cgiUtil.postCgi(productPowerData, finalMap, tokenInfo, smartPath);
+            taskIdList.add(groupResult);
+            vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_CGI, posResult), Joiner.on(",").join(taskIdList));
+            while (true) {
+                Map<String, Object> map2 = cgiUtil.postCgiOfWeb(taskQuery, groupResult, tokenInfo,smartPath);
+                if (!"9".equals(map2.get("data"))) {
+                    if (map2.get("data") == null) {
+                        vehicleNumCache.put(posResult + MagicString.EXCEPTION, "error");
+                    }else if("5".equals(map2.get("data"))){
+                        vehicleNumCache.put(posResult + "Exception", "5");
+                    }
+                    break;
+                }
+            }
+
+        }
+    }
+
+    public void callIntage(Map<String, Object> finalMap, String productPowerData, String tokenInfo, List<String> taskIdList, String taskQuery
+            , String posResult, String smartPath){
+        if (!Strings.isNullOrEmpty(MapUtils.getString(finalMap, "channelNm"))) {
+            String  uuid = UUID.randomUUID().toString();
+            finalMap.put("mode", "market_data");
+            finalMap.put("guid", uuid);
+            finalMap.put(MagicString.TABLE_NAME, "planocycle.work_product_power_intage");
+            logger.info("市場パラメータ{}", finalMap);
+            String intergeResult = cgiUtil.postCgi(productPowerData, finalMap, tokenInfo, smartPath);
+            taskIdList.add(intergeResult);
+            vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_CGI, posResult), Joiner.on(",").join(taskIdList));
+
+            while (true) {
+                Map<String, Object> map2 = cgiUtil.postCgiOfWeb(taskQuery, intergeResult, tokenInfo, smartPath);
+                if (!"9".equals(map2.get("data"))) {
+                    if (map2.get("data") == null) {
+                        vehicleNumCache.put(posResult + MagicString.EXCEPTION, "error");
+                    }else if("5".equals(map2.get("data"))){
+                        vehicleNumCache.put(posResult + "Exception", "5");
+                    }
+                    break;
+                }
+            }
+
+        }
+    }
+    public Map<String,Object> dateChange(Map<String,Object> map,String companyCd){
         map.put("basketFlg",Integer.parseInt(map.get("showItemCheck").toString()) == 1?1:0);
         map.remove("showItemCheck");
+        Integer paramCount = productPowerDataMapper.getParamCount(map);
         if (paramCount >0){
             map.put("changeFlag","1");
         }else {
@@ -253,23 +378,31 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         if ("".equals(map.get("seasonStTime"))) {
             map.put("seasonStTime","_");
         }
-        String uuid1 = UUID.randomUUID().toString();
-        String attrCondition =  this.attrList(map);
-        map.put("attrCondition",attrCondition);
-        Map<String,Object> janList =  this.janList(map);
-        map.put("filterJanlist",janList.get("listDisparitStr"));
-        map.put("excjanFlg",janList.get("janExclude"));
-        map.remove("singleJan");
-        String companyKokigyou = planocycleKigyoListMapper.getGroupInfo(companyCd);
         if (map.get("prdCd").equals("")) {
             map.put("prdCd",null);
         }
+        String companyKokigyou = planocycleKigyoListMapper.getGroupInfo(companyCd);
         //グループ企業かどうかを判断する
         if (companyKokigyou!=null){
             map.put("company_kokigyou",companyKokigyou);
         }else {
             map.put("company_kokigyou",companyCd+"_"+companyCd);
         }
+
+        if ("0".equals(map.get(MagicString.SEASON_FLAG))) {
+            map.put(MagicString.SEASON_FLAG,"MONTH");
+        } else {
+            map.put(MagicString.SEASON_FLAG,"WEEK");
+        }
+        if ("0".equals(map.get(MagicString.RECENTLY_FLAG))) {
+            map.put(MagicString.RECENTLY_FLAG,"MONTH");
+        } else {
+            map.put(MagicString.RECENTLY_FLAG,"WEEK");
+        }
+        return map;
+    }
+
+    public Map<String,Object> companyChange(Map<String,Object> map, String companyCd, String commonPartsData){
         //マスタ設定
         JSONObject jsonObject = JSON.parseObject(commonPartsData);
         String storeIsCore = jsonObject.get("storeIsCore").toString();
@@ -277,7 +410,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String dateIsCore  = jsonObject.get("dateIsCore").toString();
 
         map.put("selected_tenpo",jsonObject.get("storeMstClass").toString());
-        map.put("selected_shouhin",jsonObject.get("prodMstClass").toString());
+        map.put("selected_shouhin",jsonObject.get(MagicString.PROD_MST_CLASS).toString());
         map.put("storeLevel",jsonObject.get("storeLevel").toString());
         if ("1".equals(dateIsCore)){
             map.put("date_mst","date_core_mst");
@@ -296,127 +429,20 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         }else {
             map.put("tenpo_kaisou_mst","tenpo_kaisou_kigyomst");
         }
-        map.remove("commonPartsData");
+        map.remove(MagicString.COMMON_PARTS_DATA);
 
         //選択した品名を判断する
-        Integer janName2colNum = Integer.valueOf(map.get("janName2colNum").toString());
+        Integer janName2colNum = Integer.valueOf(map.get(MagicString.JAN_NAME2COL_NUM).toString());
         if (janName2colNum == 2){
-            Integer prodMstClass = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
-            map.put("janName2colNum",prodMstClass);
+            Integer prodMstClass = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            map.put(MagicString.JAN_NAME2COL_NUM,prodMstClass);
         }else if(janName2colNum == 3){
-            Integer prodMstClass = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get("prodMstClass").toString());
-            map.put("janName2colNum",prodMstClass);
+            Integer prodMstClass = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            map.put(MagicString.JAN_NAME2COL_NUM,prodMstClass);
         }else {
-            map.put("janName2colNum","_");
+            map.put(MagicString.JAN_NAME2COL_NUM,"_");
         }
-        map.put("guid",uuid1);
-        map.put("mode","shoki_data");
-        map.put("usercd",authorCd);
-        if ("0".equals(map.get("seasonFlag"))) {
-            map.put("seasonFlag","MONTH");
-        } else {
-            map.put("seasonFlag","WEEK");
-        }
-        if ("0".equals(map.get("recentlyFlag"))) {
-            map.put("recentlyFlag","MONTH");
-        } else {
-            map.put("recentlyFlag","WEEK");
-        }
-        map.put("tableName","planocycle.work_product_power_kokyaku");
-        String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
-        logger.info("調用cgiつかむ取data的参数：{}", map);
-
-
-
-        uuid1 = UUID.randomUUID().toString();
-        Map<String,Object> posMap = new HashMap();
-        posMap.putAll(map);
-        posMap.put("mode","shoki_data");
-        posMap.put("guid",uuid1);
-        posMap.remove("customerCondition");
-        posMap.put("tableName","planocycle.work_product_power_syokika");
-        //posデータ
-        logger.info("posパラメータ{}",posMap);
-        String taskQuery = cgiUtil.setPath("TaskQuery");
-        String productPowerData = cgiUtil.setPath("ProductPowerData");
-        String posResult = cgiUtil.postCgi(productPowerData, posMap, tokenInfo,smartPath);
-        String smartPath = this.smartPath;
-
-        Future future = executor.submit(() -> {
-                List<String> taskIdList = new ArrayList<>();
-                taskIdList.add(posResult);
-                String uuid = "";
-                Map<String, Object> map1 = null;
-                logger.info("pos開始時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-                vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_CGI, posResult), Joiner.on(",").join(taskIdList));
-                    while (true) {
-                        map1 = cgiUtil.postCgiOfWeb(taskQuery, posResult, tokenInfo,smartPath);
-                        if (!"9".equals(map1.get("data"))) {
-                            if (map1.get("data")==null){
-                                vehicleNumCache.put(posResult+"Exception",map1.get("msg"));
-                            }else if("5".equals(map1.get("data"))){
-                                vehicleNumCache.put(posResult + "Exception", "5");
-                            }
-                            break;
-                        }
-                    }
-                logger.info("pos終了時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-                    if (map1.get("data")!=null) {
-                        Map<Object, Object> customerCondition = (Map<Object, Object>) map.get("customerCondition");
-                        if (!customerCondition.isEmpty()) {
-                            map.put("basketFlg",0);
-                            logger.info("顧客パラメータ{}", map);
-                            logger.info("顧客開始時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-                            String groupResult = cgiUtil.postCgi(productPowerData, map, tokenInfo, smartPath);
-                            taskIdList.add(groupResult);
-                            vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_CGI, posResult), Joiner.on(",").join(taskIdList));
-                            while (true) {
-                                Map<String, Object> map2 = cgiUtil.postCgiOfWeb(taskQuery, groupResult, tokenInfo, smartPath);
-                                if (!"9".equals(map2.get("data"))) {
-                                    if (map2.get("data") == null) {
-                                        vehicleNumCache.put(posResult + "Exception", "error");
-                                    }else if("5".equals(map2.get("data"))){
-                                        vehicleNumCache.put(posResult + "Exception", "5");
-                                    }
-                                    break;
-                                }
-                            }
-                            logger.info("顧客終了時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-                        }
-                        //市場データ
-                        if (map.get("channelNm") != null && !"".equals(map.get("channelNm"))) {
-                            uuid = UUID.randomUUID().toString();
-                            map.put("mode", "market_data");
-                            map.put("guid", uuid);
-                            map.put("tableName", "planocycle.work_product_power_intage");
-                            logger.info("市場パラメータ{}", map);
-                            String intergeResult = cgiUtil.postCgi(productPowerData, map, tokenInfo, smartPath);
-                            taskIdList.add(intergeResult);
-                            vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_CGI, posResult), Joiner.on(",").join(taskIdList));
-                            logger.info("市場開始時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-                            while (true) {
-                                Map<String, Object> map2 = cgiUtil.postCgiOfWeb(taskQuery, intergeResult, tokenInfo, smartPath);
-                                if (!"9".equals(map2.get("data"))) {
-                                    if (map2.get("data") == null) {
-                                        vehicleNumCache.put(posResult + "Exception", "error");
-                                    }else if("5".equals(map2.get("data"))){
-                                        vehicleNumCache.put(posResult + "Exception", "5");
-                                    }
-                                    break;
-                                }
-                            }
-                            logger.info("市場終了時間：{}",new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-                        }
-                    }
-            vehicleNumCache.put(posResult,"ok");
-                });
-        String result =  posResult;
-
-        vehicleNumCache.put(posResult, "1");
-        vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, posResult), future);
-
-        logger.info("taskId返回：{}", result);
-        return ResultMaps.result(ResultEnum.SUCCESS, result);
+        return map;
     }
 
     public void setProductParam(Map<String, Object> map, Integer productPowerCd, String companyCd, String authorCd, String customerConditionStr, String prodAttrData, String singleJan) {
@@ -443,14 +469,14 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         if (!singleJan.isEmpty()) {
             List<String> filterJanList = (List<String>) singleJan.get("filterJanList");
             List<String> noSelectedJanListAll = (List<String>) singleJan.get("noSelectedJanListAll");
-            boolean janExclude = (boolean) singleJan.get("janExclude");
+            boolean janExclude = (boolean) singleJan.get(MagicString.JAN_EXCLUDE);
             List<String> listDisparitStr = ListDisparityUtils.getListDisparitStr(filterJanList, noSelectedJanListAll);
 
-            resultMap.put("janExclude", janExclude ? 1 : 0);
-            resultMap.put("listDisparitStr", Joiner.on(",").join(listDisparitStr));
+            resultMap.put(MagicString.JAN_EXCLUDE, janExclude ? 1 : 0);
+            resultMap.put(MagicString.LIST_DISPARIT_STR, Joiner.on(",").join(listDisparitStr));
         }else {
-            resultMap.put("janExclude", null);
-            resultMap.put("listDisparitStr", null);
+            resultMap.put(MagicString.JAN_EXCLUDE, null);
+            resultMap.put(MagicString.LIST_DISPARIT_STR, null);
         }
         return resultMap;
     }
@@ -458,16 +484,20 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     private String attrList(Map<String,Object> map) {
         StringBuilder finalValue = new StringBuilder();
 
-        List list = (ArrayList) map.get("prodAttrData");
+        List<Object> list = (ArrayList<Object>) map.get("prodAttrData");
 
         if (!list.isEmpty()){
             for (Object o : list) {
                 Map<String,Object> proMap = (Map<String, Object>) o;
-                List value = (List)proMap.get("value");
+                List<Object> value = (List<Object>)proMap.get("value");
+                List<Object> newValue = new ArrayList<>();
                 if (!value.isEmpty()){
                     String id = proMap.get("id").toString().split("_")[2];
-
-                    String join = Joiner.on("$|^").join(value);
+                    value.forEach(str->{
+                        str = str.toString().replace("(","\\(").replace(")","\\)");
+                        newValue.add(str);
+                    });
+                    String join = Joiner.on("$|^").join(newValue);
                     boolean flag = (boolean) proMap.getOrDefault("rmFlag", false);
                     String eq = flag ? "!~":"~";
                     if (finalValue.toString().equals("")){
@@ -480,7 +510,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             }
         }
 
-        return finalValue.toString().equals("")?null: finalValue.toString();
+        return CommonUtil.defaultIfEmpty(finalValue.toString(),null);
+
     }
 
     /**
@@ -521,8 +552,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
             List<Map<String, Object>> reserveMst = productPowerReserveMstMapper.selectAllPrepared(productPowerCd);
             reserveMst = reserveMst.stream()
-                    .peek(map->map.put("data_cd", "item"+map.get("data_cd")))
-                    .filter(map->Arrays.asList(prepareCd).contains(map.get("data_cd").toString())).collect(Collectors.toList());
+                    .peek(map->map.put(MagicString.DATE_CD, "item"+map.get(MagicString.DATE_CD)))
+                    .filter(map->Arrays.asList(prepareCd).contains(map.get(MagicString.DATE_CD).toString())).collect(Collectors.toList());
 
             List<Map<String, String>> productPowerMstData = productPowerDataMapper.selectShowData(productPowerCd, paramConfigVOS,reserveMst,
                     customerCd, Arrays.asList(prepareCd), intageCd);
@@ -530,7 +561,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             Map<String, String> colName = paramConfigVOS.stream()
                     .collect(Collectors.toMap(ParamConfigVO::getItemCd, ParamConfigVO::getItemName, (key1, key2) -> key1, LinkedHashMap::new));
 
-            Map<String, String> preparedColName = reserveMst.stream().collect(Collectors.toMap(map -> map.get("data_cd").toString(),
+            Map<String, String> preparedColName = reserveMst.stream().collect(Collectors.toMap(map -> map.get(MagicString.DATE_CD).toString(),
                     map -> map.get("data_name").toString(), (key1, key2) -> key1, LinkedHashMap::new));
             colName.putAll(preparedColName);
             returnData.add(colName);
@@ -539,6 +570,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             return ResultMaps.result(ResultEnum.SUCCESS, returnData);
         } catch (Exception e) {
             logger.error("",e);
+            logAspect.setTryErrorLog(e,new Object[]{productPowerCd,companyCd});
             return ResultMaps.result(ResultEnum.FAILURE);
 
         }

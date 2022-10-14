@@ -43,7 +43,7 @@ public interface PriorityAllPtsMapper {
 
     List<PtsTanaVo> getTanaData(Integer id);
 
-    List<LinkedHashMap> getJanData(@Param("id") Integer id, @Param("attrList")List<Map<String,Object>> attrList
+    List<LinkedHashMap<String,Object>> getJanData(@Param("id") Integer id, @Param("attrList")List<Map<String,Object>> attrList
             , @Param("tableName")String tableName, @Param("janSizeCol")List<Map<String,Object>>janSizeCol, String proTableName);
 
     PtsDetailDataVo getPtsDetailData(String companyCd, String authorCd, Integer priorityAllCd, Integer patternCd);
@@ -69,4 +69,12 @@ public interface PriorityAllPtsMapper {
     Integer getNewTaiNum(Integer ptsCd);
 
     Integer getNewTanaNum(Integer ptsCd);
+
+    Integer getNewId(String companyCd,Integer priorityAllCd,Integer patternCd);
+
+    List<Map<String, Object>> selectNewJanZokusei(Integer priorityOrderCd, Integer ptsCd, List<ZokuseiMst> attrList
+            , List<Integer> allCdList, String proInfoTable,List<Map<String,Object>>attrName,List<Map<String, Object>> janSizeCol);
+
+    void setFaceNum(@Param("list") List<PriorityAllFaceVo> priorityAllFaceVo,@Param("priorityAllCd")Integer priorityAllCd,@Param("patternCd")Integer patternCd);
 }
+

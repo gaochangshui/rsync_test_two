@@ -6,6 +6,7 @@ import com.trechina.planocycle.entity.po.CommoditySyncSet;
 import com.trechina.planocycle.entity.vo.CommoditySyncSetVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.MstCommodityMapper;
+import com.trechina.planocycle.mapper.MstJanMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.MstCommodityService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -24,6 +25,9 @@ public class MstCommodityServiceImpl implements MstCommodityService {
     MstCommodityMapper mstCommodityMapper;
     @Autowired
     private SysConfigMapper sysConfigMapper;
+
+    @Autowired
+    private MstJanMapper mstJanMapper;
 
     /**
      * 同期設定を検索

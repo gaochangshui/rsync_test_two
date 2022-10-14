@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.PriorityOrderPtsResultJandataMapper">
+    <insert id="insertPtsJandata">
+        <if test="!newPtsJanList.isEmpty">
+            insert into priority.priority_order_pts_result_jandata(company_cd,priority_order_cd, shelf_pattern_cd, jan, tai_cd, tana_cd, tanaposition_cd,
+            face_count, face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num, branch_cd, compare_flag)
+            values
+            <foreach collection="newPtsJanList" item="item" separator=",">
+                (#{companyCd},#{priorityOrderCd}, #{shelfPatternCd}, #{item.jan},#{item.taiCd},#{item.tanaCd},#{item.tanaPositionCd},
+                #{item.face_count}, #{item.face_men}, #{item.face_kaiten}, #{item.tumiagesu}, #{item.zaikosu}, #{item.face_displayflg},
+                #{item.face_position}, #{item.depth_display_num}, #{branchCd}, #{compareFlag})
+            </foreach>
+            on conflict do nothing
+        </if>
+    </insert>
+    <delete id="deletePtsJandata">
+        delete from priority.priority_order_pts_result_jandata where priority_order_cd=#{priorityOrderCd}
+    </delete>
+    <select id="selectAllResultJandata" resultType="map">
+        select patternmst.shelf_pattern_cd shelf_pattern_cd, jan, tai_cd, tana_cd, tanaposition_cd,
+        face_count, face_men, face_kaiten, tumiagesu, zaikosu, face_displayflg, face_position, depth_display_num, branch_cd,
+        patternmst.shelf_pattern_name shelf_pattern_name
+        from priority.priority_order_pts_result_jandata jandata inner join planocycle.shelf_pattern_mst patternmst
+        on patternmst.shelf_pattern_cd=jandata.shelf_pattern_cd and jandata.company_cd=patternmst.company_cd
+        where priority_order_cd=#{priorityOrderCd} order by shelf_pattern_cd,branch_cd,tai_cd, tana_cd, tanaposition_cd
+    </select>
+</mapper>

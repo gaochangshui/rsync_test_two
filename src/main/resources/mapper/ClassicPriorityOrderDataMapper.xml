@@ -319,7 +319,7 @@
              ) datas
                  left join priority.work_priority_order_attribute_classify classify
                            on  classify.attr1 = datas.${tai} and classify.attr2 = datas.${tana} and classify.priority_order_cd = #{priorityOrderCd}
-            where ${colName} != -1
+        where   ${colName} != -1
         <if test="colName != 'rank'">
             and rank_upd != 99999999
         </if>
@@ -646,11 +646,15 @@
     <select id="getWorkData" resultType="java.util.Map">
         select jan_new,jan_old,pos_amount,branch_amount,unit_price,sku,rank,rank_prop,goods_rank,rank_upd,branch_num,branch_num_upd,
                branch_amount_upd,difference,sale_forecast,
-               <foreach collection="attrSortList" separator=","  item="item" >
+               <foreach collection="attrList" separator=","  item="item" >
                    ${item} as ${item}
                </foreach>
             from priority.work_priority_order_result_data
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
+        order by    <foreach collection="attrSortList" separator=","  item="item" >
+                        ${item}
+                    </foreach>
+                    ,rank_upd
     </select>
     <select id="getJanBranchNumList" resultType="java.util.Map">
         select distinct prd.jan_new,prd.jan_old,prd.attr1,prd.attr2,prd.rank_upd,count(distinct ptsB.branch) as  branch_num

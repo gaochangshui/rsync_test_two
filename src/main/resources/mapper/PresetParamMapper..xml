@@ -16,7 +16,8 @@
     delete from planocycle.preset_param where author_cd=#{authorCd}
   </delete>
   <delete id="deleteProductPresetParam">
-    delete from planocycle.product_preset_param where author_cd=#{authorCd} and jsonb_eq(common_parts_data ::jsonb, '${presetAttribute.commonPartsData}' ::jsonb)
+    delete from planocycle.product_preset_param
+           where author_cd=#{authorCd} and jsonb_eq(common_parts_data ::jsonb, '${presetAttribute.commonPartsData}' ::jsonb)
   </delete>
   <select id="getPresetParam" resultType="string">
     select item_cd from planocycle.preset_param

@@ -22,13 +22,6 @@ public class cgiUtils {
     public String smartPath;
     private String textFormat ="application/json;charset=UTF-8";
 
-    /**
-     * get調用cgi
-     * @param path
-     * @return
-     * @throws IOException
-     */
-    ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
 
     /**
      * post調用cgi
@@ -69,28 +62,7 @@ public class cgiUtils {
         }catch (Exception e){
             logger.error("io異常", e);
         }finally {
-            try {
-                if(Objects.nonNull(in)){
-                    in.close();
-                }
-
-                if(Objects.nonNull(buffer)){
-                    buffer.close();
-                }
-
-                if(Objects.nonNull(reader)){
-                    reader.close();
-                }
-
-                if(Objects.nonNull(os)){
-                    os.close();
-                }
-                if (Objects.nonNull(connection)){
-                    connection.disconnect();
-                }
-            } catch (IOException e) {
-                logger.error("io閉じる異常", e);
-            }
+            this.closeResource(in,buffer,reader,connection);
         }
         return "";
     }
@@ -134,28 +106,7 @@ public class cgiUtils {
         }catch (Exception e){
             logger.error("io異常", e);
         }finally {
-            try {
-                if(Objects.nonNull(in)){
-                    in.close();
-                }
-
-                if(Objects.nonNull(buffer)){
-                    buffer.close();
-                }
-
-                if(Objects.nonNull(reader)){
-                    reader.close();
-                }
-
-                if(Objects.nonNull(os)){
-                    os.close();
-                }
-                if (Objects.nonNull(connection)){
-                    connection.disconnect();
-                }
-            } catch (IOException e) {
-                logger.error("io閉じる異常", e);
-            }
+            this.closeResource(in,buffer,reader,connection);
         }
         return "";
     }
@@ -228,28 +179,7 @@ public class cgiUtils {
             logger.info("cgi調用error：", e);
             return ResultMaps.result(ResultEnum.FAILURE,null);
         } finally {
-            try {
-                if(Objects.nonNull(in)){
-                    in.close();
-                }
-
-                if(Objects.nonNull(buffer)){
-                    buffer.close();
-                }
-
-                if(Objects.nonNull(inputStreamReader)){
-                    inputStreamReader.close();
-                }
-
-                if(Objects.nonNull(reader)){
-                    reader.close();
-                }
-                if (Objects.nonNull(connection)){
-                    connection.disconnect();
-                }
-            } catch (IOException e) {
-                logger.info("io閉じる異常：",e);
-            }
+            this.closeResource(in,buffer,reader,connection);
         }
     }
     /**
@@ -315,28 +245,7 @@ public class cgiUtils {
             logger.info("cgi調用error：", e);
             return ResultMaps.result(ResultEnum.FAILURE,null);
         } finally {
-            try {
-                if(Objects.nonNull(in)){
-                    in.close();
-                }
-
-                if(Objects.nonNull(buffer)){
-                    buffer.close();
-                }
-
-                if(Objects.nonNull(inputStreamReader)){
-                    inputStreamReader.close();
-                }
-
-                if(Objects.nonNull(reader)){
-                    reader.close();
-                }
-                if (Objects.nonNull(connection)){
-                    connection.disconnect();
-                }
-            } catch (IOException e) {
-                logger.info("io閉じる異常：",e);
-            }
+            this.closeResource(in,buffer,reader,connection);
         }
     }
     /**
@@ -360,9 +269,9 @@ public class cgiUtils {
         HttpURLConnection connection =null;
         try{
             URL url =new URL(smartPath+path);
-            Boolean result  = true;
+
             StringBuilder builder = null;
-            while (result) {
+            while (true) {
                 Thread.sleep(10*1_000L);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
@@ -375,7 +284,7 @@ public class cgiUtils {
                 Map<String,String> para = new HashMap<>();
                 para.put("taskid",taskid);
                 os.write(JSON.toJSONBytes(para));
-                Integer statusCode = connection.getResponseCode();
+                int statusCode = connection.getResponseCode();
 
                 in =connection.getInputStream();
                 buffer =new BufferedInputStream(in);
@@ -392,22 +301,19 @@ public class cgiUtils {
                 logger.info("cgiQueryTask statusCode,reqult：{},{}",statusCode,builder);
                 if(statusCode == 200) {
                     break;
-                } else  {
-                    if (builder.toString().equals("2")) {
-                        return ResultMaps.result(ResultEnum.CGITIEMOUT,null);
-                    }
-                    else if (builder.toString().equals("3")) {
-                        return ResultMaps.result(ResultEnum.CGICANCEL,null);
-                    }
-                    else if (builder.toString().equals("4")) {
-                        return ResultMaps.result(ResultEnum.CGIERROR,null);
-                    }
-                    else if (builder.toString().equals("9")) {
-                        continue;
-                    }
-                    else{
-                        return ResultMaps.result(ResultEnum.FAILURE,null);
-                    }
+                }
+
+                if (builder.toString().equals("2")) {
+                    return ResultMaps.result(ResultEnum.CGITIEMOUT,null);
+                }
+                else if (builder.toString().equals("3")) {
+                    return ResultMaps.result(ResultEnum.CGICANCEL,null);
+                }
+                else if (builder.toString().equals("4")) {
+                    return ResultMaps.result(ResultEnum.CGIERROR,null);
+                }
+                else{
+                    return ResultMaps.result(ResultEnum.FAILURE,null);
                 }
             }
             return ResultMaps.result(ResultEnum.SUCCESS,builder.toString());
@@ -417,25 +323,29 @@ public class cgiUtils {
             Thread.currentThread().interrupt();
             return ResultMaps.result(ResultEnum.FAILURE,null);
         } finally {
-            try{
-                if(Objects.nonNull(in)){
-                    in.close();
-                }
 
-                if(Objects.nonNull(buffer)){
-                    buffer.close();
-                }
+        this.closeResource(in,buffer,reader,connection);
+        }
+    }
 
-                if(Objects.nonNull(reader)){
-                    reader.close();
-                }
-                if (Objects.nonNull(connection)){
-                    connection.disconnect();
-                }
-            }catch (Exception e){
-                logger.error("io閉じる異常", e);
+    public void closeResource(InputStream in ,InputStream buffer, BufferedReader reader ,HttpURLConnection connection){
+        try{
+            if(Objects.nonNull(in)){
+                in.close();
             }
 
+            if(Objects.nonNull(buffer)){
+                buffer.close();
+            }
+
+            if(Objects.nonNull(reader)){
+                reader.close();
+            }
+            if (Objects.nonNull(connection)){
+                connection.disconnect();
+            }
+        }catch (Exception e){
+            logger.error("io閉じる異常", e);
         }
     }
 

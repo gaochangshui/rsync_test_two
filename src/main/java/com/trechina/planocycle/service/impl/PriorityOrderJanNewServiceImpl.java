@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.google.common.base.Joiner;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.po.PriorityOrderJanNew;
@@ -78,8 +79,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                 zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,shelfPatternCd,productPowerCd);
         for (Map<String, Object> productPowerDatum : productPowerData) {
             for (Map<String, Object> priorityOrderJanNewVO : priorityOrderJanNewVOS) {
-                if (productPowerDatum.get("janCd").toString().equals(priorityOrderJanNewVO.get("janCd"))){
-                    priorityOrderJanNewVO.put("errMsg","現状棚に並んでいる可能性がありますので削除してください。");
+                if (productPowerDatum.get(MagicString.JAN_CD).toString().equals(priorityOrderJanNewVO.get(MagicString.JAN_CD))){
+                    priorityOrderJanNewVO.put(MagicString.ERROR_MSG,MagicString.DEL_ERROR_MSG);
                 }
             }
         }
@@ -109,7 +110,7 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                 zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,janCd,model);
         List<String> listNew = new ArrayList<>();
         for (Map<String,Object> priorityOrderJanNewVO : priorityOrderJanNewVOList) {
-            listNew.add( priorityOrderJanNewVO.get("janCd").toString());
+            listNew.add( priorityOrderJanNewVO.get(MagicString.JAN_CD).toString());
         }
         List<String> list = Arrays.asList(janCd);
         List<String> listDisparitStr = ListDisparityUtils.getListDisparitStr(list, listNew);
@@ -122,8 +123,8 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                     zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,shelfPatternCd,productPowerCd);
             for (Map<String, Object> productPowerDatum : productPowerData) {
                 for (Map<String, Object> priorityOrderJanNewVO : priorityOrderJanNewVOList) {
-                    if (productPowerDatum.get("janCd").toString().equals(priorityOrderJanNewVO.get("janCd"))){
-                        priorityOrderJanNewVO.put("errMsg","現状棚に並んでいる可能性がありますので削除してください。");
+                    if (productPowerDatum.get(MagicString.JAN_CD).toString().equals(priorityOrderJanNewVO.get(MagicString.JAN_CD))){
+                        priorityOrderJanNewVO.put(MagicString.ERROR_MSG,MagicString.DEL_ERROR_MSG);
                     }
                 }
             }
@@ -145,13 +146,10 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
     @Override
     public Map<String, Object> setPriorityOrderJanNew(List<PriorityOrderJanNew> priorityOrderJanNew) {
         String authorCd = session.getAttribute("aud").toString();
-        String companyCd = null;
-        Integer priorityOrderCd = null;
+        String companyCd = priorityOrderJanNew.get(0).getCompanyCd();
+        Integer priorityOrderCd = priorityOrderJanNew.get(0).getPriorityOrderCd();
+
         shelfPtsDataMapper.deletePtsJandataByPriorityOrderCd(priorityOrderCd);
-        for (PriorityOrderJanNew orderJanNew : priorityOrderJanNew) {
-            companyCd = orderJanNew.getCompanyCd();
-            priorityOrderCd = orderJanNew.getPriorityOrderCd();
-        }
         priorityOrderJanNewMapper.workDelete(companyCd, authorCd, priorityOrderCd);
         if(priorityOrderJanNew.get(0).getJanNew() != null) {
             List<PriorityOrderMstAttrSort> mstAttrSorts = attrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
@@ -162,11 +160,11 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
             janList.toArray(janCd);
             Map<String, Object> priorityOrderJanNewInfo = this.getPriorityOrderJanNewInfo(janCd, companyCd, priorityOrderCd, 0);
 
-            Map data = (Map)priorityOrderJanNewInfo.get("data");
+            Map<String,Object> data = (Map<String,Object>)priorityOrderJanNewInfo.get("data");
             List<Map<String,Object>> datas = (List<Map<String,Object>>) data.get("priorityOrderJanNewVOList");
             for (Map<String, Object> objectMap : datas) {
                 for (PriorityOrderJanNew orderJanNew : priorityOrderJanNew) {
-                    if (objectMap.get("janCd").equals(orderJanNew.getJanNew())){
+                    if (objectMap.get(MagicString.JAN_CD).equals(orderJanNew.getJanNew())){
                         objectMap.put("rank",orderJanNew.getRank());
                     }
                 }
@@ -174,11 +172,17 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
             Map<String, List<Map<String, Object>>> janGroup = datas.stream().collect(Collectors.groupingBy(map -> {
                 StringBuilder attrKey = new StringBuilder();
                 for (Integer col : attrList) {
-                    attrKey.append(map.get("zokusei" + col));
+                    attrKey.append(map.get(MagicString.ZOKUSEI_PREFIX + col));
                 }
-
                 return attrKey.toString();
             }));
+            priorityOrderJanNew = this.rankCalculation(janGroup,companyCd,priorityOrderCd,priorityOrderJanNew);
+            priorityOrderJanNewMapper.insert(priorityOrderJanNew, authorCd);
+
+        }
+            return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+        public List<PriorityOrderJanNew> rankCalculation(Map<String, List<Map<String, Object>>> janGroup,String companyCd,Integer priorityOrderCd,List<PriorityOrderJanNew> priorityOrderJanNew){
             for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
                 Map<String,Object> map = new HashMap<>();
                 map.put("companyCd",companyCd);
@@ -186,21 +190,17 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
                 map.put("data",stringListEntry.getValue());
                 Map<String, Object> similarity = this.getSimilarity(map);
                 List<Object> list = (List<Object>) similarity.get("data");
-               List<Map<String,Object>>maps = (List<Map<String,Object>>)list.get(1);
+                List<Map<String,Object>>maps = (List<Map<String,Object>>)list.get(1);
                 for (Map<String, Object> objectMap : maps) {
                     for (PriorityOrderJanNew orderJanNew : priorityOrderJanNew) {
-                        if (objectMap.get("janCd").equals(orderJanNew.getJanNew())){
+                        if (objectMap.get(MagicString.JAN_CD).equals(orderJanNew.getJanNew())){
                             orderJanNew.setRank(Integer.valueOf(objectMap.get("rank").toString()));
                         }
                     }
                 }
             }
-            priorityOrderJanNewMapper.insert(priorityOrderJanNew, authorCd);
-
+            return priorityOrderJanNew;
         }
-            return ResultMaps.result(ResultEnum.SUCCESS);
-    }
-
 
     /**
      * 分類によって商品の力点数表を除いて同類の商品を抽出する
@@ -214,10 +214,9 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         List<Map<String,Object>> data = (List<Map<String,Object>>)map.get("data");
         String aud = session.getAttribute("aud").toString();
         //
-        for (Map<String, Object> datum : data) {
-            datum.putIfAbsent("rank",1);
-        }
-        data = data.stream().sorted(Comparator.comparing(map1 -> MapUtils.getString(map1,"janCd"),Comparator.nullsFirst(String::compareTo).reversed()))
+        data.forEach(datum-> datum.putIfAbsent("rank",1));
+
+        data = data.stream().sorted(Comparator.comparing(map1 -> MapUtils.getString(map1,MagicString.JAN_CD),Comparator.nullsFirst(String::compareTo).reversed()))
                 .sorted(Comparator.comparing(map1 -> MapUtils.getInteger(map1,"rank"),Comparator.nullsFirst(Integer::compareTo))).collect(Collectors.toList());
         List<String> errorMsgJan = priorityOrderJanNewMapper.getErrorMsgJan(companyCd, priorityOrderCd);
         PriorityOrderAttrDto attrDto = priorityOrderMstMapper.selectCommonPartsData(companyCd, priorityOrderCd);
@@ -229,62 +228,55 @@ public class PriorityOrderJanNewServiceImpl implements PriorityOrderJanNewServic
         List<Integer> attrList1 = mstAttrSorts.stream().map(vo->Integer.parseInt(vo.getValue())).collect(Collectors.toList());
         Map<String,Object> mapAttr = new HashMap<>();
         for (Map.Entry<String, Object> stringObjectEntry : data.get(0).entrySet()) {
-            for (Integer integer : attrList1) {
-                if (stringObjectEntry.getKey().equals("zokusei"+integer)){
+            attrList1.forEach(integer->{
+                if (stringObjectEntry.getKey().equals(MagicString.ZOKUSEI_PREFIX+integer)){
                     mapAttr.put(stringObjectEntry.getKey(),stringObjectEntry.getValue());
                 }
-            }
+            });
         }
 
         List<Map<String,Object>> list = new ArrayList<>();
         List<Integer> attrList = new ArrayList<>();
-
-        for (Map.Entry<String, Object> stringObjectEntry : mapAttr.entrySet()) {
+        mapAttr.entrySet().forEach(stringObjectEntry->{
             Map<String,Object> newMap = new HashMap<>();
-           newMap.put("zokuseiId",stringObjectEntry.getKey().split("zokusei")[1]);
-           newMap.put("zokuseiValue",stringObjectEntry.getValue());
-           list.add(newMap);
-           attrList.add(Integer.valueOf(stringObjectEntry.getKey().split("zokusei")[1]));
-        }
+            newMap.put("zokuseiId",stringObjectEntry.getKey().split(MagicString.ZOKUSEI_PREFIX)[1]);
+            newMap.put("zokuseiValue",stringObjectEntry.getValue());
+            list.add(newMap);
+            attrList.add(Integer.valueOf(stringObjectEntry.getKey().split(MagicString.ZOKUSEI_PREFIX)[1]));
+        });
+
         List<Map<String,Object>> zokuseiCol = zokuseiMstMapper.getZokuseiCol(attrList, commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
-        for (Map<String, Object> objectMap : list) {
-            for (Map<String, Object> stringObjectMap : zokuseiCol) {
-                if (objectMap.get("zokuseiId").equals(stringObjectMap.get("zokusei_id")+"")){
-                    objectMap.put("zokuseiCol",stringObjectMap.get("zokusei_col"));
-                }
+        list.forEach(objectMap-> zokuseiCol.forEach(stringObjectMap->{
+            if (objectMap.get("zokuseiId").equals(stringObjectMap.get("zokusei_id")+"")){
+                objectMap.put("zokuseiCol",stringObjectMap.get("zokusei_col"));
             }
-        }
+        }));
         List<ZokuseiMst> zokuseiMsts = zokuseiMapper.selectZokusei(commonTableName.getProdIsCore(), commonTableName.getProdMstClass(), Joiner.on(",").join(attrList));
         List<Integer> allCdList = zokuseiMapper.selectCdHeader(commonTableName.getProKaisouTable());
 
 
         List<Map<String,Object>> productPowerData = priorityOrderJanNewMapper.getProductPowerData(priorityOrderCd,
                 zokuseiMsts, allCdList, commonTableName.getProInfoTable(),zokuseiCol,shelfPatternCd,productPowerCd,mapAttr);
-
-        for (Map<String, Object> datum : data) {
-            if (errorMsgJan.contains(datum.get("janCd").toString())){
-                datum.put("errMsg","現状棚に並んでいる可能性がありますので削除してください。");
+        data.forEach(datum->{
+            if (errorMsgJan.contains(datum.get(MagicString.JAN_CD).toString())){
+                datum.put(MagicString.ERROR_MSG,MagicString.DEL_ERROR_MSG);
             }else {
-                datum.put("errMsg","");
+                datum.put(MagicString.ERROR_MSG,"");
             }
-        }
-        for (Map<String, Object> productPowerDatum : productPowerData) {
-            for (Map<String, Object> datum : data) {
-                if (productPowerDatum.get("janCd").toString().equals(datum.get("janCd"))){
-                    datum.put("errMsg","pts棚に並んでいる可能性がありますので削除してください。");
-                }
-
+        });
+        List<Map<String, Object>> finalData = data;
+        productPowerData.forEach(productPowerDatum-> finalData.forEach(datum->{
+            if (productPowerDatum.get(MagicString.JAN_CD).toString().equals(datum.get(MagicString.JAN_CD))){
+                datum.put(MagicString.ERROR_MSG,"pts棚に並んでいる可能性がありますので削除してください。");
             }
-        }
+        }));
         
         if (!productPowerData.isEmpty()) {
             productPowerData = CommonUtil.janSort(productPowerData, data, "rank");
         }else {
             data = data.stream().sorted(Comparator.comparing(map1->MapUtils.getInteger(map1,"rank"))).collect(Collectors.toList());
-            int j = 1;
-            for (Map<String, Object> datum : data) {
-                datum.put("rank",j++);
-            }
+            final int[] j = {1};
+            data.forEach(datum-> datum.put("rank", j[0]++));
             productPowerData.addAll(data);
         }
         List<Object> list1 = new ArrayList<>();

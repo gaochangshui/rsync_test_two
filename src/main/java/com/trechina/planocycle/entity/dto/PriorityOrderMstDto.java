@@ -27,4 +27,6 @@ public class PriorityOrderMstDto {
 
     private Integer setSpecialFlag;
 
+    private String taskID;
+
 }

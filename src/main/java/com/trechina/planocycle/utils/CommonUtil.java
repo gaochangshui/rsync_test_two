@@ -1,8 +1,8 @@
 package com.trechina.planocycle.utils;
 
+import com.google.common.base.Strings;
 import org.apache.commons.collections4.MapUtils;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +38,10 @@ public class CommonUtil {
             objectMap.put(rankName,i++);
         }
         return ptsJanList;
+    }
+
+    public static String defaultIfEmpty(String val, String defaultVal){
+        return Strings.isNullOrEmpty(val)?defaultVal:val;
     }
 
 }

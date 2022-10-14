@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderAttrDto;
 import com.trechina.planocycle.entity.po.PriorityOrderMstAttrSort;
@@ -108,16 +109,16 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         for (int j = 0; j  < attrCol.size(); j++) {
             String prodMstClass = commonTableName.getProdMstClass();
             String prodIsCore = commonTableName.getProdIsCore();
-            List<Map<String, Object>> attrDistinct = priorityOrderMstAttrSortMapper.getAttrDistinct(Integer.parseInt(attrCol.get(j).get("value").toString())<104?prodMstClass:"0000"
-                    ,Integer.parseInt(attrCol.get(j).get("value").toString())<104? prodIsCore :"9999",priorityOrderAttrDto.getPriorityOrderCd()
-                    ,attrCol.get(j).get("value").toString() ,id,width, attrSortList.get(j)
-                    ,attrCol.get(j).get("zokusei_colname").toString(),attrCol.get(j).get("zokusei_colcd").toString(),attrCol.get(j).get("zokusei_nm").toString());
+            List<Map<String, Object>> attrDistinct = priorityOrderMstAttrSortMapper.getAttrDistinct(Integer.parseInt(attrCol.get(j).get(MagicString.VALUE).toString())<104?prodMstClass:"0000"
+                    ,Integer.parseInt(attrCol.get(j).get(MagicString.VALUE).toString())<104? prodIsCore :"9999",priorityOrderAttrDto.getPriorityOrderCd()
+                    ,attrCol.get(j).get(MagicString.VALUE).toString() ,id,width, attrSortList.get(j)
+                    ,attrCol.get(j).get(MagicString.ZOUKUSEI_COLNAME).toString(),attrCol.get(j).get(MagicString.ZOUKUSEI_COLCD).toString(),attrCol.get(j).get(MagicString.ZOUKUSEI_NM).toString());
             for (int i = 0; i < attrDistinct.size(); i++) {
-                attrDistinct.get(i).put("color",mainColor.get(i));
+                attrDistinct.get(i).put(MagicString.COLOR,mainColor.get(i));
             }
             list.add(attrDistinct);
         }
-        List<String> attrName = attrCol.stream().map(attrMap -> MapUtils.getString(attrMap,"zokusei_colname")).collect(Collectors.toList());
+        List<String> attrName = attrCol.stream().map(attrMap -> MapUtils.getString(attrMap,MagicString.ZOUKUSEI_COLNAME)).collect(Collectors.toList());
         map.put("data",list);
         map.put("attrName",attrName);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
@@ -143,17 +144,17 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         List<Map<String, Object>> newRestrictList = new ArrayList<>();
         for (Map<String, Object> objectMap : restrictList) {
             Map<String, Object> newObjectMap = new HashMap<>();
-            newObjectMap.put("color", objectMap.getOrDefault("color", "#ffffff"));
-            newObjectMap.put("restrictCd", objectMap.get("restrictCd"));
+            newObjectMap.put(MagicString.COLOR, objectMap.getOrDefault(MagicString.COLOR, "#ffffff"));
+            newObjectMap.put(MagicString.RESTRICT_CD, objectMap.get(MagicString.RESTRICT_CD));
             for (Map<String, Object> map : attrName) {
                 for (int i = 0; i < attrCol.size(); i++) {
 
                     String sort = attrSortList.get(i);
-                    if (objectMap.get("zokusei"+sort ).equals(map.get("val"))){
-                        newObjectMap.put(attrCol.get(i).get("zokusei_colname").toString(),map.get("nm"));
+                    if (objectMap.get(MagicString.ZOKUSEI_PREFIX+sort ).equals(map.get("val"))){
+                        newObjectMap.put(attrCol.get(i).get(MagicString.ZOUKUSEI_COLNAME).toString(),map.get("nm"));
                     }
-                    newObjectMap.put(attrCol.get(i).get("zokusei_colcd").toString(), objectMap.get("zokusei"+sort));
-                    newObjectMap.putIfAbsent(attrCol.get(i).get("zokusei_colname").toString(),objectMap.get("zokusei"+sort));
+                    newObjectMap.put(attrCol.get(i).get(MagicString.ZOUKUSEI_COLCD).toString(), objectMap.get(MagicString.ZOKUSEI_PREFIX+sort));
+                    newObjectMap.putIfAbsent(attrCol.get(i).get(MagicString.ZOUKUSEI_COLNAME).toString(),objectMap.get(MagicString.ZOKUSEI_PREFIX+sort));
                 }
             }
             newRestrictList.add(newObjectMap);
@@ -163,11 +164,11 @@ public class PriorityOrderMstAttrSortServiceImpl implements PriorityOrderMstAttr
         StringBuilder groupColumns = new StringBuilder();
         for (Map<String, Object> map : attrCol) {
             if (groupHeader.toString().equals("")){
-                groupHeader.append(map.get("zokusei_nm"));
-                groupColumns.append(map.get("zokusei_colname"));
+                groupHeader.append(map.get(MagicString.ZOUKUSEI_NM));
+                groupColumns.append(map.get(MagicString.ZOUKUSEI_COLNAME));
             }else {
-                groupHeader.append(",").append(map.get("zokusei_nm"));
-                groupColumns.append(",").append(map.get("zokusei_colname"));
+                groupHeader.append(",").append(map.get(MagicString.ZOUKUSEI_NM));
+                groupColumns.append(",").append(map.get(MagicString.ZOUKUSEI_COLNAME));
             }
         }
         Map<String,Object> map = new HashMap<>();

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -38,7 +39,7 @@ public class FilesOperationController {
     public Map<String,Object> csvUpload(@RequestParam("file")MultipartFile multipartFile,
             @RequestParam("item")String filename,@RequestParam("companyCd") String companyCd) throws IOException {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("csvPathCommodityPower")+session.getAttribute("aud").toString()+"/";
+        String path = resourceBundle.getString("csvPathCommodityPower")+session.getAttribute("aud").toString()+File.separator;
 
         return filesOperationService.csvUpload(multipartFile,path,companyCd,filename,projectIds,bucketNames);
     }
@@ -52,7 +53,7 @@ public class FilesOperationController {
     public Map<String,Object> csvUploadShelf(@RequestParam("file") MultipartFile[] multipartFileList,
                                              @RequestParam("companyCd") String companyCd) {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("pathConfig");
-        String path = resourceBundle.getString("csvPathShelf")+session.getAttribute("aud").toString()+"/";
+        String path = resourceBundle.getString("csvPathShelf")+session.getAttribute("aud").toString()+ File.separator;
         return filesOperationService.csvUploadMulti(multipartFileList,path,companyCd,projectIds,bucketNames);
     }
 

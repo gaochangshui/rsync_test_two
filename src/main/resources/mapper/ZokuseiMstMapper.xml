@@ -10,14 +10,15 @@
     </insert>
     <insert id="insertZokuseiData">
         insert into masterdb.planocycle_zokusei_mst_data(zokusei_id,type,nm,company_cd,class_cd,val,val_parent)
-        select distinct #{zokuseiId}, 1,COALESCE("${col+1}", ''),#{company},#{classCd}
-        <foreach open="," collection="list" item="item" separator="|| '_' ||">
+        select distinct #{zokuseiId}, 1,COALESCE("${col+1}", ''),#{company},#{classCd},
+        COALESCE(
+        <foreach collection="list" item="item" separator="|| '_' ||">
             <if test="item &lt;= col">
                 "${item}"
             </if>
-        </foreach>
+        </foreach>, ''),
         <trim suffixOverrides=",">
-            <foreach open="," collection="list" index="index" item="item" separator="|| '_' ||">
+            <foreach collection="list" index="index" item="item" separator="|| '_' ||">
                 <if test="index==0 and item == col">null</if>
                 <if test="item &lt; col">
                     "${item}"

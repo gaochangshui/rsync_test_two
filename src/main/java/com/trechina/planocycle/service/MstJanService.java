@@ -1,15 +1,18 @@
 package com.trechina.planocycle.service;
 
+import com.trechina.planocycle.entity.po.CommoditySyncSet;
 import com.trechina.planocycle.entity.vo.JanInfoVO;
 import com.trechina.planocycle.entity.vo.JanParamVO;
 import com.trechina.planocycle.entity.vo.CheckVO;
 import com.trechina.planocycle.entity.vo.DownFlagVO;
 import com.trechina.planocycle.entity.vo.JanPresetAttribute;
 import com.trechina.planocycle.entity.po.JanInfoList;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -65,7 +68,10 @@ public interface MstJanService {
      *
      * @return
      */
-    Map<String, Object> syncJanData();
+    Map<String, Object> syncJanData(String env);
+
+    @Transactional(rollbackFor = Exception.class)
+    Map<String, Object> perSyncJanData(String companyCd, CommoditySyncSet commoditySyncSet, String existTable);
 
     JanInfoVO getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response) throws IOException;
 

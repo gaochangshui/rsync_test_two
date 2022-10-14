@@ -65,4 +65,8 @@ public interface BasicPatternRestrictResultMapper {
             ,String tableName,Integer productPowerCd);
 
     List<Map<String,Object>> selectSortValue(Integer priorityOrderCd,String tableName);
+
+    List<Map<String, Object>> selectOldJanZokuseiForFinal(Integer priorityOrderCd, Integer ptsCd, List<ZokuseiMst> attrList
+            , List<Integer> allCdList, String proInfoTable, List<Map<String, Object>> attrName, List<Map<String, Object>> janSizeCol, Integer productPowerCd);
 }
+

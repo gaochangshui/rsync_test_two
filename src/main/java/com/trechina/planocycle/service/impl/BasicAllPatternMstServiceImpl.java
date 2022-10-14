@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
@@ -96,6 +98,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
     private JanInfoMapper janInfoMapper;
     @Autowired
     private PriorityOrderSortMapper priorityOrderSortMapper;
+    @Autowired
+    private ApplicationContext applicationContext;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -103,7 +107,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
 
-        executor.execute(()->{
+        Map<String, Object> requestMap = logAspect.errInfo();
+        Future<?> future = executor.submit(() -> {
             Integer basicPatternCd;
 
             String companyCd = priorityAllSaveDto.getCompanyCd();
@@ -115,7 +120,6 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             // 全パターンの制約List
 
             // 全パターンのRelationList
-
             try {
                 PriorityOrderMstDto priorityOrderMst = priorityAllMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
                 basicPatternCd = Integer.parseInt(priorityOrderMst.getShelfPatternCd());
@@ -124,17 +128,19 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 // 全パターンのList
                 List<PriorityAllPatternListVO> checkedInfo = info.stream().filter(vo->vo.getCheckFlag()==1).collect(Collectors.toList());
                 int isReOrder = priorityOrderSortMapper.selectSort(companyCd, priorityOrderCd);
+                BasicAllPatternMstService basicAllPatternMstService = applicationContext.getBean(BasicAllPatternMstService.class);
                 for(PriorityAllPatternListVO pattern : checkedInfo) {
-                    autoDetect(companyCd,priorityAllCd,pattern.getShelfPatternCd(),priorityOrderCd,authorCd);
-
+                    if(this.interruptThread(uuid, "1")){
+                        return;
+                    }
+                    basicAllPatternMstService.autoDetect(companyCd,priorityAllCd,pattern.getShelfPatternCd(),priorityOrderCd,authorCd);
                     makeWKResultDataList(pattern, priorityAllCd, companyCd, authorCd,priorityOrderCd);
-
                     this.getNewReorder(companyCd,priorityOrderCd,authorCd,priorityAllCd,pattern.getShelfPatternCd());
-                 
-
 
                     priorityAllPtsService.saveWorkPtsData(companyCd, authorCd, priorityAllCd, pattern.getShelfPatternCd());
-
+                    if(this.interruptThread(uuid, "1")){
+                        return;
+                    }
                     /**
                      * 商品を置く
                      */
@@ -157,13 +163,24 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 logger.error("", ex);
                 vehicleNumCache.put("IO"+uuid,1);
                 vehicleNumCache.put("IOError"+uuid,JSON.toJSONString(ex));
-                logAspect.setTryErrorLog(ex,new Object[]{priorityAllSaveDto});
+                logAspect.errInfoForEmail(requestMap, ex, new Object[]{priorityAllSaveDto});
                 throw new BusinessException("自動計算失敗");
             }finally {
                 vehicleNumCache.put(uuid,1);
             }
         });
+        vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, uuid),future);
         return ResultMaps.result(ResultEnum.SUCCESS, uuid);
+    }
+
+    public boolean interruptThread(String taskId, String step){
+        if(Thread.currentThread().isInterrupted()){
+            logger.info("taskId:{} interrupted, step:{}", taskId, step);
+            Thread.currentThread().interrupt();
+            return true;
+        }
+
+        return false;
     }
 
     private Map<String, Object> allPatternCommSetJan(Integer patternCd, String companyCd, Integer priorityOrderCd,Integer priorityAllCd,
@@ -272,13 +289,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 zokuseiMsts, aud, (long) priorityAllCd);
 
         workPriorityAllRestrictMapper.deleteBasicPatternResult(companyCd,priorityAllCd,aud,shelfPatternCd);
-        long restrictCd = 1;
-        for (Map.Entry<String, BasicPatternRestrictResult> entry : classify.entrySet()) {
-            BasicPatternRestrictResult value = entry.getValue();
-            value.setRestrictCd(restrictCd);
-            classify.put(entry.getKey(), value);
-            restrictCd++;
-        }
+        classify = this.generateRestrictCd(classify);
         List<BasicPatternRestrictResult> basicPatternRestrictResults = new ArrayList<>(classify.values());
         BasicPatternRestrictResult result = new BasicPatternRestrictResult();
         result.setRestrictCd(MagicString.NO_RESTRICT_CD);
@@ -297,8 +308,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             Integer tanaCd = tanamst.getTanaCd();
             Integer tanaWidth = tanamst.getTanaWidth();
 
-            List<Map<String, Object>> jans = classifyList.stream().filter(map -> MapUtils.getInteger(map, MagicString.TAI_CD).equals(taiCd) &&
-                    MapUtils.getInteger(map, MagicString.TANA_CD).equals(tanaCd)).collect(Collectors.toList());
+            List<Map<String, Object>> jans = classifyList.stream().filter(map -> commonMstService.taiTanaEquals(MapUtils.getInteger(map, MagicString.TAI_CD),
+                    taiCd, MapUtils.getInteger(map, MagicString.TANA_CD), tanaCd)).collect(Collectors.toList());
 
             logger.info("taiCd:{},tanaCd:{}, jans:{}", taiCd, tanaCd,jans);
             double areaWidth = 0;
@@ -309,20 +320,14 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
             for (int i = 0; i < jans.size(); i++) {
                 Map<String, Object> janMap = jans.get(i);
                 double width = MapUtils.getDouble(janMap, MagicString.WIDTH);
-                StringBuilder key = new StringBuilder();
-                for (Integer zokusei : zokuseiList) {
-                    if(key.length()>0){
-                        key.append(",");
-                    }
-                    key.append(MapUtils.getString(janMap, zokusei+""));
-                }
+                String key = commonMstService.getClassifyKey(zokuseiList, janMap);
 
-                if(lastKey.equals(key.toString()) && (i+1)==jans.size()){
+                if(isLastAndEqualsToLastKey(key, lastKey, i, jans.size())){
                     areaWidth += width;
                     janCount++;
                 }
 
-                if(!"".equals(lastKey) && (!lastKey.equals(key.toString()) || (i+1)==jans.size())){
+                if(!"".equals(lastKey) && (!lastKey.equals(key) || (i+1)==jans.size())){
                     double percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 5, RoundingMode.CEILING)
                             .multiply(BigDecimal.valueOf(100)).doubleValue();
                     Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
@@ -342,13 +347,13 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 }
 
                 //If the last grouping is independent, it should be handled separately
-                if(!lastKey.equals(key.toString()) && (i+1)==jans.size()){
+                if(isLastAndNotEqualsToLastKey(key, lastKey, i, jans.size())){
                     areaWidth = width;
-                    int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, BigDecimal.ROUND_UP)
-                            .multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_UP).intValue();
+                    int percent = BigDecimal.valueOf(areaWidth).divide(BigDecimal.valueOf(tanaWidth), 2, RoundingMode.HALF_UP)
+                            .multiply(BigDecimal.valueOf(100)).setScale(0, RoundingMode.HALF_UP).intValue();
                     Map<String, Object> map = new GsonBuilder().create().fromJson(JSON.toJSONString(janMap),
                             new TypeToken<Map<String, Object>>(){}.getType());
-                    map.put(MagicString.RESTRICT_CD, classify.get(key.toString()).getRestrictCd());
+                    map.put(MagicString.RESTRICT_CD, classify.get(key).getRestrictCd());
                     map.put("area", percent);
                     map.put("janCount", janCount);
                     map.put("priorityOrderCd", priorityAllCd);
@@ -357,22 +362,37 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                     newJans.add(map);
                 }
 
-                lastKey = key.toString();
+                lastKey = key;
             }
 
             newJans.forEach(map->{
                 map.put("tanaPosition", index[0]);
                 index[0]++;
             });
-            if(!newJans.isEmpty()){
-                workPriorityAllRestrictRelationMapper.setBasicPatternRelation(newJans,shelfPatternCd);
-            }
+            workPriorityAllRestrictRelationMapper.setBasicPatternRelation(newJans,shelfPatternCd);
         }
 
 
     }
 
+    private Map<String, BasicPatternRestrictResult> generateRestrictCd(Map<String, BasicPatternRestrictResult> classify){
+        long restrictCd = 1;
+        for (Map.Entry<String, BasicPatternRestrictResult> entry : classify.entrySet()) {
+            BasicPatternRestrictResult value = entry.getValue();
+            value.setRestrictCd(restrictCd);
+            classify.put(entry.getKey(), value);
+            restrictCd++;
+        }
+        return classify;
+    }
 
+    private boolean isLastAndNotEqualsToLastKey(String key, String lastKey, int currentIndex, int size){
+        return !lastKey.equals(key) && (currentIndex+1)==size;
+    }
+
+    private boolean isLastAndEqualsToLastKey(String key, String lastKey, int currentIndex, int size){
+        return lastKey.equals(key) && (currentIndex+1)==size;
+    }
 
     private int makeWKResultDataList(PriorityAllPatternListVO pattern, Integer priorityAllCd, String companyCd, String authorCd, Integer priorityOrderCd) {
         Integer ptsCd = shelfPtsDataMapper.getPtsCd(pattern.getShelfPatternCd());
@@ -430,7 +450,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         for (Map<String, Object> map : restrictResult) {
             Map<String, Object> newHashMap = new HashMap<>();
             newHashMap.put("shelf_pattern_cd", map.get("shelf_pattern_cd"));
-            newHashMap.put("restrict_cd", map.get("restrict_cd"));
+            newHashMap.put(MagicString.RESTRICT_CD_UNDERLINE, map.get(MagicString.RESTRICT_CD_UNDERLINE));
             newHashMap.put("author_cd", map.get("author_cd"));
             newHashMap.put("priority_all_cd", map.get("priority_all_cd"));
             newHashMap.put("company_cd", map.get("company_cd"));
@@ -451,18 +471,8 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         for (int i = 0; i < zokuseiList.size(); i++) {
             Map<String, Object> zokusei = zokuseiList.get(i);
             for (Map<String, Object> restrict : newRestrictResult) {
-                int equalsCount = 0;
-                for (Integer integer : attrList) {
-                    String restrictKey = MapUtils.getString(restrict, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
-                    String zokuseiKey = MapUtils.getString(zokusei, MagicString.ZOKUSEI_PREFIX + integer, MagicString.DEFAULT_VALUE);
-
-                    if(restrictKey!=null && restrictKey.equals(zokuseiKey)){
-                        equalsCount++;
-                    }
-                }
-
-                if(equalsCount == attrList.size()){
-                    int restrictCd = MapUtils.getInteger(restrict, "restrict_cd");
+                if(commonMstService.zokuseiEquals(attrList, restrict, zokusei)){
+                    int restrictCd = MapUtils.getInteger(restrict, MagicString.RESTRICT_CD_UNDERLINE);
                     zokusei.put(MagicString.RESTRICT_CD, restrictCd);
                 }
             }

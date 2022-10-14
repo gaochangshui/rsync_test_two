@@ -1,19 +1,29 @@
 package com.trechina.planocycle.utils;
 
-import com.trechina.planocycle.mapper.LogMapper;
-import com.trechina.planocycle.mapper.PriorityOrderPtsBackupJanMapper;
-import com.trechina.planocycle.mapper.PriorityOrderPtsPatternNameMapper;
-import com.trechina.planocycle.mapper.ProductPowerDataMapper;
+import cn.hutool.extra.mail.MailAccount;
+import com.trechina.planocycle.aspect.LogAspect;
+import com.trechina.planocycle.config.MailConfig;
+import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.MstBranchService;
 import com.trechina.planocycle.service.MstJanService;
 import com.trechina.planocycle.service.TableTransferService;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.text.MessageFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class ScheduleTask {
@@ -32,6 +42,12 @@ public class ScheduleTask {
     private MstBranchService mstBranchService;
     @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
+    @Autowired
+    private LogAspect logAspect;
+    @Value("${projectIds}")
+    private String projectIds;
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
 
     @Scheduled(cron = "0 0 7 * * ?")
     public void MasterInfoSync(){
@@ -45,8 +61,42 @@ public class ScheduleTask {
 //        tableTransferService.getJansTransfer();
         //logger.info("定時調度任務--janInfo表同期開始");
         //tableTransferService.getJanInfoTransfer();
-        mstJanService.syncJanData();
-        mstBranchService.syncTenData();
+        LocalDateTime start = LocalDateTime.now();
+        String env = sysConfigMapper.selectSycConfig("env");
+        Map<String, Object> janInfoResult = mstJanService.syncJanData(env);
+        Map<String, Object> tenInfoResult = mstBranchService.syncTenData(env);
+        LocalDateTime end = LocalDateTime.now();
+
+        MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"));
+        String title = MessageFormat.format("「{0}」マスター データ同期完了", env);
+
+        String janResult = "";
+        String tenResult = "";
+
+        if(Objects.equals(MapUtils.getInteger(janInfoResult, "code"), ResultEnum.SUCCESS.getCode())){
+            List<Map<String, Object>> data = (List<Map<String, Object>>) MapUtils.getObject(janInfoResult, "data");
+            for (Map<String, Object> datum : data) {
+                String msg = "<p style='text-indent: 30px'>%s-%s:%s,%d条</p>";
+                janResult += String.format(msg, MapUtils.getString(datum, MagicString.COMPANY_CD),
+                        MapUtils.getString(datum, "classCd"), MapUtils.getString(datum, "result"),
+                        MapUtils.getInteger(datum, "count"));
+            }
+        }
+
+        if(Objects.equals(MapUtils.getInteger(tenInfoResult, "code"), ResultEnum.SUCCESS.getCode())){
+            List<Map<String, Object>> data = (List<Map<String, Object>>) MapUtils.getObject(tenInfoResult, "data");
+            for (Map<String, Object> datum : data) {
+                String msg = "<p style='text-indent: 30px'>%s-%s:%s,%d条</p>";
+                tenResult += String.format(msg, MapUtils.getString(datum, MagicString.COMPANY_CD),
+                        MapUtils.getString(datum, "classCd"), MapUtils.getString(datum, "result"),
+                        MapUtils.getInteger(datum, "count"));
+            }
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-mm HH:mm:ss");
+        String content = String.format(MailConfig.MAIL_SUCCESS_TEMPLATE, "MasterInfoSync", janResult, tenResult,
+                formatter.format(start), formatter.format(end), Duration.between(start, end).toMillis());
+        MailUtils.sendEmail(account, MagicString.TO_MAIL, title, content);
         tableTransferService.syncZokuseiMst();
     }
 

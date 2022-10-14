@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableMap;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.PriorityAllSaveDto;
@@ -66,6 +67,8 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
     private ProductPowerMstMapper productPowerMstMapper;
     @Autowired
     private PriorityAllNumGeneratorMapper priorityAllNumGeneratorMapper;
+    @Autowired
+    private BasicAllPatternMstServiceImpl basicAllPatternMstService;
     @Autowired
     private ThreadPoolTaskExecutor executor;
     @Autowired
@@ -212,16 +215,10 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
         Map<String,Object> optionSet = new HashMap<>();
         Boolean thickneCheck = workPriorityOrderMst.getPartitionFlag() != 0;
         Short thickneValue = workPriorityOrderMst.getPartitionVal()!=null?workPriorityOrderMst.getPartitionVal():0;
-        optionSet.put("thickne",new HashMap(){{
-            put("check",thickneCheck);
-            put("value",thickneValue);
-        }});
+        optionSet.put("thickne", ImmutableMap.of("check",thickneCheck, "value",thickneValue));
         Boolean hSpaceCheck = workPriorityOrderMst.getTopPartitionFlag() != 0;
         Short hSpaceValue = workPriorityOrderMst.getTopPartitionVal()!=null?workPriorityOrderMst.getTopPartitionVal().shortValue():0;
-        optionSet.put("hSpace",new HashMap(){{
-            put("check",hSpaceCheck);
-            put("value",hSpaceValue);
-        }});
+        optionSet.put("hSpace",ImmutableMap.of("check",hSpaceCheck,"value",hSpaceValue));
         optionSet.put("backOpacity",0.25);
         ptsInfoTemp.put("optionSet",optionSet);
         Map<String, Object> result = new HashMap<>();
@@ -238,21 +235,6 @@ public class PriorityAllMstServiceImpl  implements PriorityAllMstService{
 
     @Override
     public Map<String, Object> returnAutoCalculationState(String taskId) {
-       // if (vehicleNumCache.get("janIsNull"+taskId)!=null){
-       //     vehicleNumCache.remove("janIsNull"+taskId);
-       //     return ResultMaps.result(ResultEnum.JANNOTESISTS);
-       // }
-       // if (vehicleNumCache.get("IO"+taskId)!=null){
-       //     vehicleNumCache.remove("IO"+taskId);
-       //     String error = vehicleNumCache.get("IOError" + taskId).toString();
-       //     vehicleNumCache.remove("IOError"+taskId);
-       //     return ResultMaps.error(ResultEnum.FAILURE, error);
-       // }
-       //if (vehicleNumCache.get(taskId) != null){
-       //     vehicleNumCache.remove(taskId);
-       //    return ResultMaps.result(ResultEnum.SUCCESS,"success");
-       //}
-       // return ResultMaps.result(ResultEnum.SUCCESS,"9");
         LocalDateTime now = LocalDateTime.now();
         while (true) {
 

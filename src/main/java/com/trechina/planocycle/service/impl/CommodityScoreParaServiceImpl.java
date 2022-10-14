@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerParamMst;
@@ -65,6 +66,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     private VehicleNumCache vehicleNumCache;
     @Autowired
     private ThreadPoolTaskExecutor executor;
+    @Autowired
+    private LogAspect logAspect;
     @Autowired
     private cgiUtils cgiUtil;
 
@@ -209,11 +212,11 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> rankCalculate(Map<String,Object> map) {
         String authorCd = session.getAttribute("aud").toString();
-        String companyCd = map.get("companyCd").toString();
-        Integer productPowerCd = Integer.valueOf(map.get("productPowerCd").toString());
-        map.remove("companyCd");
-        map.remove("productPowerCd");
-
+        String companyCd = map.get(MagicString.COMPANY_CD).toString();
+        Integer productPowerCd = Integer.valueOf(map.get(MagicString.PRODUCT_POWER_CD).toString());
+        map.remove(MagicString.COMPANY_CD);
+        map.remove(MagicString.PRODUCT_POWER_CD);
+        Map<String, Object> errMap = logAspect.errInfo();
         String uuid = UUID.randomUUID().toString();
         Future<?> future = executor.submit(() -> {
         try {
@@ -221,16 +224,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             List<Map<String, Object>> rankCalculate = productPowerDataMapper.getProductRankCalculate(map, companyCd, productPowerCd,authorCd);
             ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
             List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
-            if (storeCd.isEmpty()){
-                storeCd.add("");
-            }
             List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
-            if (shelfPts.isEmpty()){
                 shelfPts.add(0);
-            }
-            if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, uuid)))) {
-                return;
-            }
             productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd,shelfPts,storeCd);
             List<Map<String, Object>> list = new ArrayList<>();
             for (int i = 0; i < rankCalculate.size(); i++) {
@@ -247,8 +242,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 productPowerDataMapper.insertWkRank(list, authorCd, companyCd, productPowerCd);
             }
 
-            vehicleNumCache.put(uuid+",data", rankCalculate);
+            vehicleNumCache.put(uuid+MagicString.DATA_STR, rankCalculate);
         } catch (Exception e) {
+            logAspect.errInfoForEmail(errMap,e,new Object[]{map});
             logger.error("rank計算失敗",e);
         }
         });
@@ -265,9 +261,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     @Override
     public Map<String, Object> deleteReserve(JSONObject jsonObject) {
         String aud = session.getAttribute("aud").toString();
-        String companyCd = String.valueOf(((Map) jsonObject.get("param")).get("companyCd"));
-        Integer valueCd = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("valueCd")));
-        Integer productPowerCd = Integer.valueOf(String.valueOf(((Map) jsonObject.get("param")).get("productPowerCd")));
+        String companyCd = String.valueOf(((Map) jsonObject.get(MagicString.PARAM)).get(MagicString.COMPANY_CD));
+        Integer valueCd = Integer.valueOf(String.valueOf(((Map) jsonObject.get(MagicString.PARAM)).get("valueCd")));
+        Integer productPowerCd = Integer.valueOf(String.valueOf(((Map) jsonObject.get(MagicString.PARAM)).get(MagicString.PRODUCT_POWER_CD)));
         productPowerDataMapper.deleteWKYobiiiternCd(aud,companyCd,valueCd,productPowerCd);
         productPowerDataMapper.deleteWKYobiiiternDataCd(aud,companyCd,valueCd,productPowerCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
@@ -281,9 +277,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
                 return ResultMaps.result(ResultEnum.SUCCESS);
             }
-            if (vehicleNumCache.get(taskID+",data") != null){
-                Object o = vehicleNumCache.get(taskID + ",data");
-                vehicleNumCache.remove(taskID+",data");
+            if (vehicleNumCache.get(taskID+MagicString.DATA_STR) != null){
+                Object o = vehicleNumCache.get(taskID + MagicString.DATA_STR);
+                vehicleNumCache.remove(taskID+MagicString.DATA_STR);
                 return ResultMaps.result(ResultEnum.SUCCESS,o);
             }
 

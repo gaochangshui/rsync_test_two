@@ -1,5 +1,11 @@
 package com.trechina.planocycle.constant;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+
+import java.util.Map;
+
 public class MagicString {
     public static final String HEIGHT_NAME = "plano_height";
     public static final String DEPTH_NAME = "plano_depth";
@@ -14,6 +20,7 @@ public class MagicString {
     public static final String SPECIAL_SCHEMA_CD = "9999";
 
     public static final String JAN_HEADER_JAN_CD_COL = "jan_cd";
+    public static final String JAN_CD = "janCd";
     public static final String JAN_HEADER_JAN_NAME_COL = "jan_name";
 
     public static final String TASK_ID = "taskID";
@@ -47,10 +54,13 @@ public class MagicString {
     public static final String TANA_POSITION_CD = "tanaPositionCd";
 
     public static final String TANA_POSITION = "tanaPosition";
+    public static final String TANAPOSITIONCD = "tanapositionCd";
 
     public static final String SET_ZOKUSEI = "setZokusei";
 
     public static final String RESTRICT_CD = "restrictCd";
+
+    public static final String RESTRICT_CD_UNDERLINE = "restrict_cd";
 
     public static final Long NO_RESTRICT_CD = 9999L;
     /**
@@ -108,6 +118,8 @@ public class MagicString {
     public static final String RANK = "rank";
 
     public static final String BRANCH_NUM_UPD = "branch_num_upd";
+    public static final String FACE_NUM = "faceNum";
+    public static final String SKU_NUM = "skuNum";
     public static final String BRANCH_AMOUNT_UPD = "branch_amount_upd";
     public static final String COLUMN_INDEX_JANINFO_COLUMN = "3";
     public static final String COLUMN_INDEX_KAISOU_COLUMN = "4";
@@ -131,6 +143,7 @@ public class MagicString {
 
     public static final String BRANCH_NUM = "branch_num";
     public static final String BRANCH = "branch";
+    public static final String AREA_CD = "areaCd";
 
     public static final String PATTERN_NAME = "pattern_name";
 
@@ -148,12 +161,16 @@ public class MagicString {
     public static final String MASTER_SYOHIN = "\"{0}\".master_syohin";
     public static final String WK_MASTER_SYOHIN = "\"{0}\".wk_master_syohin";
     public static final String PROD_JAN_ATTR_HEADER_SYS = "\"{0}\".prod_{1}_jan_attr_header_sys";
+    public static final String PROD_JAN_ATTR_HEADER_SYS_PKEY = "prod_{0}_jan_attr_header_sys_pkey";
     public static final String PROD_JAN_INFO ="\"{0}\".prod_{1}_jan_info";
+
+    public static final String PROD_JAN_INFO_PKEY ="prod_{0}_jan_info_pkey";
     public static final String PROD_JAN_KAISOU_HEADER_SYS = "\"{0}\".prod_{1}_jan_kaisou_header_sys";
     public static final String PROD_JAN_KAISOU = "\"{0}\".prod_{1}_jan_kaisou";
     public static final String PROD_JAN_PRESET_PARAM = "\"{0}\".prod_{1}_jan_preset_param";
 
     public static final String PROD_TEN_INFO = "\"{0}\".ten_{1}_ten_info";
+    public static final String PROD_TEN_INFO_PKEY = "ten_{0}_ten_info_pkey";
 
 
     public static final String WK_PROD_JAN_ATTR_HEADER_SYS = "\"{0}\".wk_prod_{1}_jan_attr_header_sys";
@@ -165,7 +182,9 @@ public class MagicString {
 
     public static final String WK_PROD_TEN_INFO_HEADER = "\"{0}\".ten_{1}_ten_kaisou_header_sys";
 
-    public static final String WK_MASTER_TEN = "\"{0}\".master_ten";
+    public static final String MASTER_TEN = "\"{0}\".master_ten";
+    public static final String MASTER_TEN_PKEY = "master_ten_pkey";
+    public static final String WK_MASTER_TEN = "\"{0}\".wk_master_ten";
 
     /**
      * 必須区分
@@ -222,9 +241,9 @@ public class MagicString {
     public static final String TABLE2="table2";
     public static final String JANINFOTABLE="janInfoTable";
 
-    public static final String area="area";
+    public static final String AREA ="area";
 
-    public static final String sort="sort";
+    public static final String SORT ="sort";
 
     public static final String BASIC_PATTERN_PTS_TABLE_NAME="planocycle.work_priority_order_pts_data";
     public static final String BASIC_PATTERN_PTS_DATA_TABLE_NAME="planocycle.work_priority_order_pts_data_jandata";
@@ -232,5 +251,121 @@ public class MagicString {
     public static final String BASIC_ALL_PTS_TABLE_NAME="planocycle.work_priority_all_pts_data";
 
     public static final String BASIC_ALL_PTS_DATA_TABLE_NAME="planocycle.work_priority_all_pts_jans";
+
+    public static final String ZOUKUSEI_COLCD="zokusei_colcd";
+
+    public static final String ZOUKUSEI_COLNAME="zokusei_colname";
+
+    public static final String ZOUKUSEI_NM="zokusei_nm";
+
+    public static final String REMARKS="remarks";
+    public static final String GROUP_HEADER="groupHeader";
+    public static final String GROUP_COLUMNS="groupColumns";
+
+    public static final String NEW_DATA="newData";
+    public static final String OLD_DATA="oldData";
+
+
+
+
+    public static final String FACE_KAITEN = "faceKaiten";
+
+    public static final String FACE_MEN = "faceMen";
+
+    public static final String PLANO_PREFIX = "getPlano";
+
+    public static final String PLANO_WIDTH = "planoWidth";
+
+    public static final String PLANO_HEIGHT = "planoHeight";
+
+    public static final String PLANO_DEPTH = "planoDepth";
+    public static final String COLOR = "color";
+
+    public static final String ERROR_MSG = "errMsg";
+    public static final String DEL_ERROR_MSG = "現状棚に並んでいる可能性がありますので削除してください。";
+    public static final String SEASON_FLAG = "seasonFlag";
+
+    public static final String RECENTLY_FLAG = "recentlyFlag";
+
+    public static final String DATE_CD = "data_cd";
+
+    public static final String TABLE_NAME = "tableName";
+
+    public static final String JAN_EXCLUDE = "janExclude";
+
+    public static final String LIST_DISPARIT_STR = "listDisparitStr";
+
+    public static final String JAN_NAME2COL_NUM = "janName2colNum";
+
+    public static final String EXCEPTION = "Exception";
+
+    public static final String GET_COMMODITY_SCORE_DATA = "getCommodityScoreData:{}";
+
+    public static final String DATA_STR = ",data";
+
+    public static final String STATUS_STR = ",status";
+    public static final String STATUS = "status";
+
+    public static final String FLAG_STR = ",flag";
+    public static final String FLAG = "flag";
+
+    public static final String RETURN_STR = ",returnVal";
+
+    public static final String FILEPATH_STR = ",filepath";
+
+    public static final String COMPANY_CD = "companyCd";
+    public static final String COMPANY_CD_DB = "company_cd";
+    public static final String AUTHOR_CD_DB = "author_cd";
+    public static final String PRODUCT_POWER_CD = "productPowerCd";
+    public static final String PRIORITY_ORDER_CD = "priorityOrderCd";
+    public static final String SHELF_PATTERN_CD = "shelfPatternCd";
+    public static final String PRIORITY_ORDER_CD_DB = "priority_order_cd";
+
+    public static final String PARAM = "param";
+    public static final String TASKID = "taskId";
+
+    public static final String NUMBER = "number";
+
+    public static final String STRING = "string";
+
+    public static final String ZOKUSEI_COL = "zokusei_col";
+    public static final String ZOKUSEI_ID = "zokusei_id";
+
+    public static final String PLANO = "plano";
+    public static final String HEIGHT = "height";
+    public static final String DEPTH = "depth";
+    public static final String BRANCHNUM = "branchNum";
+    public static final String BRANCH_ACCOUNT = "branchAccount";
+    public static final String JANNEW = "janNew";
+
+    public static final String BRANCH_AMOUNT_NAME = "店@金額(円)";
+    public static final String POS_AMOUNT = "pos_amount";
+    public static final String UNIT_PRICE = "unit_price";
+    public static final String DIFFERENCE = "difference";
+    public static final String SALE_FORECAST = "sale_forecast";
+    public static final String RANK_PROP = "rank_prop";
+    public static final String GOODS_RANK = "goods_rank";
+    public static final String PATTERN = "pattern";
+    public static final String CHILDREN = "__children";
+    public static final String SHELF_PATTERN_NAME = "shelfPatternName";
+    public static final String BRANCH_NAME = "branchName";
+    public static final String MAKER = "maker";
+    public static final String TOTAL = "total";
+    public static final String BRANCH_CD = "branchCd";
+    public static final String COLUMN = "column";
+    public static final String HEADER = "header";
+
+    public static final String GROUP = "group";
+    public static final String BR = "<br />";
+
+    public static final String BRANCH_NUM_NAME = "定番 店舗数";
+
+    public static final String DEFAULT_TABLE = "prod_0000_jan_info";
+    public static final String  PERCENTAGE = "%";
+
+    public static final Map<String, String> REASON_MAP = ImmutableMap.of("1", "rank_change", "2", "replace", "3",
+            "capepak", "4", "must_not", "5", "pattern_duplicate");
+
+    public static final String TO_MAIL = Joiner.on("@").join(Lists.newArrayList("planocyclesystem", "cn.tre-inc.com"));
 
 }

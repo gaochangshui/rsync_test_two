@@ -212,4 +212,6 @@ public interface ProductPowerDataMapper {
     String getItemCol(String company, String classCd);
 
     List<Map<String,Object>> getAttrColName(List<String> attr, String tableName);
+
+    void setIntageJanForSyokika(String companyCd, Integer productPowerCd);
 }

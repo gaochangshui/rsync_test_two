@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.ClassicPriorityOrderCompareJanDataMapper">
+    <select id="getPatternNewCompare" resultType="com.trechina.planocycle.entity.dto.PriorityOrderCompareJanData">
+        select
+            shelf_name_cd as "shelfCd",
+            shelf_name as "shelfName",   --棚名称
+            shelf_pattern_name as "shelfPatternName", --棚パターン
+            newdata.shelf_pattern_cd as "shelfPatternCd",
+            count ( DISTINCT newdata.jan ) "skuNew",
+            sum (  newdata.face_count ) "faceNew",
+            sum(resultdata.sale_forecast) "saleForecast"   --売上増減予測
+        from
+            priority.priority_order_pts_result_jandata newdata
+                LEFT join planocycle.shelf_pattern_mst patternmst on patternmst.shelf_pattern_cd = newdata.shelf_pattern_cd
+                LEFT join planocycle.shelf_name_mst namemst on patternmst.shelf_name_cd = namemst.id
+                left join priority.priority_order_result_data resultdata on  resultdata.priority_order_cd =  #{priorityOrderCd} and resultdata.jan_new = newdata.jan
+        where
+            newdata.priority_order_cd = #{priorityOrderCd} and newdata.compare_flag = 1
+        GROUP BY
+            newdata.shelf_pattern_cd,
+            shelf_pattern_name,
+            shelf_name,
+            shelf_name_cd
+        order by shelf_name_cd,newdata.shelf_pattern_cd desc
+    </select>
+    <select id="getPatternList" resultType="java.lang.Integer">
+        select shelf_pattern_cd
+        from  priority.priority_order_pattern
+        where priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getChangeJan" resultType="java.util.Map">
+        select array_to_string(array_agg(DISTINCT jan),',') "janList",flag,count(distinct jan) "skuNum",shelf_pattern_cd as "shelfPatternCd"
+        from priority.priority_order_compare_jandata
+        where priority_order_cd = #{priorityOrderCd} and compare_flag = 1
+        GROUP BY shelf_pattern_cd,flag
+    </select>
+    <select id="getNewPtsAttrCompare" resultType="java.util.Map">
+        select
+            coalesce(count(DISTINCT newdata.jan),0) "skuNum",coalesce(sum(newdata.face_count),0) "faceNum",'1' flag,
+            <foreach collection="attrResultList" item="item" separator=",">
+                coalesce(${item.tableName}."${item.col}",'_') as "${item.name}"
+            </foreach>
+        from
+            priority.priority_order_pts_result_jandata newdata
+        <foreach collection="listTableName" item="item" index="index">
+            left join ${item} as ${index}
+            on ${index}."1" = newdata.jan
+        </foreach>
+        where
+            newdata.priority_order_cd = #{priorityOrderCd} and newdata.compare_flag = 1
+        GROUP BY
+            <foreach collection="attrResultList" item="item" separator=",">
+                ${item.tableName}."${item.col}"
+            </foreach>
+    </select>
+    <select id="getOldPtsAttrCompare" resultType="java.util.Map">
+        select
+        coalesce(count(DISTINCT olddata.jan),0) "skuNum",coalesce(sum(olddata.face_count),0) "faceNum",'0' flag,
+        <foreach collection="attrResultList" item="item" separator=",">
+            coalesce(${item.tableName}."${item.col}",'_') as "${item.name}"
+        </foreach>
+        from
+            priority.priority_order_pattern pattern
+                left join
+            planocycle.shelf_pts_data ptsdata
+            on ptsdata.shelf_pattern_cd = pattern.shelf_pattern_cd
+                left join
+            planocycle.shelf_pts_data_jandata olddata
+            on olddata.pts_cd = ptsdata.id
+        <foreach collection="listTableName" item="item" index="index">
+            left join ${item} as ${index}
+            on ${index}."1" = olddata.jan
+        </foreach>
+        where
+            pattern.priority_order_cd = #{priorityOrderCd}
+        GROUP BY
+        <foreach collection="attrResultList" item="item" separator=",">
+            ${item.tableName}."${item.col}"
+        </foreach>
+    </select>
+    <select id="getAllNewCompare" resultType="com.trechina.planocycle.entity.dto.PriorityOrderCompareJanData">
+        select count
+                   ( DISTINCT newdata.jan ) "skuNew",
+               sum ( newdata.face_count ) "faceNew",
+               sum ( resultdata.sale_forecast ) "saleForecast"
+        from
+            priority.priority_order_pts_result_jandata newdata
+                LEFT join planocycle.shelf_pattern_mst patternmst on patternmst.shelf_pattern_cd = newdata.shelf_pattern_cd
+                LEFT join planocycle.shelf_name_mst namemst on patternmst.shelf_name_cd = namemst.
+                id left join priority.priority_order_result_data resultdata on resultdata.priority_order_cd = 790
+                and resultdata.jan_new = newdata.jan
+        where
+            newdata.priority_order_cd = #{priorityOrderCd}
+          and newdata.compare_flag = 1
+        GROUP BY
+            newdata.priority_order_cd;
+    </select>
+    <select id="getChangeJanForAll" resultType="java.util.Map">
+        select array_to_string(array_agg(DISTINCT jan),',') "janList",flag,count(distinct jan) "skuNum"
+        from priority.priority_order_compare_jandata
+        where priority_order_cd = #{priorityOrderCd} and compare_flag = 1
+        GROUP BY flag,priority_order_cd
+    </select>
+    <select id="getAttrValue" resultType="java.util.Map">
+        select attr.value ,attr.name,attr.sort
+        from priority.priority_order_mst_attrsort attrsort
+                 left join priority.priority_order_mst_attr attr
+                           on attrsort."value" = attr."sort" and attr.priority_order_cd = attrsort.priority_order_cd
+        where attrsort.priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getJanOldData" resultType="java.util.LinkedHashMap">
+        select
+        jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",jandata.tanaposition_cd as "tanapositionCd",jandata.jan as "jan",jandata.face_count as "faceCount"
+        ,jandata.face_men as "faceMen",jandata.face_kaiten as "faceKaiten",
+        jandata.tumiagesu as "tumiagesu",jandata.zaikosu as "zaikosu",jandata.face_displayflg as "faceDisplayflg"
+        ,jandata.face_position as "facePosition",jandata.depth_display_num as "depthDisplayNum",
+         janinfo1."2" as "janName"
+        <foreach collection="janSizeCol" item="item">
+            ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
+        </foreach>
+        ,
+        <foreach collection="attrList" separator="," item="item" >
+            coalesce(${item.tableName}."${item.col}",'_') as ${item.sort}
+        </foreach>
+        from
+        planocycle.shelf_pts_data ptsdata
+        left join planocycle.shelf_pts_data_jandata jandata
+            on jandata.pts_cd = ptsdata.id
+        left join "9999".prod_0000_jan_info janinfo
+            on  janinfo."1" = jandata.jan
+        left join ${tableName} janinfo1
+        on  janinfo1."1" = jandata.jan
+        <foreach collection="listTableName" item="item" index="index">
+            left join ${item} as ${index}
+            on ${index}."1" = jandata.jan
+        </foreach>
+        where ptsdata.shelf_pattern_cd = #{shelfPatternCd}
+        order by jandata.tai_cd,jandata.tana_cd,jandata.tanaposition_cd
+    </select>
+    <select id="getJanNewData" resultType="java.util.LinkedHashMap">
+        select
+        jandata.tai_cd as "taiCd",jandata.tana_cd as "tanaCd",jandata.tanaposition_cd as "tanapositionCd",jandata.jan as "jan",jandata.face_count as "faceCount"
+        ,jandata.face_men as "faceMen",jandata.face_kaiten as "faceKaiten",
+        jandata.tumiagesu as "tumiagesu",jandata.zaikosu as "zaikosu",jandata.face_displayflg as "faceDisplayflg"
+        ,jandata.face_position as "facePosition",jandata.depth_display_num as "depthDisplayNum",
+        janinfo1."2" as "janName"
+        <foreach collection="janSizeCol" item="item">
+            ,coalesce (janinfo."${item.infoCol}" ::integer,0) as "${item.colCd}"
+        </foreach>
+        ,
+        <foreach collection="attrList" separator="," item="item" >
+            coalesce(${item.tableName}."${item.col}",'_') as ${item.sort}
+        </foreach>
+        from
+        priority.priority_order_pts_result_jandata jandata
+        left join "9999".prod_0000_jan_info janinfo
+        on  janinfo."1" = jandata.jan
+        left join ${tableName} janinfo1
+        on  janinfo1."1" = jandata.jan
+        <foreach collection="listTableName" item="item" index="index">
+            left join ${item} as ${index}
+            on ${index}."1" = jandata.jan
+        </foreach>
+        where jandata.shelf_pattern_cd = #{shelfPatternCd} and priority_order_cd = #{priorityOrderCd} and jandata.compare_flag = 1
+        order by jandata.tai_cd,jandata.tana_cd,jandata.tanaposition_cd
+    </select>
+    <delete id="deleteCompareJandata">
+        delete from priority.priority_order_compare_jandata
+        where priority_order_cd=#{priorityOrderCd}
+    </delete>
+    <insert id="insertCompareDeleteJandata">
+        <if test="!deleteJanList.isEmpty">
+            insert into priority.priority_order_compare_jandata(company_cd,priority_order_cd, shelf_pattern_cd, jan, flag, branch_cd, compare_flag,describe)
+            values
+            <foreach collection="deleteJanList" item="item" separator=",">
+                (#{companyCd},#{priorityOrderCd},#{shelfPatternCd},#{item.jan} , '888', #{branchCd}, #{compareFlag},#{item.reason})
+            </foreach>
+        </if>
+    </insert>
+    <insert id="insertCompareNewJandata">
+        <if test="!newJanList.isEmpty">
+            insert into priority.priority_order_compare_jandata(company_cd,priority_order_cd, shelf_pattern_cd, jan, flag, branch_cd, compare_flag,describe)
+            values
+            <foreach collection="newJanList" item="item" separator=",">
+                (#{companyCd},#{priorityOrderCd}, #{shelfPatternCd},#{item.jan}, '777', #{branchCd}, #{compareFlag},#{item.reason})
+            </foreach>
+        </if>
+    </insert>
+    <select id="selectAllCompareJandata" resultType="map">
+        select shelf_pattern_cd,jan, branch_cd,flag from priority.priority_order_compare_jandata where priority_order_cd=#{priorityOrderCd}
+    </select>
+    <select id="getPatternBranchList" resultType="java.util.Map">
+        select
+            pattern.shelf_pattern_cd "shelfPatternCd",
+            array_to_string(array_agg(DISTINCT concat(
+        case when "char_length"(split_part(branch.branch, '_', 2)) > 0 then split_part(branch.branch, '_', 2)
+        else branch end,'_',teninfo."2")),',') "branchNum"
+        from
+            priority.priority_order_pattern pattern
+                left join planocycle.shelf_pattern_branch branch
+                          on branch.shelf_pattern_cd = pattern.shelf_pattern_cd
+        left join ${tableName} teninfo
+        on (teninfo."1" = branch.branch or
+        (split_part(teninfo."1", '_', 2) = branch.branch
+        and
+        split_part(teninfo."1", '_', 1) in
+        <foreach collection="groupCompany" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        ))
+        where
+            priority_order_cd = #{priorityOrderCd}
+        GROUP BY pattern.shelf_pattern_cd
+    </select>
+    <select id="getAllBranchList" resultType="java.lang.String">
+        select
+            distinct
+        concat(
+        case when "char_length"(split_part(branch.branch, '_', 2)) > 0 then split_part(branch.branch, '_', 2)
+        else branch end,'_',teninfo."2")"branchNum"
+
+        from
+            priority.priority_order_pattern pattern
+                left join planocycle.shelf_pattern_branch branch
+                          on branch.shelf_pattern_cd = pattern.shelf_pattern_cd
+        left join ${tableName} teninfo
+        on (teninfo."1" = branch.branch or
+        (split_part(teninfo."1", '_', 2) = branch.branch
+        and
+        split_part(teninfo."1", '_', 1) in
+        <foreach collection="groupCompany" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        ))
+        where
+            priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getPatternOldCompare" resultType="com.trechina.planocycle.entity.dto.PriorityOrderCompareJanData">
+        select sum(face_count) "faceOld",count(distinct jan) "skuOld",pattern.shelf_pattern_cd
+        from
+            priority.priority_order_pattern pattern
+                left join planocycle.shelf_pts_data ptsdata
+                          on ptsdata.shelf_pattern_cd = pattern.shelf_pattern_cd
+                left join planocycle.shelf_pts_data_jandata newdata
+                          on ptsdata.id = newdata.pts_cd
+        where pattern.priority_order_cd = #{priorityOrderCd}
+        GROUP BY pattern.shelf_pattern_cd;
+    </select>
+    <select id="getAllOldCompare" resultType="com.trechina.planocycle.entity.dto.PriorityOrderCompareJanData">
+        select sum(face_count) "faceOld",count(distinct jan)"skuOld" from planocycle.shelf_pts_data_jandata newdata where pts_cd  in(
+
+            select id from priority.priority_order_pattern pattern
+                               left join planocycle.shelf_pts_data ptsdata
+                                         on ptsdata.shelf_pattern_cd = pattern.shelf_pattern_cd
+            where pattern.priority_order_cd = #{priorityOrderCd}
+        );
+    </select>
+</mapper>

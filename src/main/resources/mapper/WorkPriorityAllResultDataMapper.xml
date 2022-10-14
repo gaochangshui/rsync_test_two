@@ -82,6 +82,15 @@
 
         where resultdata.priority_all_cd  = #{priorityAllCd} and resultdata.shelf_pattern_cd = #{patternCd} and resultdata.author_cd = #{authorCd}
     </select>
+    <select id="selectGroup" resultType="java.util.Map">
+        select
+        <foreach collection="list" separator="," item="item">
+            case when coalesce ("zokusei${item.sort}",'未登録') = '' then '未登録' else coalesce ("zokusei${item.sort}",'未登録') end  as "${item.zokusei_colcd}"
+        </foreach>
+        ,restrict_cd
+        from planocycle.work_all_pattern_restrict_result
+        where priority_all_cd=#{priorityAllCd} and shelf_pattern_cd = #{patternCd}
+    </select>
 
     <update id="updateTaiTanaBatch">
         UPDATE planocycle.work_priority_all_result_data SET

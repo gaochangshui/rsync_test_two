@@ -79,4 +79,10 @@ public interface ClassicPriorityOrderDataService {
 
      void deleteWorkData(String companyCd, Integer newPriorityOrderCd);
 
+    Map<String, Object> getPatternCompare(String companyCd, Integer priorityOrderCd);
+
+    Map<String, Object> getAttrCompare(String companyCd, Integer priorityOrderCd,String attrList);
+
+    Map<String, Object> getPriorityOrderNewPts(String companyCd, Integer priorityOrderCd, Integer shelfPatternCd,Integer flag);
+
 }

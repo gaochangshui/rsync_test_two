@@ -20,29 +20,29 @@ public class MstJanParamServiceImpl implements MstJanParamService {
 @Autowired
 private  MstJanParamMapper mstJanParamMapper;
 
-    public static List listToTree(List arr, String id, String pid, String child){
-        List<Object> r = new ArrayList<>();
+    public static List<Map<String,Object>> listToTree(List<Map<String,Object>> arr, String id, String pid, String child){
+        List<Map<String,Object>> r = new ArrayList<>();
         Map<String,Object> hash = new HashMap<>();
         //配列をObject形式に変換し、keyは配列中のid
         for(int i=0;i<arr.size();i++){
-            Map<String,Object> json = (Map<String,Object>) arr.get(i);
+            Map<String,Object> json =  arr.get(i);
             hash.put((String) json.get(id), json);
         }
         //結果セットのトラバース
         for(int j=0;j<arr.size();j++){
             //シングルレコード
-            Map<String,Object> aVal = (Map<String,Object>) arr.get(j);
+            Map<String,Object> aVal =  arr.get(j);
             //1つのレコードにおけるpidの値であるkeyをhashから取り出す
             Map<String,Object> hashVP = (Map<String,Object>) hash.get(aVal.get(pid).toString());
             //記録されたpidが存在する場合は、親ノードがあり、子ノードのコレクションに追加されます
             if(hashVP!=null){
                 //child属性があるかどうかをチェック
                 if(hashVP.get(child)!=null){
-                    List ch = (List) hashVP.get(child);
+                    List<Map<String,Object>> ch = (List) hashVP.get(child);
                     ch.add(aVal);
                     hashVP.put(child, ch);
                 }else{
-                    List ch = new ArrayList<>();
+                    List<Map<String,Object>> ch = new ArrayList<>();
                     ch.add(aVal);
                     hashVP.put(child, ch);
                 }

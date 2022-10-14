@@ -211,16 +211,18 @@
         where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
     </insert>
     <insert id="insertBatch">
-        insert into planocycle.work_basic_pattern_restrict_relation
-        ( priority_order_cd,company_cd,author_cd
-        ,tai_cd,tana_cd,tana_position
-        ,restrict_cd,area,jan_count)
-        values
+        <if test="!lists.isEmpty">
+            insert into planocycle.work_basic_pattern_restrict_relation
+            ( priority_order_cd,company_cd,author_cd
+            ,tai_cd,tana_cd,tana_position
+            ,restrict_cd,area,jan_count)
+            values
             <foreach collection="lists" item="item" separator=",">
                 (#{item.priorityOrderCd,jdbcType=BIGINT},#{item.companyCd,jdbcType=VARCHAR},#{item.authorCd,jdbcType=VARCHAR}
                 ,#{item.taiCd,jdbcType=OTHER},#{item.tanaCd,jdbcType=OTHER},#{item.tanaPosition,jdbcType=SMALLINT}
                 ,#{item.restrictCd,jdbcType=BIGINT},#{item.area,jdbcType=BIGINT},#{item.janCount})
             </foreach>
+        </if>
     </insert>
     <select id="selectUnusedTaiTana" resultType="integer">
         select sum(case when relation.restrict_cd is null or relation.restrict_cd=9999 then 1 else 0 end)
@@ -242,6 +244,18 @@
         and tana_cd = #{item.tanaCd} and  area_position = #{item.tanaPosition}
         GROUP BY restrict_cd
     </select>
+    <select id="getTana" resultType="java.util.Map">
+        select tai_cd "taiCd",tana_cd "tanaCd" from
+        planocycle.work_priority_order_pts_data ptsdata
+        left join
+        planocycle.work_priority_order_pts_data_tanamst tanamst
+        on ptsdata."id" = tanamst.pts_cd
+        where priority_order_cd = #{priorityOrderCd}
+        and  concat(tai_cd,'_',tana_cd) not in
+        <foreach collection="resultList" item="item" separator="," open="(" close=")">
+            '${item.taiCd}_${item.tanaCd}'
+        </foreach>
+    </select>
     <update id="updateAreaPosition">
         update planocycle.work_basic_pattern_restrict_relation
         SET
@@ -256,20 +270,17 @@
         END
         where priority_order_cd=#{priorityOrderCd}
     </update>
-    <update id="updateArea">
+    <insert id="updateArea">
         <if test="!list.isEmpty">
-            update planocycle.work_basic_pattern_restrict_relation
-            SET
-            area =
-            CASE concat(tai_cd,tana_cd, tana_position, restrict_cd)
-            <foreach collection="list" item="obj">
-                WHEN concat(#{obj.taiCd}::integer,#{obj.tanaCd}::integer,#{obj.tanaPosition}::integer,#{obj.restrictCd}::integer) THEN #{obj.area}
+            insert into planocycle.work_basic_pattern_restrict_relation(priority_order_cd,company_cd,author_cd,tai_cd,tana_cd,
+            tana_position,restrict_cd,area, jan_count)
+            values
+            <foreach collection="list" item="obj" separator=",">
+                (#{priorityOrderCd},#{companyCd},#{authorCd},#{obj.taiCd}::integer,#{obj.tanaCd}::integer,#{obj.tanaPosition}::integer,#{obj.restrictCd}::integer,
+                #{obj.area}, #{obj.janCount})
             </foreach>
-            ELSE area
-            END
-            where priority_order_cd=#{priorityOrderCd}
         </if>
-    </update>
+    </insert>
     <update id="reorderTanaPosition">
         update planocycle.work_basic_pattern_restrict_relation as relation
         set tana_position=tmp.sort
@@ -278,4 +289,7 @@
         where priority_order_cd=#{priorityOrderCd} and relation.tai_Cd = tmp.tai_Cd and relation.tana_cd=tmp.tana_cd and relation.tana_position=tmp.tana_position
         and relation.restrict_cd = tmp.restrict_cd
     </update>
+    <delete id="deleteArea">
+        delete from planocycle.work_basic_pattern_restrict_relation where priority_order_cd=#{priorityOrderCd}
+    </delete>
 </mapper>

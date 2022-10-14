@@ -19,7 +19,10 @@ import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderBranchNumService;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanReplaceService;
-import com.trechina.planocycle.utils.*;
+import com.trechina.planocycle.utils.ExcelUtils;
+import com.trechina.planocycle.utils.ResultMaps;
+import com.trechina.planocycle.utils.VehicleNumCache;
+import com.trechina.planocycle.utils.cgiUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +41,10 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -94,7 +100,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     private MstBranchMapper mstBranchMapper;
 
 
-    public static final Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+    public static final Pattern pattern = Pattern.compile("^[-\\+]?\\d*$");
 
     /**
      * 必須商品リストの取得
@@ -151,95 +157,88 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderCommodityMust(List<PriorityOrderCommodityMust> priorityOrderCommodityMust) {
-        logger.info("必須商品リストパラメータを保存する：{}",priorityOrderCommodityMust);
-//取得したパラメータは1行目に企業と順位テーブルcdがあるだけで、パラメータを巡回し、すべての行に値を割り当てる必要があります。
+//        logger.info("必須商品リストパラメータを保存する：{}",priorityOrderCommodityMust);
+////取得したパラメータは1行目に企業と順位テーブルcdがあるだけで、パラメータを巡回し、すべての行に値を割り当てる必要があります。
+//
+//            String companyCd = priorityOrderCommodityMust.get(0).getCompanyCd();
+//            Integer priorityOrderCd = priorityOrderCommodityMust.get(0).getPriorityOrderCd();
+//            dataConverUtils dataConverUtil = new dataConverUtils();
+//            // 共通メソッドを呼び出し、データを処理する
+//            List<PriorityOrderCommodityMust> mustList =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderCommodityMust.class,priorityOrderCommodityMust,
+//                    companyCd ,priorityOrderCd);
+//            // map.getJan() != null&& !"".equals(map.getJan())
+//            mustList = mustList.stream().filter(map -> !Strings.isNullOrEmpty(map.getJan())).collect(Collectors.toList());
+//            logger.info("必須商品リストの処理後のパラメータを保存する：{}",mustList);
+//            //削除
+//            priorityOrderCommodityMustMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
+//            if (mustList.isEmpty()){
+//                return ResultMaps.result(ResultEnum.SUCCESS);
+//            }
+//            PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
+//            ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
+//            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+//            String proInfoTable = commonTableName.getProInfoTable();
+//            String storeInfoTable = commonTableName.getStoreInfoTable();
+//            String storeIsCore = commonTableName.getStoreIsCore();
+//            String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd,storeInfoTable,storeIsCore);
+//            int branchLen = branchCd.length();
+//            // notを巡回して店cdに0を補充する
+//            mustList.forEach(item->{
+//                item.setBranchOrigin(item.getBranch());
+//                if (!Strings.isNullOrEmpty(item.getBranch()) && pattern.matcher(item.getBranch()).matches()){
+//                    item.setBranch( Strings.padStart(item.getBranch(), branchLen, '0'));
+//                }
+//            });
+//            logger.info("必須商品の店補0後の結菓を保存する{}",mustList);
+//
+//            // jancheck
+//            List<String> janList = mustList.stream().map(PriorityOrderCommodityMust::getJan).collect(Collectors.toList());
+//            List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList,priorityOrderCd);
+//            List<String> notExistJan = ListDisparityUtils.getListDisparitStr(janList,existJan);
+//            List<PriorityOrderCommodityMust> existJanList = mustList.stream().filter(map -> existJan.contains(map.getJan())).collect(Collectors.toList());
+//
+//
+//            List<String> notBranchExists = new ArrayList<>();
+//            List<PriorityOrderCommodityMust> exists = new ArrayList<>();
+//            for (int i = 0; i < existJanList.size(); i++) {
+//                PriorityOrderCommodityMust must = existJanList.get(i);
+//                    String branch = must.getBranch();
+//                    List<Integer> patternCdList = priorityOrderCommodityMustMapper.selectPatternByBranch(priorityOrderCd, companyCd, branch);
+//                    //! "".equals() &&  must.getBranchOrigin() != null
+//                    if(patternCdList.isEmpty()&& !Strings.isNullOrEmpty(must.getBranchOrigin())){
+//                        notBranchExists.add(must.getBranchOrigin()+"");
+//                    }
+//                    for (Integer patternCd : patternCdList) {
+//                        PriorityOrderCommodityMust newMust = new PriorityOrderCommodityMust();
+//                        BeanUtils.copyProperties(must, newMust);
+//
+//                        int result = priorityOrderCommodityMustMapper.selectExistJan(patternCd, must.getJan());
+//                        if(result>0){
+//                            newMust.setBeforeFlag(1);
+//                        }else{
+//                            newMust.setBeforeFlag(0);
+//                        }
+//                        if(patternCd!=null){
+//                            newMust.setFlag(1);
+//                        }else{
+//                            newMust.setFlag(0);
+//                        }
+//                        newMust.setShelfPatternCd(patternCd);
+//                        exists.add(newMust);
+//                    }
+//
+//            }
+//            if (!exists.isEmpty()){
+//                //データベースへの書き込み
+//                priorityOrderCommodityMustMapper.insert(exists);
+//            }
+//           if (!notExistJan.isEmpty()){
+//               return ResultMaps.result(ResultEnum.BRANCHNOTESISTS, Joiner.on(",").join(notExistJan));
+//           }else if (!notBranchExists.isEmpty()){
+//               return ResultMaps.result(ResultEnum.BRANCHNOTESISTS, Joiner.on(",").join(notBranchExists));
+//           }
 
-            String companyCd = priorityOrderCommodityMust.get(0).getCompanyCd();
-            Integer priorityOrderCd = priorityOrderCommodityMust.get(0).getPriorityOrderCd();
-            dataConverUtils dataConverUtil = new dataConverUtils();
-            // 共通メソッドを呼び出し、データを処理する
-            List<PriorityOrderCommodityMust> mustList =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderCommodityMust.class,priorityOrderCommodityMust,
-                    companyCd ,priorityOrderCd);
-            mustList = mustList.stream().filter(map -> map.getJan() != null && !"".equals(map.getJan())).collect(Collectors.toList());
-            logger.info("必須商品リストの処理後のパラメータを保存する：{}",mustList);
-            //削除
-            priorityOrderCommodityMustMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
-            if (mustList.isEmpty()){
-                return ResultMaps.result(ResultEnum.SUCCESS);
-            }
-            PriorityOrderMstDto priorityOrderMst = classicPriorityOrderMstMapper.getPriorityOrderMst(companyCd, priorityOrderCd);
-            ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderMst.getProductPowerCd());
-            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
-            String proInfoTable = commonTableName.getProInfoTable();
-            String storeInfoTable = commonTableName.getStoreInfoTable();
-            String storeIsCore = commonTableName.getStoreIsCore();
-            String branchCd = priorityOrderCommodityNotMapper.selectBranchCDForCalcLength(companyCd,storeInfoTable,storeIsCore);
-            int branchLen = branchCd.length();
-            // notを巡回して店cdに0を補充する
-            mustList.forEach(item->{
-                item.setBranchOrigin(item.getBranch());
-                if (!Strings.isNullOrEmpty(item.getBranch())){
-                    if(pattern.matcher(item.getBranch()).matches()){
-                        int length = item.getBranch().length();
-                        StringBuilder branchStr = new StringBuilder();
-                        int diff = branchLen - length;
-                        for (int i = 0; i < diff; i++) {
-                            branchStr.append("0");
-                        }
-                        item.setBranch(branchStr +item.getBranch());
-                    }
-                }
-            });
-            logger.info("必須商品の店補0後の結菓を保存する{}",mustList);
-
-            // jancheck
-            List<String> janList = mustList.stream().map(PriorityOrderCommodityMust::getJan).collect(Collectors.toList());
-            List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList,priorityOrderCd);
-            List<String> notExistJan = ListDisparityUtils.getListDisparitStr(janList,existJan);
-            List<PriorityOrderCommodityMust> existJanList = mustList.stream().filter(map -> existJan.contains(map.getJan())).collect(Collectors.toList());
-
-
-            List<String> notBranchExists = new ArrayList<>();
-            List<PriorityOrderCommodityMust> exists = new ArrayList<>();
-            for (int i = 0; i < existJanList.size(); i++) {
-                PriorityOrderCommodityMust must = existJanList.get(i);
-                    String branch = must.getBranch();
-                    List<Integer> patternCdList = priorityOrderCommodityMustMapper.selectPatternByBranch(priorityOrderCd, companyCd, branch);
-                    if(patternCdList.isEmpty()&& ! "".equals(must.getBranchOrigin()) &&  must.getBranchOrigin() != null){
-                        notBranchExists.add(must.getBranchOrigin()+"");
-                    }
-                    for (Integer patternCd : patternCdList) {
-                        PriorityOrderCommodityMust newMust = new PriorityOrderCommodityMust();
-                        BeanUtils.copyProperties(must, newMust);
-
-                        int result = priorityOrderCommodityMustMapper.selectExistJan(patternCd, must.getJan());
-                        if(result>0){
-                            newMust.setBeforeFlag(1);
-                        }else{
-                            newMust.setBeforeFlag(0);
-                        }
-                        if(patternCd!=null){
-                            newMust.setFlag(1);
-                        }else{
-                            newMust.setFlag(0);
-                        }
-                        newMust.setShelfPatternCd(patternCd);
-                        exists.add(newMust);
-                    }
-
-            }
-            if (!exists.isEmpty()){
-                //データベースへの書き込み
-                priorityOrderCommodityMustMapper.insert(exists);
-            }
-           if (!notExistJan.isEmpty()){
-               return ResultMaps.result(ResultEnum.BRANCHNOTESISTS, Joiner.on(",").join(notExistJan));
-           }else if (!notBranchExists.isEmpty()){
-               return ResultMaps.result(ResultEnum.BRANCHNOTESISTS, Joiner.on(",").join(notBranchExists));
-           }
-           else{
-                return ResultMaps.result(ResultEnum.SUCCESS);
-           }
+        return ResultMaps.result(ResultEnum.SUCCESS);
 
     }
 
@@ -253,7 +252,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderCommodityNot(List<PriorityOrderCommodityNot> priorityOrderCommodityNot) {
-        logger.info("不可商品リストパラメータの保存：{}",priorityOrderCommodityNot);
+      /*  logger.info("不可商品リストパラメータの保存：{}",priorityOrderCommodityNot);
         // 拿到的参数只有第一行有企業和順位表cd，需要遍暦参数，給所有行都賦
         try{
             String companyCd = priorityOrderCommodityNot.get(0).getCompanyCd();
@@ -262,7 +261,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             // 調用共同方法，處理数据
             List<PriorityOrderCommodityNot> not =dataConverUtil.priorityOrderCommonMstInsertMethod(PriorityOrderCommodityNot.class,priorityOrderCommodityNot,
                     companyCd ,priorityOrderCd);
-            not = not.stream().filter(map -> map.getJan() != null && !"".equals(map.getJan())).collect(Collectors.toList());
+//            not = not.stream().filter(map -> map.getJan() != null && !"".equals(map.getJan())).collect(Collectors.toList());
+            not = not.stream().filter(map -> !Strings.isNullOrEmpty(map.getJan())).collect(Collectors.toList());
             logger.info("不可商品リスト処理後のパラメータを保存する：{}",not);
             //削除
             priorityOrderCommodityNotMapper.deleteByPrimaryKey(companyCd,priorityOrderCd);
@@ -282,21 +282,11 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             // 遍暦not 給店cd補0
             not.forEach(item->{
                 item.setBranchOrigin(item.getBranch());
-                if (!Strings.isNullOrEmpty(item.getBranch())) {
-                    if(pattern.matcher(item.getBranch()).matches()){
-                        int length = item.getBranch().length();
-                        StringBuilder branchStr = new StringBuilder();
-                        int diff = branchLen - length;
-                        for (int i = 0; i < diff; i++) {
-                            branchStr.append("0");
-                        }
-                        item.setBranch(branchStr +item.getBranch());
-                    }
+                if (!Strings.isNullOrEmpty(item.getBranch()) && pattern.matcher(item.getBranch()).matches()) {
+                    item.setBranch(Strings.padStart(item.getBranch(), branchLen, '0'));
                 }
             });
             logger.info("不可商品list店が0を補充した結菓を保存します{}",not);
-
-
 
             List<String> janList = not.stream().map(PriorityOrderCommodityNot::getJan).collect(Collectors.toList());
             List<String> existJan = classicPriorityOrderJanReplaceMapper.selectJanDistinctByJan(proInfoTable, janList,priorityOrderCd);
@@ -308,43 +298,43 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 PriorityOrderCommodityNot commodityNot = existJanList.get(i);
                     String branch = commodityNot.getBranch();
                     List<Integer> patternCdList = priorityOrderCommodityMustMapper.selectPatternByBranch(priorityOrderCd, companyCd, branch);
-                    if(patternCdList.isEmpty() && ! "".equals(commodityNot.getBranchOrigin()) &&  commodityNot.getBranchOrigin() != null ){
+
+                    if(patternCdList.isEmpty() && !Strings.isNullOrEmpty(commodityNot.getBranchOrigin()) ){
                         notBranchExists.add(commodityNot.getBranchOrigin()+"");
                     }
-                    for (Integer  patternCd : patternCdList) {
+                    patternCdList.forEach(patternCd->{
                         PriorityOrderCommodityNot newNot = new PriorityOrderCommodityNot();
+                        newNot.setBeforeFlag(0);
+                        newNot.setFlag(0);
+
                         BeanUtils.copyProperties(commodityNot, newNot);
                         int result = priorityOrderCommodityMustMapper.selectExistJan(patternCd, newNot.getJan());
                         if(result>0){
                             newNot.setBeforeFlag(1);
-                        }else{
-                            newNot.setBeforeFlag(0);
                         }
                         if(patternCd!=null){
                             newNot.setFlag(1);
-                        }else{
-                            newNot.setFlag(0);
                         }
                         newNot.setShelfPatternCd(patternCd);
                         exists.add(newNot);
-                    }
+                    });
             }
-            if (!exists.isEmpty()){
-                //写入数据庫
-                priorityOrderCommodityNotMapper.insert(exists);
-            }
+            //写入数据庫
+            priorityOrderCommodityNotMapper.insert(exists);
             if (!notExistJan.isEmpty()){
                 return ResultMaps.result(ResultEnum.JANNOTESISTS,Joiner.on(",").join(notExistJan));
             }else if(!notBranchExists.isEmpty()){
                 return ResultMaps.result(ResultEnum.BRANCHNOTESISTS,Joiner.on(",").join(notBranchExists));
-            }else{
-                return ResultMaps.result(ResultEnum.SUCCESS);
             }
+
+            return ResultMaps.result(ResultEnum.SUCCESS);
         } catch (Exception e) {
             logger.error("不可商品リストの保存：",e);
             logAspect.setTryErrorLog(e,new Object[]{priorityOrderCommodityNot});
+
             return ResultMaps.result(ResultEnum.FAILURE);
-        }
+        } */
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     /**
@@ -400,14 +390,14 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         priorityOrderDataService.getPriorityOrderListInfo(companyCd,priorityOrderCd,attrList);
         List<Map<String, Object>> priorityOrderAttr = classicPriorityOrderDataMapper.getPriorityOrderMustAttr( attrList,mustTable,priorityOrderCd);
         for (Map<String, Object> objectMap : priorityOrderAttr) {
-            objectMap.put("__children",new ArrayList<>());
+            objectMap.put(MagicString.CHILDREN,new ArrayList<>());
         }
         List<Map<String, Object>> priorityOrderMustList = priorityOrderCommodityMustMapper.getPriorityOrderMustList(companyCd, priorityOrderCd, attrList);
         for (Map<String, Object> objectMap : priorityOrderMustList) {
 
             List<PriorityOrderBranchNumDto> children = priorityOrderCommodityMustMapper.getBranchAndPattern(objectMap.get(MagicString.JAN).toString()
                     , priorityOrderCd,table1,table2,groupCompany);
-            objectMap.put("__children",children);
+            objectMap.put(MagicString.CHILDREN,children);
         }
         priorityOrderMustList.addAll(priorityOrderAttr);
         priorityOrderMustList = priorityOrderMustList.stream()
@@ -419,8 +409,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                         (k1,k2)->k1, LinkedHashMap::new));
         map.put(MagicString.JAN, "Jan");
         map.put(MagicString.JAN_NAME, "商品名");
-        map.put("shelfPatternName", "該当棚パターン");
-        map.put("branchName", "店舗");
+        map.put(MagicString.SHELF_PATTERN_NAME, "該当棚パターン");
+        map.put(MagicString.BRANCH_NAME, "店舗");
         map.put("errmsg", "エラーメッセージ");
         map.putAll(attrMap);
         priorityOrderMustList.add(0,map);
@@ -443,14 +433,14 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         priorityOrderDataService.getPriorityOrderListInfo(companyCd,priorityOrderCd,attrList);
         List<Map<String, Object>> priorityOrderAttr = classicPriorityOrderDataMapper.getPriorityOrderMustAttr( attrList,mustTable,priorityOrderCd);
         for (Map<String, Object> objectMap : priorityOrderAttr) {
-            objectMap.put("__children",new ArrayList<>());
+            objectMap.put(MagicString.CHILDREN,new ArrayList<>());
         }
         List<Map<String, Object>> priorityOrderNotList = priorityOrderCommodityNotMapper.getPriorityOrderNotList(companyCd, priorityOrderCd, attrList);
         for (Map<String, Object> objectMap : priorityOrderNotList) {
 
             List<PriorityOrderBranchNumDto> children = priorityOrderCommodityNotMapper.getBranchAndPattern(objectMap.get(MagicString.JAN).toString()
                     , companyCd,priorityOrderCd,table1,table2,groupCompany);
-            objectMap.put("__children",children);
+            objectMap.put(MagicString.CHILDREN,children);
         }
         priorityOrderNotList.addAll(priorityOrderAttr);
         priorityOrderNotList = priorityOrderNotList.stream()
@@ -462,8 +452,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                         (k1,k2)->k1, LinkedHashMap::new));
         map.put(MagicString.JAN, "Jan");
         map.put(MagicString.JAN_NAME, "商品名");
-        map.put("shelfPatternName", "該当棚パターン");
-        map.put("branchName", "店舗");
+        map.put(MagicString.SHELF_PATTERN_NAME, "該当棚パターン");
+        map.put(MagicString.BRANCH_NAME, "店舗");
         map.put("errmsg", "エラーメッセージ");
         map.putAll(attrMap);
         priorityOrderNotList.add(0,map);
@@ -572,7 +562,7 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         String companyCd = starReadingTableDto.getCompanyCd();
         StringBuilder column = new StringBuilder("jan,janName,maker,total");
         StringBuilder header = new StringBuilder("JAN,商品名,メーカー,合計");
-        Map<String,Object> mapResult = new HashMap();
+        Map<String,Object> mapResult = new HashMap<>();
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
         int existTableName = mstBranchMapper.checkTableExist("prod_0000_jan_info", coreCompany);
@@ -587,101 +577,105 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         String makerCol = classicPriorityOrderMstMapper.getMakerCol(commonTableName.getStoreIsCore(),commonTableName.getStoreMstClass());
         List<Map<String, Object>> janName = classicPriorityOrderDataMapper.getJanName(starReadingTableDto.getJanList(),priorityOrderCd,makerCol,commonTableName.getProInfoTable());
         if (starReadingTableDto.getModeCheck() == 1) {
-            List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
-            groupCompany.add(companyCd);
-            List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
-            branchList=branchList.stream().filter(map -> starReadingTableDto.getExpressItemList().contains(map.get(MagicString.sort))).collect(Collectors.toList());
-            List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList,tableName,groupCompany);
-
-            if (!autoBranch.isEmpty()){
-                for (Map<String, Object> branch : autoBranch) {
-                    for (Map<String, Object> objectMap : branchList) {
-                        if (branch.get(MagicString.area).equals(objectMap.get(MagicString.area))){
-                            branch.put(MagicString.sort,objectMap.get(MagicString.sort));
-                        }
-                    }
-                }
-            }
-            List<Map<String, Object>> list = new ArrayList();
-
-            for (Map<String,Object> janMap : janName) {
-                Map<String,Object> map = new HashMap<>();
-                map.put(MagicString.JAN,janMap.get(MagicString.JAN));
-                map.put(MagicString.JAN_NAME,janMap.get(MagicString.JAN_NAME));
-                map.put("maker",janMap.get("maker"));
-                map.put("total","");
-                for (Map<String, Object> objectMap : branchList) {
-                    map.put(objectMap.get(MagicString.sort)+"_"+objectMap.get("branchCd").toString(),"☓");
-                }
-                list.add(map);
-            }
-            Map<String, List<Map<String, Object>>> janGroup = autoBranch.stream()
-                    .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.JAN)));
-            for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
-                for (Map<String, Object> map : stringListEntry.getValue()) {
-                    for (Map<String, Object> stringObjectMap : list) {
-                        if (stringObjectMap.get(MagicString.JAN).equals(stringListEntry.getKey())){
-                                stringObjectMap.put(map.get(MagicString.sort)+"_"+map.get("branchCd"),map.get("flag"));
-                        }
-                    }
-                }
-
-            }
-            for (Map<String, Object> objectMap : branchList) {
-                column.append(",").append(objectMap.get(MagicString.sort)).append("_").append(objectMap.get("branchCd"));
-                header.append(",").append(objectMap.get("branchCd")).append("<br />").append(objectMap.get("branchName"));
-                group.put( objectMap.get(MagicString.sort).toString(), objectMap.get(MagicString.area));
-            }
-            mapResult.put("column", column.toString());
-            mapResult.put("header", header.toString());
-            mapResult.put("group", group);
-            list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
-            mapResult.put("data", list);
+             mapResult = this.calculationBranch(tableName,mapResult,starReadingTableDto,companyCd,priorityOrderCd,column,header,group,janName);
 
         }else {
-            List<String> expressItemList = starReadingTableDto.getExpressItemList();
-            List<String> pattern = expressItemList.stream().map(item -> item.split("pattern")[1]).collect(Collectors.toList());
-            List<Map<String, Object>> patternNameList = starReadingTableMapper.getPatternNameList(priorityOrderCd);
-            patternNameList = patternNameList.stream().filter(map->expressItemList.contains(map.get("id").toString())).collect(Collectors.toList());
-            List<Map<String, Object>> patternDiffForPattern = starReadingTableMapper.getPatterndiffForPattern(starReadingTableDto, pattern);
-            List<Map<String, Object>> list = new ArrayList();
-            for (Map<String,Object> janMap : janName) {
-                Map<String,Object> map = new HashMap<>();
-                map.put(MagicString.JAN,janMap.get(MagicString.JAN));
-                map.put(MagicString.JAN_NAME,janMap.get(MagicString.JAN_NAME));
-                map.put("maker",janMap.get("maker"));
-                map.put("total","");
-                for (Map<String, Object> objectMap : patternNameList) {
-                    map.put(objectMap.get("id")+"_"+objectMap.get("shelfPatternCd").toString(),"☓");
-                }
-                list.add(map);
-            }
-
-            Map<String, List<Map<String, Object>>> janGroup = patternDiffForPattern.stream()
-                    .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.JAN)));
-            for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
-                for (Map<String, Object> map : stringListEntry.getValue()) {
-                    for (Map<String, Object> stringObjectMap : list) {
-                        if (stringObjectMap.get(MagicString.JAN).equals(stringListEntry.getKey())){
-                            stringObjectMap.put(map.get("id")+"_"+map.get("shelfPatternCd"),map.get("flag"));
-                        }
-                    }
-                }
-
-            }
-
-            for (Map<String, Object> objectMap : patternNameList) {
-                column.append(",").append(objectMap.get("id")).append("_").append(objectMap.get("shelfPatternCd"));
-                header.append(",").append(objectMap.get("shelfPatternName"));
-                group.put( objectMap.get("id").toString(), objectMap.get("shelfName"));
-            }
-            mapResult.put("column", column.toString());
-            mapResult.put("header", header.toString());
-            mapResult.put("group", group);
-            list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
-            mapResult.put("data", list);
+            mapResult = this.calculationPattern(mapResult,starReadingTableDto,priorityOrderCd,column,header,group,janName);
         }
         return ResultMaps.result(ResultEnum.SUCCESS,mapResult);
+    }
+    public Map<String,Object> calculationPattern( Map<String, Object> mapResult, StarReadingTableDto starReadingTableDto, Integer priorityOrderCd, StringBuilder column, StringBuilder header, Map<String, Object> group, List<Map<String, Object>> janName){
+        List<String> expressItemList = starReadingTableDto.getExpressItemList();
+        List<String> pattern = expressItemList.stream().map(item -> item.split(MagicString.PATTERN)[1]).collect(Collectors.toList());
+        List<Map<String, Object>> patternNameList = starReadingTableMapper.getPatternNameList(priorityOrderCd);
+        patternNameList = patternNameList.stream().filter(map->expressItemList.contains(map.get("id").toString())).collect(Collectors.toList());
+        List<Map<String, Object>> patternDiffForPattern = starReadingTableMapper.getPatterndiffForPattern(starReadingTableDto, pattern);
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (Map<String,Object> janMap : janName) {
+            Map<String,Object> map = new HashMap<>();
+            map.put(MagicString.JAN,janMap.get(MagicString.JAN));
+            map.put(MagicString.JAN_NAME,janMap.get(MagicString.JAN_NAME));
+            map.put(MagicString.MAKER,janMap.get(MagicString.MAKER));
+            map.put(MagicString.TOTAL,"");
+            patternNameList.forEach(objectMap-> map.put(objectMap.get("id")+"_"+objectMap.get(MagicString.SHELF_PATTERN_CD).toString(),"☓"));
+
+            list.add(map);
+        }
+
+        Map<String, List<Map<String, Object>>> janGroup = patternDiffForPattern.stream()
+                .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.JAN)));
+        for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
+            for (Map<String, Object> map : stringListEntry.getValue()) {
+                list.forEach(stringObjectMap->{
+                    if (stringObjectMap.get(MagicString.JAN).equals(stringListEntry.getKey())){
+                        stringObjectMap.put(map.get("id")+"_"+map.get(MagicString.SHELF_PATTERN_CD),map.get("flag"));
+                    }
+                });
+            }
+
+        }
+        patternNameList.forEach(objectMap->{
+            column.append(",").append(objectMap.get("id")).append("_").append(objectMap.get(MagicString.SHELF_PATTERN_CD));
+            header.append(",").append(objectMap.get(MagicString.SHELF_PATTERN_NAME));
+            group.put( objectMap.get("id").toString(), objectMap.get("shelfName"));
+        });
+        mapResult.put(MagicString.COLUMN, column.toString());
+        mapResult.put(MagicString.HEADER, header.toString());
+        mapResult.put(MagicString.GROUP, group);
+        list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
+        mapResult.put("data", list);
+        return mapResult;
+    }
+    public Map<String,Object> calculationBranch(String tableName, Map<String, Object> mapResult, StarReadingTableDto starReadingTableDto, String companyCd, Integer priorityOrderCd, StringBuilder column, StringBuilder header, Map<String, Object> group, List<Map<String, Object>> janName){
+        List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
+        groupCompany.add(companyCd);
+        List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
+        branchList=branchList.stream().filter(map -> starReadingTableDto.getExpressItemList().contains(map.get(MagicString.SORT))).collect(Collectors.toList());
+        List<Map<String, Object>>  autoBranch = starReadingTableMapper.getBranchdiffForBranch(starReadingTableDto,branchList,tableName,groupCompany);
+
+        if (!autoBranch.isEmpty()){
+            List<Map<String, Object>> finalBranchList = branchList;
+            autoBranch.forEach(branch-> finalBranchList.forEach(objectMap->{
+                if (branch.get(MagicString.AREA).equals(objectMap.get(MagicString.AREA))){
+                    branch.put(MagicString.SORT,objectMap.get(MagicString.SORT));
+                }
+            }));
+
+        }
+        List<Map<String, Object>> list = new ArrayList<>();
+
+        for (Map<String,Object> janMap : janName) {
+            Map<String,Object> map = new HashMap<>();
+            map.put(MagicString.JAN,janMap.get(MagicString.JAN));
+            map.put(MagicString.JAN_NAME,janMap.get(MagicString.JAN_NAME));
+            map.put(MagicString.MAKER,janMap.get(MagicString.MAKER));
+            map.put(MagicString.TOTAL,"");
+            branchList.forEach(objectMap-> map.put(objectMap.get(MagicString.SORT)+"_"+objectMap.get(MagicString.BRANCH_CD).toString(),"☓"));
+            list.add(map);
+        }
+        Map<String, List<Map<String, Object>>> janGroup = autoBranch.stream()
+                .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.JAN)));
+        for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
+            for (Map<String, Object> map : stringListEntry.getValue()) {
+                list.forEach(stringObjectMap->{
+                    if (stringObjectMap.get(MagicString.JAN).equals(stringListEntry.getKey())){
+                        stringObjectMap.put(map.get(MagicString.SORT)+"_"+map.get(MagicString.BRANCH_CD),map.get("flag"));
+                    }
+                });
+            }
+
+        }
+        branchList.forEach(objectMap->{
+            column.append(",").append(objectMap.get(MagicString.SORT)).append("_").append(objectMap.get(MagicString.BRANCH_CD));
+            header.append(",").append(objectMap.get(MagicString.BRANCH_CD)).append(MagicString.BR).append(objectMap.get(MagicString.BRANCH_NAME));
+            group.put( objectMap.get(MagicString.SORT).toString(), objectMap.get(MagicString.AREA));
+        });
+        mapResult.put(MagicString.COLUMN, column.toString());
+        mapResult.put(MagicString.HEADER, header.toString());
+        mapResult.put(MagicString.GROUP, group);
+        list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
+        mapResult.put("data", list);
+        return mapResult;
     }
 
     @Override
@@ -692,10 +686,8 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
         String makerCol = classicPriorityOrderMstMapper.getMakerCol(commonTableName.getStoreIsCore(),commonTableName.getStoreMstClass());
         Integer modeCheck = priorityOrderMstMapper.getModeCheck(priorityOrderCd);
-        boolean isModeCheck = true;
         if (modeCheck == null){
             modeCheck =1;
-            isModeCheck = false;
         }
 
         String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
@@ -710,98 +702,20 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         String janInfoTableName = "";
         StringBuilder column = new StringBuilder("jan,janName,maker,total");
         StringBuilder header = new StringBuilder("JAN,商品名,メーカー,合計");
-        Map<String,Object> mapResult = new HashMap();
+        Map<String,Object> mapResult = new HashMap<>();
         LinkedHashMap<String, Object> group = new LinkedHashMap<>();
         List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
         groupCompany.add(companyCd);
 
         if (modeCheck == 1){
             janInfoTableName = "priority.work_priority_order_commodity_branch";
-            logger.info("branch:{}",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
-            List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
-            if (!branchDiff.isEmpty()){
-                List<Map<String, Object>> janOrName = starReadingTableMapper.getJanOrName(companyCd, priorityOrderCd,commonTableName.getProInfoTable(),makerCol);
-                List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
-                List<Object> branchCd = branchDiff.stream().map(map -> map.get("branchCd")).collect(Collectors.toList());
-                branchList=branchList.stream().filter(map ->branchCd.contains(map.get("branchCd"))).collect(Collectors.toList());
-                Map<String, List<Map<String, Object>>> janGroup = branchDiff.stream()
-                        .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.JAN)));
+          this.getDepositBranch(companyCd,priorityOrderCd,tableName,mapResult,makerCol,column,header,commonTableName,groupCompany,group);
 
-                List<Map<String, Object>> list = new ArrayList();
-                for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
-                    for (Map<String, Object> stringObjectMap : janOrName) {
-                        if (stringListEntry.getKey().equals(stringObjectMap.get("jan_new"))){
-                            stringListEntry.getValue().get(0).put(MagicString.JAN_NAME,stringObjectMap.get("sku"));
-                            stringListEntry.getValue().get(0).put("maker",stringObjectMap.get("maker"));
-                        }
-                    }
-                    Map<String,Object> map = new HashMap<>();
-                    map.put(MagicString.JAN,stringListEntry.getValue().get(0).get(MagicString.JAN));
-                    map.put(MagicString.JAN_NAME,stringListEntry.getValue().get(0).get(MagicString.JAN_NAME));
-                    map.put("maker",stringListEntry.getValue().get(0).get("maker"));
-                    long total = stringListEntry.getValue().stream().filter(map1 -> map1.get("flag").equals("◯")).count();
-                    map.put("total",total);
-                    for (Map<String, Object> objectMap : branchList) {
-                        for (Map<String, Object> stringObjectMap : stringListEntry.getValue()) {
-                            if (objectMap.get("branchCd").equals(stringObjectMap.get("branchCd"))){
-                                map.put(objectMap.get(MagicString.sort)+"_"+objectMap.get("branchCd"),stringObjectMap.get("flag"));
-                            }
-                        }
-                    }
-                    list.add(map);
-                }
-
-                for (Map<String, Object> objectMap : branchList) {
-                    column.append(",").append(objectMap.get(MagicString.sort)).append("_").append(objectMap.get("branchCd"));
-                    header.append(",").append(objectMap.get("branchCd")).append("<br />").append(objectMap.get("branchName"));
-                    group.put( objectMap.get("sort").toString(), objectMap.get(MagicString.area));
-                }
-                mapResult.put("column", column.toString());
-                mapResult.put("header", header.toString());
-                mapResult.put("group", group);
-                list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
-                mapResult.put("data", list);
-            }
         }else if (modeCheck == 0){
             janInfoTableName = "priority.work_priority_order_commodity_pattern";
-            List<Map<String, Object>> patternDiff = starReadingTableMapper.getPatterndiff(priorityOrderCd, commonTableName.getProInfoTable(), makerCol);
-            if (!patternDiff.isEmpty()) {
-                List<Map<String, Object>> patternNameList = starReadingTableMapper.getPatternNameList(priorityOrderCd);
-                List<String> shelfNameCd = patternDiff.stream().map(map -> "pattern" + map.get("shelfNameCd").toString()).collect(Collectors.toList());
-                patternNameList = patternNameList.stream().filter(map -> shelfNameCd.contains(map.get("id").toString())).collect(Collectors.toList());
-                List<Map<String, Object>> list = new ArrayList();
-                Map<String, List<Map<String, Object>>> janGroup = patternDiff.stream()
-                        .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.JAN)));
-                for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
-                    Map<String, Object> patternMap = new HashMap<>();
-                    patternMap.put(MagicString.JAN, stringListEntry.getKey());
-                    patternMap.put(MagicString.JAN_NAME, stringListEntry.getValue().get(0).get(MagicString.JAN_NAME));
-                    patternMap.put("maker", stringListEntry.getValue().get(0).get("maker"));
-                    long total = stringListEntry.getValue().stream().filter(map1 -> map1.get("flag").equals("◯")).count();
-                    patternMap.put("total", total);
-                    for (Map<String, Object> map : stringListEntry.getValue()) {
-                        for (Map<String, Object> stringObjectMap : patternNameList) {
-                            if (stringObjectMap.get("shelfPatternCd").equals(map.get("shelfPatternCd"))) {
-                                patternMap.put(stringObjectMap.get("id") + "_" + map.get("shelfPatternCd"), map.get("flag"));
-                            }
-                        }
-                    }
-                    list.add(patternMap);
-                }
+            this.getDepositPattern(priorityOrderCd,mapResult,makerCol,column,header,commonTableName,group);
 
-                for (Map<String, Object> objectMap : patternNameList) {
-                    column.append(",").append(objectMap.get("id")).append("_").append(objectMap.get("shelfPatternCd"));
-                    header.append(",").append(objectMap.get("shelfPatternName"));
-                    group.put(objectMap.get("id").toString(), objectMap.get("shelfName"));
-                }
-                mapResult.put("column", column.toString());
-                mapResult.put("header", header.toString());
-                mapResult.put("group", group);
-                list = list.stream().sorted(Comparator.comparing(map -> MapUtils.getString(map, MagicString.JAN))).collect(Collectors.toList());
-                mapResult.put("data", list);
-            }
         }
-        logger.info("branch end:{}",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
         List<Map<String, Object>> areaList = starReadingTableMapper.getAreaList(priorityOrderCd,groupCompany,tableName);
         List<Map<String, Object>>  patternList =  starReadingTableMapper.getPatternList(priorityOrderCd);
         expressItemList.addAll(areaList);
@@ -812,9 +726,102 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         map.put("expressItemList",expressItemList);
         map.put("janList",janList);
         map.put("modeCheck",modeCheck);
-        map.put("data",!isModeCheck?null:mapResult);
-        logger.info("end:{}",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
+        map.put("data",mapResult.isEmpty()?null:mapResult);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
+    }
+    public Map<String,Object> getDepositPattern( Integer priorityOrderCd, Map<String, Object> mapResult
+            , String makerCol, StringBuilder column, StringBuilder header, GetCommonPartsDataDto commonTableName
+            , Map<String, Object> group){
+        List<Map<String, Object>> patternDiff = starReadingTableMapper.getPatterndiff(priorityOrderCd,commonTableName.getProInfoTable(),makerCol);
+        if (patternDiff.isEmpty()){
+            return mapResult;
+        }
+        List<Map<String, Object>> patternNameList = starReadingTableMapper.getPatternNameList(priorityOrderCd);
+        List<String> shelfNameCd = patternDiff.stream().map(map -> MagicString.PATTERN+map.get("shelfNameCd").toString()).collect(Collectors.toList());
+        patternNameList = patternNameList.stream().filter(map->shelfNameCd.contains(map.get("id").toString())).collect(Collectors.toList());
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, List<Map<String, Object>>> janGroup = patternDiff.stream()
+                .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.JAN)));
+        for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
+            Map<String,Object> patternMap = new HashMap<>();
+            patternMap.put(MagicString.JAN,stringListEntry.getKey());
+            patternMap.put(MagicString.JAN_NAME,stringListEntry.getValue().get(0).get(MagicString.JAN_NAME));
+            patternMap.put(MagicString.MAKER,stringListEntry.getValue().get(0).get(MagicString.MAKER));
+            long total = stringListEntry.getValue().stream().filter(map1 -> map1.get("flag").equals("◯")).count();
+            patternMap.put(MagicString.TOTAL,total);
+            for (Map<String, Object> map : stringListEntry.getValue()) {
+                for (Map<String, Object> stringObjectMap : patternNameList) {
+                    if (stringObjectMap.get(MagicString.SHELF_PATTERN_CD).equals(map.get(MagicString.SHELF_PATTERN_CD))){
+                        patternMap.put(stringObjectMap.get("id")+"_"+map.get(MagicString.SHELF_PATTERN_CD),map.get("flag"));
+                    }
+                }
+            }
+            list.add(patternMap);
+        }
+
+        for (Map<String, Object> objectMap : patternNameList) {
+            column.append(",").append(objectMap.get("id")).append("_").append(objectMap.get(MagicString.SHELF_PATTERN_CD));
+            header.append(",").append(objectMap.get(MagicString.SHELF_PATTERN_NAME));
+            group.put( objectMap.get("id").toString(), objectMap.get("shelfName"));
+        }
+        mapResult.put(MagicString.COLUMN, column.toString());
+        mapResult.put(MagicString.HEADER, header.toString());
+        mapResult.put(MagicString.GROUP, group);
+        list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
+        mapResult.put("data", list);
+        return mapResult;
+    }
+    public Map<String,Object> getDepositBranch(String companyCd, Integer priorityOrderCd, String tableName, Map<String, Object> mapResult
+            , String makerCol, StringBuilder column, StringBuilder header, GetCommonPartsDataDto commonTableName, List<String> groupCompany
+            , Map<String, Object> group){
+
+        List<Map<String, Object>> branchDiff = starReadingTableMapper.getBranchdiff(priorityOrderCd);
+        if (branchDiff.isEmpty()){
+            return mapResult;
+        }
+        List<Map<String, Object>> branchList = starReadingTableMapper.getBranchList(priorityOrderCd,groupCompany,tableName);
+        List<Map<String, Object>> janOrName = starReadingTableMapper.getJanOrName(companyCd, priorityOrderCd,commonTableName.getProInfoTable(),makerCol);
+        List<Object> branchCd = branchDiff.stream().map(map -> map.get(MagicString.BRANCH_CD)).collect(Collectors.toList());
+        branchList=branchList.stream().filter(map ->branchCd.contains(map.get(MagicString.BRANCH_CD))).collect(Collectors.toList());
+        Map<String, List<Map<String, Object>>> janGroup = branchDiff.stream()
+                .collect(Collectors.groupingBy(map -> MapUtils.getString(map, MagicString.JAN)));
+
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : janGroup.entrySet()) {
+            janOrName.forEach(stringObjectMap->{
+                if (stringListEntry.getKey().equals(stringObjectMap.get("jan_new"))){
+                    stringListEntry.getValue().get(0).put(MagicString.JAN_NAME,stringObjectMap.get("sku"));
+                    stringListEntry.getValue().get(0).put(MagicString.MAKER,stringObjectMap.get(MagicString.MAKER));
+                }
+            });
+
+            Map<String,Object> map = new HashMap<>();
+            map.put(MagicString.JAN,stringListEntry.getValue().get(0).get(MagicString.JAN));
+            map.put(MagicString.JAN_NAME,stringListEntry.getValue().get(0).get(MagicString.JAN_NAME));
+            map.put(MagicString.MAKER,stringListEntry.getValue().get(0).get(MagicString.MAKER));
+            long total = stringListEntry.getValue().stream().filter(map1 -> map1.get("flag").equals("◯")).count();
+            map.put(MagicString.TOTAL,total);
+            for (Map<String, Object> objectMap : branchList) {
+                for (Map<String, Object> stringObjectMap : stringListEntry.getValue()) {
+                    if (objectMap.get(MagicString.BRANCH_CD).equals(stringObjectMap.get(MagicString.BRANCH_CD))){
+                        map.put(objectMap.get(MagicString.SORT)+"_"+objectMap.get(MagicString.BRANCH_CD),stringObjectMap.get("flag"));
+                    }
+                }
+            }
+            list.add(map);
+        }
+
+        for (Map<String, Object> objectMap : branchList) {
+            column.append(",").append(objectMap.get(MagicString.SORT)).append("_").append(objectMap.get(MagicString.BRANCH_CD));
+            header.append(",").append(objectMap.get(MagicString.BRANCH_CD)).append(MagicString.BR).append(objectMap.get(MagicString.BRANCH_NAME));
+            group.put( objectMap.get("sort").toString(), objectMap.get(MagicString.AREA));
+        }
+        mapResult.put(MagicString.COLUMN, column.toString());
+        mapResult.put(MagicString.HEADER, header.toString());
+        mapResult.put(MagicString.GROUP, group);
+        list = list.stream().sorted(Comparator.comparing(map->MapUtils.getString(map,MagicString.JAN))).collect(Collectors.toList());
+        mapResult.put("data", list);
+        return mapResult;
     }
 
     @Override
@@ -859,18 +866,18 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
                 for (LinkedHashMap<String, Object> datum : finalStarReadingVo.getData()) {
                     String jan = datum.get(MagicString.JAN).toString();
                     for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
-                        if (!stringObjectEntry.getKey().equals(MagicString.JAN) && !stringObjectEntry.getKey().equals(MagicString.JAN_NAME) && !stringObjectEntry.getKey().equals("total")
-                                &&!stringObjectEntry.getKey().equals("maker")) {
+                        if (!stringObjectEntry.getKey().equals(MagicString.JAN) && !stringObjectEntry.getKey().equals(MagicString.JAN_NAME) && !stringObjectEntry.getKey().equals(MagicString.TOTAL)
+                                &&!stringObjectEntry.getKey().equals(MagicString.MAKER)) {
                             Map<String, Object> map = new HashMap<>();
                             map.put(MagicString.JAN, jan);
-                            map.put("branch", stringObjectEntry.getKey().split("_")[1]);
+                            map.put(MagicString.BRANCH, stringObjectEntry.getKey().split("_")[1]);
                             map.put("flag", stringObjectEntry.getValue().equals("☓") ? -1 : stringObjectEntry.getValue().equals("") ? 0 : 1);
                             if (finalStarReadingVo.getModeCheck() == 0){
-                                map.put("patternNameCd",Integer.valueOf(stringObjectEntry.getKey().split("_")[0].split("pattern")[1]));
+                                map.put("patternNameCd",Integer.valueOf(stringObjectEntry.getKey().split("_")[0].split(MagicString.PATTERN)[1]));
                             }
                             for (Map.Entry<String, Object> objectEntry : finalStarReadingVo.getGroup().entrySet()) {
                                 if (objectEntry.getKey().equals(stringObjectEntry.getKey().split("_")[0])) {
-                                    map.put(MagicString.area, objectEntry.getValue());
+                                    map.put(MagicString.AREA, objectEntry.getValue());
                                 }
                             }
                             list.add(map);
@@ -903,9 +910,9 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
         try {
             future.get(10, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            logger.error("", e);
         } catch (InterruptedException e){
-            logger.error("thread is interrupted", e);
+            logger.error("", e);
             Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
             Map<String,Object> map = new HashMap<>();
@@ -928,18 +935,12 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             starReadingVo = (StarReadingVo) stringObjectMap.get("data");
             List<LinkedHashMap<String, Object>> data = starReadingVo.getData();
             for (LinkedHashMap<String, Object> datum : data) {
-                int total = 0;
-                for (Map.Entry<String, Object> stringObjectEntry : datum.entrySet()) {
-                    if (stringObjectEntry.getValue().equals("◯")){
-                        total++;
-                    }
-
-                }
-                datum.put("total",total);
+                long total = datum.entrySet().stream().filter(entry->"◯".equals(entry.getValue())).count();
+                datum.put(MagicString.TOTAL,total);
             }
             starReadingVo.setData(data);
         }
-        List<String> header = Arrays.asList(starReadingVo.getHeader().toString().replaceAll("<br />","_").split(","));
+        List<String> header = Arrays.asList(starReadingVo.getHeader().toString().replaceAll(MagicString.BR,"_").split(","));
         List<String>  column = Arrays.asList(starReadingVo.getColumn().split(","));
         List<String>  columns = new ArrayList<>(column);
         Map<String, Object> group = starReadingVo.getGroup();
@@ -962,10 +963,10 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
             response.setHeader("Content-Disposition", format);
             outputStream = response.getOutputStream();
 
-            ExcelUtils.starReadingExcel(header,columns, linkedHashMap,starReadingVo.getData() ,outputStream);
+            ExcelUtils.starReadingExcel(columns, linkedHashMap,starReadingVo.getData() ,outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error("", e);
         }
 
     }
@@ -973,102 +974,112 @@ public class ClassicPriorityOrderBranchNumServiceImpl implements ClassicPriority
     @Override
     public Map<String, Object> rowColumnConversion(StarReadingVo starReadingVo) {
         if (starReadingVo.getFlag()==1) {
-            List<String> list = Arrays.asList(starReadingVo.getColumn().split(",")).stream().filter(item -> !item.equals(MagicString.JAN) && !item.equals(MagicString.JAN_NAME) && !item.equals("total") && !item.equals("maker")).collect(Collectors.toList());
-            List<String> header = Arrays.asList(starReadingVo.getHeader().toString().split(",")).stream().filter(item -> !item.equals("商品名") && !item.equals("JAN") && !item.equals("合計") && !item.equals("メーカー")).collect(Collectors.toList());
-            Map<String, Object> group = starReadingVo.getGroup();
-            List<String> columnList = new ArrayList<>(list);
-            List<LinkedHashMap<String, Object>> resultList = new ArrayList<>();
-            List<String> headers = new ArrayList<>();
-            StringBuilder header1 = new StringBuilder();
-            StringBuilder header2 = new StringBuilder();
-            StringBuilder header3 = new StringBuilder();
-            StringBuilder header4 = new StringBuilder();
-            if (starReadingVo.getModeCheck() == 1) {
-                 header4 = new StringBuilder("エリア,店舗CD,店舗名");
-            }else {
-                 header4 = new StringBuilder("棚名称,棚パターンCD,棚パターン");
-            }
-            StringBuilder column = new StringBuilder("area,branchCd,branch");
-            List<LinkedHashMap<String, Object>> data = starReadingVo.getData().stream().sorted(Comparator.comparing(map -> MapUtils.getString(map, "jan"))).collect(Collectors.toList());
-            for (LinkedHashMap<String, Object> datum : data) {
-                if (header1.toString().equals("")) {
-                    header1.append(datum.get("maker"));
-                    header2.append(datum.get("total"));
-                    header3.append(datum.get(MagicString.JAN));
-                }else {
-                    header1.append(",").append(datum.get("maker"));
-                    header2.append(",").append(datum.get("total"));
-                    header3.append(",").append(datum.get(MagicString.JAN));
-
-                }
-                header4.append(",").append(datum.get(MagicString.JAN_NAME));
-                column.append(",jan").append(datum.get(MagicString.JAN));
-            }
-            headers.add(header1.toString());
-            headers.add(header3.toString());
-            headers.add(header4.toString());
-            for (int i = 0; i < columnList.size(); i++) {
-                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-                if (starReadingVo.getModeCheck() == 1) {
-                    map.put("branch", header.get(i).split("<br />")[1]);
-                }else {
-                    map.put("branch", header.get(i));
-                }
-                map.put(MagicString.area, group.get(columnList.get(i).split("_")[0]));
-                map.put("branchCd", columnList.get(i).split("_")[1]);
-                map.put("areaCd", columnList.get(i).split("_")[0]);
-                for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
-                    map.put(MagicString.JAN + datum.get(MagicString.JAN), datum.get(columnList.get(i)));
-                }
-                resultList.add(map);
-            }
-            StarReadingVo starReadingVo1 = new StarReadingVo();
-            starReadingVo1.setColumn(column.toString());
-            starReadingVo1.setHeader(headers);
-            starReadingVo1.setData(resultList);
-            starReadingVo1.setFlag(1);
-            starReadingVo1.setModeCheck(starReadingVo.getModeCheck());
+            StarReadingVo starReadingVo1 = this.branchConversion(starReadingVo);
             return ResultMaps.result(ResultEnum.SUCCESS,starReadingVo1);
         }else {
-           List<String> headers =  (List<String>) starReadingVo.getHeader();
-            List<String> header1 = Arrays.asList(headers.get(0).split(","));
-            List<String> header2 = Arrays.asList(headers.get(1).split(","));
-            List<String> header3 = Arrays.asList(headers.get(2).split(","));
-            List<LinkedHashMap<String,Object>> resultList = new ArrayList<>();
-            for (int i = 0; i < header2.size(); i++) {
-                LinkedHashMap<String,Object> map= new LinkedHashMap<>();
-                map.put(MagicString.JAN,header2.get(i));
-                map.put(MagicString.JAN_NAME,header3.get(i+3));
-                map.put("maker",header1.get(i));
-                map.put("total","");
-                for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
-                    map.put(datum.get("areaCd")+"_"+datum.get("branchCd"),datum.get(MagicString.JAN+header2.get(i)));
-                }
-
-                resultList.add(map);
-            }
-            StringBuilder column = new StringBuilder("jan,janName,maker,total");
-            StringBuilder header = new StringBuilder("JAN,商品名,メーカー,合計");
-            Map<String,Object> group = new LinkedHashMap<>();
-            for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
-                    column.append(",").append(datum.get("areaCd")).append("_").append(datum.get("branchCd"));
-                if (starReadingVo.getModeCheck() == 1) {
-                    header.append(",").append(datum.get("branchCd")).append("<br />").append(datum.get("branch"));
-                }else {
-                    header.append(",").append(datum.get("branch"));
-                }
-                group.putIfAbsent(datum.get("areaCd").toString(),datum.get("area"));
-            }
-            StarReadingVo starReadingVo1 = new StarReadingVo();
-            starReadingVo1.setColumn(column.toString());
-            starReadingVo1.setHeader(header.toString());
-            starReadingVo1.setData(resultList);
-            starReadingVo1.setGroup(group);
-            starReadingVo1.setFlag(0);
-            starReadingVo1.setModeCheck(starReadingVo.getModeCheck());
+            StarReadingVo starReadingVo1 = this.patternConversion(starReadingVo);
             return ResultMaps.result(ResultEnum.SUCCESS,starReadingVo1);
         }
 
+    }
+    public StarReadingVo branchConversion(StarReadingVo starReadingVo){
+        List<String> list = Arrays.asList(starReadingVo.getColumn().split(",")).stream().filter(item -> !item.equals(MagicString.JAN) && !item.equals(MagicString.JAN_NAME) && !item.equals(MagicString.TOTAL) && !item.equals(MagicString.MAKER)).collect(Collectors.toList());
+        List<String> header = Arrays.asList(starReadingVo.getHeader().toString().split(",")).stream().filter(item -> !item.equals("商品名") && !item.equals("JAN") && !item.equals("合計") && !item.equals("メーカー")).collect(Collectors.toList());
+        Map<String, Object> group = starReadingVo.getGroup();
+        List<String> columnList = new ArrayList<>(list);
+        List<LinkedHashMap<String, Object>> resultList = new ArrayList<>();
+        List<String> headers = new ArrayList<>();
+        StringBuilder header1 = new StringBuilder();
+        StringBuilder header2 = new StringBuilder();
+        StringBuilder header3 = new StringBuilder();
+        StringBuilder header4;
+        if (starReadingVo.getModeCheck() == 1) {
+            header4 = new StringBuilder("エリア,店舗CD,店舗名");
+        }else {
+            header4 = new StringBuilder("棚名称,棚パターンCD,棚パターン");
+        }
+        StringBuilder column = new StringBuilder("area,branchCd,branch");
+        List<LinkedHashMap<String, Object>> data = starReadingVo.getData().stream().sorted(Comparator.comparing(map -> MapUtils.getString(map, "jan"))).collect(Collectors.toList());
+        data.forEach(datum->{
+            if (header1.toString().equals("")) {
+                header1.append(datum.get(MagicString.MAKER));
+                header2.append(datum.get(MagicString.TOTAL));
+                header3.append(datum.get(MagicString.JAN));
+            }else {
+                header1.append(",").append(datum.get(MagicString.MAKER));
+                header2.append(",").append(datum.get(MagicString.TOTAL));
+                header3.append(",").append(datum.get(MagicString.JAN));
+
+            }
+            header4.append(",").append(datum.get(MagicString.JAN_NAME));
+            column.append(",jan").append(datum.get(MagicString.JAN));
+        });
+        headers.add(header1.toString());
+        headers.add(header3.toString());
+        headers.add(header4.toString());
+        for (int i = 0; i < columnList.size(); i++) {
+            LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+            if (starReadingVo.getModeCheck() == 1) {
+                map.put(MagicString.BRANCH, header.get(i).split(MagicString.BR)[1]);
+            }else {
+                map.put(MagicString.BRANCH, header.get(i));
+            }
+            map.put(MagicString.AREA, group.get(columnList.get(i).split("_")[0]));
+            map.put(MagicString.BRANCH_CD, columnList.get(i).split("_")[1]);
+            map.put(MagicString.AREA_CD, columnList.get(i).split("_")[0]);
+
+            for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
+                map.put(MagicString.JAN + datum.get(MagicString.JAN), datum.get(columnList.get(i)));
+            }
+            resultList.add(map);
+        }
+        StarReadingVo starReadingVo1 = new StarReadingVo();
+        starReadingVo1.setColumn(column.toString());
+        starReadingVo1.setHeader(headers);
+        starReadingVo1.setData(resultList);
+        starReadingVo1.setFlag(1);
+        starReadingVo1.setModeCheck(starReadingVo.getModeCheck());
+        return starReadingVo1;
+    }
+    public StarReadingVo patternConversion(StarReadingVo starReadingVo){
+        List<String> headers =  (List<String>) starReadingVo.getHeader();
+        List<String> header1 = Arrays.asList(headers.get(0).split(","));
+        List<String> header2 = Arrays.asList(headers.get(1).split(","));
+        List<String> header3 = Arrays.asList(headers.get(2).split(","));
+        List<LinkedHashMap<String,Object>> resultList = new ArrayList<>();
+        for (int i = 0; i < header2.size(); i++) {
+            LinkedHashMap<String,Object> map= new LinkedHashMap<>();
+            map.put(MagicString.JAN,header2.get(i));
+            map.put(MagicString.JAN_NAME,header3.get(i+3));
+            map.put(MagicString.MAKER,header1.get(i));
+            map.put(MagicString.TOTAL,"");
+            for (LinkedHashMap<String, Object> datum : starReadingVo.getData()) {
+                map.put(datum.get(MagicString.AREA_CD)+"_"+datum.get(MagicString.BRANCH_CD),datum.get(MagicString.JAN+header2.get(i)));
+            }
+
+            resultList.add(map);
+        }
+        StringBuilder column = new StringBuilder("jan,janName,maker,total");
+        StringBuilder header = new StringBuilder("JAN,商品名,メーカー,合計");
+        Map<String,Object> group = new LinkedHashMap<>();
+        starReadingVo.getData().forEach(datum->{
+            column.append(",").append(datum.get(MagicString.AREA_CD)).append("_").append(datum.get(MagicString.BRANCH_CD));
+            if (starReadingVo.getModeCheck() == 1) {
+                header.append(",").append(datum.get(MagicString.BRANCH_CD)).append(MagicString.BR).append(datum.get(MagicString.BRANCH));
+            }else {
+                header.append(",").append(datum.get(MagicString.BRANCH));
+            }
+            group.putIfAbsent(datum.get(MagicString.AREA_CD).toString(),datum.get("area"));
+        });
+
+        StarReadingVo starReadingVo1 = new StarReadingVo();
+        starReadingVo1.setColumn(column.toString());
+        starReadingVo1.setHeader(header.toString());
+        starReadingVo1.setData(resultList);
+        starReadingVo1.setGroup(group);
+        starReadingVo1.setFlag(0);
+        starReadingVo1.setModeCheck(starReadingVo.getModeCheck());
+        return starReadingVo1;
     }
 
 

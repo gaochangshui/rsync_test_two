@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/planoCycleApi/priority/PriorityOrderMst")
@@ -38,7 +39,7 @@ public class ClassicPriorityOrderMstController {
      * @return
      */
     @PostMapping("/setPriorityOrderMst")
-    public Map<String,Object> setPriorityOrderMst(@RequestBody PriorityOrderMstDto priorityOrderMstDto){
+    public Map<String,Object> setPriorityOrderMst(@RequestBody PriorityOrderMstDto priorityOrderMstDto) throws ExecutionException, InterruptedException {
         return priorityOrderMstService.setPriorityOrderMst(priorityOrderMstDto);
     }
 
@@ -49,7 +50,8 @@ public class ClassicPriorityOrderMstController {
      */
     @PostMapping("/setWorkPriorityOrderMst")
     public Map<String,Object> setWorkPriorityOrderMst(@RequestBody PriorityOrderMstDto priorityOrderMstDto){
-        return priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto);
+        String authorCd = session.getAttribute("aud").toString();
+        return priorityOrderMstService.setWorkPriorityOrderMst(priorityOrderMstDto, authorCd);
     }
 
     /**
@@ -90,9 +92,11 @@ public class ClassicPriorityOrderMstController {
      */
     @PostMapping("/getPtsFileDownLoad")
     public Map<String,Object> getPtsFileDownLoad(@RequestBody PriorityOrderPtsDownDto priorityOrderPtsDownDto, HttpServletResponse response) {
-        return priorityOrderMstService.downloadPtsTask(priorityOrderPtsDownDto.getTaskId(), priorityOrderPtsDownDto.getCompany(),
-                priorityOrderPtsDownDto.getPriorityNo(),
-                priorityOrderPtsDownDto.getNewCutFlg(), priorityOrderPtsDownDto.getPtsVerison(), response);
+//        return priorityOrderMstService.downloadPtsTask(priorityOrderPtsDownDto.getTaskId(), priorityOrderPtsDownDto.getCompany(),
+//                priorityOrderPtsDownDto.getPriorityNo(),
+//                priorityOrderPtsDownDto.getNewCutFlg(), priorityOrderPtsDownDto.getPtsVerison(), response);
+        return priorityOrderMstService.generatePtsTask(priorityOrderPtsDownDto.getTaskId(),priorityOrderPtsDownDto.getCompany(),
+                priorityOrderPtsDownDto.getPriorityNo(),priorityOrderPtsDownDto.getNewCutFlg(), priorityOrderPtsDownDto.getPtsVerison(), response);
 //        return priorityOrderMstService.getPtsFileDownLoad(priorityOrderPtsDownDto,response,ptsDownPath);
     }
 

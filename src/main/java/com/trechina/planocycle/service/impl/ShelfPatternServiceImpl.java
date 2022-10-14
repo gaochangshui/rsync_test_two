@@ -12,7 +12,6 @@ import com.trechina.planocycle.entity.vo.ShelfPatternBranchVO;
 import com.trechina.planocycle.entity.vo.ShelfPatternNameVO;
 import com.trechina.planocycle.entity.vo.ShelfPatternTreeVO;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.ShelfNameMstMapper;
 import com.trechina.planocycle.mapper.ShelfPatternBranchMapper;
 import com.trechina.planocycle.mapper.ShelfPatternMstMapper;
@@ -63,7 +62,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             list.add(commonTableName.getStoreInfoTable());
         }
         Set<String> existSpecialUse = shelfPatternMstMapper.getExistSpecialUse(list);
-        resultInfo = resultInfo.stream().peek(result -> {
+        resultInfo.stream().forEach(result -> {
             if (result.getStoreCdStr()==null) {
                 result.setStoreCd(new String[]{});
                 result.setBranchNum(0);
@@ -76,7 +75,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 result.setBranchNum(storeCdStrList.length);
                 result.setSpecialFlag(count == 0 ? "-" : "◯");
             }
-        }).collect(Collectors.toList());
+        });
         logger.info("棚pattern情報の戻り値の取得：{}",resultInfo);
         return ResultMaps.result(ResultEnum.SUCCESS,resultInfo);
     }
@@ -124,8 +123,7 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
                 shelfPatternBranchMapper.insert(branchList, authorCd);
             }
         } catch (Exception e) {
-            logger.error(e.toString());
-            throw new BusinessException(e.toString());
+            logger.error("",e);
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
@@ -178,8 +176,8 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
             }
 
         }catch (Exception e) {
-            logger.error(e.toString());
-            throw new BusinessException(e.getMessage());
+            logger.error("",e);
+
         }
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

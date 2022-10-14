@@ -2,20 +2,16 @@ package com.trechina.planocycle.utils;
 
 
 import com.google.common.base.Strings;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -120,14 +116,14 @@ public class ExcelUtils {
                     }
                 }
             }
-            ParamForExcel(sheet1,paramMap,workbook);
+            paramForExcel(sheet1,paramMap,workbook);
             workbook.write(outputStream);
         }catch (Exception e){
             logger.error("", e);
         }
     }
 
-    public static void ParamForExcel ( XSSFSheet sheet1,Map<String,Object> paramMap,XSSFWorkbook workbook){
+    public static void paramForExcel(XSSFSheet sheet1, Map<String,Object> paramMap, XSSFWorkbook workbook){
 
         sheet1.setDisplayGridlines(false);
         //スタイルの設定
@@ -350,7 +346,6 @@ public class ExcelUtils {
      */
     public static String generateNormalExcelToFile(List<String[]> allData, String filePath){
         logger.info("start generate excel,now:{}, filename: {}", LocalDateTime.now(),filePath);
-
         try(XSSFWorkbook workbook = new XSSFWorkbook();
             FileOutputStream fos = new FileOutputStream(filePath)){
             XSSFSheet sheet = workbook.createSheet();
@@ -438,7 +433,7 @@ public class ExcelUtils {
         //}
     }
 
-    public static void starReadingExcel(List<String> header, List<String> column, LinkedHashMap<String, Object> group, List<LinkedHashMap<String, Object>> data, ServletOutputStream outputStream) {
+    public static void starReadingExcel(List<String> column, LinkedHashMap<String, Object> group, List<LinkedHashMap<String, Object>> data, ServletOutputStream outputStream) {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
             XSSFSheet sheet = workbook.createSheet();
             //最初の行の索引
@@ -516,7 +511,7 @@ public class ExcelUtils {
             XSSFSheet sheet = workbook.createSheet("商品明細");
             sheet.autoSizeColumn(10);
             sheet.autoSizeColumn(10,true);
-            Pattern numberPattern = Pattern.compile("-?[0-9]+(\\.[0-9]+)?%?");
+            Pattern numberPattern = Pattern.compile("-?\\d+(\\.\\d+)?%?");
             sheet1.setDisplayGridlines(false);
             //スタイルの設定
             XSSFCellStyle cellStyle = workbook.createCellStyle();

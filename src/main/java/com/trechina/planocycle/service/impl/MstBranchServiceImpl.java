@@ -1,6 +1,8 @@
 package com.trechina.planocycle.service.impl;
 
+import cn.hutool.extra.mail.MailAccount;
 import com.google.api.client.util.Strings;
+import com.trechina.planocycle.config.MailConfig;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.BranchList;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -9,17 +11,18 @@ import com.trechina.planocycle.mapper.MstBranchMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.MstBranchService;
 import com.trechina.planocycle.service.MstCommodityService;
+import com.trechina.planocycle.utils.MailUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.text.MessageFormat;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +35,8 @@ public class MstBranchServiceImpl implements MstBranchService {
     private ClassicPriorityOrderCommodityMustMapper classicPriorityOrderCommodityMustMapper;
     @Autowired
     private MstCommodityService mstCommodityService;
+    @Value("${projectIds}")
+    private String projectIds;
 
     private Logger logger = LoggerFactory.getLogger(MstBranchServiceImpl.class);
 
@@ -87,39 +92,94 @@ public class MstBranchServiceImpl implements MstBranchService {
 
     @Transactional
     @Override
-    public Map<String, Object> syncTenData() {
-        String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
-        String[] companyList = syncCompanyList.split(",");
-        String tableNameInfo;
-        String masterTenTb;
-        String tableNameInfoWK;
-        String tableNameHeaderInfo;
+    public Map<String, Object> syncTenData(String env) {
+        List<Map<String, Object>> syncResults = new ArrayList<>();
+        try {
+            String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
+            String[] companyList = syncCompanyList.split(",");
+            String masterTenTb;
+            String masterTenTbPkey;
+            String masterTenTbWk;
 
-        List<LinkedHashMap<String,Object>> tenList;
-        String column;
-        for (String companyCd : companyList) {
-            masterTenTb = MessageFormat.format(MagicString.WK_MASTER_TEN, companyCd);
-            List<String> tenClass = mstBranchMapper.getMasterTenClass(masterTenTb);
-
-            for (String classCd : tenClass) {
-                tableNameInfo = MessageFormat.format(MagicString.PROD_TEN_INFO, companyCd, classCd);
-                tableNameInfoWK = MessageFormat.format(MagicString.WK_PROD_TEN_INFO, companyCd, classCd);
-                tableNameHeaderInfo = MessageFormat.format(MagicString.WK_PROD_TEN_INFO_HEADER, companyCd, classCd);
-
-                int i = mstBranchMapper.checkTableExist(tableNameInfoWK.split("\\.")[1], companyCd);
-                if(i < 1){
-                    //if not exist, delete from table
-                    mstBranchMapper.deleteNotExistMst(classCd, masterTenTb);
-                    logger.info("{} not exist", tableNameInfoWK);
-                    continue;
+            for (String companyCd : companyList) {
+                masterTenTb = MessageFormat.format(MagicString.MASTER_TEN, companyCd);
+                masterTenTbWk = MessageFormat.format(MagicString.WK_MASTER_TEN, companyCd);
+                masterTenTbPkey = MessageFormat.format(MagicString.MASTER_TEN_PKEY, companyCd);
+                String masterTenExist = mstBranchMapper.selectMasterTenExist(companyCd);
+                if (Strings.isNullOrEmpty(masterTenExist)) {
+                    mstBranchMapper.creatMasterTen(masterTenTb, masterTenTbWk, masterTenTbPkey);
                 }
-
-                tenList = mstBranchMapper.getTenHeader(tableNameHeaderInfo);
-                column = tenList.stream().map(e->e.get("3").toString()).collect(Collectors.joining(","));
-
-                mstBranchMapper.syncTenData(tableNameInfo, tableNameInfoWK, column);
+                List<String> tenClass = mstBranchMapper.getMasterTenClass(masterTenTb);
+                for (String classCd : tenClass) {
+                    Map<String, Object> resultMap = perSyncTenData(companyCd, classCd, masterTenTb);
+                    syncResults.add(resultMap);
+                }
             }
+
+            if(syncResults.stream().anyMatch(map->map.containsKey("error"))){
+                List<Map<String, Object>> error = syncResults.stream().filter(map -> map.containsKey("error")).collect(Collectors.toList());
+                Exception errorMsg = (Exception) error.get(0).get("error");
+
+                MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"));
+                String title = MessageFormat.format("「{0}」同期发生异常:不明なエラーが発生しました", env);
+                String content = String.format(MailConfig.MAIL_EXCEPTION_TEMPLATE, "syncTenData", errorMsg.getMessage());
+                MailUtils.sendEmail(account, MagicString.TO_MAIL, title, content);
+            }
+
+            return ResultMaps.result(ResultEnum.SUCCESS, syncResults);
+        }catch (Exception e){
+            MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"));
+            String title = MessageFormat.format("「{0}」同期发生异常:不明なエラーが発生しました", env);
+            String content = String.format(MailConfig.MAIL_EXCEPTION_TEMPLATE, "syncTenData", e.getMessage());
+            MailUtils.sendEmail(account, MagicString.TO_MAIL, title, content);
+
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
-        return ResultMaps.result(ResultEnum.SUCCESS.getCode(),"同期完了しました");
+
+        return ResultMaps.result(ResultEnum.FAILURE.getCode(), "Ten同期失败しました");
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Object> perSyncTenData(String companyCd, String classCd, String masterTenTb){
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("companyCd", companyCd);
+        resultMap.put("classCd", classCd);
+
+        try {
+            String tableNameInfo;
+            String tableNameInfoPkey;
+            String tableNameInfoWK;
+            String tableNameHeaderInfo;
+
+            String tableNameExist = mstBranchMapper.selectTableNameExist(companyCd, classCd);
+            tableNameInfo = MessageFormat.format(MagicString.PROD_TEN_INFO, companyCd, classCd);
+            tableNameInfoPkey = MessageFormat.format(MagicString.PROD_TEN_INFO_PKEY, classCd);
+            tableNameInfoWK = MessageFormat.format(MagicString.WK_PROD_TEN_INFO, companyCd, classCd);
+            tableNameHeaderInfo = MessageFormat.format(MagicString.WK_PROD_TEN_INFO_HEADER, companyCd, classCd);
+
+            int i = mstBranchMapper.checkTableExist(tableNameInfoWK.split("\\.")[1], companyCd);
+            if (i < 1) {
+                //if not exist, delete from table
+                mstBranchMapper.deleteNotExistMst(classCd, masterTenTb);
+                logger.info("{} not exist", tableNameInfoWK);
+                return resultMap;
+            }
+
+            List<LinkedHashMap<String, Object>> tenList = mstBranchMapper.getTenHeader(tableNameHeaderInfo);
+            String column = tenList.stream().map(e -> e.get("3").toString()).collect(Collectors.joining(","));
+            if (Strings.isNullOrEmpty(tableNameExist)) {
+                mstBranchMapper.creatTenData(tableNameInfo, tableNameInfoWK, tableNameInfoPkey);
+            }
+            int syncCount = mstBranchMapper.syncTenData(tableNameInfo, tableNameInfoWK, column);
+            resultMap.put("result", "true");
+            resultMap.put("count", syncCount);
+        }catch (Exception e){
+            resultMap.put("result", "true");
+            resultMap.put("count", "0");
+            resultMap.put("error", e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
+
+        return resultMap;
     }
 }
