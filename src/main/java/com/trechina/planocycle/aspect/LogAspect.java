@@ -73,9 +73,7 @@ public class LogAspect {
         //取得＃シュトク＃classオブジェクト象
         String s = JSON.toJSONString(ex);
         String params = jsonArray.toString();
-        executor.execute(()->{
-            logMapper.saveErrorLog(targetName+"_"+methodName, params,s);
-        });
+        executor.execute(()-> logMapper.saveErrorLog(targetName+"_"+methodName, params,s));
 
         this.errInfoForEmail(ex.getMessage(),methodName,params);
     }
@@ -100,6 +98,7 @@ public class LogAspect {
         String url = httpServletRequest.getRequestURI();
         String ip = ServletUtil.getClientIP(httpServletRequest);
         String authorCd = session.getAttribute("aud").toString();
+        String addressee = MessageFormat.format("planocyclesystem{0}cn.tre-inc.com","@");
         for (Cookie cookie : cookies) {
             cookieList.put(cookie.getName(),cookie.getValue());
         }
@@ -114,9 +113,8 @@ public class LogAspect {
                 browser,//browser
                 ip//userIP
                 ,errMsg);//errInfo
-        String title = MessageFormat.format("「${0}」发生异常",env);
-        MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"));
-        MailUtils.sendEmail(account, "planocyclesystem@cn.tre-inc.com","版本："+env ,msg);
-        MailUtils.sendEmail(account, "10215814liu_xinyu@cn.tre-inc.com",title ,msg);
+        String title = MessageFormat.format("「{0}」異常発生",env);
+        MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"),"sender");
+        MailUtils.sendEmail(account, addressee,title ,msg);
     }
 }
