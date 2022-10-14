@@ -716,7 +716,7 @@ public class MstJanServiceImpl implements MstJanService {
                 MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"));
                 String title = MessageFormat.format("「{0}」同期发生异常:不明なエラーが発生しました", env);
                 String content = String.format(MailConfig.MAIL_EXCEPTION_TEMPLATE, "syncJanData", errorMsg.getMessage());
-                MailUtils.sendEmail(account, "10218504chen_ke@cn.tre-inc.com", title, content);
+                MailUtils.sendEmail(account, MagicString.TO_MAIL, title, content);
             }
 
             return ResultMaps.result(ResultEnum.SUCCESS,syncResults);
@@ -724,7 +724,7 @@ public class MstJanServiceImpl implements MstJanService {
             MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"));
             String title = MessageFormat.format("「{0}」同期发生异常:不明なエラーが発生しました", env);
             String content = String.format(MailConfig.MAIL_EXCEPTION_TEMPLATE, "syncJanData", e.getMessage());
-            MailUtils.sendEmail(account, "10218504chen_ke@cn.tre-inc.com", title, content);
+            MailUtils.sendEmail(account, MagicString.TO_MAIL, title, content);
             return ResultMaps.result(ResultEnum.FAILURE.getCode(),"janinfo同期失败しました");
         }
     }

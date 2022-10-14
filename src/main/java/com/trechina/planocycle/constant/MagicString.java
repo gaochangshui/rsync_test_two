@@ -1,6 +1,8 @@
 package com.trechina.planocycle.constant;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 import java.util.Map;
 
@@ -364,6 +366,6 @@ public class MagicString {
     public static final Map<String, String> REASON_MAP = ImmutableMap.of("1", "rank_change", "2", "replace", "3",
             "capepak", "4", "must_not", "5", "pattern_duplicate");
 
-    public static final String TO_MAIL = "planocyclesystem@cn.tre-inc.com";
+    public static final String TO_MAIL = Joiner.on("@").join(Lists.newArrayList("planocyclesystem", "cn.tre-inc.com"));
 
 }

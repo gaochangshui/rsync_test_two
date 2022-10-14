@@ -100,7 +100,7 @@ public class ScheduleTask {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-mm HH:mm:ss");
         String content = String.format(MailConfig.MAIL_SUCCESS_TEMPLATE, "MasterInfoSync", janResult, tenResult,
                 formatter.format(start), formatter.format(end), Duration.between(start, end).toMillis());
-        MailUtils.sendEmail(account, "10218504chen_ke@cn.tre-inc.com", title, content);
+        MailUtils.sendEmail(account, MagicString.TO_MAIL, title, content);
         tableTransferService.syncZokuseiMst();
     }
 
