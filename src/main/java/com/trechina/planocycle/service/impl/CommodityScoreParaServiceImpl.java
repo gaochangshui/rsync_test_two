@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.po.ProductPowerParamMst;
@@ -65,6 +66,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     private VehicleNumCache vehicleNumCache;
     @Autowired
     private ThreadPoolTaskExecutor executor;
+    @Autowired
+    private LogAspect logAspect;
     @Autowired
     private cgiUtils cgiUtil;
 
@@ -213,7 +216,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         Integer productPowerCd = Integer.valueOf(map.get(MagicString.PRODUCT_POWER_CD).toString());
         map.remove(MagicString.COMPANY_CD);
         map.remove(MagicString.PRODUCT_POWER_CD);
-
+        Map<String, Object> errMap = logAspect.errInfo();
         String uuid = UUID.randomUUID().toString();
         Future<?> future = executor.submit(() -> {
         try {
@@ -241,6 +244,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
             vehicleNumCache.put(uuid+MagicString.DATA_STR, rankCalculate);
         } catch (Exception e) {
+            logAspect.errInfoForEmail(errMap,e,new Object[]{map});
             logger.error("rank計算失敗",e);
         }
         });

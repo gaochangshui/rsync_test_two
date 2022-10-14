@@ -129,6 +129,7 @@ public class MstJanServiceImpl implements MstJanService {
     @Override
     public Map<String, Object> getJanList(DownFlagVO downFlagVO) {
         JanInfoVO janInfoVO = new JanInfoVO();
+        Map<String, Object> errMap = logAspect.errInfo();
         if (cacheUtil.get(downFlagVO.getTaskID()) == null) {
             return ResultMaps.result(ResultEnum.FAILURE, "taskId not exists");
         }
@@ -153,6 +154,7 @@ public class MstJanServiceImpl implements MstJanService {
                this.janHandle(janInfoVO,downFlagVO);
             }catch (Exception e){
                 logger.error("", e);
+                logAspect.errInfoForEmail(errMap,e,new Object[]{downFlagVO});
                 cacheUtil.put(downFlagVO.getTaskID()+MagicString.STATUS_STR, MagicString.TASK_STATUS_EXCEPTION);
                 cacheUtil.remove(downFlagVO.getTaskID()+MagicString.STATUS_STR);
             }
@@ -558,6 +560,7 @@ public class MstJanServiceImpl implements MstJanService {
         String finalCompanyCd = companyCd;
         String authorCd = session.getAttribute("aud").toString();
         cacheUtil.put(taskId+MagicString.STATUS_STR, MagicString.TASK_STATUS_PROCESSING);
+        Map<String, Object> errMap = logAspect.errInfo();
         executor.execute(()->{
             Map<String, String> headerNameIndex = new HashMap<>();
             janHeader.forEach(headerAttr-> headerNameIndex.put(headerAttr.getAttrVal(), headerAttr.getSort()));
@@ -674,7 +677,7 @@ public class MstJanServiceImpl implements MstJanService {
                 cacheUtil.put(taskId+MagicString.DATA_STR, count + MagicString.MSG_UPLOAD_SUCCESS);
             } catch (Exception e) {
                 logger.error("", e);
-                logAspect.setTryErrorLog(e,new Object[]{commonPartsData, finalCompanyCd,classCd});
+                logAspect.errInfoForEmail(errMap,e,new Object[]{commonPartsData,classCd});
                 cacheUtil.put(taskId+",exception", MagicString.MSG_ABNORMALITY_DATA);
                 cacheUtil.put(taskId+MagicString.STATUS_STR, MagicString.TASK_STATUS_EXCEPTION);
             }

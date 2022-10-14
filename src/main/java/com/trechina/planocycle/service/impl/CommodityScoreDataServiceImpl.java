@@ -177,8 +177,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                                 ,shelfPts,storeCd,attrColName);
                         List<Map<String, Object>> resultData = new ArrayList<>();
 
-
-
                         resultData.add(colMap);
                         resultData.addAll(allData);
 
