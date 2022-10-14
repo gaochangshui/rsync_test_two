@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -70,7 +71,7 @@ public interface MstJanService {
     Map<String, Object> syncJanData(String env);
 
     @Transactional(rollbackFor = Exception.class)
-    int perSyncJanData(String companyCd, CommoditySyncSet commoditySyncSet, String existTable);
+    Map<String, Object> perSyncJanData(String companyCd, CommoditySyncSet commoditySyncSet, String existTable);
 
     JanInfoVO getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response) throws IOException;
 

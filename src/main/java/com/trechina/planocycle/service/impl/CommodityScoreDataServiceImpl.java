@@ -168,6 +168,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
                             break;
                         }
+                        productPowerDataMapper.setIntageJanForSyokika(companyCd,productPowerCd);
                         List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
                                 janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd
                                 ,shelfPts,storeCd,attrColName);
@@ -487,10 +488,14 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             for (Object o : list) {
                 Map<String,Object> proMap = (Map<String, Object>) o;
                 List<Object> value = (List<Object>)proMap.get("value");
+                List<Object> newValue = new ArrayList<>();
                 if (!value.isEmpty()){
                     String id = proMap.get("id").toString().split("_")[2];
-
-                    String join = Joiner.on("$|^").join(value);
+                    value.forEach(str->{
+                        str = str.toString().replace("(","\\(").replace(")","\\)");
+                        newValue.add(str);
+                    });
+                    String join = Joiner.on("$|^").join(newValue);
                     boolean flag = (boolean) proMap.getOrDefault("rmFlag", false);
                     String eq = flag ? "!~":"~";
                     if (finalValue.toString().equals("")){

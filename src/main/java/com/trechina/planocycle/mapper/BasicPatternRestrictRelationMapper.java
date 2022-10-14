@@ -68,4 +68,5 @@ public interface BasicPatternRestrictRelationMapper {
 
     int deleteArea(Integer priorityOrderCd);
 
+    List<Map<String, Object>> getTana(Integer priorityOrderCd, List<Map<String, Object>> resultList);
 }

@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -50,8 +51,9 @@ public class ScheduleTask {
     @Autowired
     private SysConfigMapper sysConfigMapper;
 
-    //@Scheduled(cron = "0 0 7 * * ?")
-    @Scheduled(cron = "0 06 17 * * ?")
+    @Scheduled(cron = "0 0 7 * * ?")
+    @PostConstruct
+    //@Scheduled(cron = "0 16 09 * * ?")
     public void MasterInfoSync(){
 //        logger.info("定時調度任務--attr表同期開始");
 //        tableTransferService.getAttrTransfer();
@@ -73,28 +75,30 @@ public class ScheduleTask {
         String title = MessageFormat.format("「{0}」マスター データ同期完了", env);
 
         String janResult = "";
-        String janCount = "";
         String tenResult = "";
-        String tenCount = "";
 
         if(Objects.equals(MapUtils.getInteger(janInfoResult, "code"), ResultEnum.SUCCESS.getCode())){
-            janResult = "true";
-            janCount = MapUtils.getString(janInfoResult, "msg");
-        }else{
-            janResult = "false";
-            janCount = "0";
+            List<Map<String, Object>> data = (List<Map<String, Object>>) MapUtils.getObject(janInfoResult, "data");
+            for (Map<String, Object> datum : data) {
+                String msg = "<p style='text-indent: 30px'>%s-%s:%s,%d条</p>";
+                janResult += String.format(msg, MapUtils.getString(datum, MagicString.COMPANY_CD),
+                        MapUtils.getString(datum, "classCd"), MapUtils.getString(datum, "result"),
+                        MapUtils.getInteger(datum, "count"));
+            }
         }
 
         if(Objects.equals(MapUtils.getInteger(tenInfoResult, "code"), ResultEnum.SUCCESS.getCode())){
-            tenResult = "true";
-            tenCount = MapUtils.getString(tenInfoResult, "msg");
-        }else{
-            tenResult = "false";
-            tenCount = "0";
+            List<Map<String, Object>> data = (List<Map<String, Object>>) MapUtils.getObject(tenInfoResult, "data");
+            for (Map<String, Object> datum : data) {
+                String msg = "<p style='text-indent: 30px'>%s-%s:%s,%d条</p>";
+                tenResult += String.format(msg, MapUtils.getString(datum, MagicString.COMPANY_CD),
+                        MapUtils.getString(datum, "classCd"), MapUtils.getString(datum, "result"),
+                        MapUtils.getInteger(datum, "count"));
+            }
         }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-mm HH:mm:ss");
-        String content = String.format(MailConfig.MAIL_SUCCESS_TEMPLATE, "MasterInfoSync", janResult, janCount, tenResult, tenCount,
+        String content = String.format(MailConfig.MAIL_SUCCESS_TEMPLATE, "MasterInfoSync", janResult, tenResult,
                 formatter.format(start), formatter.format(end), Duration.between(start, end).toMillis());
         MailUtils.sendEmail(account, "10218504chen_ke@cn.tre-inc.com", title, content);
         tableTransferService.syncZokuseiMst();

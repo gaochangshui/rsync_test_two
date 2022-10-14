@@ -534,9 +534,13 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 groups.add(itemMap);
                 resultMap.put("groups", groups);
             }
-
             resultList.add(resultMap);
         }
+        List<Map<String, Object>> tana = restrictRelationMapper.getTana(priorityOrderCd,resultList);
+        tana.forEach(map->{
+            map.put("groups",new ArrayList<>());
+            resultList.add(map);
+        });
 
         restrictRelationMapper.updateAreaPosition(resultList, priorityOrderCd);
         return ResultMaps.result(ResultEnum.SUCCESS, resultList);
