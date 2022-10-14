@@ -39,6 +39,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.ServletOutputStream;
@@ -179,10 +180,11 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String, Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) throws ExecutionException, InterruptedException {
+    public Map<String, Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) {
         String taskID = priorityOrderMstDto.getTaskID();
         Future<?> future = null;
         String authorCd = session.getAttribute("aud").toString();
+        Map<String, Object> requestMap = logAspect.errInfo();
 
         if(Strings.isNullOrEmpty(taskID)){
             logger.info("優先順位テーブルパラメータの保存{}",priorityOrderMstDto);
@@ -193,8 +195,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             if (count >0) {
                 return ResultMaps.result(ResultEnum.NAMEISEXISTS);
             }
+
             priorityOrderMstDto.setTaskID(taskID);
-            future = taskExecutor.submit(()-> priorityOrderMstService.setPriorityOrderMstAndCalc(priorityOrderMstDto, authorCd));
+            future = taskExecutor.submit(()-> priorityOrderMstService.setPriorityOrderMstAndCalc(priorityOrderMstDto, authorCd, requestMap));
             vehicleNumCache.put(MessageFormat.format(MagicString.TASK_KEY_FUTURE, taskID), future);
             return ResultMaps.result(ResultEnum.SUCCESS, taskID);
         }else{
@@ -221,6 +224,10 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             return ResultMaps.result(ResultEnum.FAILURE);
         } catch (ExecutionException e){
             logger.error("", e);
+            PriorityOrderMstDto priorityOrderMstDto1 = new PriorityOrderMstDto();
+            BeanUtils.copyProperties(priorityOrderMstDto, priorityOrderMstDto1);
+            priorityOrderMstDto1.setPriorityData("");
+            logAspect.errInfoForEmail(requestMap, e, new Object[]{priorityOrderMstDto1});
             return ResultMaps.result(ResultEnum.FAILURE);
         }
 
@@ -230,7 +237,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void setPriorityOrderMstAndCalc(PriorityOrderMstDto priorityOrderMstDto, String authorCd){
+    public void setPriorityOrderMstAndCalc(PriorityOrderMstDto priorityOrderMstDto, String authorCd, Map<String, Object> requestMap){
         // チェック優先順位テーブル名
         Integer priorityOrderCd = priorityOrderMstDto.getPriorityOrderCd();
         String companyCd = priorityOrderMstDto.getCompanyCd();

@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.GetCommonPartsDataDto;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
@@ -112,6 +113,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
     private cgiUtils cgiUtil;
     @Value("${smartUrlPath}")
     public String smartPath;
+    @Autowired
+    private LogAspect logAspect;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -553,6 +556,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
         String authorCd = session.getAttribute("aud").toString();
         String uuid = UUID.randomUUID().toString();
         Integer finalHeightSpace = heightSpace;
+        Map<String, Object> requestMap = logAspect.errInfo();
         Future<?> future = executor.submit(() -> {
             try{
                 //商品力点数表cdを取得する
@@ -668,6 +672,8 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
                 logger.error("auto calculation is error", e);
                 vehicleNumCache.put(uuid,2);
                 vehicleNumCache.put(uuid+"-error",JSON.toJSONString(e));
+                logAspect.errInfoForEmail(requestMap, e, new Object[]{companyCd, priorityOrderCd, partition, heightSpace,
+                        tanaWidthCheck});
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             }
         });

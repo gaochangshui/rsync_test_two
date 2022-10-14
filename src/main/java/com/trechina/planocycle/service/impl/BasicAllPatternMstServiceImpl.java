@@ -107,6 +107,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
         String uuid = UUID.randomUUID().toString();
         String authorCd = session.getAttribute("aud").toString();
 
+        Map<String, Object> requestMap = logAspect.errInfo();
         Future<?> future = executor.submit(() -> {
             Integer basicPatternCd;
 
@@ -162,7 +163,7 @@ public class BasicAllPatternMstServiceImpl implements BasicAllPatternMstService 
                 logger.error("", ex);
                 vehicleNumCache.put("IO"+uuid,1);
                 vehicleNumCache.put("IOError"+uuid,JSON.toJSONString(ex));
-                logAspect.setTryErrorLog(ex,new Object[]{priorityAllSaveDto});
+                logAspect.errInfoForEmail(requestMap, ex, new Object[]{priorityAllSaveDto});
                 throw new BusinessException("自動計算失敗");
             }finally {
                 vehicleNumCache.put(uuid,1);

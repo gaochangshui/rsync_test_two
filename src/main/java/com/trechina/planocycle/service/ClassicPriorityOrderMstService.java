@@ -30,7 +30,7 @@ public interface ClassicPriorityOrderMstService {
     Map<String,Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) throws ExecutionException, InterruptedException;
 
     @Transactional(rollbackFor = Exception.class)
-    void setPriorityOrderMstAndCalc(PriorityOrderMstDto priorityOrderMstDto, String authorCd);
+    void setPriorityOrderMstAndCalc(PriorityOrderMstDto priorityOrderMstDto, String authorCd, Map<String, Object> requestMap);
 
     /**
      * この企業に優先順位テーブルがあるかどうかのログインを取得します。
