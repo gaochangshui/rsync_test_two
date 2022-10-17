@@ -36,7 +36,7 @@ public class MailConfig {
 
     public static MailAccount getMailAccount(boolean isCloud){
         MailAccount account = new MailAccount();
-        Map<String, Object> mailMap = MailConfig.getMailConfig(isCloud);
+        Map<String, Object> mailMap = MailConfig.getMailConfig(false);
         account.setAuth(true);
         account.setDebug(true);
         account.setSslEnable(MapUtils.getBoolean(mailMap, "IS_SSL"));

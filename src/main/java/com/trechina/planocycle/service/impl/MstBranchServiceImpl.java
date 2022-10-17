@@ -174,7 +174,7 @@ public class MstBranchServiceImpl implements MstBranchService {
             resultMap.put("result", "true");
             resultMap.put("count", syncCount);
         }catch (Exception e){
-            resultMap.put("result", "true");
+            resultMap.put("result", "false");
             resultMap.put("count", "0");
             resultMap.put("error", e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

@@ -1,7 +1,9 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.service.TableTransferService;
+import com.trechina.planocycle.utils.ScheduleTask;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class TableTransferController {
     @Autowired
     private TableTransferService tableTransferService;
+    @Autowired
+    private ScheduleTask scheduleTask;
     /**
      * Areasテーブル情報の転送
      * @return -1 失敗  >0成功
@@ -55,5 +59,10 @@ public class TableTransferController {
     @GetMapping("syncZokuseiMst")
     public void syncZokuseiMst() {
         tableTransferService.syncZokuseiMst();
+    }
+    @GetMapping("sync")
+    @Async
+    public void syncAllMst() {
+        scheduleTask.MasterInfoSync();
     }
 }
