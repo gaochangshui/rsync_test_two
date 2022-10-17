@@ -37,8 +37,8 @@ public class MstCommodityServiceImpl implements MstCommodityService {
     @Override
     public List<CommoditySyncSet> getSyncSet(String companyCd) {
         String coreCompanycd = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
-        String tableName = "";
-        if (Strings.isNullOrEmpty(coreCompanycd)){
+        String tableName ="";
+        if (!Strings.isNullOrEmpty(coreCompanycd)){
              tableName = MessageFormat.format(MagicString.MASTER_SYOHIN, coreCompanycd);
         }
         String tableNameCompany = MessageFormat.format(MagicString.MASTER_SYOHIN, companyCd);

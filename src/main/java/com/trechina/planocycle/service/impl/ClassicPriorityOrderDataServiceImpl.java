@@ -774,10 +774,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         map.put("skuCompareArea",BigDecimal.valueOf(skuNewArea-skuOldArea).setScale(1,BigDecimal.ROUND_UP).doubleValue()+MagicString.PERCENTAGE);
         map.put("faceNew",newPts.getOrDefault(MagicString.FACE_NUM,0));
         map.put("faceOld",oldPts.getOrDefault(MagicString.FACE_NUM,0));
-        map.put("faceCompare",BigDecimal.valueOf(faceNewArea-faceOldArea).setScale(1,BigDecimal.ROUND_UP).doubleValue()+MagicString.PERCENTAGE);
+        map.put("faceCompare",Integer.parseInt(newPts.getOrDefault(MagicString.FACE_NUM,0).toString()) -Integer.parseInt(oldPts.getOrDefault(MagicString.FACE_NUM,0).toString()) );
         map.put("faceOldArea",faceOldArea+MagicString.PERCENTAGE);
         map.put("faceNewArea",faceNewArea+MagicString.PERCENTAGE);
-        map.put("faceCompareArea",faceNewArea-faceOldArea+MagicString.PERCENTAGE);
+        map.put("faceCompareArea",BigDecimal.valueOf(faceNewArea-faceOldArea).setScale(1,BigDecimal.ROUND_UP).doubleValue()+MagicString.PERCENTAGE);
         return map;
     }
 
