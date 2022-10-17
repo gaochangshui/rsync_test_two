@@ -448,5 +448,7 @@
     <select id="selectTableExist" resultType="string">
         select "table_name" from information_schema.tables where "table_name" = 'master_syohin' and "table_schema" = '${tableName}'
     </select>
-
+    <select id="selectCompanyName" resultType="string">
+        select "2" from masterdb.kigyou_name where "1"=#{companyCd};
+    </select>
 </mapper>

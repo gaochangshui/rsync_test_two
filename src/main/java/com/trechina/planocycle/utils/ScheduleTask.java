@@ -25,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class ScheduleTask {
@@ -49,6 +50,8 @@ public class ScheduleTask {
     private String projectIds;
     @Autowired
     private SysConfigMapper sysConfigMapper;
+    @Autowired
+    private MstJanMapper mstJanMapper;
 
     @Scheduled(cron = "0 0 7 * * ?")
     @PostConstruct
@@ -86,7 +89,9 @@ public class ScheduleTask {
                     errorMsg = ((Exception) datum.get("error")).getMessage();
                 }
 
-                janResult += MessageFormat.format(msg, MapUtils.getString(datum, MagicString.COMPANY_CD),
+                String companyCd = MapUtils.getString(datum, MagicString.COMPANY_CD);
+                String companyName = mstJanMapper.selectCompanyName(companyCd);
+                janResult += MessageFormat.format(msg,companyCd+" "+ Optional.ofNullable(companyName).orElse("") ,
                         MapUtils.getString(datum, "classCd"), MapUtils.getString(datum, "result"),
                         MapUtils.getInteger(datum, "count"), errorMsg);
             }
@@ -102,7 +107,9 @@ public class ScheduleTask {
                     errorMsg = ((Exception) datum.get("error")).getMessage();
                 }
 
-                tenResult += MessageFormat.format(msg, MapUtils.getString(datum, MagicString.COMPANY_CD),
+                String companyCd = MapUtils.getString(datum, MagicString.COMPANY_CD);
+                String companyName = mstJanMapper.selectCompanyName(companyCd);
+                tenResult += MessageFormat.format(msg, companyCd+" "+Optional.ofNullable(companyName).orElse(""),
                         MapUtils.getString(datum, "classCd"), MapUtils.getString(datum, "result"),
                         MapUtils.getInteger(datum, "count"),errorMsg);
             }

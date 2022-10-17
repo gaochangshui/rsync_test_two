@@ -7,24 +7,22 @@ import org.apache.commons.collections4.MapUtils;
 import java.util.Map;
 
 public class MailConfig {
-    class LocalMailConfig{
+    static class LocalMailConfig{
         public static final String MAIL1 = "10218504chen_ke";
-        //public static final String MAIL1 = "planocyclesystem";
         public static final String MAIL2 = "cn.tre-inc.com";
 
         public static final String PASS = "chTRE10218504";
-        //public static final String PASS = "planocycleqdtre";
 
         public static final String SMTP = "cn.tre-inc.com";
         public static final boolean IS_SSL = false;
     }
 
-    class CloudMailConfig{
-        public final static String MAIL1 = "planocycle.retailai";
-        public final static String MAIL2 = "gmail.com";
-        public static final String PASS = "planocycleqdtre";
-        public static final String SMTP = "smtp.gmail.com";
-        public static final boolean IS_SSL = true;
+    static class CloudMailConfig{
+        public static final String MAIL1 = "planocycleSystem";
+        public static final String MAIL2 = "cn.tre-inc.com";
+        public static final String PASS = "chTRE@BiaoG888";
+        public static final String SMTP = "cn.tre-inc.com";
+        public static final boolean IS_SSL = false;
     }
 
     static Map<String, Object> getMailConfig(boolean isCloud){
@@ -41,7 +39,7 @@ public class MailConfig {
         MailAccount account = new MailAccount();
         Map<String, Object> mailMap = MailConfig.getMailConfig(false);
         account.setAuth(true);
-        account.setDebug(true);
+        account.setDebug(false);
         account.setSslEnable(MapUtils.getBoolean(mailMap, "IS_SSL"));
         account.setFrom(MapUtils.getString(mailMap, "MAIL"));
         account.setPass(MapUtils.getString(mailMap, "PASS"));
