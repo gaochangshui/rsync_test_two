@@ -12,6 +12,8 @@ public interface ClassicPriorityOrderCompareJanDataMapper {
 
     List<PriorityOrderCompareJanData> getPatternNewCompare(String companyCd,Integer priorityOrderCd);
     List<PriorityOrderCompareJanData> getAllNewCompare(String companyCd,Integer priorityOrderCd);
+
+    Integer getAllSaleForecast(String companyCd,Integer priorityOrderCd);
     List<PriorityOrderCompareJanData> getAllOldCompare(String companyCd,Integer priorityOrderCd);
 
     List<Integer> getPatternList(String companyCd, Integer priorityOrderCd);

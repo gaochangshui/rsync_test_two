@@ -577,20 +577,25 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<PriorityOrderCompareJanData> patternOldCompare = classicPriorityOrderCompareJanDataMapper.getPatternOldCompare(companyCd,priorityOrderCd);
         List<PriorityOrderCompareJanData> allNewCompare = classicPriorityOrderCompareJanDataMapper.getAllNewCompare(companyCd,priorityOrderCd);
         List<PriorityOrderCompareJanData> allOldCompare = classicPriorityOrderCompareJanDataMapper.getAllOldCompare(companyCd,priorityOrderCd);
+        Integer allSaleForecast = classicPriorityOrderCompareJanDataMapper.getAllSaleForecast(companyCd, priorityOrderCd);
         patternNewCompare
                 .forEach(map -> {
-                    patternOldCompare.forEach(oldPts->{
-                        if (oldPts.getShelfPatternCd().equals(map.getShelfPatternCd())){
-                            map.setFaceOld(oldPts.getFaceOld());
-                            map.setSkuOld(oldPts.getSkuOld());
-                            map.setFaceCompare(map.getFaceNew()-oldPts.getFaceOld());
-                            map.setSkuCompare(map.getSkuNew()-oldPts.getSkuOld());
-                        }
-                    });
+
                     patternBranchList.forEach(branch->{
                         if (branch.get(MagicString.SHELF_PATTERN_CD).equals(map.getShelfPatternCd())){
                             String branchs = branch.get(MagicString.BRANCHNUM).toString();
                             map.setBranchNum(Arrays.asList(branchs.split(",")));
+                        }
+                    });
+                    patternOldCompare.forEach(oldPts->{
+                        if (oldPts.getShelfPatternCd().equals(map.getShelfPatternCd())){
+                            List<String> branchList = (List<String>)(map.getBranchNum());
+                            int sale = BigDecimal.valueOf((double) (map.getNewAmount()-oldPts.getOldAmount()) * branchList.size() /1000).setScale(0,BigDecimal.ROUND_UP).intValue();
+                            map.setFaceOld(oldPts.getFaceOld());
+                            map.setSkuOld(oldPts.getSkuOld());
+                            map.setFaceCompare(map.getFaceNew()-oldPts.getFaceOld());
+                            map.setSkuCompare(map.getSkuNew()-oldPts.getSkuOld());
+                            map.setSaleForecast(sale);
                         }
                     });
                     changeJan.forEach(map1 ->{
@@ -615,6 +620,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         allNewCompare.get(0).setSkuOld(allOldCompare.get(0).getSkuOld());
         allNewCompare.get(0).setFaceCompare(allNewCompare.get(0).getFaceNew()-allOldCompare.get(0).getFaceOld());
         allNewCompare.get(0).setSkuCompare(allNewCompare.get(0).getSkuNew()-allOldCompare.get(0).getSkuOld());
+        allNewCompare.get(0).setSaleForecast(allSaleForecast);
         List<List<PriorityOrderCompareJanData>> list = new ArrayList<>();
         list.add(allNewCompare);
         list.add(patternNewCompare);
@@ -741,19 +747,23 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         for (String s : attr) {
             map.put("attr_"+s,newPts.get("attr_"+s));
         }
-        int skuOldArea =(int) Math.round(Double.parseDouble(oldPts.getOrDefault(MagicString.SKU_NUM,0).toString())/ oldSkuSum*100);
-        int skuNewArea = (int) Math.round(Double.parseDouble(newPts.getOrDefault(MagicString.SKU_NUM,0).toString())/newSkuSum*100);
-        int faceOldArea =(int) Math.round(Double.parseDouble(oldPts.getOrDefault(MagicString.FACE_NUM,0).toString())/oldFaceSum*100);
-        int faceNewArea = (int) Math.round(Double.parseDouble(newPts.getOrDefault(MagicString.FACE_NUM,0).toString())/newFaceSum*100);
+        double skuOldArea = BigDecimal.valueOf(Double.parseDouble(oldPts.getOrDefault(MagicString.SKU_NUM, 0).toString()) / oldSkuSum * 100)
+                .setScale(1, BigDecimal.ROUND_UP).doubleValue();
+        double skuNewArea =  BigDecimal.valueOf(Double.parseDouble(newPts.getOrDefault(MagicString.SKU_NUM,0).toString())/newSkuSum*100)
+                .setScale(1,BigDecimal.ROUND_UP).doubleValue();
+        double faceOldArea = BigDecimal.valueOf(Double.parseDouble(oldPts.getOrDefault(MagicString.FACE_NUM,0).toString())/oldFaceSum*100)
+                .setScale(1,BigDecimal.ROUND_UP).doubleValue();
+        double faceNewArea =  BigDecimal.valueOf(Double.parseDouble(newPts.getOrDefault(MagicString.FACE_NUM,0).toString())/newFaceSum*100)
+                .setScale(1,BigDecimal.ROUND_UP).doubleValue();
         map.put("skuNew",newPts.getOrDefault(MagicString.SKU_NUM,0));
         map.put("skuOld",oldPts.getOrDefault(MagicString.SKU_NUM,0));
         map.put("skuCompare",Integer.parseInt(newPts.getOrDefault(MagicString.SKU_NUM,0).toString())-Integer.parseInt(oldPts.getOrDefault(MagicString.SKU_NUM,0).toString()));
         map.put("skuOldArea",skuOldArea+MagicString.PERCENTAGE);
         map.put("skuNewArea",skuNewArea+MagicString.PERCENTAGE);
-        map.put("skuCompareArea",skuNewArea-skuOldArea+MagicString.PERCENTAGE);
+        map.put("skuCompareArea",BigDecimal.valueOf(skuNewArea-skuOldArea).setScale(1,BigDecimal.ROUND_UP).doubleValue()+MagicString.PERCENTAGE);
         map.put("faceNew",newPts.getOrDefault(MagicString.FACE_NUM,0));
         map.put("faceOld",oldPts.getOrDefault(MagicString.FACE_NUM,0));
-        map.put("faceCompare",Integer.parseInt(newPts.getOrDefault(MagicString.FACE_NUM,0).toString())-Integer.parseInt(oldPts.getOrDefault(MagicString.FACE_NUM,0).toString()));
+        map.put("faceCompare",BigDecimal.valueOf(faceNewArea-faceOldArea).setScale(1,BigDecimal.ROUND_UP).doubleValue()+MagicString.PERCENTAGE);
         map.put("faceOldArea",faceOldArea+MagicString.PERCENTAGE);
         map.put("faceNewArea",faceNewArea+MagicString.PERCENTAGE);
         map.put("faceCompareArea",faceNewArea-faceOldArea+MagicString.PERCENTAGE);
