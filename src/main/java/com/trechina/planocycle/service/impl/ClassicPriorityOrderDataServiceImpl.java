@@ -578,9 +578,20 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<PriorityOrderCompareJanData> allNewCompare = classicPriorityOrderCompareJanDataMapper.getAllNewCompare(companyCd,priorityOrderCd);
         List<PriorityOrderCompareJanData> allOldCompare = classicPriorityOrderCompareJanDataMapper.getAllOldCompare(companyCd,priorityOrderCd);
         Integer allSaleForecast = classicPriorityOrderCompareJanDataMapper.getAllSaleForecast(companyCd, priorityOrderCd);
+        patternOldCompare.forEach(map->{
+            if (patternNewCompare.stream().noneMatch(oldMap->oldMap.getShelfPatternCd().equals(map.getShelfPatternCd()))) {
+                PriorityOrderCompareJanData priorityOrderCompareJanData = new PriorityOrderCompareJanData();
+                priorityOrderCompareJanData.setNewAmount(0);
+                priorityOrderCompareJanData.setShelfPatternName(map.getShelfPatternName());
+                priorityOrderCompareJanData.setShelfPatternCd(map.getShelfPatternCd());
+                priorityOrderCompareJanData.setShelfName(map.getShelfName());
+                priorityOrderCompareJanData.setSkuNew(0);
+                priorityOrderCompareJanData.setFaceNew(0);
+                patternNewCompare.add(priorityOrderCompareJanData);
+            }
+        });
         patternNewCompare
                 .forEach(map -> {
-
                     patternBranchList.forEach(branch->{
                         if (branch.get(MagicString.SHELF_PATTERN_CD).equals(map.getShelfPatternCd())){
                             String branchs = branch.get(MagicString.BRANCHNUM).toString();

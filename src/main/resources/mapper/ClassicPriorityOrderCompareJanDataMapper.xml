@@ -234,18 +234,29 @@
             priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getPatternOldCompare" resultType="com.trechina.planocycle.entity.dto.PriorityOrderCompareJanData">
-        select sum(face_count) "faceOld",count(distinct jan) "skuOld",pattern.shelf_pattern_cd,
-               sum(resultdata.branch_amount_upd ::INTEGER) "oldAmount"
+        select sum
+                   ( face_count ) "faceOld",
+               count ( distinct jan ) "skuOld",
+               pattern.shelf_pattern_cd,
+               sum ( resultdata.branch_amount_upd :: INTEGER ) "oldAmount",
+               shelf_name_cd as "shelfCd",
+               shelf_name as "shelfName",
+               shelf_pattern_name as "shelfPatternName"
         from
             priority.priority_order_pattern pattern
-                left join planocycle.shelf_pts_data ptsdata
-                          on ptsdata.shelf_pattern_cd = pattern.shelf_pattern_cd
-                left join planocycle.shelf_pts_data_jandata newdata
-                          on ptsdata.id = newdata.pts_cd
-                left join priority.priority_order_result_data resultdata on resultdata.priority_order_cd = #{priorityOrderCd}
+                left join planocycle.shelf_pts_data ptsdata on ptsdata.shelf_pattern_cd = pattern.shelf_pattern_cd
+                left join planocycle.shelf_pts_data_jandata newdata on ptsdata.id = newdata.pts_cd
+                left join priority.priority_order_result_data resultdata on resultdata.priority_order_cd = 841
                 and resultdata.jan_old = newdata.jan
-        where pattern.priority_order_cd = #{priorityOrderCd}
-        GROUP BY pattern.shelf_pattern_cd;
+                LEFT join planocycle.shelf_pattern_mst patternmst on patternmst.shelf_pattern_cd = ptsdata.shelf_pattern_cd
+                LEFT join planocycle.shelf_name_mst namemst on patternmst.shelf_name_cd = namemst.id
+        where
+            pattern.priority_order_cd = 841
+        GROUP BY
+            pattern.shelf_pattern_cd,
+            shelf_pattern_name,
+            shelf_name,
+            shelf_name_cd;
     </select>
     <select id="getAllOldCompare" resultType="com.trechina.planocycle.entity.dto.PriorityOrderCompareJanData">
         select sum(face_count) "faceOld",count(distinct jan)"skuOld" from planocycle.shelf_pts_data_jandata newdata where pts_cd  in(
@@ -258,7 +269,7 @@
     </select>
     <select id="getAllSaleForecast" resultType="java.lang.Integer">
         select
-            round(sum(branch_amount_upd :: integer * difference)/1000)
+            sum(sale_forecast)
         from
             priority.priority_order_result_data resultdata
         where  resultdata.priority_order_cd = #{priorityOrderCd}
