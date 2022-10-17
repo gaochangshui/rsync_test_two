@@ -54,7 +54,9 @@ public class LogAspect {
     private String projectIds;
     //定義切入点
     //只要加了MonitorLog注解的方法，就是切入点
-    @Pointcut("execution(public * com.trechina.planocycle.service..*.*(..))")
+    @Pointcut("execution(public * com.trechina.planocycle.service..*.*(..)) && !execution(* com.trechina.planocycle.service.MstJanService.syncJanData(..))" +
+            "&& !execution(* com.trechina.planocycle.service.MstBranchService.syncTenData(..))"+
+            "&& !execution(* com.trechina.planocycle.service.TableTransferService.syncZokuseiMst(..))")
     public void point(){ // default implementation ignored
          }
 

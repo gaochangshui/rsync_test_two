@@ -51,7 +51,6 @@ public class ScheduleTask {
     private SysConfigMapper sysConfigMapper;
 
     @Scheduled(cron = "0 0 7 * * ?")
-    @PostConstruct
     public void MasterInfoSync(){
 //        logger.info("定時調度任務--attr表同期開始");
 //        tableTransferService.getAttrTransfer();
