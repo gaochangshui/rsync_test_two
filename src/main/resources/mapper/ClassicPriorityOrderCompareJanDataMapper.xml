@@ -246,12 +246,12 @@
             priority.priority_order_pattern pattern
                 left join planocycle.shelf_pts_data ptsdata on ptsdata.shelf_pattern_cd = pattern.shelf_pattern_cd
                 left join planocycle.shelf_pts_data_jandata newdata on ptsdata.id = newdata.pts_cd
-                left join priority.priority_order_result_data resultdata on resultdata.priority_order_cd = 841
+                left join priority.priority_order_result_data resultdata on resultdata.priority_order_cd = #{priorityOrderCd}
                 and resultdata.jan_old = newdata.jan
                 LEFT join planocycle.shelf_pattern_mst patternmst on patternmst.shelf_pattern_cd = ptsdata.shelf_pattern_cd
                 LEFT join planocycle.shelf_name_mst namemst on patternmst.shelf_name_cd = namemst.id
         where
-            pattern.priority_order_cd = 841
+            pattern.priority_order_cd = #{priorityOrderCd}
         GROUP BY
             pattern.shelf_pattern_cd,
             shelf_pattern_name,

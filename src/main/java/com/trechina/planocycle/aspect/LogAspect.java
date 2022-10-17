@@ -76,8 +76,11 @@ public class LogAspect {
         String s = JSON.toJSONString(ex);
         String params = jsonArray.toString();
         executor.execute(()-> logMapper.saveErrorLog(targetName+"_"+methodName, params,s));
-
-        this.errInfoForEmail(ex.getMessage(),methodName,params);
+        try {
+            this.errInfoForEmail(ex.getMessage(),methodName,params);
+        } catch (Exception e) {
+            log.error("メールにエラーが発生しました");
+        }
     }
 
     public  void setTryErrorLog(Exception ex, Object[] o) {
@@ -88,7 +91,12 @@ public class LogAspect {
         String path = ex.getStackTrace()[0].getFileName()+"_"+ex.getStackTrace()[0].getMethodName();
         StackTraceElement stackTraceElement = ex.getStackTrace()[0];
         executor.execute(()-> logMapper.saveErrorLog(path, params,s));
-        this.errInfoForEmail(ex.getMessage(),stackTraceElement.getMethodName(),params);
+
+        try {
+            this.errInfoForEmail(ex.getMessage(),stackTraceElement.getMethodName(),params);
+        } catch (Exception e) {
+           log.error("メールにエラーが発生しました");
+        }
     }
 
     public  void errInfoForEmail(String errMsg,String method,String params){

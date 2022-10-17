@@ -90,7 +90,6 @@ public class MstBranchServiceImpl implements MstBranchService {
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
-    @Transactional
     @Override
     public Map<String, Object> syncTenData(String env) {
         List<Map<String, Object>> syncResults = new ArrayList<>();

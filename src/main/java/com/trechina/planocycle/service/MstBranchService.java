@@ -8,7 +8,6 @@ import java.util.Map;
 public interface MstBranchService {
     Map<String,Object> getBranchInfo(BranchList branchList);
 
-    @Transactional
     Map<String, Object> syncTenData(String env);
     Map<String, Object> setBranchInfo(List<BranchList> branchList);
 }

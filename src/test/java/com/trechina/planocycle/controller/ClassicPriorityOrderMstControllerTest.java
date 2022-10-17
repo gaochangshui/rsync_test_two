@@ -206,9 +206,9 @@ public class ClassicPriorityOrderMstControllerTest {
 
                     JSONObject resultJson = JSONObject.parseObject(result);
                     Assert.assertEquals(resultJson.getInteger("code"), ResultEnum.SUCCESS.getCode());
-                    String reciveTaskId = resultJson.getString("data");
-                    if(!Strings.isNullOrEmpty(reciveTaskId)){
-                        savePriority(data, priorityOrderDataDto, reciveTaskId);
+                    String receiveTaskId = resultJson.getString("data");
+                    if(!Strings.isNullOrEmpty(receiveTaskId)){
+                        savePriority(data, priorityOrderDataDto, receiveTaskId);
                     }
                 });
     }
