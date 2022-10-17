@@ -177,4 +177,6 @@ public interface MstJanMapper {
     void deleteJanIsNull(String tableNameInfoWK);
 
     void createJanPreset(String companyCd,String classCd);
+
+    String selectCompanyName(String companyCd);
 }
