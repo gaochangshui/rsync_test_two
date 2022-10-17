@@ -12,12 +12,14 @@ public class PriorityOrderCompareJanData {
     private Integer skuNew;
     private Integer skuOld;
     private Integer skuCompare;
-    private Integer skuAdd;
-    private Integer skuCut;
+    private Integer skuAdd = 0;
+    private Integer skuCut = 0;
     private Integer faceOld;
     private Integer faceNew;
     private Integer faceCompare;
     private String ptsOld = "PTS旧";
     private String ptsNew = "PTS新";
+    private Integer oldAmount;
+    private Integer newAmount;
 
 }

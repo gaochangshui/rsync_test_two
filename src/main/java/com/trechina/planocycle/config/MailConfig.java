@@ -9,9 +9,12 @@ import java.util.Map;
 public class MailConfig {
     class LocalMailConfig{
         public static final String MAIL1 = "10218504chen_ke";
+        //public static final String MAIL1 = "planocyclesystem";
         public static final String MAIL2 = "cn.tre-inc.com";
 
         public static final String PASS = "chTRE10218504";
+        //public static final String PASS = "planocycleqdtre";
+
         public static final String SMTP = "cn.tre-inc.com";
         public static final boolean IS_SSL = false;
     }
@@ -36,7 +39,7 @@ public class MailConfig {
 
     public static MailAccount getMailAccount(boolean isCloud){
         MailAccount account = new MailAccount();
-        Map<String, Object> mailMap = MailConfig.getMailConfig(isCloud);
+        Map<String, Object> mailMap = MailConfig.getMailConfig(false);
         account.setAuth(true);
         account.setDebug(true);
         account.setSslEnable(MapUtils.getBoolean(mailMap, "IS_SSL"));
