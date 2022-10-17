@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -50,6 +51,7 @@ public class ScheduleTask {
     private SysConfigMapper sysConfigMapper;
 
     @Scheduled(cron = "0 0 7 * * ?")
+    @PostConstruct
     public void MasterInfoSync(){
 //        logger.info("定時調度任務--attr表同期開始");
 //        tableTransferService.getAttrTransfer();
@@ -63,6 +65,7 @@ public class ScheduleTask {
         //tableTransferService.getJanInfoTransfer();
         LocalDateTime start = LocalDateTime.now();
         String env = sysConfigMapper.selectSycConfig("env");
+        logger.info("start sync...");
         Map<String, Object> janInfoResult = mstJanService.syncJanData(env);
         Map<String, Object> tenInfoResult = mstBranchService.syncTenData(env);
         LocalDateTime end = LocalDateTime.now();
@@ -76,20 +79,32 @@ public class ScheduleTask {
         if(Objects.equals(MapUtils.getInteger(janInfoResult, "code"), ResultEnum.SUCCESS.getCode())){
             List<Map<String, Object>> data = (List<Map<String, Object>>) MapUtils.getObject(janInfoResult, "data");
             for (Map<String, Object> datum : data) {
-                String msg = "<p style='text-indent: 30px'>%s-%s:%s,%d条</p>";
-                janResult += String.format(msg, MapUtils.getString(datum, MagicString.COMPANY_CD),
+                String msg = "<p style=\"margin-left: 30px\">{0}-{1}:{2},{3}条</p>";
+                String errorMsg = "";
+                if(datum.containsKey("error")){
+                    msg+="<p style=\"margin-left: 30px\">异常信息: {4}</p>";
+                    errorMsg = ((Exception) datum.get("error")).getMessage();
+                }
+
+                janResult += MessageFormat.format(msg, MapUtils.getString(datum, MagicString.COMPANY_CD),
                         MapUtils.getString(datum, "classCd"), MapUtils.getString(datum, "result"),
-                        MapUtils.getInteger(datum, "count"));
+                        MapUtils.getInteger(datum, "count"), errorMsg);
             }
         }
 
         if(Objects.equals(MapUtils.getInteger(tenInfoResult, "code"), ResultEnum.SUCCESS.getCode())){
             List<Map<String, Object>> data = (List<Map<String, Object>>) MapUtils.getObject(tenInfoResult, "data");
             for (Map<String, Object> datum : data) {
-                String msg = "<p style='text-indent: 30px'>%s-%s:%s,%d条</p>";
-                tenResult += String.format(msg, MapUtils.getString(datum, MagicString.COMPANY_CD),
+                String msg = "<p style=\"margin-left: 30px\">{0}-{1}:{2},{3}条</p>";
+                String errorMsg = "";
+                if(datum.containsKey("error")){
+                    msg+="<p style=\"margin-left: 30px\">异常信息: {4}</p>";
+                    errorMsg = ((Exception) datum.get("error")).getMessage();
+                }
+
+                tenResult += MessageFormat.format(msg, MapUtils.getString(datum, MagicString.COMPANY_CD),
                         MapUtils.getString(datum, "classCd"), MapUtils.getString(datum, "result"),
-                        MapUtils.getInteger(datum, "count"));
+                        MapUtils.getInteger(datum, "count"),errorMsg);
             }
         }
 
@@ -98,6 +113,7 @@ public class ScheduleTask {
                 formatter.format(start), formatter.format(end), Duration.between(start, end).toMillis());
         MailUtils.sendEmail(account, MagicString.TO_MAIL, title, content);
         tableTransferService.syncZokuseiMst();
+        logger.info("end sync...");
     }
 
     @Scheduled(cron = "0 5 0 * * ?")
