@@ -131,8 +131,6 @@ public class MstBranchServiceImpl implements MstBranchService {
             String title = MessageFormat.format("「{0}」同期发生异常:不明なエラーが発生しました", env);
             String content = String.format(MailConfig.MAIL_EXCEPTION_TEMPLATE, "syncTenData", e.getMessage());
             MailUtils.sendEmail(account, MagicString.TO_MAIL, title, content);
-
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
 
         return ResultMaps.result(ResultEnum.FAILURE.getCode(), "Ten同期失败しました");
