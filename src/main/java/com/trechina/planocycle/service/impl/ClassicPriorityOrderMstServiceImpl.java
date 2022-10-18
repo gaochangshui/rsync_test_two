@@ -181,7 +181,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> setPriorityOrderMst(PriorityOrderMstDto priorityOrderMstDto) {
-        int i = 1/0;
         String taskID = priorityOrderMstDto.getTaskID();
         Future<?> future = null;
         String authorCd = session.getAttribute("aud").toString();
