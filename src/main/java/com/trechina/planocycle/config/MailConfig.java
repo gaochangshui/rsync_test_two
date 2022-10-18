@@ -1,9 +1,12 @@
 package com.trechina.planocycle.config;
 
+import cn.hutool.extra.mail.Mail;
 import cn.hutool.extra.mail.MailAccount;
 import com.google.common.collect.ImmutableMap;
+import com.sun.mail.util.MailSSLSocketFactory;
 import org.apache.commons.collections4.MapUtils;
 
+import java.security.GeneralSecurityException;
 import java.util.Map;
 
 public class MailConfig {
@@ -18,11 +21,27 @@ public class MailConfig {
     }
 
     static class CloudMailConfig{
-        public static final String MAIL1 = "planocycleSystem";
-        public static final String MAIL2 = "cn.tre-inc.com";
-        public static final String PASS = "chTRE@BiaoG888";
-        public static final String SMTP = "cn.tre-inc.com";
-        public static final boolean IS_SSL = false;
+        public static final String MAIL1 = "planocycle.retailai";
+        public static final String MAIL2 = "gmail.com";
+        public static final String PASS = "planocycleqdtre";
+        public static final String SMTP = "smtp.gmail.com";
+        public static final boolean IS_SSL = true;
+    }
+
+    public static void main(String[] args) {
+        MailSSLSocketFactory sf = null;
+        try {
+            sf = new MailSSLSocketFactory();
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        }
+        sf.setTrustAllHosts(true);
+        MailAccount mailAccount = getMailAccount(true);
+        mailAccount.setPort(465);
+        mailAccount.setStarttlsEnable(true);
+        mailAccount.setCustomProperty("mail.smtp.ssl.socketFactory", sf);
+        Mail.create(mailAccount).setTos("10218504chen_ke@cn.tre-inc.com")
+                .setTitle("test").setContent("test").send();
     }
 
     static Map<String, Object> getMailConfig(boolean isCloud){
@@ -37,9 +56,9 @@ public class MailConfig {
 
     public static MailAccount getMailAccount(boolean isCloud){
         MailAccount account = new MailAccount();
-        Map<String, Object> mailMap = MailConfig.getMailConfig(false);
+        Map<String, Object> mailMap = MailConfig.getMailConfig(isCloud);
         account.setAuth(true);
-        account.setDebug(false);
+        account.setDebug(true);
         account.setSslEnable(MapUtils.getBoolean(mailMap, "IS_SSL"));
         account.setFrom(MapUtils.getString(mailMap, "MAIL"));
         account.setPass(MapUtils.getString(mailMap, "PASS"));
