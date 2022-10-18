@@ -463,6 +463,7 @@ public class BasicPatternMstServiceImpl implements BasicPatternMstService {
             }
 
             getCommonPartsDataDto.setStoreIsCore(isCompanyCd);
+            getCommonPartsDataDto.setStoreIsCoreNum(storeIsCore);
             getCommonPartsDataDto.setStoreMstClass(storeMstClass);
             getCommonPartsDataDto.setStoreInfoTable(MessageFormat.format("\"{0}\".ten_{1}_ten_info", isCompanyCd, storeMstClass));
         }

@@ -44,6 +44,8 @@ public class GetCommonPartsDataDto {
 
     private String storeIsCore;
 
+    private String storeIsCoreNum;
+
     private String storeMstClass;
 
 

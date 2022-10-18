@@ -516,7 +516,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             for (Map<String, Object> data : patternCommonPartsData) {
                 String commonPartsData = MapUtils.getString(data, "common_parts_data");
                 GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
-                tenTableName.put(commonTableName.getStoreInfoTable(), commonTableName.getStoreIsCore());
+                tenTableName.put(commonTableName.getStoreInfoTable(), commonTableName.getStoreIsCoreNum());
             }
 
             Integer shelfPatternCd = pattern.getShelfPatternCd();
@@ -690,7 +690,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 for (Map<String, Object> data : patternCommonPartsData) {
                     String commonPartsData = MapUtils.getString(data, "common_parts_data");
                     GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
-                    tenTableName.put(commonTableName.getStoreInfoTable(), commonTableName.getStoreIsCore());
+                    tenTableName.put(commonTableName.getStoreInfoTable(), commonTableName.getStoreIsCoreNum());
                 }
 
                 Integer shelfPatternCd = pattern.getShelfPatternCd();
@@ -958,7 +958,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 for (Map<String, Object> data : patternCommonPartsData) {
                     String commonPartsData = MapUtils.getString(data, "common_parts_data");
                     GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
-                    tenTableName.put(commonTableName.getStoreInfoTable(), commonTableName.getStoreIsCore());
+                    tenTableName.put(commonTableName.getStoreInfoTable(), commonTableName.getStoreIsCoreNum());
                 }
 
                 List<Map<String, Object>> patternBranches = shelfPatternBranchMapper.selectAllPatternBranch(priorityOrderCd, companyCd, tenTableName, patternCd);
