@@ -483,6 +483,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             finalAdoptJan.addAll(oldJanList);
         }
 
+        //exchange jan position, old jan revert to old position
         for (int i = 0; i < finalAdoptJan.size(); i++) {
             if(Thread.currentThread().isInterrupted()){
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -494,6 +495,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             Integer oldTaiCd = dataDto.getOldTaiCd();
             Integer oldTanaCd = dataDto.getOldTanaCd();
             Integer oldTanaPositionCd = dataDto.getOldTanapositionCd();
+            Long oldFace = dataDto.getFace();
 
             if(dataDto.getOldTaiCd()!=null && (!Objects.equals(oldTaiCd+"_"+oldTanaCd+"_"+oldTanaPositionCd,
                     dataDto.getTaiCd()+"_"+dataDto.getTanaCd()+ "_"+dataDto.getTanapositionCd()))){
@@ -514,20 +516,28 @@ public class CommonMstServiceImpl implements CommonMstService {
                     BeanUtils.copyProperties(oldPositionJan, dataDto);
                     dataDto.setTaiCd(tmp.getTaiCd());
                     dataDto.setTanaCd(tmp.getTanaCd());
+                    dataDto.setFace(tmp.getFace());
                     dataDto.setTanapositionCd(tmp.getTanapositionCd());
 
                     BeanUtils.copyProperties(tmp, oldPositionJan);
                     oldPositionJan.setTaiCd(oldTaiCd);
                     oldPositionJan.setTanaCd(oldTanaCd);
+                    oldPositionJan.setFace(oldFace);
                     oldPositionJan.setTanapositionCd(oldTanaPositionCd);
 
                     finalAdoptJan.set(oldIndex, oldPositionJan);
                     finalAdoptJan.set(i, dataDto);
                 }else{
-                    dataDto.setTaiCd(oldTaiCd);
-                    dataDto.setTanaCd(oldTanaCd);
-                    dataDto.setTanapositionCd(oldTanaPositionCd);
-                    finalAdoptJan.set(i, dataDto);
+                    //check old position contains current group
+                    if(relationMap.stream().anyMatch(map->taiTanaEquals(MapUtils.getInteger(map, "tai_cd"),
+                            oldTaiCd, MapUtils.getInteger(map, "tana_cd"), oldTanaCd) &&
+                            Objects.equals(MapUtils.getLong(map, "restrict_cd"), dataDto.getRestrictCd()))){
+                        dataDto.setTaiCd(oldTaiCd);
+                        dataDto.setTanaCd(oldTanaCd);
+                        dataDto.setFace(oldFace);
+                        dataDto.setTanapositionCd(oldTanaPositionCd);
+                        finalAdoptJan.set(i, dataDto);
+                    }
                 }
             }
         }
@@ -670,6 +680,7 @@ public class CommonMstServiceImpl implements CommonMstService {
             jan.setOldTaiCd(jan.getTaiCd());
             jan.setOldTanaCd(jan.getTanaCd());
             jan.setOldTanapositionCd(jan.getTanapositionCd());
+            jan.setFaceFact(jan.getFace());
 
             relation.put("areaFlag", 0);
             if (!backupJans.isEmpty() && (backupJans.stream().anyMatch(dto->janOld.equals(dto.getJanCd())
@@ -771,6 +782,7 @@ public class CommonMstServiceImpl implements CommonMstService {
                 newJanDto.setTaiCd(Integer.parseInt(taiCd));
                 newJanDto.setTanaCd(Integer.parseInt(tanaCd));
                 newJanDto.setFaceFact(face);
+                newJanDto.setFace(face);
                 newJanDto.setAdoptFlag(1);
                 adoptJanByTaiTana.add(newJanDto);
                 jan.setAdoptFlag(1);
