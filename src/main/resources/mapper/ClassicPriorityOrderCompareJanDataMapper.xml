@@ -8,8 +8,8 @@
             shelf_pattern_name as "shelfPatternName", --棚パターン
             newdata.shelf_pattern_cd as "shelfPatternCd",
             count ( DISTINCT newdata.jan ) "skuNew",
-            sum (  newdata.face_count ) "faceNew",
-            sum(resultdata.branch_amount_upd ::INTEGER) "newAmount"   --売上増減予測
+            sum (  newdata.face_count ) "faceNew"
+--                ,  sum(resultdata.branch_amount_upd ::INTEGER) "newAmount"   --売上増減予測
         from
             priority.priority_order_pts_result_jandata newdata
                 LEFT join planocycle.shelf_pattern_mst patternmst on patternmst.shelf_pattern_cd = newdata.shelf_pattern_cd
@@ -238,7 +238,7 @@
                    ( face_count ) "faceOld",
                count ( distinct jan ) "skuOld",
                pattern.shelf_pattern_cd,
-               sum ( resultdata.branch_amount_upd :: INTEGER ) "oldAmount",
+--                sum ( resultdata.branch_amount_upd :: INTEGER ) "oldAmount",
                shelf_name_cd as "shelfCd",
                shelf_name as "shelfName",
                shelf_pattern_name as "shelfPatternName"
@@ -273,5 +273,35 @@
         from
             priority.priority_order_result_data resultdata
         where  resultdata.priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getOldAmountNum" resultType="java.util.Map">
+        SELECT sum ( resultdata.branch_amount_upd ::INTEGER ) "amount",shelf_pattern_cd "shelfPatternCd" from (
+              select distinct jan,ptsdata.shelf_pattern_cd
+              from
+                  priority.priority_order_pattern pattern
+                      left join planocycle.shelf_pts_data ptsdata on ptsdata.shelf_pattern_cd = pattern.shelf_pattern_cd
+                      left join planocycle.shelf_pts_data_jandata newdata on ptsdata.id = newdata.pts_cd
+              where pattern.priority_order_cd  = #{priorityOrderCd}
+          ) a
+
+              left join priority.priority_order_result_data resultdata on resultdata.priority_order_cd  = #{priorityOrderCd}
+            and resultdata.jan_old = a.jan
+        GROUP BY
+            shelf_pattern_cd
+    </select>
+    <select id="getNewAmountNum" resultType="java.util.Map">
+
+        SELECT sum ( resultdata.branch_amount_upd ::INTEGER ) "amount",shelf_pattern_cd "shelfPatternCd" from (
+              select distinct jan,shelf_pattern_cd
+              from priority.priority_order_pts_result_jandata newdata
+              where
+                  newdata.priority_order_cd = #{priorityOrderCd}
+          ) a
+
+              left join priority.priority_order_result_data resultdata on resultdata.priority_order_cd = #{priorityOrderCd}
+            and resultdata.jan_new = a.jan
+
+        GROUP BY
+            shelf_pattern_cd;
     </select>
 </mapper>

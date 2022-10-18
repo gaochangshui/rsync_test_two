@@ -20,4 +20,6 @@ public class ParamConfigController {
 
         return paramConfigService.getParamConfigList(showItemCheck);
     }
+
+
 }
