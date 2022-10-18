@@ -5,4 +5,6 @@ import java.util.Map;
 public interface ParamConfigService {
 
     Map<String, Object> getParamConfigList(Integer showItemCheck);
+
+    Map<String, Object> getCompanyConfig(Map<String, Object> map);
 }

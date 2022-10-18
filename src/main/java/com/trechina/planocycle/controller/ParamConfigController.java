@@ -22,4 +22,9 @@ public class ParamConfigController {
     }
 
 
+    @GetMapping("")
+    public Map<String,Object> getCompanyConfig(Map<String,Object> map)  {
+
+        return paramConfigService.getCompanyConfig(map);
+    }
 }
