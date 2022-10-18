@@ -79,7 +79,7 @@ public class LogAspect {
         try {
             this.errInfoForEmail(ex.getMessage(),methodName,params);
         } catch (Exception e) {
-            log.error("メールにエラーが発生しました");
+            log.error("メールにエラーが発生しました",e);
         }
     }
 
@@ -95,7 +95,7 @@ public class LogAspect {
         try {
             this.errInfoForEmail(ex.getMessage(),stackTraceElement.getMethodName(),params);
         } catch (Exception e) {
-           log.error("メールにエラーが発生しました");
+           log.error("メールにエラーが発生しました",e);
         }
     }
 
