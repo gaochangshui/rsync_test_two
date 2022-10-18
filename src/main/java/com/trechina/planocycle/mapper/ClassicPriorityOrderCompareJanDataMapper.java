@@ -46,4 +46,8 @@ public interface ClassicPriorityOrderCompareJanDataMapper {
     List<String> getAllBranchList(String companyCd, Integer priorityOrderCd,String tableName,List<String> groupCompany);
 
     List<PriorityOrderCompareJanData> getPatternOldCompare(String companyCd, Integer priorityOrderCd);
+
+    List<Map<String,Object>> getOldAmountNum(String companyCd, Integer priorityOrderCd);
+
+    List<Map<String, Object>> getNewAmountNum(String companyCd, Integer priorityOrderCd);
 }

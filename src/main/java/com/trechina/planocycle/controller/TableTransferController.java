@@ -60,7 +60,7 @@ public class TableTransferController {
     public void syncZokuseiMst() {
         tableTransferService.syncZokuseiMst();
     }
-    @GetMapping("sync")
+    @GetMapping("/sync")
     @Async
     public void syncAllMst() {
         scheduleTask.MasterInfoSync();

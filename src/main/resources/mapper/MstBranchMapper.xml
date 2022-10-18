@@ -74,7 +74,7 @@
         insert into ${tableName}
         select *,0
         from
-        ${tableNameWK}
+        ${tableNameWK} where "1" !~* concat('^0', '{',"length"("1"),'}$')
         on
         conflict("1") do
         update

@@ -343,6 +343,7 @@ public class MagicString {
     public static final String UNIT_PRICE = "unit_price";
     public static final String DIFFERENCE = "difference";
     public static final String SALE_FORECAST = "sale_forecast";
+    public static final String AMOUNT = "amount";
     public static final String RANK_PROP = "rank_prop";
     public static final String GOODS_RANK = "goods_rank";
     public static final String PATTERN = "pattern";

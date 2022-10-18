@@ -373,7 +373,7 @@
             <foreach collection="colNameList" item="item" separator=",">
                 ${item}
             </foreach>
-               ,pos_amount,branch_amount,unit_price,branch_num,branch_amount_upd,branch_num_upd,sale_forecast,difference,
+               ,pos_amount,branch_amount,unit_price,branch_num,branch_amount_upd,branch_num_upd,sale_forecast,difference,goods_rank,
 
             case mst.rank when -1 then mst.rank else
             ROW_NUMBER() OVER (

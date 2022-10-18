@@ -629,3 +629,5 @@ Caused by: org.postgresql.util.PSQLException: ERROR: column "3" does not exist
 	... 72 common frames omitted
 20221017 12:35:50.687  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():350 - DatebookHikariCP - Shutdown initiated...
 20221017 12:35:50.691  [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close():352 - DatebookHikariCP - Shutdown completed.
+20221017 15:40:46.281  [http-nio-8383-exec-2] INFO  com.trechina.planocycle.service.impl.ClassicPriorityOrderJanReplaceServiceImpl.getPriorityOrderJanInfo():61 - jan変の情報パラメータを取得する：0001,841
+20221017 15:40:46.556  [http-nio-8383-exec-2] INFO  com.trechina.planocycle.service.impl.ClassicPriorityOrderJanReplaceServiceImpl.getPriorityOrderJanInfo():70 - jan変の情報戻り値を取得する：[]
