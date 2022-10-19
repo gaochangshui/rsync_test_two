@@ -86,7 +86,7 @@
 
     </delete>
     <insert id="insert">
-        insert into basic_pattern_restrict_relation
+        insert into planocycle.basic_pattern_restrict_relation
         ( priority_order_cd,company_cd,author_cd
         ,tai_cd,tana_cd,tana_position
         ,restrict_cd,area)
@@ -95,7 +95,7 @@
         ,#{restrictCd,jdbcType=BIGINT},#{area,jdbcType=BIGINT})
     </insert>
     <insert id="insertSelective">
-        insert into basic_pattern_restrict_relation
+        insert into planocycle.basic_pattern_restrict_relation
         <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="priorityOrderCd != null">priority_order_cd,</if>
                 <if test="companyCd != null">company_cd,</if>
@@ -118,7 +118,7 @@
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.trechina.planocycle.entity.po.BasicPatternRestrictRelation">
-        update basic_pattern_restrict_relation
+        update planocycle.basic_pattern_restrict_relation
         <set>
                 <if test="priorityOrderCd != null">
                     priority_order_cd = #{priorityOrderCd,jdbcType=BIGINT},
@@ -148,7 +148,7 @@
         where  
     </update>
     <update id="updateByPrimaryKey" parameterType="com.trechina.planocycle.entity.po.BasicPatternRestrictRelation">
-        update basic_pattern_restrict_relation
+        update planocycle.basic_pattern_restrict_relation
         set 
             priority_order_cd =  #{priorityOrderCd,jdbcType=BIGINT},
             company_cd =  #{companyCd,jdbcType=VARCHAR},
@@ -235,7 +235,7 @@
     <select id="getTanaGroup" resultType="java.lang.Integer">
         select  restrict_cd from planocycle.work_basic_pattern_restrict_relation where
             priority_order_cd=#{item.priorityOrderCd} and company_cd=#{item.companyCd} and tai_cd = #{item.taiCd}
-                 and tana_cd = #{item.tanaCd} and area_postion = #{item.tanaPosition}
+                 and tana_cd = #{item.tanaCd} and area_position = #{item.tanaPosition}
     </select>
     <select id="getTanaInfo" resultType="java.util.Map">
         select  sum(area) area,restrict_cd
