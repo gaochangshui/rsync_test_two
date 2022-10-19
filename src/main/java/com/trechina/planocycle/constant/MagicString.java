@@ -364,9 +364,15 @@ public class MagicString {
     public static final String DEFAULT_TABLE = "prod_0000_jan_info";
     public static final String  PERCENTAGE = "%";
 
+    public static final String BASKET_PROD_CD = "basketProdCd";
+
     public static final Map<String, String> REASON_MAP = ImmutableMap.of("1", "rank_change", "2", "replace", "3",
             "capepak", "4", "must_not", "5", "pattern_duplicate");
 
     public static final String TO_MAIL = Joiner.on("@").join(Lists.newArrayList("planocyclesystem", "cn.tre-inc.com"));
+    public static final String F1 = "F1";
+    public static final String F2 = "F2";
+    public static final String F3 = "F3";
+    public static final String F4 = "F4";
 
 }

@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
@@ -114,6 +115,15 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         String prodAttrData = productPowerParam.getProdAttrData().toString();
         productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
         String singleJan =new Gson().toJson(productPowerParam.getSingleJan());
+
+        String basketProdCd = productPowerParam.getBasketProdCd();
+        if(!Strings.isNullOrEmpty(basketProdCd)){
+            JSONObject basketJson = new JSONObject();
+            basketJson.put("type", 0);
+            basketJson.put(MagicString.BASKET_PROD_CD, basketProdCd);
+            productPowerParam.setBasketProdCd(basketJson.toJSONString());
+        }
+
         productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd,newProductPowerCd
                 ,prodAttrData, singleJan);
 
@@ -244,8 +254,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
             vehicleNumCache.put(uuid+MagicString.DATA_STR, rankCalculate);
         } catch (Exception e) {
-            logAspect.errInfoForEmail(errMap,e,new Object[]{map});
             logger.error("rank計算失敗",e);
+            vehicleNumCache.put(uuid+MagicString.EXCEPTION, e.getMessage());
+            logAspect.errInfoForEmail(errMap,e,new Object[]{map});
         }
         });
 
@@ -281,6 +292,12 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 Object o = vehicleNumCache.get(taskID + MagicString.DATA_STR);
                 vehicleNumCache.remove(taskID+MagicString.DATA_STR);
                 return ResultMaps.result(ResultEnum.SUCCESS,o);
+            }
+
+            if(vehicleNumCache.get(taskID+MagicString.EXCEPTION) != null){
+                Object o = vehicleNumCache.get(taskID + MagicString.EXCEPTION);
+                vehicleNumCache.remove(taskID+MagicString.EXCEPTION);
+                return ResultMaps.result(ResultEnum.FAILURE,o);
             }
 
             if(Duration.between(now, LocalDateTime.now()).getSeconds() >MagicString.TASK_TIME_OUT_LONG){

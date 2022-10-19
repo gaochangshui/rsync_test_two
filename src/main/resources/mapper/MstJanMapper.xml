@@ -451,4 +451,34 @@
     <select id="selectCompanyName" resultType="string">
         select "2" from masterdb.kigyou_name where "1"=#{companyCd};
     </select>
+    <select id="getConvertNumbers" resultType="string">
+        select  convert_numbers
+        from  planocycle.sku_name_config
+        where company_cd = #{companyCd} and class = #{classCd}
+    </select>
+    <select id="getAttrConvertToNumber" resultType="java.lang.String">
+        select a  from (
+                          select distinct
+                              "array_to_string"(regexp_matches(case when "${colName}" !~ '\d' then '0' else "${colName}" end, '\d+'),',')  a
+                          from
+                              "${company}".prod_${classCd}_jan_info
+                          where
+                              "${colName}" != ''
+                      ) a
+            order by a::integer
+    </select>
+    <select id="getNewValue" resultType="object">
+        select b from (
+                          select DISTINCT
+                              "array_to_string"(regexp_matches(case when "${colCd}" !~ '\d' then '0' else "${colCd}" end, '\d+'),',') a ,"11" b
+                          from
+                            "${company}".prod_${classCd}_jan_info
+                          where
+                            "${colCd}" != ''
+                      ) a
+        where a.a in
+        <foreach collection="value" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

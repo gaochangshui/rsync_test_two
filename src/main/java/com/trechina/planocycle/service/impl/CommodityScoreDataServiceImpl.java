@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
@@ -243,7 +244,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String companyCd = map.get("company").toString();
         String commonPartsData = map.get(MagicString.COMMON_PARTS_DATA).toString();
 
-        map = this.dateChange(map,companyCd);
+        map = this.dateChange(map,companyCd, commonPartsData);
         String uuid1 = UUID.randomUUID().toString();
         String attrCondition =  this.attrList(map);
         map.put("attrCondition",attrCondition);
@@ -274,7 +275,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String taskQuery = cgiUtil.setPath("TaskQuery");
         String productPowerData = cgiUtil.setPath("ProductPowerData");
         String posResult = cgiUtil.postCgi(productPowerData, posMap, tokenInfo,smartPath);
-
 
         Map<String, Object> finalMap = map;
         Future<?> future = executor.submit(() -> {
@@ -363,8 +363,23 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         }
     }
-    public Map<String,Object> dateChange(Map<String,Object> map,String companyCd){
-        map.put("basketFlg",Integer.parseInt(map.get("showItemCheck").toString()) == 1?1:0);
+    public Map<String,Object> dateChange(Map<String,Object> map,String companyCd, String commonPartsData){
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        JSONObject jsonObject = JSON.parseObject(commonPartsData);
+        String basketIsCore = "";
+        String basketMstClass = "";
+        if(jsonObject.containsKey("basketIsCore")){
+            basketIsCore = jsonObject.getString("basketIsCore").equals("1")?coreCompany:jsonObject.getString("basketIsCore");
+            basketMstClass = jsonObject.getString("basketMstClass");
+        }
+
+        String basketProdCd = MapUtils.getString(map, "basketProdCd", "");
+        map.put("basketFlg",Strings.isNullOrEmpty(basketProdCd)?0:1);
+        map.put("basketprdcd", basketProdCd);
+        map.put("basketcompany", basketIsCore);
+        map.put("basketselected_shouhin", basketMstClass);
+
+        map.remove(MagicString.BASKET_PROD_CD);
         map.remove("showItemCheck");
         Integer paramCount = productPowerDataMapper.getParamCount(map);
         if (paramCount >0){
@@ -485,7 +500,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         StringBuilder finalValue = new StringBuilder();
 
         List<Object> list = (ArrayList<Object>) map.get("prodAttrData");
-
+        list = this.ConvertToNumber(list);
         if (!list.isEmpty()){
             for (Object o : list) {
                 Map<String,Object> proMap = (Map<String, Object>) o;
@@ -512,6 +527,25 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         return CommonUtil.defaultIfEmpty(finalValue.toString(),null);
 
+    }
+
+    private List<Object>  ConvertToNumber( List<Object> list) {
+        for (Object o : list) {
+            Map<String,Object> proMap = (Map<String, Object>) o;
+            String[] split = proMap.get("id").toString().split("_");
+            String company = split[0];
+            String classCd = split[1];
+            String colCd = split[2];
+            String convertNumbers = mstJanMapper.getConvertNumbers(company, classCd);
+            JSONArray jsonArray = JSONArray.parseArray(convertNumbers);
+            List<Object> value = (List<Object>)proMap.get("value");
+            if (jsonArray.stream().anyMatch(map->((JSONObject)map).get("col").equals(colCd))){
+                 value = mstJanMapper.getNewValue(value,company,classCd,colCd);
+                proMap.put("value",value);
+            }
+        }
+
+        return list;
     }
 
     /**
@@ -584,7 +618,24 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
        String classCd = attrLists.get(0).split("_")[1];
 
         List<Map<String,Object>> lists = new ArrayList<>();
+        String convertNumbers = mstJanMapper.getConvertNumbers(company, classCd);
+        JSONArray jsonArray = new JSONArray();
+        if (!Strings.isNullOrEmpty(convertNumbers)){
+             jsonArray = JSON.parseArray(convertNumbers);
+        }
+        //List<String> colList  = Arrays.asList(convertNumbers.split(",")) ;
+
         for (String list : attrLists) {
+            boolean flag = false;
+            String unit = "";
+            if (jsonArray.stream().anyMatch(map->((JSONObject)map).get("col").equals(list.split("_")[2]))) {
+                flag = true;
+                for (Object jsonObject : jsonArray) {
+                    if (((JSONObject)jsonObject).get("col").equals(list.split("_")[2])) {
+                        unit = ((JSONObject) jsonObject).getString("unit");
+                    }
+                }
+            }
             Map<String,Object> map = new HashMap<>();
             String attrNameForId = mstJanMapper.getAttrNameForId(list.split("_")[2], company, classCd);
             map.put("title",attrNameForId);
@@ -593,7 +644,14 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             map.put("value",new Object[]{});
             map.put("rmFlag",false);
             map.put("showFlag",false);
-            List<String> attrValueList = mstJanMapper.getAttrValueList(list.split("_")[2], company, classCd);
+            map.put("unit",unit);
+            map.put("range",false);
+            List<String> attrValueList = new ArrayList<>();
+            if (flag){
+                attrValueList = mstJanMapper.getAttrConvertToNumber(list.split("_")[2], company, classCd);
+            }else {
+                 attrValueList = mstJanMapper.getAttrValueList(list.split("_")[2], company, classCd);
+            }
             map.put("option",attrValueList);
             lists.add(map);
         }

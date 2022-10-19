@@ -17,6 +17,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -79,7 +80,7 @@ public class LogAspect {
         try {
             this.errInfoForEmail(ex.getMessage(),methodName,params);
         } catch (Exception e) {
-            log.error("メールにエラーが発生しました");
+            log.error("メールにエラーが発生しました",e);
         }
     }
 
@@ -95,7 +96,7 @@ public class LogAspect {
         try {
             this.errInfoForEmail(ex.getMessage(),stackTraceElement.getMethodName(),params);
         } catch (Exception e) {
-           log.error("メールにエラーが発生しました");
+           log.error("メールにエラーが発生しました",e);
         }
     }
 
@@ -160,6 +161,7 @@ public class LogAspect {
     }
 
 
+    @Async
     public  void errInfoForEmail(Map<String,Object>map ,Exception e, Object[] o){
         String url = map.get("url").toString();
         String authorCd = map.get("authorCd").toString();
