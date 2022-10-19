@@ -254,8 +254,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
             vehicleNumCache.put(uuid+MagicString.DATA_STR, rankCalculate);
         } catch (Exception e) {
-            logAspect.errInfoForEmail(errMap,e,new Object[]{map});
             logger.error("rank計算失敗",e);
+            vehicleNumCache.put(uuid+MagicString.EXCEPTION, e.getMessage());
+            logAspect.errInfoForEmail(errMap,e,new Object[]{map});
         }
         });
 
@@ -291,6 +292,12 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 Object o = vehicleNumCache.get(taskID + MagicString.DATA_STR);
                 vehicleNumCache.remove(taskID+MagicString.DATA_STR);
                 return ResultMaps.result(ResultEnum.SUCCESS,o);
+            }
+
+            if(vehicleNumCache.get(taskID+MagicString.EXCEPTION) != null){
+                Object o = vehicleNumCache.get(taskID + MagicString.EXCEPTION);
+                vehicleNumCache.remove(taskID+MagicString.EXCEPTION);
+                return ResultMaps.result(ResultEnum.FAILURE,o);
             }
 
             if(Duration.between(now, LocalDateTime.now()).getSeconds() >MagicString.TASK_TIME_OUT_LONG){
