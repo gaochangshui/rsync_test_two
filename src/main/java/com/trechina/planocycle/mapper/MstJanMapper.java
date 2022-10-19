@@ -146,7 +146,7 @@ public interface MstJanMapper {
     int deleteMultipleJan(List<String> janKaisouCol, String tableNameInfoWK);
 
 
-    List<String> getAttrValueList(String colName,String company,String classCd);
+    List<String> getAttrValueList(String colName,String company,String classCd );
 
     String getAttrNameForId(String colName, String company, String classCd);
 
@@ -179,4 +179,10 @@ public interface MstJanMapper {
     void createJanPreset(String companyCd,String classCd);
 
     String selectCompanyName(String companyCd);
+
+    String getConvertNumbers(String companyCd, String classCd);
+
+    List<String> getAttrConvertToNumber(String colName,String company,String classCd);
+
+    List<Object> getNewValue(List<Object> value,String company,String classCd,String colCd);
 }

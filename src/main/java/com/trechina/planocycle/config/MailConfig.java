@@ -23,7 +23,7 @@ public class MailConfig {
     //}
 
     static class CloudMailConfig{
-        public static final String MAIL1 = "planocycle.retailai";
+        public static final String MAIL1 = "yu556985";
         public static final String MAIL2 = "gmail.com";
         public static final String PASS = "pqsncazynwwiiypc";
         public static final String SMTP = "smtp.gmail.com";
