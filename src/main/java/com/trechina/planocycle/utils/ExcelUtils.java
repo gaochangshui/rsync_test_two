@@ -271,6 +271,7 @@ public class ExcelUtils {
         sizeList.add(((List<String>)paramMap.get("channelNm")).size());
         sizeList.add(((List<String>)paramMap.get("placeNm")).size());
         sizeList.add(janList.size());
+        sizeList.add(((List<Map<String,Object>>)paramMap.get("basketJanClassify")).size());
         int integer = 0;
         Optional<Integer> max = sizeList.stream().max(Integer::compare);
         if (max.isPresent()){
@@ -324,7 +325,7 @@ public class ExcelUtils {
                 headerColIndex +=1;
                 for (Map<String, Object> objectMap : kaisouHeader) {
                     cell = row.createCell(headerColIndex +=1 );
-                    cell.setCellValue(basketJanClassify.size()>i?kaisouList.get(i).get(objectMap.get("name")).toString():"");
+                    cell.setCellValue(basketJanClassify.size()>i?basketJanClassify.get(i).get(objectMap.get("name")).toString():"");
                 }
             }
         }
