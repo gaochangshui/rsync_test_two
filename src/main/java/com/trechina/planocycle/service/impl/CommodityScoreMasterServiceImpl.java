@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
@@ -301,7 +302,15 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setCompany(companyCd);
         powerParam.setProdAttrData(param.getProdAttrData());
         powerParam.setSingleJan(param.getSingleJan());
-        powerParam.setShowItemCheck(param.getShowItemCheck());
+        //powerParam.setShowItemCheck(param.getShowItemCheck());
+        String basketCondition = param.getBasketCondition();
+        if(Strings.isNullOrEmpty(basketCondition)){
+            powerParam.setBasketProdCd("");
+        }else{
+            JSONObject basketJson = JSON.parseObject(basketCondition);
+            powerParam.setBasketProdCd(basketJson.getString(MagicString.BASKET_PROD_CD));
+        }
+
         List<ReserveMstVo> reserve = productPowerDataMapper.getReserve(productPowerNo, companyCd);
         List<Object> dataAll = new ArrayList<>();
         dataAll.add(returnDataAttr);

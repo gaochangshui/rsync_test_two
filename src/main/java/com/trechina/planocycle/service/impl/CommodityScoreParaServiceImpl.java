@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
@@ -114,6 +115,15 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         String prodAttrData = productPowerParam.getProdAttrData().toString();
         productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
         String singleJan =new Gson().toJson(productPowerParam.getSingleJan());
+
+        String basketProdCd = productPowerParam.getBasketProdCd();
+        if(!Strings.isNullOrEmpty(basketProdCd)){
+            JSONObject basketJson = new JSONObject();
+            basketJson.put("type", 0);
+            basketJson.put(MagicString.BASKET_PROD_CD, basketProdCd);
+            productPowerParam.setBasketProdCd(basketJson.toJSONString());
+        }
+
         productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd,newProductPowerCd
                 ,prodAttrData, singleJan);
 

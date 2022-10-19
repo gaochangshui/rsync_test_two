@@ -26,5 +26,6 @@ public class ProductPowerParamVo {
     private Object prodAttrData;
     private Object singleJan;
     private Integer showItemCheck;
+    private String basketCondition;
 
 }

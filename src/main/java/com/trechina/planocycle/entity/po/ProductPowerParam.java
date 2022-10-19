@@ -29,6 +29,6 @@ public class ProductPowerParam {
     private Object prodAttrData;
     private Object singleJan;
     private Integer showItemCheck;
-
+    private String basketProdCd;
 
 }

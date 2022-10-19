@@ -243,7 +243,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String companyCd = map.get("company").toString();
         String commonPartsData = map.get(MagicString.COMMON_PARTS_DATA).toString();
 
-        map = this.dateChange(map,companyCd);
+        map = this.dateChange(map,companyCd, commonPartsData);
         String uuid1 = UUID.randomUUID().toString();
         String attrCondition =  this.attrList(map);
         map.put("attrCondition",attrCondition);
@@ -274,7 +274,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String taskQuery = cgiUtil.setPath("TaskQuery");
         String productPowerData = cgiUtil.setPath("ProductPowerData");
         String posResult = cgiUtil.postCgi(productPowerData, posMap, tokenInfo,smartPath);
-
 
         Map<String, Object> finalMap = map;
         Future<?> future = executor.submit(() -> {
@@ -363,8 +362,23 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         }
     }
-    public Map<String,Object> dateChange(Map<String,Object> map,String companyCd){
-        map.put("basketFlg",Integer.parseInt(map.get("showItemCheck").toString()) == 1?1:0);
+    public Map<String,Object> dateChange(Map<String,Object> map,String companyCd, String commonPartsData){
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        JSONObject jsonObject = JSON.parseObject(commonPartsData);
+        String basketIsCore = "";
+        String basketMstClass = "";
+        if(jsonObject.containsKey("basketIsCore")){
+            basketIsCore = jsonObject.getString("basketIsCore").equals("1")?coreCompany:jsonObject.getString("basketIsCore");
+            basketMstClass = jsonObject.getString("basketMstClass");
+        }
+
+        String basketProdCd = MapUtils.getString(map, "basketProdCd", "");
+        map.put("basketFlg",Strings.isNullOrEmpty(basketProdCd)?0:1);
+        map.put("basketprdcd", basketProdCd);
+        map.put("basketcompany", basketIsCore);
+        map.put("basketselected_shouhin", basketMstClass);
+
+        map.remove(MagicString.BASKET_PROD_CD);
         map.remove("showItemCheck");
         Integer paramCount = productPowerDataMapper.getParamCount(map);
         if (paramCount >0){
