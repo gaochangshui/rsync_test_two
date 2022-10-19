@@ -425,7 +425,33 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             placeNm = Arrays.asList(param.getPlaceNm().split(","));
         }
         mapResult.put("placeNm",placeNm);
+        //バスケット単価
+        this.getBasketCondition(param,mapResult,commonTableName);
 
+        return mapResult;
+    }
+
+    private Map<String,Object> getBasketCondition(ProductPowerParamVo param, Map<String, Object> mapResult, GetCommonPartsDataDto commonTableName) {
+        List<LinkedHashMap<String, Object>> classifyHeader = productPowerDataMapper.getClassifyHeader(commonTableName.getProKaisouTable());
+        String basketCondition = param.getBasketCondition();
+        List<Map<String,Object>> janClassify =  new ArrayList<>();
+        if (!Strings.isNullOrEmpty(basketCondition)){
+            JSONObject basketJson = JSON.parseObject(basketCondition);
+            List<String> list = Arrays.asList(basketJson.get(MagicString.BASKET_PROD_CD).toString().split(","));
+            List<Map<String,Object>>  janClassifyList = new ArrayList<>();
+            for (String s : list) {
+                Map<String,Object> janClassCd = new HashMap<>();
+                String s1 = s.split("-")[1];
+                String[] s2 = s1.split("_");
+                for (int i = 0; i < s2.length; i++) {
+                    janClassCd.put(2*i+1+"",s2[i]);
+                }
+
+                janClassifyList.add(janClassCd);
+            }
+            janClassify = productPowerDataMapper.getJanClassify(janClassifyList,commonTableName.getProKaisouInfoTable(),classifyHeader);
+        }
+        mapResult.put("basketJanClassify",janClassify);
         return mapResult;
     }
 

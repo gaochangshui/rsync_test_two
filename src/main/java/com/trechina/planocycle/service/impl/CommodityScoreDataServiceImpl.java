@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
@@ -618,12 +619,22 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         List<Map<String,Object>> lists = new ArrayList<>();
         String convertNumbers = mstJanMapper.getConvertNumbers(company, classCd);
-        List<String> colList  = Arrays.asList(convertNumbers) ;
+        JSONArray jsonArray = new JSONArray();
+        if (!Strings.isNullOrEmpty(convertNumbers)){
+             jsonArray = JSON.parseArray(convertNumbers);
+        }
+        //List<String> colList  = Arrays.asList(convertNumbers.split(",")) ;
 
         for (String list : attrLists) {
             boolean flag = false;
-            if (!colList.isEmpty() && colList.contains(list.split("_")[2])){
+            String unit = "";
+            if (jsonArray.stream().anyMatch(map->((JSONObject)map).get("col").equals(list.split("_")[2]))) {
                 flag = true;
+                for (Object jsonObject : jsonArray) {
+                    if (((JSONObject)jsonObject).get("col").equals(list.split("_")[2])) {
+                        unit = ((JSONObject) jsonObject).getString("unit");
+                    }
+                }
             }
             Map<String,Object> map = new HashMap<>();
             String attrNameForId = mstJanMapper.getAttrNameForId(list.split("_")[2], company, classCd);
@@ -633,6 +644,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             map.put("value",new Object[]{});
             map.put("rmFlag",false);
             map.put("showFlag",false);
+            map.put("unit",unit);
+            map.put("range",false);
             List<String> attrValueList = new ArrayList<>();
             if (flag){
                 attrValueList = mstJanMapper.getAttrConvertToNumber(list.split("_")[2], company, classCd);
