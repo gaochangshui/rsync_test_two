@@ -2,16 +2,20 @@ package com.trechina.planocycle.utils;
 
 
 import com.google.common.base.Strings;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -176,6 +180,7 @@ public class ExcelUtils {
         cell.setCellValue("店舗条件");
         cell.setCellStyle(cellStyle);
         List<Map<String,Object>> kaisouList = (List<Map<String,Object>>) paramMap.get("janClassify");
+        List<Map<String,Object>> basketJanClassify = (List<Map<String,Object>>) paramMap.get("basketJanClassify");
         List<Map<String,Object>> kaisouHeader = (List<Map<String,Object>>) paramMap.get("classifyHeader");
             cell = row.createCell(headerColIndex += 2);
             cell.setCellValue("商品分類");
@@ -198,6 +203,9 @@ public class ExcelUtils {
         cell.setCellStyle(cellStyle);
         cell = row.createCell(headerColIndex+=2);
         cell.setCellValue("市場条件");
+        cell.setCellStyle(cellStyle);
+        cell = row.createCell(headerColIndex+=3);
+        cell.setCellValue("バスケット単価");
         cell.setCellStyle(cellStyle);
         colIndex+=1;
         //にだんヘッド
@@ -243,6 +251,12 @@ public class ExcelUtils {
         cell = row.createCell(headerColIndex+=1);
         cell.setCellValue("都道府県");
         cell.setCellStyle(cellStyle);
+        cell = row.createCell(headerColIndex+=2);
+        for (Map<String, Object> objectMap : kaisouHeader) {
+            cell = row.createCell(headerColIndex++);
+            cell.setCellValue(objectMap.get("name").toString());
+            cell.setCellStyle(cellStyle);
+        }
         colIndex++;
 
         List<String> janList = (List<String>) paramMap.get("janList");
@@ -305,6 +319,14 @@ public class ExcelUtils {
             cell = row.createCell(headerColIndex+=1);
             cell.setCellValue(((List<String>)paramMap.get("placeNm")).size()>i?((List<String>)paramMap.get("placeNm")).get(i):"");
             colIndex++;
+
+            if (!basketJanClassify.isEmpty()) {
+                headerColIndex +=1;
+                for (Map<String, Object> objectMap : kaisouHeader) {
+                    cell = row.createCell(headerColIndex +=1 );
+                    cell.setCellValue(basketJanClassify.size()>i?kaisouList.get(i).get(objectMap.get("name")).toString():"");
+                }
+            }
         }
     }
     public static void generateNormalExcel(List<String[]> allData, OutputStream outputStream) {
