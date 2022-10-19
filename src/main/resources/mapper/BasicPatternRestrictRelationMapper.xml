@@ -235,7 +235,7 @@
     <select id="getTanaGroup" resultType="java.lang.Integer">
         select  restrict_cd from planocycle.work_basic_pattern_restrict_relation where
             priority_order_cd=#{item.priorityOrderCd} and company_cd=#{item.companyCd} and tai_cd = #{item.taiCd}
-                 and tana_cd = #{item.tanaCd} and area_postion = #{item.tanaPosition}
+                 and tana_cd = #{item.tanaCd} and area_position = #{item.tanaPosition}
     </select>
     <select id="getTanaInfo" resultType="java.util.Map">
         select  sum(area) area,restrict_cd
