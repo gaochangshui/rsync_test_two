@@ -485,7 +485,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         StringBuilder finalValue = new StringBuilder();
 
         List<Object> list = (ArrayList<Object>) map.get("prodAttrData");
-
+        list = this.ConvertToNumber(list);
         if (!list.isEmpty()){
             for (Object o : list) {
                 Map<String,Object> proMap = (Map<String, Object>) o;
@@ -512,6 +512,25 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         return CommonUtil.defaultIfEmpty(finalValue.toString(),null);
 
+    }
+
+    private List<Object>  ConvertToNumber( List<Object> list) {
+        for (Object o : list) {
+            Map<String,Object> proMap = (Map<String, Object>) o;
+            String[] split = proMap.get("id").toString().split("_");
+            String company = split[0];
+            String classCd = split[1];
+            String colCd = split[2];
+            String convertNumbers = mstJanMapper.getConvertNumbers(company, classCd);
+            List<String> colList  = Arrays.asList(convertNumbers) ;
+            if (colList.contains(colCd)){
+                List<Object> value = (List<Object>)proMap.get("value");
+                 value = mstJanMapper.getNewValue(value,company,classCd,colCd);
+                proMap.put("value",value);
+            }
+        }
+
+        return list;
     }
 
     /**
@@ -584,7 +603,14 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
        String classCd = attrLists.get(0).split("_")[1];
 
         List<Map<String,Object>> lists = new ArrayList<>();
+        String convertNumbers = mstJanMapper.getConvertNumbers(company, classCd);
+        List<String> colList  = Arrays.asList(convertNumbers) ;
+
         for (String list : attrLists) {
+            boolean flag = false;
+            if (!colList.isEmpty() && colList.contains(list.split("_")[2])){
+                flag = true;
+            }
             Map<String,Object> map = new HashMap<>();
             String attrNameForId = mstJanMapper.getAttrNameForId(list.split("_")[2], company, classCd);
             map.put("title",attrNameForId);
@@ -593,7 +619,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             map.put("value",new Object[]{});
             map.put("rmFlag",false);
             map.put("showFlag",false);
-            List<String> attrValueList = mstJanMapper.getAttrValueList(list.split("_")[2], company, classCd);
+            List<String> attrValueList = new ArrayList<>();
+            if (flag){
+                attrValueList = mstJanMapper.getAttrConvertToNumber(list.split("_")[2], company, classCd);
+            }else {
+                 attrValueList = mstJanMapper.getAttrValueList(list.split("_")[2], company, classCd);
+            }
             map.put("option",attrValueList);
             lists.add(map);
         }

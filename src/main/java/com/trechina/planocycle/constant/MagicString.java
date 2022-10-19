@@ -368,5 +368,9 @@ public class MagicString {
             "capepak", "4", "must_not", "5", "pattern_duplicate");
 
     public static final String TO_MAIL = Joiner.on("@").join(Lists.newArrayList("planocyclesystem", "cn.tre-inc.com"));
+    public static final String F1 = "F1";
+    public static final String F2 = "F2";
+    public static final String F3 = "F3";
+    public static final String F4 = "F4";
 
 }
