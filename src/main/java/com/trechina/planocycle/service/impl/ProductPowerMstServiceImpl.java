@@ -33,6 +33,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -502,14 +504,17 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         Map<String,Object> janAttrFlag =  new LinkedHashMap<>();
         List<Map<String, Object>> janAttrList = new Gson().fromJson(param.getProdAttrData().toString(),
                 new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
-        if(!janAttrList.isEmpty()){
-            for (Map<String, Object> objectMap : janAttrList) {
-                List<String> value= (List<String>)objectMap.get("value");
-                boolean flag= (boolean)objectMap.getOrDefault("rmFlag", false);
-                String attrName = productPowerDataMapper.getAttrName(objectMap.get("id").toString().split("_")[2],commonTableName.getProAttrTable());
-                janAttr.put(attrName,value);
-                janAttrFlag.put(attrName+"区分",flag?"除外":"対象");
 
+        if(!janAttrList.isEmpty()){
+            for (Map<String,Object> objectMap : janAttrList) {
+                List<String> value = ((List<Object>) objectMap.get("value")).stream().map(val -> val instanceof Double ?
+                        BigDecimal.valueOf((Double) val).setScale(0, RoundingMode.HALF_UP).toString() : String.valueOf(val)).collect(Collectors.toList());
+                if (!value.isEmpty()) {
+                    boolean flag = (boolean) objectMap.getOrDefault("rmFlag", false);
+                    String attrName = productPowerDataMapper.getAttrName(objectMap.get("id").toString().split("_")[2], commonTableName.getProAttrTable());
+                    janAttr.put(attrName, value);
+                    janAttrFlag.put(attrName + "区分", flag ? "除外" : "対象");
+                }
             }
         }
         mapResult.put("janAttr",janAttr);

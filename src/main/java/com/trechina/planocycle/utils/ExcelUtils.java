@@ -296,9 +296,9 @@ public class ExcelUtils {
             headerColIndex+=2;
             for (Map.Entry<String, Object> stringObjectEntry : attrList.entrySet()) {
                 cell = row.createCell(headerColIndex++);
-                cell.setCellValue(((List<String>)stringObjectEntry.getValue()).size()>i?((List<String>)stringObjectEntry.getValue()).get(i):"");
+                cell.setCellValue(((List<String>) stringObjectEntry.getValue()).size() > i ? ((List<String>) stringObjectEntry.getValue()).get(i) : "");
                 cell = row.createCell(headerColIndex++);
-                cell.setCellValue( ((List<String>)stringObjectEntry.getValue()).size()>i?janAttrFlag.get(stringObjectEntry.getKey()+"区分").toString():"");
+                cell.setCellValue(((List<String>) stringObjectEntry.getValue()).size() > i ? janAttrFlag.get(stringObjectEntry.getKey() + "区分").toString() : "");
             }
             if (attrList.size() == 0) {
                 headerColIndex+=2;
