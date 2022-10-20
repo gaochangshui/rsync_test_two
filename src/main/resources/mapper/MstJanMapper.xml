@@ -467,7 +467,7 @@
                       ) a
             order by a::integer
     </select>
-    <select id="getNewValue" resultType="object">
+    <select id="getNewValue" resultType="string">
         select b from (
                           select DISTINCT
                               "array_to_string"(regexp_matches(case when "${colCd}" !~ '\d' then '0' else "${colCd}" end, '\d+'),',') a ,"11" b

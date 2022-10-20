@@ -184,5 +184,5 @@ public interface MstJanMapper {
 
     List<String> getAttrConvertToNumber(String colName,String company,String classCd);
 
-    List<Object> getNewValue(List<Object> value,String company,String classCd,String colCd);
+    List<String> getNewValue(List<String> value,String company,String classCd,String colCd);
 }

@@ -541,8 +541,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             if (!Strings.isNullOrEmpty(convertNumbers)){
                 jsonArray = JSON.parseArray(convertNumbers);
             }
-            List<Object> value = (List<Object>)proMap.get("value");
-            if (jsonArray.stream().anyMatch(map->((JSONObject)map).get("col").equals(colCd))){
+            List<String> value = (List<String>)proMap.get("value");
+            if (!value.isEmpty()&&jsonArray.stream().anyMatch(map->((JSONObject)map).get("col").equals(colCd))){
                  value = mstJanMapper.getNewValue(value,company,classCd,colCd);
                 proMap.put("value",value);
             }
