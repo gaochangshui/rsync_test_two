@@ -369,7 +369,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         String basketIsCore = "";
         String basketMstClass = "";
         if(jsonObject.containsKey("basketIsCore")){
-            basketIsCore = jsonObject.getString("basketIsCore").equals("1")?coreCompany:jsonObject.getString("basketIsCore");
+            basketIsCore = jsonObject.getString("basketIsCore").equals("1")?coreCompany:companyCd;
             basketMstClass = jsonObject.getString("basketMstClass");
         }
 
