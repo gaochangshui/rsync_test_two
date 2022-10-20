@@ -537,7 +537,10 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             String classCd = split[1];
             String colCd = split[2];
             String convertNumbers = mstJanMapper.getConvertNumbers(company, classCd);
-            JSONArray jsonArray = JSONArray.parseArray(convertNumbers);
+            JSONArray jsonArray = new JSONArray();
+            if (!Strings.isNullOrEmpty(convertNumbers)){
+                jsonArray = JSON.parseArray(convertNumbers);
+            }
             List<Object> value = (List<Object>)proMap.get("value");
             if (jsonArray.stream().anyMatch(map->((JSONObject)map).get("col").equals(colCd))){
                  value = mstJanMapper.getNewValue(value,company,classCd,colCd);

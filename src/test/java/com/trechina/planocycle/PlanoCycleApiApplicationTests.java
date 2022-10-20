@@ -168,6 +168,8 @@ class PlanoCycleApiApplicationTests {
 
     @Test
     public  void test8()  {
-
+        String str = "0001230";
+        String newStr = str.replaceAll("^(0+)", "");
+        System.out.println(newStr);
     }
 }
