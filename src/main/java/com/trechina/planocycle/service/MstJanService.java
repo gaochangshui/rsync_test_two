@@ -73,6 +73,8 @@ public interface MstJanService {
     @Transactional(rollbackFor = Exception.class)
     Map<String, Object> perSyncJanData(String companyCd, CommoditySyncSet commoditySyncSet, String existTable);
 
+    void addPrimaryKey(String tableName, String primaryKey, String schema, String pkName);
+
     JanInfoVO getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response) throws IOException;
 
     Map<String, Object> getUploadJanDataResult(String taskId);
