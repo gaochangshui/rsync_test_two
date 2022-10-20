@@ -130,20 +130,26 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 Integer patternId = patternIdList.get(0);
                 logger.info("使用されるpatternid：{}", patternId);
                 logger.info("使用されるpatternid：{}", patternId);
-                // 清空patternid
-                shelfPtsDataMapper.updateSingle(patternId, authorCd);
-                shelfPtsDataMapper.updatePtsHistoryFlgSingle(patternId, authorCd);
-                // 写入patternid
-                shelfPtsDataMapper.updateShelfPtsOfAutoInner(shelfPtsData.getId(), patternId, authorCd);
-                // 写入history
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-                ShelfPtsJoinPatternDto shelfPtsJoinPatternDto = new ShelfPtsJoinPatternDto();
-                shelfPtsJoinPatternDto.setCompanyCd(shelfPtsDto.getCompanyCd());
-                shelfPtsJoinPatternDto.setShelfPtsCd(shelfPtsData.getId());
-                shelfPtsJoinPatternDto.setShelfPatternCd(patternId);
-                shelfPtsJoinPatternDto.setStartDay(simpleDateFormat.format(now));
-                shelfPtsDataMapper.insertPtsHistory(shelfPtsJoinPatternDto, authorCd);
+                if (MagicString.PATTERN_MAP.putIfAbsent(patternId, "1")==null) {
+                    // 清空patternid
+                    shelfPtsDataMapper.updateSingle(patternId, authorCd);
+                    shelfPtsDataMapper.updatePtsHistoryFlgSingle(patternId, authorCd);
+                    // 写入patternid
+                    shelfPtsDataMapper.updateShelfPtsOfAutoInner(shelfPtsData.getId(), patternId, authorCd);
+                    // 写入history
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+                    ShelfPtsJoinPatternDto shelfPtsJoinPatternDto = new ShelfPtsJoinPatternDto();
+                    shelfPtsJoinPatternDto.setCompanyCd(shelfPtsDto.getCompanyCd());
+                    shelfPtsJoinPatternDto.setShelfPtsCd(shelfPtsData.getId());
+                    shelfPtsJoinPatternDto.setShelfPatternCd(patternId);
+                    shelfPtsJoinPatternDto.setStartDay(simpleDateFormat.format(now));
+                    shelfPtsDataMapper.insertPtsHistory(shelfPtsJoinPatternDto, authorCd);
+
+                    MagicString.PATTERN_MAP.remove(patternId);
+                }
+
             }
         }
         return ResultMaps.result(ResultEnum.SUCCESS, shelfPtsData.getId());
