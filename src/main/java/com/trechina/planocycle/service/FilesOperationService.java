@@ -22,7 +22,6 @@ public interface FilesOperationService {
 
     Map<String, Object> csvUploadMulti(MultipartFile[] multipartFileList, String path, String companyCd,
                                        String projectIds, String bucketNames);
-
     @Transactional(rollbackFor = Exception.class)
     void savePtsData(ShelfPtsDataVersion ptsDataVersion, List<String[]> arrList1,
                      List<String[]> arrList2, List<String[]> arrList3, Integer ptsId, String companyCd, String authorCd, Date now);

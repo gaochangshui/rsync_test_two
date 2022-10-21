@@ -34,6 +34,8 @@ public class ExcelUtils {
             XSSFSheet sheet1 = workbook.createSheet("抽出条件");
             XSSFSheet sheet = workbook.createSheet("商品明細");
             Pattern numberPattern = Pattern.compile("-?\\d+(\\.\\d+)?%?");
+            XSSFCellStyle percentCellStyle = workbook.createCellStyle();
+            percentCellStyle.setDataFormat(workbook.createDataFormat().getFormat("0.0%"));
 
             //最初の行の索引
             int colIndex=0;
@@ -101,9 +103,13 @@ public class ExcelUtils {
                             janCell.setCellValue((Integer)value);
                         }else{
                             Matcher isNum = numberPattern.matcher(String.valueOf(value));
-                            if (!columnName.equals("jan") && !columnName.equals("jan_name") && isNum.matches()){
+                            if (columnName.equals("intage_item03")){
+                                janCell.setCellStyle(percentCellStyle);
+                                janCell.setCellValue(Double.parseDouble(value.toString())/100);
+                            }
+                            else if (!columnName.equals("jan") && !columnName.equals("jan_name") && isNum.matches()){
                                 janCell.setCellType(CellType.NUMERIC);
-                                janCell.setCellValue(Math.floor(Double.parseDouble(String.valueOf(value))));
+                                janCell.setCellValue(Math.round(Double.parseDouble(String.valueOf(value))));
                             }else{
                                 String valStr = value==null?"":String.valueOf(value);
                                 if(columnName.startsWith("intage") && Strings.isNullOrEmpty(valStr)){
@@ -181,6 +187,7 @@ public class ExcelUtils {
         cell.setCellStyle(cellStyle);
         List<Map<String,Object>> kaisouList = (List<Map<String,Object>>) paramMap.get("janClassify");
         List<Map<String,Object>> basketJanClassify = (List<Map<String,Object>>) paramMap.get("basketJanClassify");
+        List<Map<String,Object>> basketJanClassifyHeader = (List<Map<String,Object>>) paramMap.get("basketJanClassifyHeader");
         List<Map<String,Object>> kaisouHeader = (List<Map<String,Object>>) paramMap.get("classifyHeader");
             cell = row.createCell(headerColIndex += 2);
             cell.setCellValue("商品分類");
@@ -252,7 +259,7 @@ public class ExcelUtils {
         cell.setCellValue("都道府県");
         cell.setCellStyle(cellStyle);
         cell = row.createCell(headerColIndex+=2);
-        for (Map<String, Object> objectMap : kaisouHeader) {
+        for (Map<String, Object> objectMap : basketJanClassifyHeader) {
             cell = row.createCell(headerColIndex++);
             cell.setCellValue(objectMap.get("name").toString());
             cell.setCellStyle(cellStyle);
@@ -321,9 +328,9 @@ public class ExcelUtils {
             cell.setCellValue(((List<String>)paramMap.get("placeNm")).size()>i?((List<String>)paramMap.get("placeNm")).get(i):"");
             colIndex++;
 
-            if (!basketJanClassify.isEmpty()) {
+            if (!basketJanClassifyHeader.isEmpty()) {
                 headerColIndex +=1;
-                for (Map<String, Object> objectMap : kaisouHeader) {
+                for (Map<String, Object> objectMap : basketJanClassifyHeader) {
                     cell = row.createCell(headerColIndex +=1 );
                     cell.setCellValue(basketJanClassify.size()>i?basketJanClassify.get(i).get(objectMap.get("name")).toString():"");
                 }

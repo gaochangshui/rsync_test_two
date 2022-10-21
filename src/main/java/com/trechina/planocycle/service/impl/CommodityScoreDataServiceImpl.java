@@ -381,12 +381,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         map.remove(MagicString.BASKET_PROD_CD);
         map.remove("showItemCheck");
-        Integer paramCount = productPowerDataMapper.getParamCount(map);
-        if (paramCount >0){
-            map.put("changeFlag","1");
-        }else {
-            map.put("changeFlag","0");
-        }
+        //fix: save->change condition-> error
+        map.put("changeFlag","0");
         if ("".equals(map.get("seasonEndTime"))) {
             map.put("seasonEndTime","_");
         }
@@ -594,6 +590,16 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
             List<Map<String, String>> productPowerMstData = productPowerDataMapper.selectShowData(productPowerCd, paramConfigVOS,reserveMst,
                     customerCd, Arrays.asList(prepareCd), intageCd);
+            productPowerMstData.forEach(map->map.entrySet().forEach(entry->{
+                if (entry.getKey().equals("intage_item03")){
+                    Double value = Double.valueOf( entry.getValue());
+                    String result = String.format("%.1f",value);
+                    entry.setValue(result+MagicString.PERCENTAGE);
+                }else if (!entry.getKey().equals("jan")){
+                    Integer value = Double.valueOf( entry.getValue()).intValue();
+                    entry.setValue(value.toString());
+                }
+            }));
             List<Map<String, String>> returnData = new ArrayList<>();
             Map<String, String> colName = paramConfigVOS.stream()
                     .collect(Collectors.toMap(ParamConfigVO::getItemCd, ParamConfigVO::getItemName, (key1, key2) -> key1, LinkedHashMap::new));

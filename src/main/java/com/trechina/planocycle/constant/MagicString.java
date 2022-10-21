@@ -5,8 +5,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MagicString {
+
+    public static final ConcurrentHashMap<Integer, Object> PATTERN_MAP = new ConcurrentHashMap<>();
     public static final String HEIGHT_NAME = "plano_height";
     public static final String DEPTH_NAME = "plano_depth";
     public static final String IRISU_NAME = "plano_irisu";

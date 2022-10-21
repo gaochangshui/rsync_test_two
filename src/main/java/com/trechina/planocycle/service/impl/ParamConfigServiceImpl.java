@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.ParamConfigDto;
+import com.trechina.planocycle.entity.po.MstKiGyoCore;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.CompanyConfigMapper;
 import com.trechina.planocycle.mapper.ParamConfigMapper;
@@ -30,10 +31,25 @@ public class ParamConfigServiceImpl implements ParamConfigService {
     public Map<String, Object> getCompanyConfig(Map<String, Object> map) {
 
         if (!MapUtils.getString(map,"F1").equals("")){
-            companyConfigMapper.getMstkigyocore(MapUtils.getString(map,MagicString.F1));
+
+            MstKiGyoCore mstkigyocore = companyConfigMapper.getMstkigyocore(MapUtils.getString(map, MagicString.F1));
+
         }else {
 
         }
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> setCompanyConfig(Map<String, Object> map) {
+        String companyCd="";
+        String companyName="";
+        String classCd="";
+        Integer janName2colNum = null;
+        Integer janItem2colNum = null;
+
+        companyConfigMapper.setCompany(companyCd,companyName);
+        companyConfigMapper.setCompanyConfig();
         return null;
     }
 }
