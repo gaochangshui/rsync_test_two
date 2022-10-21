@@ -187,6 +187,7 @@ public class ExcelUtils {
         cell.setCellStyle(cellStyle);
         List<Map<String,Object>> kaisouList = (List<Map<String,Object>>) paramMap.get("janClassify");
         List<Map<String,Object>> basketJanClassify = (List<Map<String,Object>>) paramMap.get("basketJanClassify");
+        List<Map<String,Object>> basketJanClassifyHeader = (List<Map<String,Object>>) paramMap.get("basketJanClassifyHeader");
         List<Map<String,Object>> kaisouHeader = (List<Map<String,Object>>) paramMap.get("classifyHeader");
             cell = row.createCell(headerColIndex += 2);
             cell.setCellValue("商品分類");
@@ -258,7 +259,7 @@ public class ExcelUtils {
         cell.setCellValue("都道府県");
         cell.setCellStyle(cellStyle);
         cell = row.createCell(headerColIndex+=2);
-        for (Map<String, Object> objectMap : kaisouHeader) {
+        for (Map<String, Object> objectMap : basketJanClassifyHeader) {
             cell = row.createCell(headerColIndex++);
             cell.setCellValue(objectMap.get("name").toString());
             cell.setCellStyle(cellStyle);
@@ -327,9 +328,9 @@ public class ExcelUtils {
             cell.setCellValue(((List<String>)paramMap.get("placeNm")).size()>i?((List<String>)paramMap.get("placeNm")).get(i):"");
             colIndex++;
 
-            if (!basketJanClassify.isEmpty()) {
+            if (!basketJanClassifyHeader.isEmpty()) {
                 headerColIndex +=1;
-                for (Map<String, Object> objectMap : kaisouHeader) {
+                for (Map<String, Object> objectMap : basketJanClassifyHeader) {
                     cell = row.createCell(headerColIndex +=1 );
                     cell.setCellValue(basketJanClassify.size()>i?basketJanClassify.get(i).get(objectMap.get("name")).toString():"");
                 }

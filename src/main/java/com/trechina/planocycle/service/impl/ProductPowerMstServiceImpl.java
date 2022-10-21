@@ -382,6 +382,16 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         mapResult.put("company",company);
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerCd);
         GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(param.getCommonPartsData(), companyCd);
+        JSONObject basket = JSON.parseObject(param.getCommonPartsData());
+        String basketTableName = "";
+        String basketKaisouTableName = "";
+        if (basket.getOrDefault("basketIsCore","2").equals("0")){
+            basketTableName = MessageFormat.format(MagicString.PROD_JAN_KAISOU,companyCd,basket.get("basketMstClass"));
+            basketKaisouTableName = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS,companyCd,basket.get("basketMstClass"));
+        }else if (basket.getOrDefault("basketIsCore","2").equals("1")){
+            basketTableName = MessageFormat.format(MagicString.PROD_JAN_KAISOU,MagicString.SELF_SERVICE,basket.get("basketMstClass"));
+            basketKaisouTableName = MessageFormat.format(MagicString.PROD_JAN_KAISOU_HEADER_SYS,MagicString.SELF_SERVICE,basket.get("basketMstClass"));
+        }
         //商品出力粒度
         String granularity = param.getJanName2colNum() == 1 ?"JAN単位":param.getJanName2colNum() == 2 ?"SKU単位":"Item単位";
         mapResult.put("granularity",granularity);
@@ -433,15 +443,21 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         }
         mapResult.put("placeNm",placeNm);
         //バスケット単価
-        this.getBasketCondition(param,mapResult,commonTableName);
+        this.getBasketCondition(param,mapResult,basketTableName,basketKaisouTableName);
 
         return mapResult;
     }
 
-    private Map<String,Object> getBasketCondition(ProductPowerParamVo param, Map<String, Object> mapResult, GetCommonPartsDataDto commonTableName) {
-        List<LinkedHashMap<String, Object>> classifyHeader = productPowerDataMapper.getClassifyHeader(commonTableName.getProKaisouTable());
-        String basketCondition = param.getBasketCondition();
+    private Map<String,Object> getBasketCondition(ProductPowerParamVo param, Map<String, Object> mapResult, String basketTableName,String basketAttrTableName) {
+        if (basketTableName.equals("")){
+            mapResult.put("basketJanClassify",new ArrayList<>());
+            mapResult.put("basketJanClassifyHeader",new ArrayList<>());
+            return mapResult;
+        }
         List<Map<String,Object>> janClassify =  new ArrayList<>();
+        List<LinkedHashMap<String, Object>> classifyHeader = productPowerDataMapper.getClassifyHeader(basketAttrTableName);
+        String basketCondition = param.getBasketCondition();
+
         if (!Strings.isNullOrEmpty(basketCondition)){
             JSONObject basketJson = JSON.parseObject(basketCondition);
             List<String> list = Arrays.asList(basketJson.get(MagicString.BASKET_PROD_CD).toString().split(","));
@@ -456,9 +472,10 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
                 janClassifyList.add(janClassCd);
             }
-            janClassify = productPowerDataMapper.getJanClassify(janClassifyList,commonTableName.getProKaisouInfoTable(),classifyHeader);
+            janClassify = productPowerDataMapper.getJanClassify(janClassifyList,basketTableName,classifyHeader);
         }
         mapResult.put("basketJanClassify",janClassify);
+        mapResult.put("basketJanClassifyHeader",classifyHeader);
         return mapResult;
     }
 
