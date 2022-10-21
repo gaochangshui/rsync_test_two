@@ -210,11 +210,15 @@ public interface ShelfPtsDataMapper {
 
     void insertPtsData1(PriorityOrderPtsDataDto priorityOrderPtsDataDto);
 
-    ShelfPtsHeaderDto selectShelfPts(Integer shelfPatternCd);
+    ShelfPtsHeaderDto selectShelfPts(Integer shelfPatternCd, String companyCd);
 
     List<Map<String, Object>> selectClassifyPtsData(List<String> rankAttr, Integer patternCd, Integer priorityOrderCd);
 
     List<ShelfPtsDataTaimst> selectShelfPtsTaiMst(Integer patternCd);
+
+    List<ShelfPtsDataTaimst> selectShelfPtsTaiMstByPattern(Integer patternCd, String companyCd);
+
+    List<ShelfPtsDataTanamst> selectShelfPtsTanaMstByPattern(Integer patternCd, String companyCd);
 
     List<ShelfPtsDataTanamst> selectShelfPtsTanaMst(Integer patternCd);
 

@@ -545,7 +545,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             }
 
             Integer ptsCd = pattern.getId();
-            ShelfPtsHeaderDto shelfPtsHeaderDto = shelfPtsDataMapper.selectShelfPts(shelfPatternCd);
+            ShelfPtsHeaderDto shelfPtsHeaderDto = shelfPtsDataMapper.selectShelfPts(shelfPatternCd, companyCd);
 
             List<Map<String, Object>> ptsSkuNum = priorityOrderPtsClassifyMapper.getPtsSkuNum(companyCd, priorityOrderCd, ptsCd, rankAttrList);
             List<Map<String, Object>> ptsJanDtoList = shelfPtsDataMapper.selectClassifyPtsData(rankAttrList, shelfPatternCd, priorityOrderCd);
@@ -719,7 +719,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 }
 
                 Integer ptsCd = pattern.getId();
-                ShelfPtsHeaderDto shelfPtsHeaderDto = shelfPtsDataMapper.selectShelfPts(shelfPatternCd);
+                ShelfPtsHeaderDto shelfPtsHeaderDto = shelfPtsDataMapper.selectShelfPts(shelfPatternCd, companyCd);
 
                 List<Map<String, Object>> ptsSkuNum = priorityOrderPtsClassifyMapper.getPtsSkuNum(companyCd, priorityOrderCd, ptsCd, rankAttrList);
                 List<Map<String, Object>> ptsJanDtoList = shelfPtsDataMapper.selectClassifyPtsData(rankAttrList, shelfPatternCd, priorityOrderCd);
@@ -978,9 +978,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         }
                     }
 
-                    ShelfPtsHeaderDto shelfPtsHeaderDto = shelfPtsDataMapper.selectShelfPts(patternCd);
-                    List<ShelfPtsDataTaimst> shelfPtsDataTaimst = shelfPtsDataMapper.selectShelfPtsTaiMst(patternCd);
-                    List<ShelfPtsDataTanamst> shelfPtsDataTanamst = shelfPtsDataMapper.selectShelfPtsTanaMst(patternCd);
+                    ShelfPtsHeaderDto shelfPtsHeaderDto = shelfPtsDataMapper.selectShelfPts(patternCd, companyCd);
+                    List<ShelfPtsDataTaimst> shelfPtsDataTaimst = shelfPtsDataMapper.selectShelfPtsTaiMstByPattern(patternCd, companyCd);
+                    List<ShelfPtsDataTanamst> shelfPtsDataTanamst = shelfPtsDataMapper.selectShelfPtsTanaMstByPattern(patternCd, companyCd);
 
                     String branchNames = String.join("_", Lists.newArrayList(branchCd,branchName));
                     String fileName = shelfPtsHeaderDto.getFileName().replace(".csv", "")+ (Strings.isNullOrEmpty(branchNames)?"":"_"+branchNames)+".csv";
