@@ -260,14 +260,21 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         List<LinkedHashMap<String, Object>> returnDataAttr = new ArrayList<>();
         List<LinkedHashMap<String, Object>> allDataAttr = productPowerDataMapper.getAllDataAttr(companyCd, productPowerNo
                 , cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName,attrColName);
-        attrColName.forEach(map->{
-            colMap.put(map.get("colCd").toString(),map.get("colName"));
-        });
+        attrColName.forEach(map-> colMap.put(map.get("colCd").toString(),map.get("colName")));
         colMap.put("branchNum","定番店舗数");
         returnDataAttr.add(colMap);
         returnDataAttr.addAll(allDataAttr);
         List<LinkedHashMap<String, Object>> returnDataItem = new ArrayList<>();
         List<LinkedHashMap<String, Object>> allDataItem = productPowerDataMapper.getAllDataItem(companyCd, productPowerNo, cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName);
+        allDataItem.forEach(map->map.entrySet().forEach(entry->{
+            if (entry.getKey().equals("intage_item03")) {
+                Double value = Double.valueOf(entry.getValue().toString());
+                entry.setValue(value+MagicString.PERCENTAGE);
+            }else if (!entry.getKey().equals("jan")){
+                Integer value = Double.valueOf(entry.getValue().toString()).intValue();
+                entry.setValue(value);
+            }
+        }));
         List<ParamConfigVO> paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
         LinkedHashMap<String, Object> colName = paramConfigVOS.stream()
                 .collect(Collectors.toMap(ParamConfigVO::getItemCd, ParamConfigVO::getItemName, (key1, key2) -> key1, LinkedHashMap::new));

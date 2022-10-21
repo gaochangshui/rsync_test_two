@@ -225,7 +225,12 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         ProductPowerMstVo productPowerInfo = productPowerMstMapper.getProductPowerInfo(companyCd, productPowerCd);
         List<Map<String, Object>> allData = productPowerDataMapper.getDynamicAllData(companyCd, productPowerCd,
                 janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", classify, project, janNameColIndex,attrColName);
-
+        allData.forEach(map->map.entrySet().forEach(entry->{
+            if (entry.getKey().equals("intage_item03")) {
+                Double value = Double.valueOf(entry.getValue().toString());
+                entry.setValue(value);
+            }
+        }));
         //表示するカラムに対応するフィールド名
         List<String> attr = classify.stream().map(map -> map.get("attr").toString()).collect(Collectors.toList());
         List<String> attrColCdList = attrColName.stream().map(map -> map.get("colCd").toString()).collect(Collectors.toList());
