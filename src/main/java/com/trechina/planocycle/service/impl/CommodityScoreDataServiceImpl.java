@@ -590,6 +590,15 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
             List<Map<String, String>> productPowerMstData = productPowerDataMapper.selectShowData(productPowerCd, paramConfigVOS,reserveMst,
                     customerCd, Arrays.asList(prepareCd), intageCd);
+            productPowerMstData.forEach(map->map.entrySet().forEach(entry->{
+                if (entry.getKey().equals("intage_item03")){
+                    Double value = Double.valueOf( entry.getValue());
+                    entry.setValue(value+MagicString.PERCENTAGE);
+                }else if (!entry.getKey().equals("jan")){
+                    Integer value = Double.valueOf( entry.getValue()).intValue();
+                    entry.setValue(value.toString());
+                }
+            }));
             List<Map<String, String>> returnData = new ArrayList<>();
             Map<String, String> colName = paramConfigVOS.stream()
                     .collect(Collectors.toMap(ParamConfigVO::getItemCd, ParamConfigVO::getItemName, (key1, key2) -> key1, LinkedHashMap::new));

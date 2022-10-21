@@ -456,8 +456,12 @@
     <select id="selectShowData" resultType="map">
         select
         syokika.jan jan
-            <foreach collection="showList" item="item" open="," separator=",">coalesce(${item.itemCd},'0') as ${item.itemCd}</foreach>
-            <foreach collection="showPreparedList" item="item" open="," separator=",">coalesce(${item.data_cd},0) as ${item.data_cd}</foreach>
+            <foreach collection="showList" item="item" open="," separator=",">
+                    coalesce(${item.itemCd},'0') as ${item.itemCd}
+            </foreach>
+            <foreach collection="showPreparedList" item="item" open="," separator=",">
+            coalesce(${item.data_cd},0) as ${item.data_cd}
+        </foreach>
         from  planocycle.work_product_power_syokika syokika
             <if test="!prepareCd.isEmpty">
                 left join (select
@@ -578,7 +582,7 @@
             jan_info."${item.sort}" as ${item.attr}
         </foreach>
         <foreach collection="projects" index="index" item="item" open="," separator=",">
-            power_mst."${item}", power_mst."${item}_rank"
+            coalesce(power_mst."${item}",'0')as "${item}", power_mst."${item}_rank"
         </foreach>
         <foreach collection="attrList" item="item">
             ,"${item.col}" as "${item.colCd}"
