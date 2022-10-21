@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -214,7 +216,11 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
 
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
         List<Map<String, Object>> prodAttrData = new Gson().fromJson(param.getProdAttrData().toString(), new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
-
+        prodAttrData.forEach(map -> {
+            List<String> value = ((List<Object>) map.get("value")).stream().map(val -> val instanceof Double ?
+                    BigDecimal.valueOf((Double) val).setScale(0, RoundingMode.HALF_UP).toString() : String.valueOf(val)).collect(Collectors.toList());
+            map.put("value",value);
+        });
         LinkedHashMap<String, Object> singleJan = new Gson().fromJson(param.getSingleJan().toString(), new com.google.common.reflect.TypeToken<LinkedHashMap<String, Object>>(){}.getType());
         param.setProdAttrData(prodAttrData);
         param.setSingleJan(singleJan);
