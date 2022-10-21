@@ -381,12 +381,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         map.remove(MagicString.BASKET_PROD_CD);
         map.remove("showItemCheck");
-        Integer paramCount = productPowerDataMapper.getParamCount(map);
-        if (paramCount >0){
-            map.put("changeFlag","1");
-        }else {
-            map.put("changeFlag","0");
-        }
+        //save->select product_power-> error
+        map.put("changeFlag","0");
         if ("".equals(map.get("seasonEndTime"))) {
             map.put("seasonEndTime","_");
         }
