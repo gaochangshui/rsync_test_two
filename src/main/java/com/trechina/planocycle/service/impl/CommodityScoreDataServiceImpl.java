@@ -24,6 +24,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -537,7 +539,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             if (!Strings.isNullOrEmpty(convertNumbers)){
                 jsonArray = JSON.parseArray(convertNumbers);
             }
-            List<String> value = (List<String>)proMap.get("value");
+            List<String> value = ((List<Object>) proMap.get("value")).stream().map(val -> val instanceof Double ?
+                    BigDecimal.valueOf((Double) val).setScale(0, RoundingMode.HALF_UP).toString() : String.valueOf(val)).collect(Collectors.toList());
             if (!value.isEmpty()&&jsonArray.stream().anyMatch(map->((JSONObject)map).get("col").equals(colCd))){
                  value = mstJanMapper.getNewValue(value,company,classCd,colCd);
                 proMap.put("value",value);
