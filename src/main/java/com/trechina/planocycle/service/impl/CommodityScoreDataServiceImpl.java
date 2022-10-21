@@ -381,7 +381,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
 
         map.remove(MagicString.BASKET_PROD_CD);
         map.remove("showItemCheck");
-        //save->select product_power-> error
+        //fix: save->change condition-> error
         map.put("changeFlag","0");
         if ("".equals(map.get("seasonEndTime"))) {
             map.put("seasonEndTime","_");
