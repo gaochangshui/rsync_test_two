@@ -593,7 +593,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             productPowerMstData.forEach(map->map.entrySet().forEach(entry->{
                 if (entry.getKey().equals("intage_item03")){
                     Double value = Double.valueOf( entry.getValue());
-                    entry.setValue(value+MagicString.PERCENTAGE);
+                    String result = String.format("%.1f",value);
+                    entry.setValue(result+MagicString.PERCENTAGE);
                 }else if (!entry.getKey().equals("jan")){
                     Integer value = Double.valueOf( entry.getValue()).intValue();
                     entry.setValue(value.toString());

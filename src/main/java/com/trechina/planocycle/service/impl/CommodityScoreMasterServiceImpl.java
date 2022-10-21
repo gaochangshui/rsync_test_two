@@ -269,7 +269,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         allDataItem.forEach(map->map.entrySet().forEach(entry->{
             if (entry.getKey().equals("intage_item03")) {
                 Double value = Double.valueOf(entry.getValue().toString());
-                entry.setValue(value+MagicString.PERCENTAGE);
+                String result = String.format("%.1f",value);
+                entry.setValue(result+MagicString.PERCENTAGE);
             }else if (!entry.getKey().equals("jan")){
                 Integer value = Double.valueOf(entry.getValue().toString()).intValue();
                 entry.setValue(value);
