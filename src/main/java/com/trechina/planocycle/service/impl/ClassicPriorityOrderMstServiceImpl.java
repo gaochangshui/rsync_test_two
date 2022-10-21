@@ -979,8 +979,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                     }
 
                     ShelfPtsHeaderDto shelfPtsHeaderDto = shelfPtsDataMapper.selectShelfPts(patternCd, companyCd);
-                    List<ShelfPtsDataTaimst> shelfPtsDataTaimst = shelfPtsDataMapper.selectShelfPtsTaiMstByPattern(patternCd, companyCd);
-                    List<ShelfPtsDataTanamst> shelfPtsDataTanamst = shelfPtsDataMapper.selectShelfPtsTanaMstByPattern(patternCd, companyCd);
+                    List<ShelfPtsDataTaimst> shelfPtsDataTaimst = shelfPtsDataMapper.selectShelfPtsTaiMst(shelfPtsHeaderDto.getPtsCd());
+                    List<ShelfPtsDataTanamst> shelfPtsDataTanamst = shelfPtsDataMapper.selectShelfPtsTanaMst(shelfPtsHeaderDto.getPtsCd());
 
                     String branchNames = String.join("_", Lists.newArrayList(branchCd,branchName));
                     String fileName = shelfPtsHeaderDto.getFileName().replace(".csv", "")+ (Strings.isNullOrEmpty(branchNames)?"":"_"+branchNames)+".csv";

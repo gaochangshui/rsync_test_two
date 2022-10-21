@@ -694,7 +694,7 @@
     group by id
   </select>
   <select id="selectShelfPts" resultType="com.trechina.planocycle.entity.dto.ShelfPtsHeaderDto">
-    select commoninfo, versioninfo, outflg, modename, tai_header, tana_header, jan_header,file_name
+    select commoninfo, versioninfo, outflg, modename, tai_header, tana_header, jan_header,file_name, pts_data.id ptsCd
     from planocycle.shelf_pts_data pts_data inner join planocycle.shelf_pts_data_version data_version on
       pts_data.id=data_version.pts_cd where pts_data.shelf_pattern_cd=#{shelfPatternCd} and pts_data.company_cd=#{companyCd}
   </select>
@@ -713,20 +713,8 @@
     select tai_cd,tai_height,tai_width,tai_depth from planocycle.shelf_pts_data_taimst where pts_cd=#{ptsCd}
     order by tai_cd
   </select>
-  <select id="selectShelfPtsTaiMstByPattern" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataTaimst">
-    select tai_cd,tai_height,tai_width,tai_depth from planocycle.shelf_pts_data_taimst taimst
-    inner join planocycle.shelf_pts_data ptsdata on taimst.pts_cd=ptsdata.id
-    where ptsdata.shelf_pattern_cd=#{patternCd} and ptsdata.company_cd=#{companyCd}
-    order by tai_cd
-  </select>
   <select id="selectShelfPtsTanaMst" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataTanamst">
     select tai_cd,tana_cd,tana_height,tana_width,tana_depth,tana_thickness,tana_type from planocycle.shelf_pts_data_tanamst where pts_cd=#{ptsCd}
-    order by tai_cd, tana_cd
-  </select>
-  <select id="selectShelfPtsTanaMstByPattern" resultType="com.trechina.planocycle.entity.po.ShelfPtsDataTanamst">
-    select tai_cd,tana_cd,tana_height,tana_width,tana_depth,tana_thickness,tana_type from planocycle.shelf_pts_data_tanamst tanamst
-    inner join planocycle.shelf_pts_data ptsdata on tanamst.pts_cd=ptsdata.id
-    where ptsdata.shelf_pattern_cd=#{patternCd} and ptsdata.company_cd=#{companyCd}
     order by tai_cd, tana_cd
   </select>
   <select id="getNewJanDataTypeMap" resultType="java.util.LinkedHashMap">

@@ -11,6 +11,16 @@ public class ShelfPtsHeaderDto {
     private String tanaHeader;
     private String janHeader;
 
+    private Integer ptsCd;
+
+    public Integer getPtsCd() {
+        return ptsCd;
+    }
+
+    public void setPtsCd(Integer ptsCd) {
+        this.ptsCd = ptsCd;
+    }
+
     public String getCommonInfo() {
         return commonInfo;
     }
