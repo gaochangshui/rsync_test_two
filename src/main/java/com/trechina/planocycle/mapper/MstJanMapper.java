@@ -185,4 +185,8 @@ public interface MstJanMapper {
     List<String> getAttrConvertToNumber(String colName,String company,String classCd);
 
     List<String> getNewValue(List<String> value,String company,String classCd,String colCd);
+
+    int checkPrimaryKey(String table, String schema);
+
+    void addPrimaryKey(String table, String schema, String primaryKey, String pkName);
 }

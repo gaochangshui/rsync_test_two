@@ -481,4 +481,12 @@
             #{item}
         </foreach>
     </select>
+    <select id="checkPrimaryKey" resultType="int">
+        select count(*) from information_schema.table_constraints where table_schema=#{schema} and table_name=#{table}
+        and constraint_type='PRIMARY KEY'
+    </select>
+    <update id="addPrimaryKey">
+        alter table "${schema}"."${table}" add constraint ${pkName}
+        primary key ("${primaryKey}");
+    </update>
 </mapper>

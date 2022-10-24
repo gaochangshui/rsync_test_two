@@ -786,6 +786,8 @@ public class MstJanServiceImpl implements MstJanService {
             if (Strings.isNullOrEmpty(existTable)) {
                 mstJanMapper.createJanHeader(tableNameHeader, tableNameHeaderWK);
                 mstJanMapper.addJanHeaderCol(tableNameHeader, tableNameHeaderPkey);
+            }else{
+                addPrimaryKey(tableNameHeader.split("\\.")[1],"1", companyCd, tableNameHeaderPkey);
             }
             mstJanMapper.syncJanHeader(tableNameHeader, tableNameHeaderWK);
             if (Strings.isNullOrEmpty(existTable)) {
@@ -795,6 +797,8 @@ public class MstJanServiceImpl implements MstJanService {
             if (Strings.isNullOrEmpty(existTable)) {
                 mstJanMapper.createJanData(tableNameInfo, tableNameInfoWK);
                 mstJanMapper.addJanDataCol(tableNameInfo, tableNameInfoPkey);
+            }else{
+                addPrimaryKey(tableNameInfo.split("\\.")[1],"1", companyCd, tableNameInfoPkey);
             }
             janAttrList = mstJanMapper.getJanAttrColWK(tableNameHeaderWK, tableNameKaisouHeader);
             column = janAttrList.stream().collect(Collectors.joining(","));
@@ -813,6 +817,15 @@ public class MstJanServiceImpl implements MstJanService {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return resultMap;
         }
+    }
+
+    @Override
+    public void addPrimaryKey(String tableName, String primaryKey, String schema, String pkName){
+        if(mstJanMapper.checkPrimaryKey(tableName, schema)>0){
+            return;
+        }
+
+        mstJanMapper.addPrimaryKey(tableName, schema, primaryKey, pkName);
     }
 
     @Override
