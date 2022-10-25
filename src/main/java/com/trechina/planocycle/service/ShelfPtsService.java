@@ -2,6 +2,7 @@ package com.trechina.planocycle.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.trechina.planocycle.entity.dto.PriorityOrderResultDataDto;
+import com.trechina.planocycle.entity.dto.PtsPatternRelationDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
@@ -138,5 +139,5 @@ public interface ShelfPtsService {
      * @param
      * @return
      */
-    Map<String, Object> ptsKeyCheck(List<String> tableNameList,String companyCd);
+    Map<String, Object> ptsKeyRelation(List<PtsPatternRelationDto> ptsPatternRelationDtoList);
 }

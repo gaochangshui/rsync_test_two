@@ -1,6 +1,7 @@
 package com.trechina.planocycle.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.entity.dto.PtsPatternRelationDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
@@ -186,14 +187,16 @@ public class ShelfPtsController {
     }
 
     /**
-     * check ptsKey
-     * @param
-     * @return
+     * pts关联pattern
+     *
      */
-    @PostMapping("/ptsKeyCheck")
-    public Map<String,Object> ptsKeyCheck(@RequestBody Map<String,Object> map) {
-        List<String> tableNameList = (List<String>) map.get("tableNameList");
-        String companyCd = map.get("companyCd").toString();
-        return shelfPtsService.ptsKeyCheck(tableNameList,companyCd);
+    @PostMapping("/ptsKeyRelation")
+    public Map<String,Object> ptsKeyRelation(@RequestBody List<PtsPatternRelationDto> ptsPatternRelationDtoList) {
+
+        return shelfPtsService.ptsKeyRelation(ptsPatternRelationDtoList);
     }
+
+
+
+
 }

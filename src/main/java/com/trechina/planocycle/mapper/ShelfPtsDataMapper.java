@@ -50,6 +50,7 @@ public interface ShelfPtsDataMapper {
     void updateShelfPtsOfAutoInner(@Param("id") Integer id, @Param("patternId") Integer patternId, @Param("authorCd") String authorCd);
 
     void updateSingle(@Param("patternId") Integer patternId, @Param("authorCd") String authorCd);
+    void updateSingleList(@Param("list") List<Integer> patternIdList, @Param("authorCd") String authorCd);
 
     void updatePtsHistoryFlgSingle(@Param("patternId") Integer patternId, @Param("authorCd") String authorCd);
 
@@ -222,4 +223,7 @@ public interface ShelfPtsDataMapper {
             ,@Param("tableName")String tableName,@Param("janSizeCol")List<Map<String,Object>>janSizeCol);
 
     int selectJanCount(Integer priorityOrderCd, Integer taiCd, Integer tanaCd, Long restrictCd, Long id);
+
+    void updatePtsAndPattern(List<PtsPatternRelationDto> ptsPatternRelationDtoList);
+
 }
