@@ -103,7 +103,7 @@ public class ScheduleTask {
                         classCd, result,
                         MapUtils.getInteger(datum, "count"), errorMsg));
 
-                String resultMsg = MessageFormat.format("【{0}-Plano-Cycle商品マスタ更新】{1} {2}-{3}: {4}\n", env, companyCd, companyName, classCd,
+                String resultMsg = MessageFormat.format("【{0}】Plano-Cycle_商品マスタ更新: {1} {2}-{3}: {4}\n", env, companyCd, companyName, classCd,
                         (result.equals("true")?"正常終了、問題無し":"異常発生、更新無し"));
                 slackJanResult.append(resultMsg);
             }
@@ -127,7 +127,7 @@ public class ScheduleTask {
                         classCd, result,
                         MapUtils.getInteger(datum, "count"),errorMsg));
 
-                String resultMsg = MessageFormat.format("【{0}-Plano-Cycle店舗マスタ更新】{1} {2}-{3}: {4}\n", env, companyCd, companyName, classCd,
+                String resultMsg = MessageFormat.format("【{0}】Plano-Cycle_店舗マスタ更新: {1} {2}-{3}: {4}\n", env, companyCd, companyName, classCd,
                         (result.equals("true")?"正常終了、問題無し":"異常発生、更新無し"));
                 slackTenResult.append(resultMsg);
             }
@@ -199,9 +199,14 @@ public class ScheduleTask {
         msgList.forEach(msg->{
             JSONObject jsonMsg = JSON.parseObject(msg.getErrorMsg());
             JSONObject cause = jsonMsg.getJSONObject("cause");
-            msg.setErrorMsg(cause.getString("message"));
+            if(cause==null){
+                String message = jsonMsg.getString("message");
+                msg.setErrorMsg(message);
+            }else{
+                msg.setErrorMsg(cause.getString("message"));
+            }
 
-            String message = MessageFormat.format("【{0}-{1}】@ERROR「{2}」:時間「{3}」、ユーザー「{4}」、ブラウザ「{5}」",
+            String message = MessageFormat.format("【{0}】{1} @ERROR「{2}」時間:「{3}」、ユーザー「{4}」、ブラウザ「{5}」",
                     finalEnv, "Plano-Cycle", msg.getErrorMsg(), msg.getCreateTime(), msg.getAuthorCd(), msg.getBrowser());
             JSONObject requestParam = new JSONObject();
             requestParam.put("text", message);
