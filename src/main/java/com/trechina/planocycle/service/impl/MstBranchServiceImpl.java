@@ -11,6 +11,7 @@ import com.trechina.planocycle.mapper.MstBranchMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.MstBranchService;
 import com.trechina.planocycle.service.MstCommodityService;
+import com.trechina.planocycle.service.MstJanService;
 import com.trechina.planocycle.utils.MailUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
@@ -37,6 +38,8 @@ public class MstBranchServiceImpl implements MstBranchService {
     private MstCommodityService mstCommodityService;
     @Value("${projectIds}")
     private String projectIds;
+    @Autowired
+    private MstJanService mstJanService;
 
     private Logger logger = LoggerFactory.getLogger(MstBranchServiceImpl.class);
 
@@ -166,6 +169,8 @@ public class MstBranchServiceImpl implements MstBranchService {
             String column = tenList.stream().map(e -> e.get("3").toString()).collect(Collectors.joining(","));
             if (Strings.isNullOrEmpty(tableNameExist)) {
                 mstBranchMapper.creatTenData(tableNameInfo, tableNameInfoWK, tableNameInfoPkey);
+            }else{
+                mstJanService.addPrimaryKey(tableNameInfo, "1", companyCd, tableNameInfoPkey);
             }
             int syncCount = mstBranchMapper.syncTenData(tableNameInfo, tableNameInfoWK, column);
             resultMap.put("result", "true");

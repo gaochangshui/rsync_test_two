@@ -203,8 +203,16 @@ public class MstJanServiceImpl implements MstJanService {
         }
         janHeader = janHeaderSort;
         //SQL文の列： a."1" "jan_cd",a."2" "jan_name",a."21" "kikaku",b."104" "planoWidth"
-        String column = janHeader.stream().map(map -> "COALESCE(" + ("5".equals(map.getType()) ||"6".equals(map.getType()) ? "b" : "a") + ".\""
-                        + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
+        String column = janHeader.stream().map(map -> {
+                    String sqlCol = "COALESCE(" + ("5".equals(map.getType()) ||"6".equals(map.getType()) ? "b" : "a") + ".\""
+                            + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"";
+                    if("sync".equals(map.getAttr())){
+                        sqlCol = "COALESCE(" + ("5".equals(map.getType()) ||"6".equals(map.getType()) ? "b" : "a") + ".\""
+                                + map.getSort() + "\",'1') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"";
+                    }
+
+                    return sqlCol;
+                })
                 .collect(Collectors.joining(","));
         janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTable, janInfoTablePlanoCycle, column));
         janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
@@ -778,6 +786,8 @@ public class MstJanServiceImpl implements MstJanService {
             if (Strings.isNullOrEmpty(existTable)) {
                 mstJanMapper.createJanHeader(tableNameHeader, tableNameHeaderWK);
                 mstJanMapper.addJanHeaderCol(tableNameHeader, tableNameHeaderPkey);
+            }else{
+                addPrimaryKey(tableNameHeader.split("\\.")[1],"1", companyCd, tableNameHeaderPkey);
             }
             mstJanMapper.syncJanHeader(tableNameHeader, tableNameHeaderWK);
             if (Strings.isNullOrEmpty(existTable)) {
@@ -787,6 +797,8 @@ public class MstJanServiceImpl implements MstJanService {
             if (Strings.isNullOrEmpty(existTable)) {
                 mstJanMapper.createJanData(tableNameInfo, tableNameInfoWK);
                 mstJanMapper.addJanDataCol(tableNameInfo, tableNameInfoPkey);
+            }else{
+                addPrimaryKey(tableNameInfo.split("\\.")[1],"1", companyCd, tableNameInfoPkey);
             }
             janAttrList = mstJanMapper.getJanAttrColWK(tableNameHeaderWK, tableNameKaisouHeader);
             column = janAttrList.stream().collect(Collectors.joining(","));
@@ -805,6 +817,15 @@ public class MstJanServiceImpl implements MstJanService {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return resultMap;
         }
+    }
+
+    @Override
+    public void addPrimaryKey(String tableName, String primaryKey, String schema, String pkName){
+        if(mstJanMapper.checkPrimaryKey(tableName, schema)>0){
+            return;
+        }
+
+        mstJanMapper.addPrimaryKey(tableName, schema, primaryKey, pkName);
     }
 
     @Override
