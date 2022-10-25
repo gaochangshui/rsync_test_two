@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -150,7 +151,8 @@ public class ScheduleTask {
         logger.info("end sync...");
     }
 
-    private void syncSlackNotify(String slackJanResult, String slackTenResult){
+    @Async
+    void syncSlackNotify(String slackJanResult, String slackTenResult){
         if(Strings.isNullOrEmpty(MagicString.SLACK_URL)){
             MagicString.SLACK_URL = sysConfigMapper.selectSycConfig("slack_url");
         }
