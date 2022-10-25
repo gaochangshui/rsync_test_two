@@ -818,18 +818,14 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
      * @return
      */
     @Override
-    public Map<String, Object> ptsKeyCheck(List<String> tableNameList,String companyCd) {
-        List<String> ptsKeyList = shelfPatternMstMapper.getPtsKeyList(companyCd,tableNameList);
-        List<Map<String,Object>> resultList = new ArrayList<>();
-        tableNameList.forEach(name-> ptsKeyList.stream().filter(ptskey -> name.contains(ptskey)).forEach(ptskey -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("ptskey", ptskey);
-            map.put("name", name);
-            resultList.add(map);
-        }));
-        Map<Object, List<Map<String, Object>>> collect = resultList.stream().collect(Collectors.groupingBy(map -> map.get(MagicString.NAME)));
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Object> ptsKeyRelation(List<PtsPatternRelationDto> ptsPatternRelationDtoList) {
+        String authorCd = httpSession.getAttribute("aud").toString();
 
-        return ResultMaps.result(ResultEnum.SUCCESS,resultList);
+        List<Integer> patternList = ptsPatternRelationDtoList.stream().map(PtsPatternRelationDto::getShelfPatternCd).collect(Collectors.toList());
+        shelfPtsDataMapper.updateSingleList(patternList,authorCd);
+        shelfPtsDataMapper.updatePtsAndPattern(ptsPatternRelationDtoList);
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     public StringBuilder colHeader(List<Map<String, Object>> attrCol,PtsDetailDataVo ptsDetailData){

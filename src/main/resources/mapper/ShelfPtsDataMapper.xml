@@ -191,7 +191,27 @@
     set valid_flg = 0 ,edit_time=now(),editer_cd=#{authorCd}
     where pattern_cd = #{patternId,jdbcType=INTEGER}
   </update>
-  <update id="setFinalPtsData"></update>
+  <update id="updateSingleList">
+    update planocycle.shelf_pts_data
+    set shelf_pattern_cd = null ,start_day = null ,valid_flg = 0,edit_time=now(),editer_cd=#{authorCd}
+    where shelf_pattern_cd in
+    <foreach collection="list" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </update>
+  <update id="updatePtsAndPattern">
+    update planocycle.shelf_pts_data
+    set shelf_pattern_cd =
+    case id
+    <foreach collection="ptsPatternRelationDtoList" item="item">
+      when #{item.fileCd} then #{item.shelfPatternCd}
+    </foreach>
+    else shelf_pattern_cd end,start_day = now()
+    where id in
+        <foreach collection="ptsPatternRelationDtoList" separator="," open="(" close=")" item="item">
+            #{item.fileCd}
+        </foreach>
+  </update>
   <insert id="setDisplay">
     insert into planocycle.work_priority_order_sort(priority_order_cd,company_cd,author_cd,zokusei_id,sort_num)
     values
