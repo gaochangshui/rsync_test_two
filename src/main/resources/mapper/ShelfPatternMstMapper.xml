@@ -269,4 +269,15 @@
     <select id="getCommonPartsData" resultType="java.lang.String">
         select distinct common_parts_data from planocycle.shelf_pattern_mst where company_cd = #{companyCd}
     </select>
+    <select id="getPtsKeyList" resultType="java.lang.String">
+        select ptskey
+        from planocycle.shelf_pattern_mst
+        where company_cd = #{companyCd} and ptskey is not null
+        and ptskey != ''
+    </select>
+    <select id="getShelfPatternName" resultType="java.lang.String">
+        select shelf_pattern_name
+        from planocycle.shelf_pattern_mst
+        where company_cd = #{companyCd} and shelf_pattern_cd = #{shelfPatternCd}
+    </select>
 </mapper>

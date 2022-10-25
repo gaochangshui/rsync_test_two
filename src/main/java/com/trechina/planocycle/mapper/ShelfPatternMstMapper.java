@@ -60,4 +60,8 @@ public interface ShelfPatternMstMapper {
     Set<String> getExistSpecialUse(List<String> list);
 
     List<String> getCommonPartsData(String companyCd);
+
+    List<String> getPtsKeyList(String companyCd,List<String> tableNameList);
+
+    String getShelfPatternName(Integer shelfPatternCd,String companyCd);
 }
