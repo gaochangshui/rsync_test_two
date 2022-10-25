@@ -190,13 +190,12 @@ public class ScheduleTask {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String env = MagicString.ENV;
         if(Strings.isNullOrEmpty(MagicString.ENV)){
-            env = sysConfigMapper.selectSycConfig("env");
+            MagicString.ENV = sysConfigMapper.selectSycConfig("env");
         }
 
         List<ErrorMsg> msgList = logMapper.selectErrorLog();
-        String finalEnv = env;
+        String finalEnv = MagicString.ENV;
         msgList.forEach(msg->{
             JSONObject jsonMsg = JSON.parseObject(msg.getErrorMsg());
             JSONObject cause = jsonMsg.getJSONObject("cause");
