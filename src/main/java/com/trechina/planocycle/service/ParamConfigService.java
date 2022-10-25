@@ -9,4 +9,7 @@ public interface ParamConfigService {
     Map<String, Object> getCompanyConfig(Map<String, Object> map);
 
     Map<String, Object> setCompanyConfig(Map<String, Object> map);
+
+    Map<String, Object> getCompanyList();
+
 }

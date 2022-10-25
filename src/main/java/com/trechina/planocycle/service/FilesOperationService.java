@@ -13,7 +13,7 @@ public interface FilesOperationService {
     /**
      * csvアップロードインタフェース
      *
-     * @param multipartFile
+     * @param
      * @return
      * @throws IOException
      */

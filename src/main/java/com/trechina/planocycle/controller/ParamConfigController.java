@@ -30,4 +30,15 @@ public class ParamConfigController {
 
         return paramConfigService.setCompanyConfig(map);
     }
+
+    /**
+     * エンタープライズ管理ページエンタープライズリストの取得
+     *
+     * @return
+     */
+    @GetMapping("getCompanyList")
+    public Map<String,Object> getCompanyList()  {
+
+        return paramConfigService.getCompanyList();
+    }
 }
