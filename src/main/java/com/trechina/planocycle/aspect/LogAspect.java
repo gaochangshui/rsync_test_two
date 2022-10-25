@@ -76,7 +76,11 @@ public class LogAspect {
         //取得＃シュトク＃classオブジェクト象
         String s = JSON.toJSONString(ex);
         String params = jsonArray.toString();
-        executor.execute(()-> logMapper.saveErrorLog(targetName+"_"+methodName, params,s));
+        String browser = httpServletRequest.getHeader("User-Agent");
+        String authorCd = session.getAttribute("aud").toString();
+        String url = httpServletRequest.getRequestURI();
+
+        executor.execute(()-> logMapper.saveErrorLog(targetName+"_"+methodName, params,s, browser, authorCd, url));
         try {
             this.errInfoForEmail(ex.getMessage(),methodName,params);
         } catch (Exception e) {
@@ -91,7 +95,10 @@ public class LogAspect {
         String params = jsonArray.toString();
         String path = ex.getStackTrace()[0].getFileName()+"_"+ex.getStackTrace()[0].getMethodName();
         StackTraceElement stackTraceElement = ex.getStackTrace()[0];
-        executor.execute(()-> logMapper.saveErrorLog(path, params,s));
+        String browser = httpServletRequest.getHeader("User-Agent");
+        String authorCd = session.getAttribute("aud").toString();
+        String url = httpServletRequest.getRequestURI();
+        executor.execute(()-> logMapper.saveErrorLog(path, params,s, browser, authorCd, url));
 
         try {
             this.errInfoForEmail(ex.getMessage(),stackTraceElement.getMethodName(),params);

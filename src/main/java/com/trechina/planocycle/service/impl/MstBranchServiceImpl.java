@@ -170,7 +170,7 @@ public class MstBranchServiceImpl implements MstBranchService {
             if (Strings.isNullOrEmpty(tableNameExist)) {
                 mstBranchMapper.creatTenData(tableNameInfo, tableNameInfoWK, tableNameInfoPkey);
             }else{
-                mstJanService.addPrimaryKey(tableNameInfo, "1", companyCd, tableNameInfoPkey);
+                mstJanService.addPrimaryKey(tableNameInfo.split("\\.")[1], "1", companyCd, tableNameInfoPkey);
             }
             int syncCount = mstBranchMapper.syncTenData(tableNameInfo, tableNameInfoWK, column);
             resultMap.put("result", "true");
