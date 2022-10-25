@@ -66,16 +66,6 @@ public class ScheduleTask {
 
     @Scheduled(cron = "0 0 7 * * ?")
     public void MasterInfoSync(){
-//        logger.info("定時調度任務--attr表同期開始");
-//        tableTransferService.getAttrTransfer();
-//        logger.info("定時調度任務--area表同期開始");
-//        tableTransferService.getAreasTransfer();
-//        logger.info("定時調度任務--branch表同期開始");
-//        tableTransferService.getBranchsTransfer();
-//        logger.info("定時調度任務--jan表同期開始");
-//        tableTransferService.getJansTransfer();
-        //logger.info("定時調度任務--janInfo表同期開始");
-        //tableTransferService.getJanInfoTransfer();
         LocalDateTime start = LocalDateTime.now();
         String env = MagicString.ENV;
         if(Strings.isNullOrEmpty(MagicString.ENV)){
@@ -89,10 +79,10 @@ public class ScheduleTask {
         MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"));
         String title = MessageFormat.format("「{0}」マスター データ同期完了", env);
 
-        String janResult = "";
-        String tenResult = "";
-        String slackJanResult = "";
-        String slackTenResult = "";
+        StringBuilder janResult = new StringBuilder();
+        StringBuilder tenResult = new StringBuilder();
+        StringBuilder slackJanResult = new StringBuilder();
+        StringBuilder slackTenResult = new StringBuilder();
 
         if(Objects.equals(MapUtils.getInteger(janInfoResult, "code"), ResultEnum.SUCCESS.getCode())){
             List<Map<String, Object>> data = (List<Map<String, Object>>) MapUtils.getObject(janInfoResult, "data");
@@ -109,12 +99,13 @@ public class ScheduleTask {
                 String classCd = MapUtils.getString(datum, "classCd");
                 String result = MapUtils.getString(datum, "result");
 
-                janResult += MessageFormat.format(msg,companyCd+" "+ Optional.ofNullable(companyName).orElse("") ,
+                janResult.append(MessageFormat.format(msg,companyCd+" "+ Optional.ofNullable(companyName).orElse("") ,
                         classCd, result,
-                        MapUtils.getInteger(datum, "count"), errorMsg);
+                        MapUtils.getInteger(datum, "count"), errorMsg));
 
-                slackJanResult += "【"+env+"-Plano-Cycle商品マスタ更新】"+companyCd+" "+companyName+"-"+classCd+": "
-                        +(result.equals("true")?"正常終了、問題無し":"異常発生、更新無し")+"\n";
+                String resultMsg = MessageFormat.format("【{0}-Plano-Cycle商品マスタ更新】{1} {2}-{3}: {4}\n", env, companyCd, companyName, classCd,
+                        (result.equals("true")?"正常終了、問題無し":"異常発生、更新無し"));
+                slackJanResult.append(resultMsg);
             }
         }
 
@@ -132,16 +123,17 @@ public class ScheduleTask {
                 String companyName = mstJanMapper.selectCompanyName(companyCd);
                 String classCd = MapUtils.getString(datum, "classCd");
                 String result = MapUtils.getString(datum, "result");
-                tenResult += MessageFormat.format(msg, companyCd+" "+Optional.ofNullable(companyName).orElse(""),
+                tenResult.append(MessageFormat.format(msg, companyCd+" "+Optional.ofNullable(companyName).orElse(""),
                         classCd, result,
-                        MapUtils.getInteger(datum, "count"),errorMsg);
+                        MapUtils.getInteger(datum, "count"),errorMsg));
 
-                slackTenResult += "【"+env+"-Plano-Cycle店舗マスタ更新】"+companyCd+" "+companyName+"-"+classCd+": "
-                        +(result.equals("true")?"正常終了、更新なし":"異常発生、更新無し")+"\n";
+                String resultMsg = MessageFormat.format("【{0}-Plano-Cycle店舗マスタ更新】{1} {2}-{3}: {4}\n", env, companyCd, companyName, classCd,
+                        (result.equals("true")?"正常終了、問題無し":"異常発生、更新無し"));
+                slackTenResult.append(resultMsg);
             }
         }
 
-        this.syncSlackNotify(slackJanResult, slackTenResult);
+        this.syncSlackNotify(slackJanResult.toString(), slackTenResult.toString());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-mm HH:mm:ss");
         String content = String.format(MailConfig.MAIL_SUCCESS_TEMPLATE, "MasterInfoSync", janResult, tenResult,
