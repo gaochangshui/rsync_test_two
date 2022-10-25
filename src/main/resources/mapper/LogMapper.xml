@@ -11,7 +11,7 @@
         delete from "planocycle_log".log where create_time &lt; current_date::timestamp - INTERVAL '2 day'
     </delete>
     <select id="selectErrorLog" resultType="com.trechina.planocycle.entity.po.ErrorMsg">
-        select id, error_msg,author_cd, browser, request_uri from "planocycle_log".log where send_flag != 1
+        select id, error_msg,author_cd, browser, request_uri,create_time from "planocycle_log".log where send_flag != 1
     </select>
     <update id="updateErrorLogFlag">
         update "planocycle_log".log set send_flag=1 where send_flag!=1

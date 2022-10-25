@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -65,16 +66,6 @@ public class ScheduleTask {
 
     @Scheduled(cron = "0 0 7 * * ?")
     public void MasterInfoSync(){
-//        logger.info("定時調度任務--attr表同期開始");
-//        tableTransferService.getAttrTransfer();
-//        logger.info("定時調度任務--area表同期開始");
-//        tableTransferService.getAreasTransfer();
-//        logger.info("定時調度任務--branch表同期開始");
-//        tableTransferService.getBranchsTransfer();
-//        logger.info("定時調度任務--jan表同期開始");
-//        tableTransferService.getJansTransfer();
-        //logger.info("定時調度任務--janInfo表同期開始");
-        //tableTransferService.getJanInfoTransfer();
         LocalDateTime start = LocalDateTime.now();
         String env = MagicString.ENV;
         if(Strings.isNullOrEmpty(MagicString.ENV)){
@@ -88,10 +79,10 @@ public class ScheduleTask {
         MailAccount account = MailConfig.getMailAccount(!projectIds.equals("nothing"));
         String title = MessageFormat.format("「{0}」マスター データ同期完了", env);
 
-        String janResult = "";
-        String tenResult = "";
-        String slackJanResult = "";
-        String slackTenResult = "";
+        StringBuilder janResult = new StringBuilder();
+        StringBuilder tenResult = new StringBuilder();
+        StringBuilder slackJanResult = new StringBuilder();
+        StringBuilder slackTenResult = new StringBuilder();
 
         if(Objects.equals(MapUtils.getInteger(janInfoResult, "code"), ResultEnum.SUCCESS.getCode())){
             List<Map<String, Object>> data = (List<Map<String, Object>>) MapUtils.getObject(janInfoResult, "data");
@@ -108,12 +99,13 @@ public class ScheduleTask {
                 String classCd = MapUtils.getString(datum, "classCd");
                 String result = MapUtils.getString(datum, "result");
 
-                janResult += MessageFormat.format(msg,companyCd+" "+ Optional.ofNullable(companyName).orElse("") ,
+                janResult.append(MessageFormat.format(msg,companyCd+" "+ Optional.ofNullable(companyName).orElse("") ,
                         classCd, result,
-                        MapUtils.getInteger(datum, "count"), errorMsg);
+                        MapUtils.getInteger(datum, "count"), errorMsg));
 
-                slackJanResult += "【"+env+"-Plano-Cycle商品マスタ更新】"+companyCd+" "+companyName+"-"+classCd+": "
-                        +(result.equals("true")?"正常終了、問題無し":"異常発生、更新無し")+"\n";
+                String resultMsg = MessageFormat.format("【{0}】Plano-Cycle_商品マスタ更新: {1} {2}-{3}: {4}\n", env, companyCd, companyName, classCd,
+                        (result.equals("true")?"正常終了、問題無し":"異常発生、更新無し"));
+                slackJanResult.append(resultMsg);
             }
         }
 
@@ -131,16 +123,17 @@ public class ScheduleTask {
                 String companyName = mstJanMapper.selectCompanyName(companyCd);
                 String classCd = MapUtils.getString(datum, "classCd");
                 String result = MapUtils.getString(datum, "result");
-                tenResult += MessageFormat.format(msg, companyCd+" "+Optional.ofNullable(companyName).orElse(""),
+                tenResult.append(MessageFormat.format(msg, companyCd+" "+Optional.ofNullable(companyName).orElse(""),
                         classCd, result,
-                        MapUtils.getInteger(datum, "count"),errorMsg);
+                        MapUtils.getInteger(datum, "count"),errorMsg));
 
-                slackTenResult += "【"+env+"-Plano-Cycle店舗マスタ更新】"+companyCd+" "+companyName+"-"+classCd+": "
-                        +(result.equals("true")?"正常終了、更新なし":"異常発生、更新無し")+"\n";
+                String resultMsg = MessageFormat.format("【{0}】Plano-Cycle_店舗マスタ更新: {1} {2}-{3}: {4}\n", env, companyCd, companyName, classCd,
+                        (result.equals("true")?"正常終了、問題無し":"異常発生、更新無し"));
+                slackTenResult.append(resultMsg);
             }
         }
 
-        this.syncSlackNotify(slackJanResult, slackTenResult);
+        this.syncSlackNotify(slackJanResult.toString(), slackTenResult.toString());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-mm HH:mm:ss");
         String content = String.format(MailConfig.MAIL_SUCCESS_TEMPLATE, "MasterInfoSync", janResult, tenResult,
@@ -150,7 +143,8 @@ public class ScheduleTask {
         logger.info("end sync...");
     }
 
-    private void syncSlackNotify(String slackJanResult, String slackTenResult){
+    @Async
+    void syncSlackNotify(String slackJanResult, String slackTenResult){
         if(Strings.isNullOrEmpty(MagicString.SLACK_URL)){
             MagicString.SLACK_URL = sysConfigMapper.selectSycConfig("slack_url");
         }
@@ -196,19 +190,23 @@ public class ScheduleTask {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String env = MagicString.ENV;
         if(Strings.isNullOrEmpty(MagicString.ENV)){
-            env = sysConfigMapper.selectSycConfig("env");
+            MagicString.ENV = sysConfigMapper.selectSycConfig("env");
         }
 
         List<ErrorMsg> msgList = logMapper.selectErrorLog();
-        String finalEnv = env;
+        String finalEnv = MagicString.ENV;
         msgList.forEach(msg->{
             JSONObject jsonMsg = JSON.parseObject(msg.getErrorMsg());
             JSONObject cause = jsonMsg.getJSONObject("cause");
-            msg.setErrorMsg(cause.getString("message"));
+            if(cause==null){
+                String message = jsonMsg.getString("message");
+                msg.setErrorMsg(message);
+            }else{
+                msg.setErrorMsg(cause.getString("message"));
+            }
 
-            String message = MessageFormat.format("【{0}-{1}】@ERROR「{2}」:時間「{3}」、ユーザー「{4}」、ブラウザ「{5}」",
+            String message = MessageFormat.format("【{0}】{1} @ERROR「{2}」時間:「{3}」、ユーザー「{4}」、ブラウザ「{5}」",
                     finalEnv, "Plano-Cycle", msg.getErrorMsg(), msg.getCreateTime(), msg.getAuthorCd(), msg.getBrowser());
             JSONObject requestParam = new JSONObject();
             requestParam.put("text", message);

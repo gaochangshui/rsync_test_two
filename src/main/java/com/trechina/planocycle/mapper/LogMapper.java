@@ -13,7 +13,6 @@ public interface LogMapper {
 
     int deleteLog();
 
-    void addTimeLog(String methodName, LocalDateTime startTime, LocalDateTime endTime, String params, Long totalTime);
     List<ErrorMsg> selectErrorLog();
 
     void updateErrorLogFlag(Integer id);
