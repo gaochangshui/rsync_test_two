@@ -2,10 +2,7 @@ package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.service.ParamConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -22,8 +19,8 @@ public class ParamConfigController {
     }
 
 
-    @GetMapping("getCompanyConfig")
-    public Map<String,Object> getCompanyConfig(Map<String,Object> map)  {
+    @PostMapping("getCompanyConfig")
+    public Map<String,Object> getCompanyConfig(@RequestBody Map<String,Object> map)  {
 
         return paramConfigService.getCompanyConfig(map);
     }

@@ -11,4 +11,7 @@ public interface SysConfigMapper {
     List<Map<String, String>> selectByPrefix(String targetColumnPre);
 
     Integer selectIsGroupCompany(String companyCd);
+
+    List<Map<String,Object>> getAttrHeader(String tableName);
+
 }

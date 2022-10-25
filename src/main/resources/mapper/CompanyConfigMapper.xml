@@ -12,7 +12,29 @@
         company_cd = #{companyCd},
         company_name= #{companyName}
     </insert>
+    <update id="setSyncCompany">
+        insert into planocycle.sys_config (item_name,item_value)
+        values ('sync_company_list',#{syncCompanyList})
+            on conflict("item_name")
+        do update set
+            item_value = #{syncCompanyList}
+    </update>
+    <insert id="setGroupCompany">
+        insert into masterdb.group_company(group_cd,group_name,company_cd,company_name)
+        values (#{groupCd},#{groupName},#{companyCd},#{companyName})
+            on conflict(group_cd,company_cd)
+        do update set
+                        group_cd = #{groupCd},
+                       group_name = #{groupName},
+                       company_cd = #{companyCd},
+                       company_name = #{companyName},
+    </insert>
     <select id="getMstkigyocore" resultType="com.trechina.planocycle.entity.po.MstKiGyoCore">
         select * from masterdb.mst_kigyocore where company_cd = #{companyCd}
+    </select>
+    <select id="getCompanyConfig" resultType="map">
+        select jan_name2col_num,jan_item2col_num,kokyaku,intage,maker,basket_price,convert_numbers
+        from planocycle.sku_name_config
+        where company_cd = #{companyCd} and class = #{classCd}
     </select>
 </mapper>

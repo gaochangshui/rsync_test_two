@@ -76,6 +76,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     private PriorityAllMstMapper priorityAllMstMapper;
     @Autowired
     private PriorityOrderMstAttrSortMapper attrSortMapper;
+    @Autowired
+    private ShelfPatternMstMapper shelfPatternMstMapper;
 
 
     /**
@@ -110,6 +112,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         shelfPtsData.setAuthorcd(authorCd);
         shelfPtsDataMapper.insert(shelfPtsData);
         logger.info("保存後のパラメータ：{}", shelfPtsData);
+        PtsPatternRelationDto ptsPatternRelationDto = new PtsPatternRelationDto();
         if (flg == 0) {
             // check patternid
             String[] ptsKeyList = shelfPtsData.getFileName().split("_");
@@ -126,10 +129,13 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             logger.info("手動で組み合わせたptskey：{}", ptsKey);
             List<Integer> patternIdList = shelfPatternService.getpatternIdOfFilename(shelfPtsDto.getFileName(),shelfPtsDto.getCompanyCd());
             logger.info("組み合わせのptskeyによってpatternidを探します：{}", patternIdList);
+            ptsPatternRelationDto.setFileCd(shelfPtsData.getId());
+            ptsPatternRelationDto.setFileName(shelfPtsData.getFileName());
             if (!patternIdList.isEmpty()) {
                 Integer patternId = patternIdList.get(0);
                 logger.info("使用されるpatternid：{}", patternId);
                 logger.info("使用されるpatternid：{}", patternId);
+                ptsPatternRelationDto.setShelfPatternCd(patternId);
 
                 if (MagicString.PATTERN_MAP.putIfAbsent(patternId, "1")==null) {
                     // 清空patternid
@@ -146,13 +152,16 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                     shelfPtsJoinPatternDto.setShelfPatternCd(patternId);
                     shelfPtsJoinPatternDto.setStartDay(simpleDateFormat.format(now));
                     shelfPtsDataMapper.insertPtsHistory(shelfPtsJoinPatternDto, authorCd);
-
                     MagicString.PATTERN_MAP.remove(patternId);
                 }
 
             }
         }
-        return ResultMaps.result(ResultEnum.SUCCESS, shelfPtsData.getId());
+        if (ptsPatternRelationDto.getShelfPatternCd() != null){
+            String shelfPatternName = shelfPatternMstMapper.getShelfPatternName(ptsPatternRelationDto.getShelfPatternCd(), shelfPtsDto.getCompanyCd());
+            ptsPatternRelationDto.setShelfPatternName(shelfPatternName);
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS,ptsPatternRelationDto);
     }
 
     /**
@@ -803,8 +812,27 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         }
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
+    /**
+     * check ptsKey
+     * @param
+     * @return
+     */
+    @Override
+    public Map<String, Object> ptsKeyCheck(List<String> tableNameList,String companyCd) {
+        List<String> ptsKeyList = shelfPatternMstMapper.getPtsKeyList(companyCd,tableNameList);
+        List<Map<String,Object>> resultList = new ArrayList<>();
+        tableNameList.forEach(name-> ptsKeyList.stream().filter(ptskey -> name.contains(ptskey)).forEach(ptskey -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("ptskey", ptskey);
+            map.put("name", name);
+            resultList.add(map);
+        }));
+        Map<Object, List<Map<String, Object>>> collect = resultList.stream().collect(Collectors.groupingBy(map -> map.get(MagicString.NAME)));
 
-        public StringBuilder colHeader(List<Map<String, Object>> attrCol,PtsDetailDataVo ptsDetailData){
+        return ResultMaps.result(ResultEnum.SUCCESS,resultList);
+    }
+
+    public StringBuilder colHeader(List<Map<String, Object>> attrCol,PtsDetailDataVo ptsDetailData){
             StringBuilder s = new StringBuilder("taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu,");
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
                 s.append("faceDisplayflg,facePosition,depthDisplayNum,remarks");

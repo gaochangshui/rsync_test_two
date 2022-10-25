@@ -12,4 +12,8 @@
     <select id="selectIsGroupCompany" resultType="int">
         select count(*) from masterdb.group_company where group_cd=#{companyCd}
     </select>
+    <select id="getAttrHeader" resultType="map">
+        select  "2" "colName","3" "colCd"
+        from "1000".wk_prod_0000_jan_attr_header_sys
+    </select>
 </mapper>

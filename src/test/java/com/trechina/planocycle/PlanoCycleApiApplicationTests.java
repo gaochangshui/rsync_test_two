@@ -1,6 +1,7 @@
 package com.trechina.planocycle;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.trechina.planocycle.entity.dto.PriorityAllResultDataDto;
 import com.trechina.planocycle.entity.po.ProductPowerMstData;
 import com.trechina.planocycle.mapper.*;
@@ -22,6 +23,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -168,8 +170,33 @@ class PlanoCycleApiApplicationTests {
 
     @Test
     public  void test8()  {
-        String str = "0001230";
-        String newStr = str.replaceAll("^(0+)", "");
-        System.out.println(newStr);
+        Map<String,Object> map = new HashMap<>();
+
+        List<Map<String, Object>> prodAttrData
+                = new Gson().fromJson("[\n" +
+                "                {\n" +
+                "                        \"id\": \"1000_0000_11\",\n" +
+                "                \"value\": [\n" +
+                "        \"0\",\n" +
+                "                \"#.10\",\n" +
+                "                \"18\"\n" +
+                "    ],\n" +
+                "        \"rmFlag\": false,\n" +
+                "                \"showFlag\": true\n" +
+                "  },\n" +
+                "        {\n" +
+                "            \"id\": \"1000_0000_12\",\n" +
+                "                \"value\": [],\n" +
+                "            \"rmFlag\": false,\n" +
+                "                \"showFlag\": false\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": \"1000_0000_13\",\n" +
+                "                \"value\": [],\n" +
+                "            \"rmFlag\": false,\n" +
+                "                \"showFlag\": false\n" +
+                "        }\n" +
+                "]", new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
+        System.out.println(prodAttrData);
     }
 }

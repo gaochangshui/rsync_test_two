@@ -133,4 +133,10 @@ public interface ShelfPtsService {
      * @return
      */
     Map<String, Object> getNewPtsDetailData(Integer patternCd, String companyCd, Integer priorityOrderCd);
+    /**
+     * check ptsKey
+     * @param
+     * @return
+     */
+    Map<String, Object> ptsKeyCheck(List<String> tableNameList,String companyCd);
 }

@@ -184,4 +184,16 @@ public class ShelfPtsController {
     public  Map<String,Object> setPtsTanaSize(@RequestBody List<PtsTanaVo> ptsTanaVoList){
         return shelfPtsService.setPtsTanaSize(ptsTanaVoList);
     }
+
+    /**
+     * check ptsKey
+     * @param
+     * @return
+     */
+    @PostMapping("/ptsKeyCheck")
+    public Map<String,Object> ptsKeyCheck(@RequestBody Map<String,Object> map) {
+        List<String> tableNameList = (List<String>) map.get("tableNameList");
+        String companyCd = map.get("companyCd").toString();
+        return shelfPtsService.ptsKeyCheck(tableNameList,companyCd);
+    }
 }

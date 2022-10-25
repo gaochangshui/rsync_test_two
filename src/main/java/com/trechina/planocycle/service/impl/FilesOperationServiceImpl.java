@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 
 import com.trechina.planocycle.entity.dto.GetPtsCsvCgiDto;
+import com.trechina.planocycle.entity.dto.PtsPatternRelationDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.po.ShelfPtsDataJandata;
 import com.trechina.planocycle.entity.po.ShelfPtsDataTaimst;
@@ -187,7 +188,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                 String[] arr1;
                 String[] arr2;
                 String[] arr3;
-
+                PtsPatternRelationDto resultMap = new PtsPatternRelationDto();
                 for (MultipartFile file : multipartFileList) {
                     String filenames = "";
                     if (file != null && file.getOriginalFilename() != null) {
@@ -276,7 +277,8 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                             shelfPtsDto.setFileName(filenames);
 
                             Map<String, Object> res = shelfPtsService.setShelfPtsInfo(shelfPtsDto, 0);
-                            Integer ptsId = (Integer) res.get("data");
+                             resultMap = (PtsPatternRelationDto) res.get("data");
+                            Integer ptsId = Integer.valueOf(resultMap.getFileCd());
                             ptsDataVersion.setPtsCd(ptsId);
                             FilesOperationService filesOperationService = applicationContext.getBean(FilesOperationService.class);
                             filesOperationService.savePtsData(ptsDataVersion, arrList1, arrList2, arrList3, ptsId, companyCd, authorCd, now);
@@ -303,7 +305,7 @@ public class FilesOperationServiceImpl implements FilesOperationService {
                         }
                     }
                 }
-                return ResultMaps.result(ResultEnum.SUCCESS);
+                return ResultMaps.result(ResultEnum.SUCCESS,resultMap);
 
             } else {
                 return ResultMaps.result(ResultEnum.FAILURE);
