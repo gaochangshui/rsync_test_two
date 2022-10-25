@@ -378,4 +378,7 @@ public class MagicString {
     public static final String F3 = "F3";
     public static final String F4 = "F4";
 
+    public static String SLACK_URL = "";
+
+    public static String ENV = "";
 }
