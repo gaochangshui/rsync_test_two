@@ -37,4 +37,29 @@
         from planocycle.sku_name_config
         where company_cd = #{companyCd} and class = #{classCd}
     </select>
+    <select id="getCompanyList" resultType="com.trechina.planocycle.entity.po.Company">
+        select
+            name."1" as "companyCd",name."2" as "companyName",
+            case when groups.company_cd is not null then 'グループ利用'
+                when list.is_use is not null then  list.is_use
+                else '設定待ち' end as "isUse",list.updater,list.update_time,
+            case when name."1" = '1000' then 1 else 2 end as flag
+        from
+            masterdb.kigyou_name name
+                left join masterdb.kigyou_company_sortid sortid
+                on sortid."1" = name."1"
+                left join masterdb.company_list list
+                          on name."1" = list.company_cd
+                left join masterdb.group_company groups
+                          on groups.company_cd = name."1"
+        where name."1" in
+        <foreach collection="companyList" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        order by flag,sortid."3" ::integer
+    </select>
+    <select id="getGroupList" resultType="com.trechina.planocycle.entity.po.Group">
+        select group_cd,group_name,company_cd,company_name,update_time,updater
+        from masterdb.group_company
+    </select>
 </mapper>

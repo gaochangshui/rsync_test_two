@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.base.Strings;
 import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.entity.dto.CompanyConfigureDto;
 import com.trechina.planocycle.entity.dto.ParamConfigDto;
-import com.trechina.planocycle.entity.po.CommoditySyncSet;
+import com.trechina.planocycle.entity.po.Company;
+import com.trechina.planocycle.entity.po.Group;
 import com.trechina.planocycle.entity.po.MstKiGyoCore;
 import com.trechina.planocycle.entity.vo.CommonPartsDataVO;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ParamConfigServiceImpl implements ParamConfigService {
@@ -59,69 +62,74 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         if (commonPartsDataVO.getProdIsCore().equals("0")){
             company = companyCd;
         }
-
+        CompanyConfigureDto companyConfigureDto = new CompanyConfigureDto();
         Map<String, Object> companyConfig = companyConfigMapper.getCompanyConfig(company, commonPartsDataVO.getProdMstClass());
         Integer colNum = skuNameConfigMapper.getJanName2colNum(company,commonPartsDataVO.getProdMstClass());
-        Map<String,Object> resultMap  = new HashMap<>();
-        resultMap.put("commonPartsData",commonPartsDataVO);
-        resultMap.put("basketPriceFlag", MapUtils.getInteger(companyConfig,"basket_price"));
-        resultMap.put("intageFlag", MapUtils.getInteger(companyConfig,"intage"));
-        resultMap.put("kokyakuFlag", MapUtils.getInteger(companyConfig,"kokyaku"));
-        resultMap.put("showJanSkuFlag", MapUtils.getString(companyConfig,"kokyaku"));
-        resultMap.put("showJanSkuFlag", MapUtils.getString(companyConfig,"kokyaku"));
-        resultMap.put("janName2colNum", MapUtils.getString(companyConfig,"jan_name2col_num"));
-        resultMap.put("janItem2colNum", MapUtils.getString(companyConfig,"jan_item2col_num"));
-        resultMap.put("maker", MapUtils.getString(companyConfig,"maker"));
-        String convertNumbers = MapUtils.getString(companyConfig, "convert_numbers");
-        JSONArray jsonArray = new JSONArray();
-        if (!Strings.isNullOrEmpty(convertNumbers)){
-            jsonArray = JSON.parseArray(convertNumbers);
-        }
-        if (colNum != null){
-            List<Map<String, String>> janUnit = sysConfigMapper.selectByPrefix("jan_unit_");
-            List<Map<String, Object>> janUnitList = new ArrayList<>();
-            Map<String, Object> itemJanUnit = null;
+        if (!companyConfig.isEmpty()) {
+            companyConfigureDto.setCommonPartsData(commonPartsDataVO);
+            companyConfigureDto.setBasketPriceFlag(MapUtils.getInteger(companyConfig, "basket_price"));
+            companyConfigureDto.setIntageFlag(MapUtils.getInteger(companyConfig, "intage"));
+            companyConfigureDto.setKokyakuFlag(MapUtils.getInteger(companyConfig, "kokyaku"));
+            companyConfigureDto.setJanName2colNum(MapUtils.getString(companyConfig, "jan_name2col_num"));
+            companyConfigureDto.setJanItem2colNum(MapUtils.getString(companyConfig, "jan_item2col_num"));
+            String convertNumbers = MapUtils.getString(companyConfig, "convert_numbers");
 
-            for (Map<String, String> s : janUnit) {
-                itemJanUnit = new HashMap<>();
-                String itemName = MapUtils.getString(s, "item_name");
-                String[] sArray = itemName.split("_");
-                itemJanUnit.put("label", MapUtils.getString(s, "item_value"));
-                itemJanUnit.put("value", Integer.parseInt(sArray[sArray.length-1]));
-                janUnitList.add(itemJanUnit);
+            JSONArray jsonArray = new JSONArray();
+            if (!Strings.isNullOrEmpty(convertNumbers)) {
+                jsonArray = JSON.parseArray(convertNumbers);
             }
-            resultMap.put("janUnit",janUnitList);
-            resultMap.put("showJanSkuFlag", 1);
-        }else {
-            resultMap.put("showJanSkuFlag", 0);
+            if (colNum != null) {
+                List<Map<String, String>> janUnit = sysConfigMapper.selectByPrefix("jan_unit_");
+                List<Map<String, Object>> janUnitList = new ArrayList<>();
+                Map<String, Object> itemJanUnit = null;
+
+                for (Map<String, String> s : janUnit) {
+                    itemJanUnit = new HashMap<>();
+                    String itemName = MapUtils.getString(s, "item_name");
+                    String[] sArray = itemName.split("_");
+                    itemJanUnit.put("label", MapUtils.getString(s, "item_value"));
+                    itemJanUnit.put("value", Integer.parseInt(sArray[sArray.length - 1]));
+                    janUnitList.add(itemJanUnit);
+                }
+                companyConfigureDto.setJanUnit(janUnitList);
+                companyConfigureDto.setShowJanSkuFlag(1);
+            } else {
+                companyConfigureDto.setShowJanSkuFlag(0);
+            }
         }
-        //String existTable = mstJanMapper.selectTableExist(companyCd);
-        List<CommoditySyncSet> commoditySyncSetList = mstCommodityService.getCommodityList(companyCd);
-        Map<String,Object> headerMap = new HashMap<>();
-        for (CommoditySyncSet commoditySyncSet : commoditySyncSetList) {
-            String tableAttrHeader = String.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, "1000",commoditySyncSet.getProdMstClass());
-            List<Map<String, Object>> attrHeader = sysConfigMapper.getAttrHeader(tableAttrHeader);
-            headerMap.put("table1_"+commoditySyncSet.getProdMstClass(),attrHeader);
-        }
-        String uuid = UUID.randomUUID().toString();
+        Map<String,Object> companyColMap = new HashMap<>();
+        companyColMap.putAll(this.getCompanyCol(companyCd, "0"));
+        companyColMap.putAll(this.getCompanyCol("1000", "1"));
+        companyConfigureDto.setCompanyColMap(companyColMap);
+        return ResultMaps.result(ResultEnum.SUCCESS,companyConfigureDto);
+    }
+
+    private Map<String,Object> getCompanyCol(String subkigyo,String flag) {
         String tokenInfo = (String) session.getAttribute("MSPACEDGOURDLP");
         ResourceBundle resource = ResourceBundle.getBundle("pathConfig");
         String paths = resource.getString("CompanyHeaderData");
         Map<String,Object> cgiMap = new HashMap<>();
-        cgiMap.put("subkigyo","1000");
+        cgiMap.put("subkigyo",subkigyo);
         String result = cgiUtil.postCgiCompany(paths, cgiMap, tokenInfo);
-        String[] attrList = result.split("@");
+        if (Strings.isNullOrEmpty(result)){
+            return new HashMap<>();
+        }
+        List<String> attrList = Arrays.asList(result.split("@"));
         List<Map<String,Object>> List = new ArrayList<>();
         for (String attr : attrList) {
             Map<String,Object> attrMap = new HashMap<>();
             String[] value = attr.split(" ");
-            attrMap.put("colCd",value[2]);
-            attrMap.put("colName",value[1]);
+            attrMap.put("colCd",value[3]);
+            attrMap.put("colName",value[2]);
+            attrMap.put("classCd",value[0]);
             List.add(attrMap);
         }
-
-        resultMap.put("headerMap",headerMap);
-        return ResultMaps.result(ResultEnum.SUCCESS,resultMap);
+        Map<Object, java.util.List<Map<String, Object>>> classCd = List.stream().collect(Collectors.groupingBy(map -> map.get("classCd")));
+        Map<String,Object> resultMap = new HashMap<>();
+        for (Map.Entry<Object, java.util.List<Map<String, Object>>> objectListEntry : classCd.entrySet()) {
+            resultMap.put("table"+flag+"_"+objectListEntry.getKey(),objectListEntry.getValue());
+        }
+        return resultMap;
     }
 
     private CommonPartsDataVO mstKigyocoreChange(MstKiGyoCore mstkigyocore) {
@@ -162,5 +170,19 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         }
 
         return null;
+    }
+
+    @Override
+    public Map<String, Object> getCompanyList() {
+        Map<String,Object> map = new HashMap<>();
+        String companys = session.getAttribute("inCharge").toString();
+        List<String> companyList = Arrays.asList(companys.split(","));
+        List<String> companyList1 = new ArrayList<>(companyList);
+        companyList1.add("1000");
+        List<Company> companyList2 = companyConfigMapper.getCompanyList(companyList1);
+        List<Group> groupList = companyConfigMapper.getGroupList();
+        map.put("companyList",companyList2);
+        map.put("groupList",groupList);
+        return ResultMaps.result(ResultEnum.SUCCESS,map);
     }
 }
