@@ -1,14 +1,14 @@
 package com.trechina.planocycle.controller;
 
 import com.trechina.planocycle.entity.vo.AllParamConfigVO;
-import com.trechina.planocycle.entity.vo.ParamConfigVO;
+import com.trechina.planocycle.entity.vo.GroupCompanyVO;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.service.GroupCompanyService;
 import com.trechina.planocycle.service.ParamConfigService;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -16,6 +16,8 @@ import java.util.Map;
 public class ParamConfigController {
     @Autowired
     private ParamConfigService paramConfigService;
+    @Autowired
+    private GroupCompanyService groupCompanyService;
 
     @GetMapping("getParamConfigList")
     public Map<String,Object> getParamConfigList(@RequestParam(required = false) Integer showItemCheck)  {
@@ -56,5 +58,10 @@ public class ParamConfigController {
     @PostMapping("/updateParamConfig")
     public Map<String, Object> updateParamConfig(@RequestBody AllParamConfigVO allParamConfigVO){
         return paramConfigService.updateParamConfig(allParamConfigVO);
+    }
+
+    @PostMapping("/saveGroupCompany")
+    public Map<String, Object> saveGroupCompany(@RequestBody GroupCompanyVO groupCompanyVO){
+        return groupCompanyService.saveGroupCompany(groupCompanyVO);
     }
 }
