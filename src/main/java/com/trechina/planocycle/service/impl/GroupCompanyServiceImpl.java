@@ -39,9 +39,8 @@ public class GroupCompanyServiceImpl implements GroupCompanyService {
         if(groupCompanyVO.getCompanyCds()!=null && !groupCompanyVO.getCompanyCds().isEmpty()){
             List<Map<String, String>> companyMapList = groupCompanyMapper.selectCompanyName(String.join(",", groupCompanyVO.getCompanyCds()));
             String aud = session.getAttribute("aud").toString();
-            LocalDate now = LocalDate.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-            groupCompanyMapper.insertCompany(groupCd, groupCompanyVO.getGroupName(), companyMapList, aud, formatter.format(now));
+            LocalDateTime now = LocalDateTime.now();
+            groupCompanyMapper.insertCompany(groupCd, groupCompanyVO.getGroupName(), companyMapList, aud, now);
         }
 
         return ResultMaps.result(ResultEnum.SUCCESS);
