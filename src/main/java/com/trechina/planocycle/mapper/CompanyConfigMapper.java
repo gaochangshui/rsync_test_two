@@ -26,4 +26,6 @@ public interface CompanyConfigMapper {
     List<Group> getGroupList();
 
     List<Company> getInUseCompanyList();
+
+    List<Map<String, Object>> selectTargetColumn(List<String> targetColumn, Map<String, Object> condition);
 }
