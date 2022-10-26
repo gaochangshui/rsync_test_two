@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.CommoditySyncSet;
+import com.trechina.planocycle.entity.po.Company;
 import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.TableTransferService;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TableTransferServiceImpl implements TableTransferService {
@@ -32,6 +34,8 @@ public class TableTransferServiceImpl implements TableTransferService {
 
     @Autowired
     private ZokuseiMstDataService zokuseiMstDataService;
+    @Autowired
+    private CompanyConfigMapper companyConfigMapper;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -92,8 +96,8 @@ public class TableTransferServiceImpl implements TableTransferService {
 
     @Override
     public void syncZokuseiMst() {
-        String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
-        String[] companyList = syncCompanyList.split(",");
+        List<Company> inUseCompanyList = companyConfigMapper.getInUseCompanyList();
+        List<String> companyList = inUseCompanyList.stream().map(Company::getCompanyCd).collect(Collectors.toList());
         for (String company : companyList) {
             String tableName = MessageFormat.format(MagicString.MASTER_SYOHIN, company);
             List<CommoditySyncSet> commodityList = mstCommodityMapper.getCommodityList(tableName);
