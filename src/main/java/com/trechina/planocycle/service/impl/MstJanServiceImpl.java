@@ -10,14 +10,12 @@ import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.config.MailConfig;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.CommoditySyncSet;
+import com.trechina.planocycle.entity.po.Company;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
 import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.MstBranchMapper;
-import com.trechina.planocycle.mapper.MstJanMapper;
-import com.trechina.planocycle.mapper.SysConfigMapper;
-import com.trechina.planocycle.mapper.ZokuseiMstMapper;
+import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.MstCommodityService;
 import com.trechina.planocycle.service.MstJanService;
 import com.trechina.planocycle.service.ZokuseiMstDataService;
@@ -69,7 +67,7 @@ public class MstJanServiceImpl implements MstJanService {
     @Autowired
     private CacheUtil cacheUtil;
     @Autowired
-    private ZokuseiMstDataService zokuseiMstDataService;
+    private CompanyConfigMapper companyConfigMapper;
     @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
@@ -706,8 +704,8 @@ public class MstJanServiceImpl implements MstJanService {
         List<Map<String, Object>> syncResults = new ArrayList<>();
 
         try{
-            String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
-            String[] companyList = syncCompanyList.split(",");
+            List<Company> inUseCompanyList = companyConfigMapper.getInUseCompanyList();
+            List<String> companyList = inUseCompanyList.stream().map(Company::getCompanyCd).collect(Collectors.toList());
             List<CommoditySyncSet> commoditySyncSetList;
 
             for (String companyCd : companyList) {

@@ -24,4 +24,6 @@ public interface CompanyConfigMapper {
     List<Company> getCompanyList();
 
     List<Group> getGroupList();
+
+    List<Company> getInUseCompanyList();
 }
