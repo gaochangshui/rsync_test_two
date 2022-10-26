@@ -632,7 +632,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
        String classCd = attrLists.get(0).split("_")[1];
 
         List<Map<String,Object>> lists = new ArrayList<>();
-        List<Map<String, Object>> convertNumbers = companyConfigMapper.selectTargetColumn(ImmutableList.of("is_number", "number_unit", "col_cd"),
+        List<Map<String, Object>> convertNumbers = companyConfigMapper.selectAttrTargetColumn(ImmutableList.of("is_number", "number_unit", "col_cd"),
                 ImmutableMap.of("company_cd", company, "class_cd", classCd, "is_number", 1));
 
         for (String list : attrLists) {

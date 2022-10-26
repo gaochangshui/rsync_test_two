@@ -67,7 +67,7 @@
     <select id="getInUseCompanyList" resultType="com.trechina.planocycle.entity.po.Company">
         select company_cd from planocycle.company_list where is_use='1'
     </select>
-    <select id="selectTargetColumn" resultType="map">
+    <select id="selectAttrTargetColumn" resultType="map">
         select 
             <foreach collection="targetColumn" item="item" separator=",">${item}</foreach>
         from planocycle.company_attr_config
@@ -76,5 +76,10 @@
                 ${colName}=#{colVal}
             </foreach>
         </where>
+    </select>
+    <select id="getKokyakuShow" resultType="map">
+        select  COALESCE(kokyaku,0) as kokyaku ,COALESCE(basket_price,0) as "basketPrice"
+        from planocycle.company_list
+        where company_cd = #{companyCd}
     </select>
 </mapper>
