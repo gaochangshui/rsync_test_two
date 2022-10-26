@@ -13,5 +13,9 @@ public interface ParamConfigMapper {
 
     List<ParamConfigVO> selectParamConfig();
 
+    List<ParamConfigVO> selectAllParamConfig();
+
     List<ParamConfigVO> selectParamConfigByCd(@Param("cdList") List<String> cdList);
+
+    void updateParamConfig(@Param("list") List<ParamConfigVO> paramConfigVO);
 }

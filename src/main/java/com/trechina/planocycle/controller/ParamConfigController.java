@@ -1,9 +1,14 @@
 package com.trechina.planocycle.controller;
 
+import com.trechina.planocycle.entity.vo.AllParamConfigVO;
+import com.trechina.planocycle.entity.vo.ParamConfigVO;
+import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.service.ParamConfigService;
+import com.trechina.planocycle.utils.ResultMaps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -40,5 +45,16 @@ public class ParamConfigController {
     public Map<String,Object> getCompanyList()  {
 
         return paramConfigService.getCompanyList();
+    }
+
+    @GetMapping("/getAllParamConfig")
+    public Map<String, Object> getAllParamConfig(){
+        AllParamConfigVO allParamConfig = paramConfigService.getAllParamConfig();
+        return ResultMaps.result(ResultEnum.SUCCESS, allParamConfig);
+    }
+
+    @PostMapping("/updateParamConfig")
+    public Map<String, Object> updateParamConfig(@RequestBody AllParamConfigVO allParamConfigVO){
+        return paramConfigService.updateParamConfig(allParamConfigVO);
     }
 }

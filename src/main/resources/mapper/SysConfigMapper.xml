@@ -7,7 +7,7 @@
     </select>
     <select id="selectByPrefix" resultType="map">
         select item_name,item_value from planocycle.sys_config
-        where item_name like concat(#{targetColumnPre}, '%')
+        where item_name like concat(#{targetColumnPre}, '%') and status=1
     </select>
     <select id="selectIsGroupCompany" resultType="int">
         select count(*) from masterdb.group_company where group_cd=#{companyCd}
@@ -16,4 +16,21 @@
         select  "2" "colName","3" "colCd"
         from "1000".wk_prod_0000_jan_attr_header_sys
     </select>
+    <update id="updateValByName">
+        insert into planocycle.sys_config(item_name, item_value, status)
+        values(#{name}, #{value}, 1)
+        on conflict("item_name") do
+        update
+        <set>item_value=excluded.item_value</set>
+    </update>
+    <update id="updateVal">
+        insert into planocycle.sys_config(item_name, item_value, status)
+        values
+        <foreach collection="janUnitList" item="item" separator=",">
+            (#{item.itemName}, #{item.itemValue}, #{item.status})
+        </foreach>
+        on conflict("item_name") do
+        update
+        <set>item_value=excluded.item_value, status=excluded.status</set>
+    </update>
 </mapper>

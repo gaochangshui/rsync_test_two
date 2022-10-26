@@ -2,14 +2,20 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.CompanyConfigureDto;
 import com.trechina.planocycle.entity.dto.ParamConfigDto;
+import com.trechina.planocycle.entity.dto.SysConfigDto;
 import com.trechina.planocycle.entity.po.Company;
 import com.trechina.planocycle.entity.po.Group;
 import com.trechina.planocycle.entity.po.MstKiGyoCore;
+import com.trechina.planocycle.entity.vo.AllParamConfigVO;
 import com.trechina.planocycle.entity.vo.CommonPartsDataVO;
+import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.CompanyConfigMapper;
 import com.trechina.planocycle.mapper.ParamConfigMapper;
@@ -22,6 +28,9 @@ import com.trechina.planocycle.utils.cgiUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
@@ -184,5 +193,33 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         map.put("companyList",companyList2);
         map.put("groupList",groupList);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
+    }
+
+    @Override
+    public AllParamConfigVO getAllParamConfig() {
+        List<ParamConfigVO> paramConfigVOS = paramConfigMapper.selectAllParamConfig();
+        String intage = sysConfigMapper.selectSycConfig(MagicString.ITEM_NAME_SHOW_INTAGE);
+
+        AllParamConfigVO allParamConfigVO = new AllParamConfigVO();
+        allParamConfigVO.setShowIntage(Strings.isNullOrEmpty(intage)?1:Integer.parseInt(intage));
+        allParamConfigVO.setParamConfigList(JSON.toJSONString(paramConfigVOS));
+
+        return allParamConfigVO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String,Object> updateParamConfig(AllParamConfigVO allParamConfigVO){
+        Integer showIntage = allParamConfigVO.getShowIntage();
+        sysConfigMapper.updateValByName(MagicString.ITEM_NAME_SHOW_INTAGE, showIntage);
+        List<ParamConfigVO> paramConfigVOS = new Gson().fromJson(allParamConfigVO.getParamConfigList(), new TypeToken<List<ParamConfigVO>>() {
+        }.getType());
+        paramConfigMapper.updateParamConfig(paramConfigVOS);
+
+        String janUnit = allParamConfigVO.getJanUnit();
+        List<SysConfigDto> janUnitList = new Gson().fromJson(janUnit, new TypeToken<List<SysConfigDto>>(){}.getType());
+        sysConfigMapper.updateVal(janUnitList);
+
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 }

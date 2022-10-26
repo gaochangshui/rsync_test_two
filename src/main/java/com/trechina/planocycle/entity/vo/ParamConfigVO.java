@@ -8,7 +8,6 @@ public class ParamConfigVO {
     private String itemCd;
     private String itemValue;
     private Integer flag;
-
     private String itemType;
     private Integer rankFlag;
 
