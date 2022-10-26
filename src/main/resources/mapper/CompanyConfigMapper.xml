@@ -43,7 +43,7 @@
             case when groups.company_cd is not null then 'グループ利用'
                 when list.is_use is not null then  list.is_use
                 else '設定待ち' end as "isUse",list.updater,list.update_time,
-            case when name."1" = '1000' then 1 else 2 end as flag
+            case when name."1" = '1000' then 1 else 2 end as sortFlag
         from
             masterdb.kigyou_name name
                 left join masterdb.kigyou_company_sortid sortid
@@ -52,7 +52,7 @@
                           on name."1" = list.company_cd
                 left join masterdb.group_company groups
                           on groups.company_cd = name."1"
-        order by flag,sortid."3" ::integer
+        order by sortFlag,sortid."3" ::integer
     </select>
     <select id="getGroupList" resultType="com.trechina.planocycle.entity.po.Group">
         select group_cd,group_name,

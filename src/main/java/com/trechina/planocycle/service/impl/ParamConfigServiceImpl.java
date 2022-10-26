@@ -15,7 +15,6 @@ import com.trechina.planocycle.mapper.CompanyConfigMapper;
 import com.trechina.planocycle.mapper.ParamConfigMapper;
 import com.trechina.planocycle.mapper.SkuNameConfigMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
-import com.trechina.planocycle.service.MstCommodityService;
 import com.trechina.planocycle.service.ParamConfigService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
@@ -38,8 +37,6 @@ public class ParamConfigServiceImpl implements ParamConfigService {
     @Autowired
     private SkuNameConfigMapper skuNameConfigMapper;
     @Autowired
-    private MstCommodityService mstCommodityService;
-    @Autowired
     private cgiUtils cgiUtil;
     @Autowired
     private HttpSession session;
@@ -57,6 +54,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         String groupName = MapUtils.getString(map,"F2");
 
         MstKiGyoCore mstkigyocore = companyConfigMapper.getMstkigyocore(companyCd);
+
         CommonPartsDataVO commonPartsDataVO = this.mstKigyocoreChange(mstkigyocore);
         String company = "1000";
         if (commonPartsDataVO.getProdIsCore().equals("0")){
@@ -175,12 +173,14 @@ public class ParamConfigServiceImpl implements ParamConfigService {
     @Override
     public Map<String, Object> getCompanyList() {
         Map<String,Object> map = new HashMap<>();
-        String companys = session.getAttribute("inCharge").toString();
-        List<String> companyList = Arrays.asList(companys.split(","));
-        List<String> companyList1 = new ArrayList<>(companyList);
-        companyList1.add("1000");
-        List<Company> companyList2 = companyConfigMapper.getCompanyList(companyList1);
+        List<Company> companyList2 = companyConfigMapper.getCompanyList();
         List<Group> groupList = companyConfigMapper.getGroupList();
+        String coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+        for (Company company : companyList2) {
+            if (company.getCompanyCd().equals(coreCompany)){
+                company.setFlag(true);
+            }
+        }
         map.put("companyList",companyList2);
         map.put("groupList",groupList);
         return ResultMaps.result(ResultEnum.SUCCESS,map);
