@@ -9,5 +9,5 @@ public class Group {
     private String companyCd;
     private String companyName;
     private String updateTime;
-    private String updater;
+    private String authorCd;
 }

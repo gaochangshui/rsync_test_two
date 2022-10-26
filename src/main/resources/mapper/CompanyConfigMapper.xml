@@ -52,14 +52,14 @@
                           on name."1" = list.company_cd
                 left join masterdb.group_company groups
                           on groups.company_cd = name."1"
-        where name."1" in
-        <foreach collection="companyList" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
         order by flag,sortid."3" ::integer
     </select>
     <select id="getGroupList" resultType="com.trechina.planocycle.entity.po.Group">
-        select group_cd,group_name,company_cd,company_name,update_time,updater
+        select group_cd,group_name,
+               array_to_string(array_agg(company_cd),',') "companyCd",
+               array_to_string(array_agg(company_name),',') "companyName",
+               update_time,updater "authorCd"
         from masterdb.group_company
+        group by group_cd,group_name,update_time,updater
     </select>
 </mapper>
