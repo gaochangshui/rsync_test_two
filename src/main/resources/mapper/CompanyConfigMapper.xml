@@ -41,13 +41,15 @@
         select
             name."1" as "companyCd",name."2" as "companyName",
             case when groups.company_cd is not null then 'グループ利用'
-                when list.is_use is not null then  list.is_use
-                else '設定待ち' end as "isUse",list.updater,list.update_time,
+                 when list.is_use = '0' then ''
+                 when list.is_use = '1' then '利用中'
+                 when list.is_use = '2' then 'グループ利用'
+                 else '' end as "isUse",list.updater,list.update_time,
             case when name."1" = '1000' then 1 else 2 end as sortFlag
         from
             masterdb.kigyou_name name
                 left join masterdb.kigyou_company_sortid sortid
-                on sortid."1" = name."1"
+                          on sortid."1" = name."1"
                 left join masterdb.company_list list
                           on name."1" = list.company_cd
                 left join masterdb.group_company groups
