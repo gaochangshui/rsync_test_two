@@ -10,4 +10,5 @@ public class Company {
     private String isUse;
     private String authorCd;
     private String updateTime;
+    private Boolean flag = false;
 }

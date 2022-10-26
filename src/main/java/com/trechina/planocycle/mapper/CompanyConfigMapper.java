@@ -21,7 +21,7 @@ public interface CompanyConfigMapper {
 
     void setGroupCompany(String companyCd, String companyName, String groupCd, String groupName);
 
-    List<Company> getCompanyList(List<String> companyList);
+    List<Company> getCompanyList();
 
     List<Group> getGroupList();
 }
