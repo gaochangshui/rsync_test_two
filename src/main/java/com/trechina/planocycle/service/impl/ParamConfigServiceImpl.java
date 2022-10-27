@@ -211,14 +211,16 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         prodClassMap.forEach(classMap->{
             List<Map<String,Object>> optionList = new ArrayList<>();
             janUnit.forEach(option->{
-                Map<String,Object> optionMap = new HashMap<>();
-                optionMap.put("value",option.get("item_name"));
-                optionMap.put("label",option.get("item_value"));
-                optionList.add(optionMap);
+                if (!option.get("item_name").equals("jan_unit_1")) {
+                    Map<String, Object> optionMap = new HashMap<>();
+                    optionMap.put("value", option.get("item_name"));
+                    optionMap.put("label", option.get("item_value"));
+                    optionList.add(optionMap);
+                }
             });
             classMap.put("option",optionList);
             attrMap.entrySet().forEach(attr->{
-                if (attr.getKey().equals("table_"+classMap.get("label"))){
+                if (attr.getKey().equals("table_"+classMap.get("value"))){
                     List<Map<String, Object>> value = (List<Map<String, Object>>) attr.getValue();
                     List<Map<String, Object>> collect = value.stream().map(map -> {
                         Map<String, Object> resultMap = new HashMap<>();
@@ -233,13 +235,13 @@ public class ParamConfigServiceImpl implements ParamConfigService {
                 }
             });
         });
+        Map<String,Object> option0 = new HashMap<>();
+        option0.put("label", "");
+        option0.put("value", "0");
+        attrMap.entrySet().forEach(attr-> ((List)attr.getValue()).add(0,option0));
         prodClassMap.forEach(classMap->((List)classMap.get("option")).forEach(unit-> attrMap.entrySet().forEach(attr->{
             if (attr.getKey().equals("table_"+classMap.get("value"))){
-                if (((Map<String,Object>)unit).get("value").equals("jan_unit_1")){
-                    ((Map<String,Object>)unit).put("option",null);
-                }else {
                     ((Map<String,Object>)unit).put("option",attr.getValue());
-                }
             }
         })));
         maps.put("storeList",storeForSmt);
