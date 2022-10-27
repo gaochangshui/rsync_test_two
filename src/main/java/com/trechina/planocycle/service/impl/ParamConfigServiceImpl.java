@@ -111,6 +111,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         List resultList = new ArrayList();
         List<String> attrList = Arrays.asList(result.split("@"));
         List<Map<String,Object>> list = new ArrayList<>();
+
         for (String attr : attrList) {
             Map<String,Object> attrMap = new HashMap<>();
             String[] value = attr.split(" ");
@@ -118,7 +119,10 @@ public class ParamConfigServiceImpl implements ParamConfigService {
             attrMap.put("colName",value[3]);
             attrMap.put("classCd",value[0]);
             attrMap.put("className",value[1]);
+            attrMap.put("flag",value[5]);
             list.add(attrMap);
+
+
         }
         List<Map<String, Object>> prodList = list.stream().map(map -> {
             Map<String, Object> resultMap = new HashMap<>();
@@ -135,12 +139,26 @@ public class ParamConfigServiceImpl implements ParamConfigService {
                 attr.put("value", map.get("colCd").toString());
                 return attr;
             }).filter(map->!map.get("label").toString().contains("CD"))
-                    .sorted(Comparator.comparing(map->MapUtils.getInteger(map, "value"))).collect(Collectors.toList());
+                    .sorted(Comparator.comparing(map->MapUtils.getInteger(map, "value"))).distinct().collect(Collectors.toList());
             resultMap.put("table_"+objectListEntry.getKey(),collect);
+        }
+
+        Map<String, Object> attrMap = new HashMap<>();
+        for (Map.Entry<Object, java.util.List<Map<String, Object>>> objectListEntry : classCd.entrySet()) {
+            List<Map<String, Object>> collect = objectListEntry.getValue().stream()
+                    .filter(map->map.get("flag").toString().equals("0"))
+                    .map(map -> {
+                        Map<String, Object> attr = new HashMap<>();
+                        attr.put("label", map.get("colName").toString());
+                        attr.put("value", map.get("colCd").toString());
+                        return attr;
+                    })
+                    .sorted(Comparator.comparing(map->MapUtils.getInteger(map, "value"))).distinct().collect(Collectors.toList());
+            attrMap.put("table_"+objectListEntry.getKey(),collect);
         }
         resultList.add(resultMap);
         resultList.add(prodList);
-        resultList.add(list);
+        resultList.add(attrMap);
         return resultList;
     }
 
@@ -206,6 +224,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         List companyCol = this.getCompanyCol(companyCd);
         Map<String,Object> attrMap = (Map<String,Object>)companyCol.get(0);
         List<Map<String,Object>> prodClassMap = (List<Map<String,Object>>)companyCol.get(1);
+        Map<String,Object> attrHeader = (Map<String,Object>)companyCol.get(2);
         Map<String,Object> maps = new HashMap<>();
         List<Map<String, Object>> storeForSmt = this.getStoreForSmt(companyCd);
         prodClassMap.forEach(classMap->{
@@ -219,7 +238,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
                 }
             });
             classMap.put("option",optionList);
-            attrMap.entrySet().forEach(attr->{
+            attrHeader.entrySet().forEach(attr->{
                 if (attr.getKey().equals("table_"+classMap.get("value"))){
                     List<Map<String, Object>> value = (List<Map<String, Object>>) attr.getValue();
                     List<Map<String, Object>> collect = value.stream().map(map -> {
@@ -229,6 +248,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
                         resultMap.put("isUse", false);
                         resultMap.put("isNumber", false);
                         resultMap.put("isInterval", false);
+                        resultMap.put("unit", "");
                         return resultMap;
                     }).collect(Collectors.toList());
                     classMap.put("attrList",collect);
