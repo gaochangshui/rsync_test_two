@@ -95,16 +95,19 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         String companyCd = productPowerParam.getCompany();
         Integer productPowerCd = productPowerParam.getProductPowerNo();
         Integer newProductPowerCd = productPowerCd;
+        List<String> posHeader = productPowerDataMapper.getColHeader("pos");
+        List<String> customerHeader = productPowerDataMapper.getColHeader("customer");
+        List<String> intageHeader = productPowerDataMapper.getColHeader("intage");
 
         //テンポラリ・テーブルの最終テーブルへの保存
         //pos基本データ
             //物理削除挿入の保存の変更
             productPowerDataMapper.phyDeleteSyokika(companyCd,newProductPowerCd,authorCd);
-            productPowerDataMapper.endSyokikaForWK(companyCd, productPowerCd, authorCd,newProductPowerCd);
+            productPowerDataMapper.endSyokikaForWK(companyCd, productPowerCd, authorCd,newProductPowerCd,posHeader);
 
             //物理削除挿入の保存の変更
             productPowerDataMapper.phyDeleteGroup(companyCd,newProductPowerCd,authorCd);
-            productPowerDataMapper.endGroupForWK(companyCd, productPowerCd, authorCd,newProductPowerCd);
+            productPowerDataMapper.endGroupForWK(companyCd, productPowerCd, authorCd,newProductPowerCd,customerHeader);
 
             //物理削除挿入の保存の変更
             productPowerDataMapper.phyDeleteYobiiitern(companyCd,newProductPowerCd,authorCd);
@@ -113,7 +116,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             productPowerDataMapper.endYobiiiternDataForWk(companyCd,productPowerCd,authorCd,newProductPowerCd);
             //物理削除挿入の保存の変更
             productPowerDataMapper.phyDeleteIntage(companyCd,newProductPowerCd,authorCd);
-            productPowerDataMapper.endIntageForWK(companyCd,productPowerCd,authorCd,newProductPowerCd);
+            productPowerDataMapper.endIntageForWK(companyCd,productPowerCd,authorCd,newProductPowerCd,intageHeader);
             //物理削除挿入の保存の変更
         
             productPowerDataMapper.deleteData(companyCd,newProductPowerCd);
@@ -238,13 +241,14 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         String uuid = UUID.randomUUID().toString();
         Future<?> future = executor.submit(() -> {
         try {
+            List<String> posHeader = productPowerDataMapper.getColHeader("");
             productPowerDataMapper.deleteWKData(companyCd,authorCd,productPowerCd);
             List<Map<String, Object>> rankCalculate = productPowerDataMapper.getProductRankCalculate(map, companyCd, productPowerCd,authorCd);
             ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
             List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
             List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
                 shelfPts.add(0);
-            productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd,shelfPts,storeCd);
+            productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd,shelfPts,storeCd,posHeader);
             List<Map<String, Object>> list = new ArrayList<>();
             List<Map<String, Object>> levelMap = this.calcLevel(rankCalculate.size());
             for (int i = 0; i < rankCalculate.size(); i++) {
