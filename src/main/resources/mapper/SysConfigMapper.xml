@@ -10,7 +10,7 @@
         where item_name like concat(#{targetColumnPre}, '%') and status=1
     </select>
     <select id="selectAllByPrefix" resultType="map">
-        select item_name value,item_value label,status from planocycle.sys_config
+        select item_name "value",item_value "label",status from planocycle.sys_config
         where item_name like concat(#{targetColumnPre}, '%')
     </select>
     <select id="selectIsGroupCompany" resultType="int">
