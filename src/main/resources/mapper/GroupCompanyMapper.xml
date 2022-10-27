@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trechina.planocycle.mapper.GroupCompanyMapper">
+    <delete id="deleteCompany">
+        delete from masterdb.group_company where group_cd=#{groupCd}
+    </delete>
+    <insert id="insertCompany">
+        insert into masterdb.group_company(group_cd, group_name, company_cd, company_name, update_time, updater)
+        values
+        <foreach collection="companyMapList" item="item" separator=",">
+            (#{groupCd}, #{groupName}, #{item.companyCd}, #{item.companyName}, #{date}, #{aud})
+        </foreach>
+    </insert>
+    <select id="selectCompanyName" resultType="map">
+        select "1" "companyCd","2" "companyName" from masterdb.kigyou_name where "1" = any(string_to_array(#{companyList},','))
+    </select>
+    <select id="selectGroupCdNumber" resultType="string">
+        select lpad(nextval('masterdb.group_cd_seq'::regclass)::text, 4, '0')
+    </select>
+</mapper>

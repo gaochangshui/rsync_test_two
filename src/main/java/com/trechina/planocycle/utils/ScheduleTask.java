@@ -53,8 +53,6 @@ public class ScheduleTask {
     private MstBranchService mstBranchService;
     @Autowired
     private ProductPowerDataMapper productPowerDataMapper;
-    @Autowired
-    private LogAspect logAspect;
     @Value("${projectIds}")
     private String projectIds;
     @Autowired

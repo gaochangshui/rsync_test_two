@@ -5,6 +5,9 @@
     select item_cd,item_value,item_name,item_type from planocycle.param_config config
     where flag=0 order by item_value
   </select>
+  <select id="selectAllParamConfig" resultType="com.trechina.planocycle.entity.vo.ParamConfigVO">
+    select item_cd,item_value,item_name,item_type from planocycle.param_config config
+  </select>
   <select id="getParamConfig" resultType="com.trechina.planocycle.entity.dto.ParamConfigDto">
     select item_cd as colName,item_value as value,item_name as label,rank_flag as rankFlag,item_type as itemType
     from planocycle.param_config config
@@ -24,4 +27,20 @@
       order by item_value
     </where>
   </select>
+  <update id="updateParamConfig">
+    update planocycle.param_config
+    <set>
+      item_name=
+        CASE item_cd
+      <foreach collection="list" item="item">
+        WHEN #{item.itemCd} THEN COALESCE(#{item.itemName}, item_name)
+      </foreach>ELSE item_name END,
+      flag=CASE item_cd <foreach collection="list" item="item">
+      WHEN #{item.itemCd} THEN COALESCE(#{item.flag}, flag)
+      </foreach>ELSE flag END,
+      rank_flag=CASE item_cd <foreach collection="list" item="item">
+      WHEN #{item.itemCd} THEN COALESCE(#{item.rankFlag}, rank_flag)
+    </foreach>ELSE rank_flag END
+    </set>
+  </update>
 </mapper>

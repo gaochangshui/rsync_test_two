@@ -1,9 +1,11 @@
 package com.trechina.planocycle.constant;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -385,4 +387,5 @@ public class MagicString {
     public static String SLACK_URL = "";
 
     public static String ENV = "";
+    public static final String ITEM_NAME_SHOW_INTAGE="show_intage";
 }
