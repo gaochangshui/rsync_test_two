@@ -210,11 +210,11 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerParamMstMapper.deleteWork(companyCd,newProductPowerCd);
 
         productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud,newProductPowerCd,posHeader);
-         productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
+         productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud,newProductPowerCd,customerHeader);
          productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
         productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
         productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud,newProductPowerCd,dataCol);
-        productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
+        productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud,newProductPowerCd,intageHeader);
         productPowerParamMstMapper.setWorkForFinal(companyCd,productPowerNo,newProductPowerCd);
 
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
