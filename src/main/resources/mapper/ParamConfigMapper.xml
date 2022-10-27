@@ -9,7 +9,7 @@
     select item_cd "colName",item_value "value",item_name "label",item_type "itemType", rank_flag "rankFlag", flag from planocycle.param_config config
   </select>
   <select id="getParamConfig" resultType="com.trechina.planocycle.entity.dto.ParamConfigDto">
-    select item_cd as colName,item_value as value,item_name as label,rank_flag as rankFlag,item_type as itemType
+    select item_cd as colName,item_value as value,item_name as label,rank_flag as rankFlag,item_type as itemType, remark
     from planocycle.param_config config
     where flag=0
     <if test="showItemCheck == 0">

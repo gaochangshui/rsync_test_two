@@ -11,5 +11,6 @@ public class ParamConfigDto {
     private Integer rankFlag;
     private Integer flag;
     private boolean disabled = false;
+    private String remark;
 
 }
