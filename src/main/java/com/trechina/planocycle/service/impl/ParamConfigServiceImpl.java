@@ -249,12 +249,15 @@ public class ParamConfigServiceImpl implements ParamConfigService {
 
     @Override
     public AllParamConfigVO getAllParamConfig() {
-        List<ParamConfigVO> paramConfigVOS = paramConfigMapper.selectAllParamConfig();
+        List<ParamConfigDto> paramConfigVOS = paramConfigMapper.selectAllParamConfig();
         String intage = sysConfigMapper.selectSycConfig(MagicString.ITEM_NAME_SHOW_INTAGE);
 
         AllParamConfigVO allParamConfigVO = new AllParamConfigVO();
         allParamConfigVO.setShowIntage(Strings.isNullOrEmpty(intage)?1:Integer.parseInt(intage));
         allParamConfigVO.setParamConfigList(JSON.toJSONString(paramConfigVOS));
+
+        List<Map<String, String>> junitList = sysConfigMapper.selectAllByPrefix(MagicString.JAN_UNIT_PREFIX);
+        allParamConfigVO.setJanUnit(JSON.toJSONString(junitList));
 
         return allParamConfigVO;
     }
@@ -264,7 +267,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
     public Map<String,Object> updateParamConfig(AllParamConfigVO allParamConfigVO){
         Integer showIntage = allParamConfigVO.getShowIntage();
         sysConfigMapper.updateValByName(MagicString.ITEM_NAME_SHOW_INTAGE, showIntage);
-        List<ParamConfigVO> paramConfigVOS = new Gson().fromJson(allParamConfigVO.getParamConfigList(), new TypeToken<List<ParamConfigVO>>() {
+        List<ParamConfigDto> paramConfigVOS = new Gson().fromJson(allParamConfigVO.getParamConfigList(), new TypeToken<List<ParamConfigDto>>() {
         }.getType());
         paramConfigMapper.updateParamConfig(paramConfigVOS);
 
