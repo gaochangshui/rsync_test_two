@@ -29,11 +29,14 @@
                        company_cd = #{companyCd},
                        company_name = #{companyName},
     </insert>
-    <select id="getMstkigyocore" resultType="com.trechina.planocycle.entity.po.MstKiGyoCore">
-        select * from masterdb.mst_kigyocore where company_cd = #{companyCd}
+    <select id="getMstkigyocore" resultType="map">
+        select date_is_core as "dateIsCore",store_is_core as "storeIsCore",prod_is_core as "prodIsCore"
+             ,kokyaku,intage,basket_price as "basketPrice",is_id_pos as "isIdPos"
+        from planocycle.company_list
+        where company_cd = #{companyCd}
     </select>
     <select id="getCompanyConfig" resultType="map">
-        select jan_name2col_num,jan_item2col_num,kokyaku,intage,maker,basket_price,convert_numbers
+        select jan_name2col_num,jan_item2col_num,kokyaku,intage,maker,basket_price,convert_numbers,jan_col_flag,show_flag
         from planocycle.sku_name_config
         where company_cd = #{companyCd} and class = #{classCd}
     </select>

@@ -161,6 +161,10 @@ public class MagicString {
     public static final String COMMON_PARTS_DATA = "commonPartsData";
     public static final String PROD_MST_CLASS = "prodMstClass";
     public static final String PROD_IS_CORE = "prodIsCore";
+
+    public static final String STORE_IS_CORE = "storeIsCore";
+
+    public static final String DATE_IS_CORE = "dateIsCore";
     public static final String MASTER_SYOHIN = "\"{0}\".master_syohin";
     public static final String WK_MASTER_SYOHIN = "\"{0}\".wk_master_syohin";
     public static final String PROD_JAN_ATTR_HEADER_SYS = "\"{0}\".prod_{1}_jan_attr_header_sys";

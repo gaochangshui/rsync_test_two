@@ -12,4 +12,5 @@ public interface ParamConfigService {
 
     Map<String, Object> getCompanyList();
 
+    Map<String, Object> getCompanyParam(String companyCd);
 }
