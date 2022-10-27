@@ -3,6 +3,7 @@ package com.trechina.planocycle.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Range;
@@ -293,22 +294,21 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         if(Strings.isNullOrEmpty(level)){
             return levelMap;
         }
-        JSONArray levelJsonArray = JSON.parseArray(level);
+        JSONObject levelJson = JSON.parseObject(level, Feature.OrderedField);
         final int[] lastMax = {0};
-        final int[] index = {0};
-        levelJsonArray.forEach(item->{
-            String s = item.toString();
-            String[] levelArr = s.replaceAll("^*%$", "").split("-");
-            BigDecimal percent = BigDecimal.valueOf(Double.parseDouble(levelArr[1])).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        for (Map.Entry<String, Object> entry : levelJson.entrySet()) {
+            Object value = entry.getValue();
+
+            BigDecimal percent = BigDecimal.valueOf((int)value).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
             BigDecimal maxBD = BigDecimal.valueOf(totalNum).multiply(percent).setScale(0, RoundingMode.HALF_UP);
 
-            Map<String, Object> itemMap = ImmutableMap.of("max", maxBD.intValue(), "min", lastMax[0]+1,
-                    "level", String.valueOf((char) (65+ index[0])));
+            Map<String, Object> itemMap = ImmutableMap.of("max", maxBD.intValue()+lastMax[0], "min", lastMax[0]+1,
+                    "level", entry.getKey());
             levelMap.add(itemMap);
 
-            lastMax[0] = maxBD.intValue();
-            index[0]++;
-        });
+            lastMax[0] += maxBD.intValue();
+        }
+
         return levelMap;
     }
 
