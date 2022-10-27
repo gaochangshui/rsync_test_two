@@ -1,10 +1,14 @@
 package com.trechina.planocycle.entity.vo;
 
+import com.trechina.planocycle.entity.dto.ParamConfigDto;
 import lombok.Data;
+
+import java.util.List;
+import java.util.Map;
 
 @Data
 public class AllParamConfigVO {
-    private String paramConfigList;
+    private List<ParamConfigDto> paramConfigList;
     private Integer showIntage;
-    private String janUnit;
+    private List<Map<String, Object>> janUnit;
 }
