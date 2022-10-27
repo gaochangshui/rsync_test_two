@@ -17,4 +17,5 @@ public interface ParamConfigService {
     AllParamConfigVO getAllParamConfig();
 
     Map<String, Object> updateParamConfig(AllParamConfigVO allParamConfigVO);
+    Map<String, Object> getCompanyParam(String companyCd);
 }

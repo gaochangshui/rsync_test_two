@@ -32,6 +32,12 @@ public class ParamConfigController {
         return paramConfigService.getCompanyConfig(map);
     }
 
+    @GetMapping("getCompanyParam")
+    public Map<String,Object> getCompanyParam(String companyCd)  {
+
+        return paramConfigService.getCompanyParam(companyCd);
+    }
+
     @GetMapping("setCompanyConfig")
     public Map<String,Object> setCompanyConfig(Map<String,Object> map)  {
 
@@ -45,7 +51,6 @@ public class ParamConfigController {
      */
     @GetMapping("getCompanyList")
     public Map<String,Object> getCompanyList()  {
-
         return paramConfigService.getCompanyList();
     }
 
