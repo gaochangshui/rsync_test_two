@@ -299,6 +299,8 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         List<Map<String, Object>> janUnitList = allParamConfigVO.getJanUnit();
         sysConfigMapper.updateVal(janUnitList);
 
+        sysConfigMapper.updateValByName(MagicString.LEVEL, allParamConfigVO.getLevel());
+
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 }
