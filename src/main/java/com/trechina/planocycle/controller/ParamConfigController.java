@@ -51,7 +51,6 @@ public class ParamConfigController {
      */
     @GetMapping("getCompanyList")
     public Map<String,Object> getCompanyList()  {
-
         return paramConfigService.getCompanyList();
     }
 
