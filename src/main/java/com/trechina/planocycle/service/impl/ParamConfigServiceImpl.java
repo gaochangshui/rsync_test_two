@@ -233,17 +233,15 @@ public class ParamConfigServiceImpl implements ParamConfigService {
                 }
             });
         });
-        prodClassMap.forEach(classMap->((List)classMap.get("option")).forEach(unit->{
-            attrMap.entrySet().forEach(attr->{
-                if (attr.getKey().equals("table_"+classMap.get("label"))){
-                    if (((Map<String,Object>)unit).get("value").equals("jan_unit_1")){
-                        ((Map<String,Object>)unit).put("option",null);
-                    }else {
-                        ((Map<String,Object>)unit).put("option",attr.getValue());
-                    }
+        prodClassMap.forEach(classMap->((List)classMap.get("option")).forEach(unit-> attrMap.entrySet().forEach(attr->{
+            if (attr.getKey().equals("table_"+classMap.get("value"))){
+                if (((Map<String,Object>)unit).get("value").equals("jan_unit_1")){
+                    ((Map<String,Object>)unit).put("option",null);
+                }else {
+                    ((Map<String,Object>)unit).put("option",attr.getValue());
                 }
-            });
-        }));
+            }
+        })));
         maps.put("storeList",storeForSmt);
         maps.put("prodList",prodClassMap);
         return ResultMaps.result(ResultEnum.SUCCESS,maps);
