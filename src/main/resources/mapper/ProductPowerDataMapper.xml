@@ -656,7 +656,7 @@
             "${index}_rank" ::INTEGER * ${item} :: integer
         </foreach>
 
-        ) as rank_result
+        ) as rank_result, '' as level
                from
                (select s.jan,
         <foreach collection="map" index="index" separator="," item="item">

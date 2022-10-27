@@ -390,4 +390,6 @@ public class MagicString {
     public static final String ITEM_NAME_SHOW_INTAGE="show_intage";
 
     public static final String JAN_UNIT_PREFIX = "jan_unit_";
+
+    public static final String LEVEL = "level";
 }
