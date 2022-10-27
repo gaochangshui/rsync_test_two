@@ -220,7 +220,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
             });
             classMap.put("option",optionList);
             attrMap.entrySet().forEach(attr->{
-                if (attr.getKey().equals("table_"+classMap.get("label"))){
+                if (attr.getKey().equals("table_"+classMap.get("value"))){
                     List<Map<String, Object>> value = (List<Map<String, Object>>) attr.getValue();
                     List<Map<String, Object>> collect = value.stream().map(map -> {
                         Map<String, Object> resultMap = new HashMap<>();
@@ -235,6 +235,10 @@ public class ParamConfigServiceImpl implements ParamConfigService {
                 }
             });
         });
+        Map<String,Object> option0 = new HashMap<>();
+        option0.put("label", "");
+        option0.put("value", "0");
+        attrMap.entrySet().forEach(attr-> ((List)attr.getValue()).add(0,option0));
         prodClassMap.forEach(classMap->((List)classMap.get("option")).forEach(unit-> attrMap.entrySet().forEach(attr->{
             if (attr.getKey().equals("table_"+classMap.get("value"))){
                     ((Map<String,Object>)unit).put("option",attr.getValue());

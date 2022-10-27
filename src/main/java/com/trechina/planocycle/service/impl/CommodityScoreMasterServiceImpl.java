@@ -195,6 +195,9 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         }
 
         List<String> dataCol = productPowerDataMapper.getDataCol();
+        List<String> posHeader = productPowerDataMapper.getColHeader("pos");
+        List<String> customerHeader = productPowerDataMapper.getColHeader("customer");
+        List<String> intageHeader = productPowerDataMapper.getColHeader("intage");
         dataCol.remove("product_power_cd");
         String aud = session.getAttribute("aud").toString();
         productPowerMstMapper.deleteWork(companyCd,newProductPowerCd);
@@ -206,7 +209,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.deleteWKIntage(companyCd,aud,newProductPowerCd);
         productPowerParamMstMapper.deleteWork(companyCd,newProductPowerCd);
 
-        productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
+        productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud,newProductPowerCd,posHeader);
          productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
          productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
         productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud,newProductPowerCd);

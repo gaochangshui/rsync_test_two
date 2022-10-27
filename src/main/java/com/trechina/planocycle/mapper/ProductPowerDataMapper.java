@@ -59,7 +59,7 @@ public interface ProductPowerDataMapper {
 
     //最終テーブルをテンポラリ・テーブルに保存
     int setWkSyokikaForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
-        ,@Param("newProductPowerCd")Integer newProductPowerCd);
+        ,@Param("newProductPowerCd")Integer newProductPowerCd,@Param("posHeader")List<String> posHeader);
 
     int setWkGroupForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
          ,@Param("newProductPowerCd")Integer newProductPowerCd);
@@ -214,4 +214,6 @@ public interface ProductPowerDataMapper {
     List<Map<String,Object>> getAttrColName(List<String> attr, String tableName);
 
     void setIntageJanForSyokika(String companyCd, Integer productPowerCd);
+
+    List<String> getColHeader(String itemCd);
 }

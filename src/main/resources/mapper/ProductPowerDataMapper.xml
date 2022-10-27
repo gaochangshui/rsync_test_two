@@ -402,14 +402,10 @@
           and product_power_cd = #{productPowerCd,jdbcType=INTEGER} and deleteflg=0
     </insert>
     <insert id="setWkSyokikaForFinally">
-        insert into planocycle.work_product_power_syokika(company_cd,product_power_cd,jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
-                                                          pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,pos_store_item01,pos_store_item02,
-                                                          pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,pos_store_item08,
-                                                          pos_store_item09,pos_store_item10,pos_compare_item01,pos_compare_item02,pos_compare_item03,pos_compare_item04,
-                                                          pos_compare_item05,pos_compare_item06,pos_compare_item07,pos_compare_item08,pos_compare_item09,pos_compare_item10,
-                                                          pos_compare_store_item01,pos_compare_store_item02,pos_compare_store_item03,pos_compare_store_item04,pos_compare_store_item05,
-                                                          pos_compare_store_item06,pos_compare_store_item07,pos_compare_store_item08,pos_compare_store_item09,pos_compare_store_item10,
-                                                          author_cd)
+        insert into planocycle.work_product_power_syokika(company_cd,product_power_cd,author_cd,
+        <foreach collection="posHeader" separator="," item="item">
+            #{}
+        </foreach>)
         select #{companyCd},#{newProductPowerCd},jan,pos_item01,pos_item02,pos_item03,pos_item04,pos_item05,pos_item06,
                pos_item07,pos_item08,pos_item09,pos_item10,pos_item11,pos_store_item01,pos_store_item02,
                pos_store_item03,pos_store_item04,pos_store_item05,pos_store_item06,pos_store_item07,pos_store_item08,
@@ -899,5 +895,8 @@
                 #{item}
             </foreach>
         </if>
+    </select>
+    <select id="getColHeader" resultType="java.lang.String">
+        select planocycle.param_config where item_cd like '#{itemCd}%'
     </select>
 </mapper>
