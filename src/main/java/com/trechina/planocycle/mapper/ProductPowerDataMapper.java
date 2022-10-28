@@ -216,4 +216,11 @@ public interface ProductPowerDataMapper {
     void setIntageJanForSyokika(String companyCd, Integer productPowerCd);
 
     List<String> getColHeader(String itemCd);
+
+    void deleteWkStarFetch(String companyCd, Integer productPowerCd);
+
+    void deleteWkSyokikaPos(String companyCd, Integer productPowerCd);
+
+    void setSyokikaPos(List<Map<String, Object>> posBranchIntersection);
+
 }

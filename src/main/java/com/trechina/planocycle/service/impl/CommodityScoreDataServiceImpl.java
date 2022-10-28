@@ -179,6 +179,14 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
                                 janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd
                                 ,shelfPts,storeCd,attrColName);
+                        List<Map<String, Object>> posBranchIntersection = allData.stream().map(map -> {
+                            Map<String, Object> posMap = new HashMap<>();
+                            posMap.put("jan", map.get("jan"));
+                            posMap.put("productPowerCd", productPowerCd);
+                            posMap.put("branchIntersection", map.get("branchIntersection"));
+                            return posMap;
+                        }).collect(Collectors.toList());
+                        productPowerDataMapper.setSyokikaPos(posBranchIntersection);
                         List<Map<String, Object>> resultData = new ArrayList<>();
 
                         resultData.add(colMap);
@@ -474,6 +482,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd,productPowerCd);
         productPowerDataMapper.deleteWKSyokika(companyCd, authorCd,productPowerCd);
         productPowerDataMapper.deleteWKIntage(companyCd, authorCd,productPowerCd);
+        productPowerDataMapper.deleteWkStarFetch(companyCd,productPowerCd);
+        productPowerDataMapper.deleteWkSyokikaPos(companyCd,productPowerCd);
 
     }
 
