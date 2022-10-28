@@ -251,7 +251,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
                 shelfPts.add(0);
             productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd,shelfPts,storeCd,posHeader);
             List<Map<String, Object>> list = new ArrayList<>();
-            List<Map<String, Object>> levelMap = this.calcLevel(rankCalculate.size());
+            //List<Map<String, Object>> levelMap = this.calcLevel(rankCalculate.size());
+            List<Map<String, Object>> levelMap = new ArrayList<>();
             for (int i = 0; i < rankCalculate.size(); i++) {
                 Map<String, Object> calMap = rankCalculate.get(i);
                 levelMap.forEach(itemLevel->{
