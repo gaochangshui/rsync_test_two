@@ -9,6 +9,10 @@
         select item_name,item_value from planocycle.sys_config
         where item_name like concat(#{targetColumnPre}, '%') and status=1
     </select>
+    <select id="selectAllByPrefix" resultType="map">
+        select item_name "value",item_value "label",status from planocycle.sys_config
+        where item_name like concat(#{targetColumnPre}, '%')
+    </select>
     <select id="selectIsGroupCompany" resultType="int">
         select count(*) from masterdb.group_company where group_cd=#{companyCd}
     </select>
@@ -27,7 +31,7 @@
         insert into planocycle.sys_config(item_name, item_value, status)
         values
         <foreach collection="janUnitList" item="item" separator=",">
-            (#{item.itemName}, #{item.itemValue}, #{item.status})
+            (#{item.value}, #{item.label}, #{item.status})
         </foreach>
         on conflict("item_name") do
         update

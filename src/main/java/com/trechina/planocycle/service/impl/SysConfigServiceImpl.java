@@ -2,8 +2,10 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.mapper.CompanyConfigMapper;
 import com.trechina.planocycle.mapper.SkuNameConfigMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.SysConfigService;
@@ -12,10 +14,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SysConfigServiceImpl implements SysConfigService {
@@ -23,6 +22,8 @@ public class SysConfigServiceImpl implements SysConfigService {
     private SysConfigMapper sysConfigMapper;
     @Autowired
     private SkuNameConfigMapper skuNameConfigMapper;
+    @Autowired
+    private CompanyConfigMapper companyConfigMapper;
     @Override
     public Map<String, Object> getShowJanSku(EnterpriseAxisDto enterpriseAxisDto) {
         Map<String, Object> resultMap = new HashMap<>();
@@ -57,14 +58,16 @@ public class SysConfigServiceImpl implements SysConfigService {
         }else {
             resultMap.put("showJanSkuFlag", 0);
         }
-        Map<String, Object> kokyakuShow = skuNameConfigMapper.getKokyakuShow(isCompanyCd, prodMstClass);
+        Map<String, Object> kokyakuShow = companyConfigMapper.getKokyakuShow(isCompanyCd);
+        String intageFlag = sysConfigMapper.selectSycConfig(MagicString.ITEM_NAME_SHOW_INTAGE);
+
+        resultMap.put("intageFlag", Objects.equals(intageFlag, "1")?1:0);
+
         if (kokyakuShow == null || kokyakuShow.isEmpty()){
             resultMap.put("kokyakuFlag",0);
-            resultMap.put("intageFlag",0);
             resultMap.put("basketPrice",0);
         }else {
             resultMap.put("kokyakuFlag",Integer.parseInt(kokyakuShow.get("kokyaku").toString())==1?1:0);
-            resultMap.put("intageFlag",Integer.parseInt(kokyakuShow.get("intage").toString())==1?1:0);
             resultMap.put("basketPriceFlag",Integer.parseInt(kokyakuShow.get("basketPrice").toString())==1?1:0);
         }
 

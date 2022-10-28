@@ -293,9 +293,10 @@
     </select>
     <select id="selectPriorityAttrName" resultType="java.util.Map">
         select "2" as label ,concat( #{isCompanyCd} ,'_', #{prodIsCore} ,'_', "3") as value,2 as attr_type,"11"as type
-        FROM ${tableNameAttr}
-
+        FROM ${tableNameAttr} janattr
         where "4" is not null and "1" not in ('jan_cd','jan_name','description','sync','update_time','updater','product_shape')
+        and exists(select * from planocycle.company_attr_config where company_cd=#{isCompanyCd} and class_cd=#{prodIsCore} and is_show=1
+        and col_cd=janattr."3")
         order by "4"::integer
     </select>
     <select id="selectPriorityAttrValue" resultType="java.lang.String">

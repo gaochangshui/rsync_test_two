@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
@@ -63,7 +65,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Autowired
     private ShelfPatternMstMapper shelfPatternMstMapper;
     @Autowired
-    private CommodityScoreDataService commodityScoreDataService;
+    private CompanyConfigMapper companyConfigMapper;
     @Autowired
     private MstJanMapper mstJanMapper;
     @Autowired
@@ -630,21 +632,17 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
        String classCd = attrLists.get(0).split("_")[1];
 
         List<Map<String,Object>> lists = new ArrayList<>();
-        String convertNumbers = mstJanMapper.getConvertNumbers(company, classCd);
-        JSONArray jsonArray = new JSONArray();
-        if (!Strings.isNullOrEmpty(convertNumbers)){
-             jsonArray = JSON.parseArray(convertNumbers);
-        }
-        //List<String> colList  = Arrays.asList(convertNumbers.split(",")) ;
+        List<Map<String, Object>> convertNumbers = companyConfigMapper.selectAttrTargetColumn(ImmutableList.of("is_number", "number_unit", "col_cd"),
+                ImmutableMap.of("company_cd", company, "class_cd", classCd, "is_number", 1));
 
         for (String list : attrLists) {
             boolean flag = false;
             String unit = "";
-            if (jsonArray.stream().anyMatch(map->((JSONObject)map).get("col").equals(list.split("_")[2]))) {
+            if (convertNumbers.stream().anyMatch(map->MapUtils.getString(map, "col_cd").equals(list.split("_")[2]))) {
                 flag = true;
-                for (Object jsonObject : jsonArray) {
-                    if (((JSONObject)jsonObject).get("col").equals(list.split("_")[2])) {
-                        unit = ((JSONObject) jsonObject).getString("unit");
+                for (Map<String, Object> map : convertNumbers) {
+                    if (MapUtils.getString(map, "col_cd").equals(list.split("_")[2])) {
+                        unit = MapUtils.getString(map, "number_unit", "");
                     }
                 }
             }

@@ -358,12 +358,18 @@ public class ParamConfigServiceImpl implements ParamConfigService {
 
     @Override
     public AllParamConfigVO getAllParamConfig() {
-        List<ParamConfigVO> paramConfigVOS = paramConfigMapper.selectAllParamConfig();
+        List<ParamConfigDto> paramConfigVOS = paramConfigMapper.selectAllParamConfig();
         String intage = sysConfigMapper.selectSycConfig(MagicString.ITEM_NAME_SHOW_INTAGE);
 
         AllParamConfigVO allParamConfigVO = new AllParamConfigVO();
         allParamConfigVO.setShowIntage(Strings.isNullOrEmpty(intage)?1:Integer.parseInt(intage));
-        allParamConfigVO.setParamConfigList(JSON.toJSONString(paramConfigVOS));
+        allParamConfigVO.setParamConfigList(paramConfigVOS);
+
+        List<Map<String, Object>> junitList = sysConfigMapper.selectAllByPrefix(MagicString.JAN_UNIT_PREFIX);
+        allParamConfigVO.setJanUnit(junitList);
+
+        String level = sysConfigMapper.selectSycConfig(MagicString.LEVEL);
+        allParamConfigVO.setLevel( JSON.parseObject(level));
 
         return allParamConfigVO;
     }
@@ -373,13 +379,14 @@ public class ParamConfigServiceImpl implements ParamConfigService {
     public Map<String,Object> updateParamConfig(AllParamConfigVO allParamConfigVO){
         Integer showIntage = allParamConfigVO.getShowIntage();
         sysConfigMapper.updateValByName(MagicString.ITEM_NAME_SHOW_INTAGE, showIntage);
-        List<ParamConfigVO> paramConfigVOS = new Gson().fromJson(allParamConfigVO.getParamConfigList(), new TypeToken<List<ParamConfigVO>>() {
-        }.getType());
+        List<ParamConfigDto> paramConfigVOS = allParamConfigVO.getParamConfigList();
         paramConfigMapper.updateParamConfig(paramConfigVOS);
 
-        String janUnit = allParamConfigVO.getJanUnit();
-        List<SysConfigDto> janUnitList = new Gson().fromJson(janUnit, new TypeToken<List<SysConfigDto>>(){}.getType());
+        //String janUnit = allParamConfigVO.getJanUnit();
+        List<Map<String, Object>> janUnitList = allParamConfigVO.getJanUnit();
         sysConfigMapper.updateVal(janUnitList);
+
+        sysConfigMapper.updateValByName(MagicString.LEVEL, allParamConfigVO.getLevel());
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

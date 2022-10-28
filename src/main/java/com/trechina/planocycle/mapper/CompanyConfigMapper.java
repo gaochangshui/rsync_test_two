@@ -38,4 +38,10 @@ public interface CompanyConfigMapper {
     List<Map<String, Object>> getProdList(String companyCd);
 
     Map<String, Object> getCompanyList1(String companyCd);
+
+    List<Company> getInUseCompanyList();
+
+    List<Map<String, Object>> selectAttrTargetColumn(List<String> targetColumn, Map<String, Object> condition);
+
+    Map<String, Object> getKokyakuShow(String isCompanyCd);
 }

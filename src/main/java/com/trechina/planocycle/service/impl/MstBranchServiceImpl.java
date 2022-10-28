@@ -5,8 +5,10 @@ import com.google.api.client.util.Strings;
 import com.trechina.planocycle.config.MailConfig;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.BranchList;
+import com.trechina.planocycle.entity.po.Company;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.ClassicPriorityOrderCommodityMustMapper;
+import com.trechina.planocycle.mapper.CompanyConfigMapper;
 import com.trechina.planocycle.mapper.MstBranchMapper;
 import com.trechina.planocycle.mapper.SysConfigMapper;
 import com.trechina.planocycle.service.MstBranchService;
@@ -35,7 +37,7 @@ public class MstBranchServiceImpl implements MstBranchService {
     @Autowired
     private ClassicPriorityOrderCommodityMustMapper classicPriorityOrderCommodityMustMapper;
     @Autowired
-    private MstCommodityService mstCommodityService;
+    private CompanyConfigMapper companyConfigMapper;
     @Value("${projectIds}")
     private String projectIds;
     @Autowired
@@ -97,8 +99,8 @@ public class MstBranchServiceImpl implements MstBranchService {
     public Map<String, Object> syncTenData(String env) {
         List<Map<String, Object>> syncResults = new ArrayList<>();
         try {
-            String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
-            String[] companyList = syncCompanyList.split(",");
+            List<Company> inUseCompanyList = companyConfigMapper.getInUseCompanyList();
+            List<String> companyList = inUseCompanyList.stream().map(Company::getCompanyCd).collect(Collectors.toList());
             String masterTenTb;
             String masterTenTbPkey;
             String masterTenTbWk;
