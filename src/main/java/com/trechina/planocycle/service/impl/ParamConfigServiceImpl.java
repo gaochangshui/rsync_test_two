@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.CompanyConfigureDto;
@@ -9,10 +10,8 @@ import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.AllParamConfigVO;
 import com.trechina.planocycle.entity.vo.CommonPartsDataVO;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.CompanyConfigMapper;
-import com.trechina.planocycle.mapper.ParamConfigMapper;
-import com.trechina.planocycle.mapper.SkuNameConfigMapper;
-import com.trechina.planocycle.mapper.SysConfigMapper;
+import com.trechina.planocycle.mapper.*;
+import com.trechina.planocycle.service.MstBranchService;
 import com.trechina.planocycle.service.ParamConfigService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
@@ -39,6 +38,10 @@ public class ParamConfigServiceImpl implements ParamConfigService {
     private cgiUtils cgiUtil;
     @Autowired
     private HttpSession session;
+    @Autowired
+    private MstBranchMapper mstBranchMapper;
+    @Autowired
+    private GroupCompanyMapper groupCompanyMapper;
     @Override
     public Map<String, Object> getParamConfigList(Integer showItemCheck) {
         List<ParamConfigDto> paramConfig = paramConfigMapper.getParamConfig(showItemCheck);
@@ -358,6 +361,45 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         maps.put("storeList",storeForSmt);
         maps.put("prodList",prodClassMap);
         return ResultMaps.result(ResultEnum.SUCCESS,maps);
+    }
+
+    @Override
+    public Map<String, Object> getCommonMaster(String companyCd) {
+        int i = groupCompanyMapper.selectGroupCompany(companyCd);
+        String  coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
+
+        Map<String, Object> companyMst = paramConfigMapper.selectCompanyMst(companyCd);
+        String storeIsCore = MapUtils.getString(companyMst, "store_is_core");
+        String prodIsCore = MapUtils.getString(companyMst, "prod_is_core");
+
+        String tenCompanyCd = companyCd;
+
+        if(i>0){
+            //is group company,use core company;
+            prodIsCore = "1";
+        }else{
+            //mstBranchMapper.checkTableExist(companyCd);
+            if(Objects.equals("1", storeIsCore)){
+                tenCompanyCd = coreCompany;
+            }
+        }
+
+        List<Map<String, Object>> tenMstMap = paramConfigMapper.selectTenClassMst(tenCompanyCd);
+
+        List<List<Map<String, Object>>> prodMap = new ArrayList<>();
+        if(Objects.equals(prodIsCore, "2")){
+            prodMap.add(paramConfigMapper.selectProdClassMst(companyCd));
+            prodMap.add(paramConfigMapper.selectProdClassMst(coreCompany));
+        }else if(Objects.equals(prodIsCore, "1")){
+            prodMap.add(paramConfigMapper.selectProdClassMst(coreCompany));
+        }else{
+            prodMap.add(paramConfigMapper.selectProdClassMst(companyCd));
+        }
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("store", tenMstMap);
+        resultMap.put("prod", prodMap);
+        return ResultMaps.result(ResultEnum.SUCCESS, resultMap);
     }
 
     @Override

@@ -69,4 +69,14 @@ public class ParamConfigController {
     public Map<String, Object> saveGroupCompany(@RequestBody GroupCompanyVO groupCompanyVO){
         return groupCompanyService.saveGroupCompany(groupCompanyVO);
     }
+
+    /**
+     * get company common master
+     * @param companyCd
+     * @return
+     */
+    @GetMapping("/getCommonMaster")
+    public Map<String, Object> getCommonMaster(String companyCd){
+        return paramConfigService.getCommonMaster(companyCd);
+    }
 }
