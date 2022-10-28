@@ -264,7 +264,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         List<Map<String, Object>> prodList= new ArrayList<>();
         List<String> storeList = new ArrayList<>();
         List<String> prodMstClass = new ArrayList<>();
-        if (!companyList1.isEmpty()) {
+        if (companyList1 != null) {
             companyConfigForCompany = companyConfigMapper.getCompanyConfigForCompany(companyCd);
              prodList = companyConfigMapper.getProdList(companyCd);
              storeList = companyConfigMapper.getStoreList(companyCd);
