@@ -2,10 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.SkuNameConfigMapper">
     <select id="getJanName2colNum" resultType="java.lang.Integer">
-        select jan_name2col_num from planocycle.sku_name_config where company_cd = #{companyCd} and class = #{paragraph}
+        select jan_name2col_num ::integer
+        from planocycle.sku_name_config
+        where company_cd = #{companyCd} and class = #{paragraph}
     </select>
     <select id="getJanItem2colNum" resultType="java.lang.Integer">
-        select jan_item2col_num from planocycle.sku_name_config where company_cd = #{companyCd} and class = #{paragraph}
+        select jan_item2col_num ::integer
+        from planocycle.sku_name_config
+        where company_cd = #{companyCd} and class = #{paragraph}
     </select>
     <select id="getKokyakuShow" resultType="java.util.Map">
         select  COALESCE(kokyaku,0) as kokyaku ,COALESCE(intage,0) as intage,COALESCE(basket_price,0) as "basketPrice"

@@ -105,7 +105,7 @@
         group by group_cd,group_name,update_time,updater
     </select>
     <select id="getCompanyConfigForCompany" resultType="java.util.Map">
-        select class,jan_name2col_num,jan_item2col_num,kokyaku,intage,maker,basket_price,convert_numbers,jan_col_flag,show_flag
+        select class,jan_name2col_num,jan_item2col_num,jan_col_flag,show_flag
         from planocycle.sku_name_config
         where company_cd = #{companyCd}
     </select>

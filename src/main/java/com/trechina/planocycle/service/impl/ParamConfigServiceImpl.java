@@ -271,15 +271,15 @@ public class ParamConfigServiceImpl implements ParamConfigService {
              prodMstClass = companyConfigForCompany.stream().map(map -> map.get("class").toString()).collect(Collectors.toList());
             maps.put("storeMstClass", storeList);
             maps.put("prodMstClass", prodMstClass);
-            maps.put("companyType", companyList1.get("is_id_pos").equals("1") ? true : false);
-            maps.put("kokyaku", companyList1.get("kokyaku").equals("1") ? true : false);
-            maps.put("basket", companyList1.get("basket_price").equals("1") ? true : false);
+            maps.put("companyType", companyList1.get("is_id_pos").equals(1) ? true : false);
+            maps.put("kokyaku", companyList1.get("kokyaku").equals(1) ? true : false);
+            maps.put("basket", companyList1.get("basket_price").equals(1) ? true : false);
             maps.put("dateIsCore", companyList1.get("date_is_core").toString());
             maps.put("storeIsCore", companyList1.get("store_is_core").toString());
             List<String> prodIsCore = new ArrayList<>();
             if (companyList1.get("prod_is_core").toString().equals("2")) {
                 prodIsCore.add("1");
-                prodIsCore.add("2");
+                prodIsCore.add("0");
 
             } else {
                 prodIsCore.add(companyList1.get("prod_is_core").toString());
