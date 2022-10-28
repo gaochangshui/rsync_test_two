@@ -224,11 +224,13 @@ public class ParamConfigServiceImpl implements ParamConfigService {
                 prodClass.add(companyAttrConfig);
             });
         }
+
         companyConfigMapper.delProdClass(companyCd);
         companyConfigMapper.delcompanyConfig(companyCd);
+        companyConfigMapper.delMstKigyocore(companyCd);
         companyConfigMapper.setProdClass(prodClass);
         companyConfigMapper.setCompanyConfig(resultProd);
-
+        companyConfigMapper.setMstKigyocore(companyCd);
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
@@ -262,7 +264,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         List<Map<String, Object>> prodList= new ArrayList<>();
         List<String> storeList = new ArrayList<>();
         List<String> prodMstClass = new ArrayList<>();
-        if (companyList1!= null) {
+        if (false) {
             companyConfigForCompany = companyConfigMapper.getCompanyConfigForCompany(companyCd);
              prodList = companyConfigMapper.getProdList(companyCd);
              storeList = companyConfigMapper.getStoreList(companyCd);

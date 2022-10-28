@@ -33,6 +33,10 @@
             (#{item.companyCd},#{item.classCd},#{item.colCd},#{item.colName},#{item.isNumber},#{item.isShow},#{item.isRange},#{item.numberUnit})
         </foreach>
     </insert>
+    <insert id="setMstKigyocore">
+        insert into masterdb.mst_kigyocore(company_cd,date_mst,tenpo_kaisou_mst,selected_tenpo,shouhin_kaisou_mst,selected_shouhin)
+        values (#{companyCd},'date_core_mst','tenpo_kaisou_core_mst','0000','shouhin_kaisou_core_mst','0000')
+    </insert>
     <delete id="delStore">
         delete from planocycle.company_ten_master where company_cd = #{companyCd}
     </delete>
@@ -41,6 +45,9 @@
     </delete>
     <delete id="delcompanyConfig">
         delete from planocycle.sku_name_config where company_cd = #{companyCd}
+    </delete>
+    <delete id="delMstKigyocore">
+        delete from masterdb.mst_kigyocore where company_cd = #{companyCd}
     </delete>
     <insert id="setStoreMstClass">
         insert into planocycle.company_ten_master (company_cd,class,show_flag)

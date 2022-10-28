@@ -44,4 +44,8 @@ public interface CompanyConfigMapper {
     List<Map<String, Object>> selectAttrTargetColumn(List<String> targetColumn, Map<String, Object> condition);
 
     Map<String, Object> getKokyakuShow(String isCompanyCd);
+
+    void setMstKigyocore(String companyCd);
+
+    void delMstKigyocore(String companyCd);
 }
