@@ -1,6 +1,5 @@
 package com.trechina.planocycle.mapper;
 
-import com.trechina.planocycle.entity.dto.SysConfigDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -20,4 +19,6 @@ public interface SysConfigMapper {
     int updateValByName(String name, Object value);
 
     void updateVal(List<Map<String, Object>> janUnitList);
+
+    String getGroupName(String companyCd);
 }

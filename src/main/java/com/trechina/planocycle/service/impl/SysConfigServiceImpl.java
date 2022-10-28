@@ -1,7 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.google.api.client.util.Strings;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -29,19 +28,15 @@ public class SysConfigServiceImpl implements SysConfigService {
         Map<String, Object> resultMap = new HashMap<>();
         //
         String companyCd = enterpriseAxisDto.getCompanyCd();
-        String commonPartsData = enterpriseAxisDto.getCommonPartsData();
-        JSONObject jsonObject = JSON.parseObject(commonPartsData);
-        String prodMstClass = jsonObject.get("prodMstClass").toString();
-        String prodIsCore = jsonObject.get("prodIsCore").toString();
         String coreCompany = sysConfigMapper.selectSycConfig("core_company");
         String isCompanyCd = null;
-        if ("1".equals(prodIsCore)) {
-            isCompanyCd = coreCompany;
-        } else {
             isCompanyCd = companyCd;
+
+        String groupName = sysConfigMapper.getGroupName(companyCd);
+        if (!Strings.isNullOrEmpty(groupName)){
+            isCompanyCd = coreCompany;
         }
-        Integer colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd,prodMstClass);
-        if (colNum != null){
+
             List<Map<String, String>> janUnit = sysConfigMapper.selectByPrefix("jan_unit_");
             List<Map<String, Object>> janUnitList = new ArrayList<>();
             Map<String, Object> itemJanUnit = null;
@@ -55,9 +50,7 @@ public class SysConfigServiceImpl implements SysConfigService {
             }
             resultMap.put("showJanSkuFlag", 1);
             resultMap.put("janUnit", janUnitList);
-        }else {
-            resultMap.put("showJanSkuFlag", 0);
-        }
+
         Map<String, Object> kokyakuShow = companyConfigMapper.getKokyakuShow(isCompanyCd);
         String intageFlag = sysConfigMapper.selectSycConfig(MagicString.ITEM_NAME_SHOW_INTAGE);
 

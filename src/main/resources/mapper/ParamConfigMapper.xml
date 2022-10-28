@@ -21,17 +21,17 @@
   <select id="selectParamConfigByCd" resultType="com.trechina.planocycle.entity.vo.ParamConfigVO">
     select item_cd,item_value,concat(item_type,'-',item_name) as item_name  from planocycle.param_config config
     <where>
-      flag=0 and item_cd in
+      flag=1 and item_cd in
         <foreach collection="cdList" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
       order by item_value
     </where>
   </select>
-    <select id="getParamRatio" resultType="com.trechina.planocycle.entity.dto.ParamConfigDto">
+    <select id="getParamRatio" resultType="string">
       select item_cd
       from planocycle.param_config config
-      where flag=0 and percent_flag = 1
+      where  percent_flag = 1
     </select>
     <update id="updateParamConfig">
     update planocycle.param_config

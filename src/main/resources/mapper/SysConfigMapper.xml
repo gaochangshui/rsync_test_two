@@ -20,6 +20,11 @@
         select  "2" "colName","3" "colCd"
         from "1000".wk_prod_0000_jan_attr_header_sys
     </select>
+    <select id="getGroupName" resultType="java.lang.String">
+        select distinct group_name
+        from masterdb.group_company
+        where group_cd = #{companyCd}
+    </select>
     <update id="updateValByName">
         insert into planocycle.sys_config(item_name, item_value, status)
         values(#{name}, #{value}, 1)

@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.ParamConfigDto;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -588,7 +587,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             }else{
                 paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
             }
-            List<ParamConfigDto> paramConfig = paramConfigMapper.getParamRatio();
+            List<String> paramConfig = paramConfigMapper.getParamRatio();
             List<Map<String, Object>> reserveMst = productPowerReserveMstMapper.selectAllPrepared(productPowerCd);
             reserveMst = reserveMst.stream()
                     .peek(map->map.put(MagicString.DATE_CD, "item"+map.get(MagicString.DATE_CD)))
