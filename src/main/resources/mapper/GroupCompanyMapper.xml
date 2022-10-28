@@ -17,4 +17,7 @@
     <select id="selectGroupCdNumber" resultType="string">
         select lpad(nextval('masterdb.group_cd_seq'::regclass)::text, 4, '0')
     </select>
+    <select id="selectGroupCompany" resultType="int">
+        select count(*) from masterdb.group_company where group_cd = #{companyCd}
+    </select>
 </mapper>

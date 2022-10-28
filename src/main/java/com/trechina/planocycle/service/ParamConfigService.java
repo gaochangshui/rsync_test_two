@@ -18,4 +18,6 @@ public interface ParamConfigService {
 
     Map<String, Object> updateParamConfig(AllParamConfigVO allParamConfigVO);
     Map<String, Object> getCompanyParam(String companyCd);
+
+    Map<String, Object> getCommonMaster(String companyCd);
 }

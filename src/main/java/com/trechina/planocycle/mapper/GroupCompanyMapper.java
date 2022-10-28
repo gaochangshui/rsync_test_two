@@ -15,4 +15,6 @@ public interface GroupCompanyMapper {
     List<Map<String, String>> selectCompanyName(String companyList);
 
     String selectGroupCdNumber();
+
+    int selectGroupCompany(String companyCd);
 }

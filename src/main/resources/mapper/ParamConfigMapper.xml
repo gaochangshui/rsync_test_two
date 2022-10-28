@@ -49,4 +49,18 @@
     </foreach>ELSE rank_flag END
     </set>
   </update>
+  <select id="selectProdClassMst" resultType="map">
+    select distinct class_cd "value",  "2" "label" from planocycle.company_attr_config config
+    inner join "${companyCd}".master_syohin mst on config.class_cd=mst."1"
+    where company_cd=#{companyCd} and is_show='1' order by class_cd
+  </select>
+  <select id="selectTenClassMst" resultType="map">
+    select distinct class "value", "2" "label" from planocycle.company_ten_master config
+    inner join "${companyCd}".master_ten mst on config.class=mst."1"
+    where company_cd=#{companyCd} and show_flag='1' order by class
+  </select>
+  <select id="selectCompanyMst" resultType="map">
+    select store_is_core, prod_is_core from planocycle.company_list where company_cd=#{companyCd} and is_use='1'
+    limit 1
+  </select>
 </mapper>
