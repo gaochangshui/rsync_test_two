@@ -755,7 +755,7 @@
         inner join
         (select distinct jan, janinfo."${janNameCol}" jan_name from ${tableName} janinfo
         inner join planocycle.product_power_mst_data powermst on janinfo."${janCol}"=powermst.jan
-        where powermst.product_power_cd=#{productPowerNo}) t2 on t2.jan_name = t1.jan_name
+        where powermst.product_power_cd=#{productPowerNo} and powermst.pos_store_item01::integer>0) t2 on t2.jan_name = t1.jan_name
         where t1.jan!=t2.jan;
     </select>
     <select id="getBranch" resultType="java.lang.String">
