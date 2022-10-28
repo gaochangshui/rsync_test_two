@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.entity.dto.ParamConfigDto;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
@@ -193,7 +194,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
             ProductPowerNumGenerator prod = (ProductPowerNumGenerator)productPowerID.get("data");
             newProductPowerCd = prod.getId();
         }
-
+        List<ParamConfigDto> paramConfig = paramConfigMapper.getParamRatio();
         List<String> dataCol = productPowerDataMapper.getDataCol();
         List<String> posHeader = productPowerDataMapper.getColHeader("pos");
         List<String> customerHeader = productPowerDataMapper.getColHeader("customer");
@@ -276,13 +277,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         List<LinkedHashMap<String, Object>> returnDataItem = new ArrayList<>();
         List<LinkedHashMap<String, Object>> allDataItem = productPowerDataMapper.getAllDataItem(companyCd, productPowerNo, cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName);
         allDataItem.forEach(map->map.entrySet().forEach(entry->{
-            if (entry.getKey().equals("intage_item03")) {
+            if (paramConfig.contains(entry.getKey())) {
                 Double value = Double.valueOf(entry.getValue().toString());
                 String result = String.format("%.1f",value);
                 entry.setValue(result+MagicString.PERCENTAGE);
-            }else if (!entry.getKey().equals("jan")){
-                Integer value = Double.valueOf(entry.getValue().toString()).intValue();
-                entry.setValue(value);
             }
         }));
         List<ParamConfigVO> paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);

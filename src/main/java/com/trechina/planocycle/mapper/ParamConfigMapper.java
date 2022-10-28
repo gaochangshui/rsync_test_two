@@ -18,4 +18,7 @@ public interface ParamConfigMapper {
     List<ParamConfigVO> selectParamConfigByCd(@Param("cdList") List<String> cdList);
 
     void updateParamConfig(@Param("list") List<ParamConfigDto> paramConfigVO);
+
+    List<ParamConfigDto> getParamRatio();
+
 }

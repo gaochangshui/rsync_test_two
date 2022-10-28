@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
+import com.trechina.planocycle.entity.dto.ParamConfigDto;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
@@ -587,7 +588,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             }else{
                 paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
             }
-
+            List<ParamConfigDto> paramConfig = paramConfigMapper.getParamRatio();
             List<Map<String, Object>> reserveMst = productPowerReserveMstMapper.selectAllPrepared(productPowerCd);
             reserveMst = reserveMst.stream()
                     .peek(map->map.put(MagicString.DATE_CD, "item"+map.get(MagicString.DATE_CD)))
@@ -596,13 +597,10 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             List<Map<String, String>> productPowerMstData = productPowerDataMapper.selectShowData(productPowerCd, paramConfigVOS,reserveMst,
                     customerCd, Arrays.asList(prepareCd), intageCd);
             productPowerMstData.forEach(map->map.entrySet().forEach(entry->{
-                if (entry.getKey().equals("intage_item03")){
+                if (paramConfig.contains(entry.getKey())){
                     Double value = Double.valueOf( entry.getValue());
                     String result = String.format("%.1f",value);
                     entry.setValue(result+MagicString.PERCENTAGE);
-                }else if (!entry.getKey().equals("jan")){
-                    Integer value = Double.valueOf( entry.getValue()).intValue();
-                    entry.setValue(value.toString());
                 }
             }));
             List<Map<String, String>> returnData = new ArrayList<>();

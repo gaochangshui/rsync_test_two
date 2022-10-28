@@ -28,7 +28,12 @@
       order by item_value
     </where>
   </select>
-  <update id="updateParamConfig">
+    <select id="getParamRatio" resultType="com.trechina.planocycle.entity.dto.ParamConfigDto">
+      select item_cd
+      from planocycle.param_config config
+      where flag=0 and percent_flag = 1
+    </select>
+    <update id="updateParamConfig">
     update planocycle.param_config
     <set>
       item_name=

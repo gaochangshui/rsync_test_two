@@ -206,8 +206,8 @@ public class ParamConfigServiceImpl implements ParamConfigService {
             List<Map<String,Object>> attrList = (List<Map<String,Object>>)value.get("attrList");
             skuNameConfig.setCompanyCd(companyCd);
             skuNameConfig.setClassCd(stringObjectEntry.getKey().split("_")[1]);
-            skuNameConfig.setJanItem2colNum(Integer.parseInt(option.get("jan_unit_3").toString()));
-            skuNameConfig.setJanName2colNum(Integer.parseInt(option.get("jan_unit_2").toString()));
+            skuNameConfig.setJanItem2colNum(option.get("jan_unit_3").toString());
+            skuNameConfig.setJanName2colNum(option.get("jan_unit_2").toString());
             resultProd.add(skuNameConfig);
 
             attrList.forEach(attr->{
