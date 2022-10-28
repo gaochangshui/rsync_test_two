@@ -1,7 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.CompanyConfigureDto;
@@ -11,7 +10,6 @@ import com.trechina.planocycle.entity.vo.AllParamConfigVO;
 import com.trechina.planocycle.entity.vo.CommonPartsDataVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
-import com.trechina.planocycle.service.MstBranchService;
 import com.trechina.planocycle.service.ParamConfigService;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
@@ -196,8 +194,8 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         companyConfigMapper.setCompany(companyList);
         //store
         companyConfigMapper.delStore(companyCd);
-        if (companyList.getStoreIsCore() == 0 && !companyCd.equals("1000")) {
-            List<String> storeMstClass = (List<String>) map.get("storeMstClass");
+        List<String> storeMstClass = (List<String>) map.get("storeMstClass");
+        if (!storeMstClass.isEmpty()) {
             companyConfigMapper.setStoreMstClass(companyCd, storeMstClass);
         }
         companyConfigMapper.delProdClass(companyCd);

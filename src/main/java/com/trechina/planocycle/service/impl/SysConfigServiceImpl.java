@@ -65,7 +65,7 @@ public class SysConfigServiceImpl implements SysConfigService {
             resultMap.put("basketPriceFlag",Integer.parseInt(kokyakuShow.get("basketPrice").toString())==1?1:0);
         }
         CommonPartsDataVO commonPartsDataVO = new CommonPartsDataVO();
-        commonPartsDataVO.setProdIsCore(String.valueOf(companyList.get("prod_is_core")).equals("2")?"1":"0");
+        commonPartsDataVO.setProdIsCore(String.valueOf(companyList.get("prod_is_core")).equals("2")?"1":String.valueOf(companyList.get("prod_is_core")));
         commonPartsDataVO.setStoreIsCore(String.valueOf(companyList.get("store_is_core")));
         commonPartsDataVO.setDateIsCore(String.valueOf(companyList.get("date_is_core")));
         resultMap.put("commonPartsData",commonPartsDataVO);
