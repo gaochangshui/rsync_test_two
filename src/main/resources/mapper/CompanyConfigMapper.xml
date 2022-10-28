@@ -90,7 +90,7 @@
             masterdb.kigyou_name name
                 left join masterdb.kigyou_company_sortid sortid
                           on sortid."1" = name."1"
-                left join masterdb.company_list list
+                left join planocycle.company_list list
                           on name."1" = list.company_cd
                 left join masterdb.group_company groups
                           on groups.company_cd = name."1"
