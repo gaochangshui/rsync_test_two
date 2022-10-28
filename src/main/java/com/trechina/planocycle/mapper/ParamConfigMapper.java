@@ -27,4 +27,6 @@ public interface ParamConfigMapper {
     List<Map<String, Object>> selectTenClassMst(String companyCd);
 
     Map<String, Object> selectCompanyMst(String companyCd);
+
+    int selectTenMaxLevel(String companyCd, String classCd);
 }

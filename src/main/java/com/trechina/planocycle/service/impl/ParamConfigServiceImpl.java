@@ -9,6 +9,7 @@ import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.AllParamConfigVO;
 import com.trechina.planocycle.entity.vo.CommonPartsDataVO;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.exception.NotInitCompanyMstException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ParamConfigService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -362,7 +363,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
     }
 
     @Override
-    public Map<String, Object> getCommonMaster(String companyCd) {
+    public Map<String, Object> getCommonMaster(String companyCd) throws NotInitCompanyMstException {
         int i = groupCompanyMapper.selectGroupCompany(companyCd);
         String  coreCompany = sysConfigMapper.selectSycConfig(MagicString.CORE_COMPANY);
 
@@ -376,15 +377,31 @@ public class ParamConfigServiceImpl implements ParamConfigService {
             //is group company,use core company;
             prodIsCore = "1";
         }else{
-            //mstBranchMapper.checkTableExist(companyCd);
             if(Objects.equals("1", storeIsCore)){
                 tenCompanyCd = coreCompany;
+            }
+
+            int masterTen = mstBranchMapper.checkTableExist("master_ten", tenCompanyCd);
+            if(masterTen<1){
+                throw new NotInitCompanyMstException("table["+tenCompanyCd+".master_ten] not exists");
             }
         }
 
         List<Map<String, Object>> tenMstMap = paramConfigMapper.selectTenClassMst(tenCompanyCd);
+        String finalTenCompanyCd = tenCompanyCd;
+        tenMstMap.forEach(ten->{
+            String classCd = MapUtils.getString(ten, "value");
+            int level = paramConfigMapper.selectTenMaxLevel(finalTenCompanyCd, classCd);
+            ten.put("level",level);
+        });
+
 
         List<List<Map<String, Object>>> prodMap = new ArrayList<>();
+        String resultMsg = checkTableExist(prodIsCore, companyCd, coreCompany);
+        if(!Strings.isNullOrEmpty(resultMsg)){
+            throw new NotInitCompanyMstException(resultMsg);
+        }
+        
         if(Objects.equals(prodIsCore, "2")){
             prodMap.add(paramConfigMapper.selectProdClassMst(companyCd));
             prodMap.add(paramConfigMapper.selectProdClassMst(coreCompany));
@@ -398,6 +415,33 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         resultMap.put("store", tenMstMap);
         resultMap.put("prod", prodMap);
         return ResultMaps.result(ResultEnum.SUCCESS, resultMap);
+    }
+
+    private String checkTableExist(String prodIsCore, String companyCd, String coreCompany){
+        if(Objects.equals(prodIsCore, "2")){
+            int masterSyohin = mstBranchMapper.checkTableExist("master_syohin", companyCd);
+            int coreMasterSyohin = mstBranchMapper.checkTableExist("master_syohin", coreCompany);
+
+            if(masterSyohin<1){
+                return "table["+companyCd+".master_syohin] not exists";
+            }
+
+            if(coreMasterSyohin<1){
+                return "table["+coreCompany+".master_syohin] not exists";
+            }
+        }else if(Objects.equals(prodIsCore, "1")){
+            int coreMasterSyohin = mstBranchMapper.checkTableExist("master_syohin", coreCompany);
+            if(coreMasterSyohin<1){
+                return "table["+coreCompany+".master_syohin] not exists";
+            }
+        }else{
+            int masterSyohin = mstBranchMapper.checkTableExist("master_syohin", companyCd);
+            if(masterSyohin<1){
+                return "table["+companyCd+".master_syohin] not exists";
+            }
+        }
+
+        return "";
     }
 
     @Override
