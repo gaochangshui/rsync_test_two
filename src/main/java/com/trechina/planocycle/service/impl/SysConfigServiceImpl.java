@@ -36,8 +36,8 @@ public class SysConfigServiceImpl implements SysConfigService {
         if (!Strings.isNullOrEmpty(groupName)){
             isCompanyCd = coreCompany;
         }
-
-            List<Map<String, String>> janUnit = sysConfigMapper.selectByPrefix("jan_unit_");
+        Map<String, Object> companyList = companyConfigMapper.getCompanyList1(companyCd);
+        List<Map<String, String>> janUnit = sysConfigMapper.selectByPrefix("jan_unit_");
             List<Map<String, Object>> janUnitList = new ArrayList<>();
             Map<String, Object> itemJanUnit = null;
             for (Map<String, String> s : janUnit) {
@@ -63,7 +63,9 @@ public class SysConfigServiceImpl implements SysConfigService {
             resultMap.put("kokyakuFlag",Integer.parseInt(kokyakuShow.get("kokyaku").toString())==1?1:0);
             resultMap.put("basketPriceFlag",Integer.parseInt(kokyakuShow.get("basketPrice").toString())==1?1:0);
         }
-
+        resultMap.put("dateIsCore",String.valueOf(companyList.get("date_is_core")));
+        resultMap.put("storeIsCore",String.valueOf(companyList.get("store_is_core")));
+        resultMap.put("prodIsCore",String.valueOf(companyList.get("prod_is_core")).equals("2")?"1":"0");
         return ResultMaps.result(ResultEnum.SUCCESS, resultMap);
     }
 }
