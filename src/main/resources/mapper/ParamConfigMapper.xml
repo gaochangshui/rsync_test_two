@@ -63,4 +63,7 @@
     select store_is_core, prod_is_core from planocycle.company_list where company_cd=#{companyCd} and is_use='1'
     limit 1
   </select>
+  <select id="selectTenMaxLevel" resultType="int">
+    select max("5"::integer) from "${companyCd}"."ten_${classCd}_ten_kaisou_header_sys";
+  </select>
 </mapper>

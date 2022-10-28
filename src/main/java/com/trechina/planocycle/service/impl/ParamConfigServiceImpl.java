@@ -390,6 +390,13 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         }
 
         List<Map<String, Object>> tenMstMap = paramConfigMapper.selectTenClassMst(tenCompanyCd);
+        String finalTenCompanyCd = tenCompanyCd;
+        tenMstMap.forEach(ten->{
+            String classCd = MapUtils.getString(ten, "value");
+            int level = paramConfigMapper.selectTenMaxLevel(finalTenCompanyCd, classCd);
+            ten.put("level",level);
+        });
+
 
         List<List<Map<String, Object>>> prodMap = new ArrayList<>();
         String resultMsg = checkTableExist(prodIsCore, companyCd, coreCompany);
