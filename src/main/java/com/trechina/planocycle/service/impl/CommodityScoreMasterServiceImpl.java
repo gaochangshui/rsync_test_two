@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.dto.ParamConfigDto;
 import com.trechina.planocycle.entity.dto.ProductCdAndNameDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
@@ -194,7 +193,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
             ProductPowerNumGenerator prod = (ProductPowerNumGenerator)productPowerID.get("data");
             newProductPowerCd = prod.getId();
         }
-        List<ParamConfigDto> paramConfig = paramConfigMapper.getParamRatio();
+        List<String> paramConfig = paramConfigMapper.getParamRatio();
         List<String> dataCol = productPowerDataMapper.getDataCol();
         List<String> posHeader = productPowerDataMapper.getColHeader("pos");
         List<String> customerHeader = productPowerDataMapper.getColHeader("customer");
