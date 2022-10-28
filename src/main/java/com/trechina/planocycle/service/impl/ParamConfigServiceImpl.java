@@ -364,10 +364,11 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         allParamConfigVO.setParamConfigList(paramConfigVOS);
 
         List<Map<String, Object>> junitList = sysConfigMapper.selectAllByPrefix(MagicString.JAN_UNIT_PREFIX);
+        junitList.forEach(jan->jan.put("show", false));
         allParamConfigVO.setJanUnit(junitList);
 
         String level = sysConfigMapper.selectSycConfig(MagicString.LEVEL);
-        allParamConfigVO.setLevel( JSON.parseObject(level));
+        allParamConfigVO.setLevel(JSON.parseObject(level));
 
         return allParamConfigVO;
     }
