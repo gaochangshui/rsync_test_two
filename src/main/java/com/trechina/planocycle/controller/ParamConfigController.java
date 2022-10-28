@@ -38,8 +38,8 @@ public class ParamConfigController {
         return paramConfigService.getCompanyParam(companyCd);
     }
 
-    @GetMapping("setCompanyConfig")
-    public Map<String,Object> setCompanyConfig(Map<String,Object> map)  {
+    @PostMapping("setCompanyConfig")
+    public Map<String,Object> setCompanyConfig(@RequestBody Map<String,Object> map)  {
 
         return paramConfigService.setCompanyConfig(map);
     }

@@ -2,18 +2,12 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.CompanyConfigureDto;
 import com.trechina.planocycle.entity.dto.ParamConfigDto;
-import com.trechina.planocycle.entity.dto.SysConfigDto;
-import com.trechina.planocycle.entity.po.Company;
-import com.trechina.planocycle.entity.po.Group;
-import com.trechina.planocycle.entity.po.MstKiGyoCore;
+import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.AllParamConfigVO;
 import com.trechina.planocycle.entity.vo.CommonPartsDataVO;
-import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.CompanyConfigMapper;
 import com.trechina.planocycle.mapper.ParamConfigMapper;
@@ -146,7 +140,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         Map<String, Object> attrMap = new HashMap<>();
         for (Map.Entry<Object, java.util.List<Map<String, Object>>> objectListEntry : classCd.entrySet()) {
             List<Map<String, Object>> collect = objectListEntry.getValue().stream()
-                    .filter(map->map.get("flag").toString().equals("0"))
+                    .filter(map->map.get("flag").toString().equals("0")&&!map.get("colCd").equals("1") && !map.get("colCd").equals("2"))
                     .map(map -> {
                         Map<String, Object> attr = new HashMap<>();
                         attr.put("label", map.get("colName").toString());
@@ -181,25 +175,63 @@ public class ParamConfigServiceImpl implements ParamConfigService {
 
     @Override
     public Map<String, Object> setCompanyConfig(Map<String, Object> map) {
+        CompanyList companyList = new CompanyList();
         String companyCd=map.get(MagicString.COMPANY_CD).toString();
         String companyName=map.get("companyName").toString();
-        String groupCd=map.get("groupCd").toString();
-        String groupName=map.get("groupName").toString();
-        String classCd="";
-        Integer janName2colNum = null;
-        Integer janItem2colNum = null;
+        String authorCd = session.getAttribute("aud").toString();
+        companyList.setCompanyCd(companyCd);
+        companyList.setCompanyName(companyName);
+        companyList.setKokyaku((Boolean)map.get("kokyaku")?1:0);
+        companyList.setBasketPrice((Boolean)map.get("basket")?1:0);
+        companyList.setDateIsCore(Integer.parseInt(map.get("dateIsCore").toString()));
+        companyList.setStoreIsCore(Integer.parseInt(map.get("storeIsCore").toString()));
+        companyList.setIsIdPos((Boolean)map.get("companyType")?1:0);
+       int prodIsCore = ((List<String>)map.get("prodIsCore")).size()>1?2:Integer.parseInt(((List<String>)map.get("prodIsCore")).get(0));
+        companyList.setIsUse("1");
+        companyList.setProdIsCore(prodIsCore);
+        companyList.setUpdater(authorCd);
+        companyConfigMapper.setCompany(companyList);
+        //store
+        List<String> storeMstClass = (List<String>) map.get("storeMstClass");
+        companyConfigMapper.delStore(companyCd);
+        companyConfigMapper.setStoreMstClass(companyCd,storeMstClass);
+        //prod
+        Map<String,Object> prodMstOption = (Map<String,Object>) map.get("prodMstOption");
+        List<SkuNameConfig> resultProd = new ArrayList<>();
+        List<CompanyAttrConfig> prodClass = new ArrayList<>();
+        for (Map.Entry<String, Object> stringObjectEntry : prodMstOption.entrySet()) {
+            SkuNameConfig skuNameConfig = new SkuNameConfig();
+            Map<String, Object> value = (Map<String, Object>) stringObjectEntry.getValue();
+            Map<String, Object> option = (Map<String, Object>)value.get("option");
+            List<Map<String,Object>> attrList = (List<Map<String,Object>>)value.get("attrList");
+            skuNameConfig.setCompanyCd(companyCd);
+            skuNameConfig.setClassCd(stringObjectEntry.getKey().split("_")[1]);
+            skuNameConfig.setJanItem2colNum(Integer.parseInt(option.get("jan_unit_3").toString()));
+            skuNameConfig.setJanName2colNum(Integer.parseInt(option.get("jan_unit_2").toString()));
+            resultProd.add(skuNameConfig);
 
-        companyConfigMapper.setCompany(companyCd,companyName);
-        companyConfigMapper.setCompanyConfig();
-        String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
-        if (!Arrays.asList(syncCompanyList.split(",")).contains(companyCd)){
-            companyConfigMapper.setSyncCompany(syncCompanyList+","+companyCd);
-        }
-        if (!companyCd.equals(companyName)){
-            companyConfigMapper.setGroupCompany(companyCd,companyName,groupCd,groupName);
+            attrList.forEach(attr->{
+                Map<String,Object> attrMap = attr;
+                CompanyAttrConfig companyAttrConfig = new CompanyAttrConfig();
+                companyAttrConfig.setCompanyCd(companyCd);
+                companyAttrConfig.setClassCd(stringObjectEntry.getKey().split("_")[1]);
+                companyAttrConfig.setColName(attrMap.get("label").toString());
+                companyAttrConfig.setColCd(attrMap.get("value").toString());
+                companyAttrConfig.setNumberUnit(attrMap.get("unit").toString());
+                companyAttrConfig.setIsNumber(((Boolean)attrMap.get("isNumber"))?1:0);
+                companyAttrConfig.setIsRange(((Boolean)attrMap.get("isInterval"))?1:0);
+                companyAttrConfig.setIsShow(((Boolean)attrMap.get("isUse"))?1:0);
+                prodClass.add(companyAttrConfig);
+            });
         }
 
-        return null;
+        companyConfigMapper.delProdClass(companyCd);
+        companyConfigMapper.delcompanyConfig(companyCd);
+        companyConfigMapper.delMstKigyocore(companyCd);
+        companyConfigMapper.setProdClass(prodClass);
+        companyConfigMapper.setCompanyConfig(resultProd);
+        companyConfigMapper.setMstKigyocore(companyCd);
+        return ResultMaps.result(ResultEnum.SUCCESS);
     }
 
     @Override
@@ -226,29 +258,82 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         List<Map<String,Object>> prodClassMap = (List<Map<String,Object>>)companyCol.get(1);
         Map<String,Object> attrHeader = (Map<String,Object>)companyCol.get(2);
         Map<String,Object> maps = new HashMap<>();
+
+        Map<String, Object> companyList1 = companyConfigMapper.getCompanyList1(companyCd);
+        List<Map<String, Object>> companyConfigForCompany= new ArrayList<>();
+        List<Map<String, Object>> prodList= new ArrayList<>();
+        List<String> storeList = new ArrayList<>();
+        List<String> prodMstClass = new ArrayList<>();
+        if (!companyList1.isEmpty()) {
+            companyConfigForCompany = companyConfigMapper.getCompanyConfigForCompany(companyCd);
+             prodList = companyConfigMapper.getProdList(companyCd);
+             storeList = companyConfigMapper.getStoreList(companyCd);
+             prodMstClass = companyConfigForCompany.stream().map(map -> map.get("class").toString()).collect(Collectors.toList());
+            maps.put("storeMstClass", storeList);
+            maps.put("prodMstClass", prodMstClass);
+            maps.put("companyType", companyList1.get("is_id_pos").equals("1") ? true : false);
+            maps.put("kokyaku", companyList1.get("kokyaku").equals("1") ? true : false);
+            maps.put("basket", companyList1.get("basket_price").equals("1") ? true : false);
+            maps.put("dateIsCore", companyList1.get("date_is_core").toString());
+            maps.put("storeIsCore", companyList1.get("store_is_core").toString());
+            List<String> prodIsCore = new ArrayList<>();
+            if (companyList1.get("prod_is_core").toString().equals("2")) {
+                prodIsCore.add("1");
+                prodIsCore.add("2");
+
+            } else {
+                prodIsCore.add(companyList1.get("prod_is_core").toString());
+            }
+            maps.put("prodIsCore", prodIsCore);
+        }
         List<Map<String, Object>> storeForSmt = this.getStoreForSmt(companyCd);
+        List<Map<String, Object>> finalCompanyConfigForCompany = companyConfigForCompany;
+        List<Map<String, Object>> finalProdList = prodList;
         prodClassMap.forEach(classMap->{
             List<Map<String,Object>> optionList = new ArrayList<>();
             janUnit.forEach(option->{
+
                 if (!option.get("item_name").equals("jan_unit_1")) {
                     Map<String, Object> optionMap = new HashMap<>();
+                    finalCompanyConfigForCompany.forEach(unit->{
+                        if (unit.get("class").equals(classMap.get("value"))){
+                            if (option.get("item_name").equals("jan_unit_2")){
+                                optionMap.put("col", String.valueOf(unit.getOrDefault("jan_name2col_num","")));
+                            }else {
+                                optionMap.put("col", String.valueOf(unit.getOrDefault("jan_item2col_num","")));
+                            }
+
+                        }
+                    });
                     optionMap.put("value", option.get("item_name"));
                     optionMap.put("label", option.get("item_value"));
                     optionList.add(optionMap);
                 }
+
+
+
             });
             classMap.put("option",optionList);
             attrHeader.entrySet().forEach(attr->{
                 if (attr.getKey().equals("table_"+classMap.get("value"))){
                     List<Map<String, Object>> value = (List<Map<String, Object>>) attr.getValue();
                     List<Map<String, Object>> collect = value.stream().map(map -> {
+
                         Map<String, Object> resultMap = new HashMap<>();
                         resultMap.put("label", map.get("label"));
                         resultMap.put("value", map.get("value"));
-                        resultMap.put("isUse", false);
+                        resultMap.put("isUse", true);
                         resultMap.put("isNumber", false);
                         resultMap.put("isInterval", false);
                         resultMap.put("unit", "");
+                        for (Map<String, Object> stringObjectMap : finalProdList) {
+                            if (stringObjectMap.get("class_cd").equals(classMap.get("value")) && stringObjectMap.get("col_cd").equals(map.get("value"))){
+                                resultMap.put("isUse", stringObjectMap.get("is_show").equals(1));
+                                resultMap.put("isNumber", stringObjectMap.get("is_number").equals(1));
+                                resultMap.put("isInterval", stringObjectMap.get("is_range").equals(1));
+                                resultMap.put("unit", stringObjectMap.get("number_unit"));
+                            }
+                        }
                         return resultMap;
                     }).collect(Collectors.toList());
                     classMap.put("attrList",collect);
@@ -261,7 +346,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         attrMap.entrySet().forEach(attr-> ((List)attr.getValue()).add(0,option0));
         prodClassMap.forEach(classMap->((List)classMap.get("option")).forEach(unit-> attrMap.entrySet().forEach(attr->{
             if (attr.getKey().equals("table_"+classMap.get("value"))){
-                    ((Map<String,Object>)unit).put("option",attr.getValue());
+                ((Map<String,Object>)unit).put("option",attr.getValue());
             }
         })));
         maps.put("storeList",storeForSmt);
