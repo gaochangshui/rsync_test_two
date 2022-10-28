@@ -12,7 +12,7 @@
   <select id="getParamConfig" resultType="com.trechina.planocycle.entity.dto.ParamConfigDto">
     select item_cd as colName,item_value as value,item_name as label,rank_flag as rankFlag,item_type as itemType, remark
     from planocycle.param_config config
-    where flag=0
+    where flag=1 and delete_flag!=1
     <if test="showItemCheck == 0">
     and item_cd not in ( 'pos_item12')
     </if>
