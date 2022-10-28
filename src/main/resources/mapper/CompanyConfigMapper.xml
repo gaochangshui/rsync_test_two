@@ -85,7 +85,8 @@
                  when list.is_use = '1' then '利用中'
                  when list.is_use = '2' then 'グループ利用'
                  else '設定待ち' end as "isUse",list.updater,list.update_time,
-            case when name."1" = '1000' then 1 else 2 end as sortFlag
+            case when name."1" = '1000' then 1 else 2 end as sortFlag,
+            list.updater as "authorCd"
         from
             masterdb.kigyou_name name
                 left join masterdb.kigyou_company_sortid sortid
@@ -105,7 +106,7 @@
         group by group_cd,group_name,update_time,updater
     </select>
     <select id="getCompanyConfigForCompany" resultType="java.util.Map">
-        select class,jan_name2col_num,jan_item2col_num,jan_col_flag,show_flag
+        select class,jan_name2col_num,jan_item2col_num,show_flag
         from planocycle.sku_name_config
         where company_cd = #{companyCd}
     </select>
@@ -119,7 +120,7 @@
     </select>
     <select id="getCompanyList1" resultType="java.util.Map">
         select
-            is_use,date_is_core,store_is_core,prod_is_core,kokyaku,intage,basket_price,is_id_pos
+            is_use,date_is_core,store_is_core,prod_is_core,kokyaku,basket_price,is_id_pos
         from
             planocycle.company_list
         where company_cd = #{companyCd}
