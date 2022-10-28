@@ -2,16 +2,12 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.CompanyConfigureDto;
 import com.trechina.planocycle.entity.dto.ParamConfigDto;
-import com.trechina.planocycle.entity.dto.SysConfigDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.AllParamConfigVO;
 import com.trechina.planocycle.entity.vo.CommonPartsDataVO;
-import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.CompanyConfigMapper;
 import com.trechina.planocycle.mapper.ParamConfigMapper;
@@ -300,9 +296,9 @@ public class ParamConfigServiceImpl implements ParamConfigService {
                     finalCompanyConfigForCompany.forEach(unit->{
                         if (unit.get("class").equals(classMap.get("value"))){
                             if (option.get("item_name").equals("jan_unit_2")){
-                                optionMap.put("col", unit.getOrDefault("jan_name2col_num",""));
+                                optionMap.put("col", String.valueOf(unit.getOrDefault("jan_name2col_num","")));
                             }else {
-                                optionMap.put("col", unit.getOrDefault("jan_item2col_num",""));
+                                optionMap.put("col", String.valueOf(unit.getOrDefault("jan_item2col_num","")));
                             }
 
                         }
