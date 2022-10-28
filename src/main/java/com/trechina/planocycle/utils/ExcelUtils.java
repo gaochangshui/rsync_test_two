@@ -29,7 +29,7 @@ public class ExcelUtils {
 
     public static void generateExcel(Map<String, List<String>> headersByClassify,
                                          Map<String, List<String>> columnsByClassify, List<Map<String, Object>> allData,
-                                         OutputStream outputStream,Map<String,Object> paramMap) {
+                                         OutputStream outputStream,Map<String,Object> paramMap,List<String> paramCol) {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
             XSSFSheet sheet1 = workbook.createSheet("抽出条件");
             XSSFSheet sheet = workbook.createSheet("商品明細");
@@ -103,7 +103,7 @@ public class ExcelUtils {
                             janCell.setCellValue((Integer)value);
                         }else{
                             Matcher isNum = numberPattern.matcher(String.valueOf(value));
-                            if (columnName.equals("intage_item03")){
+                            if (paramCol.contains(columnName)){
                                 janCell.setCellStyle(percentCellStyle);
                                 janCell.setCellValue(Double.parseDouble(value.toString())/100);
                             }

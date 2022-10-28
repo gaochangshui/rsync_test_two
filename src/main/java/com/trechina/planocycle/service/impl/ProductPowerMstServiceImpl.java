@@ -155,7 +155,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         String intageValue = Stream.of(project).filter(s -> s.startsWith(ProductPowerHeaderEnum.INTAGE.getCode())).collect(Collectors.joining(","));
         String rankWeight = param.getRankWeight();
         Set<String> weightKeys = new HashSet<>();
-
+        List<String> paramConfig = paramConfigMapper.getParamRatio();
         if (!Strings.isNullOrEmpty(rankWeight)) {
             JSONArray weightArray = JSON.parseArray(rankWeight);
             weightArray = weightArray.stream().filter(json->!((JSONObject)json).getString("weight").equals("0")).collect(Collectors.toCollection(JSONArray::new));
@@ -226,7 +226,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         List<Map<String, Object>> allData = productPowerDataMapper.getDynamicAllData(companyCd, productPowerCd,
                 janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", classify, project, janNameColIndex,attrColName);
         allData.forEach(map->map.entrySet().forEach(entry->{
-            if (entry.getKey().equals("intage_item03")) {
+            if (paramConfig.contains(entry.getKey())) {
                 Double value = Double.valueOf(entry.getValue().toString());
                 entry.setValue(value);
             }
@@ -260,7 +260,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
             response.setHeader("Content-Disposition", format);
             outputStream = response.getOutputStream();
-            ExcelUtils.generateExcel(headersByClassify, columnsByClassify, allData, outputStream,productParam);
+            ExcelUtils.generateExcel(headersByClassify, columnsByClassify, allData, outputStream,productParam,paramConfig);
             outputStream.flush();
         } catch (IOException e) {
             logger.error("", e);
