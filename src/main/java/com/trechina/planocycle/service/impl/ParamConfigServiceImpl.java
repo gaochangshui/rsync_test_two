@@ -193,7 +193,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         companyConfigMapper.setCompany(companyList);
         //store
         companyConfigMapper.delStore(companyCd);
-        if (companyList.getStoreIsCore() == 0) {
+        if (companyList.getStoreIsCore() == 0 && !companyCd.equals("1000")) {
             List<String> storeMstClass = (List<String>) map.get("storeMstClass");
             companyConfigMapper.setStoreMstClass(companyCd, storeMstClass);
         }
@@ -201,7 +201,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
         companyConfigMapper.delcompanyConfig(companyCd);
         companyConfigMapper.delMstKigyocore(companyCd);
         companyConfigMapper.setMstKigyocore(companyCd);
-        if (companyList.getProdIsCore() == 1){
+        if (companyList.getProdIsCore() == 1 && !companyCd.equals("1000")){
             return ResultMaps.result(ResultEnum.SUCCESS);
         }
         //prod
