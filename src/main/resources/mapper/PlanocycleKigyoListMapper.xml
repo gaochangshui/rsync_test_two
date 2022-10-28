@@ -8,9 +8,6 @@
                     COALESCE(group_cd,name."1") group_cd,name."1" company_cd,COALESCE(group_name,name."2") group_name,name."2"  company_name  from
 
                     masterdb.kigyou_name name
-                        left join masterdb.kigyou_company_sortid sort
-                                  on name."1" = sort."1"
-
                         left join
                     masterdb.group_company groups
                     on name."1" = groups.company_cd
@@ -20,12 +17,16 @@
                     </foreach>
 
                ) mst
+                    left join planocycle.priority_order_company_config config
+                    on mst.group_cd = config.company_cd and author_cd = #{authorCd}
+                    inner join
 
-                   INNER JOIN
-               masterdb.planocycle_kigyo_list list
-               on list.company_cd = mst.group_cd
-                left join planocycle.priority_order_company_config config
-                on mst.group_cd = config.company_cd and author_cd = #{authorCd}
+                (
+                select company_cd from planocycle.company_list
+                where is_use = '1'
+                union
+                select group_cd from masterdb.group_company groups
+                ) showcompany on showcompany.company_cd = mst.group_cd
     </select>
     <select id="getGroupInfo" resultType="java.lang.String">
         SELECT array_to_string(array_agg(  concat(group_cd,'_',company_cd)),',')  from masterdb.group_company where group_cd = #{companyCd}

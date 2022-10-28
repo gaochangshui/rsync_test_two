@@ -3,6 +3,7 @@ package com.trechina.planocycle.service.impl;
 import com.google.api.client.util.Strings;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.EnterpriseAxisDto;
+import com.trechina.planocycle.entity.vo.CommonPartsDataVO;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.CompanyConfigMapper;
 import com.trechina.planocycle.mapper.SkuNameConfigMapper;
@@ -36,8 +37,8 @@ public class SysConfigServiceImpl implements SysConfigService {
         if (!Strings.isNullOrEmpty(groupName)){
             isCompanyCd = coreCompany;
         }
-
-            List<Map<String, String>> janUnit = sysConfigMapper.selectByPrefix("jan_unit_");
+        Map<String, Object> companyList = companyConfigMapper.getCompanyList1(companyCd);
+        List<Map<String, String>> janUnit = sysConfigMapper.selectByPrefix("jan_unit_");
             List<Map<String, Object>> janUnitList = new ArrayList<>();
             Map<String, Object> itemJanUnit = null;
             for (Map<String, String> s : janUnit) {
@@ -63,7 +64,11 @@ public class SysConfigServiceImpl implements SysConfigService {
             resultMap.put("kokyakuFlag",Integer.parseInt(kokyakuShow.get("kokyaku").toString())==1?1:0);
             resultMap.put("basketPriceFlag",Integer.parseInt(kokyakuShow.get("basketPrice").toString())==1?1:0);
         }
-
+        CommonPartsDataVO commonPartsDataVO = new CommonPartsDataVO();
+        commonPartsDataVO.setProdIsCore(String.valueOf(companyList.get("prod_is_core")).equals("2")?"1":"0");
+        commonPartsDataVO.setStoreIsCore(String.valueOf(companyList.get("store_is_core")));
+        commonPartsDataVO.setDateIsCore(String.valueOf(companyList.get("date_is_core")));
+        resultMap.put("commonPartsData",commonPartsDataVO);
         return ResultMaps.result(ResultEnum.SUCCESS, resultMap);
     }
 }
