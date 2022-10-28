@@ -14,7 +14,7 @@
     from planocycle.param_config config
     where flag=0
     <if test="showItemCheck == 0">
-    and item_cd not in ( 'pos_item12','pos_item13')
+    and item_cd not in ( 'pos_item12')
     </if>
     order by item_value
   </select>
