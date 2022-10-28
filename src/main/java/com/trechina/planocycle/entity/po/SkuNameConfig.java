@@ -6,10 +6,13 @@ import lombok.Data;
 public class SkuNameConfig {
     String companyCd;
     String classCd;
-    String janName2colNum;
+    Integer janName2colNum;
+    Integer janItem2colNum;
     String kokyaku;
     String intage;
     String maker;
     String basketPrice;
     String convertNumbers;
+    String janColFlag;
+    String showFlag;
 }
