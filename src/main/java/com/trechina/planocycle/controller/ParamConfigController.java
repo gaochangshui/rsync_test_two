@@ -3,6 +3,7 @@ package com.trechina.planocycle.controller;
 import com.trechina.planocycle.entity.vo.AllParamConfigVO;
 import com.trechina.planocycle.entity.vo.GroupCompanyVO;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.exception.NotInitCompanyMstException;
 import com.trechina.planocycle.service.GroupCompanyService;
 import com.trechina.planocycle.service.ParamConfigService;
 import com.trechina.planocycle.utils.ResultMaps;
@@ -76,7 +77,7 @@ public class ParamConfigController {
      * @return
      */
     @GetMapping("/getCommonMaster")
-    public Map<String, Object> getCommonMaster(String companyCd){
+    public Map<String, Object> getCommonMaster(String companyCd) throws NotInitCompanyMstException {
         return paramConfigService.getCommonMaster(companyCd);
     }
 }

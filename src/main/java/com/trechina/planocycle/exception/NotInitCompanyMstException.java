@@ -6,6 +6,6 @@ public class NotInitCompanyMstException extends Exception{
     }
 
     public NotInitCompanyMstException(String message) {
-        super(message);
+        super("not init company mst data exception: "+message);
     }
 }
