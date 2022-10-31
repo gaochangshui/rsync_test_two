@@ -11,6 +11,7 @@ import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO;
 import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreMasterService;
 import com.trechina.planocycle.service.IDGeneratorService;
@@ -248,9 +249,17 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         Integer janName2colNum = param.getJanName2colNum();
         Integer colNum = 2;
         if (janName2colNum == 2){
-            colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            try {
+                colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            } catch (Exception e) {
+                throw new BusinessException("まず商品名単位を配置してください");
+            }
         }else if(janName2colNum==3){
-            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            try {
+                colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            } catch (Exception e) {
+                throw new BusinessException("まずitem単位を配置してください");
+            }
         }
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);

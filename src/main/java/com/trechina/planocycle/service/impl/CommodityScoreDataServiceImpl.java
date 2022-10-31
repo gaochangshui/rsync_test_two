@@ -12,6 +12,7 @@ import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreDataService;
 import com.trechina.planocycle.utils.*;
@@ -130,9 +131,17 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         int janName2colNum = Integer.parseInt(taskIdMap.get(MagicString.JAN_NAME2COL_NUM).toString());
                         int colNum = 2;
                         if (janName2colNum == 2){
-                            colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+                            try {
+                                colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+                            } catch (Exception e) {
+                                throw new BusinessException("まず商品名単位を配置してください");
+                            }
                         }else if(janName2colNum==3){
-                            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+                            try {
+                                colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+                            } catch (Exception e) {
+                                throw new BusinessException("まずitem単位を配置してください");
+                            }
                         }
 
                         if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
@@ -471,10 +480,20 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         //選択した品名を判断する
         Integer janName2colNum = Integer.valueOf(map.get(MagicString.JAN_NAME2COL_NUM).toString());
         if (janName2colNum == 2){
-            Integer prodMstClass = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            Integer prodMstClass = null;
+            try {
+                prodMstClass = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            } catch (Exception e) {
+                throw new BusinessException("まず商品名単位を配置してください");
+            }
             map.put(MagicString.JAN_NAME2COL_NUM,prodMstClass);
         }else if(janName2colNum == 3){
-            Integer prodMstClass = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            Integer prodMstClass = null;
+            try {
+                prodMstClass = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            } catch (Exception e) {
+                throw new BusinessException("まずitem単位を配置してください");
+            }
             map.put(MagicString.JAN_NAME2COL_NUM,prodMstClass);
         }else {
             map.put(MagicString.JAN_NAME2COL_NUM,"_");
@@ -658,13 +677,13 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         for (String list : attrLists) {
             boolean flag = false;
             String unit = "";
-            boolean isRange = false;
+            int isRange = -1;
             if (convertNumbers.stream().anyMatch(map->MapUtils.getString(map, "col_cd").equals(list.split("_")[2]))) {
                 flag = true;
                 for (Map<String, Object> map : convertNumbers) {
                     if (MapUtils.getString(map, "col_cd").equals(list.split("_")[2])) {
                         unit = MapUtils.getString(map, "number_unit", "");
-                        isRange =MapUtils.getInteger(map, "is_range", 0) == 1?true:false;
+                        isRange =MapUtils.getInteger(map, "is_range", 0) == 1?0:-1;
                     }
                 }
             }
