@@ -584,7 +584,12 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                     ImmutableMap.of("company_cd", company, "class_cd", classCd, "is_number", 1));
             List<String> value = ((List<Object>) proMap.get("value")).stream().map(val -> val instanceof Double ?
                     BigDecimal.valueOf((Double) val).setScale(0, RoundingMode.HALF_UP).toString() : String.valueOf(val)).collect(Collectors.toList());
-            if (!value.isEmpty()&&convertNumbers.stream().anyMatch(map->map.get("col_cd").equals(colCd))){
+            if (!value.isEmpty()&&MapUtils.getInteger(proMap,"isInterval",0)==1){
+                String startNum = value.get(0);
+                String endNum = value.get(1);
+                value = mstJanMapper.getNewValueForRange(startNum,endNum,company,classCd,colCd);
+                proMap.put("value",value);
+            } else if (!value.isEmpty()&&convertNumbers.stream().anyMatch(map->map.get("col_cd").equals(colCd))){
                  value = mstJanMapper.getNewValue(value,company,classCd,colCd);
                 proMap.put("value",value);
             }

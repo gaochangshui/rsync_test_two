@@ -485,6 +485,17 @@
         select count(*) from information_schema.table_constraints where table_schema=#{schema} and table_name=#{table}
         and constraint_type='PRIMARY KEY'
     </select>
+    <select id="getNewValueForRange" resultType="java.lang.String">
+        select b from (
+        select DISTINCT
+        "array_to_string"(regexp_matches(case when "${colCd}" !~ '\d' then '0' else "${colCd}" end, '\d+'),',') a ,"11" b
+        from
+        "${company}".prod_${classCd}_jan_info
+        where
+        "${colCd}" != ''
+        ) a
+        where a.a ::integer >= ${startNum} and a.a ::integer &lt;= ${endNum}
+    </select>
     <update id="addPrimaryKey">
         alter table "${schema}"."${table}" add constraint ${pkName}
         primary key ("${primaryKey}");
