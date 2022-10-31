@@ -1,7 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import com.google.common.base.Strings;
@@ -122,6 +121,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         
             productPowerDataMapper.deleteData(companyCd,newProductPowerCd);
             productPowerDataMapper.setData(productPowerCd,companyCd,newProductPowerCd);
+
+            productPowerDataMapper.deleteSyokikaPos(companyCd,newProductPowerCd);
+
             //期間パラメータ削除挿入きかんぱらめーた:さくじょそうにゅう
             String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
         String prodAttrData = productPowerParam.getProdAttrData().toString();
@@ -243,6 +245,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         Future<?> future = executor.submit(() -> {
         try {
             List<String> posHeader = productPowerDataMapper.getColHeader("");
+            posHeader.remove("pos_store_item11");
+            posHeader.remove("pos_store_item12");
             productPowerDataMapper.deleteWKData(companyCd,authorCd,productPowerCd);
             List<Map<String, Object>> rankCalculate = productPowerDataMapper.getProductRankCalculate(map, companyCd, productPowerCd,authorCd);
             ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);

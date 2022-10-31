@@ -1,7 +1,6 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
@@ -186,7 +185,25 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             posMap.put("branchIntersection", map.get("branchIntersection"));
                             return posMap;
                         }).collect(Collectors.toList());
-                        productPowerDataMapper.setSyokikaPos(posBranchIntersection);
+                        if (!posBranchIntersection.isEmpty()) {
+                            List<Map<String, Object>> maps = productPowerDataMapper.selectSyokikaAccount(productPowerCd);
+                            maps.stream().forEach(map-> posBranchIntersection.forEach(branch->{
+                                if (branch.get("jan").equals(map.get("jan"))){
+                                    int posItem01 = Integer.parseInt(map.get("pos_item01").toString());
+                                    int posItem02 = Integer.parseInt(map.get("pos_item02").toString());
+                                    int branchNum = Integer.parseInt(branch.get("branchIntersection").toString());
+                                    branch.put("posStoreItem11",branchNum == 0?0:posItem01/branchNum);
+                                    branch.put("posStoreItem12",branchNum == 0?0:posItem02/branchNum);
+                                }
+                            }));
+                            int batchSize = 1000;
+                            int janDataNum = (int) Math.ceil(posBranchIntersection.size() / 1000.0);
+                            for (int i = 0; i < janDataNum; i++) {
+                                int end = Math.min(batchSize * (i + 1), posBranchIntersection.size());
+                                 productPowerDataMapper.setSyokikaPos(posBranchIntersection.subList(batchSize * i, end));
+                            }
+
+                        }
                         List<Map<String, Object>> resultData = new ArrayList<>();
 
                         resultData.add(colMap);
@@ -594,6 +611,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             }else{
                 paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
             }
+
             List<String> paramConfig = paramConfigMapper.getParamRatio();
             List<Map<String, Object>> reserveMst = productPowerReserveMstMapper.selectAllPrepared(productPowerCd);
             reserveMst = reserveMst.stream()

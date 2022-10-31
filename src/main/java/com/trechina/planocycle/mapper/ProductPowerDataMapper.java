@@ -173,8 +173,6 @@ public interface ProductPowerDataMapper {
 
     int setSyokikaAllData(@Param("lists") List<Map<String,Object>>lists);
 
-    List<Map<String,Object>> rankCalculation(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
-
     List<Map<String, Object>> getProductRankCalculate(@Param("map") Map<String, Object> map, @Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);
 
     void setWkDataRank(List<Map<String, Object>> rankCalculate, String authorCd, String companyCd, Integer productPowerCd,String colName);
@@ -221,6 +219,9 @@ public interface ProductPowerDataMapper {
 
     void deleteWkSyokikaPos(String companyCd, Integer productPowerCd);
 
-    void setSyokikaPos(List<Map<String, Object>> posBranchIntersection);
+    int setSyokikaPos(List<Map<String, Object>> posBranchIntersection);
 
+    List<Map<String,Object>> selectSyokikaAccount(Integer productPowerCd);
+
+    void deleteSyokikaPos(String companyCd, Integer newProductPowerCd);
 }

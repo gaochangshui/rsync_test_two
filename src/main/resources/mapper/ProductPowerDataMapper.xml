@@ -138,18 +138,20 @@
     </insert>
     <insert id="setWKData" >
         insert into planocycle.work_product_power_mst_data(company_cd,product_power_cd,author_cd,jan,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,
-        branch_num,
+        branch_num,pos_store_item11,pos_store_item12,
         <foreach collection="posHeader" item="item" separator=",">
             ${item}
         </foreach>
                                                           )
         select #{companyCd},#{productPowerCd},#{authorCd},s.jan,yobi.item1,yobi.item2,yobi.item3,yobi.item4,yobi.item5,yobi.item6,yobi.item7,yobi.item8,yobi.item9,yobi.item10,
-        coalesce (branchs."branchCount",0),
+        coalesce (branchs."branchCount",0),pos_store_item11,pos_store_item12,
         <foreach collection="posHeader" item="item" separator=",">
             ${item}
         </foreach>
 
         from  planocycle.work_product_power_syokika s
+            left join planocycle.work_product_power_syokika_pos pos
+            on   pos.jan = s.jan and s.product_power_cd = pos.product_power_cd
             left join planocycle.work_product_power_kokyaku k
                     on k.jan = s.jan and k.author_cd=s.author_cd and  s.company_cd = k.company_cd and s.product_power_cd = k.product_power_cd
             left join planocycle.work_product_power_intage i
@@ -279,6 +281,9 @@
     <delete id="deleteWkSyokikaPos">
         delete from planocycle.work_product_power_syokika_pos where product_power_cd = #{productPowerCd}
     </delete>
+    <delete id="deleteSyokikaPos">
+        delete from planocycle.product_power_syokika_pos where product_power_cd = #{productPowerCd}
+    </delete>
 
     <update id="deleteRankData">
         update planocycle.product_power_mst_data set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
@@ -405,10 +410,10 @@
         where company_cd = #{companyCd} and product_power_cd = #{productPowerCd} and tmp.jan =mstdata.jan
     </update>
     <insert id="setSyokikaPos">
-        insert into planocycle.work_product_power_syokika_pos(product_power_cd,jan,branch_num)
+        insert into planocycle.work_product_power_syokika_pos(product_power_cd,jan,branch_num,pos_store_item11,pos_store_item12)
         values
             <foreach collection="posBranchIntersection" separator="," item="item">
-                (#{item.productPowerCd},#{item.jan},#{item.branchIntersection})
+                (#{item.productPowerCd},#{item.jan},#{item.branchIntersection},#{item.posStoreItem11},#{item.posStoreItem12})
             </foreach>
     </insert>
     <insert id="setIntageJanForSyokika">
@@ -431,6 +436,8 @@
             coalesce(${item.data_cd},0) as ${item.data_cd}
         </foreach>
         from  planocycle.work_product_power_syokika syokika
+            left join planocycle.work_product_power_syokika_pos posBranchNum
+            on posBranchNum.jan = syokika.jan
             <if test="!prepareCd.isEmpty">
                 left join (select
                 dd.jan as jan,
@@ -622,9 +629,6 @@
 
         where power_syokika.author_cd = #{authorCd} and power_syokika.company_cd = #{companyCd} and power_syokika.product_power_cd = #{productPowerCd}
         order by power_syokika.jan
-    </select>
-    <select id="rankCalculation" resultType="java.util.Map">
-
     </select>
     <select id="getProductRankCalculate" resultType="java.util.Map">
         select msts.*
@@ -875,5 +879,15 @@
     </select>
     <select id="getColHeader" resultType="java.lang.String">
         select item_cd from  planocycle.param_config where item_cd like '${itemCd}%'
+    </select>
+    <select id="selectSyokikaAccount" resultType="map">
+        select
+            syokika.jan,
+            pos_item01,
+            pos_item02
+    from
+	    planocycle.work_product_power_syokika syokika
+    where
+	    syokika.product_power_cd = #{productPowerCd}
     </select>
 </mapper>
