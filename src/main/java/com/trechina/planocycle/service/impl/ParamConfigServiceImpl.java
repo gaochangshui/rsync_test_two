@@ -228,7 +228,7 @@ public class ParamConfigServiceImpl implements ParamConfigService {
                 companyAttrConfig.setClassCd(stringObjectEntry.getKey().split("_")[1]);
                 companyAttrConfig.setColName(attrMap.get("label").toString());
                 companyAttrConfig.setColCd(attrMap.get("value").toString());
-                companyAttrConfig.setNumberUnit(attrMap.get("unit").toString());
+                companyAttrConfig.setNumberUnit(MapUtils.getString(attrMap,"unit",""));
                 companyAttrConfig.setIsNumber(((Boolean)attrMap.get("isNumber"))?1:0);
                 companyAttrConfig.setIsRange(((Boolean)attrMap.get("isInterval"))?1:0);
                 companyAttrConfig.setIsShow(((Boolean)attrMap.get("isUse"))?1:0);
