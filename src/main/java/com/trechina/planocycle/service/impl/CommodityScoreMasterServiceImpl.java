@@ -208,6 +208,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.deleteWKData(companyCd,aud,newProductPowerCd);
         productPowerDataMapper.deleteWKIntage(companyCd,aud,newProductPowerCd);
         productPowerParamMstMapper.deleteWork(companyCd,newProductPowerCd);
+        productPowerDataMapper.deleteWkStarFetch(companyCd,newProductPowerCd);
+        productPowerDataMapper.deleteWkSyokikaPos(companyCd,newProductPowerCd);
 
         productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud,newProductPowerCd,posHeader);
          productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud,newProductPowerCd,customerHeader);
@@ -215,6 +217,8 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
         productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud,newProductPowerCd,dataCol);
         productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud,newProductPowerCd,intageHeader);
+        productPowerDataMapper.setWKSyokikaPosForFinally(companyCd,productPowerNo,newProductPowerCd);
+        productPowerDataMapper.setWKStarFetchTableForFinally(companyCd,productPowerNo,newProductPowerCd);
         productPowerParamMstMapper.setWorkForFinal(companyCd,productPowerNo,newProductPowerCd);
 
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);

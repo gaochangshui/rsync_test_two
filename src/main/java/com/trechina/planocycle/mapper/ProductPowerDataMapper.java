@@ -223,5 +223,15 @@ public interface ProductPowerDataMapper {
 
     List<Map<String,Object>> selectSyokikaAccount(Integer productPowerCd);
 
-    void deleteSyokikaPos(String companyCd, Integer newProductPowerCd);
+    void deleteSyokikaPos(String companyCd, Integer productPowerCd);
+
+    void endSyokikaPosForWK(String companyCd, Integer productPowerCd);
+
+    void deleteStarFetchTable(String companyCd, Integer productPowerCd);
+
+    void endStarFetchTableForWK(String companyCd, Integer productPowerCd);
+
+    void setWKSyokikaPosForFinally(String companyCd, Integer productPowerCd, Integer newProductPowerCd);
+
+    void setWKStarFetchTableForFinally(String companyCd, Integer productPowerCd, Integer newProductPowerCd);
 }

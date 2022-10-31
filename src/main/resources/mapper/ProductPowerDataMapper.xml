@@ -284,6 +284,9 @@
     <delete id="deleteSyokikaPos">
         delete from planocycle.product_power_syokika_pos where product_power_cd = #{productPowerCd}
     </delete>
+    <delete id="deleteStarFetchTable">
+        delete from planocycle.product_power_pos_star_fetch_table where product_power_cd = #{productPowerCd}
+    </delete>
 
     <update id="deleteRankData">
         update planocycle.product_power_mst_data set deleteflg=1,editer_cd=#{authorCd},edit_time=now()
@@ -409,6 +412,18 @@
         )
         where company_cd = #{companyCd} and product_power_cd = #{productPowerCd} and tmp.jan =mstdata.jan
     </update>
+    <insert id="setWKStarFetchTableForFinally">
+        insert into planocycle.work_product_power_pos_star_fetch_table(product_power_cd,jan,branch_cd)
+        select #{newProductPowerCd},jan,branch_cd
+        from planocycle.product_power_pos_star_fetch_table
+        where  product_power_cd = #{productPowerCd}
+    </insert>
+    <insert id="setWKSyokikaPosForFinally">
+        insert into planocycle.work_product_power_syokika_pos(product_power_cd,jan,pos_store_item11,pos_store_item12)
+        select #{newProductPowerCd},jan,pos_store_item11,pos_store_item12
+        from planocycle.product_power_syokika_pos
+        where  product_power_cd = #{productPowerCd}
+    </insert>
     <insert id="setSyokikaPos">
         insert into planocycle.work_product_power_syokika_pos(product_power_cd,jan,branch_num,pos_store_item11,pos_store_item12)
         values
@@ -425,6 +440,20 @@
         where
             intage.product_power_cd = #{productPowerCd}
           and syokika.jan is null
+    </insert>
+    <insert id="endSyokikaPosForWK">
+        insert into planocycle.product_power_syokika_pos (product_power_cd,jan,branch_num,pos_store_item11,pos_store_item12)
+        select product_power_cd,jan,branch_num,pos_store_item11,pos_store_item12
+            from planocycle.work_product_power_syokika_pos
+        where
+            product_power_cd = #{productPowerCd}
+    </insert>
+    <insert id="endStarFetchTableForWK">
+        insert into planocycle.product_power_pos_star_fetch_table (product_power_cd,jan,branch_cd)
+        select product_power_cd,jan,branch_cd
+        from planocycle.work_product_power_pos_star_fetch_table
+        where
+            product_power_cd = #{productPowerCd}
     </insert>
     <select id="selectShowData" resultType="map">
         select
@@ -878,7 +907,7 @@
         </if>
     </select>
     <select id="getColHeader" resultType="java.lang.String">
-        select item_cd from  planocycle.param_config where item_cd like '${itemCd}%'
+        select item_cd from  planocycle.param_config where item_cd like '${itemCd}%' and item_cd not in ('pos_store_item11','pos_store_item12')
     </select>
     <select id="selectSyokikaAccount" resultType="map">
         select

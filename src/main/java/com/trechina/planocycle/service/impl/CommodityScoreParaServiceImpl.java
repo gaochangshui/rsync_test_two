@@ -123,6 +123,10 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             productPowerDataMapper.setData(productPowerCd,companyCd,newProductPowerCd);
 
             productPowerDataMapper.deleteSyokikaPos(companyCd,newProductPowerCd);
+            productPowerDataMapper.endSyokikaPosForWK(companyCd,newProductPowerCd);
+
+            productPowerDataMapper.deleteStarFetchTable(companyCd,newProductPowerCd);
+            productPowerDataMapper.endStarFetchTableForWK(companyCd,newProductPowerCd);
 
             //期間パラメータ削除挿入きかんぱらめーた:さくじょそうにゅう
             String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
