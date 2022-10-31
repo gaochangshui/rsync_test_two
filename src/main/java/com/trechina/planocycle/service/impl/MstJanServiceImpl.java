@@ -706,7 +706,6 @@ public class MstJanServiceImpl implements MstJanService {
         try{
             List<Company> inUseCompanyList = companyConfigMapper.getInUseCompanyList();
             List<String> companyList = inUseCompanyList.stream().map(Company::getCompanyCd).collect(Collectors.toList());
-            List<CommoditySyncSet> commoditySyncSetList;
 
             for (String companyCd : companyList) {
                 String existTable = mstJanMapper.selectTableExist(companyCd);
@@ -714,9 +713,10 @@ public class MstJanServiceImpl implements MstJanService {
                     mstJanMapper.createMasterSyohin(companyCd);
                 }
                 mstCommodityService.syncCommodityMaster(companyCd);
-                commoditySyncSetList = mstCommodityService.getCommodityList(companyCd);
-                for (CommoditySyncSet commoditySyncSet : commoditySyncSetList) {
-                    Map<String, Object> syncResult = mstJanService.perSyncJanData(companyCd, commoditySyncSet, existTable);
+                List<String> classList = mstCommodityService.getClassList(companyCd);
+
+                for (String classCd : classList) {
+                    Map<String, Object> syncResult = mstJanService.perSyncJanData(companyCd, classCd, existTable);
                     syncResults.add(syncResult);
                 }
             }
@@ -743,12 +743,11 @@ public class MstJanServiceImpl implements MstJanService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> perSyncJanData(String companyCd, CommoditySyncSet commoditySyncSet, String existTable){
+    public Map<String, Object> perSyncJanData(String companyCd, String prodMstClass, String existTable){
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("companyCd", companyCd);
 
         try {
-            String prodMstClass;
             String tableNameHeader;
             String tableNameHeaderPkey;
             String tableNameInfo;
@@ -758,7 +757,6 @@ public class MstJanServiceImpl implements MstJanService {
             List<String> janAttrList;
             String column;
 
-            prodMstClass = commoditySyncSet.getProdMstClass();
             resultMap.put("classCd", prodMstClass);
 
             tableNameHeader = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);

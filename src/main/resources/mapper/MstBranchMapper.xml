@@ -107,7 +107,7 @@
         select "1","2","3" from ${tableName} where "1" not in ('jan_name','jan_cd')   order by "3"
     </select>
     <select id="getMasterTenClass" resultType="string">
-        select "1" from ${tableName}
+        select distinct class from planocycle.company_ten_master
     </select>
     <select id="checkTableExist" resultType="int">
         select count(*) from information_schema.tables where "table_name"=#{tableName} and table_schema=#{schema}

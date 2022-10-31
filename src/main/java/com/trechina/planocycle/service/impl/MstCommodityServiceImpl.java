@@ -91,4 +91,9 @@ public class MstCommodityServiceImpl implements MstCommodityService {
         String tableNameCommodity = MessageFormat.format(MagicString.MASTER_SYOHIN, companyCd);
         return mstCommodityMapper.getCommodityList(tableNameCommodity);
     }
+
+    @Override
+    public List<String> getClassList(String companyCd) {
+        return mstCommodityMapper.getClassList(companyCd);
+    }
 }
