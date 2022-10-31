@@ -33,4 +33,6 @@ public interface MstCommodityService {
      * @return
      */
     List<CommoditySyncSet> getCommodityList(String companyCd);
+
+    List<String> getClassList(String companyCd);
 }

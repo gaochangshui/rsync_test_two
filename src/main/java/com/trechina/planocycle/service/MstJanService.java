@@ -71,7 +71,7 @@ public interface MstJanService {
     Map<String, Object> syncJanData(String env);
 
     @Transactional(rollbackFor = Exception.class)
-    Map<String, Object> perSyncJanData(String companyCd, CommoditySyncSet commoditySyncSet, String existTable);
+    Map<String, Object> perSyncJanData(String companyCd, String prodMstClass, String existTable);
 
     void addPrimaryKey(String tableName, String primaryKey, String schema, String pkName);
 

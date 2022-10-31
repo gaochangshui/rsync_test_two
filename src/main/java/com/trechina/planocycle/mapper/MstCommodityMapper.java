@@ -35,4 +35,5 @@ public interface MstCommodityMapper {
      */
     List<CommoditySyncSet> getCommodityList(String tableName);
 
+    List<String> getClassList(String companyCd);
 }

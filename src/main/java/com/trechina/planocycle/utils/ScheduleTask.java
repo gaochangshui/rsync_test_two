@@ -147,6 +147,11 @@ public class ScheduleTask {
             MagicString.SLACK_URL = sysConfigMapper.selectSycConfig("slack_url");
         }
 
+        if(Strings.isNullOrEmpty(MagicString.SLACK_URL)){
+            logger.warn("no slack url!!!");
+            return;
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
