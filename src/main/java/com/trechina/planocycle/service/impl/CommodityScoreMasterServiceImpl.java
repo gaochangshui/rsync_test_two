@@ -247,7 +247,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         }
         Integer janName2colNum = param.getJanName2colNum();
         Integer colNum = 2;
-        if (janName2colNum == 1){
+        if (janName2colNum == 2){
             colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
         }else if(janName2colNum==3){
             colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());

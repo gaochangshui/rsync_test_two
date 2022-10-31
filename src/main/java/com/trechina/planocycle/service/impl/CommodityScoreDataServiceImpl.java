@@ -161,9 +161,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             }
                         });
                         List<Map<String, Object>> attrColName = productPowerDataMapper.getAttrColName(attr, tableNameAttr);
-                        attrColName.forEach(map->{
-                            colMap.put(map.get("colCd").toString(),map.get("colName"));
-                        });
+                        attrColName.forEach(map-> colMap.put(map.get("colCd").toString(),map.get("colName")));
 
                         colMap.put("branchNum","定番店舗数");
 
@@ -189,8 +187,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             List<Map<String, Object>> maps = productPowerDataMapper.selectSyokikaAccount(productPowerCd);
                             maps.stream().forEach(map-> posBranchIntersection.forEach(branch->{
                                 if (branch.get("jan").equals(map.get("jan"))){
-                                    int posItem01 = Integer.parseInt(map.get("pos_item01").toString());
-                                    int posItem02 = Integer.parseInt(map.get("pos_item02").toString());
+                                    double posItem01 = Double.parseDouble(map.get("pos_item01").toString());
+                                    double posItem02 = Double.parseDouble(map.get("pos_item02").toString());
                                     int branchNum = Integer.parseInt(branch.get("branchIntersection").toString());
                                     branch.put("posStoreItem11",branchNum == 0?0:posItem01/branchNum);
                                     branch.put("posStoreItem12",branchNum == 0?0:posItem02/branchNum);
@@ -654,17 +652,19 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
        String classCd = attrLists.get(0).split("_")[1];
 
         List<Map<String,Object>> lists = new ArrayList<>();
-        List<Map<String, Object>> convertNumbers = companyConfigMapper.selectAttrTargetColumn(ImmutableList.of("is_number", "number_unit", "col_cd"),
+        List<Map<String, Object>> convertNumbers = companyConfigMapper.selectAttrTargetColumn(ImmutableList.of("is_number", "number_unit", "col_cd","is_range"),
                 ImmutableMap.of("company_cd", company, "class_cd", classCd, "is_number", 1));
 
         for (String list : attrLists) {
             boolean flag = false;
             String unit = "";
+            boolean isRange = false;
             if (convertNumbers.stream().anyMatch(map->MapUtils.getString(map, "col_cd").equals(list.split("_")[2]))) {
                 flag = true;
                 for (Map<String, Object> map : convertNumbers) {
                     if (MapUtils.getString(map, "col_cd").equals(list.split("_")[2])) {
                         unit = MapUtils.getString(map, "number_unit", "");
+                        isRange =MapUtils.getInteger(map, "is_range", 0) == 1?true:false;
                     }
                 }
             }
@@ -677,7 +677,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             map.put("rmFlag",false);
             map.put("showFlag",false);
             map.put("unit",unit);
-            map.put("range",false);
+            map.put("isInterval",isRange);
             List<String> attrValueList = new ArrayList<>();
             if (flag){
                 attrValueList = mstJanMapper.getAttrConvertToNumber(list.split("_")[2], company, classCd);
