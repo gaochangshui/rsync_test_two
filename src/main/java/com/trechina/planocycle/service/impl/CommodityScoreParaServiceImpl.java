@@ -130,9 +130,9 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
 
             //期間パラメータ削除挿入きかんぱらめーた:さくじょそうにゅう
             String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
-        String prodAttrData = productPowerParam.getProdAttrData().toString();
-        productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
-        String singleJan =new Gson().toJson(productPowerParam.getSingleJan());
+            String prodAttrData = new Gson().toJson(productPowerParam.getProdAttrData());
+            productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
+            String singleJan =new Gson().toJson(productPowerParam.getSingleJan());
 
         String basketProdCd = productPowerParam.getBasketProdCd();
         if(!Strings.isNullOrEmpty(basketProdCd)){

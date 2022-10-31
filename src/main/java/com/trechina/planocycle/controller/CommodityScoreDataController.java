@@ -44,7 +44,7 @@ public class CommodityScoreDataController {
         Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
         //param
         String customerConditionStr = map.get("customerCondition").toString();
-        String prodAttrData = map.get("prodAttrData").toString();
+        String prodAttrData = new Gson().toJson(map.get("prodAttrData"));
         String singleJan = new Gson().toJson(map.get("singleJan"));
         commodityScoreDataService.setProductParam(map,productPowerCd,companyCd,authorCd,customerConditionStr,prodAttrData,singleJan);
         return commodityScoreDataService.getCommodityScoreTaskId(map);
