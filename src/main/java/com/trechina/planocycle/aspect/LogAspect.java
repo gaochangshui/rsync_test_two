@@ -79,13 +79,12 @@ public class LogAspect {
         String browser = httpServletRequest.getHeader("User-Agent");
         String authorCd = session.getAttribute("aud").toString();
         String url = httpServletRequest.getRequestURI();
-
-        executor.execute(()-> logMapper.saveErrorLog(targetName+"_"+methodName, params,s, browser, authorCd, url));
-        try {
-            this.errInfoForEmail(ex.getMessage(),methodName,params);
-        } catch (Exception e) {
-            log.error("メールにエラーが発生しました",e);
-        }
+        Map<String, Object> error = this.errorMap();
+        executor.execute(()-> {
+            logMapper.saveErrorLog(targetName + "_" + methodName, params, s, browser, authorCd, url);
+            this.errInfoForEmail(error, ex.getMessage(), methodName, params);
+            }
+        );
     }
 
     public  void setTryErrorLog(Exception ex, Object[] o) {
@@ -98,16 +97,14 @@ public class LogAspect {
         String browser = httpServletRequest.getHeader("User-Agent");
         String authorCd = session.getAttribute("aud").toString();
         String url = httpServletRequest.getRequestURI();
-        executor.execute(()-> logMapper.saveErrorLog(path, params,s, browser, authorCd, url));
+        Map<String, Object> error = this.errorMap();
+        executor.execute(()-> {logMapper.saveErrorLog(path, params,s, browser, authorCd, url);
+            this.errInfoForEmail(error,ex.getMessage(),stackTraceElement.getMethodName(),params);
+        });
 
-        try {
-            this.errInfoForEmail(ex.getMessage(),stackTraceElement.getMethodName(),params);
-        } catch (Exception e) {
-           log.error("メールにエラーが発生しました",e);
-        }
     }
-
-    public  void errInfoForEmail(String errMsg,String method,String params){
+    public  Map<String,Object> errorMap (){
+        Map<String,Object> map = new HashMap<>();
         Cookie[] cookies = httpServletRequest.getCookies();
         Map<String,Object> cookieList = new HashMap<>();
         String env = sysConfigMapper.selectSycConfig("env");
@@ -120,6 +117,23 @@ public class LogAspect {
         for (Cookie cookie : cookies) {
             cookieList.put(cookie.getName(),cookie.getValue());
         }
+        map.put("url",url);
+        map.put("authorCd",authorCd);
+        map.put("cookieList",cookieList);
+        map.put("browser",browser);
+        map.put("ip",ip);
+        map.put("env",env);
+        map.put("addressee",addressee);
+        return map;
+    }
+    public  void errInfoForEmail(Map<String,Object>map,String errMsg,String method,String params){
+        String url = map.get("url").toString();
+        String authorCd = map.get("authorCd").toString();
+        Map<String,Object> cookieList = (Map<String,Object>)map.get("cookieList");
+        String browser = map.get("browser").toString();
+        String ip = map.get("ip").toString();
+        String env = map.get("env").toString();
+        String addressee = map.get("addressee").toString();
         String msg = MessageFormat.format(
                 "<p>エラーコード：500</p>" +
                         "<p>パス：{0}</p>" +
