@@ -39,7 +39,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.ServletOutputStream;
@@ -419,13 +418,14 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         }
 
         priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
-        List<Map<String, Object>> linkedHashMaps = new Gson().fromJson(datas.toString(), new TypeToken<List<LinkedHashMap<String, Object>>>() {
+        List<Map<String, Object>> linkedHashMaps = new Gson().fromJson(datas.toString(), new TypeToken<List<TreeMap<String, Object>>>() {
         }.getType());
         linkedHashMaps.forEach(linkedHashMap -> {
             linkedHashMap.remove("priority_order_cd");
             linkedHashMap.remove("company_cd");
             linkedHashMap.remove("author_cd");
             linkedHashMap.remove("repeatFlg");
+            linkedHashMap.entrySet().stream().sorted();
         });
         priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,linkedHashMaps,authorCd);
         if (!goodsRank.isEmpty()) {

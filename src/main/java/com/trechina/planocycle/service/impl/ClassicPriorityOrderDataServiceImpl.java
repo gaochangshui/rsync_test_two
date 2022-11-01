@@ -572,7 +572,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<String> groupCompany = priorityOrderCommodityMustMapper.getGroupCompany(companyCd);
         groupCompany.add(companyCd);
         List<Map<String, Object>> patternBranchList = classicPriorityOrderCompareJanDataMapper.getPatternBranchList(companyCd, priorityOrderCd,tableName,groupCompany);
+        patternBranchList = patternBranchList.stream().filter(map->!MapUtils.getString(map,"branchNum").equals("_")).collect(Collectors.toList());
         List<String> allBranchList = classicPriorityOrderCompareJanDataMapper.getAllBranchList(companyCd, priorityOrderCd,tableName,groupCompany);
+        allBranchList = allBranchList.stream().filter(val->!val.equals("_")).collect(Collectors.toList());
         List<PriorityOrderCompareJanData> patternNewCompare = classicPriorityOrderCompareJanDataMapper.getPatternNewCompare(companyCd,priorityOrderCd);
         List<PriorityOrderCompareJanData> patternOldCompare = classicPriorityOrderCompareJanDataMapper.getPatternOldCompare(companyCd,priorityOrderCd);
         List<PriorityOrderCompareJanData> allNewCompare = classicPriorityOrderCompareJanDataMapper.getAllNewCompare(companyCd,priorityOrderCd);
@@ -607,14 +609,18 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             });
         });
         //branch
+        List<Map<String, Object>> finalPatternBranchList = patternBranchList;
         patternNewCompare
                 .forEach(map -> {
-                    patternBranchList.forEach(branch->{
+                    finalPatternBranchList.forEach(branch->{
                         if (branch.get(MagicString.SHELF_PATTERN_CD).equals(map.getShelfPatternCd())){
                             String branchs = branch.get(MagicString.BRANCHNUM).toString();
-                            map.setBranchNum(Arrays.asList(branchs.split(",")));
+                                map.setBranchNum(Arrays.asList(branchs.split(",")));
                         }
                     });
+                    if (map.getBranchNum()==null){
+                        map.setBranchNum(new ArrayList<>());
+                    }
                     patternOldCompare.forEach(oldPts->{
                         if (oldPts.getShelfPatternCd().equals(map.getShelfPatternCd())){
                             List<String> branchList = (List<String>)(map.getBranchNum());
@@ -643,7 +649,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 allNewCompare.get(0).setSkuCut(MapUtils.getInteger(map,MagicString.SKU_NUM));
             }
         });
-        allNewCompare.get(0).setBranchNum(allBranchList);
+        allNewCompare.get(0).setBranchNum(allBranchList.isEmpty()?new ArrayList<>():allBranchList);
         allNewCompare.get(0).setFaceOld(allOldCompare.get(0).getFaceOld());
         allNewCompare.get(0).setSkuOld(allOldCompare.get(0).getSkuOld());
         allNewCompare.get(0).setFaceCompare(allNewCompare.get(0).getFaceNew()-allOldCompare.get(0).getFaceOld());
