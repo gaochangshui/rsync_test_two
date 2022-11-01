@@ -6,4 +6,7 @@ import java.util.Map;
 
 public interface  SysConfigService {
     Map<String, Object> getShowJanSku(EnterpriseAxisDto enterpriseAxisDto);
+
+    Map<String, Object> getCompanySettings(String companyCd);
+
 }

@@ -48,4 +48,8 @@ public interface CompanyConfigMapper {
     void setMstKigyocore(String companyCd);
 
     void delMstKigyocore(String companyCd);
+
+    String getCompanyProdClass(String isCompanyCd);
+
+    String getCompanyStoreClass(String isCompanyCd);
 }
