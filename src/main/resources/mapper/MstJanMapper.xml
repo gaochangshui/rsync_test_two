@@ -494,7 +494,10 @@
         where
         "${colCd}" != ''
         ) a
-        where a.a ::integer >= ${startNum} and a.a ::integer &lt;= ${endNum}
+        where
+            <foreach collection="twoDimArray" item="item" separator="or">
+                (a.a ::integer >=${item[0]} and a.a ::integer &lt;= ${item[1]})
+            </foreach>
     </select>
     <update id="addPrimaryKey">
         alter table "${schema}"."${table}" add constraint ${pkName}
