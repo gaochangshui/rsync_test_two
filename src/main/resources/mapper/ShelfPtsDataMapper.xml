@@ -663,7 +663,7 @@
               left join ${tableName} info
                         on jandata.jan = info."1"
             inner join planocycle.shelf_pts_data ptsdata on ptsdata.id = jandata.pts_cd
-            inner join planocycle.shelf_pattern_branch branchs on ptsdata.shelf_pattern_cd = branchs.shelf_pattern_cd
+            left join planocycle.shelf_pattern_branch branchs on ptsdata.shelf_pattern_cd = branchs.shelf_pattern_cd
           where jandata.pts_cd in
             <foreach collection="shelfPtsData" item="item" open="(" close=")" separator=",">
               #{item.id}

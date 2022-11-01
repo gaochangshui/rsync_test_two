@@ -280,4 +280,37 @@
         from planocycle.shelf_pattern_mst
         where company_cd = #{companyCd} and shelf_pattern_cd = #{shelfPatternCd}
     </select>
+    <select id="getPatternForNoStore" resultType="com.trechina.planocycle.entity.vo.ShelfPatternNameVO">
+        select
+        shelf.shelf_name_cd, name.shelf_name as shelfName
+        , shelf.shelf_pattern_cd,shelf.common_parts_data as storeIsCore
+        ,  shelf.shelf_pattern_name as shelfPatternName
+        ,name.id as shelfCd
+        ,name.shelf_name as shelfName
+        ,string_agg(branch.branch, ',') filter(
+        where <foreach collection="map" index="index" separator="or">
+        "${index}"."100" = '0'
+    </foreach>
+        ) as "storeCd"
+        from planocycle.shelf_pattern_mst shelf
+        inner join planocycle.shelf_name_mst name
+        on shelf.shelf_name_cd = name.id and name.deleteflg=0
+        left join planocycle.shelf_pattern_branch branch
+        on branch.shelf_pattern_cd = shelf.shelf_pattern_cd and branch.deleteflg=0
+        inner join planocycle.shelf_pts_data ptsdata
+        on ptsdata.shelf_pattern_cd = shelf.shelf_pattern_cd
+        <foreach collection="map" item="item" index="index">
+            left join ${item} as "${index}"
+            on "${index}"."1" = branch.branch and "${index}"."100" = '0'
+        </foreach>
+        where   shelf.deleteflg=0  and shelf.company_cd = #{companyCd}
+        group by   shelf.shelf_name_cd,name.shelf_name, shelf.shelf_pattern_cd,  shelf.shelf_pattern_name,storeIsCore,name.id
+--         having string_agg(branch.branch, ',')
+<!--        filter(-->
+<!--        where <foreach collection="map" index="index" separator="or">-->
+<!--        "${index}"."100" = '0'-->
+<!--    </foreach>-->
+<!--        ) is not null-->
+        order by name.id desc,shelf.shelf_pattern_cd desc
+    </select>
 </mapper>

@@ -18,7 +18,7 @@
         on mst.jan_old = jandata.jan and mst.priority_order_cd = #{priorityOrderCd}
         INNER join planocycle.shelf_pts_data ptsdata
         on jandata.pts_cd = ptsdata."id"
-        INNER join planocycle.shelf_pattern_branch branch
+        left join planocycle.shelf_pattern_branch branch
         on branch.shelf_pattern_cd = ptsdata.shelf_pattern_cd
         where jandata.pts_cd in
         <foreach collection="shelfPtsData" item="item" separator="," open="(" index="index" close=")">

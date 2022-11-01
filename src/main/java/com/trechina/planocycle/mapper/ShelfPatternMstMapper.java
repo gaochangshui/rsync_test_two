@@ -64,4 +64,6 @@ public interface ShelfPatternMstMapper {
     List<String> getPtsKeyList(String companyCd,List<String> tableNameList);
 
     String getShelfPatternName(Integer shelfPatternCd,String companyCd);
+
+    List<ShelfPatternNameVO> getPatternForNoStore(String storeIsCore, String companyCd, Map<String, Object> map);
 }

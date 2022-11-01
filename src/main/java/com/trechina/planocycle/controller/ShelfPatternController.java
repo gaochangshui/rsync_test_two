@@ -136,4 +136,15 @@ public class ShelfPatternController {
     public Map<String, Object> getPatternForStorel(String companyCd,String storeIsCore) {
         return shelfPatternService.getPatternForStorel(companyCd,storeIsCore);
     }
+
+    /**
+     * get pattern contains no branch pattern
+     * @param companyCd
+     * @param storeIsCore
+     * @return
+     */
+    @GetMapping("/getPatternForNoStore")
+    public Map<String, Object> getPatternForNoStore(String companyCd,String storeIsCore) {
+        return shelfPatternService.getPatternForNoStore(companyCd,storeIsCore);
+    }
 }
