@@ -20,4 +20,10 @@ public class SysConfigController {
     public Map<String, Object> getShowJanSku(@RequestBody EnterpriseAxisDto enterpriseAxisDto){
         return sysConfigService.getShowJanSku(enterpriseAxisDto);
     }
+
+
+    @PostMapping("/getCompanySettings")
+    public Map<String, Object> getCompanySettings(String companyCd){
+        return sysConfigService.getCompanySettings(companyCd);
+    }
 }

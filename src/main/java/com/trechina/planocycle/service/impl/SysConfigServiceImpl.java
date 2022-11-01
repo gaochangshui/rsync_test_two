@@ -71,4 +71,37 @@ public class SysConfigServiceImpl implements SysConfigService {
         resultMap.put("commonPartsData",commonPartsDataVO);
         return ResultMaps.result(ResultEnum.SUCCESS, resultMap);
     }
+
+    @Override
+    public Map<String, Object> getCompanySettings(String companyCd) {
+
+
+        String groupName = sysConfigMapper.getGroupName(companyCd);
+        String coreCompany = sysConfigMapper.selectSycConfig("core_company");
+        if (!Strings.isNullOrEmpty(groupName)){
+            companyCd = coreCompany;
+        }
+        Map<String, Object> companyList = companyConfigMapper.getCompanyList1(companyCd);
+
+        CommonPartsDataVO commonPartsDataVO = new CommonPartsDataVO();
+        commonPartsDataVO.setProdIsCore(String.valueOf(companyList.get("prod_is_core")).equals("2")?"1":String.valueOf(companyList.get("prod_is_core")));
+        commonPartsDataVO.setStoreIsCore(String.valueOf(companyList.get("store_is_core")));
+        commonPartsDataVO.setDateIsCore(String.valueOf(companyList.get("date_is_core")));
+        String prodClass ="";
+        String storeClass ="";
+        if (commonPartsDataVO.getProdIsCore().equals("1")){
+             prodClass = companyConfigMapper.getCompanyProdClass(coreCompany);
+        }else {
+             prodClass = companyConfigMapper.getCompanyProdClass(companyCd);
+        }
+        if (commonPartsDataVO.getStoreIsCore().equals("1")){
+             storeClass = companyConfigMapper.getCompanyStoreClass(coreCompany);
+        }else {
+             storeClass = companyConfigMapper.getCompanyStoreClass(companyCd);
+        }
+
+        commonPartsDataVO.setProdMstClass(prodClass);
+        commonPartsDataVO.setStoreMstClass(storeClass);
+        return ResultMaps.result(ResultEnum.SUCCESS,commonPartsDataVO);
+    }
 }

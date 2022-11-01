@@ -143,4 +143,18 @@
         from planocycle.company_list
         where company_cd = #{companyCd}
     </select>
+    <select id="getCompanyProdClass" resultType="java.lang.String">
+        select class_cd
+        from planocycle.company_attr_config
+        where company_cd = #{companyCd}
+        ORDER BY class_cd
+        limit 1
+    </select>
+    <select id="getCompanyStoreClass" resultType="java.lang.String">
+        select class
+        from planocycle.company_ten_master
+        where company_cd = #{companyCd}
+        ORDER BY class
+            limit 1
+    </select>
 </mapper>
