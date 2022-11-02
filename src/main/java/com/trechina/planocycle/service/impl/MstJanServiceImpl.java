@@ -904,12 +904,8 @@ public class MstJanServiceImpl implements MstJanService {
             String name  = MapUtils.getString(attr, MagicString.NAME);
             attr.put("id", name.split("-")[1]);
             attr.put(MagicString.TITLE, name.split("-")[1]);
-
-            if (attr.get("type").equals("0")) {
-                attr.put("type",MagicString.NUMBER);
-            }else {
-                attr.put("type",MagicString.STRING);
-            }
+            //任意項目
+            attr.put("type", "1");
         });
         return ResultMaps.result(ResultEnum.SUCCESS, planoAttrList);
     }
