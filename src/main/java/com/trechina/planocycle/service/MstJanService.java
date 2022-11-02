@@ -78,4 +78,6 @@ public interface MstJanService {
     JanInfoVO getJanListResult(DownFlagVO downFlagVO, HttpServletResponse response) throws IOException;
 
     Map<String, Object> getUploadJanDataResult(String taskId);
+
+    Map<String, Object> getPlanoAttr();
 }

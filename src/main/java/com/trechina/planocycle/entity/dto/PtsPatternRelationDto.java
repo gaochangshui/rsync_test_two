@@ -9,4 +9,5 @@ public class PtsPatternRelationDto {
     private Integer shelfPatternCd;
     private String shelfPatternName;
     private String shelfName;
+    private Integer shelfNameCd;
 }
