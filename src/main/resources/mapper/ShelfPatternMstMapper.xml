@@ -275,10 +275,11 @@
         where company_cd = #{companyCd} and ptskey is not null
         and ptskey != ''
     </select>
-    <select id="getShelfPatternName" resultType="java.lang.String">
-        select shelf_pattern_name
-        from planocycle.shelf_pattern_mst
-        where company_cd = #{companyCd} and shelf_pattern_cd = #{shelfPatternCd}
+    <select id="getShelfPatternName" resultType="map">
+        select shelf_pattern_name,shelf_name
+        from planocycle.shelf_pattern_mst patternmst
+        inner join planocycle.shelf_name_mst namemst on patternmst.shelf_name_cd=namemst.id
+        where patternmst.company_cd = #{companyCd} and shelf_pattern_cd = #{shelfPatternCd} and namemst.deleteflg=0
     </select>
     <select id="getPatternForNoStore" resultType="com.trechina.planocycle.entity.vo.ShelfPatternNameVO">
         select

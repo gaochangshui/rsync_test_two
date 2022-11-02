@@ -8,5 +8,5 @@ public class PtsPatternRelationDto {
     private String fileName;
     private Integer shelfPatternCd;
     private String shelfPatternName;
-
+    private String shelfName;
 }

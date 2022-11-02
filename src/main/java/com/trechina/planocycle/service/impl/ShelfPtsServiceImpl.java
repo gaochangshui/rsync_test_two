@@ -158,8 +158,9 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             }
         }
         if (ptsPatternRelationDto.getShelfPatternCd() != null){
-            String shelfPatternName = shelfPatternMstMapper.getShelfPatternName(ptsPatternRelationDto.getShelfPatternCd(), shelfPtsDto.getCompanyCd());
-            ptsPatternRelationDto.setShelfPatternName(shelfPatternName);
+            Map<String, String> shelfPatternName = shelfPatternMstMapper.getShelfPatternName(ptsPatternRelationDto.getShelfPatternCd(), shelfPtsDto.getCompanyCd());
+            ptsPatternRelationDto.setShelfPatternName(MapUtils.getString(shelfPatternName, "shelf_pattern_name"));
+            ptsPatternRelationDto.setShelfName(MapUtils.getString(shelfPatternName, "shelf_name"));
         }
         return ResultMaps.result(ResultEnum.SUCCESS,ptsPatternRelationDto);
     }
