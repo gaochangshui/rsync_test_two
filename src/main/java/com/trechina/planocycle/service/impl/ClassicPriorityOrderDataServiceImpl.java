@@ -335,7 +335,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     public void downloadForCsv(DownloadSortDto downloadDto, HttpServletResponse response) throws IOException {
         String companyCd = downloadDto.getCompanyCd();
         Integer priorityOrderCd = downloadDto.getPriorityOrderCd();
-        downloadDto.getList().stream().forEach(item->{
+        downloadDto.getList().forEach(item->{
             item.setPriorityOrderCd(downloadDto.getPriorityOrderCd());
             item.setCompanyCd(downloadDto.getCompanyCd());
         });
@@ -362,11 +362,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         datas = priorityOrderDataMapper.downloadForCsv(downloadDto.getTaiCd(), downloadDto.getTanaCd()
                 ,downloadDto.getPriorityOrderCd(),colName);
 
-        datas.stream().forEach(item->{
+        datas.forEach(item->{
             item.setCompanyCd(downloadDto.getCompanyCd());
             item.setPriorityOrderCd(downloadDto.getPriorityOrderCd());
         });
-        if (!downloadDto.getList().isEmpty() && downloadDto.getFlag()!=0) {
+        if (!downloadDto.getList().isEmpty()) {
             priorityOrderPtsJandataMapper.delete(companyCd, priorityOrderCd);
             priorityOrderPtsJandataMapper.insert(datas);
         }
@@ -962,7 +962,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
             List<PriorityOrderMstAttrSortDto> checkedAttrList = priorityOrderMstAttrSortMapper.selectWKRankSort(company, priorityOrderCd);
             String attrList = checkedAttrList.stream().map(PriorityOrderMstAttrSortDto::getValue).collect(Collectors.joining(","));
-            List<DownloadDto> uploadJanList = (List<DownloadDto>) checkResult.get("data");
+            Map<String, Object> data = (Map<String, Object>) checkResult.get("data");
+            List<DownloadDto> uploadJanList = (List<DownloadDto>) data.get("janList");
             List<PriorityOrderAttributeClassify> classifyList = priorityOrderClassifyMapper.getClassifyList(company, priorityOrderCd);
 
             List<DownloadDto> cutJanList = new ArrayList<>(priorityOrderPtsJandataMapper.selectCutJan(company, priorityOrderCd, uploadJanList));
@@ -972,6 +973,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             List<DownloadDto> newJanList = new ArrayList<>(priorityOrderPtsJandataMapper.selectNewJan(company, priorityOrderCd, uploadJanList));
             List<ClassicPriorityOrderJanNew> priorityOrderJanNews = null;
             List<PriorityOrderMstAttrSortDto> attrSorts = priorityOrderMstAttrSortMapper.selectWKAttr(company, priorityOrderCd);
+
+            if(Objects.equals(MapUtils.getString(data, "modeName"), "現状")){
+                //現状pts delete jan new, because 現状pts download not have jan new
+                priorityOrderJanNewMapper.delete(company, priorityOrderCd);
+                priorityOrderJanAttributeMapper.deleteByPrimaryKey(company, priorityOrderCd);
+            }
+
             resultMap = dataService.doJanNew(newJanList, company, priorityOrderCd, taiCd, tanaCd, attrList, classifyList, attrSorts);
             priorityOrderJanNews = (List<ClassicPriorityOrderJanNew>) resultMap.getOrDefault("data", Lists.newArrayList());
             String authorCd = session.getAttribute("aud").toString();
@@ -1329,7 +1337,16 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         Pattern numPattern = Pattern.compile(numberRegex);
         List<DownloadDto> uploadJanList = new ArrayList<>();
 
+        String modeName = null;
         for (CsvRow csvRow : csvReader) {
+            if(rowIndex==1){
+                if (csvRow.getField(0).startsWith("現状")) {
+                    modeName = "現状";
+                }else{
+                    modeName = "変更後";
+                }
+            }
+
             if(csvRow.isEmpty() || csvRow.getFields().stream().allMatch(""::equals)){
                 rowIndex++;
                 continue;
@@ -1385,7 +1402,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             return ResultMaps.result(ResultEnum.CLASSIFY_NOT_EXIST);
         }
 
-        return ResultMaps.result(ResultEnum.SUCCESS, uploadJanList);
+        Map<String, Object> data = new HashMap<>(2);
+        data.put("janList", uploadJanList);
+        data.put("modeName", modeName);
+        return ResultMaps.result(ResultEnum.SUCCESS, data);
     }
     public Map<String,Object> checkVersionFormat(int rowIndex, CsvRow csvRow){
         if(rowIndex==0){
@@ -1394,10 +1414,10 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 return ResultMaps.result(ResultEnum.VERSION_ERROR);
             }
         }else if(rowIndex==1){
-            String modeName = csvRow.getField(0);
-            if(!modeName.startsWith("変更後")){
-                return ResultMaps.result(ResultEnum.UPDATE_RANK);
-            }
+            //String modeName = csvRow.getField(0);
+            //if(!modeName.startsWith("変更後")){
+            //    return ResultMaps.result(ResultEnum.UPDATE_RANK);
+            //}
         }
         return new HashMap<>();
     }
