@@ -899,7 +899,7 @@ public class MstJanServiceImpl implements MstJanService {
 
     @Override
     public Map<String, Object> getPlanoAttr() {
-        List<Map<String, Object>> planoAttrList = mstJanMapper.selectPlanoAttr(MagicString.PLANO_CYCLE_COMPANY_CD, "0000");
+        List<Map<String, Object>> planoAttrList = mstJanMapper.selectPlanoAttr(MagicString.PLANO_CYCLE_COMPANY_CD, MagicString.FIRST_CLASS_CD);
         planoAttrList.forEach(attr->{
             String name  = MapUtils.getString(attr, MagicString.NAME);
             attr.put("id", name.split("-")[1]);

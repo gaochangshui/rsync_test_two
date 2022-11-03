@@ -9,6 +9,6 @@ public class ProductItemVO {
     private String type;
     private CommonPartsDataVO commonPartsData;
     private String companyCd;
-    private String itemType;
+    private Integer itemType;
 
 }
