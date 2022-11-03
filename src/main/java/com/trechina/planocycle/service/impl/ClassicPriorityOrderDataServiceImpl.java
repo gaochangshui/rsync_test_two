@@ -65,6 +65,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
     @Autowired
     private ClassicPriorityOrderJanNewMapper priorityOrderJanNewMapper;
     @Autowired
+    private ComparePriorityOrderPatternMapper comparePriorityOrderPatternMapper;
+    @Autowired
     private ProductPowerParamMstMapper productPowerParamMstMapper;
     @Autowired
     private ClassicPriorityOrderJanCardMapper priorityOrderJanCardMapper;
@@ -182,6 +184,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         logger.info("優先順位テーブルpattertテーブルが保存するデータを保存するには{}：",priorityOrderPatternList);
         priorityOrderPatternMapper.deleteWork(priorityOrderDataDto.getPriorityOrderCd());
         priorityOrderPatternMapper.insertWork(priorityOrderPatternList);
+        //参照パスを保存
+       this.saveReferencePattern(priorityOrderDataDto.getReferenceData(),priorityPowerCd,companyCd);
+
         List<Integer> comparePtsList = shelfPtsDataMapper.getPtsCdForShelfName(companyCd, priorityPowerCd);
         List<Integer> exceptJanPtsCd = shelfPtsDataMapper.getExceptJanPtsCd(companyCd, priorityPowerCd);
         // 初期化データ
@@ -247,9 +252,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             mapColHeader.put(MagicString.RANK,"対象Rank");
             mapColHeader.put(MagicString.RANK_PROP,"対象Rank");
             mapColHeader.put(MagicString.RANK_UPD,"対象Rank");
-            mapColHeader.put(MagicString.ACTUALITY_ALL_NUM,"合計定番店舗数");
-            mapColHeader.put(MagicString.ACTUALITY_COMPARE_NUM,"参照定番店舗数");
-            mapColHeader.put(MagicString.UPDATE_ALL_NUM,"合計定番店舗数");
+            mapColHeader.put(MagicString.ACTUALITY_ALL_NUM,"合計定番 店舗数");
+            mapColHeader.put(MagicString.ACTUALITY_COMPARE_NUM,"参照定番 店舗数");
+            mapColHeader.put(MagicString.UPDATE_ALL_NUM,"合計定番 店舗数");
             List<Map<String, Object>> initialExtraction = new ArrayList<>();
             initialExtraction.add(mapColHeader);
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderDataDto.getProductPowerCd());
@@ -299,6 +304,23 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             //delete old data
     return ResultMaps.result(ResultEnum.SUCCESS,initialExtraction);
 
+    }
+
+    private void saveReferencePattern(List<Map<String, Object>> referenceData, Integer priorityPowerCd, String companyCd) {
+        List<ComparePriorityOrderPattern> comparePriorityOrderPatternList = new ArrayList<>();
+        for (Map<String, Object> referenceDatum : referenceData) {
+            ComparePriorityOrderPattern comparePriorityOrderPattern = new ComparePriorityOrderPattern();
+            comparePriorityOrderPattern.setPriorityOrderCd(priorityPowerCd);
+            comparePriorityOrderPattern.setCompanyCd(companyCd);
+            comparePriorityOrderPattern.setShelfNameCd(Integer.parseInt(referenceDatum.get("shelfCd").toString()));
+            boolean reference = (boolean)referenceDatum.get("reference");
+            boolean flag = (boolean)referenceDatum.get("flag");
+            comparePriorityOrderPattern.setCompareFlag(reference?1:0);
+            comparePriorityOrderPattern.setRepeatFlag(flag?1:0);
+            comparePriorityOrderPatternList.add(comparePriorityOrderPattern);
+        }
+        comparePriorityOrderPatternMapper.delWk(priorityPowerCd);
+        comparePriorityOrderPatternMapper.insertWK(comparePriorityOrderPatternList);
     }
 
     private List<Map<String, Object>> allBranchNum(List<Map<String, Object>> datas) {
@@ -527,6 +549,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             priorityOrderJanNewMapper.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
             priorityOrderJanAttributeMapper.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
             priorityOrderJanProposalMapper.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
+            comparePriorityOrderPatternMapper.delWk(priorityOrderCd);
 
             priorityOrderCatepakMapper.setWorkForFinal( companyCd, priorityOrderCd,newPriorityOrderCd);
             priorityOrderCatepakAttributeMapper.setWorkForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
@@ -537,6 +560,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             classicPriorityOrderMstAttrSortMapper.insertAttrSortForFinal(companyCd, priorityOrderCd,newPriorityOrderCd);
             starReadingTableMapper.insertForFinalByPattern(companyCd, priorityOrderCd,newPriorityOrderCd);
             starReadingTableMapper.insertForFinalByBranch(companyCd, priorityOrderCd,newPriorityOrderCd);
+            comparePriorityOrderPatternMapper.setWKForFinal(priorityOrderCd);
         }
         List<Object> list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
@@ -554,9 +578,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         map.put("rank","対象Rank");
         map.put(MagicString.RANK_PROP,"対象Rank");
         map.put(MagicString.RANK_UPD,"対象Rank");
-        map.put(MagicString.ACTUALITY_ALL_NUM,"合計定番店舗数");
-        map.put(MagicString.ACTUALITY_COMPARE_NUM,"参照定番店舗数");
-        map.put(MagicString.UPDATE_ALL_NUM,"合計定番店舗数");
+        map.put(MagicString.ACTUALITY_ALL_NUM,"合計定番 店舗数");
+        map.put(MagicString.ACTUALITY_COMPARE_NUM,"参照定番 店舗数");
+        map.put(MagicString.UPDATE_ALL_NUM,"合計定番 店舗数");
         List<String> attrSortList = classicPriorityOrderMstAttrSortMapper.getAttrSortList(companyCd, newPriorityOrderCd);
         List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, newPriorityOrderCd);
         List<Map<String,Object>> allAttrList = classicPriorityOrderMstAttrSortMapper.getAllAttrList(companyCd, newPriorityOrderCd);
