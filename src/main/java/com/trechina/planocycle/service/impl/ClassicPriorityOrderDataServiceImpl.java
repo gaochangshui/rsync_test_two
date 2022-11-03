@@ -878,7 +878,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 compareBranchList= Arrays.asList(compareBranch.split(","));
             }
             List<String> list = new ArrayList<>();
-            if (!compareBranchList.isEmpty() && !compareBranchList.equals("")&& !compareBranchList.equals("_")){
+            if (!compareBranchList.isEmpty() && !compareBranch.equals("")&& !compareBranch.equals("_")){
                 list.addAll(compareBranchList);
             }
             if (ptsCd.isEmpty()){
