@@ -504,6 +504,6 @@
         primary key ("${primaryKey}");
     </update>
     <select id="selectPlanoAttr" resultType="map">
-        select "1" as "value","2" as "name", "13" as "type", coalesce("14", 1)::integer as "itemType"  from "${company}".prod_${classCd}_jan_attr_header_sys where "11"='6'
+        select "1" as "value","2" as "name", "13" as "type", coalesce("14", 0)::integer as "itemType"  from "${company}".prod_${classCd}_jan_attr_header_sys where "11"='6'
     </select>
 </mapper>
