@@ -573,27 +573,6 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     }
 
     private List<Object>  ConvertToNumber( List<Object> list) {
-        //for (Object o : list) {
-        //    Map<String,Object> proMap = (Map<String, Object>) o;
-        //    String[] split = proMap.get("id").toString().split("_");
-        //    String company = split[0];
-        //    String classCd = split[1];
-        //    String colCd = split[2];
-        //
-        //    List<Map<String, Object>> convertNumbers = companyConfigMapper.selectAttrTargetColumn(ImmutableList.of("is_number", "number_unit", "col_cd"),
-        //            ImmutableMap.of("company_cd", company, "class_cd", classCd, "is_number", 1));
-        //    List<String> value = ((List<Object>) proMap.get("value")).stream().map(val -> val instanceof Double ?
-        //            BigDecimal.valueOf((Double) val).setScale(0, RoundingMode.HALF_UP).toString() : String.valueOf(val)).collect(Collectors.toList());
-        //    if (!value.isEmpty()&&MapUtils.getInteger(proMap,"isInterval",0)==1){
-        //        String startNum = value.get(0);
-        //        String endNum = value.get(1);
-        //        value = mstJanMapper.getNewValueForRange(startNum,endNum,company,classCd,colCd);
-        //        proMap.put("value",value);
-        //    } else if (!value.isEmpty()&&convertNumbers.stream().anyMatch(map->map.get("col_cd").equals(colCd))){
-        //         value = mstJanMapper.getNewValue(value,company,classCd,colCd);
-        //        proMap.put("value",value);
-        //    }
-        //}
         for (Object o : list) {
             Map<String,Object> proMap = (Map<String, Object>) o;
             String[] split = proMap.get("id").toString().split("_");

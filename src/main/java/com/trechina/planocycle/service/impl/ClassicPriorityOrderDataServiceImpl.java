@@ -21,6 +21,7 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.CacheUtil;
+import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.cgiUtils;
 import de.siegmar.fastcsv.reader.CsvReader;
@@ -181,7 +182,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         logger.info("優先順位テーブルpattertテーブルが保存するデータを保存するには{}：",priorityOrderPatternList);
         priorityOrderPatternMapper.deleteWork(priorityOrderDataDto.getPriorityOrderCd());
         priorityOrderPatternMapper.insertWork(priorityOrderPatternList);
-
+        List<Integer> comparePtsList = shelfPtsDataMapper.getPtsCdForShelfName(companyCd, priorityPowerCd);
+        List<Integer> exceptJanPtsCd = shelfPtsDataMapper.getExceptJanPtsCd(companyCd, priorityPowerCd);
         // 初期化データ
         List<ShelfPtsData> shelfPtsData = shelfPtsDataMapper.getPtsCdByPatternCd(companyCd, priorityOrderDataDto.getShelfPatternCd());
         //ただの用品名2
@@ -242,9 +244,12 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             mapColHeader.put(MagicString.BRANCH_NUM_UPD,MagicString.BRANCH_NUM_NAME);
             mapColHeader.put(MagicString.DIFFERENCE,"配荷差");
             mapColHeader.put(MagicString.SALE_FORECAST,"売上増減 予測(千円)");
-            mapColHeader.put(MagicString.RANK,"Rank");
-            mapColHeader.put(MagicString.RANK_PROP,"Rank");
-            mapColHeader.put(MagicString.RANK_UPD,"Rank");
+            mapColHeader.put(MagicString.RANK,"対象Rank");
+            mapColHeader.put(MagicString.RANK_PROP,"対象Rank");
+            mapColHeader.put(MagicString.RANK_UPD,"対象Rank");
+            mapColHeader.put(MagicString.ACTUALITY_ALL_NUM,"合計定番店舗数");
+            mapColHeader.put(MagicString.ACTUALITY_COMPARE_NUM,"参照定番店舗数");
+            mapColHeader.put(MagicString.UPDATE_ALL_NUM,"合計定番店舗数");
             List<Map<String, Object>> initialExtraction = new ArrayList<>();
             initialExtraction.add(mapColHeader);
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, priorityOrderDataDto.getProductPowerCd());
@@ -257,12 +262,15 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         }else {
             colName = productPowerDataMapper.getItemCol(commonTableName.getProdIsCore(), commonTableName.getProdMstClass());
         }
+        comparePtsList.add(0);
+        exceptJanPtsCd.add(0);
         List<Map<String, Object>> datas = shelfPtsDataMapper.getInitialExtraction(shelfPtsData, tableName
-                , priorityOrderDataDto.getProductPowerCd(), listTableName, listAttr,colName);
+                , priorityOrderDataDto.getProductPowerCd(), listTableName, listAttr,colName,comparePtsList,exceptJanPtsCd);
+
         if (datas.isEmpty()){
             return ResultMaps.result(ResultEnum.SIZEISZERO);
         }
-
+        datas = this.allBranchNum(datas);
         for (Map<String, Object> data : datas) {
             BigDecimal branchAmountUpd = BigDecimal.valueOf(Double.parseDouble(data.get(MagicString.BRANCH_AMOUNT_UPD).toString()));
             branchAmountUpd = branchAmountUpd.setScale(0,RoundingMode.HALF_UP);
@@ -291,6 +299,34 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             //delete old data
     return ResultMaps.result(ResultEnum.SUCCESS,initialExtraction);
 
+    }
+
+    private List<Map<String, Object>> allBranchNum(List<Map<String, Object>> datas) {
+        datas.stream().forEach(map->{
+            String branch = map.getOrDefault("branch","").toString();
+            String compareBranch = map.getOrDefault("actuality_compare_branch","").toString();
+            String exceptBranch = map.getOrDefault("except_branch","").toString();
+            List<String> branchList = Arrays.asList(branch.split(","));
+            List<String> compareBranchList = Arrays.asList(compareBranch.split(","));
+            List<String> exceptBranchList = Arrays.asList(exceptBranch.split(","));
+            List<String> list = new ArrayList<>();
+            List<String> newBranchList = ListDisparityUtils.getListDisparitStr(branchList == null ? new ArrayList<>() : branchList,
+                    exceptBranchList == null ? new ArrayList<>() : exceptBranchList);
+
+            if (compareBranchList != null && !compareBranch.equals("")) {
+                list.addAll(compareBranchList);
+            }
+            if (branchList != null && !branch.equals("")) {
+                list.addAll(branchList);
+            }
+            List<String> AllBranchList = list.stream().distinct().collect(Collectors.toList());
+            map.put("actuality_all_num",AllBranchList.size());
+            map.put("update_all_num",AllBranchList.size());
+            map.put("branch_num",newBranchList.size());
+            map.put("branch_num_upd",newBranchList.size());
+            map.remove("branch");
+        });
+        return datas;
     }
 
 
@@ -515,9 +551,12 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         map.put(MagicString.BRANCH_NUM_UPD,MagicString.BRANCH_NUM_NAME);
         map.put(MagicString.DIFFERENCE,"配荷差");
         map.put(MagicString.SALE_FORECAST,"売上増減 予測(千円)");
-        map.put("rank","Rank");
-        map.put(MagicString.RANK_PROP,"Rank");
-        map.put(MagicString.RANK_UPD,"Rank");
+        map.put("rank","対象Rank");
+        map.put(MagicString.RANK_PROP,"対象Rank");
+        map.put(MagicString.RANK_UPD,"対象Rank");
+        map.put(MagicString.ACTUALITY_ALL_NUM,"合計定番店舗数");
+        map.put(MagicString.ACTUALITY_COMPARE_NUM,"参照定番店舗数");
+        map.put(MagicString.UPDATE_ALL_NUM,"合計定番店舗数");
         List<String> attrSortList = classicPriorityOrderMstAttrSortMapper.getAttrSortList(companyCd, newPriorityOrderCd);
         List<String> attrList = classicPriorityOrderMstAttrSortMapper.getAttrList(companyCd, newPriorityOrderCd);
         List<Map<String,Object>> allAttrList = classicPriorityOrderMstAttrSortMapper.getAllAttrList(companyCd, newPriorityOrderCd);
@@ -825,12 +864,23 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 branchNumNow = new HashMap<>();
                 branchNumNow.put(MagicString.BRANCH_NUM,0);
                 branchNumNow.put(MagicString.BRANCH_AMOUNT_UPD,0);
+                branchNumNow.put(MagicString.EXCEPT_BRANCH,0);
             }
 
             List<Integer> ptsCd = workPriorityOrderPtsClassify.getJanPtsCd(companyCd, priorityOrderCd, objectMap);
             Map<String, Object> janBranchNum =  new HashMap<>();
             janBranchNum.put(MagicString.JAN_OLD,objectMap.get(MagicString.JAN_OLD));
             janBranchNum.put(MagicString.JAN_NEW,objectMap.get(MagicString.JAN_NEW));
+            String compareBranch = MapUtils.getString(branchNumNow, "actuality_compare_branch");
+            String exceptBranch = MapUtils.getString(branchNumNow, MagicString.EXCEPT_BRANCH);
+            List<String> compareBranchList = new ArrayList<>();
+            if (compareBranch!=null){
+                compareBranchList= Arrays.asList(compareBranch.split(","));
+            }
+            List<String> list = new ArrayList<>();
+            if (!compareBranchList.isEmpty() && !compareBranchList.equals("")&& !compareBranchList.equals("_")){
+                list.addAll(compareBranchList);
+            }
             if (ptsCd.isEmpty()){
                 Integer difference = -Integer.parseInt(branchNumNow.getOrDefault(MagicString.BRANCH_NUM,0).toString());
                 double saleForecast = difference  * Double.parseDouble(branchNumNow.getOrDefault(MagicString.BRANCH_AMOUNT_UPD,0).toString()) / 1000;
@@ -841,16 +891,26 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 janBranchNum.put(MagicString.BRANCH_NUM_UPD,0);
                 janBranchNum.put(MagicString.DIFFERENCE,difference);
                 janBranchNum.put(MagicString.SALE_FORECAST,saleForecast);
+                janBranchNum.put(MagicString.UPDATE_ALL_NUM,list.size());
             }else {
-                Integer branchNum = workPriorityOrderPtsClassify.getJanBranchNum(ptsCd, objectMap);
+                Map<String,Object> branchList = workPriorityOrderPtsClassify.getJanBranchNum(ptsCd, objectMap);
+                Integer branchNum = MapUtils.getInteger(branchList, "branch_num_upd");
+                String branch = MapUtils.getString(branchList, "branch");
+                List<String> branchs = Arrays.asList(branch.split(","));
+                List<String> newBranchList = ListDisparityUtils.getListDisparitStr(branchs == null ? new ArrayList<>() : branchs,
+                        compareBranchList == null ? new ArrayList<>() : compareBranchList);
+                if (branchs != null && !branch.equals("")&& !branch.equals("_")){
+                    list.addAll(branchs);
+                }
                 logger.info("店舗数{}",branchNumNow.get(MagicString.BRANCH_NUM));
                 Integer difference = branchNum - Integer.parseInt(branchNumNow.getOrDefault(MagicString.BRANCH_NUM,0).toString());
                 double saleForecast = difference  * Double.parseDouble(branchNumNow.getOrDefault(MagicString.BRANCH_AMOUNT_UPD,0).toString()) / 1000;
                 BigDecimal bd = BigDecimal.valueOf(saleForecast);
                 saleForecast = bd.setScale(0,RoundingMode.HALF_UP).doubleValue();
-                janBranchNum.put(MagicString.BRANCH_NUM_UPD,branchNum);
+                janBranchNum.put(MagicString.BRANCH_NUM_UPD,newBranchList.size());
                 janBranchNum.put(MagicString.DIFFERENCE,difference);
                 janBranchNum.put(MagicString.SALE_FORECAST,saleForecast);
+                janBranchNum.put(MagicString.UPDATE_ALL_NUM,list.size());
             }
             lists.add(janBranchNum);
         }
@@ -1508,6 +1568,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 priorityOrderJanNewVO.put(MagicString.AUTHOR_CD_DB, authorCd);
                 priorityOrderJanNewVO.put(MagicString.COMPANY_CD_DB, companyCd);
                 priorityOrderJanNewVO.put(MagicString.JAN_OLD, "_");
+                priorityOrderJanNewVO.put(MagicString.ACTUALITY_ALL_NUM, priorityOrderJanNewVO.get("actuality_compare_num"));
                 //写入jsonArray
                 jsonArray.add(priorityOrderJanNewVO);
             }
@@ -1573,7 +1634,25 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         datas.forEach(objectMap->{
             branchNumList.forEach(map->{
                 if (objectMap.get(MagicString.JAN_NEW).equals(map.get(MagicString.JAN_NEW)) && objectMap.get(MagicString.JAN_OLD).equals(map.get(MagicString.JAN_OLD))) {
+
+                    List<String> list = new ArrayList<>();
+                    String compareBranch = objectMap.get(MagicString.ACTUALITY_COMPARE_BRANCH).toString();
+                    String exceptBranch = objectMap.get(MagicString.EXCEPT_BRANCH).toString();
+                    String branch = map.get(MagicString.BRANCH).toString();
+                    List<String> compareBrranchList = Arrays.asList(compareBranch.split(","));
+                    List<String> exceptBranchList = Arrays.asList(exceptBranch.split(","));
+                    List<String> branchList = Arrays.asList(branch.split(","));
+                    if (compareBrranchList != null && !compareBranch.equals("")&&!compareBranch.equals("_")){
+                        list.addAll(compareBrranchList);
+                    }
+                    if (branchList != null && !branch.equals("")){
+                        list.addAll(branchList);
+                    }
+                    list = list.stream().distinct().collect(Collectors.toList());
+                    List<String> newBranchList = ListDisparityUtils.getListDisparitStr(branchList == null ? new ArrayList<>() : branchList,
+                            exceptBranchList == null ? new ArrayList<>() : exceptBranchList);
                     objectMap.put(MagicString.BRANCH_NUM_UPD, map.get(MagicString.BRANCH_NUM));
+                    objectMap.put(MagicString.UPDATE_ALL_NUM, list.size());
                 }
             });
             objectMap.entrySet().forEach(stringObjectEntry->{

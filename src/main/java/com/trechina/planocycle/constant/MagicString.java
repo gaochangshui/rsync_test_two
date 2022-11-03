@@ -1,11 +1,9 @@
 package com.trechina.planocycle.constant;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -121,6 +119,13 @@ public class MagicString {
 
     public static final String RANK_UPD = "rank_upd";
     public static final String RANK = "rank";
+
+    public static final String ACTUALITY_COMPARE_NUM = "actuality_compare_num";
+
+    public static final String UPDATE_ALL_NUM = "update_all_num";
+    public static final String ACTUALITY_COMPARE_BRANCH = "actuality_compare_branch";
+    public static final String EXCEPT_BRANCH = "except_branch";
+    public static final String ACTUALITY_ALL_NUM = "actuality_all_num";
 
     public static final String BRANCH_NUM_UPD = "branch_num_upd";
     public static final String FACE_NUM = "faceNum";
@@ -368,7 +373,7 @@ public class MagicString {
     public static final String GROUP = "group";
     public static final String BR = "<br />";
 
-    public static final String BRANCH_NUM_NAME = "定番 店舗数";
+    public static final String BRANCH_NUM_NAME = "対象定番 店舗数";
 
     public static final String DEFAULT_TABLE = "prod_0000_jan_info";
     public static final String  PERCENTAGE = "%";

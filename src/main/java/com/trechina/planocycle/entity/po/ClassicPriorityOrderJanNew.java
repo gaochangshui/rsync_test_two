@@ -19,5 +19,9 @@ public class ClassicPriorityOrderJanNew {
 
     private String nameNew;
 
+    private String actualityCompareBranch;
+
+    private String exceptBranch;
+
 
 }

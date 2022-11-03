@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.trechina.planocycle.mapper.ComparePriorityOrderPatternMapper">
+    <insert id="insertWK">
+        insert into priority.work_compare_priority_order_pattern (company_cd,priority_order_cd,shelf_name_cd,compare_flag,repeat_flag)
+    values
+        <foreach collection="list" separator="," item="item">
+            (#{item.companyCd},#{item.priorityOrderCd},#{item.shelfNameCd},#{item.compareFlag},#{item.repeatFlag})
+        </foreach>
+    </insert>
+    <insert id="setWKForFinal">
+        insert into priority.work_compare_priority_order_pattern
+        select * from priority.compare_priority_order_pattern
+        where priority_order_cd = #{priorityOrderCd}
+    </insert>
+    <insert id="setFinalForWK">
+        insert into priority.compare_priority_order_pattern
+        select * from priority.work_compare_priority_order_pattern
+        where priority_order_cd = #{priorityOrderCd}
+    </insert>
+    <delete id="delFinal">
+        delete from priority.compare_priority_order_pattern where priority_order_cd = #{priorityOrderCd}
+    </delete>
+    <delete id="delWk">
+        delete from priority.work_compare_priority_order_pattern where priority_order_cd = #{priorityOrderCd}
+    </delete>
+</mapper>

@@ -14,6 +14,7 @@ import com.trechina.planocycle.service.ClassicPriorityOrderCatePakService;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import com.trechina.planocycle.utils.CommonUtil;
 import com.trechina.planocycle.utils.ResultMaps;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -300,7 +301,8 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
                 priorityOrderCd, rank);
         logger.info("pts:{}", ptsCd);
         if (!ptsCd.isEmpty()) {
-            Integer branchNum = workPriorityOrderPtsClassifyMapper.getJanBranchNum(ptsCd, new HashMap<>());
+            Map<String,Object> branchList = workPriorityOrderPtsClassifyMapper.getJanBranchNum(ptsCd, new HashMap<>());
+            Integer branchNum = MapUtils.getInteger(branchList, "branch_num_upd");
             logger.info("査詢定番店鋪数{}", branchNum);
             priorityOrderCatepakMapper.updateBranchNum(priorityOrderCatepak.getId(), branchNum);
         } else {

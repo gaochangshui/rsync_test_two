@@ -18,7 +18,7 @@ public interface WorkPriorityOrderPtsClassifyMapper {
     List<Integer> getJanPtsCd(String companyCd, Integer priorityOrderCd, Map<String, Object> map );
     List<Integer> getAllJanPtsCd(String companyCd, Integer priorityOrderCd, Map<String, Object> map, List<String> colNameList);
 
-    Integer getJanBranchNum(List<Integer> ptsCd,Map<String,Object> map);
+    Map<String,Object> getJanBranchNum(List<Integer> ptsCd,Map<String,Object> map);
 
 
     List<Map<String, Object>> getPtsSkuNum(String companyCd, Integer priorityOrderCd, Integer ptsCd, List<String> rankAttr);

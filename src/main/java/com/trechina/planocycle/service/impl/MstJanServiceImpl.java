@@ -9,7 +9,6 @@ import com.google.common.collect.Lists;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.config.MailConfig;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.po.CommoditySyncSet;
 import com.trechina.planocycle.entity.po.Company;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
 import com.trechina.planocycle.entity.po.JanInfoList;
@@ -18,7 +17,6 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.MstCommodityService;
 import com.trechina.planocycle.service.MstJanService;
-import com.trechina.planocycle.service.ZokuseiMstDataService;
 import com.trechina.planocycle.utils.*;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
@@ -368,6 +366,7 @@ public class MstJanServiceImpl implements MstJanService {
         janAttrGroup3.stream().forEach(stringObjectLinkedHashMap->{
             Map<String,Object> janAttrInfo = new HashMap<>();
             janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
+            janAttrInfo.put("itemType",0);
             janAttrInfo.put(MagicString.TITLE,janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put(MagicString.VALUE,stringObjectLinkedHashMap.get("1"));
