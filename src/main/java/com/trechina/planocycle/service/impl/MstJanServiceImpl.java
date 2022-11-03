@@ -32,6 +32,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
+import javax.mail.Message;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -893,6 +894,17 @@ public class MstJanServiceImpl implements MstJanService {
         cacheUtil.remove(taskId+",exception");
 
         return ResultMaps.result(ResultEnum.FAILURE.getCode(), String.valueOf(msg));
+    }
+
+    @Override
+    public Map<String, Object> getPlanoAttr() {
+        List<Map<String, Object>> planoAttrList = mstJanMapper.selectPlanoAttr(MagicString.PLANO_CYCLE_COMPANY_CD, MagicString.FIRST_CLASS_CD);
+        planoAttrList.forEach(attr->{
+            String name  = MapUtils.getString(attr, MagicString.NAME);
+            attr.put("id", name.split("-")[1]);
+            attr.put(MagicString.TITLE, name.split("-")[1]);
+        });
+        return ResultMaps.result(ResultEnum.SUCCESS, planoAttrList);
     }
 
     /**

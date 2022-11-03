@@ -1,6 +1,7 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.trechina.planocycle.aspect.LogAspect;
@@ -90,16 +91,18 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
 
                 priorityOrderJanNewVOS.forEach(item -> {
                     Map<String, Object> result = new HashMap<>();
-                    String[] attrList = item.getAttr().split(",");
-                    String[] valList;
-                    result.put(MagicString.JANNEW, item.getJanNew());
-                    result.put(MagicString.JAN_NAME, item.getJanName());
-                    for (int i = 0; i < attrList.length; i++) {
-                        valList = attrList[i].split(":");
-                        if(valList.length<2){
-                            result.put("attr" + valList[0], "");
-                        }else{
-                            result.put("attr" + valList[0], valList[1]);
+                    if(!Strings.isNullOrEmpty(item.getAttr())){
+                        String[] attrList = item.getAttr().split(",");
+                        String[] valList;
+                        result.put(MagicString.JANNEW, item.getJanNew());
+                        result.put(MagicString.JAN_NAME, item.getJanName());
+                        for (int i = 0; i < attrList.length; i++) {
+                            valList = attrList[i].split(":");
+                            if(valList.length<2){
+                                result.put("attr" + valList[0], "");
+                            }else{
+                                result.put("attr" + valList[0], valList[1]);
+                            }
                         }
                     }
                     result.put("rank", item.getRank());

@@ -12,5 +12,6 @@ public class ParamConfigDto {
     private Integer flag;
     private boolean disabled = false;
     private String remark;
+    private String type;
 
 }

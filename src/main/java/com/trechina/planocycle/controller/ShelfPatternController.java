@@ -147,4 +147,9 @@ public class ShelfPatternController {
     public Map<String, Object> getPatternForNoStore(String companyCd,String storeIsCore) {
         return shelfPatternService.getPatternForNoStore(companyCd,storeIsCore);
     }
+
+    @GetMapping("/getComparePattern")
+    public Map<String, Object> getComparePattern(Integer priorityOrderCd) {
+        return shelfPatternService.getComparePattern(priorityOrderCd);
+    }
 }

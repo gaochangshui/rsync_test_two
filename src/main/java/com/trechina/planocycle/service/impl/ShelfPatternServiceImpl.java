@@ -411,5 +411,9 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         return ResultMaps.result(ResultEnum.SUCCESS,patternForStorel);
     }
 
-
+    @Override
+    public Map<String, Object> getComparePattern(Integer priorityOrderCd) {
+        List<Map<String, Object>> comparePatternList = shelfPatternMstMapper.selectComparePatternList(priorityOrderCd);
+        return ResultMaps.result(ResultEnum.SUCCESS, comparePatternList);
+    }
 }

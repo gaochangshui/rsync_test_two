@@ -191,4 +191,6 @@ public interface MstJanMapper {
     void addPrimaryKey(String table, String schema, String primaryKey, String pkName);
 
     List<String> getNewValueForRange(List<List<String>> twoDimArray, String company, String classCd, String colCd);
+
+    List<Map<String, Object>> selectPlanoAttr(String company, String classCd);
 }

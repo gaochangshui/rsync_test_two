@@ -8,6 +8,7 @@ import com.trechina.planocycle.entity.dto.ParamConfigDto;
 import com.trechina.planocycle.entity.po.*;
 import com.trechina.planocycle.entity.vo.AllParamConfigVO;
 import com.trechina.planocycle.entity.vo.CommonPartsDataVO;
+import com.trechina.planocycle.enums.ProductPowerHeaderEnum;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.exception.NotInitCompanyMstException;
 import com.trechina.planocycle.mapper.*;
@@ -447,6 +448,15 @@ public class ParamConfigServiceImpl implements ParamConfigService {
     @Override
     public AllParamConfigVO getAllParamConfig() {
         List<ParamConfigDto> paramConfigVOS = paramConfigMapper.selectAllParamConfig();
+        paramConfigVOS.forEach(dto->{
+            if(dto.getColName().startsWith(ProductPowerHeaderEnum.POS.getCode())){
+                dto.setType(ProductPowerHeaderEnum.POS.getName());
+            }else if(dto.getColName().startsWith(ProductPowerHeaderEnum.CUSTOMER.getCode())){
+                dto.setType(ProductPowerHeaderEnum.CUSTOMER.getName());
+            }else if(dto.getColName().startsWith(ProductPowerHeaderEnum.INTAGE.getCode())){
+                dto.setType(ProductPowerHeaderEnum.INTAGE.getName());
+            }
+        });
         String intage = sysConfigMapper.selectSycConfig(MagicString.ITEM_NAME_SHOW_INTAGE);
 
         AllParamConfigVO allParamConfigVO = new AllParamConfigVO();
