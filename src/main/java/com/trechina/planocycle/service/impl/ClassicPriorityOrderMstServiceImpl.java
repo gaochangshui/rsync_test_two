@@ -2040,7 +2040,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         "":MapUtils.getString(janMap, "except_branch", "")).split(",");
                 List<String> branchCdList = Lists.newArrayList(branchCdArray);
                 branchCdList.remove("");
-                if(Arrays.asList(branchCdList).contains(branchCd)){
+                if(branchCdList.contains(branchCd)){
                     if (janOld.equals(janCd)) {
                         janMap.put(MagicString.PTS_NAME, fileName);
                         janMap.put(MagicString.PATTERN_NAME, shelfPtsDataDto.getShelfPatternName());
