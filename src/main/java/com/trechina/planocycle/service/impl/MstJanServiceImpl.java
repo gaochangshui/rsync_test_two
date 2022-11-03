@@ -905,7 +905,7 @@ public class MstJanServiceImpl implements MstJanService {
             attr.put("id", name.split("-")[1]);
             attr.put(MagicString.TITLE, name.split("-")[1]);
             //任意項目
-            attr.put("type", "1");
+            attr.put("itemType", "1");
         });
         return ResultMaps.result(ResultEnum.SUCCESS, planoAttrList);
     }
