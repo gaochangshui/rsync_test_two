@@ -872,7 +872,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             janBranchNum.put(MagicString.JAN_OLD,objectMap.get(MagicString.JAN_OLD));
             janBranchNum.put(MagicString.JAN_NEW,objectMap.get(MagicString.JAN_NEW));
             String compareBranch = MapUtils.getString(branchNumNow, "actuality_compare_branch");
-            String exceptBranch = MapUtils.getString(branchNumNow, MagicString.EXCEPT_BRANCH);
+
             List<String> compareBranchList = new ArrayList<>();
             if (compareBranch!=null){
                 compareBranchList= Arrays.asList(compareBranch.split(","));
@@ -894,16 +894,18 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 janBranchNum.put(MagicString.UPDATE_ALL_NUM,list.size());
             }else {
                 Map<String,Object> branchList = workPriorityOrderPtsClassify.getJanBranchNum(ptsCd, objectMap);
-                Integer branchNum = MapUtils.getInteger(branchList, "branch_num_upd");
+                //Integer branchNum = MapUtils.getInteger(branchList, "branch_num_upd");
                 String branch = MapUtils.getString(branchList, "branch");
+                String exceptBranch = MapUtils.getString(branchNumNow, MagicString.EXCEPT_BRANCH);
+                List<String> exceptBranchList = Arrays.asList(exceptBranch.split(","));
                 List<String> branchs = Arrays.asList(branch.split(","));
                 List<String> newBranchList = ListDisparityUtils.getListDisparitStr(branchs == null ? new ArrayList<>() : branchs,
-                        compareBranchList == null ? new ArrayList<>() : compareBranchList);
+                        exceptBranchList == null ? new ArrayList<>() : exceptBranchList);
                 if (branchs != null && !branch.equals("")&& !branch.equals("_")){
-                    list.addAll(branchs);
+                    list.addAll(newBranchList);
                 }
                 logger.info("店舗数{}",branchNumNow.get(MagicString.BRANCH_NUM));
-                Integer difference = branchNum - Integer.parseInt(branchNumNow.getOrDefault(MagicString.BRANCH_NUM,0).toString());
+                Integer difference = newBranchList.size() - Integer.parseInt(branchNumNow.getOrDefault(MagicString.BRANCH_NUM,0).toString());
                 double saleForecast = difference  * Double.parseDouble(branchNumNow.getOrDefault(MagicString.BRANCH_AMOUNT_UPD,0).toString()) / 1000;
                 BigDecimal bd = BigDecimal.valueOf(saleForecast);
                 saleForecast = bd.setScale(0,RoundingMode.HALF_UP).doubleValue();
