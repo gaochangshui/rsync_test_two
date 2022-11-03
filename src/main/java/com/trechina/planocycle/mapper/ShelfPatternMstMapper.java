@@ -66,4 +66,6 @@ public interface ShelfPatternMstMapper {
     Map<String, String> getShelfPatternName(Integer shelfPatternCd,String companyCd);
 
     List<ShelfPatternNameVO> getPatternForNoStore(String storeIsCore, String companyCd, Map<String, Object> map);
+
+    List<Map<String, Object>> selectComparePatternList(Integer priorityOrderCd);
 }

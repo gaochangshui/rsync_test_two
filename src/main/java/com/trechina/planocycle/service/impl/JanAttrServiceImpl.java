@@ -59,7 +59,7 @@ public class JanAttrServiceImpl implements JanAttrService {
         }else if ("string".equals(productItemVO.getType())){
             map.put("13","1");
         }
-        map.put("14", productItemVO.getItemType());
+        map.put("14", productItemVO.getItemType()+"");
         prodKaisouHeaderMapper.setItem(map,tableNameAttr);
         zokuseiMstMapper.setItem(itemColName,Integer.valueOf(itemColName),productItemVO.getName());
         return ResultMaps.result(ResultEnum.SUCCESS,map.get("1"));
