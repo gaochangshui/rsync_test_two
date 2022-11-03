@@ -6,7 +6,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.trechina.planocycle.aspect.LogAspect;
@@ -2038,8 +2041,10 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             newPtsJanList.forEach(janMap->{
                 String janOld = MapUtils.getString(janMap, MagicString.JAN_OLD);
                 String janCd = MapUtils.getString(janMap, MagicString.JAN);
-                String[] branchCdList = (Strings.isNullOrEmpty(MapUtils.getString(janMap, "except_branch", ""))?
+                String[] branchCdArray = (Strings.isNullOrEmpty(MapUtils.getString(janMap, "except_branch", ""))?
                         "":MapUtils.getString(janMap, "except_branch", "")).split(",");
+                List<String> branchCdList = Lists.newArrayList(branchCdArray);
+                branchCdList.remove("");
                 if(Arrays.asList(branchCdList).contains(branchCd)){
                     if (janOld.equals(janCd)) {
                         janMap.put(MagicString.PTS_NAME, fileName);
