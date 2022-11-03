@@ -466,7 +466,7 @@
         </foreach>
         from  planocycle.work_product_power_syokika syokika
             left join planocycle.work_product_power_syokika_pos posBranchNum
-            on posBranchNum.jan = syokika.jan
+            on posBranchNum.jan = syokika.jan and posBranchNum.product_power_cd = #{productPowerCd}
             <if test="!prepareCd.isEmpty">
                 left join (select
                 dd.jan as jan,
