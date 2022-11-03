@@ -593,10 +593,12 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         List<Map<String, Object>> workData = new ArrayList<>();
                 workData.add(map);
                 workData.addAll(priorityOrderDataMapper.getWorkData(companyCd, newPriorityOrderCd, attrList,attrSortList));
+        List<Map<String, Object>> referenceData = comparePriorityOrderPatternMapper.selectWorkReference(companyCd, priorityOrderCd);
         list.add(attrSortList);
         list.add(patternOrProduct);
         list.add(workData);
         list.add(attrValueList);
+        list.add(referenceData);
         logger.info("取得優先順位テーブルデータの編集リターンマッチ:{}",list);
         return ResultMaps.result(ResultEnum.SUCCESS,list);
     }

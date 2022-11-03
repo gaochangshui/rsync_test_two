@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ComparePriorityOrderPatternMapper {
@@ -15,4 +16,7 @@ public interface ComparePriorityOrderPatternMapper {
 
     void  delFinal(Integer priorityOrderCd);
     void  delWk(Integer priorityOrderCd);
+
+    List<Map<String,Object>> selectWorkReference(String companyCd, Integer priorityOrderCd);
+
 }
