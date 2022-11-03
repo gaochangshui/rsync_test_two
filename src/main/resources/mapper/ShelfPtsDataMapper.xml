@@ -655,9 +655,16 @@
 
          ,coalesce(t2.pos_item01,'0') as pos_amount,coalesce(t2.pos_item03,'0') as unit_price,coalesce(t2.pos_store_item01,'0') as branch_amount,
             t1.branch_num as branch_num,t1.branch_num as branch_num_upd,coalesce(t2.pos_store_item01,'0') as branch_amount_upd,0 as difference,0 as sale_forecast
-            ,ROW_NUMBER () OVER (order by t1.branch_num ::integer desc , t2.pos_item01 ::integer desc) as rank,coalesce(t2.rank_result,99999998) as rank_prop,99999998 as rank_upd,coalesce(t2.rank_result,99999998) as goods_rank
+            ,ROW_NUMBER () OVER (order by t1.branch_num ::integer desc , t2.pos_item01 ::integer desc) as rank
+            ,coalesce(t2.rank_result,99999998) as rank_prop,99999998 as rank_upd,coalesce(t2.rank_result,99999998) as goods_rank,
+            coalesce(t3.branch_num,0) as actuality_compare_num,
+            coalesce(t1.branch,'') branch,
+            coalesce(t3.branch,'') as actuality_compare_branch,
+            coalesce(t4.branch,'') as except_branch
+
     from(
-          select  jan,info."2",info."${colName}" as a,count(DISTINCT branch) as branch_num
+          select  jan,info."2",info."${colName}" as a,count(DISTINCT branch) as branch_num,
+            array_to_string(array_agg(DISTINCT branch),',') branch
           from
             planocycle.shelf_pts_data_jandata  jandata
               left join ${tableName} info
@@ -679,6 +686,45 @@
          where datas.product_power_cd =#{productPowerCd}
         ) t2
         on t1. a = t2."${colName}"
+    left join
+    (
+    select
+    jan,
+    count ( DISTINCT branch ) as branch_num ,
+    array_to_string(array_agg(DISTINCT branch),',') branch
+    from
+    planocycle.shelf_pts_data_jandata jandata
+    inner join planocycle.shelf_pts_data ptsdata on ptsdata.id = jandata.pts_cd
+    left join planocycle.shelf_pattern_branch branchs on ptsdata.shelf_pattern_cd = branchs.shelf_pattern_cd
+    where
+    jandata.pts_cd in (
+        <foreach collection="comparePtsList" item="item" separator="," >
+          #{item}
+        </foreach>
+    )
+    GROUP BY
+    jan
+    ) t3
+    on t3.jan = t1."a"
+    left join
+    (
+    select
+    jan,
+    array_to_string(array_agg(DISTINCT branch),',') branch
+    from
+    planocycle.shelf_pts_data_jandata jandata
+    inner join planocycle.shelf_pts_data ptsdata on ptsdata.id = jandata.pts_cd
+    left join planocycle.shelf_pattern_branch branchs on ptsdata.shelf_pattern_cd = branchs.shelf_pattern_cd
+    where
+    jandata.pts_cd in (
+    <foreach collection="comparePtsList" item="item" separator="," >
+      #{item}
+    </foreach>
+    )
+    GROUP BY
+    jan
+    ) t4
+    on t4.jan = t1."a"
         <foreach collection="attrTableName" item="item" index="index">
           left join ${item} as ${index}
         on ${index}."1" = t1.jan
@@ -818,5 +864,23 @@
     <if test="ptsFlag == 1">
       and priority_all_cd = #{priorityOrderCd} and shelf_pattern_cd = #{patternCd}
     </if>
+  </select>
+    <select id="getPtsCdForShelfName" resultType="java.lang.Integer">
+      select id
+      from priority.work_compare_priority_order_pattern shelfname
+             left join planocycle.shelf_pattern_mst patternmst
+                       on shelfname.shelf_name_cd = patternmst.shelf_name_cd
+             inner join planocycle.shelf_pts_data ptsdata
+                        on ptsdata.shelf_pattern_cd = patternmst.shelf_pattern_cd
+      where priority_order_cd = #{priorityPowerCd}
+    </select>
+  <select id="getExceptJanPtsCd" resultType="java.lang.Integer">
+    select id
+    from priority.work_compare_priority_order_pattern shelfname
+           left join planocycle.shelf_pattern_mst patternmst
+                     on shelfname.shelf_name_cd = patternmst.shelf_name_cd
+           inner join planocycle.shelf_pts_data ptsdata
+                      on ptsdata.shelf_pattern_cd = patternmst.shelf_pattern_cd
+    where priority_order_cd = #{priorityPowerCd} and repeat_flag = 1
   </select>
 </mapper>

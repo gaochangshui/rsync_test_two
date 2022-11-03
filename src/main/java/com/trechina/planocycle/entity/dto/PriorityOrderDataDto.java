@@ -3,6 +3,8 @@ package com.trechina.planocycle.entity.dto;
 import lombok.Data;
 
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Data
 public class PriorityOrderDataDto {
@@ -15,5 +17,6 @@ public class PriorityOrderDataDto {
     private String attrOption;
     private  Integer flag;
     private Integer isCover;
+    private List<Map<String,Object>> referenceData;
 
 }

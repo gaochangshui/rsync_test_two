@@ -201,7 +201,8 @@ public interface ShelfPtsDataMapper {
     List<ShelfPtsData> getPtsCdByPatternCd(@Param("companyCd") String companyCd, @Param("patternCd") String shelfPatternCd);
 
     List<Map<String,Object>> getInitialExtraction(List<ShelfPtsData> shelfPtsData, String tableName, Integer productPowerCd
-            , Map<String,Object> attrTableName, List<Map<String,Object>> listAttr,String colName);
+            , Map<String,Object> attrTableName, List<Map<String,Object>> listAttr,String colName,List<Integer> comparePtsList,
+                                                  List<Integer> exceptJanPtsCd);
 
     List<LinkedHashMap<String, Object>> getColHeader(Map<String, Object> listTableName, List<Map<String, Object>> listAttr);
 
@@ -226,4 +227,7 @@ public interface ShelfPtsDataMapper {
 
     void updatePtsAndPattern(List<PtsPatternRelationDto> ptsPatternRelationDtoList);
 
+    List<Integer> getPtsCdForShelfName(String companyCd, Integer priorityPowerCd);
+
+    List<Integer> getExceptJanPtsCd(String companyCd, Integer priorityPowerCd);
 }

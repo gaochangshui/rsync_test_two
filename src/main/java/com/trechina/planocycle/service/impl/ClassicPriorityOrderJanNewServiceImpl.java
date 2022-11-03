@@ -15,6 +15,7 @@ import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.ClassicPriorityOrderDataService;
 import com.trechina.planocycle.service.ClassicPriorityOrderJanNewService;
+import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
@@ -187,11 +188,44 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
             map.put(MagicString.JAN_NEW, jan.get(MagicString.JANNEW));
             jan.put(MagicString.RANK_UPD, jan.get("rank"));
             List<Integer> ptsCd = workPriorityOrderPtsClassifyMapper.getJanPtsCd(companyCd, priorityOrderCd, jan);
+            List<Map<String, Object>> compareList = priorityOrderJanNewMapper.getCompareList(priorityOrderCd);
+            List<Map<String, Object>> exceptList = priorityOrderJanNewMapper.getExceptList(priorityOrderCd);
+
+                compareList.forEach(compare->{
+                    if (MapUtils.getString(compare,MagicString.JAN).equals(MapUtils.getString(jan,MagicString.JAN_NEW))){
+                        jan.put("actuality_compare_branch",MapUtils.getString(compare,MagicString.BRANCH));
+                    }
+                });
+                exceptList.forEach(except->{
+                    if (MapUtils.getString(except,MagicString.JAN).equals(MapUtils.getString(jan,MagicString.JAN_NEW))){
+                        jan.put("except_branch",MapUtils.getString(except,MagicString.BRANCH));
+                    }
+                });
+                jan.putIfAbsent("actuality_compare_branch","");
+                jan.putIfAbsent("except_branch","");
+                List<String> updateAllBranch = new ArrayList<>();
+            String actualityCompareBranch = jan.get("actuality_compare_branch").toString();
+            String exceptBranch = jan.get("except_branch").toString();
+            List<String> exceptBranchList = Arrays.asList(exceptBranch.split(","));
+            if (!actualityCompareBranch.equals("")){
+                updateAllBranch.addAll(Arrays.asList(actualityCompareBranch.split(",")));
+            }
+            map.put(MagicString.ACTUALITY_COMPARE_NUM, updateAllBranch.size());
             if (ptsCd.isEmpty()) {
                 map.put(MagicString.BRANCH_NUM, 0);
+                map.put(MagicString.UPDATE_ALL_NUM, updateAllBranch.size());
             } else {
-                Integer branchNum = workPriorityOrderPtsClassifyMapper.getJanBranchNum(ptsCd, jan);
-                map.put(MagicString.BRANCH_NUM, branchNum);
+                Map<String,Object> branchList = workPriorityOrderPtsClassifyMapper.getJanBranchNum(ptsCd, jan);
+                String branch = MapUtils.getString(branchList, "branch");
+                List<String> branchs = Arrays.asList(branch.split(","));
+                if (!branch.equals("")){
+                    updateAllBranch.addAll(branchs);
+                }
+                List<String> newBranchList = ListDisparityUtils.getListDisparitStr(branchs == null ? new ArrayList<>() : branchs,
+                        exceptBranchList == null ? new ArrayList<>() : exceptBranchList);
+
+                map.put(MagicString.BRANCH_NUM, newBranchList.size());
+                map.put(MagicString.UPDATE_ALL_NUM, updateAllBranch.size());
             }
             list.add(map);
         });
@@ -335,6 +369,7 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
 
         //すべて挿入
         if (!janNewList.isEmpty()) {
+
             priorityOrderJanNewMapper.insert(janNewList);
             priorityOrderJanAttributeMapper.insert(janAttributeList);
             priorityOrderJanNewMapper.updateBranchNum(priorityOrderCd,list);
@@ -386,6 +421,9 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
         priorityOrderJanNew.setRank(Integer.valueOf(String.valueOf(item.get("rank"))));
         priorityOrderJanNew.setBranchAccount(BigDecimal.valueOf(Double.parseDouble(String.valueOf(item.get(MagicString.BRANCH_ACCOUNT)))));
         priorityOrderJanNew.setNameNew(String.valueOf(item.get(MagicString.JAN_NAME)));
+        priorityOrderJanNew.setNameNew(String.valueOf(item.get(MagicString.JAN_NAME)));
+        priorityOrderJanNew.setExceptBranch(String.valueOf(item.get(MagicString.EXCEPT_BRANCH)));
+        priorityOrderJanNew.setActualityCompareBranch(String.valueOf(item.get(MagicString.ACTUALITY_COMPARE_BRANCH)));
         janNewList.add(priorityOrderJanNew);
     }
 }

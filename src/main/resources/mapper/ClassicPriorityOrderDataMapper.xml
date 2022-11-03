@@ -375,7 +375,7 @@
                 ${item}
             </foreach>
                ,pos_amount,branch_amount,unit_price,branch_num,branch_amount_upd,branch_num_upd,sale_forecast,difference,goods_rank,
-
+            actuality_compare_num,actuality_all_num,actuality_compare_branch,update_all_num,except_branch,
             case mst.rank when -1 then mst.rank else
             ROW_NUMBER() OVER (
             partition by
@@ -418,7 +418,7 @@
             coalesce(datas.${item},'') as ${item}
         </foreach>
         ,datas.pos_amount,datas.branch_amount,datas.unit_price,datas.branch_num,datas.branch_amount_upd,datas.branch_num_upd,difference,sale_forecast,
-               datas.rank_prop,datas.rank,datas.rank_upd
+               datas.rank_prop,datas.rank,datas.rank_upd,actuality_compare_num,actuality_all_num,actuality_compare_branch,update_all_num,except_branch
         from priority.work_priority_order_result_data datas
         left join priority.work_priority_order_jan_proposal pro
         on datas.jan_old = pro.jan_old and pro.priority_order_cd = #{priorityOrderCd} and pro.company_cd = #{companyCd} and pro.flag = 1
@@ -580,10 +580,10 @@
     <insert id="insertWorkDataForFinal">
         insert into priority.work_priority_order_result_data(priority_order_cd,author_cd,company_cd,jan_new,jan_old,pos_amount,branch_amount
         ,unit_price,sku,attr1,attr2,attr3,attr4,attr5,attr6,attr7,attr8,attr9,attr10,rank,rank_prop,goods_rank,rank_upd,branch_num,branch_num_upd
-        ,difference,sale_forecast,branch_amount_upd)
+        ,difference,sale_forecast,branch_amount_upd,actuality_compare_num,actuality_all_num,actuality_compare_branch,update_all_num,except_branch)
             select #{newPriorityOrderCd},author_cd,company_cd,jan_new,jan_old,pos_amount,branch_amount
                                     ,unit_price,sku,attr1,attr2,attr3,attr4,attr5,attr6,attr7,attr8,attr9,attr10,rank,rank_prop,goods_rank,rank_upd,branch_num,branch_num_upd
-                                    ,difference,sale_forecast,branch_amount_upd
+                                    ,difference,sale_forecast,branch_amount_upd,actuality_compare_num,actuality_all_num,actuality_compare_branch,update_all_num,except_branch
         from
             priority.priority_order_result_data
             where company_cd = #{companyCd} and priority_order_cd = #{priorityOrderCd}
@@ -646,7 +646,7 @@
     </select>
     <select id="getWorkData" resultType="java.util.Map">
         select jan_new,jan_old,pos_amount,branch_amount,unit_price,sku,rank,rank_prop,goods_rank,rank_upd,branch_num,branch_num_upd,
-               branch_amount_upd,difference,sale_forecast,
+               branch_amount_upd,difference,sale_forecast,update_all_num,actuality_all_num,actuality_compare_num,
                <foreach collection="attrList" separator=","  item="item" >
                    ${item} as ${item}
                </foreach>
@@ -658,7 +658,9 @@
                     ,rank_upd
     </select>
     <select id="getJanBranchNumList" resultType="java.util.Map">
-        select distinct prd.jan_new,prd.jan_old,prd.attr1,prd.attr2,prd.rank_upd,count(distinct ptsB.branch) as  branch_num
+        select distinct prd.jan_new,prd.jan_old,prd.attr1,prd.attr2,prd.rank_upd,
+                        count(distinct ptsB.branch) as  branch_num,
+        array_to_string(array_agg(distinct ptsB.branch),',') branch
         from priority.work_priority_order_result_data prd
         left join priority.work_priority_order_pts_classify wkC
         on wkC.priority_order_cd = #{priorityOrderCd}
@@ -686,7 +688,7 @@
         ,rank_upd
     </select>
     <select id="getJanBranchNum" resultType="java.util.Map">
-        select  branch_num  , branch_amount_upd
+        select  branch_num  , branch_amount_upd,actuality_compare_branch,except_branch
         from priority.work_priority_order_result_data where jan_old = #{janOld} and jan_new = #{janNew}
         and  priority_order_cd = #{priorityOrderCd}
     </select>

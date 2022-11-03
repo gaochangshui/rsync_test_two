@@ -159,6 +159,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     private VehicleNumCache vehicleNumCache;
     @Autowired
     private PriorityOrderPtsResultJandataMapper ptsResultJandataMapper;
+    @Autowired
+    private ComparePriorityOrderPatternMapper comparePriorityOrderPatternMapper;
 
     /**
      * 優先順位テーブルlistの取得
@@ -267,6 +269,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         //Catepak 最終テーブルデータの保存
         priorityOrderCatepakMapper.deleteFinalByPrimaryKey(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
         priorityOrderCatepakMapper.insertFinalData(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+
+        comparePriorityOrderPatternMapper.delFinal(priorityOrderCd);
+        comparePriorityOrderPatternMapper.setFinalForWK(priorityOrderCd);
 
         if(this.interruptThread(priorityOrderMstDto.getTaskID(), "1")){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

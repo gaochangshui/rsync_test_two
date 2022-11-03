@@ -12,11 +12,12 @@
   </resultMap>
   <insert id="insert" parameterType="com.trechina.planocycle.entity.po.PriorityOrderJanNew">
     insert into priority.work_priority_order_jan_new (company_cd, priority_order_cd, jan_new,
-      rank, branch_num, branch_account, name_new )
+      rank, branch_num, branch_account, name_new ,actuality_compare_branch,except_branch)
     values
            <foreach collection="lists" separator="," item="list">
            (#{list.companyCd,jdbcType=VARCHAR}, #{list.priorityOrderCd,jdbcType=INTEGER}, #{list.janNew,jdbcType=VARCHAR},
-      #{list.rank,jdbcType=INTEGER} , #{list.branchNum,jdbcType=INTEGER}::integer , #{list.branchAccount,jdbcType=NUMERIC} , #{list.nameNew,jdbcType=VARCHAR})
+      #{list.rank,jdbcType=INTEGER} , #{list.branchNum,jdbcType=INTEGER}::integer , #{list.branchAccount,jdbcType=NUMERIC} , #{list.nameNew,jdbcType=VARCHAR}
+      ,#{list.actualityCompareBranch},#{list.exceptBranch})
            </foreach>
   </insert>
 
@@ -32,6 +33,18 @@
         CASE jan_new
         <foreach collection="list" item="item" >
             WHEN trim(#{item.jan_new}) THEN #{item.branch_num}::integer
+        </foreach>
+        else 0 end,
+         update_all_num=
+        CASE jan_new
+        <foreach collection="list" item="item" >
+            WHEN trim(#{item.jan_new}) THEN #{item.update_all_num}::integer
+        </foreach>
+        else 0 end,
+        actuality_compare_num=
+        CASE jan_new
+        <foreach collection="list" item="item" >
+            WHEN trim(#{item.jan_new}) THEN #{item.actuality_compare_num}::integer
         </foreach>
         else 0 end
         where priority_order_cd = #{priorityOrderCd,jdbcType=INTEGER}
@@ -184,12 +197,12 @@
     <select id="getJanNews" resultType="java.util.Map">
         select
         jan_new ,name_new as sku,rank as rank_upd,branch_account as branch_amount_upd,branch_num as branch_num_upd, rank as goods_rank,
-        rank as rank_prop,
+        rank as rank_prop,actuality_compare_branch,except_branch,update_all_num,actuality_compare_num,
         <foreach collection="colName" item="item" separator=",">
             ${item}
         </foreach>
         from (
-        select jannew.jan_new,name_new,rank,branch_account,branch_num,
+        select jannew.jan_new,name_new,rank,branch_account,branch_num,actuality_compare_branch,except_branch,update_all_num,actuality_compare_num,
         max( case when attr.attr_cd = 1 then attr.attr_value else null end ) as attr1,
         max( case when attr.attr_cd = 2 then attr.attr_value else null end ) as attr2,
         max(  case when attr.attr_cd = 3 then attr.attr_value else null end)  as attr3,
@@ -208,7 +221,11 @@
 
         where jannew.priority_order_cd = #{priorityOrderCd}
 
-        GROUP BY  jannew.jan_new,name_new,rank,branch_account,branch_num)as jannews
+        GROUP BY  jannew.jan_new,name_new,rank,branch_account,branch_num,
+        actuality_compare_branch,
+        except_branch,
+        update_all_num,
+        actuality_compare_num)as jannews
         where
         not exists(select jan_old from priority.work_priority_order_jan_proposal pro1 where jannews.jan_new = pro1.jan_old and pro1.priority_order_cd = #{priorityOrderCd} and pro1.flag=1)
         and not exists(select jan_old from priority.work_priority_order_jan_proposal pro2 where jannews.jan_new = pro2.jan_new and pro2.priority_order_cd = #{priorityOrderCd} and pro2.flag=1)
@@ -297,6 +314,40 @@
         select array_to_string(array_agg(jan_new),',')
         from    priority.work_priority_order_jan_new
         where priority_order_cd = #{priorityOrderCd}
+    </select>
+    <select id="getCompareList" resultType="java.util.Map">
+        select
+            jan, array_to_string(array_agg(DISTINCT branch),',') branch
+        from
+            priority.work_compare_priority_order_pattern shelfname
+                left join
+            planocycle.shelf_pattern_mst patternmst
+            on patternmst.shelf_name_cd = shelfname.shelf_name_cd
+                inner join planocycle.shelf_pts_data ptsdata
+                           on ptsdata.shelf_pattern_cd = patternmst.shelf_pattern_cd
+                left join planocycle.shelf_pts_data_jandata jandata
+                          on ptsdata.id = jandata.pts_cd
+                left join planocycle.shelf_pattern_branch branch
+                          on branch.shelf_pattern_cd = patternmst.shelf_pattern_cd
+        where priority_order_cd = #{priorityOrderCd}
+        group by jan
+    </select>
+    <select id="getExceptList" resultType="java.util.Map">
+        select
+            jan, array_to_string(array_agg(DISTINCT branch),',') branch
+        from
+            priority.work_compare_priority_order_pattern shelfname
+                left join
+            planocycle.shelf_pattern_mst patternmst
+            on patternmst.shelf_name_cd = shelfname.shelf_name_cd
+                inner join planocycle.shelf_pts_data ptsdata
+                           on ptsdata.shelf_pattern_cd = patternmst.shelf_pattern_cd
+                left join planocycle.shelf_pts_data_jandata jandata
+                          on ptsdata.id = jandata.pts_cd
+                left join planocycle.shelf_pattern_branch branch
+                          on branch.shelf_pattern_cd = patternmst.shelf_pattern_cd
+        where priority_order_cd = #{priorityOrderCd} and repeat_flag = 1
+        group by jan
     </select>
 
 
