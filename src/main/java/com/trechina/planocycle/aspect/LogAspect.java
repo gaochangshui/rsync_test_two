@@ -64,27 +64,31 @@ public class LogAspect {
     //定義通知
     @AfterThrowing(pointcut = "point()",throwing = "ex")
     public  void serviceMonitor(JoinPoint joinPoint,Throwable ex) {
-        //取得＃シュトク＃ターゲット方法名称
-        String methodName = joinPoint.getSignature().getName();
-        //取得＃シュトク＃被代理オブジェクト象名称
-        String targetName = joinPoint.getTarget().getClass().getName();
+        try{
+            //取得＃シュトク＃ターゲット方法名称
+            String methodName = joinPoint.getSignature().getName();
+            //取得＃シュトク＃被代理オブジェクト象名称
+            String targetName = joinPoint.getTarget().getClass().getName();
 
-        Object[] arguments = joinPoint.getArgs();
+            Object[] arguments = joinPoint.getArgs();
 
-        JSONArray jsonArray = new JSONArray();
-        jsonArray.addAll(Arrays.asList(arguments));
-        //取得＃シュトク＃classオブジェクト象
-        String s = JSON.toJSONString(ex);
-        String params = jsonArray.toString();
-        String browser = httpServletRequest.getHeader("User-Agent");
-        String authorCd = session.getAttribute("aud").toString();
-        String url = httpServletRequest.getRequestURI();
-        Map<String, Object> error = this.errorMap();
-        executor.execute(()-> {
-            logMapper.saveErrorLog(targetName + "_" + methodName, params, s, browser, authorCd, url);
-            this.errInfoForEmail(error, ex.getMessage(), methodName, params);
-            }
-        );
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.addAll(Arrays.asList(arguments));
+            //取得＃シュトク＃classオブジェクト象
+            String s = JSON.toJSONString(ex);
+            String params = jsonArray.toString();
+            String browser = httpServletRequest.getHeader("User-Agent");
+            String authorCd = session.getAttribute("aud").toString();
+            String url = httpServletRequest.getRequestURI();
+            Map<String, Object> error = this.errorMap();
+            executor.execute(()-> {
+                        logMapper.saveErrorLog(targetName + "_" + methodName, params, s, browser, authorCd, url);
+                        this.errInfoForEmail(error, ex.getMessage(), methodName, params);
+                    }
+            );
+        }catch (Exception e){
+            log.error("serviceMonitor",e);
+        }
     }
 
     public  void setTryErrorLog(Exception ex, Object[] o) {

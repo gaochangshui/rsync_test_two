@@ -21,8 +21,9 @@
     <select id="selectBackupJan" resultType="map">
         select "group" attr_list, sku, jan, rank_upd,branch_amount_upd,branch_num_upd
         from priority.priority_order_pts_backup_jan backupjan where priority_order_cd=#{priorityOrderCd} and branch=#{branch}
-        and shelf_pattern_cd=#{shelfPatternCd} and not exists(select * from priority.priority_order_pts_pattern_name patternname where
-        patternname.jan=backupjan.jan and shelf_name_cd!=#{shelfNameCd})
+        and shelf_pattern_cd=#{shelfPatternCd}
+--         and not exists(select * from priority.priority_order_pts_pattern_name patternname where
+--         patternname.jan=backupjan.jan and shelf_name_cd!=#{shelfNameCd})
         order by "group", rank_upd
     </select>
 </mapper>
