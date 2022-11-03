@@ -91,6 +91,4 @@ public interface ClassicPriorityOrderMstService {
                    String branchCd, Integer ptsVersion, String companyCd, List<Map<String, Object>> deleteList,
                    List<Map<String, Object>> newList, String fileName, List<String> branchList);
 
-    void saveJanShelfNameCd(List<Map<String, Object>> newJanList, Integer shelfNameCd, Integer priorityOrderCd,
-                            Integer patternCd, List<String> branchList);
 }

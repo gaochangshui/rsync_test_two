@@ -486,7 +486,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         Integer modeCheck = priorityOrderMstMapper.selectModeCheck(priorityOrderCd);
 
         ptsBackupJanMapper.deleteBackupJanByCd(priorityOrderCd);
-        ptsPatternNameMapper.deletePtsPatternNameByCd(priorityOrderCd);
         comparisonJanDataMapper.deleteCompareJandata(priorityOrderCd);
         ptsResultJandataMapper.deletePtsJandata(priorityOrderCd);
 
@@ -494,7 +493,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
         //pts foreach
         List<ShelfPtsDataDto> patternList = patternMapper.selectPattern(companyCd, priorityOrderCd);
-        List<Map<String, Object>> branchs = new ArrayList<>();
         List<Map<String, String>> janReplace = janReplaceMapper.selectJanReplace(companyCd, priorityOrderCd);
         Map<String, String> janReplaceMap = janReplace.stream().collect(Collectors.toMap(map->MapUtils.getString(map, MagicString.JAN_OLD), map->MapUtils.getString(map, MagicString.JAN_NEW)));
 
@@ -524,7 +522,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
             Integer shelfPatternCd = pattern.getShelfPatternCd();
             List<Map<String, Object>> patternBranches = shelfPatternBranchMapper.selectAllPatternBranch(priorityOrderCd, companyCd, tenTableName, shelfPatternCd);
-            branchs.addAll(patternBranches);
 
             List<String> patternBranchCd = patternBranches.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
             List<Map<String, Object>> commodityMustJans = null;
@@ -2002,8 +1999,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
         List<Map<String, Object>> newPtsJanList = this.reOrderByTaiTana(newPtsJanMap);
 
-        priorityOrderMstService.saveJanShelfNameCd(newPtsJanList, pattern.getShelfNameCd(), priorityOrderCd, pattern.getShelfPatternCd(), patternBranchCd);
-
         ptsResultJandataMapper.insertPtsJandata(newPtsJanList, companyCd, priorityOrderCd, pattern.getShelfPatternCd(), branchCd, compareFlag);
         return resultMap;
     }
@@ -2108,15 +2103,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         return newPtsJanList;
     }
 
-    /**
-     * save jan and shelf_name_cd, in order to process [[優先順位表で複数棚名称を選択した時、出力されるパターンでJANが重複しないように]]
-     * @return
-     */
-    @Override
-    public void saveJanShelfNameCd(List<Map<String, Object>> newJanList, Integer shelfNameCd, Integer priorityOrderCd,
-                                   Integer patternCd, List<String> branchList){
-        ptsPatternNameMapper.insertPtsPatternName(priorityOrderCd, shelfNameCd, newJanList, patternCd, JSON.toJSONString(branchList));
-    }
     public String generateCsv2File(List<String> newJanList, List<String> deleteJanList, String fileParentPath,
                                    List<Map<String, Object>> newPtsJanList, ShelfPtsHeaderDto shelfPtsHeaderDto,
                                    List<ShelfPtsDataTaimst> shelfPtsDataTaimst, List<ShelfPtsDataTanamst> shelfPtsDataTanamst, String fileName) {

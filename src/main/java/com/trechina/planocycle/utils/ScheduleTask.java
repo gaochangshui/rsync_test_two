@@ -170,7 +170,6 @@ public class ScheduleTask {
     @Scheduled(cron = "0 5 0 * * ?")
     public void doDelLog(){
         ptsBackupJanMapper.deleteBackupJan();
-        patternNameMapper.deletePtsPatternName();
         logMapper.deleteLog();
         List<String> workTableName = productPowerDataMapper.getWorkTableName();
         for (String s : workTableName) {
