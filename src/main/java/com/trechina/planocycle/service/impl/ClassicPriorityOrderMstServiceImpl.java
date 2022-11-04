@@ -2031,13 +2031,10 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             List<String> newPtsJanCdList = newPtsJanList.stream().map(map -> MapUtils.getString(map, MagicString.JAN)).collect(Collectors.toList());
             List<Map<String, Object>> backupJan = backupJanListByGroup.getOrDefault(entry.getKey(), ImmutableList.of());
 
-            //List<String> existOtherPatternJan = ptsPatternNameMapper.selectExistPatternJan(priorityOrderCd, shelfNameCd,
-            //        newPtsJanCdList, "??| '{"+Joiner.on(",").join(branchList)+"}'");
             List<Map<String, Object>> removeBackupJan = new ArrayList<>();
             BeanUtils.copyProperties(backupJan, removeBackupJan);
             removeBackupJan.removeIf(janMap->newPtsJanCdList.contains(MapUtils.getString(janMap, MagicString.JAN)));
 
-            //if(!existOtherPatternJan.isEmpty()){
             newPtsJanList.forEach(janMap->{
                 String janOld = MapUtils.getString(janMap, MagicString.JAN_OLD);
                 String janCd = MapUtils.getString(janMap, MagicString.JAN);
@@ -2089,7 +2086,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             });
 
             newPtsJanMap.put(entry.getKey(), newPtsJanList);
-            //}
         }
     }
 
