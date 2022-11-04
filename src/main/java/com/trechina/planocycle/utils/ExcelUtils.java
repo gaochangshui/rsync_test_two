@@ -467,9 +467,9 @@ public class ExcelUtils {
         try(XSSFWorkbook workbook = new XSSFWorkbook()){
             XSSFSheet sheet = workbook.createSheet();
             //最初の行の索引
-            int colIndex=4;
+            int colIndex=3;
             //2行目の索引
-            int headerColIndex=4;
+            int headerColIndex=3;
             XSSFCell cell = null;
             XSSFRow dataRow;
             //最初の行
@@ -501,9 +501,6 @@ public class ExcelUtils {
                     headerCell.setCellValue("商品名");
                     headerCell = headerRow.createCell(2);
                     headerCell.setCellType(CellType.STRING);
-                    headerCell.setCellValue("メーカー");
-                    headerCell = headerRow.createCell(3);
-                    headerCell.setCellType(CellType.STRING);
                     headerCell.setCellValue("合計");
                     for (String colName : headers) {
                         headerCell = headerRow.createCell(headerColIndex);
@@ -519,7 +516,7 @@ public class ExcelUtils {
                 for (int i = 0; i < column.size(); i++) {
                     cell = dataRow.createCell(i);
 
-                    if (i  == 3){
+                    if (i  == 2){
                         cell.setCellValue(Integer.parseInt(datum.get(column.get(i)).toString()));
                         cell.setCellType(CellType.NUMERIC);
                     }else {

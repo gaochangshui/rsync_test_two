@@ -46,7 +46,9 @@ public class CommodityScoreDataController {
         String customerConditionStr = map.get("customerCondition").toString();
         String prodAttrData = new Gson().toJson(map.get("prodAttrData"));
         String singleJan = new Gson().toJson(map.get("singleJan"));
-        commodityScoreDataService.setProductParam(map,productPowerCd,companyCd,authorCd,customerConditionStr,prodAttrData,singleJan);
+        String level = new Gson().toJson(map.get("level"));
+
+        commodityScoreDataService.setProductParam(map,productPowerCd,companyCd,authorCd,customerConditionStr,prodAttrData,singleJan,level);
         return commodityScoreDataService.getCommodityScoreTaskId(map);
     }
 

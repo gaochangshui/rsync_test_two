@@ -133,6 +133,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             String prodAttrData = new Gson().toJson(productPowerParam.getProdAttrData());
             productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
             String singleJan =new Gson().toJson(productPowerParam.getSingleJan());
+            String level =new Gson().toJson(productPowerParam.getLevel());
 
         String basketProdCd = productPowerParam.getBasketProdCd();
         if(!Strings.isNullOrEmpty(basketProdCd)){
@@ -143,7 +144,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         }
 
         productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd,newProductPowerCd
-                ,prodAttrData, singleJan);
+                ,prodAttrData, singleJan,level);
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }

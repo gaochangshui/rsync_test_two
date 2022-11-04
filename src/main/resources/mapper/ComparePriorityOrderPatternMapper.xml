@@ -28,5 +28,6 @@
         select shelf_name_cd as"shelfCd",case when compare_flag = 1 then true else false end as "reference"
              ,case when repeat_flag = 1 then true else false end as "flag"
         from priority.work_compare_priority_order_pattern
+        where priority_order_cd = #{priorityOrderCd}
     </select>
 </mapper>

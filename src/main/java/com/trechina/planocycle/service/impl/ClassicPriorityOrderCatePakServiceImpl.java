@@ -224,7 +224,10 @@ public class ClassicPriorityOrderCatePakServiceImpl implements ClassicPriorityOr
             objectMap.put(MagicString.RANK_UPD, objectMap.get("rank"));
 
         }
-        List<Map<String, Object>> branchNum = (List<Map<String, Object>>) classicPriorityOrderDataService.getBranchNum(list).get("data");
+        List<Map<String, Object>> branchNum = new ArrayList<>();
+        if (!list.isEmpty()) {
+            branchNum = (List<Map<String, Object>>) classicPriorityOrderDataService.getBranchNum(list).get("data");
+        }
         for (Map<String, Object> objectMap : list) {
             for (Map<String, Object> stringObjectMap : branchNum) {
                 if (objectMap.get(MagicString.JANNEW).equals(stringObjectMap.get(MagicString.JAN_NEW)) && objectMap.get(MagicString.JAN_OLD) == stringObjectMap.get(MagicString.JAN_OLD)) {

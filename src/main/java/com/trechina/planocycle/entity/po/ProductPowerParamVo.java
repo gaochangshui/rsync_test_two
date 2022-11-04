@@ -27,5 +27,6 @@ public class ProductPowerParamVo {
     private Object singleJan;
     private Integer showItemCheck;
     private String basketCondition;
+    private Object level;
 
 }

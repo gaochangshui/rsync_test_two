@@ -194,15 +194,21 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         }).collect(Collectors.toList());
                         if (!posBranchIntersection.isEmpty()) {
                             List<Map<String, Object>> maps = productPowerDataMapper.selectSyokikaAccount(productPowerCd);
-                            maps.stream().forEach(map-> posBranchIntersection.forEach(branch->{
-                                if (branch.get("jan").equals(map.get("jan"))){
-                                    double posItem01 = Double.parseDouble(map.get("pos_item01").toString());
-                                    double posItem02 = Double.parseDouble(map.get("pos_item02").toString());
-                                    int branchNum = Integer.parseInt(branch.get("branchIntersection").toString());
-                                    branch.put("posStoreItem11",branchNum == 0?0:posItem01/branchNum);
-                                    branch.put("posStoreItem12",branchNum == 0?0:posItem02/branchNum);
-                                }
-                            }));
+                            maps.stream().forEach(map-> {
+                                posBranchIntersection.forEach(branch->{
+                                    if (branch.get("jan").equals(map.get("jan"))){
+
+                                        double posItem01 = Double.parseDouble(map.get("pos_item01").toString());
+                                        double posItem02 = Double.parseDouble(map.get("pos_item02").toString());
+                                        int branchNum = Integer.parseInt(branch.get("branchIntersection").toString());
+                                        branch.put("posStoreItem11",branchNum == 0?0:posItem01/branchNum);
+                                        branch.put("posStoreItem12",branchNum == 0?0:posItem02/branchNum);
+
+
+                                    }
+                                });
+
+                            });
                             int batchSize = 1000;
                             int janDataNum = (int) Math.ceil(posBranchIntersection.size() / 1000.0);
                             for (int i = 0; i < janDataNum; i++) {
@@ -501,14 +507,15 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         return map;
     }
 
-    public void setProductParam(Map<String, Object> map, Integer productPowerCd, String companyCd, String authorCd, String customerConditionStr, String prodAttrData, String singleJan) {
+    public void setProductParam(Map<String, Object> map, Integer productPowerCd, String companyCd, String authorCd, String customerConditionStr
+            , String prodAttrData, String singleJan,String level) {
         //mst
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
         productPowerMstMapper.deleteWork(companyCd,productPowerCd);
         productPowerMstMapper.setWork(productPowerCd,companyCd,authorCd,simpleDateFormat.format(date));
         productPowerParamMstMapper.deleteWork(companyCd,productPowerCd);
-        productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr,prodAttrData,singleJan);
+        productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr,prodAttrData,singleJan,level);
         //yobi
         productPowerDataMapper.deleteWKYobiiitern(authorCd, companyCd,productPowerCd);
         productPowerDataMapper.deleteWKYobiiiternData(authorCd, companyCd,productPowerCd);

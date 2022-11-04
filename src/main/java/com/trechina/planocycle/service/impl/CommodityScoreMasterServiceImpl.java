@@ -230,8 +230,11 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
             map.put("value",value);
         });
         LinkedHashMap<String, Object> singleJan = new Gson().fromJson(param.getSingleJan().toString(), new com.google.common.reflect.TypeToken<LinkedHashMap<String, Object>>(){}.getType());
+
+        LinkedHashMap<String, Object> level = new Gson().fromJson(param.getLevel().toString(), new com.google.common.reflect.TypeToken<LinkedHashMap<String, Object>>(){}.getType());
         param.setProdAttrData(prodAttrData);
         param.setSingleJan(singleJan);
+        param.setLevel(level);
         List<String> cdList = new ArrayList<>();
          cdList.addAll(Arrays.asList(param.getProject().split(",")));
         List<String> yobi = productPowerDataMapper.getYobi(companyCd, productPowerNo, aud);
@@ -329,6 +332,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setCompany(companyCd);
         powerParam.setProdAttrData(param.getProdAttrData());
         powerParam.setSingleJan(param.getSingleJan());
+        powerParam.setLevel(param.getLevel());
         //powerParam.setShowItemCheck(param.getShowItemCheck());
         String basketCondition = param.getBasketCondition();
         if(Strings.isNullOrEmpty(basketCondition)){
