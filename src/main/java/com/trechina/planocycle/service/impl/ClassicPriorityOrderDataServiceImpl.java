@@ -320,7 +320,9 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
             comparePriorityOrderPatternList.add(comparePriorityOrderPattern);
         }
         comparePriorityOrderPatternMapper.delWk(priorityPowerCd);
-        comparePriorityOrderPatternMapper.insertWK(comparePriorityOrderPatternList);
+        if (!comparePriorityOrderPatternList.isEmpty()) {
+            comparePriorityOrderPatternMapper.insertWK(comparePriorityOrderPatternList);
+        }
     }
 
     private List<Map<String, Object>> allBranchNum(List<Map<String, Object>> datas) {
@@ -669,7 +671,7 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         patternNewCompare.forEach(map->{
             newAmountNum.forEach(newAmount->{
                 if (newAmount.get(MagicString.SHELF_PATTERN_CD).equals(map.getShelfPatternCd())){
-                    map.setNewAmount(Integer.parseInt(newAmount.get(MagicString.AMOUNT).toString()));
+                    map.setNewAmount(Double.valueOf(newAmount.get(MagicString.AMOUNT).toString()).intValue());
                 }
             });
         });
