@@ -69,6 +69,9 @@ public class SysConfigServiceImpl implements SysConfigService {
         commonPartsDataVO.setStoreIsCore(String.valueOf(companyList.get("store_is_core")));
         commonPartsDataVO.setDateIsCore(String.valueOf(companyList.get("date_is_core")));
         resultMap.put("commonPartsData",commonPartsDataVO);
+
+        String level = sysConfigMapper.selectSycConfig(MagicString.LEVEL);
+        resultMap.put("level", level);
         return ResultMaps.result(ResultEnum.SUCCESS, resultMap);
     }
 
