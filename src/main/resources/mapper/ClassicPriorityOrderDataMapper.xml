@@ -360,14 +360,14 @@
         <foreach collection="jan" item="obj" open="(" close=")" separator=",">
             #{obj}
         </foreach>
-        and rank != -1
+        and rank != -1 and priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="existJanNew" resultType="string">
         select jan_new from priority.work_priority_order_result_data where jan_new in
         <foreach collection="jan" item="obj" open="(" close=")" separator=",">
             #{obj}
         </foreach>
-        and rank != -1
+        and rank != -1 and priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getTempDataAndMst" resultType="java.util.Map">
         select jan_old,jan_new,sku,
@@ -723,7 +723,7 @@
         where datas.priority_order_cd = #{priorityOrderCd}
     </select>
     <select id="getJanName" resultType="java.util.Map">
-        select jan_new jan,sku "janName",COALESCE("${makerCol}",'_') as maker
+        select jan_new jan,sku "janName"
         from priority.work_priority_order_result_data datas
         left join ${tableName} info
         on info."1" = datas.jan_new

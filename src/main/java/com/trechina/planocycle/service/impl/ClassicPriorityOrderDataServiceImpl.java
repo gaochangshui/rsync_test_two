@@ -306,6 +306,12 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
     }
 
+    /**
+     *
+     * @param referenceData
+     * @param priorityPowerCd
+     * @param companyCd
+     */
     private void saveReferencePattern(List<Map<String, Object>> referenceData, Integer priorityPowerCd, String companyCd) {
         List<ComparePriorityOrderPattern> comparePriorityOrderPatternList = new ArrayList<>();
         for (Map<String, Object> referenceDatum : referenceData) {
@@ -961,8 +967,8 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         if(janList.isEmpty()){
             return janMsg;
         }
-        List<String> existJanOld = priorityOrderDataMapper.existJanOld(janList);
-        List<String> existJanNew = priorityOrderDataMapper.existJanNew(janList);
+        List<String> existJanOld = priorityOrderDataMapper.existJanOld(janList,priorityOrderCd);
+        List<String> existJanNew = priorityOrderDataMapper.existJanNew(janList,priorityOrderCd);
 
         if(this.isEmptyJan(!existJanOld.isEmpty(),!existJanNew.isEmpty())){
             existJanOld.addAll(existJanNew);

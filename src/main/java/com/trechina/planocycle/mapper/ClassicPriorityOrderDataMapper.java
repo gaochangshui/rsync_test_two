@@ -84,9 +84,9 @@ public interface ClassicPriorityOrderDataMapper {
                                                 @Param("companyCd") String companyCd,
                                                 @Param("priorityOrderCd") Integer priorityOrderCd);
 
-    List<String> existJanOld(List<String> jan);
+    List<String> existJanOld(List<String> jan,Integer priorityOrderCd);
 
-    List<String> existJanNew(List<String> jan);
+    List<String> existJanNew(List<String> jan,Integer priorityOrderCd);
 
     List<Map<String,Object>> getTmpTable(@Param("colNameList")List<String>colNameList,@Param("priorityOrderCd") Integer priorityOrderCd,@Param("companyCd")String companyCd);
 
@@ -127,7 +127,7 @@ public interface ClassicPriorityOrderDataMapper {
 
     List<Map<String,Object>> getJanInfo(Integer priorityOrderCd,String janInfoTableName);
 
-    List<Map<String,Object>> getJanName(List<String> janList,Integer priorityOrderCd,String makerCol,String tableName);
+    List<Map<String,Object>> getJanName(List<String> janList,Integer priorityOrderCd,String tableName);
 
     List<LinkedHashMap<String,Object>> getAttrForName(String companyCd, Integer priorityOrderCd);
 

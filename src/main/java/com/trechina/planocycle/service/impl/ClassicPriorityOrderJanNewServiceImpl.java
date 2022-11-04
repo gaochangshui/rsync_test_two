@@ -316,9 +316,12 @@ public class ClassicPriorityOrderJanNewServiceImpl implements ClassicPriorityOrd
                 objectMap.put(MagicString.PRIORITY_ORDER_CD,priorityOrderCd);
                 objectMap.put(MagicString.RANK_UPD,objectMap.get("rank"));
             });
-
-            List<Map<String, Object>> branchNum = (List<Map<String, Object>>)priorityOrderDataService.getBranchNum(list1).get("data");
-            list1.forEach(objectMap-> branchNum.forEach(stringObjectMap->{
+            List<Map<String, Object>> branchNum = new ArrayList<>();
+            if (!list1.isEmpty()) {
+                 branchNum = (List<Map<String, Object>>) priorityOrderDataService.getBranchNum(list1).get("data");
+            }
+            List<Map<String, Object>> finalBranchNum = branchNum;
+            list1.forEach(objectMap-> finalBranchNum.forEach(stringObjectMap->{
                 if (objectMap.get(MagicString.JANNEW).equals(stringObjectMap.get(MagicString.JAN_NEW))){
                     objectMap.put(MagicString.BRANCHNUM,stringObjectMap.get("branch_num_upd"));
                     objectMap.remove(MagicString.JAN_NEW);

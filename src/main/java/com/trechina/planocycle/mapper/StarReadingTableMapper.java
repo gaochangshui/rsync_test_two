@@ -21,7 +21,7 @@ public interface StarReadingTableMapper {
     List<Map<String, Object>> getBranchdiffForBranch(@Param("item") StarReadingTableDto starReadingTableDto
             , @Param("branchList")List<Map<String,Object>> branchList,@Param("tableName")String tableName,@Param("groupCompany")List<String> groupCompany);
 
-    List<Map<String,Object>> getPatterndiff(@Param("priorityOrderCd") Integer priorityOrderCd,@Param("tableName")String tableName,@Param("makerCol")String makerCol);
+    List<Map<String,Object>> getPatterndiff(@Param("priorityOrderCd") Integer priorityOrderCd,@Param("tableName")String tableName);
 
     List<Map<String,Object>> getPatternNameList(@Param("priorityOrderCd") Integer priorityOrderCd);
 
@@ -57,5 +57,5 @@ public interface StarReadingTableMapper {
 
     void insertForFinalByBranch(String companyCd, Integer priorityOrderCd, Integer newPriorityOrderCd);
 
-    List<Map<String,Object>> getJanOrName(String companyCd,Integer priorityOrderCd,String tableName,String makerCol);
+    List<Map<String,Object>> getJanOrName(String companyCd,Integer priorityOrderCd,String tableName);
 }
