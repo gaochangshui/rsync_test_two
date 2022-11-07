@@ -1116,7 +1116,11 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
 
                     if(priorityOrderJanNews!=null){
                         Optional<ClassicPriorityOrderJanNew> firstOpt = priorityOrderJanNews.stream().filter(janNew -> janNew.getJanNew().equals(downloadDto.getJan())).findFirst();
-                        firstOpt.ifPresent(priorityOrderJanNew -> dataMap.put("sku", priorityOrderJanNew.getNameNew()));
+                        firstOpt.ifPresent(priorityOrderJanNew -> {
+                            dataMap.put("sku", priorityOrderJanNew.getNameNew());
+                            dataMap.put(MagicString.ACTUALITY_COMPARE_BRANCH, firstOpt.get().getActualityCompareBranch());
+                            dataMap.put(MagicString.EXCEPT_BRANCH, firstOpt.get().getExceptBranch());
+                        });
                     }
 
                     dataMap.put(MagicString.JAN_OLD,"_");
@@ -1312,11 +1316,23 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
         allAttrSortList.removeIf(s->s.equals(taiCd)||s.equals(tanaCd));
 
         List<String> janMstList = maps.stream().map(map -> map.get(MagicString.JAN_NEW).toString()).collect(Collectors.toList());
+
+        List<Map<String, Object>> compareList = priorityOrderJanNewMapper.getCompareList(priorityOrderCd);
+        List<Map<String, Object>> exceptList = priorityOrderJanNewMapper.getExceptList(priorityOrderCd);
+
         //not in jan master
         newJanList.stream().filter(newJan->!janMstList.contains(newJan.getJan())).forEach(newJan->{
             Map<String, Object> item = new HashMap<>(16);
             item.put("sku","");
             item.put(MagicString.JAN_NEW,newJan.getJan());
+
+            Optional<Map<String, Object>> firstCompare = compareList.stream().filter(compare ->
+                    Objects.equals(MapUtils.getString(compare, MagicString.JAN), newJan.getJan())).findFirst();
+            firstCompare.ifPresent(stringObjectMap -> newJan.setActualityCompareBranch(MapUtils.getString(stringObjectMap, MagicString.BRANCH)));
+
+            Optional<Map<String, Object>> firstExcept = exceptList.stream().filter(except ->
+                    Objects.equals(MapUtils.getString(except, MagicString.JAN), newJan.getJan())).findFirst();
+            firstExcept.ifPresent(stringObjectMap -> newJan.setExceptBranch(MapUtils.getString(stringObjectMap, MagicString.BRANCH)));
 
             this.fillCommonParam(newJan, item);
             item.put(taiCd, newJan.getAttr1());

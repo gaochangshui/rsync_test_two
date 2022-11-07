@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
+import com.google.common.cache.Cache;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
@@ -10,6 +11,7 @@ import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
+import com.trechina.planocycle.utils.CacheUtil;
 import com.trechina.planocycle.utils.ResultMaps;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import org.apache.commons.collections4.MapUtils;
@@ -137,7 +139,12 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                 logger.info("使用されるpatternid：{}", patternId);
                 ptsPatternRelationDto.setShelfPatternCd(patternId);
 
-                if (MagicString.PATTERN_MAP.putIfAbsent(patternId, "1")==null) {
+                Long start = (Long) MagicString.PATTERN_MAP.get(patternId);
+                if(start!=null && System.currentTimeMillis()-start >60000){
+                    MagicString.PATTERN_MAP.remove(patternId);
+                }
+
+                if (MagicString.PATTERN_MAP.putIfAbsent(patternId, System.currentTimeMillis())==null) {
                     // 清空patternid
                     shelfPtsDataMapper.updateSingle(patternId, authorCd);
                     shelfPtsDataMapper.updatePtsHistoryFlgSingle(patternId, authorCd);

@@ -22,4 +22,6 @@ public class DownloadDto {
         private String attrList;
         private Integer rankNow;
         private String saleForecast;
+        private String actualityCompareBranch;
+        private String exceptBranch;
 }

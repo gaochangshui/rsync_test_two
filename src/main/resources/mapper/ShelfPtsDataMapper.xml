@@ -766,7 +766,8 @@
   </select>
   <select id="selectClassifyPtsData" resultType="map">
     select id,jan, jan_old,tai_cd "taiCd",tana_cd "tanaCd",tanaposition_cd "tanaPositionCd",face_count,face_men,face_kaiten,tumiagesu,zaikosu,face_displayflg,
-    face_position,depth_display_num,coalesce(sku, '') sku, branch_num, branch_amount, rank_upd, rank
+    face_position,depth_display_num,coalesce(sku, '') sku, branch_num, branch_amount, rank_upd, rank,
+    except_branch as except_branch
     <foreach collection="rankAttr" separator=" || " open="," item="item" index="index" close=" as attr_list">
       <if test="index>0">','||</if>concat('${item}',':',${item})</foreach>
     from planocycle.shelf_pts_data patternmst
