@@ -419,8 +419,10 @@
         where  product_power_cd = #{productPowerCd}
     </insert>
     <insert id="setWKSyokikaPosForFinally">
-        insert into planocycle.work_product_power_syokika_pos(product_power_cd,jan,pos_store_item11,pos_store_item12)
-        select #{newProductPowerCd},jan,pos_store_item11,pos_store_item12
+        insert into planocycle.work_product_power_syokika_pos(product_power_cd,jan,pos_store_item11,pos_store_item12,pos_item24,pos_store_item14
+                                                             ,customer_item24,customer_store_item12,intage_item11,intage_store_item04)
+        select #{newProductPowerCd},jan,pos_store_item11,pos_store_item12,pos_item24,pos_store_item14
+                                   ,customer_item24,customer_store_item12,intage_item11,intage_store_item04
         from planocycle.product_power_syokika_pos
         where  product_power_cd = #{productPowerCd}
     </insert>
@@ -449,8 +451,10 @@
           and syokika.jan is null
     </insert>
     <insert id="endSyokikaPosForWK">
-        insert into planocycle.product_power_syokika_pos (product_power_cd,jan,branch_num,pos_store_item11,pos_store_item12)
-        select product_power_cd,jan,branch_num,pos_store_item11,pos_store_item12
+        insert into planocycle.product_power_syokika_pos (product_power_cd,jan,branch_num,pos_store_item11,pos_store_item12,pos_item24,pos_store_item14
+        ,customer_item24,customer_store_item12,intage_item11,intage_store_item04)
+        select product_power_cd,jan,branch_num,pos_store_item11,pos_store_item12,pos_item24,pos_store_item14
+                               ,customer_item24,customer_store_item12,intage_item11,intage_store_item04
             from planocycle.work_product_power_syokika_pos
         where
             product_power_cd = #{productPowerCd}
@@ -914,7 +918,14 @@
         </if>
     </select>
     <select id="getColHeader" resultType="java.lang.String">
-        select item_cd from  planocycle.param_config where item_cd like '${itemCd}%' and item_cd not in ('pos_store_item11','pos_store_item12')
+        select
+            item_cd
+        from
+            planocycle.param_config
+        where
+            item_cd like'${itemCd}%'
+          and item_cd not in ( 'pos_store_item11', 'pos_store_item12' ,'pos_item24','pos_store_item14','customer_item24'
+          ,'customer_store_item12','intage_item11','intage_store_item04')
     </select>
     <select id="selectSyokikaAccount" resultType="map">
         select
