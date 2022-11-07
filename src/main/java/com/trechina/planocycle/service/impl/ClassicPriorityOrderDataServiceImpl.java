@@ -928,13 +928,13 @@ public class ClassicPriorityOrderDataServiceImpl implements ClassicPriorityOrder
                 janBranchNum.put(MagicString.UPDATE_ALL_NUM,list.size());
             }else {
                 Map<String,Object> branchList = workPriorityOrderPtsClassify.getJanBranchNum(ptsCd, objectMap);
-                //Integer branchNum = MapUtils.getInteger(branchList, "branch_num_upd");
                 String branch = MapUtils.getString(branchList, "branch");
                 String exceptBranch = MapUtils.getString(branchNumNow, MagicString.EXCEPT_BRANCH);
                 List<String> exceptBranchList = Arrays.asList(exceptBranch.split(","));
                 List<String> branchs = Arrays.asList(branch.split(","));
                 List<String> newBranchList = ListDisparityUtils.getListDisparitStr(branchs == null ? new ArrayList<>() : branchs,
                         exceptBranchList == null ? new ArrayList<>() : exceptBranchList);
+                newBranchList.remove("");
                 if (branchs != null && !branch.equals("")&& !branch.equals("_")){
                     list.addAll(newBranchList);
                 }

@@ -238,35 +238,35 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                                         branch.putIfAbsent("pos_store_item14",'A');
                                     }else {
                                         int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
-                                        branch.putIfAbsent("pos_store_item14",posItem23 <= B?'B':'C');
+                                        branch.putIfAbsent("pos_store_item14",posStoreItem13 <= B?'B':'C');
                                     }
 
                                     if (customerItem23 <= Integer.parseInt(levelJson.get("A").toString())){
                                         branch.putIfAbsent("customer_item24",'A');
                                     }else {
                                         int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
-                                        branch.putIfAbsent("customer_item24",posItem23 <= B?'B':'C');
+                                        branch.putIfAbsent("customer_item24",customerItem23 <= B?'B':'C');
                                     }
 
                                     if (customerStoreItem11 <= Integer.parseInt(levelJson.get("A").toString())){
                                         branch.putIfAbsent("customer_store_item12",'A');
                                     }else {
                                         int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
-                                        branch.putIfAbsent("customer_store_item12",posItem23 <= B?'B':'C');
+                                        branch.putIfAbsent("customer_store_item12",customerStoreItem11 <= B?'B':'C');
                                     }
 
                                     if (intageItem10 <= Integer.parseInt(levelJson.get("A").toString())){
                                         branch.putIfAbsent("intage_item11",'A');
                                     }else {
                                         int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
-                                        branch.putIfAbsent("intage_item11",posItem23 <=B?'B':'C');
+                                        branch.putIfAbsent("intage_item11",intageItem10 <=B?'B':'C');
                                     }
 
                                     if (intageStoreItem03 <= Integer.parseInt(levelJson.get("A").toString())){
                                         branch.putIfAbsent("intage_store_item04",'A');
                                     }else {
                                         int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
-                                        branch.putIfAbsent("intage_store_item04",posItem23 <= B?'B':'C');
+                                        branch.putIfAbsent("intage_store_item04",intageStoreItem03 <= B?'B':'C');
                                     }
                                     //for (Map.Entry<String, Object> stringObjectEntry : levelJson.entrySet()) {
                                     //    int value = (int)stringObjectEntry.getValue();

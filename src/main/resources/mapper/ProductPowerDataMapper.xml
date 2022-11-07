@@ -138,13 +138,15 @@
     </insert>
     <insert id="setWKData" >
         insert into planocycle.work_product_power_mst_data(company_cd,product_power_cd,author_cd,jan,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,
-        branch_num,pos_store_item11,pos_store_item12,
+        branch_num,pos_store_item11,pos_store_item12,pos_item24,pos_store_item14
+        ,customer_item24,customer_store_item12,intage_item11,intage_store_item04,
         <foreach collection="posHeader" item="item" separator=",">
             ${item}
         </foreach>
                                                           )
         select #{companyCd},#{productPowerCd},#{authorCd},s.jan,yobi.item1,yobi.item2,yobi.item3,yobi.item4,yobi.item5,yobi.item6,yobi.item7,yobi.item8,yobi.item9,yobi.item10,
-        coalesce (branchs."branchCount",0),pos_store_item11,pos_store_item12,
+        coalesce (branchs."branchCount",0),pos_store_item11,pos_store_item12,pos_item24,pos_store_item14
+        ,customer_item24,customer_store_item12,intage_item11,intage_store_item04,
         <foreach collection="posHeader" item="item" separator=",">
             ${item}
         </foreach>
