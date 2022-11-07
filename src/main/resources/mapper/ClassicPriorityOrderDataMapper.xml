@@ -418,7 +418,9 @@
             coalesce(datas.${item},'') as ${item}
         </foreach>
         ,datas.pos_amount,datas.branch_amount,datas.unit_price,datas.branch_num,datas.branch_amount_upd,datas.branch_num_upd,difference,sale_forecast,
-               datas.rank_prop,datas.rank,datas.rank_upd,actuality_compare_num,actuality_all_num,actuality_compare_branch,update_all_num,except_branch
+               datas.rank_prop,datas.rank,datas.rank_upd,coalesce(actuality_compare_num, '0') actuality_compare_num,
+               coalesce(actuality_all_num, '0') actuality_all_num,coalesce(actuality_compare_branch, '') actuality_compare_branch,
+               coalesce(update_all_num, '0') update_all_num,coalesce(except_branch, '') except_branch
         from priority.work_priority_order_result_data datas
         left join priority.work_priority_order_jan_proposal pro
         on datas.jan_old = pro.jan_old and pro.priority_order_cd = #{priorityOrderCd} and pro.company_cd = #{companyCd} and pro.flag = 1
