@@ -196,7 +196,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         JSONObject levelJson = JSON.parseObject(workParam.getLevel().toString(), Feature.OrderedField);
 
                         if (!posBranchIntersection.isEmpty()) {
-                         
+
                             List<Map<String, Object>> maps = productPowerDataMapper.selectSyokikaAccount(productPowerCd);
 
                             maps.stream().forEach(map-> posBranchIntersection.forEach(branch->{
@@ -227,33 +227,73 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                                          intageStoreItem03 = Double.parseDouble(map.get("intage_store_item03").toString());
                                     }
 
-                                    int num = 0;
-                                    for (Map.Entry<String, Object> stringObjectEntry : levelJson.entrySet()) {
-                                        int value = (int)stringObjectEntry.getValue();
-                                        num += value;
-                                        if (posItem23 < num){
-                                            branch.putIfAbsent("pos_item24",stringObjectEntry.getKey());
-                                        }
-                                        if (posStoreItem13 < num){
-                                            branch.putIfAbsent("pos_store_item14",stringObjectEntry.getKey());
-                                        }
-                                        if (customerItem23 != null && customerItem23 < num){
-                                            branch.putIfAbsent("customer_item24",stringObjectEntry.getKey());
-                                        }
-                                        if (customerStoreItem11 != null && customerStoreItem11 < num){
-                                            branch.putIfAbsent("customer_store_item12",stringObjectEntry.getKey());
-                                        }
-                                        if (intageItem10 != null && intageItem10 < num){
-                                            branch.putIfAbsent("intage_item11",stringObjectEntry.getKey());
-                                        }
-                                        if (intageStoreItem03 != null && intageStoreItem03 < num){
-                                            branch.putIfAbsent("intage_store_item04",stringObjectEntry.getKey());
-                                        }
-
+                                    if (posItem23 <= Integer.parseInt(levelJson.get("A").toString())){
+                                        branch.putIfAbsent("pos_item24",'A');
+                                    }else {
+                                        int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
+                                        branch.putIfAbsent("pos_item24",posItem23 <=B?'B':'C');
                                     }
 
+                                    if (posStoreItem13 <= Integer.parseInt(levelJson.get("A").toString())){
+                                        branch.putIfAbsent("pos_store_item14",'A');
+                                    }else {
+                                        int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
+                                        branch.putIfAbsent("pos_store_item14",posItem23 <= B?'B':'C');
+                                    }
+
+                                    if (customerItem23 <= Integer.parseInt(levelJson.get("A").toString())){
+                                        branch.putIfAbsent("customer_item24",'A');
+                                    }else {
+                                        int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
+                                        branch.putIfAbsent("customer_item24",posItem23 <= B?'B':'C');
+                                    }
+
+                                    if (customerStoreItem11 <= Integer.parseInt(levelJson.get("A").toString())){
+                                        branch.putIfAbsent("customer_store_item12",'A');
+                                    }else {
+                                        int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
+                                        branch.putIfAbsent("customer_store_item12",posItem23 <= B?'B':'C');
+                                    }
+
+                                    if (intageItem10 <= Integer.parseInt(levelJson.get("A").toString())){
+                                        branch.putIfAbsent("intage_item11",'A');
+                                    }else {
+                                        int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
+                                        branch.putIfAbsent("intage_item11",posItem23 <=B?'B':'C');
+                                    }
+
+                                    if (intageStoreItem03 <= Integer.parseInt(levelJson.get("A").toString())){
+                                        branch.putIfAbsent("intage_store_item04",'A');
+                                    }else {
+                                        int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
+                                        branch.putIfAbsent("intage_store_item04",posItem23 <= B?'B':'C');
+                                    }
+                                    //for (Map.Entry<String, Object> stringObjectEntry : levelJson.entrySet()) {
+                                    //    int value = (int)stringObjectEntry.getValue();
+                                    //    num += value;
+                                    //    if (posItem23 < num){
+                                    //        branch.putIfAbsent("pos_item24",stringObjectEntry.getKey());
+                                    //    }
+                                    //    if (posStoreItem13 < num){
+                                    //        branch.putIfAbsent("pos_store_item14",stringObjectEntry.getKey());
+                                    //    }
+                                    //    if (customerItem23 != null && customerItem23 < num){
+                                    //        branch.putIfAbsent("customer_item24",stringObjectEntry.getKey());
+                                    //    }
+                                    //    if (customerStoreItem11 != null && customerStoreItem11 < num){
+                                    //        branch.putIfAbsent("customer_store_item12",stringObjectEntry.getKey());
+                                    //    }
+                                    //    if (intageItem10 != null && intageItem10 < num){
+                                    //        branch.putIfAbsent("intage_item11",stringObjectEntry.getKey());
+                                    //    }
+                                    //    if (intageStoreItem03 != null && intageStoreItem03 < num){
+                                    //        branch.putIfAbsent("intage_store_item04",stringObjectEntry.getKey());
+                                    //    }
+                                    //
+                                    //}
+
                                 }
-                                branch.remove("");
+
                             }));
                             int batchSize = 1000;
                             int janDataNum = (int) Math.ceil(posBranchIntersection.size() / 1000.0);
