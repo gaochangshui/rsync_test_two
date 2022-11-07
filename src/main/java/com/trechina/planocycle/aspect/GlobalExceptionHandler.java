@@ -1,6 +1,5 @@
 package com.trechina.planocycle.aspect;
 
-import com.alibaba.fastjson.JSON;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.utils.ResultMaps;
 import org.slf4j.Logger;
@@ -23,6 +22,6 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public Map<String,Object> handlerException(Exception e){
         logger.error("",e);
-        return ResultMaps.error(ResultEnum.FAILURE, JSON.toJSONString(e));
+        return ResultMaps.error(ResultEnum.FAILURE, e.getMessage());
     }
 }

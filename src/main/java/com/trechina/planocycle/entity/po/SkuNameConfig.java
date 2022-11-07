@@ -7,9 +7,12 @@ public class SkuNameConfig {
     String companyCd;
     String classCd;
     String janName2colNum;
+    String janItem2colNum;
     String kokyaku;
     String intage;
     String maker;
     String basketPrice;
     String convertNumbers;
+    String janColFlag;
+    String showFlag;
 }

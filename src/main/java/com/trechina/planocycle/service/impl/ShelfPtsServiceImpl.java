@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
+import com.google.common.cache.Cache;
 import com.google.common.collect.Lists;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.dto.*;
@@ -10,6 +11,7 @@ import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.*;
+import com.trechina.planocycle.utils.CacheUtil;
 import com.trechina.planocycle.utils.ResultMaps;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import org.apache.commons.collections4.MapUtils;
@@ -76,6 +78,8 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
     private PriorityAllMstMapper priorityAllMstMapper;
     @Autowired
     private PriorityOrderMstAttrSortMapper attrSortMapper;
+    @Autowired
+    private ShelfPatternMstMapper shelfPatternMstMapper;
 
 
     /**
@@ -110,6 +114,7 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         shelfPtsData.setAuthorcd(authorCd);
         shelfPtsDataMapper.insert(shelfPtsData);
         logger.info("保存後のパラメータ：{}", shelfPtsData);
+        PtsPatternRelationDto ptsPatternRelationDto = new PtsPatternRelationDto();
         if (flg == 0) {
             // check patternid
             String[] ptsKeyList = shelfPtsData.getFileName().split("_");
@@ -126,12 +131,20 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
             logger.info("手動で組み合わせたptskey：{}", ptsKey);
             List<Integer> patternIdList = shelfPatternService.getpatternIdOfFilename(shelfPtsDto.getFileName(),shelfPtsDto.getCompanyCd());
             logger.info("組み合わせのptskeyによってpatternidを探します：{}", patternIdList);
+            ptsPatternRelationDto.setFileCd(shelfPtsData.getId());
+            ptsPatternRelationDto.setFileName(shelfPtsData.getFileName());
             if (!patternIdList.isEmpty()) {
                 Integer patternId = patternIdList.get(0);
                 logger.info("使用されるpatternid：{}", patternId);
                 logger.info("使用されるpatternid：{}", patternId);
+                ptsPatternRelationDto.setShelfPatternCd(patternId);
 
-                if (MagicString.PATTERN_MAP.putIfAbsent(patternId, "1")==null) {
+                Long start = (Long) MagicString.PATTERN_MAP.get(patternId);
+                if(start!=null && System.currentTimeMillis()-start >60000){
+                    MagicString.PATTERN_MAP.remove(patternId);
+                }
+
+                if (MagicString.PATTERN_MAP.putIfAbsent(patternId, System.currentTimeMillis())==null) {
                     // 清空patternid
                     shelfPtsDataMapper.updateSingle(patternId, authorCd);
                     shelfPtsDataMapper.updatePtsHistoryFlgSingle(patternId, authorCd);
@@ -146,13 +159,18 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
                     shelfPtsJoinPatternDto.setShelfPatternCd(patternId);
                     shelfPtsJoinPatternDto.setStartDay(simpleDateFormat.format(now));
                     shelfPtsDataMapper.insertPtsHistory(shelfPtsJoinPatternDto, authorCd);
-
                     MagicString.PATTERN_MAP.remove(patternId);
                 }
 
             }
         }
-        return ResultMaps.result(ResultEnum.SUCCESS, shelfPtsData.getId());
+        if (ptsPatternRelationDto.getShelfPatternCd() != null){
+            Map<String, String> shelfPatternName = shelfPatternMstMapper.getShelfPatternName(ptsPatternRelationDto.getShelfPatternCd(), shelfPtsDto.getCompanyCd());
+            ptsPatternRelationDto.setShelfPatternName(MapUtils.getString(shelfPatternName, "shelf_pattern_name"));
+            ptsPatternRelationDto.setShelfName(MapUtils.getString(shelfPatternName, "shelf_name"));
+            ptsPatternRelationDto.setShelfNameCd(MapUtils.getInteger(shelfPatternName, "shelf_name_cd"));
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS,ptsPatternRelationDto);
     }
 
     /**
@@ -803,8 +821,23 @@ public class ShelfPtsServiceImpl implements ShelfPtsService {
         }
         return ResultMaps.result(ResultEnum.SUCCESS,ptsDetailData);
     }
+    /**
+     * check ptsKey
+     * @param
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Object> ptsKeyRelation(List<PtsPatternRelationDto> ptsPatternRelationDtoList) {
+        String authorCd = httpSession.getAttribute("aud").toString();
 
-        public StringBuilder colHeader(List<Map<String, Object>> attrCol,PtsDetailDataVo ptsDetailData){
+        List<Integer> patternList = ptsPatternRelationDtoList.stream().map(PtsPatternRelationDto::getShelfPatternCd).collect(Collectors.toList());
+        shelfPtsDataMapper.updateSingleList(patternList,authorCd);
+        shelfPtsDataMapper.updatePtsAndPattern(ptsPatternRelationDtoList);
+        return ResultMaps.result(ResultEnum.SUCCESS);
+    }
+
+    public StringBuilder colHeader(List<Map<String, Object>> attrCol,PtsDetailDataVo ptsDetailData){
             StringBuilder s = new StringBuilder("taiCd,tanaCd,tanapositionCd,jan,faceCount,faceMen,faceKaiten,tumiagesu,zaikosu,");
             if ("V3.0".equals(ptsDetailData.getVersioninfo())){
                 s.append("faceDisplayflg,facePosition,depthDisplayNum,remarks");

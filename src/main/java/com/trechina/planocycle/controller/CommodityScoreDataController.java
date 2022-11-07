@@ -37,16 +37,18 @@ public class CommodityScoreDataController {
      */
 
     @PostMapping("/getCommodityScoreTaskId")
-    public Map<String, Object> getCommodityScoreTaskId(@RequestBody Map<String,Object> map) {
+    public Map<String, Object> getCommodityScoreTaskId(@RequestBody Map<String,Object> map)  {
         //smtデータソースを教える
         String authorCd = session.getAttribute("aud").toString();
         String companyCd = map.get("company").toString();
         Integer productPowerCd = Integer.valueOf(map.get("productPowerNo").toString());
         //param
         String customerConditionStr = map.get("customerCondition").toString();
-        String prodAttrData = map.get("prodAttrData").toString();
+        String prodAttrData = new Gson().toJson(map.get("prodAttrData"));
         String singleJan = new Gson().toJson(map.get("singleJan"));
-        commodityScoreDataService.setProductParam(map,productPowerCd,companyCd,authorCd,customerConditionStr,prodAttrData,singleJan);
+        String level = new Gson().toJson(map.get("level"));
+
+        commodityScoreDataService.setProductParam(map,productPowerCd,companyCd,authorCd,customerConditionStr,prodAttrData,singleJan,level);
         return commodityScoreDataService.getCommodityScoreTaskId(map);
     }
 

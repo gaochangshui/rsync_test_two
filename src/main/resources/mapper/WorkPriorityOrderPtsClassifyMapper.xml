@@ -18,7 +18,7 @@
         on mst.jan_old = jandata.jan and mst.priority_order_cd = #{priorityOrderCd}
         INNER join planocycle.shelf_pts_data ptsdata
         on jandata.pts_cd = ptsdata."id"
-        INNER join planocycle.shelf_pattern_branch branch
+        left join planocycle.shelf_pattern_branch branch
         on branch.shelf_pattern_cd = ptsdata.shelf_pattern_cd
         where jandata.pts_cd in
         <foreach collection="shelfPtsData" item="item" separator="," open="(" index="index" close=")">
@@ -142,11 +142,11 @@
               </foreach>
         GROUP BY pts_cd
     </select>
-    <select id="getJanBranchNum" resultType="java.lang.Integer">
-        SELECT count(DISTINCT branch)as branch_num_upd
+    <select id="getJanBranchNum" resultType="java.util.Map">
+        SELECT count(DISTINCT branch)as branch_num_upd, array_to_string(array_agg(DISTINCT branch),',') as branch
         from planocycle.shelf_pts_data ptsdata
-                                               left join planocycle.shelf_pattern_branch branch
-                                                         on ptsdata.shelf_pattern_cd = branch.shelf_pattern_cd
+         left join planocycle.shelf_pattern_branch branch
+                   on ptsdata.shelf_pattern_cd = branch.shelf_pattern_cd
         where id in
             <foreach collection="ptsCd" item="item" separator="," open="(" close=")" >
                 #{item}

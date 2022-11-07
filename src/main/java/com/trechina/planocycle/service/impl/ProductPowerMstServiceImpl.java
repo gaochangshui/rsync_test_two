@@ -22,6 +22,7 @@ import com.trechina.planocycle.service.ProductPowerMstService;
 import com.trechina.planocycle.utils.ExcelUtils;
 import com.trechina.planocycle.utils.ListDisparityUtils;
 import com.trechina.planocycle.utils.ResultMaps;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,9 +59,13 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
     @Autowired
     private ParamConfigMapper paramConfigMapper;
     @Autowired
+    private MstJanMapper mstJanMapper;
+    @Autowired
     private JanClassifyMapper janClassifyMapper;
     @Autowired
     private ClassicPriorityOrderMstMapper classicPriorityOrderMstMapper;
+    @Autowired
+    private CompanyConfigMapper companyConfigMapper;
     @Autowired
     HttpSession session;
     @Autowired
@@ -155,12 +160,12 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         String intageValue = Stream.of(project).filter(s -> s.startsWith(ProductPowerHeaderEnum.INTAGE.getCode())).collect(Collectors.joining(","));
         String rankWeight = param.getRankWeight();
         Set<String> weightKeys = new HashSet<>();
-
+        List<String> paramConfig = paramConfigMapper.getParamRatio();
         if (!Strings.isNullOrEmpty(rankWeight)) {
             JSONArray weightArray = JSON.parseArray(rankWeight);
             weightArray = weightArray.stream().filter(json->!((JSONObject)json).getString("weight").equals("0")).collect(Collectors.toCollection(JSONArray::new));
             Set<String> finalWeightKeys = weightKeys;
-            weightArray.stream().forEach(o->{
+            weightArray.forEach(o->{
                 JSONObject jsonObj = (JSONObject) o;
                 finalWeightKeys.add(jsonObj.getString("colName"));
             });
@@ -226,7 +231,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
         List<Map<String, Object>> allData = productPowerDataMapper.getDynamicAllData(companyCd, productPowerCd,
                 janInfoTableName, "\""+attrColumnMap.get("jan_cd")+"\"", classify, project, janNameColIndex,attrColName);
         allData.forEach(map->map.entrySet().forEach(entry->{
-            if (entry.getKey().equals("intage_item03")) {
+            if (paramConfig.contains(entry.getKey())) {
                 Double value = Double.valueOf(entry.getValue().toString());
                 entry.setValue(value);
             }
@@ -260,7 +265,7 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
             response.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
             response.setHeader("Content-Disposition", format);
             outputStream = response.getOutputStream();
-            ExcelUtils.generateExcel(headersByClassify, columnsByClassify, allData, outputStream,productParam);
+            ExcelUtils.generateExcel(headersByClassify, columnsByClassify, allData, outputStream,productParam,paramConfig);
             outputStream.flush();
         } catch (IOException e) {
             logger.error("", e);
@@ -529,11 +534,24 @@ public class ProductPowerMstServiceImpl implements ProductPowerMstService {
 
         if(!janAttrList.isEmpty()){
             for (Map<String,Object> objectMap : janAttrList) {
+                String company = objectMap.get("id").toString().split("_")[0];
+                String classCd = objectMap.get("id").toString().split("_")[1];
+                String colCd = objectMap.get("id").toString().split("_")[2];
                 List<String> value = ((List<Object>) objectMap.get("value")).stream().map(val -> val instanceof Double ?
                         BigDecimal.valueOf((Double) val).setScale(0, RoundingMode.HALF_UP).toString() : String.valueOf(val)).collect(Collectors.toList());
-                if (!value.isEmpty()) {
-                    boolean flag = (boolean) objectMap.getOrDefault("rmFlag", false);
-                    String attrName = productPowerDataMapper.getAttrName(objectMap.get("id").toString().split("_")[2], commonTableName.getProAttrTable());
+                boolean flag = (boolean) objectMap.getOrDefault("rmFlag", false);
+                String attrName = productPowerDataMapper.getAttrName(colCd, commonTableName.getProAttrTable());
+                if (!value.isEmpty()&& MapUtils.getInteger(objectMap,"isInterval",0)==1){
+                    List<List<String>> twoDimArray =  (List<List<String>>) objectMap.get("value");
+                    if (twoDimArray.get(0).isEmpty()){
+                        objectMap.put("value",new ArrayList<>());
+                        continue;
+                    }
+                    value = mstJanMapper.getNewValueForRange(twoDimArray,company,classCd,colCd);
+                    janAttr.put(attrName,value);
+                    janAttrFlag.put(attrName + "区分", flag ? "除外" : "対象");
+                }else if (!value.isEmpty()) {
+
                     janAttr.put(attrName, value);
                     janAttrFlag.put(attrName + "区分", flag ? "除外" : "対象");
                 }

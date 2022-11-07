@@ -481,4 +481,29 @@
             #{item}
         </foreach>
     </select>
+    <select id="checkPrimaryKey" resultType="int">
+        select count(*) from information_schema.table_constraints where table_schema=#{schema} and table_name=#{table}
+        and constraint_type='PRIMARY KEY'
+    </select>
+    <select id="getNewValueForRange" resultType="java.lang.String">
+        select b from (
+        select DISTINCT
+        "array_to_string"(regexp_matches(case when "${colCd}" !~ '\d' then '0' else "${colCd}" end, '\d+'),',') a ,"11" b
+        from
+        "${company}".prod_${classCd}_jan_info
+        where
+        "${colCd}" != ''
+        ) a
+        where
+            <foreach collection="twoDimArray" item="item" separator="or">
+                (a.a ::integer >=${item[0]} and a.a ::integer &lt;= ${item[1]})
+            </foreach>
+    </select>
+    <update id="addPrimaryKey">
+        alter table "${schema}"."${table}" add constraint ${pkName}
+        primary key ("${primaryKey}");
+    </update>
+    <select id="selectPlanoAttr" resultType="map">
+        select "1" as "value","2" as "name", "13" as "type", coalesce("14", '0')::integer as "itemType"  from "${company}".prod_${classCd}_jan_attr_header_sys where "11"='6'
+    </select>
 </mapper>

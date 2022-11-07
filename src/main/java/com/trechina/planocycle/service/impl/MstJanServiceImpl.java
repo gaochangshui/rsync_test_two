@@ -9,18 +9,14 @@ import com.google.common.collect.Lists;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.config.MailConfig;
 import com.trechina.planocycle.constant.MagicString;
-import com.trechina.planocycle.entity.po.CommoditySyncSet;
+import com.trechina.planocycle.entity.po.Company;
 import com.trechina.planocycle.entity.po.JanHeaderAttr;
 import com.trechina.planocycle.entity.po.JanInfoList;
 import com.trechina.planocycle.entity.vo.*;
 import com.trechina.planocycle.enums.ResultEnum;
-import com.trechina.planocycle.mapper.MstBranchMapper;
-import com.trechina.planocycle.mapper.MstJanMapper;
-import com.trechina.planocycle.mapper.SysConfigMapper;
-import com.trechina.planocycle.mapper.ZokuseiMstMapper;
+import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.MstCommodityService;
 import com.trechina.planocycle.service.MstJanService;
-import com.trechina.planocycle.service.ZokuseiMstDataService;
 import com.trechina.planocycle.utils.*;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
@@ -36,6 +32,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
+import javax.mail.Message;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -69,7 +66,7 @@ public class MstJanServiceImpl implements MstJanService {
     @Autowired
     private CacheUtil cacheUtil;
     @Autowired
-    private ZokuseiMstDataService zokuseiMstDataService;
+    private CompanyConfigMapper companyConfigMapper;
     @Autowired
     private ZokuseiMstMapper zokuseiMstMapper;
     @Autowired
@@ -203,8 +200,16 @@ public class MstJanServiceImpl implements MstJanService {
         }
         janHeader = janHeaderSort;
         //SQL文の列： a."1" "jan_cd",a."2" "jan_name",a."21" "kikaku",b."104" "planoWidth"
-        String column = janHeader.stream().map(map -> "COALESCE(" + ("5".equals(map.getType()) ||"6".equals(map.getType()) ? "b" : "a") + ".\""
-                        + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"")
+        String column = janHeader.stream().map(map -> {
+                    String sqlCol = "COALESCE(" + ("5".equals(map.getType()) ||"6".equals(map.getType()) ? "b" : "a") + ".\""
+                            + map.getSort() + "\",'') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"";
+                    if("sync".equals(map.getAttr())){
+                        sqlCol = "COALESCE(" + ("5".equals(map.getType()) ||"6".equals(map.getType()) ? "b" : "a") + ".\""
+                                + map.getSort() + "\",'1') AS \"" + dataConverUtils.camelize(map.getAttr()) + "\"";
+                    }
+
+                    return sqlCol;
+                })
                 .collect(Collectors.joining(","));
         janInfoVO.setJanDataList(mstJanMapper.getJanList(janParamVO, janInfoTable, janInfoTablePlanoCycle, column));
         janInfoVO.setJanHeader(janHeader.stream().map(map -> String.valueOf(map.getAttrVal()))
@@ -362,6 +367,7 @@ public class MstJanServiceImpl implements MstJanService {
         janAttrGroup3.stream().forEach(stringObjectLinkedHashMap->{
             Map<String,Object> janAttrInfo = new HashMap<>();
             janAttrInfo.put("name",stringObjectLinkedHashMap.get("2"));
+            janAttrInfo.put("itemType",0);
             janAttrInfo.put(MagicString.TITLE,janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put("id",janInfoList1!=null?janInfoList1.getOrDefault(stringObjectLinkedHashMap.get("3"),""):"");
             janAttrInfo.put(MagicString.VALUE,stringObjectLinkedHashMap.get("1"));
@@ -698,9 +704,8 @@ public class MstJanServiceImpl implements MstJanService {
         List<Map<String, Object>> syncResults = new ArrayList<>();
 
         try{
-            String syncCompanyList = sysConfigMapper.selectSycConfig("sync_company_list");
-            String[] companyList = syncCompanyList.split(",");
-            List<CommoditySyncSet> commoditySyncSetList;
+            List<Company> inUseCompanyList = companyConfigMapper.getInUseCompanyList();
+            List<String> companyList = inUseCompanyList.stream().map(Company::getCompanyCd).collect(Collectors.toList());
 
             for (String companyCd : companyList) {
                 String existTable = mstJanMapper.selectTableExist(companyCd);
@@ -708,9 +713,10 @@ public class MstJanServiceImpl implements MstJanService {
                     mstJanMapper.createMasterSyohin(companyCd);
                 }
                 mstCommodityService.syncCommodityMaster(companyCd);
-                commoditySyncSetList = mstCommodityService.getCommodityList(companyCd);
-                for (CommoditySyncSet commoditySyncSet : commoditySyncSetList) {
-                    Map<String, Object> syncResult = mstJanService.perSyncJanData(companyCd, commoditySyncSet, existTable);
+                List<String> classList = mstCommodityService.getClassList(companyCd);
+
+                for (String classCd : classList) {
+                    Map<String, Object> syncResult = mstJanService.perSyncJanData(companyCd, classCd, existTable);
                     syncResults.add(syncResult);
                 }
             }
@@ -737,12 +743,11 @@ public class MstJanServiceImpl implements MstJanService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> perSyncJanData(String companyCd, CommoditySyncSet commoditySyncSet, String existTable){
+    public Map<String, Object> perSyncJanData(String companyCd, String prodMstClass, String existTable){
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("companyCd", companyCd);
 
         try {
-            String prodMstClass;
             String tableNameHeader;
             String tableNameHeaderPkey;
             String tableNameInfo;
@@ -752,7 +757,6 @@ public class MstJanServiceImpl implements MstJanService {
             List<String> janAttrList;
             String column;
 
-            prodMstClass = commoditySyncSet.getProdMstClass();
             resultMap.put("classCd", prodMstClass);
 
             tableNameHeader = MessageFormat.format(MagicString.PROD_JAN_ATTR_HEADER_SYS, companyCd, prodMstClass);
@@ -778,6 +782,8 @@ public class MstJanServiceImpl implements MstJanService {
             if (Strings.isNullOrEmpty(existTable)) {
                 mstJanMapper.createJanHeader(tableNameHeader, tableNameHeaderWK);
                 mstJanMapper.addJanHeaderCol(tableNameHeader, tableNameHeaderPkey);
+            }else{
+                addPrimaryKey(tableNameHeader.split("\\.")[1],"1", companyCd, tableNameHeaderPkey);
             }
             mstJanMapper.syncJanHeader(tableNameHeader, tableNameHeaderWK);
             if (Strings.isNullOrEmpty(existTable)) {
@@ -787,6 +793,8 @@ public class MstJanServiceImpl implements MstJanService {
             if (Strings.isNullOrEmpty(existTable)) {
                 mstJanMapper.createJanData(tableNameInfo, tableNameInfoWK);
                 mstJanMapper.addJanDataCol(tableNameInfo, tableNameInfoPkey);
+            }else{
+                addPrimaryKey(tableNameInfo.split("\\.")[1],"1", companyCd, tableNameInfoPkey);
             }
             janAttrList = mstJanMapper.getJanAttrColWK(tableNameHeaderWK, tableNameKaisouHeader);
             column = janAttrList.stream().collect(Collectors.joining(","));
@@ -805,6 +813,15 @@ public class MstJanServiceImpl implements MstJanService {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return resultMap;
         }
+    }
+
+    @Override
+    public void addPrimaryKey(String tableName, String primaryKey, String schema, String pkName){
+        if(mstJanMapper.checkPrimaryKey(tableName, schema)>0){
+            return;
+        }
+
+        mstJanMapper.addPrimaryKey(tableName, schema, primaryKey, pkName);
     }
 
     @Override
@@ -877,6 +894,17 @@ public class MstJanServiceImpl implements MstJanService {
         cacheUtil.remove(taskId+",exception");
 
         return ResultMaps.result(ResultEnum.FAILURE.getCode(), String.valueOf(msg));
+    }
+
+    @Override
+    public Map<String, Object> getPlanoAttr() {
+        List<Map<String, Object>> planoAttrList = mstJanMapper.selectPlanoAttr(MagicString.PLANO_CYCLE_COMPANY_CD, MagicString.FIRST_CLASS_CD);
+        planoAttrList.forEach(attr->{
+            String name  = MapUtils.getString(attr, MagicString.NAME);
+            attr.put("id", name.split("-")[1]);
+            attr.put(MagicString.TITLE, name.split("-")[1]);
+        });
+        return ResultMaps.result(ResultEnum.SUCCESS, planoAttrList);
     }
 
     /**

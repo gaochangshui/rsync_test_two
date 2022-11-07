@@ -59,10 +59,10 @@ public interface ProductPowerDataMapper {
 
     //最終テーブルをテンポラリ・テーブルに保存
     int setWkSyokikaForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
-        ,@Param("newProductPowerCd")Integer newProductPowerCd);
+        ,@Param("newProductPowerCd")Integer newProductPowerCd,@Param("posHeader")List<String> posHeader);
 
     int setWkGroupForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
-         ,@Param("newProductPowerCd")Integer newProductPowerCd);
+         ,@Param("newProductPowerCd")Integer newProductPowerCd,@Param("customerHeader")List<String> customerHeader);
 
     int setWkYobilitemForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
         ,@Param("newProductPowerCd")Integer newProductPowerCd);
@@ -74,7 +74,7 @@ public interface ProductPowerDataMapper {
     ,@Param("newProductPowerCd")Integer newProductPowerCd,@Param("dataCol")List<String> dataCol);
 
     int setWKIntageForFinally(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
-            ,@Param("newProductPowerCd")Integer newProductPowerCd);
+            ,@Param("newProductPowerCd")Integer newProductPowerCd,@Param("intageHeader")List<String> intageHeader);
 
     //最終テーブルの削除
     int deleteSyokika(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd);
@@ -106,10 +106,10 @@ public interface ProductPowerDataMapper {
 
     //テンポラリ・テーブルを最終テーブルに移動
     int endSyokikaForWK(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
-    ,@Param("newProductPowerCd")Integer newProductPowerCd);
+    ,@Param("newProductPowerCd")Integer newProductPowerCd,@Param("posHeader")List<String> posHeader);
 
     int endGroupForWK(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
-    ,@Param("newProductPowerCd")Integer newProductPowerCd);
+    ,@Param("newProductPowerCd")Integer newProductPowerCd,@Param("customerHeader")List<String> customerHeader);
 
     int endYobiiiternForWk(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
     ,@Param("newProductPowerCd")Integer newProductPowerCd);
@@ -118,7 +118,7 @@ public interface ProductPowerDataMapper {
     ,@Param("newProductPowerCd")Integer newProductPowerCd);
 
     int endIntageForWK(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd, @Param("authorCd") String authorCd
-    ,@Param("newProductPowerCd")Integer newProductPowerCd);
+    ,@Param("newProductPowerCd")Integer newProductPowerCd,@Param("intageHeader")List<String> intageHeader);
 
     //クエリの最終テーブル数
     Integer syokikaPowerCdNum(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
@@ -136,7 +136,7 @@ public interface ProductPowerDataMapper {
 
 
     int setWKData(@Param("authorCd") String authorCd, @Param("companyCd") String companyCd,@Param("productPowerCd")Integer productPowerCd
-            ,@Param("ptsCd")List<Integer> ptsCd,@Param("storeCd") List<String> storeCd);
+            ,@Param("ptsCd")List<Integer> ptsCd,@Param("storeCd") List<String> storeCd,@Param("posHeader")List<String> posHeader);
 
     int deleteData(@Param("companyCd") String companyCd, @Param("productPowerCd") Integer productPowerCd);
 
@@ -172,8 +172,6 @@ public interface ProductPowerDataMapper {
                                                 Integer janNameColIndex,List<Map<String, Object>> attrList);
 
     int setSyokikaAllData(@Param("lists") List<Map<String,Object>>lists);
-
-    List<Map<String,Object>> rankCalculation(@Param("companyCd")String companyCd,@Param("authorCd")String authorCd);
 
     List<Map<String, Object>> getProductRankCalculate(@Param("map") Map<String, Object> map, @Param("companyCd") String companyCd,@Param("productPowerCd") Integer productPowerCd,@Param("authorCd")String authorCd);
 
@@ -214,4 +212,26 @@ public interface ProductPowerDataMapper {
     List<Map<String,Object>> getAttrColName(List<String> attr, String tableName);
 
     void setIntageJanForSyokika(String companyCd, Integer productPowerCd);
+
+    List<String> getColHeader(String itemCd);
+
+    void deleteWkStarFetch(String companyCd, Integer productPowerCd);
+
+    void deleteWkSyokikaPos(String companyCd, Integer productPowerCd);
+
+    int setSyokikaPos(List<Map<String, Object>> posBranchIntersection);
+
+    List<Map<String,Object>> selectSyokikaAccount(Integer productPowerCd);
+
+    void deleteSyokikaPos(String companyCd, Integer productPowerCd);
+
+    void endSyokikaPosForWK(String companyCd, Integer productPowerCd);
+
+    void deleteStarFetchTable(String companyCd, Integer productPowerCd);
+
+    void endStarFetchTableForWK(String companyCd, Integer productPowerCd);
+
+    void setWKSyokikaPosForFinally(String companyCd, Integer productPowerCd, Integer newProductPowerCd);
+
+    void setWKStarFetchTableForFinally(String companyCd, Integer productPowerCd, Integer newProductPowerCd);
 }

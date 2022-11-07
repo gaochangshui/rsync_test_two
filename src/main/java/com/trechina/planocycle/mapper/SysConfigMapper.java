@@ -10,5 +10,15 @@ public interface SysConfigMapper {
     String selectSycConfig(String targetColumn);
     List<Map<String, String>> selectByPrefix(String targetColumnPre);
 
+    List<Map<String, Object>> selectAllByPrefix(String targetColumnPre);
+
     Integer selectIsGroupCompany(String companyCd);
+
+    List<Map<String,Object>> getAttrHeader(String tableName);
+
+    int updateValByName(String name, Object value);
+
+    void updateVal(List<Map<String, Object>> janUnitList);
+
+    String getGroupName(String companyCd);
 }

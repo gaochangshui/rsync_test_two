@@ -1,5 +1,6 @@
 package com.trechina.planocycle.service;
 
+import com.google.gson.Gson;
 import com.trechina.planocycle.mapper.PriorityOrderMstAttrSortMapper;
 import com.trechina.planocycle.mapper.WorkPriorityAllResultDataMapper;
 import org.junit.After;
@@ -12,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)

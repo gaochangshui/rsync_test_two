@@ -30,5 +30,6 @@ public class ProductPowerParam {
     private Object singleJan;
     private Integer showItemCheck;
     private String basketProdCd;
+    private Object level;
 
 }

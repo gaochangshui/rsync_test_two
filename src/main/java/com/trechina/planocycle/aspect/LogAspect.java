@@ -64,23 +64,30 @@ public class LogAspect {
     //定義通知
     @AfterThrowing(pointcut = "point()",throwing = "ex")
     public  void serviceMonitor(JoinPoint joinPoint,Throwable ex) {
-        //取得＃シュトク＃ターゲット方法名称
-        String methodName = joinPoint.getSignature().getName();
-        //取得＃シュトク＃被代理オブジェクト象名称
-        String targetName = joinPoint.getTarget().getClass().getName();
+        try{
+            //取得＃シュトク＃ターゲット方法名称
+            String methodName = joinPoint.getSignature().getName();
+            //取得＃シュトク＃被代理オブジェクト象名称
+            String targetName = joinPoint.getTarget().getClass().getName();
 
-        Object[] arguments = joinPoint.getArgs();
+            Object[] arguments = joinPoint.getArgs();
 
-        JSONArray jsonArray = new JSONArray();
-        jsonArray.addAll(Arrays.asList(arguments));
-        //取得＃シュトク＃classオブジェクト象
-        String s = JSON.toJSONString(ex);
-        String params = jsonArray.toString();
-        executor.execute(()-> logMapper.saveErrorLog(targetName+"_"+methodName, params,s));
-        try {
-            this.errInfoForEmail(ex.getMessage(),methodName,params);
-        } catch (Exception e) {
-            log.error("メールにエラーが発生しました",e);
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.addAll(Arrays.asList(arguments));
+            //取得＃シュトク＃classオブジェクト象
+            String s = JSON.toJSONString(ex);
+            String params = jsonArray.toString();
+            String browser = httpServletRequest.getHeader("User-Agent");
+            String authorCd = session.getAttribute("aud").toString();
+            String url = httpServletRequest.getRequestURI();
+            Map<String, Object> error = this.errorMap();
+            executor.execute(()-> {
+                        logMapper.saveErrorLog(targetName + "_" + methodName, params, s, browser, authorCd, url);
+                        this.errInfoForEmail(error, ex.getMessage(), methodName, params);
+                    }
+            );
+        }catch (Exception e){
+            log.error("serviceMonitor",e);
         }
     }
 
@@ -91,16 +98,17 @@ public class LogAspect {
         String params = jsonArray.toString();
         String path = ex.getStackTrace()[0].getFileName()+"_"+ex.getStackTrace()[0].getMethodName();
         StackTraceElement stackTraceElement = ex.getStackTrace()[0];
-        executor.execute(()-> logMapper.saveErrorLog(path, params,s));
+        String browser = httpServletRequest.getHeader("User-Agent");
+        String authorCd = session.getAttribute("aud").toString();
+        String url = httpServletRequest.getRequestURI();
+        Map<String, Object> error = this.errorMap();
+        executor.execute(()-> {logMapper.saveErrorLog(path, params,s, browser, authorCd, url);
+            this.errInfoForEmail(error,ex.getMessage(),stackTraceElement.getMethodName(),params);
+        });
 
-        try {
-            this.errInfoForEmail(ex.getMessage(),stackTraceElement.getMethodName(),params);
-        } catch (Exception e) {
-           log.error("メールにエラーが発生しました",e);
-        }
     }
-
-    public  void errInfoForEmail(String errMsg,String method,String params){
+    public  Map<String,Object> errorMap (){
+        Map<String,Object> map = new HashMap<>();
         Cookie[] cookies = httpServletRequest.getCookies();
         Map<String,Object> cookieList = new HashMap<>();
         String env = sysConfigMapper.selectSycConfig("env");
@@ -113,6 +121,23 @@ public class LogAspect {
         for (Cookie cookie : cookies) {
             cookieList.put(cookie.getName(),cookie.getValue());
         }
+        map.put("url",url);
+        map.put("authorCd",authorCd);
+        map.put("cookieList",cookieList);
+        map.put("browser",browser);
+        map.put("ip",ip);
+        map.put("env",env);
+        map.put("addressee",addressee);
+        return map;
+    }
+    public  void errInfoForEmail(Map<String,Object>map,String errMsg,String method,String params){
+        String url = map.get("url").toString();
+        String authorCd = map.get("authorCd").toString();
+        Map<String,Object> cookieList = (Map<String,Object>)map.get("cookieList");
+        String browser = map.get("browser").toString();
+        String ip = map.get("ip").toString();
+        String env = map.get("env").toString();
+        String addressee = map.get("addressee").toString();
         String msg = MessageFormat.format(
                 "<p>エラーコード：500</p>" +
                         "<p>パス：{0}</p>" +

@@ -291,7 +291,7 @@
     </select>
     <select id="getNewAmountNum" resultType="java.util.Map">
 
-        SELECT sum ( resultdata.branch_amount_upd ::INTEGER ) "amount",shelf_pattern_cd "shelfPatternCd" from (
+        SELECT sum ( resultdata.branch_amount_upd :: numeric) "amount",shelf_pattern_cd "shelfPatternCd" from (
               select distinct jan,shelf_pattern_cd
               from priority.priority_order_pts_result_jandata newdata
               where

@@ -8,4 +8,5 @@ public class CommonPartsDataVO {
     private String prodMstClass;
     private String storeMstClass;
     private String storeIsCore;
+    private String dateIsCore;
 }

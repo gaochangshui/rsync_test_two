@@ -10,5 +10,6 @@
                            on mst.zokusei_id = datas.zokusei_id
                                and datas.company_cd = mst.company_cd and datas.class_cd = mst.class_cd
         where datas.company_cd =#{companyCd} and datas.class_cd = #{classCd} and datas.type = '1'
+        and datas.val!='' and datas.nm!=''
     </select>
 </mapper>

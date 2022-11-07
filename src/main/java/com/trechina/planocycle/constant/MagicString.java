@@ -1,8 +1,10 @@
 package com.trechina.planocycle.constant;
 
 import com.google.common.base.Joiner;
+import com.google.common.cache.Cache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.RateLimiter;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -120,6 +122,13 @@ public class MagicString {
     public static final String RANK_UPD = "rank_upd";
     public static final String RANK = "rank";
 
+    public static final String ACTUALITY_COMPARE_NUM = "actuality_compare_num";
+
+    public static final String UPDATE_ALL_NUM = "update_all_num";
+    public static final String ACTUALITY_COMPARE_BRANCH = "actuality_compare_branch";
+    public static final String EXCEPT_BRANCH = "except_branch";
+    public static final String ACTUALITY_ALL_NUM = "actuality_all_num";
+
     public static final String BRANCH_NUM_UPD = "branch_num_upd";
     public static final String FACE_NUM = "faceNum";
     public static final String SKU_NUM = "skuNum";
@@ -161,6 +170,10 @@ public class MagicString {
     public static final String COMMON_PARTS_DATA = "commonPartsData";
     public static final String PROD_MST_CLASS = "prodMstClass";
     public static final String PROD_IS_CORE = "prodIsCore";
+
+    public static final String STORE_IS_CORE = "storeIsCore";
+
+    public static final String DATE_IS_CORE = "dateIsCore";
     public static final String MASTER_SYOHIN = "\"{0}\".master_syohin";
     public static final String WK_MASTER_SYOHIN = "\"{0}\".wk_master_syohin";
     public static final String PROD_JAN_ATTR_HEADER_SYS = "\"{0}\".prod_{1}_jan_attr_header_sys";
@@ -362,7 +375,7 @@ public class MagicString {
     public static final String GROUP = "group";
     public static final String BR = "<br />";
 
-    public static final String BRANCH_NUM_NAME = "定番 店舗数";
+    public static final String BRANCH_NUM_NAME = "対象定番 店舗数";
 
     public static final String DEFAULT_TABLE = "prod_0000_jan_info";
     public static final String  PERCENTAGE = "%";
@@ -378,4 +391,12 @@ public class MagicString {
     public static final String F3 = "F3";
     public static final String F4 = "F4";
 
+    public static String SLACK_URL = "";
+
+    public static String ENV = "";
+    public static final String ITEM_NAME_SHOW_INTAGE="show_intage";
+
+    public static final String JAN_UNIT_PREFIX = "jan_unit_";
+
+    public static final String LEVEL = "level";
 }

@@ -66,6 +66,40 @@ public class cgiUtils {
         }
         return "";
     }
+    public <U> String  postCgiCompany(String path, U cla, String tokenInfo) {
+        OutputStream os = null;
+        BufferedReader reader = null;
+        InputStream in = null;
+        InputStream buffer = null;
+        HttpURLConnection connection =null;
+        try{
+            URL url =new URL(smartPath+path);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("Cookie", "MSPACEDGOURDLP="+tokenInfo);
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestProperty(HttpHeaders.CONTENT_TYPE,textFormat);
+
+            os = connection.getOutputStream();
+            os.write(JSON.toJSONBytes(cla));
+            in =connection.getInputStream();
+
+            buffer =new BufferedInputStream(in);
+            reader =new BufferedReader(new InputStreamReader(buffer));
+            String read;
+            StringBuilder builder = new StringBuilder();
+            while ((read = reader.readLine()) !=null){
+                builder.append(read+"@");
+            }
+            return builder.toString();
+        }catch (Exception e){
+            logger.error("io異常", e);
+        }finally {
+            this.closeResource(in,buffer,reader,connection);
+        }
+        return "";
+    }
     /**
      * 非同期post呼び出しcgi
      * @param path

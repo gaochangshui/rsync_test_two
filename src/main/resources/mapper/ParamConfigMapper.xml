@@ -3,25 +3,67 @@
 <mapper namespace="com.trechina.planocycle.mapper.ParamConfigMapper">
   <select id="selectParamConfig" resultType="com.trechina.planocycle.entity.vo.ParamConfigVO">
     select item_cd,item_value,item_name,item_type from planocycle.param_config config
-    where flag=0 order by item_value
+    where flag=1 order by item_value
+  </select>
+  <select id="selectAllParamConfig" resultType="com.trechina.planocycle.entity.dto.ParamConfigDto">
+    select item_cd "colName",item_value "value",item_name "label",item_type "itemType", rank_flag "rankFlag", flag, remark from planocycle.param_config config
+    where delete_flag=0 order by item_value
   </select>
   <select id="getParamConfig" resultType="com.trechina.planocycle.entity.dto.ParamConfigDto">
-    select item_cd as colName,item_value as value,item_name as label,rank_flag as rankFlag,item_type as itemType
+    select item_cd as colName,item_value as value,item_name as label,rank_flag as rankFlag,item_type as itemType, remark
     from planocycle.param_config config
-    where flag=0
+    where flag=1 and delete_flag!=1
     <if test="showItemCheck == 0">
-    and item_cd not in ( 'pos_item12','pos_item13')
+    and item_cd not in ( 'pos_item12')
     </if>
     order by item_value
   </select>
   <select id="selectParamConfigByCd" resultType="com.trechina.planocycle.entity.vo.ParamConfigVO">
     select item_cd,item_value,concat(item_type,'-',item_name) as item_name  from planocycle.param_config config
     <where>
-      flag=0 and item_cd in
+      flag=1 and item_cd in
         <foreach collection="cdList" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
       order by item_value
     </where>
+  </select>
+    <select id="getParamRatio" resultType="string">
+      select item_cd
+      from planocycle.param_config config
+      where  percent_flag = 1
+    </select>
+    <update id="updateParamConfig">
+    update planocycle.param_config
+    <set>
+      item_name=
+        CASE item_cd
+      <foreach collection="list" item="item">
+        WHEN #{item.colName} THEN COALESCE(#{item.label}, item_name)
+      </foreach>ELSE item_name END,
+      flag=CASE item_cd <foreach collection="list" item="item">
+      WHEN #{item.colName} THEN COALESCE(#{item.flag}, flag)
+      </foreach>ELSE flag END,
+      rank_flag=CASE item_cd <foreach collection="list" item="item">
+      WHEN #{item.colName} THEN COALESCE(#{item.rankFlag}, rank_flag)
+    </foreach>ELSE rank_flag END
+    </set>
+  </update>
+  <select id="selectProdClassMst" resultType="map">
+    select distinct class_cd "value",  "2" "label" from planocycle.company_attr_config config
+    inner join "${companyCd}".master_syohin mst on config.class_cd=mst."1"
+    where company_cd=#{companyCd} and is_show='1' order by class_cd
+  </select>
+  <select id="selectTenClassMst" resultType="map">
+    select distinct class "value", "2" "label" from planocycle.company_ten_master config
+    inner join "${companyCd}".master_ten mst on config.class=mst."1"
+    where company_cd=#{companyCd} and show_flag='1' order by class
+  </select>
+  <select id="selectCompanyMst" resultType="map">
+    select store_is_core, prod_is_core from planocycle.company_list where company_cd=#{companyCd} and is_use='1'
+    limit 1
+  </select>
+  <select id="selectTenMaxLevel" resultType="int">
+    select max("5"::integer) from "${companyCd}"."ten_${classCd}_ten_kaisou_header_sys";
   </select>
 </mapper>

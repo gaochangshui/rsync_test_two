@@ -57,4 +57,8 @@ public interface ClassicPriorityOrderJanNewMapper {
     List<Map<String, Object>> getJanNewList(Integer priorityOrderCd, Map<String, Object> maps, String companyCd);
 
     String getJan(String companyCd, Integer priorityOrderCd);
+
+    List<Map<String,Object>> getCompareList(Integer priorityOrderCd);
+
+    List<Map<String, Object>> getExceptList(Integer priorityOrderCd);
 }

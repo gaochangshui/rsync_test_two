@@ -66,10 +66,10 @@ public interface ClassicPriorityOrderMstService {
 
     void generateNewPtsData(String taskID, String companyCd, Integer priorityOrderCd, Integer ptsVersion);
 
-    Map<String, Object> downloadPts(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg, Integer ptsVersion, HttpServletResponse response) throws IOException;
+    //Map<String, Object> downloadPts(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg, Integer ptsVersion, HttpServletResponse response) throws IOException;
 
-    Map<String, Object> downloadPtsTask(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg,
-                                               Integer ptsVersion, HttpServletResponse response);
+    //Map<String, Object> downloadPtsTask(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg,
+    //                                           Integer ptsVersion, HttpServletResponse response);
 
     void packagePtsZip(String taskId, HttpServletResponse response) throws IOException;
 
@@ -91,6 +91,4 @@ public interface ClassicPriorityOrderMstService {
                    String branchCd, Integer ptsVersion, String companyCd, List<Map<String, Object>> deleteList,
                    List<Map<String, Object>> newList, String fileName, List<String> branchList);
 
-    void saveJanShelfNameCd(List<Map<String, Object>> newJanList, Integer shelfNameCd, Integer priorityOrderCd,
-                            Integer patternCd, List<String> branchList);
 }

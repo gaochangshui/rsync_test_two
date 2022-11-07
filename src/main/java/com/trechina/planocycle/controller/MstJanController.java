@@ -63,6 +63,11 @@ public class MstJanController {
     public Map<String,Object> getJanListInfo(@RequestBody JanInfoList janInfoList){
         return mstJanService.getJanListInfo(janInfoList);
     }
+
+    @GetMapping("/getPlanoAttr")
+    public Map<String, Object> getPlanoAttr(){
+        return mstJanService.getPlanoAttr();
+    }
     /**
      * janデータの保存
      * @param map 検索条件

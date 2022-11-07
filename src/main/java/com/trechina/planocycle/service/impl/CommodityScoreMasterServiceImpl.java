@@ -11,6 +11,7 @@ import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.entity.vo.ProductOrderParamAttrVO;
 import com.trechina.planocycle.entity.vo.ReserveMstVo;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreMasterService;
 import com.trechina.planocycle.service.IDGeneratorService;
@@ -24,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -191,8 +194,11 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
             ProductPowerNumGenerator prod = (ProductPowerNumGenerator)productPowerID.get("data");
             newProductPowerCd = prod.getId();
         }
-
+        List<String> paramConfig = paramConfigMapper.getParamRatio();
         List<String> dataCol = productPowerDataMapper.getDataCol();
+        List<String> posHeader = productPowerDataMapper.getColHeader("pos");
+        List<String> customerHeader = productPowerDataMapper.getColHeader("customer");
+        List<String> intageHeader = productPowerDataMapper.getColHeader("intage");
         dataCol.remove("product_power_cd");
         String aud = session.getAttribute("aud").toString();
         productPowerMstMapper.deleteWork(companyCd,newProductPowerCd);
@@ -203,21 +209,36 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         productPowerDataMapper.deleteWKData(companyCd,aud,newProductPowerCd);
         productPowerDataMapper.deleteWKIntage(companyCd,aud,newProductPowerCd);
         productPowerParamMstMapper.deleteWork(companyCd,newProductPowerCd);
+        productPowerDataMapper.deleteWkStarFetch(companyCd,newProductPowerCd);
+        productPowerDataMapper.deleteWkSyokikaPos(companyCd,newProductPowerCd);
 
-        productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
-         productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
+
+        productPowerDataMapper.setWkSyokikaForFinally(companyCd,productPowerNo,aud,newProductPowerCd,posHeader);
+         productPowerDataMapper.setWkGroupForFinally(companyCd,productPowerNo,aud,newProductPowerCd,customerHeader);
          productPowerDataMapper.setWkYobilitemForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
         productPowerDataMapper.setWkYobilitemDataForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
         productPowerDataMapper.setWkDataForFinally(companyCd,productPowerNo,aud,newProductPowerCd,dataCol);
-        productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud,newProductPowerCd);
+        productPowerDataMapper.setWKIntageForFinally(companyCd,productPowerNo,aud,newProductPowerCd,intageHeader);
+        productPowerDataMapper.setWKSyokikaPosForFinally(companyCd,productPowerNo,newProductPowerCd);
+        productPowerDataMapper.setWKStarFetchTableForFinally(companyCd,productPowerNo,newProductPowerCd);
         productPowerParamMstMapper.setWorkForFinal(companyCd,productPowerNo,newProductPowerCd);
 
         ProductPowerParamVo param = productPowerDataMapper.getParam(companyCd, productPowerNo);
         List<Map<String, Object>> prodAttrData = new Gson().fromJson(param.getProdAttrData().toString(), new com.google.common.reflect.TypeToken<List<Map<String, Object>>>(){}.getType());
+        prodAttrData.forEach(map -> {
+            List<String> value = ((List<Object>) map.get("value")).stream().map(val -> val instanceof Double ?
+                    BigDecimal.valueOf((Double) val).setScale(0, RoundingMode.HALF_UP).toString() : String.valueOf(val)).collect(Collectors.toList());
+            map.put("value",value);
+        });
+        LinkedHashMap<String, Object> level = null;
+        if (param.getLevel() != null){
+            level = new Gson().fromJson(param.getLevel().toString(), new com.google.common.reflect.TypeToken<LinkedHashMap<String, Object>>(){}.getType());
+        }
+        LinkedHashMap<String, Object>  singleJan = new Gson().fromJson(param.getSingleJan().toString(), new com.google.common.reflect.TypeToken<LinkedHashMap<String, Object>>(){}.getType());
 
-        LinkedHashMap<String, Object> singleJan = new Gson().fromJson(param.getSingleJan().toString(), new com.google.common.reflect.TypeToken<LinkedHashMap<String, Object>>(){}.getType());
         param.setProdAttrData(prodAttrData);
         param.setSingleJan(singleJan);
+        param.setLevel(level);
         List<String> cdList = new ArrayList<>();
          cdList.addAll(Arrays.asList(param.getProject().split(",")));
         List<String> yobi = productPowerDataMapper.getYobi(companyCd, productPowerNo, aud);
@@ -234,10 +255,18 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         }
         Integer janName2colNum = param.getJanName2colNum();
         Integer colNum = 2;
-        if (janName2colNum == 1){
-            colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+        if (janName2colNum == 2){
+            try {
+                colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            } catch (Exception e) {
+                throw new BusinessException("まず商品名単位を配置してください");
+            }
         }else if(janName2colNum==3){
-            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            try {
+                colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            } catch (Exception e) {
+                throw new BusinessException("まずitem単位を配置してください");
+            }
         }
         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
@@ -267,13 +296,10 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         List<LinkedHashMap<String, Object>> returnDataItem = new ArrayList<>();
         List<LinkedHashMap<String, Object>> allDataItem = productPowerDataMapper.getAllDataItem(companyCd, productPowerNo, cdList,"\"" + attrColumnMap.get("jan") + "\"",janClassifyList,janInfoTableName);
         allDataItem.forEach(map->map.entrySet().forEach(entry->{
-            if (entry.getKey().equals("intage_item03")) {
+            if (paramConfig.contains(entry.getKey())) {
                 Double value = Double.valueOf(entry.getValue().toString());
                 String result = String.format("%.1f",value);
                 entry.setValue(result+MagicString.PERCENTAGE);
-            }else if (!entry.getKey().equals("jan")){
-                Integer value = Double.valueOf(entry.getValue().toString()).intValue();
-                entry.setValue(value);
             }
         }));
         List<ParamConfigVO> paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
@@ -310,6 +336,7 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
         powerParam.setCompany(companyCd);
         powerParam.setProdAttrData(param.getProdAttrData());
         powerParam.setSingleJan(param.getSingleJan());
+        powerParam.setLevel(param.getLevel());
         //powerParam.setShowItemCheck(param.getShowItemCheck());
         String basketCondition = param.getBasketCondition();
         if(Strings.isNullOrEmpty(basketCondition)){

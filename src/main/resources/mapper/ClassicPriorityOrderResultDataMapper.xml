@@ -24,7 +24,8 @@
         </foreach>
     </select>
     <select id="selectFinalDataByAttr" resultType="map">
-        select jan_new jan,rank_upd,sku,branch_num,branch_amount, branch_amount_upd,branch_num_upd,rank
+        select jan_new jan,rank_upd,sku,branch_num,branch_amount, branch_amount_upd,branch_num_upd,
+        COALESCE(except_branch, '') as except_branch,rank
         <foreach collection="attrList" item="item" index="index" open="," separator=" || " close=" as attr_list">
             <if test="index > 0">','||</if>concat('${item}',':',${item})</foreach>
         from priority.priority_order_result_data

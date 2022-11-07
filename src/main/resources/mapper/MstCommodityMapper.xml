@@ -39,4 +39,8 @@
         where "3" = true
         order by "1";
     </select>
+    <select id="getClassList" resultType="string">
+        select distinct class_cd from planocycle.company_attr_config
+        where company_cd=#{companyCd}
+    </select>
 </mapper>

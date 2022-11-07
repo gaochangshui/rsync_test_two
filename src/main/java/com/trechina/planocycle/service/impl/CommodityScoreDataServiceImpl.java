@@ -1,16 +1,19 @@
 package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
 import com.trechina.planocycle.entity.po.ProductPowerParam;
 import com.trechina.planocycle.entity.vo.ParamConfigVO;
 import com.trechina.planocycle.enums.ResultEnum;
+import com.trechina.planocycle.exception.BusinessException;
 import com.trechina.planocycle.mapper.*;
 import com.trechina.planocycle.service.CommodityScoreDataService;
 import com.trechina.planocycle.utils.*;
@@ -24,6 +27,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -61,7 +66,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
     @Autowired
     private ShelfPatternMstMapper shelfPatternMstMapper;
     @Autowired
-    private CommodityScoreDataService commodityScoreDataService;
+    private CompanyConfigMapper companyConfigMapper;
     @Autowired
     private MstJanMapper mstJanMapper;
     @Autowired
@@ -127,15 +132,22 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         int janName2colNum = Integer.parseInt(taskIdMap.get(MagicString.JAN_NAME2COL_NUM).toString());
                         int colNum = 2;
                         if (janName2colNum == 2){
-                            colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+                            try {
+                                colNum = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+                            } catch (Exception e) {
+                                throw new BusinessException("まず商品名単位を配置してください");
+                            }
                         }else if(janName2colNum==3){
-                            colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+                            try {
+                                colNum = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+                            } catch (Exception e) {
+                                throw new BusinessException("まずitem単位を配置してください");
+                            }
                         }
 
                         if ("1".equals(vehicleNumCache.get(MessageFormat.format(MagicString.TASK_KEY_CANCEL, taskID)))) {
                             break;
                         }
-
                         String tableName = MessageFormat.format("\"{0}\".prod_{1}_jan_kaisou_header_sys", isCompanyCd, prodMstClass);
                         String tableNameAttr = MessageFormat.format("\"{0}\".prod_{1}_jan_attr_header_sys", isCompanyCd, prodMstClass);
                         String janInfoTableName = MessageFormat.format("\"{0}\".prod_{1}_jan_info", isCompanyCd, prodMstClass);
@@ -159,9 +171,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                             }
                         });
                         List<Map<String, Object>> attrColName = productPowerDataMapper.getAttrColName(attr, tableNameAttr);
-                        attrColName.forEach(map->{
-                            colMap.put(map.get("colCd").toString(),map.get("colName"));
-                        });
+                        attrColName.forEach(map-> colMap.put(map.get("colCd").toString(),map.get("colName")));
 
                         colMap.put("branchNum","定番店舗数");
 
@@ -176,6 +186,123 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         List<Map<String, Object>> allData = productPowerDataMapper.getSyokikaAllData(companyCd,
                                 janInfoTableName, "\"" + attrColumnMap.get("jan") + "\"", janClassifyList, authorCd,productPowerCd
                                 ,shelfPts,storeCd,attrColName);
+                        List<Map<String, Object>> posBranchIntersection = allData.stream().map(map -> {
+                            Map<String, Object> posMap = new HashMap<>();
+                            posMap.put("jan", map.get("jan"));
+                            posMap.put("product_power_cd", productPowerCd);
+                            posMap.put("branch_num", map.get("branchIntersection"));
+                            return posMap;
+                        }).collect(Collectors.toList());
+                        JSONObject levelJson = JSON.parseObject(workParam.getLevel().toString(), Feature.OrderedField);
+
+                        if (!posBranchIntersection.isEmpty()) {
+
+                            List<Map<String, Object>> maps = productPowerDataMapper.selectSyokikaAccount(productPowerCd);
+
+                            maps.stream().forEach(map-> posBranchIntersection.forEach(branch->{
+                                if (branch.get("jan").equals(map.get("jan"))){
+
+                                    double posItem01 = Double.parseDouble(map.get("pos_item01").toString());
+                                    double posItem02 = Double.parseDouble(map.get("pos_item02").toString());
+                                    int branchNum = Integer.parseInt(branch.get("branch_num").toString());
+                                    branch.put("pos_store_item11",branchNum == 0?0:posItem01/branchNum);
+                                    branch.put("pos_store_item12",branchNum == 0?0:posItem02/branchNum);
+                                    //pos
+                                    double posItem23 = Double.parseDouble(map.get("pos_item23").toString());
+                                    double posStoreItem13 = Double.parseDouble(map.get("pos_store_item13").toString());
+                                    Double customerItem23 =null;
+                                    Double customerStoreItem11 =null;
+                                    Double intageItem10 =null;
+                                    Double intageStoreItem03 =null;
+                                    if (map.containsKey("customer_item23")){
+                                        customerItem23 = Double.parseDouble(map.get("customer_item23").toString());
+                                    }
+                                    if (map.containsKey("customer_store_item11")){
+                                         customerStoreItem11 = Double.parseDouble(map.get("customer_store_item11").toString());
+                                    }
+                                    if (map.containsKey("intage_item10")){
+                                         intageItem10 = Double.parseDouble(map.get("intage_item10").toString());
+                                    }
+                                    if (map.containsKey("intage_store_item03")){
+                                         intageStoreItem03 = Double.parseDouble(map.get("intage_store_item03").toString());
+                                    }
+
+                                    if (posItem23 <= Integer.parseInt(levelJson.get("A").toString())){
+                                        branch.putIfAbsent("pos_item24",'A');
+                                    }else {
+                                        int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
+                                        branch.putIfAbsent("pos_item24",posItem23 <=B?'B':'C');
+                                    }
+
+                                    if (posStoreItem13 <= Integer.parseInt(levelJson.get("A").toString())){
+                                        branch.putIfAbsent("pos_store_item14",'A');
+                                    }else {
+                                        int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
+                                        branch.putIfAbsent("pos_store_item14",posStoreItem13 <= B?'B':'C');
+                                    }
+
+                                    if (customerItem23 <= Integer.parseInt(levelJson.get("A").toString())){
+                                        branch.putIfAbsent("customer_item24",'A');
+                                    }else {
+                                        int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
+                                        branch.putIfAbsent("customer_item24",customerItem23 <= B?'B':'C');
+                                    }
+
+                                    if (customerStoreItem11 <= Integer.parseInt(levelJson.get("A").toString())){
+                                        branch.putIfAbsent("customer_store_item12",'A');
+                                    }else {
+                                        int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
+                                        branch.putIfAbsent("customer_store_item12",customerStoreItem11 <= B?'B':'C');
+                                    }
+
+                                    if (intageItem10 <= Integer.parseInt(levelJson.get("A").toString())){
+                                        branch.putIfAbsent("intage_item11",'A');
+                                    }else {
+                                        int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
+                                        branch.putIfAbsent("intage_item11",intageItem10 <=B?'B':'C');
+                                    }
+
+                                    if (intageStoreItem03 <= Integer.parseInt(levelJson.get("A").toString())){
+                                        branch.putIfAbsent("intage_store_item04",'A');
+                                    }else {
+                                        int B = Integer.parseInt(levelJson.get("B").toString())+ Integer.parseInt(levelJson.get("A").toString());
+                                        branch.putIfAbsent("intage_store_item04",intageStoreItem03 <= B?'B':'C');
+                                    }
+                                    //for (Map.Entry<String, Object> stringObjectEntry : levelJson.entrySet()) {
+                                    //    int value = (int)stringObjectEntry.getValue();
+                                    //    num += value;
+                                    //    if (posItem23 < num){
+                                    //        branch.putIfAbsent("pos_item24",stringObjectEntry.getKey());
+                                    //    }
+                                    //    if (posStoreItem13 < num){
+                                    //        branch.putIfAbsent("pos_store_item14",stringObjectEntry.getKey());
+                                    //    }
+                                    //    if (customerItem23 != null && customerItem23 < num){
+                                    //        branch.putIfAbsent("customer_item24",stringObjectEntry.getKey());
+                                    //    }
+                                    //    if (customerStoreItem11 != null && customerStoreItem11 < num){
+                                    //        branch.putIfAbsent("customer_store_item12",stringObjectEntry.getKey());
+                                    //    }
+                                    //    if (intageItem10 != null && intageItem10 < num){
+                                    //        branch.putIfAbsent("intage_item11",stringObjectEntry.getKey());
+                                    //    }
+                                    //    if (intageStoreItem03 != null && intageStoreItem03 < num){
+                                    //        branch.putIfAbsent("intage_store_item04",stringObjectEntry.getKey());
+                                    //    }
+                                    //
+                                    //}
+
+                                }
+
+                            }));
+                            int batchSize = 1000;
+                            int janDataNum = (int) Math.ceil(posBranchIntersection.size() / 1000.0);
+                            for (int i = 0; i < janDataNum; i++) {
+                                int end = Math.min(batchSize * (i + 1), posBranchIntersection.size());
+                                 productPowerDataMapper.setSyokikaPos(posBranchIntersection.subList(batchSize * i, end));
+                            }
+
+                        }
                         List<Map<String, Object>> resultData = new ArrayList<>();
 
                         resultData.add(colMap);
@@ -445,10 +572,20 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         //選択した品名を判断する
         Integer janName2colNum = Integer.valueOf(map.get(MagicString.JAN_NAME2COL_NUM).toString());
         if (janName2colNum == 2){
-            Integer prodMstClass = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            Integer prodMstClass = null;
+            try {
+                prodMstClass = skuNameConfigMapper.getJanName2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            } catch (Exception e) {
+                throw new BusinessException("まず商品名単位を配置してください");
+            }
             map.put(MagicString.JAN_NAME2COL_NUM,prodMstClass);
         }else if(janName2colNum == 3){
-            Integer prodMstClass = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            Integer prodMstClass = null;
+            try {
+                prodMstClass = skuNameConfigMapper.getJanItem2colNum(isCompanyCd, jsonObject.get(MagicString.PROD_MST_CLASS).toString());
+            } catch (Exception e) {
+                throw new BusinessException("まずitem単位を配置してください");
+            }
             map.put(MagicString.JAN_NAME2COL_NUM,prodMstClass);
         }else {
             map.put(MagicString.JAN_NAME2COL_NUM,"_");
@@ -456,14 +593,15 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         return map;
     }
 
-    public void setProductParam(Map<String, Object> map, Integer productPowerCd, String companyCd, String authorCd, String customerConditionStr, String prodAttrData, String singleJan) {
+    public void setProductParam(Map<String, Object> map, Integer productPowerCd, String companyCd, String authorCd, String customerConditionStr
+            , String prodAttrData, String singleJan,String level) {
         //mst
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
         productPowerMstMapper.deleteWork(companyCd,productPowerCd);
         productPowerMstMapper.setWork(productPowerCd,companyCd,authorCd,simpleDateFormat.format(date));
         productPowerParamMstMapper.deleteWork(companyCd,productPowerCd);
-        productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr,prodAttrData,singleJan);
+        productPowerParamMstMapper.setWork(map,authorCd,customerConditionStr,prodAttrData,singleJan,level);
         //yobi
         productPowerDataMapper.deleteWKYobiiitern(authorCd, companyCd,productPowerCd);
         productPowerDataMapper.deleteWKYobiiiternData(authorCd, companyCd,productPowerCd);
@@ -471,6 +609,8 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
         productPowerDataMapper.deleteWKKokyaku(companyCd, authorCd,productPowerCd);
         productPowerDataMapper.deleteWKSyokika(companyCd, authorCd,productPowerCd);
         productPowerDataMapper.deleteWKIntage(companyCd, authorCd,productPowerCd);
+        productPowerDataMapper.deleteWkStarFetch(companyCd,productPowerCd);
+        productPowerDataMapper.deleteWkSyokikaPos(companyCd,productPowerCd);
 
     }
 
@@ -532,18 +672,24 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             String company = split[0];
             String classCd = split[1];
             String colCd = split[2];
-            String convertNumbers = mstJanMapper.getConvertNumbers(company, classCd);
-            JSONArray jsonArray = new JSONArray();
-            if (!Strings.isNullOrEmpty(convertNumbers)){
-                jsonArray = JSON.parseArray(convertNumbers);
-            }
-            List<String> value = (List<String>)proMap.get("value");
-            if (!value.isEmpty()&&jsonArray.stream().anyMatch(map->((JSONObject)map).get("col").equals(colCd))){
-                 value = mstJanMapper.getNewValue(value,company,classCd,colCd);
+
+            List<Map<String, Object>> convertNumbers = companyConfigMapper.selectAttrTargetColumn(ImmutableList.of("is_number", "number_unit", "col_cd"),
+                    ImmutableMap.of("company_cd", company, "class_cd", classCd, "is_number", 1));
+            List<String> value = ((List<Object>) proMap.get("value")).stream().map(val -> val instanceof Double ?
+                    BigDecimal.valueOf((Double) val).setScale(0, RoundingMode.HALF_UP).toString() : String.valueOf(val)).collect(Collectors.toList());
+            if (!value.isEmpty()&&MapUtils.getInteger(proMap,"isInterval",0)==1){
+               List<List<String>> twoDimArray =  (List<List<String>>) proMap.get("value");
+               if (twoDimArray.get(0).isEmpty()){
+                   proMap.put("value",new ArrayList<>());
+                   continue;
+               }
+                value = mstJanMapper.getNewValueForRange(twoDimArray,company,classCd,colCd);
+                proMap.put("value",value);
+            } else if (!value.isEmpty()&&convertNumbers.stream().anyMatch(map->map.get("col_cd").equals(colCd))){
+                value = mstJanMapper.getNewValue(value,company,classCd,colCd);
                 proMap.put("value",value);
             }
         }
-
         return list;
     }
 
@@ -583,6 +729,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                 paramConfigVOS = paramConfigMapper.selectParamConfigByCd(cdList);
             }
 
+            List<String> paramConfig = paramConfigMapper.getParamRatio();
             List<Map<String, Object>> reserveMst = productPowerReserveMstMapper.selectAllPrepared(productPowerCd);
             reserveMst = reserveMst.stream()
                     .peek(map->map.put(MagicString.DATE_CD, "item"+map.get(MagicString.DATE_CD)))
@@ -591,13 +738,10 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             List<Map<String, String>> productPowerMstData = productPowerDataMapper.selectShowData(productPowerCd, paramConfigVOS,reserveMst,
                     customerCd, Arrays.asList(prepareCd), intageCd);
             productPowerMstData.forEach(map->map.entrySet().forEach(entry->{
-                if (entry.getKey().equals("intage_item03")){
+                if (paramConfig.contains(entry.getKey())){
                     Double value = Double.valueOf( entry.getValue());
                     String result = String.format("%.1f",value);
                     entry.setValue(result+MagicString.PERCENTAGE);
-                }else if (!entry.getKey().equals("jan")){
-                    Integer value = Double.valueOf( entry.getValue()).intValue();
-                    entry.setValue(value.toString());
                 }
             }));
             List<Map<String, String>> returnData = new ArrayList<>();
@@ -627,21 +771,19 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
        String classCd = attrLists.get(0).split("_")[1];
 
         List<Map<String,Object>> lists = new ArrayList<>();
-        String convertNumbers = mstJanMapper.getConvertNumbers(company, classCd);
-        JSONArray jsonArray = new JSONArray();
-        if (!Strings.isNullOrEmpty(convertNumbers)){
-             jsonArray = JSON.parseArray(convertNumbers);
-        }
-        //List<String> colList  = Arrays.asList(convertNumbers.split(",")) ;
+        List<Map<String, Object>> convertNumbers = companyConfigMapper.selectAttrTargetColumn(ImmutableList.of("is_number", "number_unit", "col_cd","is_range"),
+                ImmutableMap.of("company_cd", company, "class_cd", classCd, "is_number", 1));
 
         for (String list : attrLists) {
             boolean flag = false;
             String unit = "";
-            if (jsonArray.stream().anyMatch(map->((JSONObject)map).get("col").equals(list.split("_")[2]))) {
+            int isRange = -1;
+            if (convertNumbers.stream().anyMatch(map->MapUtils.getString(map, "col_cd").equals(list.split("_")[2]))) {
                 flag = true;
-                for (Object jsonObject : jsonArray) {
-                    if (((JSONObject)jsonObject).get("col").equals(list.split("_")[2])) {
-                        unit = ((JSONObject) jsonObject).getString("unit");
+                for (Map<String, Object> map : convertNumbers) {
+                    if (MapUtils.getString(map, "col_cd").equals(list.split("_")[2])) {
+                        unit = MapUtils.getString(map, "number_unit", "");
+                        isRange =MapUtils.getInteger(map, "is_range", 0) == 1?0:-1;
                     }
                 }
             }
@@ -654,7 +796,7 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
             map.put("rmFlag",false);
             map.put("showFlag",false);
             map.put("unit",unit);
-            map.put("range",false);
+            map.put("isInterval",isRange);
             List<String> attrValueList = new ArrayList<>();
             if (flag){
                 attrValueList = mstJanMapper.getAttrConvertToNumber(list.split("_")[2], company, classCd);

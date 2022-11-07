@@ -6,7 +6,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.trechina.planocycle.aspect.LogAspect;
@@ -39,7 +42,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.ServletOutputStream;
@@ -157,6 +159,8 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
     private VehicleNumCache vehicleNumCache;
     @Autowired
     private PriorityOrderPtsResultJandataMapper ptsResultJandataMapper;
+    @Autowired
+    private ComparePriorityOrderPatternMapper comparePriorityOrderPatternMapper;
 
     /**
      * 優先順位テーブルlistの取得
@@ -265,6 +269,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         //Catepak 最終テーブルデータの保存
         priorityOrderCatepakMapper.deleteFinalByPrimaryKey(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
         priorityOrderCatepakMapper.insertFinalData(priorityOrderMstDto.getCompanyCd(),priorityOrderMstDto.getPriorityOrderCd());
+
+        comparePriorityOrderPatternMapper.delFinal(priorityOrderCd);
+        comparePriorityOrderPatternMapper.setFinalForWK(priorityOrderCd);
 
         if(this.interruptThread(priorityOrderMstDto.getTaskID(), "1")){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -419,13 +426,14 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         }
 
         priorityOrderDataMapper.deleteWorkData(companyCd,priorityOrderCd);
-        List<Map<String, Object>> linkedHashMaps = new Gson().fromJson(datas.toString(), new TypeToken<List<LinkedHashMap<String, Object>>>() {
+        List<Map<String, Object>> linkedHashMaps = new Gson().fromJson(datas.toString(), new TypeToken<List<TreeMap<String, Object>>>() {
         }.getType());
         linkedHashMaps.forEach(linkedHashMap -> {
             linkedHashMap.remove("priority_order_cd");
             linkedHashMap.remove("company_cd");
             linkedHashMap.remove("author_cd");
             linkedHashMap.remove("repeatFlg");
+            linkedHashMap.entrySet().stream().sorted();
         });
         priorityOrderDataMapper.insertWorkData(companyCd,priorityOrderCd,linkedHashMaps,authorCd);
         if (!goodsRank.isEmpty()) {
@@ -483,7 +491,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         Integer modeCheck = priorityOrderMstMapper.selectModeCheck(priorityOrderCd);
 
         ptsBackupJanMapper.deleteBackupJanByCd(priorityOrderCd);
-        ptsPatternNameMapper.deletePtsPatternNameByCd(priorityOrderCd);
         comparisonJanDataMapper.deleteCompareJandata(priorityOrderCd);
         ptsResultJandataMapper.deletePtsJandata(priorityOrderCd);
 
@@ -491,7 +498,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
         //pts foreach
         List<ShelfPtsDataDto> patternList = patternMapper.selectPattern(companyCd, priorityOrderCd);
-        List<Map<String, Object>> branchs = new ArrayList<>();
         List<Map<String, String>> janReplace = janReplaceMapper.selectJanReplace(companyCd, priorityOrderCd);
         Map<String, String> janReplaceMap = janReplace.stream().collect(Collectors.toMap(map->MapUtils.getString(map, MagicString.JAN_OLD), map->MapUtils.getString(map, MagicString.JAN_NEW)));
 
@@ -521,7 +527,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
             Integer shelfPatternCd = pattern.getShelfPatternCd();
             List<Map<String, Object>> patternBranches = shelfPatternBranchMapper.selectAllPatternBranch(priorityOrderCd, companyCd, tenTableName, shelfPatternCd);
-            branchs.addAll(patternBranches);
 
             List<String> patternBranchCd = patternBranches.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
             List<Map<String, Object>> commodityMustJans = null;
@@ -636,262 +641,262 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         }
     }
 
-    @Override
-    public Map<String, Object> downloadPts(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg, Integer ptsVersion, HttpServletResponse response) throws IOException {
-        String path = this.getClass().getClassLoader().getResource("").getPath();
-        logger.info("parent path: {}", path);
+    //@Override
+    //public Map<String, Object> downloadPts(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg, Integer ptsVersion, HttpServletResponse response) throws IOException {
+    //    String path = this.getClass().getClassLoader().getResource("").getPath();
+    //    logger.info("parent path: {}", path);
+    //
+    //    cacheUtil.put(taskId, "1");
+    //
+    //    Integer modeCheck = priorityOrderMstMapper.selectModeCheck(priorityOrderCd);
+    //
+    //    long currentTimeMillis = System.currentTimeMillis();
+    //    String fileParentPath = Joiner.on(File.separator).join(Lists.newArrayList(path, currentTimeMillis));
+    //    File file = new File(fileParentPath);
+    //    if (!file.exists()) {
+    //        boolean isMkdir = file.mkdirs();
+    //        logger.info("mkdir:{}",isMkdir);
+    //    }
+    //
+    //    String zipFileName = "";
+    //    if(ptsVersion==1){
+    //        zipFileName = MessageFormat.format("提案棚割PTS_{0}.zip", LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER)));
+    //    }else{
+    //        zipFileName = MessageFormat.format("確認用棚割PTS_{0}.zip", LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER)));
+    //    }
+    //
+    //    try {
+    //        ptsBackupJanMapper.deleteBackupJanByCd(priorityOrderCd);
+    //        ptsPatternNameMapper.deletePtsPatternNameByCd(priorityOrderCd);
+    //
+    //        List<Map<String, Object>> patternCommonPartsData = patternMstMapper.selectPatternCommonPartsData(priorityOrderCd);
+    //
+    //        //pts foreach
+    //        List<ShelfPtsDataDto> patternList = patternMapper.selectPattern(companyCd, priorityOrderCd);
+    //        List<Map<String, Object>> branchs = new ArrayList<>();
+    //        List<Map<String, String>> janReplace = janReplaceMapper.selectJanReplace(companyCd, priorityOrderCd);
+    //        Map<String, String> janReplaceMap = janReplace.stream().collect(Collectors.toMap(map->MapUtils.getString(map, MagicString.JAN_OLD), map->MapUtils.getString(map, MagicString.JAN_NEW)));
+    //        List<Map<String, Object>> allNewJanList = new ArrayList<>();
+    //        List<Map<String, Object>> allDeleteJanList = new ArrayList<>();
+    //
+    //        List<PriorityOrderMstAttrSort> rankAttr = mstAttrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
+    //        rankAttr.sort(Comparator.comparing(PriorityOrderMstAttrSort::getValue));
+    //        List<String> rankAttrList = rankAttr.stream().map(PriorityOrderMstAttrSort::getValue).collect(Collectors.toList());
+    //
+    //        Map<String, String> tenTableName = null;
+    //
+    //        List<Integer> transferRankAttr = rankAttr.stream().map(rank->Integer.parseInt(rank.getValue().replace("attr",""))).collect(Collectors.toList());
+    //        List<PriorityOrderCatePakVO> catePakList = priorityOrderCatepakAttributeMapper.selectFinalByPrimaryKey(transferRankAttr, companyCd, priorityOrderCd);
+    //
+    //        for (ShelfPtsDataDto pattern : patternList) {
+    //            boolean branchMustNot = true;
+    //            tenTableName = new HashMap<>();
+    //
+    //            for (Map<String, Object> data : patternCommonPartsData) {
+    //                String commonPartsData = MapUtils.getString(data, "common_parts_data");
+    //                GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
+    //                tenTableName.put(commonTableName.getStoreInfoTable(), commonTableName.getStoreIsCoreNum());
+    //            }
+    //
+    //            Integer shelfPatternCd = pattern.getShelfPatternCd();
+    //            List<Map<String, Object>> patternBranches = shelfPatternBranchMapper.selectAllPatternBranch(priorityOrderCd, companyCd, tenTableName, shelfPatternCd);
+    //            branchs.addAll(patternBranches);
+    //
+    //            List<String> patternBranchCd = patternBranches.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
+    //            List<Map<String, Object>> commodityMustJans = null;
+    //            List<Map<String, Object>> commodityNotJans = null;
+    //            List<Map<String, Object>> janMustNot = null;
+    //
+    //            if(Objects.equals(modeCheck, 1)){
+    //                //branch
+    //                janMustNot = starReadingTableMapper.selectJanForBranch(companyCd, priorityOrderCd, Joiner.on(",").join(patternBranchCd));
+    //            }else{
+    //                //pattern
+    //                janMustNot = starReadingTableMapper.selectJanForPattern(companyCd, priorityOrderCd, shelfPatternCd);
+    //            }
+    //
+    //            commodityMustJans = janMustNot.stream().filter(map->MapUtils.getInteger(map,"exist_flag").equals(MagicString.START_READING_STATUS_MUST)).collect(Collectors.toList());
+    //            commodityNotJans = janMustNot.stream().filter(map->MapUtils.getInteger(map,"exist_flag").equals(MagicString.START_READING_STATUS_NOT)).collect(Collectors.toList());
+    //
+    //            if(commodityMustJans.isEmpty() && commodityNotJans.isEmpty()){
+    //                branchMustNot = false;
+    //                logger.info("patternCd:{} no exist commodity must and commodity not", shelfPatternCd);
+    //            }
+    //
+    //            Integer ptsCd = pattern.getId();
+    //            ShelfPtsHeaderDto shelfPtsHeaderDto = shelfPtsDataMapper.selectShelfPts(shelfPatternCd, companyCd);
+    //
+    //            List<Map<String, Object>> ptsSkuNum = priorityOrderPtsClassifyMapper.getPtsSkuNum(companyCd, priorityOrderCd, ptsCd, rankAttrList);
+    //            List<Map<String, Object>> ptsJanDtoList = shelfPtsDataMapper.selectClassifyPtsData(rankAttrList, shelfPatternCd, priorityOrderCd);
+    //            Map<String, List<Map<String, Object>>> ptsJanDtoListByGroup = ptsJanDtoList.stream()
+    //                    .collect(Collectors.groupingBy(s -> s.get(MagicString.ATTR_LIST).toString(), LinkedHashMap::new, Collectors.toList()));
+    //            List<Map<String, Object>> resultDataList = priorityOrderResultDataMapper.selectFinalDataByAttr(priorityOrderCd, companyCd, rankAttrList);
+    //            List<CompletableFuture<Map<String, List<Map<String, Object>>>>> tasks = new ArrayList<>();
+    //
+    //            List<String> allBranchList = shelfPatternBranchMapper.selectByPrimaryKey(shelfPatternCd)
+    //                    .stream().map(shelfPattern->shelfPattern.getBranch().contains("_")?shelfPattern.getBranch().split("_")[1]:shelfPattern.getBranch()).collect(Collectors.toList());
+    //            boolean isAllForMustNot = true;
+    //            Set<String> mustNotBranch = new HashSet<>();
+    //
+    //            if(Objects.equals(modeCheck, 1)){
+    //                //if all branch
+    //                List<String> branchList = starReadingTableMapper.selectBranchMustNotJan(companyCd, priorityOrderCd);
+    //                long count = Sets.intersection(Sets.newHashSet(allBranchList), Sets.newHashSet(branchList)).stream().count();
+    //                isAllForMustNot = Objects.equals(count,branchList.size());
+    //
+    //                List<String> mustBranch = commodityMustJans.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
+    //                List<String> notBranch = commodityNotJans.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
+    //
+    //                mustNotBranch.addAll(mustBranch);
+    //                mustNotBranch.addAll(notBranch);
+    //            }
+    //
+    //            //must and not only one branch, download a pts csv
+    //            if((mustNotBranch.size()!=1 && !isAllForMustNot) || !branchMustNot){
+    //                String json = new Gson().toJson(ptsJanDtoListByGroup);
+    //                Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
+    //                        new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
+    //                //common compare
+    //                CompletableFuture<Map<String, List<Map<String, Object>>>> commonFuture = CompletableFuture.supplyAsync(() -> doNewOldPtsCompare(finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
+    //                        shelfPtsHeaderDto, ptsVersion, catePakList, companyCd, fileParentPath,
+    //                        null, null, priorityOrderCd, null, janReplaceMap, ptsJanDtoList, patternBranchCd));
+    //                tasks.add(commonFuture);
+    //            }
+    //
+    //            if(branchMustNot || Objects.equals(0, modeCheck)){
+    //                //commodity_must+commodity_not
+    //                boolean finalIsAllForMustNot = isAllForMustNot;
+    //                List<Map<String, Object>> finalCommodityMustJans = commodityMustJans;
+    //                List<Map<String, Object>> finalCommodityNotJans = commodityNotJans;
+    //
+    //                CompletableFuture<Map<String, List<Map<String, Object>>>> mustNotFuture = CompletableFuture.supplyAsync(() -> {
+    //                    Map<String, List<Map<String, Object>>> resultMap = new ConcurrentHashMap<>();
+    //                    if(finalIsAllForMustNot){
+    //                        String json = new Gson().toJson(ptsJanDtoListByGroup);
+    //                        Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
+    //                                new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
+    //                        Map<String, List<Map<String, Object>>> tmpResultMap = doNewOldPtsCompare(finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
+    //                                shelfPtsHeaderDto, ptsVersion, catePakList, companyCd, fileParentPath,
+    //                                Maps.newHashMap(), finalCommodityMustJans, priorityOrderCd, finalCommodityNotJans, janReplaceMap, ptsJanDtoList,patternBranchCd);
+    //
+    //                        resultMap.put(MagicString.DELETE_LIST, tmpResultMap.getOrDefault(MagicString.DELETE_LIST, Lists.newArrayList()));
+    //                        resultMap.put(MagicString.NEW_LIST, tmpResultMap.getOrDefault(MagicString.NEW_LIST, Lists.newArrayList()));
+    //                    }else{
+    //                        //must not != all branch
+    //                        for (Map<String, Object> branch : patternBranches) {
+    //                            String json = new Gson().toJson(ptsJanDtoListByGroup);
+    //                            Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
+    //                                    new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
+    //                            String branchCd = branch.get(MagicString.BRANCH).toString();
+    //                            List<Map<String, Object>> commodityMustBranchJans = finalCommodityMustJans.stream().filter(m -> m.get(MagicString.BRANCH).toString().equals(branchCd)).collect(Collectors.toList());
+    //                            List<Map<String, Object>> commodityNotBranchJans = finalCommodityNotJans.stream().filter(m -> m.get(MagicString.BRANCH).toString().equals(branchCd)).collect(Collectors.toList());
+    //
+    //                            if(commodityMustBranchJans.isEmpty() && commodityNotBranchJans.isEmpty()){
+    //                                logger.info("patternCd: {},branchCd:{} no commodityMust and commodityNot", pattern.getId(), branchCd);
+    //                                continue;
+    //                            }
+    //
+    //                            Map<String, List<Map<String, Object>>> tmpResultMap = doNewOldPtsCompare(finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
+    //                                    shelfPtsHeaderDto, ptsVersion, catePakList, companyCd, fileParentPath,
+    //                                    branch, commodityMustBranchJans, priorityOrderCd, commodityNotBranchJans, janReplaceMap, ptsJanDtoList, patternBranchCd);
+    //
+    //                            resultMap.put(MagicString.DELETE_LIST, tmpResultMap.getOrDefault(MagicString.DELETE_LIST, Lists.newArrayList()));
+    //                            resultMap.put(MagicString.NEW_LIST, tmpResultMap.getOrDefault(MagicString.NEW_LIST, Lists.newArrayList()));
+    //                        }
+    //                    }
+    //                    return resultMap;
+    //                });
+    //
+    //                tasks.add(mustNotFuture);
+    //            }
+    //
+    //            CompletableFuture futures = CompletableFuture.allOf(tasks.toArray(new CompletableFuture[tasks.size()])).whenComplete((unused, throwable) -> tasks.forEach(future-> {
+    //                try {
+    //                    Map<String, List<Map<String, Object>>> tmpResult = future.get();
+    //                    allNewJanList.addAll(tmpResult.get(MagicString.NEW_LIST));
+    //                    allDeleteJanList.addAll(tmpResult.get(MagicString.DELETE_LIST));
+    //                } catch (InterruptedException e) {
+    //                    logger.error("",e);
+    //                    cacheUtil.put(taskId, "-1");
+    //                    Thread.currentThread().interrupt();
+    //                } catch (ExecutionException e){
+    //                    logger.error("",e);
+    //                    cacheUtil.put(taskId, "-1");
+    //                }
+    //            }));
+    //            futures.join();
+    //        }
+    //
+    //        if(newCutFlg==1){
+    //            this.writeNewCutExcel(fileParentPath, allNewJanList, allDeleteJanList,
+    //                    priorityOrderCd, companyCd, branchs);
+    //        }
+    //    } catch (Exception e) {
+    //        logger.error("", e);
+    //        cacheUtil.put(taskId, "-1");
+    //    }
+    //    JSONObject json = new JSONObject();
+    //    json.put("path", fileParentPath);
+    //    json.put("fileName", zipFileName);
+    //    cacheUtil.put(taskId, json.toJSONString());
+    //    return ImmutableMap.of();
+    //}
 
-        cacheUtil.put(taskId, "1");
-
-        Integer modeCheck = priorityOrderMstMapper.selectModeCheck(priorityOrderCd);
-
-        long currentTimeMillis = System.currentTimeMillis();
-        String fileParentPath = Joiner.on(File.separator).join(Lists.newArrayList(path, currentTimeMillis));
-        File file = new File(fileParentPath);
-        if (!file.exists()) {
-            boolean isMkdir = file.mkdirs();
-            logger.info("mkdir:{}",isMkdir);
-        }
-
-        String zipFileName = "";
-        if(ptsVersion==1){
-            zipFileName = MessageFormat.format("提案棚割PTS_{0}.zip", LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER)));
-        }else{
-            zipFileName = MessageFormat.format("確認用棚割PTS_{0}.zip", LocalDateTime.now().format(DateTimeFormatter.ofPattern(MagicString.DATE_FORMATER)));
-        }
-
-        try {
-            ptsBackupJanMapper.deleteBackupJanByCd(priorityOrderCd);
-            ptsPatternNameMapper.deletePtsPatternNameByCd(priorityOrderCd);
-
-            List<Map<String, Object>> patternCommonPartsData = patternMstMapper.selectPatternCommonPartsData(priorityOrderCd);
-
-            //pts foreach
-            List<ShelfPtsDataDto> patternList = patternMapper.selectPattern(companyCd, priorityOrderCd);
-            List<Map<String, Object>> branchs = new ArrayList<>();
-            List<Map<String, String>> janReplace = janReplaceMapper.selectJanReplace(companyCd, priorityOrderCd);
-            Map<String, String> janReplaceMap = janReplace.stream().collect(Collectors.toMap(map->MapUtils.getString(map, MagicString.JAN_OLD), map->MapUtils.getString(map, MagicString.JAN_NEW)));
-            List<Map<String, Object>> allNewJanList = new ArrayList<>();
-            List<Map<String, Object>> allDeleteJanList = new ArrayList<>();
-
-            List<PriorityOrderMstAttrSort> rankAttr = mstAttrSortMapper.selectByPrimaryKey(companyCd, priorityOrderCd);
-            rankAttr.sort(Comparator.comparing(PriorityOrderMstAttrSort::getValue));
-            List<String> rankAttrList = rankAttr.stream().map(PriorityOrderMstAttrSort::getValue).collect(Collectors.toList());
-
-            Map<String, String> tenTableName = null;
-
-            List<Integer> transferRankAttr = rankAttr.stream().map(rank->Integer.parseInt(rank.getValue().replace("attr",""))).collect(Collectors.toList());
-            List<PriorityOrderCatePakVO> catePakList = priorityOrderCatepakAttributeMapper.selectFinalByPrimaryKey(transferRankAttr, companyCd, priorityOrderCd);
-
-            for (ShelfPtsDataDto pattern : patternList) {
-                boolean branchMustNot = true;
-                tenTableName = new HashMap<>();
-
-                for (Map<String, Object> data : patternCommonPartsData) {
-                    String commonPartsData = MapUtils.getString(data, "common_parts_data");
-                    GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData, companyCd);
-                    tenTableName.put(commonTableName.getStoreInfoTable(), commonTableName.getStoreIsCoreNum());
-                }
-
-                Integer shelfPatternCd = pattern.getShelfPatternCd();
-                List<Map<String, Object>> patternBranches = shelfPatternBranchMapper.selectAllPatternBranch(priorityOrderCd, companyCd, tenTableName, shelfPatternCd);
-                branchs.addAll(patternBranches);
-
-                List<String> patternBranchCd = patternBranches.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
-                List<Map<String, Object>> commodityMustJans = null;
-                List<Map<String, Object>> commodityNotJans = null;
-                List<Map<String, Object>> janMustNot = null;
-
-                if(Objects.equals(modeCheck, 1)){
-                    //branch
-                    janMustNot = starReadingTableMapper.selectJanForBranch(companyCd, priorityOrderCd, Joiner.on(",").join(patternBranchCd));
-                }else{
-                    //pattern
-                    janMustNot = starReadingTableMapper.selectJanForPattern(companyCd, priorityOrderCd, shelfPatternCd);
-                }
-
-                commodityMustJans = janMustNot.stream().filter(map->MapUtils.getInteger(map,"exist_flag").equals(MagicString.START_READING_STATUS_MUST)).collect(Collectors.toList());
-                commodityNotJans = janMustNot.stream().filter(map->MapUtils.getInteger(map,"exist_flag").equals(MagicString.START_READING_STATUS_NOT)).collect(Collectors.toList());
-
-                if(commodityMustJans.isEmpty() && commodityNotJans.isEmpty()){
-                    branchMustNot = false;
-                    logger.info("patternCd:{} no exist commodity must and commodity not", shelfPatternCd);
-                }
-
-                Integer ptsCd = pattern.getId();
-                ShelfPtsHeaderDto shelfPtsHeaderDto = shelfPtsDataMapper.selectShelfPts(shelfPatternCd, companyCd);
-
-                List<Map<String, Object>> ptsSkuNum = priorityOrderPtsClassifyMapper.getPtsSkuNum(companyCd, priorityOrderCd, ptsCd, rankAttrList);
-                List<Map<String, Object>> ptsJanDtoList = shelfPtsDataMapper.selectClassifyPtsData(rankAttrList, shelfPatternCd, priorityOrderCd);
-                Map<String, List<Map<String, Object>>> ptsJanDtoListByGroup = ptsJanDtoList.stream()
-                        .collect(Collectors.groupingBy(s -> s.get(MagicString.ATTR_LIST).toString(), LinkedHashMap::new, Collectors.toList()));
-                List<Map<String, Object>> resultDataList = priorityOrderResultDataMapper.selectFinalDataByAttr(priorityOrderCd, companyCd, rankAttrList);
-                List<CompletableFuture<Map<String, List<Map<String, Object>>>>> tasks = new ArrayList<>();
-
-                List<String> allBranchList = shelfPatternBranchMapper.selectByPrimaryKey(shelfPatternCd)
-                        .stream().map(shelfPattern->shelfPattern.getBranch().contains("_")?shelfPattern.getBranch().split("_")[1]:shelfPattern.getBranch()).collect(Collectors.toList());
-                boolean isAllForMustNot = true;
-                Set<String> mustNotBranch = new HashSet<>();
-
-                if(Objects.equals(modeCheck, 1)){
-                    //if all branch
-                    List<String> branchList = starReadingTableMapper.selectBranchMustNotJan(companyCd, priorityOrderCd);
-                    long count = Sets.intersection(Sets.newHashSet(allBranchList), Sets.newHashSet(branchList)).stream().count();
-                    isAllForMustNot = Objects.equals(count,branchList.size());
-
-                    List<String> mustBranch = commodityMustJans.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
-                    List<String> notBranch = commodityNotJans.stream().map(map->map.get(MagicString.BRANCH).toString()).collect(Collectors.toList());
-
-                    mustNotBranch.addAll(mustBranch);
-                    mustNotBranch.addAll(notBranch);
-                }
-
-                //must and not only one branch, download a pts csv
-                if((mustNotBranch.size()!=1 && !isAllForMustNot) || !branchMustNot){
-                    String json = new Gson().toJson(ptsJanDtoListByGroup);
-                    Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
-                            new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
-                    //common compare
-                    CompletableFuture<Map<String, List<Map<String, Object>>>> commonFuture = CompletableFuture.supplyAsync(() -> doNewOldPtsCompare(finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
-                            shelfPtsHeaderDto, ptsVersion, catePakList, companyCd, fileParentPath,
-                            null, null, priorityOrderCd, null, janReplaceMap, ptsJanDtoList, patternBranchCd));
-                    tasks.add(commonFuture);
-                }
-
-                if(branchMustNot || Objects.equals(0, modeCheck)){
-                    //commodity_must+commodity_not
-                    boolean finalIsAllForMustNot = isAllForMustNot;
-                    List<Map<String, Object>> finalCommodityMustJans = commodityMustJans;
-                    List<Map<String, Object>> finalCommodityNotJans = commodityNotJans;
-
-                    CompletableFuture<Map<String, List<Map<String, Object>>>> mustNotFuture = CompletableFuture.supplyAsync(() -> {
-                        Map<String, List<Map<String, Object>>> resultMap = new ConcurrentHashMap<>();
-                        if(finalIsAllForMustNot){
-                            String json = new Gson().toJson(ptsJanDtoListByGroup);
-                            Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
-                                    new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
-                            Map<String, List<Map<String, Object>>> tmpResultMap = doNewOldPtsCompare(finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
-                                    shelfPtsHeaderDto, ptsVersion, catePakList, companyCd, fileParentPath,
-                                    Maps.newHashMap(), finalCommodityMustJans, priorityOrderCd, finalCommodityNotJans, janReplaceMap, ptsJanDtoList,patternBranchCd);
-
-                            resultMap.put(MagicString.DELETE_LIST, tmpResultMap.getOrDefault(MagicString.DELETE_LIST, Lists.newArrayList()));
-                            resultMap.put(MagicString.NEW_LIST, tmpResultMap.getOrDefault(MagicString.NEW_LIST, Lists.newArrayList()));
-                        }else{
-                            //must not != all branch
-                            for (Map<String, Object> branch : patternBranches) {
-                                String json = new Gson().toJson(ptsJanDtoListByGroup);
-                                Map<String, List<Map<String, Object>>> finalPtsJanDtoListByGroup = new Gson().fromJson(json,
-                                        new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType());
-                                String branchCd = branch.get(MagicString.BRANCH).toString();
-                                List<Map<String, Object>> commodityMustBranchJans = finalCommodityMustJans.stream().filter(m -> m.get(MagicString.BRANCH).toString().equals(branchCd)).collect(Collectors.toList());
-                                List<Map<String, Object>> commodityNotBranchJans = finalCommodityNotJans.stream().filter(m -> m.get(MagicString.BRANCH).toString().equals(branchCd)).collect(Collectors.toList());
-
-                                if(commodityMustBranchJans.isEmpty() && commodityNotBranchJans.isEmpty()){
-                                    logger.info("patternCd: {},branchCd:{} no commodityMust and commodityNot", pattern.getId(), branchCd);
-                                    continue;
-                                }
-
-                                Map<String, List<Map<String, Object>>> tmpResultMap = doNewOldPtsCompare(finalPtsJanDtoListByGroup, resultDataList, ptsSkuNum, pattern,
-                                        shelfPtsHeaderDto, ptsVersion, catePakList, companyCd, fileParentPath,
-                                        branch, commodityMustBranchJans, priorityOrderCd, commodityNotBranchJans, janReplaceMap, ptsJanDtoList, patternBranchCd);
-
-                                resultMap.put(MagicString.DELETE_LIST, tmpResultMap.getOrDefault(MagicString.DELETE_LIST, Lists.newArrayList()));
-                                resultMap.put(MagicString.NEW_LIST, tmpResultMap.getOrDefault(MagicString.NEW_LIST, Lists.newArrayList()));
-                            }
-                        }
-                        return resultMap;
-                    });
-
-                    tasks.add(mustNotFuture);
-                }
-
-                CompletableFuture futures = CompletableFuture.allOf(tasks.toArray(new CompletableFuture[tasks.size()])).whenComplete((unused, throwable) -> tasks.forEach(future-> {
-                    try {
-                        Map<String, List<Map<String, Object>>> tmpResult = future.get();
-                        allNewJanList.addAll(tmpResult.get(MagicString.NEW_LIST));
-                        allDeleteJanList.addAll(tmpResult.get(MagicString.DELETE_LIST));
-                    } catch (InterruptedException e) {
-                        logger.error("",e);
-                        cacheUtil.put(taskId, "-1");
-                        Thread.currentThread().interrupt();
-                    } catch (ExecutionException e){
-                        logger.error("",e);
-                        cacheUtil.put(taskId, "-1");
-                    }
-                }));
-                futures.join();
-            }
-
-            if(newCutFlg==1){
-                this.writeNewCutExcel(fileParentPath, allNewJanList, allDeleteJanList,
-                        priorityOrderCd, companyCd, branchs);
-            }
-        } catch (Exception e) {
-            logger.error("", e);
-            cacheUtil.put(taskId, "-1");
-        }
-        JSONObject json = new JSONObject();
-        json.put("path", fileParentPath);
-        json.put("fileName", zipFileName);
-        cacheUtil.put(taskId, json.toJSONString());
-        return ImmutableMap.of();
-    }
-
-    @Override
-    public Map<String, Object> downloadPtsTask(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg,
-                                               Integer ptsVersion, HttpServletResponse response) {
-        if(Strings.isNullOrEmpty(taskId)){
-            taskId = priorityOrderCd+"_"+System.currentTimeMillis();
-        }
-
-        if (cacheUtil.get(taskId)!=null) {
-            String s = cacheUtil.get(taskId).toString();
-
-            if("-1".equals(s)){
-                return ResultMaps.result(ResultEnum.FAILURE);
-            }else if("1".equals(s)){
-                JSONObject json = new JSONObject();
-                json.put("status", "9");
-                json.put("taskId", taskId);
-                return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
-            }else{
-                JSONObject json = new JSONObject();
-                json.put("taskId", taskId);
-                return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
-            }
-
-        }
-
-        String finalTaskId = taskId;
-        Future<?> submit = taskExecutor.submit(() -> {
-            try {
-                this.downloadPts(finalTaskId, companyCd, priorityOrderCd, newCutFlg, ptsVersion, response);
-            } catch (IOException e) {
-                cacheUtil.put(finalTaskId, "-1");
-                throw new RuntimeException(e);
-            }
-        });
-
-        try {
-            submit.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            JSONObject json = new JSONObject();
-            json.put("status", "9");
-            json.put("taskId", taskId);
-            return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
-        } catch(InterruptedException e ){
-            Thread.currentThread().interrupt();
-            logger.error("", e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        } catch (ExecutionException e){
-            logger.error("", e);
-            return ResultMaps.result(ResultEnum.FAILURE);
-        }
-
-        JSONObject json = new JSONObject();
-        json.put("taskId", taskId);
-        return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
-    }
+    //@Override
+    //public Map<String, Object> downloadPtsTask(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg,
+    //                                           Integer ptsVersion, HttpServletResponse response) {
+    //    if(Strings.isNullOrEmpty(taskId)){
+    //        taskId = priorityOrderCd+"_"+System.currentTimeMillis();
+    //    }
+    //
+    //    if (cacheUtil.get(taskId)!=null) {
+    //        String s = cacheUtil.get(taskId).toString();
+    //
+    //        if("-1".equals(s)){
+    //            return ResultMaps.result(ResultEnum.FAILURE);
+    //        }else if("1".equals(s)){
+    //            JSONObject json = new JSONObject();
+    //            json.put("status", "9");
+    //            json.put("taskId", taskId);
+    //            return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+    //        }else{
+    //            JSONObject json = new JSONObject();
+    //            json.put("taskId", taskId);
+    //            return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+    //        }
+    //
+    //    }
+    //
+    //    String finalTaskId = taskId;
+    //    Future<?> submit = taskExecutor.submit(() -> {
+    //        try {
+    //            this.downloadPts(finalTaskId, companyCd, priorityOrderCd, newCutFlg, ptsVersion, response);
+    //        } catch (IOException e) {
+    //            cacheUtil.put(finalTaskId, "-1");
+    //            throw new RuntimeException(e);
+    //        }
+    //    });
+    //
+    //    try {
+    //        submit.get(MagicString.TASK_TIME_OUT_LONG, TimeUnit.SECONDS);
+    //    } catch (TimeoutException e) {
+    //        JSONObject json = new JSONObject();
+    //        json.put("status", "9");
+    //        json.put("taskId", taskId);
+    //        return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+    //    } catch(InterruptedException e ){
+    //        Thread.currentThread().interrupt();
+    //        logger.error("", e);
+    //        return ResultMaps.result(ResultEnum.FAILURE);
+    //    } catch (ExecutionException e){
+    //        logger.error("", e);
+    //        return ResultMaps.result(ResultEnum.FAILURE);
+    //    }
+    //
+    //    JSONObject json = new JSONObject();
+    //    json.put("taskId", taskId);
+    //    return ResultMaps.result(ResultEnum.SUCCESS, json.toJSONString());
+    //}
 
     @Override
     public Map<String, Object> generatePtsTask(String taskId, String companyCd, Integer priorityOrderCd, Integer newCutFlg,
@@ -1158,403 +1163,403 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         }
     }
 
-    private Map<String, List<Map<String, Object>>> doNewOldPtsCompare(Map<String, List<Map<String, Object>>> ptsJanDtoListByGroup,
-                                                                      List<Map<String, Object>> resultDataList, List<Map<String, Object>> ptsSkuNum,
-                                                                      ShelfPtsDataDto pattern, ShelfPtsHeaderDto shelfPtsHeaderDto,
-          Integer ptsVersion, List<PriorityOrderCatePakVO> catePakList, String companyCd, String fileParentPath,
-          Map<String, Object> branch, List<Map<String, Object>> commodityMustJans,Integer priorityOrderCd,
-          List<Map<String, Object>> commodityNotJans, Map<String, String> janReplaceMap, List<Map<String, Object>> ptsJanDtoList,List<String> patternBranchCd){
-        Map<String, Map<String, String>> catePakMap = new HashMap<>();
-        List<Map<String, Object>> newJanList = new ArrayList<>();
-        List<Map<String, Object>> deleteJanList = new ArrayList<>();
-        Map<String, List<Map<String, Object>>> newPtsJanMap = new HashMap<>();
-        Map<String, List<Map<String, Object>>> resultMap = new HashMap<>(2);
-
-        String branchName = "";
-        String branchCd = "";
-        if(branch!=null && !branch.isEmpty()){
-            branchName = branch.get("branch_name").toString();
-            branchCd = branch.get(MagicString.BRANCH).toString();
-        }
-
-        String branchNames = String.join("_", Lists.newArrayList(branchCd,branchName));
-        String fileName = shelfPtsHeaderDto.getFileName().replace(".csv", "")+ (Strings.isNullOrEmpty(branchNames)?"":"_"+branchNames)+".csv";
-
-        //old pts have repeat jan
-        Map<String, String> repeatOldJan = new HashMap<>();
-        Map<String, List<Map<String, Object>>> notInPtsJanListByGroup = new HashMap<>();
-
-        for (Map.Entry<String, List<Map<String, Object>>> entry : ptsJanDtoListByGroup.entrySet()) {
-            //jan new: 777和jan delete: 888
-            String group = entry.getKey();
-            logger.info("group:{}",group);
-
-            int skuNumInit = 0;
-            List<Map<String, Object>> attrList = ptsSkuNum.stream().filter(map -> map.get(MagicString.ATTR_LIST).toString().equals(group)).collect(Collectors.toList());
-            if (!attrList.isEmpty()) {
-                Map<String, Object> attrMap = attrList.get(0);
-                skuNumInit = Integer.parseInt(attrMap.get("sku_num_init").toString());
-            }
-
-            List<Map<String, Object>> ptsJanList = entry.getValue();
-            List<String> ptsJanCdList = ptsJanList.stream().map(map -> map.get(MagicString.JAN).toString()).collect(Collectors.toList());
-            AtomicInteger maxSkuNum = new AtomicInteger(skuNumInit);
-            List<String> commodityNotJansCd = new ArrayList<>();
-            if(branch!=null){
-                commodityNotJansCd = commodityNotJans.stream().map(map->map.get(MagicString.JAN_NEW).toString()).collect(Collectors.toList());
-            }
-
-            List<String> finalCommodityNotJansCd = commodityNotJansCd;
-            List<Map<String, Object>> resultDataByAttr = resultDataList.stream()
-                    .filter(s -> s.get(MagicString.ATTR_LIST).toString().equals(group)).collect(Collectors.toList());
-            List<String> catePakSmallAttrList = catePakList.stream().map(PriorityOrderCatePakVO::getSmalls).collect(Collectors.toList());
-            for (String smallAttr : catePakSmallAttrList) {
-                if(smallAttr.equals(group)){
-                    maxSkuNum.getAndDecrement();
-                }
-            }
-
-            if(branch!=null){
-                //must jan first
-                List<String> commodityMustJansCd = commodityMustJans.stream().map(map->map.get(MagicString.JAN_NEW).toString()).collect(Collectors.toList());
-                List<String> finalCommodityNotJansCdList = commodityNotJansCd;
-                resultDataByAttr = resultDataByAttr.stream().map(map->{
-                    String janNew = map.get(MagicString.JAN).toString();
-                    int rank = Integer.parseInt(map.get(MagicString.RANK_UPD).toString());
-                    if (commodityMustJansCd.contains(janNew) && rank>maxSkuNum.get()) {
-                        maxSkuNum.getAndDecrement();
-                        map.put("rank_upd_original", MapUtils.getString(map, MagicString.RANK_UPD));
-                        map.put(MagicString.RANK_UPD, 0);
-                        map.put(MagicString.JAN_OLD, map.get(MagicString.JAN));
-                    }
-
-                    if (finalCommodityNotJansCdList.contains(janNew) && rank<=maxSkuNum.get()) {
-                        maxSkuNum.getAndIncrement();
-                    }
-
-                    return map;
-                }).collect(Collectors.toList());
-            }
-
-            int finalSkuNum = maxSkuNum.get();
-            List<Map<String, Object>> resultData = resultDataByAttr.stream()
-                    .filter(s->Integer.parseInt(s.get(MagicString.RANK_UPD).toString()) <= finalSkuNum
-                            && !finalCommodityNotJansCd.contains(s.get(MagicString.JAN).toString()))
-                    .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()))).collect(Collectors.toList());
-            List<Map<String, Object>> bkResultData = resultDataByAttr.stream()
-                    .filter(s->!finalCommodityNotJansCd.contains(s.get(MagicString.JAN).toString())
-                    && !janReplaceMap.containsValue(s.get(MagicString.JAN).toString()))
-                    .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()))).collect(Collectors.toList());
-            List<Map<String, Object>> notInPtsJanList = bkResultData.stream()
-                    .filter(map -> Integer.parseInt(map.get(MagicString.RANK_UPD).toString()) > finalSkuNum
-                            || (Integer.parseInt(map.get(MagicString.RANK_UPD).toString()) <= finalSkuNum
-                            && !ptsJanCdList.contains(MapUtils.getString(map, MagicString.JAN))))
-                    .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD)
-                            .toString()))).collect(Collectors.toList());
-            notInPtsJanListByGroup.put(group, notInPtsJanList);
-            if(!notInPtsJanList.isEmpty()){
-                ptsBackupJanMapper.insertBackupJan(priorityOrderCd, pattern.getShelfPatternCd(), group, branchCd, notInPtsJanList);
-            }
-
-            int newJanIndex = 0;
-            List<Map<String, Object>> adoptPtsJanList = new ArrayList<>(ptsJanList);
-
-            for (int i = 0; i < adoptPtsJanList.size(); i++) {
-                Map<String, Object> ptsJan = adoptPtsJanList.get(i);
-                String jan = ptsJan.get(MagicString.JAN).toString();
-                String janOld = ptsJan.get(MagicString.JAN_OLD).toString();
-                String rankUpd = MapUtils.getInteger(ptsJan, MagicString.RANK_UPD)+"";
-                String curAttrList = ptsJan.get(MagicString.ATTR_LIST).toString();
-
-                //mulit_attr-->attr?
-                String attrKey = String.join(",", curAttrList.split(","));
-
-                if(resultData.stream().noneMatch(map->jan.equals(map.get(MagicString.JAN).toString()))){
-                    //replace
-                    if(deleteJanList.stream().noneMatch(map->jan.equals(map.get(MagicString.JAN_OLD).toString()))){
-                        Map<String, Object> oldJanMap = new HashMap<>(ptsJan);
-                        oldJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
-                        oldJanMap.put(MagicString.PTS_NAME, fileName);
-                        newJanList.removeIf(map->Objects.equals(MapUtils.getString(map, MagicString.JAN), jan));
-                        deleteJanList.add(oldJanMap);
-                    }else {
-                        if(janReplaceMap.containsKey(janOld)) {
-                            String newJan = MapUtils.getString(janReplaceMap, janOld);
-                            List<String> newRankJan = resultData.stream().filter(data -> MapUtils.getString(data, MagicString.JAN).equals(repeatOldJan.get(jan))).map(data -> MapUtils.getString(data, MagicString.RANK_UPD)).collect(Collectors.toList());
-
-                            //old pts not exists and jan replace
-                            if (ptsJanDtoList.stream().noneMatch(map->MapUtils.getString(map, MagicString.JAN).equals(newJan))&&
-                                    newJanList.stream().noneMatch(map->newJan.equals(map.get(MagicString.JAN).toString()))) {
-
-                                Optional<Map<String, Object>> oldJanMap = resultData.stream().filter(map -> MapUtils.getString(map, MagicString.JAN).equals(newJan)).findAny();
-
-                                if (oldJanMap.isPresent()) {
-                                    Map<String, Object> oldJan = oldJanMap.get();
-                                    Map<String, Object> newCopyJanMap = new HashMap<>(oldJan);
-                                    newCopyJanMap.put(MagicString.BRANCH_NUM_UPD, oldJan.get(MagicString.BRANCH_NUM_UPD));
-                                    newCopyJanMap.put(MagicString.BRANCH_AMOUNT_UPD, oldJan.get(MagicString.BRANCH_AMOUNT_UPD));
-                                    newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
-                                    newCopyJanMap.put(MagicString.PTS_NAME, fileName);
-                                    newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(oldJan, MagicString.RANK_UPD));
-                                    deleteJanList.removeIf(map->Objects.equals(newJan, MapUtils.getString(map,MagicString.JAN)));
-                                    //priority_order_data exist jan
-                                    newJanList.add(newCopyJanMap);
-                                }
-
-                            }
-                            repeatOldJan.put(jan,newJan);
-                            if(ptsVersion==1){
-                                if(!newRankJan.isEmpty()){
-                                    ptsJan.put(MagicString.RANK_UPD, newRankJan.get(0));
-                                }
-                                ptsJan.put(MagicString.JAN, newJan);
-                            }
-                        }
-                    }
-
-                    logger.info("patternCd:{}, repeatOldJan:{}", pattern.getId(), repeatOldJan);
-                    if(repeatOldJan.containsKey(jan)){
-                        List<String> newRankJan = resultData.stream().filter(data -> MapUtils.getString(data, MagicString.JAN).equals(repeatOldJan.get(jan))).map(data -> MapUtils.getString(data, MagicString.RANK_UPD)).collect(Collectors.toList());
-                        if(!newRankJan.isEmpty()){
-                            ptsJan.put(MagicString.RANK_UPD, newRankJan.get(0));
-                        }
-
-                        if(ptsVersion == 1){
-                            ptsJan.put(MagicString.JAN, repeatOldJan.get(jan));
-                        }else{
-                            ptsJan.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,jan));
-                        }
-                    }else if(newJanIndex < notInPtsJanList.size()){
-                        String newJan = notInPtsJanList.get(newJanIndex).get(MagicString.JAN).toString();
-                        Integer newJanRank = MapUtils.getInteger(notInPtsJanList.get(newJanIndex), MagicString.RANK_UPD);
-
-                        if(janReplaceMap.containsKey(janOld)){
-                            newJan = MapUtils.getString(janReplaceMap, janOld);
-                            //old pts not exists and jan replace
-                            String finalNewJan = newJan;
-                            if (ptsJanDtoList.stream().noneMatch(map->MapUtils.getString(map, MagicString.JAN).equals(finalNewJan))&&
-                                    newJanList.stream().noneMatch(map-> finalNewJan.equals(map.get(MagicString.JAN).toString()))) {
-
-                                Optional<Map<String, Object>> oldJanMap = resultData.stream().filter(map -> MapUtils.getString(map, MagicString.JAN).equals(finalNewJan)).findAny();
-
-                                if (oldJanMap.isPresent()) {
-                                    Map<String, Object> oldJan = oldJanMap.get();
-                                    Map<String, Object> newCopyJanMap = new HashMap<>(oldJan);
-                                    newCopyJanMap.put(MagicString.BRANCH_NUM_UPD, oldJan.get(MagicString.BRANCH_NUM_UPD));
-                                    newCopyJanMap.put(MagicString.BRANCH_AMOUNT_UPD, oldJan.get(MagicString.BRANCH_AMOUNT_UPD));
-                                    newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
-                                    newCopyJanMap.put(MagicString.PTS_NAME, fileName);
-                                    newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(oldJan, MagicString.RANK_UPD));
-                                    //priority_order_data exist jan
-                                    deleteJanList.removeIf(map->finalNewJan.equals(MapUtils.getString(map,MagicString.JAN)));
-                                    newJanList.add(newCopyJanMap);
-                                }
-
-                            }
-                        }else{
-                            String finalNewJan = newJan;
-                            if(!notInPtsJanList.isEmpty() && newJanList.stream()
-                                    .noneMatch(map-> finalNewJan.equals(map.get(MagicString.JAN).toString()))){
-                                Map<String, Object> newJanMap = notInPtsJanList.get(newJanIndex);
-                                Map<String, Object> newCopyJanMap = new HashMap<>(newJanMap);
-                                newCopyJanMap.put(MagicString.BRANCH_NUM_UPD, newJanMap.get(MagicString.BRANCH_NUM_UPD));
-                                newCopyJanMap.put(MagicString.BRANCH_AMOUNT_UPD, newJanMap.get(MagicString.BRANCH_AMOUNT_UPD));
-                                newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
-                                newCopyJanMap.put(MagicString.PTS_NAME, fileName);
-                                newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(newJanMap, MagicString.RANK_UPD));
-                                deleteJanList.removeIf(map->finalNewJan.equals(MapUtils.getString(map,MagicString.JAN)));
-                                //priority_order_data exist jan
-                                newJanList.add(newCopyJanMap);
-
-                                newJanIndex++;
-                            }
-                        }
-
-                        ptsJan.put(MagicString.RANK_UPD, newJanRank);
-                        repeatOldJan.put(jan,newJan);
-                        if(ptsVersion==1){
-                            ptsJan.put(MagicString.JAN, newJan);
-                        }
-                    }else{
-                        if(ptsVersion==1){
-                            ptsJan.put(MagicString.DEL_FLAG, "1");
-                        }else if(ptsVersion==2){
-                            //not exist jan replace old jan,record flag
-                            ptsJan.put(MagicString.DEL_FLAG, "0");
-                        }
-                    }
-
-                    if(ptsVersion == 2){
-                        //確認用棚割
-                        ptsJan.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd, jan));
-                        ptsJan.put(MagicString.DUMMY_JAN, "1");
-                    }
-
-                    adoptPtsJanList.set(i, ptsJan);
-                }
-
-                int finalSkuNumInit = skuNumInit;
-                List<PriorityOrderCatePakVO> catePakVOS = catePakList.stream().filter(catePak -> catePak.getSmalls().equals(attrKey)
-                        && Integer.parseInt(catePak.getRank().toString()) <= finalSkuNumInit).collect(Collectors.toList());
-                for (PriorityOrderCatePakVO catePakVO : catePakVOS) {
-                    Map<String, String> catePakItemMap = catePakMap.getOrDefault(catePakVO.getBigs()+"@"+catePakVO.getRank(), Maps.newHashMap());
-                    catePakItemMap.put(MagicString.SMALLS, catePakVO.getSmalls());
-                    catePakMap.put(catePakVO.getBigs()+"@"+catePakVO.getRank(), catePakItemMap);
-                }
-            }
-
-
-            String transferGroup = group;
-            //拡 find 縮, record last newJanIndex
-            int finalNewJanIndex = newJanIndex;
-            List<PriorityOrderCatePakVO> bigList = catePakList.stream().filter(catePak -> catePak.getBigs().equals(transferGroup)).collect(Collectors.toList());
-            for (PriorityOrderCatePakVO priorityOrderCatePakVO : bigList) {
-                Integer rank = priorityOrderCatePakVO.getRank();
-                Map<String, String> catePakItemMap = catePakMap.getOrDefault(priorityOrderCatePakVO.getBigs()+"@"+rank, Maps.newHashMap());
-                catePakItemMap.put(MagicString.BIG_LAST_INDEX, finalNewJanIndex+"");
-                catePakMap.put(priorityOrderCatePakVO.getBigs()+"@"+rank, catePakItemMap);
-                finalNewJanIndex++;
-            }
-
-            if(skuNumInit>0){
-                newPtsJanMap.put(group, adoptPtsJanList);
-            }
-        }
-
-        //拡縮
-        for (Map.Entry<String, Map<String, String>> entry : catePakMap.entrySet()) {
-            String bigs = entry.getKey().split("@")[0];
-            Map<String, String> catePakItemMap = entry.getValue();
-
-            if(!catePakItemMap.containsKey(MagicString.SMALLS)){
-                logger.warn("catePakItemMap：{}, It can't shrink", catePakItemMap);
-                continue;
-            }
-
-            String smalls = catePakItemMap.get(MagicString.SMALLS);
-            int bigLastIndex = Integer.parseInt(catePakItemMap.getOrDefault(MagicString.BIG_LAST_INDEX, "0"));
-
-            String attrBigs = bigs;
-            String attrSmalls = smalls;
-
-            List<Map<String, Object>> bigList = null;
-            List<Map<String, Object>> smallList = null;
-            if(newPtsJanMap.containsKey(attrBigs)){
-                bigList = newPtsJanMap.get(attrBigs).stream().filter(map->
-                        !"1".equals(MapUtils.getString(map, MagicString.DEL_FLAG)) && !"0".equals(MapUtils.getString(map, MagicString.DEL_FLAG))).collect(Collectors.toList());
-            }
-
-            if(newPtsJanMap.containsKey(attrSmalls)){
-                smallList = newPtsJanMap.get(attrSmalls).stream().filter(map->
-                        !"1".equals(MapUtils.getString(map, MagicString.DEL_FLAG)) && !"0".equals(MapUtils.getString(map, MagicString.DEL_FLAG))).collect(Collectors.toList());
-            }else{
-                continue;
-            }
-
-            List<String> commodityMustJansCd = new ArrayList<>();
-            if(commodityMustJans!=null && !commodityMustJans.isEmpty()){
-                commodityMustJansCd = commodityMustJans.stream().map(map->map.get(MagicString.JAN_NEW).toString()).collect(Collectors.toList());
-            }
-            List<String> finalCommodityMustJansCd = commodityMustJansCd;
-            List<Map<String, Object>> smallListSortByRank = smallList.stream()
-                    .filter(map->!finalCommodityMustJansCd.contains(MapUtils.getString(map, MagicString.JAN)))
-                    .sorted(Comparator.comparing(map -> MapUtils.getInteger(map, MagicString.RANK_UPD))).collect(Collectors.toList());
-            Map<String, Object> compressJan = smallListSortByRank.get(smallListSortByRank.size() - 1);
-            //縮attr's last rank index
-            int smallsIndex = 0;
-            String smallJan = MapUtils.getString(compressJan, MagicString.JAN);
-            for (int i = 0; i < smallList.size(); i++) {
-                if (MapUtils.getString(smallList.get(i), MagicString.JAN).equals(smallJan)){
-                    smallsIndex = i;
-                }
-            }
-
-            List<Map<String, Object>> notInPtsJanList = new ArrayList<>();
-            if(bigList != null && !bigList.isEmpty()) {
-                notInPtsJanList = notInPtsJanListByGroup.getOrDefault(attrBigs, ImmutableList.of());
-            }
-
-            Map<String, Object> ptsJanMap = smallList.get(smallsIndex);
-
-            if(deleteJanList.stream().noneMatch(map->smallJan.equals(map.get(MagicString.JAN_OLD).toString())) && !repeatOldJan.containsKey(smallJan)){
-                Map<String, Object> oldJanMap = new HashMap<>(ptsJanMap);
-                oldJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
-                oldJanMap.put(MagicString.PTS_NAME, fileName);
-                newJanList.removeIf(map->Objects.equals(MapUtils.getString(map, MagicString.JAN), smallJan));
-                deleteJanList.add(oldJanMap);
-            }
-
-            if(notInPtsJanList.isEmpty() || bigLastIndex>= notInPtsJanList.size()){
-                //no jan can 拡
-                if(ptsVersion == 2){
-                    smallList = smallList.stream().map(map-> {
-                        if (MapUtils.getString(map, MagicString.JAN).equals(smallJan) && !"1".equals(MapUtils.getString(map, MagicString.DUMMY_JAN))) {
-                            map.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,smallJan));
-                        }
-                        return map;
-                    }).collect(Collectors.toList());
-                }else{
-                    smallList = smallList.stream().map(map-> {
-                        if (MapUtils.getString(map, MagicString.JAN).equals(smallJan)) {
-                            map.put(MagicString.DEL_FLAG, "1");
-                        }
-                        return map;
-                    }).collect(Collectors.toList());
-                }
-            }else{
-                Map<String, Object> bigMap = notInPtsJanList.get(bigLastIndex);
-
-                if(ptsVersion == 2){
-                    smallList = smallList.stream().map(map-> {
-                        if(MapUtils.getString(map, MagicString.JAN).equals(smallJan) && !"1".equals(MapUtils.getString(map, MagicString.DUMMY_JAN))){
-                            map.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,smallJan));
-                        }
-
-                        return map;
-                    }).collect(Collectors.toList());
-                }else{
-                    smallList = smallList.stream().map(map->{
-                        if(MapUtils.getString(map, MagicString.JAN).equals(smallJan)){
-                            map.put(MagicString.JAN, MapUtils.getString(bigMap,MagicString.JAN));
-                        }
-                        return map;
-                    }).collect(Collectors.toList());
-                }
-
-                if (newJanList.stream().noneMatch(map->map.get(MagicString.JAN).toString().equals(bigMap.get(MagicString.JAN)))) {
-                    Map<String, Object> newCopyJanMap = new HashMap<>(bigMap);
-                    newCopyJanMap.put(MagicString.BRANCH_NUM, bigMap.get(MagicString.BRANCH_NUM));
-                    newCopyJanMap.put(MagicString.BRANCH_AMOUNT, bigMap.get(MagicString.BRANCH_AMOUNT));
-                    newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
-                    newCopyJanMap.put(MagicString.PTS_NAME, fileName);
-                    deleteJanList.removeIf(map->Objects.equals(bigMap.get(MagicString.JAN), MapUtils.getString(map,MagicString.JAN)));
-                    //priority_order_data exist jan
-                    newJanList.add(newCopyJanMap);
-                    repeatOldJan.put(smallJan, MapUtils.getString(bigMap, MagicString.JAN));
-                }
-            }
-
-            newPtsJanMap.put(attrSmalls, smallList);
-        }
-
-        this.pluralJan(newPtsJanMap, priorityOrderCd,pattern, branchCd,
-                ptsVersion, companyCd, deleteJanList, newJanList, fileName, patternBranchCd);
-
-        resultMap.put(MagicString.DELETE_LIST, deleteJanList);
-        resultMap.put(MagicString.NEW_LIST, newJanList);
-
-        List<Map<String, Object>> newPtsJanList = this.reOrderByTaiTana(newPtsJanMap);
-        List<ShelfPtsDataTaimst> shelfPtsDataTaimst = shelfPtsDataMapper.selectShelfPtsTaiMst(pattern.getId());
-        List<ShelfPtsDataTanamst> shelfPtsDataTanamst = shelfPtsDataMapper.selectShelfPtsTanaMst(pattern.getId());
-
-        this.saveJanShelfNameCd(newPtsJanList, pattern.getShelfNameCd(), priorityOrderCd, pattern.getShelfPatternCd(), patternBranchCd);
-        this.generateCsv2File(newJanList.stream().map(map->map.get(MagicString.JAN).toString()).collect(Collectors.toList()),
-                deleteJanList.stream().map(map->map.get(MagicString.JAN).toString()).collect(Collectors.toList()),
-                fileParentPath,newPtsJanList, shelfPtsHeaderDto,
-                shelfPtsDataTaimst, shelfPtsDataTanamst, fileName);
-
-        return resultMap;
-    }
+    //private Map<String, List<Map<String, Object>>> doNewOldPtsCompare(Map<String, List<Map<String, Object>>> ptsJanDtoListByGroup,
+    //                                                                  List<Map<String, Object>> resultDataList, List<Map<String, Object>> ptsSkuNum,
+    //                                                                  ShelfPtsDataDto pattern, ShelfPtsHeaderDto shelfPtsHeaderDto,
+    //      Integer ptsVersion, List<PriorityOrderCatePakVO> catePakList, String companyCd, String fileParentPath,
+    //      Map<String, Object> branch, List<Map<String, Object>> commodityMustJans,Integer priorityOrderCd,
+    //      List<Map<String, Object>> commodityNotJans, Map<String, String> janReplaceMap, List<Map<String, Object>> ptsJanDtoList,List<String> patternBranchCd){
+    //    Map<String, Map<String, String>> catePakMap = new HashMap<>();
+    //    List<Map<String, Object>> newJanList = new ArrayList<>();
+    //    List<Map<String, Object>> deleteJanList = new ArrayList<>();
+    //    Map<String, List<Map<String, Object>>> newPtsJanMap = new HashMap<>();
+    //    Map<String, List<Map<String, Object>>> resultMap = new HashMap<>(2);
+    //
+    //    String branchName = "";
+    //    String branchCd = "";
+    //    if(branch!=null && !branch.isEmpty()){
+    //        branchName = branch.get("branch_name").toString();
+    //        branchCd = branch.get(MagicString.BRANCH).toString();
+    //    }
+    //
+    //    String branchNames = String.join("_", Lists.newArrayList(branchCd,branchName));
+    //    String fileName = shelfPtsHeaderDto.getFileName().replace(".csv", "")+ (Strings.isNullOrEmpty(branchNames)?"":"_"+branchNames)+".csv";
+    //
+    //    //old pts have repeat jan
+    //    Map<String, String> repeatOldJan = new HashMap<>();
+    //    Map<String, List<Map<String, Object>>> notInPtsJanListByGroup = new HashMap<>();
+    //
+    //    for (Map.Entry<String, List<Map<String, Object>>> entry : ptsJanDtoListByGroup.entrySet()) {
+    //        //jan new: 777和jan delete: 888
+    //        String group = entry.getKey();
+    //        logger.info("group:{}",group);
+    //
+    //        int skuNumInit = 0;
+    //        List<Map<String, Object>> attrList = ptsSkuNum.stream().filter(map -> map.get(MagicString.ATTR_LIST).toString().equals(group)).collect(Collectors.toList());
+    //        if (!attrList.isEmpty()) {
+    //            Map<String, Object> attrMap = attrList.get(0);
+    //            skuNumInit = Integer.parseInt(attrMap.get("sku_num_init").toString());
+    //        }
+    //
+    //        List<Map<String, Object>> ptsJanList = entry.getValue();
+    //        List<String> ptsJanCdList = ptsJanList.stream().map(map -> map.get(MagicString.JAN).toString()).collect(Collectors.toList());
+    //        AtomicInteger maxSkuNum = new AtomicInteger(skuNumInit);
+    //        List<String> commodityNotJansCd = new ArrayList<>();
+    //        if(branch!=null){
+    //            commodityNotJansCd = commodityNotJans.stream().map(map->map.get(MagicString.JAN_NEW).toString()).collect(Collectors.toList());
+    //        }
+    //
+    //        List<String> finalCommodityNotJansCd = commodityNotJansCd;
+    //        List<Map<String, Object>> resultDataByAttr = resultDataList.stream()
+    //                .filter(s -> s.get(MagicString.ATTR_LIST).toString().equals(group)).collect(Collectors.toList());
+    //        List<String> catePakSmallAttrList = catePakList.stream().map(PriorityOrderCatePakVO::getSmalls).collect(Collectors.toList());
+    //        for (String smallAttr : catePakSmallAttrList) {
+    //            if(smallAttr.equals(group)){
+    //                maxSkuNum.getAndDecrement();
+    //            }
+    //        }
+    //
+    //        if(branch!=null){
+    //            //must jan first
+    //            List<String> commodityMustJansCd = commodityMustJans.stream().map(map->map.get(MagicString.JAN_NEW).toString()).collect(Collectors.toList());
+    //            List<String> finalCommodityNotJansCdList = commodityNotJansCd;
+    //            resultDataByAttr = resultDataByAttr.stream().map(map->{
+    //                String janNew = map.get(MagicString.JAN).toString();
+    //                int rank = Integer.parseInt(map.get(MagicString.RANK_UPD).toString());
+    //                if (commodityMustJansCd.contains(janNew) && rank>maxSkuNum.get()) {
+    //                    maxSkuNum.getAndDecrement();
+    //                    map.put("rank_upd_original", MapUtils.getString(map, MagicString.RANK_UPD));
+    //                    map.put(MagicString.RANK_UPD, 0);
+    //                    map.put(MagicString.JAN_OLD, map.get(MagicString.JAN));
+    //                }
+    //
+    //                if (finalCommodityNotJansCdList.contains(janNew) && rank<=maxSkuNum.get()) {
+    //                    maxSkuNum.getAndIncrement();
+    //                }
+    //
+    //                return map;
+    //            }).collect(Collectors.toList());
+    //        }
+    //
+    //        int finalSkuNum = maxSkuNum.get();
+    //        List<Map<String, Object>> resultData = resultDataByAttr.stream()
+    //                .filter(s->Integer.parseInt(s.get(MagicString.RANK_UPD).toString()) <= finalSkuNum
+    //                        && !finalCommodityNotJansCd.contains(s.get(MagicString.JAN).toString()))
+    //                .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()))).collect(Collectors.toList());
+    //        List<Map<String, Object>> bkResultData = resultDataByAttr.stream()
+    //                .filter(s->!finalCommodityNotJansCd.contains(s.get(MagicString.JAN).toString())
+    //                && !janReplaceMap.containsValue(s.get(MagicString.JAN).toString()))
+    //                .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD).toString()))).collect(Collectors.toList());
+    //        List<Map<String, Object>> notInPtsJanList = bkResultData.stream()
+    //                .filter(map -> Integer.parseInt(map.get(MagicString.RANK_UPD).toString()) > finalSkuNum
+    //                        || (Integer.parseInt(map.get(MagicString.RANK_UPD).toString()) <= finalSkuNum
+    //                        && !ptsJanCdList.contains(MapUtils.getString(map, MagicString.JAN))))
+    //                .sorted(Comparator.comparing(map->Integer.parseInt(map.get(MagicString.RANK_UPD)
+    //                        .toString()))).collect(Collectors.toList());
+    //        notInPtsJanListByGroup.put(group, notInPtsJanList);
+    //        if(!notInPtsJanList.isEmpty()){
+    //            ptsBackupJanMapper.insertBackupJan(priorityOrderCd, pattern.getShelfPatternCd(), group, branchCd, notInPtsJanList);
+    //        }
+    //
+    //        int newJanIndex = 0;
+    //        List<Map<String, Object>> adoptPtsJanList = new ArrayList<>(ptsJanList);
+    //
+    //        for (int i = 0; i < adoptPtsJanList.size(); i++) {
+    //            Map<String, Object> ptsJan = adoptPtsJanList.get(i);
+    //            String jan = ptsJan.get(MagicString.JAN).toString();
+    //            String janOld = ptsJan.get(MagicString.JAN_OLD).toString();
+    //            String rankUpd = MapUtils.getInteger(ptsJan, MagicString.RANK_UPD)+"";
+    //            String curAttrList = ptsJan.get(MagicString.ATTR_LIST).toString();
+    //
+    //            //mulit_attr-->attr?
+    //            String attrKey = String.join(",", curAttrList.split(","));
+    //
+    //            if(resultData.stream().noneMatch(map->jan.equals(map.get(MagicString.JAN).toString()))){
+    //                //replace
+    //                if(deleteJanList.stream().noneMatch(map->jan.equals(map.get(MagicString.JAN_OLD).toString()))){
+    //                    Map<String, Object> oldJanMap = new HashMap<>(ptsJan);
+    //                    oldJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
+    //                    oldJanMap.put(MagicString.PTS_NAME, fileName);
+    //                    newJanList.removeIf(map->Objects.equals(MapUtils.getString(map, MagicString.JAN), jan));
+    //                    deleteJanList.add(oldJanMap);
+    //                }else {
+    //                    if(janReplaceMap.containsKey(janOld)) {
+    //                        String newJan = MapUtils.getString(janReplaceMap, janOld);
+    //                        List<String> newRankJan = resultData.stream().filter(data -> MapUtils.getString(data, MagicString.JAN).equals(repeatOldJan.get(jan))).map(data -> MapUtils.getString(data, MagicString.RANK_UPD)).collect(Collectors.toList());
+    //
+    //                        //old pts not exists and jan replace
+    //                        if (ptsJanDtoList.stream().noneMatch(map->MapUtils.getString(map, MagicString.JAN).equals(newJan))&&
+    //                                newJanList.stream().noneMatch(map->newJan.equals(map.get(MagicString.JAN).toString()))) {
+    //
+    //                            Optional<Map<String, Object>> oldJanMap = resultData.stream().filter(map -> MapUtils.getString(map, MagicString.JAN).equals(newJan)).findAny();
+    //
+    //                            if (oldJanMap.isPresent()) {
+    //                                Map<String, Object> oldJan = oldJanMap.get();
+    //                                Map<String, Object> newCopyJanMap = new HashMap<>(oldJan);
+    //                                newCopyJanMap.put(MagicString.BRANCH_NUM_UPD, oldJan.get(MagicString.BRANCH_NUM_UPD));
+    //                                newCopyJanMap.put(MagicString.BRANCH_AMOUNT_UPD, oldJan.get(MagicString.BRANCH_AMOUNT_UPD));
+    //                                newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
+    //                                newCopyJanMap.put(MagicString.PTS_NAME, fileName);
+    //                                newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(oldJan, MagicString.RANK_UPD));
+    //                                deleteJanList.removeIf(map->Objects.equals(newJan, MapUtils.getString(map,MagicString.JAN)));
+    //                                //priority_order_data exist jan
+    //                                newJanList.add(newCopyJanMap);
+    //                            }
+    //
+    //                        }
+    //                        repeatOldJan.put(jan,newJan);
+    //                        if(ptsVersion==1){
+    //                            if(!newRankJan.isEmpty()){
+    //                                ptsJan.put(MagicString.RANK_UPD, newRankJan.get(0));
+    //                            }
+    //                            ptsJan.put(MagicString.JAN, newJan);
+    //                        }
+    //                    }
+    //                }
+    //
+    //                logger.info("patternCd:{}, repeatOldJan:{}", pattern.getId(), repeatOldJan);
+    //                if(repeatOldJan.containsKey(jan)){
+    //                    List<String> newRankJan = resultData.stream().filter(data -> MapUtils.getString(data, MagicString.JAN).equals(repeatOldJan.get(jan))).map(data -> MapUtils.getString(data, MagicString.RANK_UPD)).collect(Collectors.toList());
+    //                    if(!newRankJan.isEmpty()){
+    //                        ptsJan.put(MagicString.RANK_UPD, newRankJan.get(0));
+    //                    }
+    //
+    //                    if(ptsVersion == 1){
+    //                        ptsJan.put(MagicString.JAN, repeatOldJan.get(jan));
+    //                    }else{
+    //                        ptsJan.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,jan));
+    //                    }
+    //                }else if(newJanIndex < notInPtsJanList.size()){
+    //                    String newJan = notInPtsJanList.get(newJanIndex).get(MagicString.JAN).toString();
+    //                    Integer newJanRank = MapUtils.getInteger(notInPtsJanList.get(newJanIndex), MagicString.RANK_UPD);
+    //
+    //                    if(janReplaceMap.containsKey(janOld)){
+    //                        newJan = MapUtils.getString(janReplaceMap, janOld);
+    //                        //old pts not exists and jan replace
+    //                        String finalNewJan = newJan;
+    //                        if (ptsJanDtoList.stream().noneMatch(map->MapUtils.getString(map, MagicString.JAN).equals(finalNewJan))&&
+    //                                newJanList.stream().noneMatch(map-> finalNewJan.equals(map.get(MagicString.JAN).toString()))) {
+    //
+    //                            Optional<Map<String, Object>> oldJanMap = resultData.stream().filter(map -> MapUtils.getString(map, MagicString.JAN).equals(finalNewJan)).findAny();
+    //
+    //                            if (oldJanMap.isPresent()) {
+    //                                Map<String, Object> oldJan = oldJanMap.get();
+    //                                Map<String, Object> newCopyJanMap = new HashMap<>(oldJan);
+    //                                newCopyJanMap.put(MagicString.BRANCH_NUM_UPD, oldJan.get(MagicString.BRANCH_NUM_UPD));
+    //                                newCopyJanMap.put(MagicString.BRANCH_AMOUNT_UPD, oldJan.get(MagicString.BRANCH_AMOUNT_UPD));
+    //                                newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
+    //                                newCopyJanMap.put(MagicString.PTS_NAME, fileName);
+    //                                newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(oldJan, MagicString.RANK_UPD));
+    //                                //priority_order_data exist jan
+    //                                deleteJanList.removeIf(map->finalNewJan.equals(MapUtils.getString(map,MagicString.JAN)));
+    //                                newJanList.add(newCopyJanMap);
+    //                            }
+    //
+    //                        }
+    //                    }else{
+    //                        String finalNewJan = newJan;
+    //                        if(!notInPtsJanList.isEmpty() && newJanList.stream()
+    //                                .noneMatch(map-> finalNewJan.equals(map.get(MagicString.JAN).toString()))){
+    //                            Map<String, Object> newJanMap = notInPtsJanList.get(newJanIndex);
+    //                            Map<String, Object> newCopyJanMap = new HashMap<>(newJanMap);
+    //                            newCopyJanMap.put(MagicString.BRANCH_NUM_UPD, newJanMap.get(MagicString.BRANCH_NUM_UPD));
+    //                            newCopyJanMap.put(MagicString.BRANCH_AMOUNT_UPD, newJanMap.get(MagicString.BRANCH_AMOUNT_UPD));
+    //                            newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
+    //                            newCopyJanMap.put(MagicString.PTS_NAME, fileName);
+    //                            newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(newJanMap, MagicString.RANK_UPD));
+    //                            deleteJanList.removeIf(map->finalNewJan.equals(MapUtils.getString(map,MagicString.JAN)));
+    //                            //priority_order_data exist jan
+    //                            newJanList.add(newCopyJanMap);
+    //
+    //                            newJanIndex++;
+    //                        }
+    //                    }
+    //
+    //                    ptsJan.put(MagicString.RANK_UPD, newJanRank);
+    //                    repeatOldJan.put(jan,newJan);
+    //                    if(ptsVersion==1){
+    //                        ptsJan.put(MagicString.JAN, newJan);
+    //                    }
+    //                }else{
+    //                    if(ptsVersion==1){
+    //                        ptsJan.put(MagicString.DEL_FLAG, "1");
+    //                    }else if(ptsVersion==2){
+    //                        //not exist jan replace old jan,record flag
+    //                        ptsJan.put(MagicString.DEL_FLAG, "0");
+    //                    }
+    //                }
+    //
+    //                if(ptsVersion == 2){
+    //                    //確認用棚割
+    //                    ptsJan.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd, jan));
+    //                    ptsJan.put(MagicString.DUMMY_JAN, "1");
+    //                }
+    //
+    //                adoptPtsJanList.set(i, ptsJan);
+    //            }
+    //
+    //            int finalSkuNumInit = skuNumInit;
+    //            List<PriorityOrderCatePakVO> catePakVOS = catePakList.stream().filter(catePak -> catePak.getSmalls().equals(attrKey)
+    //                    && Integer.parseInt(catePak.getRank().toString()) <= finalSkuNumInit).collect(Collectors.toList());
+    //            for (PriorityOrderCatePakVO catePakVO : catePakVOS) {
+    //                Map<String, String> catePakItemMap = catePakMap.getOrDefault(catePakVO.getBigs()+"@"+catePakVO.getRank(), Maps.newHashMap());
+    //                catePakItemMap.put(MagicString.SMALLS, catePakVO.getSmalls());
+    //                catePakMap.put(catePakVO.getBigs()+"@"+catePakVO.getRank(), catePakItemMap);
+    //            }
+    //        }
+    //
+    //
+    //        String transferGroup = group;
+    //        //拡 find 縮, record last newJanIndex
+    //        int finalNewJanIndex = newJanIndex;
+    //        List<PriorityOrderCatePakVO> bigList = catePakList.stream().filter(catePak -> catePak.getBigs().equals(transferGroup)).collect(Collectors.toList());
+    //        for (PriorityOrderCatePakVO priorityOrderCatePakVO : bigList) {
+    //            Integer rank = priorityOrderCatePakVO.getRank();
+    //            Map<String, String> catePakItemMap = catePakMap.getOrDefault(priorityOrderCatePakVO.getBigs()+"@"+rank, Maps.newHashMap());
+    //            catePakItemMap.put(MagicString.BIG_LAST_INDEX, finalNewJanIndex+"");
+    //            catePakMap.put(priorityOrderCatePakVO.getBigs()+"@"+rank, catePakItemMap);
+    //            finalNewJanIndex++;
+    //        }
+    //
+    //        if(skuNumInit>0){
+    //            newPtsJanMap.put(group, adoptPtsJanList);
+    //        }
+    //    }
+    //
+    //    //拡縮
+    //    for (Map.Entry<String, Map<String, String>> entry : catePakMap.entrySet()) {
+    //        String bigs = entry.getKey().split("@")[0];
+    //        Map<String, String> catePakItemMap = entry.getValue();
+    //
+    //        if(!catePakItemMap.containsKey(MagicString.SMALLS)){
+    //            logger.warn("catePakItemMap：{}, It can't shrink", catePakItemMap);
+    //            continue;
+    //        }
+    //
+    //        String smalls = catePakItemMap.get(MagicString.SMALLS);
+    //        int bigLastIndex = Integer.parseInt(catePakItemMap.getOrDefault(MagicString.BIG_LAST_INDEX, "0"));
+    //
+    //        String attrBigs = bigs;
+    //        String attrSmalls = smalls;
+    //
+    //        List<Map<String, Object>> bigList = null;
+    //        List<Map<String, Object>> smallList = null;
+    //        if(newPtsJanMap.containsKey(attrBigs)){
+    //            bigList = newPtsJanMap.get(attrBigs).stream().filter(map->
+    //                    !"1".equals(MapUtils.getString(map, MagicString.DEL_FLAG)) && !"0".equals(MapUtils.getString(map, MagicString.DEL_FLAG))).collect(Collectors.toList());
+    //        }
+    //
+    //        if(newPtsJanMap.containsKey(attrSmalls)){
+    //            smallList = newPtsJanMap.get(attrSmalls).stream().filter(map->
+    //                    !"1".equals(MapUtils.getString(map, MagicString.DEL_FLAG)) && !"0".equals(MapUtils.getString(map, MagicString.DEL_FLAG))).collect(Collectors.toList());
+    //        }else{
+    //            continue;
+    //        }
+    //
+    //        List<String> commodityMustJansCd = new ArrayList<>();
+    //        if(commodityMustJans!=null && !commodityMustJans.isEmpty()){
+    //            commodityMustJansCd = commodityMustJans.stream().map(map->map.get(MagicString.JAN_NEW).toString()).collect(Collectors.toList());
+    //        }
+    //        List<String> finalCommodityMustJansCd = commodityMustJansCd;
+    //        List<Map<String, Object>> smallListSortByRank = smallList.stream()
+    //                .filter(map->!finalCommodityMustJansCd.contains(MapUtils.getString(map, MagicString.JAN)))
+    //                .sorted(Comparator.comparing(map -> MapUtils.getInteger(map, MagicString.RANK_UPD))).collect(Collectors.toList());
+    //        Map<String, Object> compressJan = smallListSortByRank.get(smallListSortByRank.size() - 1);
+    //        //縮attr's last rank index
+    //        int smallsIndex = 0;
+    //        String smallJan = MapUtils.getString(compressJan, MagicString.JAN);
+    //        for (int i = 0; i < smallList.size(); i++) {
+    //            if (MapUtils.getString(smallList.get(i), MagicString.JAN).equals(smallJan)){
+    //                smallsIndex = i;
+    //            }
+    //        }
+    //
+    //        List<Map<String, Object>> notInPtsJanList = new ArrayList<>();
+    //        if(bigList != null && !bigList.isEmpty()) {
+    //            notInPtsJanList = notInPtsJanListByGroup.getOrDefault(attrBigs, ImmutableList.of());
+    //        }
+    //
+    //        Map<String, Object> ptsJanMap = smallList.get(smallsIndex);
+    //
+    //        if(deleteJanList.stream().noneMatch(map->smallJan.equals(map.get(MagicString.JAN_OLD).toString())) && !repeatOldJan.containsKey(smallJan)){
+    //            Map<String, Object> oldJanMap = new HashMap<>(ptsJanMap);
+    //            oldJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
+    //            oldJanMap.put(MagicString.PTS_NAME, fileName);
+    //            newJanList.removeIf(map->Objects.equals(MapUtils.getString(map, MagicString.JAN), smallJan));
+    //            deleteJanList.add(oldJanMap);
+    //        }
+    //
+    //        if(notInPtsJanList.isEmpty() || bigLastIndex>= notInPtsJanList.size()){
+    //            //no jan can 拡
+    //            if(ptsVersion == 2){
+    //                smallList = smallList.stream().map(map-> {
+    //                    if (MapUtils.getString(map, MagicString.JAN).equals(smallJan) && !"1".equals(MapUtils.getString(map, MagicString.DUMMY_JAN))) {
+    //                        map.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,smallJan));
+    //                    }
+    //                    return map;
+    //                }).collect(Collectors.toList());
+    //            }else{
+    //                smallList = smallList.stream().map(map-> {
+    //                    if (MapUtils.getString(map, MagicString.JAN).equals(smallJan)) {
+    //                        map.put(MagicString.DEL_FLAG, "1");
+    //                    }
+    //                    return map;
+    //                }).collect(Collectors.toList());
+    //            }
+    //        }else{
+    //            Map<String, Object> bigMap = notInPtsJanList.get(bigLastIndex);
+    //
+    //            if(ptsVersion == 2){
+    //                smallList = smallList.stream().map(map-> {
+    //                    if(MapUtils.getString(map, MagicString.JAN).equals(smallJan) && !"1".equals(MapUtils.getString(map, MagicString.DUMMY_JAN))){
+    //                        map.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,smallJan));
+    //                    }
+    //
+    //                    return map;
+    //                }).collect(Collectors.toList());
+    //            }else{
+    //                smallList = smallList.stream().map(map->{
+    //                    if(MapUtils.getString(map, MagicString.JAN).equals(smallJan)){
+    //                        map.put(MagicString.JAN, MapUtils.getString(bigMap,MagicString.JAN));
+    //                    }
+    //                    return map;
+    //                }).collect(Collectors.toList());
+    //            }
+    //
+    //            if (newJanList.stream().noneMatch(map->map.get(MagicString.JAN).toString().equals(bigMap.get(MagicString.JAN)))) {
+    //                Map<String, Object> newCopyJanMap = new HashMap<>(bigMap);
+    //                newCopyJanMap.put(MagicString.BRANCH_NUM, bigMap.get(MagicString.BRANCH_NUM));
+    //                newCopyJanMap.put(MagicString.BRANCH_AMOUNT, bigMap.get(MagicString.BRANCH_AMOUNT));
+    //                newCopyJanMap.put(MagicString.PATTERN_NAME, pattern.getShelfPatternName());
+    //                newCopyJanMap.put(MagicString.PTS_NAME, fileName);
+    //                deleteJanList.removeIf(map->Objects.equals(bigMap.get(MagicString.JAN), MapUtils.getString(map,MagicString.JAN)));
+    //                //priority_order_data exist jan
+    //                newJanList.add(newCopyJanMap);
+    //                repeatOldJan.put(smallJan, MapUtils.getString(bigMap, MagicString.JAN));
+    //            }
+    //        }
+    //
+    //        newPtsJanMap.put(attrSmalls, smallList);
+    //    }
+    //
+    //    this.pluralJan(newPtsJanMap, priorityOrderCd,pattern, branchCd,
+    //            ptsVersion, companyCd, deleteJanList, newJanList, fileName, patternBranchCd);
+    //
+    //    resultMap.put(MagicString.DELETE_LIST, deleteJanList);
+    //    resultMap.put(MagicString.NEW_LIST, newJanList);
+    //
+    //    List<Map<String, Object>> newPtsJanList = this.reOrderByTaiTana(newPtsJanMap);
+    //    List<ShelfPtsDataTaimst> shelfPtsDataTaimst = shelfPtsDataMapper.selectShelfPtsTaiMst(pattern.getId());
+    //    List<ShelfPtsDataTanamst> shelfPtsDataTanamst = shelfPtsDataMapper.selectShelfPtsTanaMst(pattern.getId());
+    //
+    //    this.saveJanShelfNameCd(newPtsJanList, pattern.getShelfNameCd(), priorityOrderCd, pattern.getShelfPatternCd(), patternBranchCd);
+    //    this.generateCsv2File(newJanList.stream().map(map->map.get(MagicString.JAN).toString()).collect(Collectors.toList()),
+    //            deleteJanList.stream().map(map->map.get(MagicString.JAN).toString()).collect(Collectors.toList()),
+    //            fileParentPath,newPtsJanList, shelfPtsHeaderDto,
+    //            shelfPtsDataTaimst, shelfPtsDataTanamst, fileName);
+    //
+    //    return resultMap;
+    //}
 
     @Override
     public Map<String, List<Map<String, Object>>> doNewOldPtsCompare(String taskID, Map<String, List<Map<String, Object>>> ptsJanDtoListByGroup,
@@ -1677,7 +1682,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                 Map<String, Object> ptsJan = adoptPtsJanList.get(i);
                 String jan = ptsJan.get(MagicString.JAN).toString();
                 String janOld = ptsJan.get(MagicString.JAN_OLD).toString();
-                String rankUpd = MapUtils.getInteger(ptsJan, MagicString.RANK_UPD)+"";
                 String curAttrList = ptsJan.get(MagicString.ATTR_LIST).toString();
 
                 //mulit_attr-->attr?
@@ -1721,6 +1725,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                     deleteJanList.removeIf(map->Objects.equals(newJan, MapUtils.getString(map,MagicString.JAN)));
                                     //priority_order_data exist jan
                                     newCopyJanMap.put("reason", MagicString.REASON_MAP.get("2"));
+                                    newCopyJanMap.put(MagicString.EXCEPT_BRANCH, MapUtils.getInteger(oldJan, MagicString.EXCEPT_BRANCH));
                                     newJanList.add(newCopyJanMap);
                                 }
 
@@ -1760,7 +1765,9 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         oldPtsJan.put("reason", MagicString.REASON_MAP.get("2"));
                         newJanList.add(oldPtsJan);
                     }else if(newJanIndex < notInPtsJanList.size()){
-                        String newJan = notInPtsJanList.get(newJanIndex).get(MagicString.JAN).toString();
+                        Map<String, Object> janNewMap = notInPtsJanList.get(newJanIndex);
+
+                        String newJan = janNewMap.get(MagicString.JAN).toString();
                         Integer newJanRank = MapUtils.getInteger(notInPtsJanList.get(newJanIndex), MagicString.RANK_UPD);
 
                         if(janReplaceMap.containsKey(janOld)){
@@ -1783,6 +1790,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                     //priority_order_data exist jan
                                     deleteJanList.removeIf(map->finalNewJan.equals(MapUtils.getString(map,MagicString.JAN)));
                                     newCopyJanMap.put("reason", MagicString.REASON_MAP.get("2"));
+                                    newCopyJanMap.put(MagicString.EXCEPT_BRANCH, oldJan.get(MagicString.EXCEPT_BRANCH));
                                     newJanList.add(newCopyJanMap);
                                 }
 
@@ -1800,6 +1808,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                                 newCopyJanMap.put(MagicString.RANK_UPD, MapUtils.getInteger(newJanMap, MagicString.RANK_UPD));
                                 deleteJanList.removeIf(map->finalNewJan.equals(MapUtils.getString(map,MagicString.JAN)));
                                 newCopyJanMap.put("reason", MagicString.REASON_MAP.get("1"));
+                                newCopyJanMap.put(MagicString.EXCEPT_BRANCH, newJanMap.get(MagicString.EXCEPT_BRANCH));
                                 //priority_order_data exist jan
                                 newJanList.add(newCopyJanMap);
 
@@ -1811,6 +1820,7 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
                         repeatOldJan.put(jan,newJan);
                         if(ptsVersion==1){
                             ptsJan.put(MagicString.JAN, newJan);
+                            ptsJan.put(MagicString.EXCEPT_BRANCH, MapUtils.getString(janNewMap, MagicString.EXCEPT_BRANCH));
                         }
                     }else{
                         if(ptsVersion==1){
@@ -1999,8 +2009,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
 
         List<Map<String, Object>> newPtsJanList = this.reOrderByTaiTana(newPtsJanMap);
 
-        priorityOrderMstService.saveJanShelfNameCd(newPtsJanList, pattern.getShelfNameCd(), priorityOrderCd, pattern.getShelfPatternCd(), patternBranchCd);
-
         ptsResultJandataMapper.insertPtsJandata(newPtsJanList, companyCd, priorityOrderCd, pattern.getShelfPatternCd(), branchCd, compareFlag);
         return resultMap;
     }
@@ -2023,59 +2031,61 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
             List<String> newPtsJanCdList = newPtsJanList.stream().map(map -> MapUtils.getString(map, MagicString.JAN)).collect(Collectors.toList());
             List<Map<String, Object>> backupJan = backupJanListByGroup.getOrDefault(entry.getKey(), ImmutableList.of());
 
-            List<String> existOtherPatternJan = ptsPatternNameMapper.selectExistPatternJan(priorityOrderCd, shelfNameCd,
-                    newPtsJanCdList, "??| '{"+Joiner.on(",").join(branchList)+"}'");
             List<Map<String, Object>> removeBackupJan = new ArrayList<>();
             BeanUtils.copyProperties(backupJan, removeBackupJan);
             removeBackupJan.removeIf(janMap->newPtsJanCdList.contains(MapUtils.getString(janMap, MagicString.JAN)));
 
-            if(!existOtherPatternJan.isEmpty()){
-                newPtsJanList.forEach(janMap->{
-                    String janOld = MapUtils.getString(janMap, MagicString.JAN_OLD);
-                    String janCd = MapUtils.getString(janMap, MagicString.JAN);
-                    if(existOtherPatternJan.contains(MapUtils.getString(janMap, MagicString.JAN))){
-                        if (janOld.equals(janCd)) {
-                            janMap.put(MagicString.PTS_NAME, fileName);
-                            janMap.put(MagicString.PATTERN_NAME, shelfPtsDataDto.getShelfPatternName());
-                            deleteList.removeIf(map-> Objects.equals(MapUtils.getString(map, MagicString.JAN), janOld));
-                            janMap.put("reason", MagicString.REASON_MAP.get("5"));
-                            deleteList.add(janMap);
+            newPtsJanList.forEach(janMap->{
+                String janOld = MapUtils.getString(janMap, MagicString.JAN_OLD);
+                String janCd = MapUtils.getString(janMap, MagicString.JAN);
+                String[] branchCdArray = (Strings.isNullOrEmpty(MapUtils.getString(janMap, "except_branch", ""))?
+                        "":MapUtils.getString(janMap, "except_branch", "")).split(",");
+                List<String> branchCdList = Lists.newArrayList(branchCdArray);
+                branchCdList.remove("");
+                branchCdList.remove("_");
+                branchCdList = branchCdList.stream().map(branch-> branch.contains("_") ? branch.split("_")[1] : branch).collect(Collectors.toList());
+                if(!Sets.intersection(new HashSet<>(branchCdList), new HashSet<>(branchList)).isEmpty()){
+                    if (janOld.equals(janCd)) {
+                        janMap.put(MagicString.PTS_NAME, fileName);
+                        janMap.put(MagicString.PATTERN_NAME, shelfPtsDataDto.getShelfPatternName());
+                        deleteList.removeIf(map-> Objects.equals(MapUtils.getString(map, MagicString.JAN), janOld));
+                        janMap.put("reason", MagicString.REASON_MAP.get("5"));
+                        deleteList.add(janMap);
+                    }else{
+                        newList.removeIf(map->map.get(MagicString.JAN).equals(janCd));
+                    }
+
+                    if(removeBackupJan.isEmpty() || usedIndex[0]>=removeBackupJan.size()){
+                        if(ptsVersion == 2){
+                            janMap.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,MapUtils.getString(janMap, MagicString.JAN_OLD)));
                         }else{
-                            newList.removeIf(map->map.get(MagicString.JAN).equals(janCd));
+                            janMap.put(MagicString.DEL_FLAG, "1");
                         }
-
-                        if(removeBackupJan.isEmpty() || usedIndex[0]>=removeBackupJan.size()){
-                            if(ptsVersion == 2){
-                                janMap.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,MapUtils.getString(janMap, MagicString.JAN_OLD)));
+                    }else{
+                        if(ptsVersion == 1){
+                            if(repeatOldJan.containsKey(janCd)){
+                                janMap.put(MagicString.JAN, repeatOldJan.get(janOld));
                             }else{
-                                janMap.put(MagicString.DEL_FLAG, "1");
+                                Map<String, Object> janNewMap = removeBackupJan.get(usedIndex[0]++);
+
+                                if (newList.stream().noneMatch(map-> MapUtils.getString(map, MagicString.JAN).equals(janOld))) {
+                                    janNewMap.put(MagicString.PTS_NAME, fileName);
+                                    janNewMap.put(MagicString.PATTERN_NAME, shelfPtsDataDto.getShelfPatternName());
+
+                                    janMap.put(MagicString.JAN, janNewMap.get(MagicString.JAN));
+                                    newList.add(janNewMap);
+                                }
+
+                                repeatOldJan.put(janCd, MapUtils.getString(janNewMap, MagicString.JAN));
                             }
                         }else{
-                            if(ptsVersion == 1){
-                                if(repeatOldJan.containsKey(janCd)){
-                                    janMap.put(MagicString.JAN, repeatOldJan.get(janOld));
-                                }else{
-                                    Map<String, Object> janNewMap = removeBackupJan.get(usedIndex[0]++);
-
-                                    if (newList.stream().noneMatch(map-> MapUtils.getString(map, MagicString.JAN).equals(janOld))) {
-                                        janNewMap.put(MagicString.PTS_NAME, fileName);
-                                        janNewMap.put(MagicString.PATTERN_NAME, shelfPtsDataDto.getShelfPatternName());
-
-                                        janMap.put(MagicString.JAN, janNewMap.get(MagicString.JAN));
-                                        newList.add(janNewMap);
-                                    }
-
-                                    repeatOldJan.put(janCd, MapUtils.getString(janNewMap, MagicString.JAN));
-                                }
-                            }else{
-                                janMap.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,MapUtils.getString(janMap, MagicString.JAN_OLD)));
-                            }
+                            janMap.put(MagicString.JAN, jansMapper.selectDummyJan(companyCd,MapUtils.getString(janMap, MagicString.JAN_OLD)));
                         }
                     }
-                });
+                }
+            });
 
-                newPtsJanMap.put(entry.getKey(), newPtsJanList);
-            }
+            newPtsJanMap.put(entry.getKey(), newPtsJanList);
         }
     }
 
@@ -2101,15 +2111,6 @@ public class ClassicPriorityOrderMstServiceImpl implements ClassicPriorityOrderM
         return newPtsJanList;
     }
 
-    /**
-     * save jan and shelf_name_cd, in order to process [[優先順位表で複数棚名称を選択した時、出力されるパターンでJANが重複しないように]]
-     * @return
-     */
-    @Override
-    public void saveJanShelfNameCd(List<Map<String, Object>> newJanList, Integer shelfNameCd, Integer priorityOrderCd,
-                                   Integer patternCd, List<String> branchList){
-        ptsPatternNameMapper.insertPtsPatternName(priorityOrderCd, shelfNameCd, newJanList, patternCd, JSON.toJSONString(branchList));
-    }
     public String generateCsv2File(List<String> newJanList, List<String> deleteJanList, String fileParentPath,
                                    List<Map<String, Object>> newPtsJanList, ShelfPtsHeaderDto shelfPtsHeaderDto,
                                    List<ShelfPtsDataTaimst> shelfPtsDataTaimst, List<ShelfPtsDataTanamst> shelfPtsDataTanamst, String fileName) {

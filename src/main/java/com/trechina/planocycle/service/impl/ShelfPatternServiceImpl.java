@@ -391,5 +391,29 @@ public class ShelfPatternServiceImpl implements ShelfPatternService {
         return ResultMaps.result(ResultEnum.SUCCESS,patternForStorel);
     }
 
+    @Override
+    public Map<String, Object> getPatternForNoStore(String companyCd, String storeIsCore) {
+        List<String> commonPartsData = shelfPatternMstMapper.getCommonPartsData(companyCd);
+        Map<String,Object> map = new HashMap<>();
+        for (int i = 0; i < commonPartsData.size(); i++) {
+            GetCommonPartsDataDto commonTableName = basicPatternMstService.getCommonTableName(commonPartsData.get(i), companyCd);
+            map.put("a"+i,commonTableName.getStoreInfoTable());
+        }
+        if (commonPartsData.isEmpty()){
+            return ResultMaps.result(ResultEnum.SUCCESS,new ArrayList<>());
+        }
+        List<ShelfPatternNameVO> patternForStorel = shelfPatternMstMapper.getPatternForNoStore(storeIsCore, companyCd,map);
+        for (ShelfPatternNameVO shelfPatternNameVO : patternForStorel) {
+            String prodIsCore = shelfPatternNameVO.getStoreIsCore();
+            JSONObject jsonObject = JSON.parseObject(prodIsCore);
+            shelfPatternNameVO.setStoreIsCore(jsonObject.get("storeIsCore").toString());
+        }
+        return ResultMaps.result(ResultEnum.SUCCESS,patternForStorel);
+    }
 
+    @Override
+    public Map<String, Object> getComparePattern(Integer priorityOrderCd) {
+        List<Map<String, Object>> comparePatternList = shelfPatternMstMapper.selectComparePatternList(priorityOrderCd);
+        return ResultMaps.result(ResultEnum.SUCCESS, comparePatternList);
+    }
 }

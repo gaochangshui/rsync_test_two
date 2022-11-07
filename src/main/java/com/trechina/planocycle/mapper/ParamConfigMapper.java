@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ParamConfigMapper {
@@ -13,5 +14,19 @@ public interface ParamConfigMapper {
 
     List<ParamConfigVO> selectParamConfig();
 
+    List<ParamConfigDto> selectAllParamConfig();
+
     List<ParamConfigVO> selectParamConfigByCd(@Param("cdList") List<String> cdList);
+
+    void updateParamConfig(@Param("list") List<ParamConfigDto> paramConfigVO);
+
+    List<String> getParamRatio();
+
+    List<Map<String, Object>> selectProdClassMst(String companyCd);
+
+    List<Map<String, Object>> selectTenClassMst(String companyCd);
+
+    Map<String, Object> selectCompanyMst(String companyCd);
+
+    int selectTenMaxLevel(String companyCd, String classCd);
 }

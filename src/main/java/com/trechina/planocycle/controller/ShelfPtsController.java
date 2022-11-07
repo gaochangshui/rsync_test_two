@@ -1,6 +1,7 @@
 package com.trechina.planocycle.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.trechina.planocycle.entity.dto.PtsPatternRelationDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsDto;
 import com.trechina.planocycle.entity.dto.ShelfPtsJoinPatternDto;
 import com.trechina.planocycle.entity.po.WorkPriorityOrderSort;
@@ -184,4 +185,18 @@ public class ShelfPtsController {
     public  Map<String,Object> setPtsTanaSize(@RequestBody List<PtsTanaVo> ptsTanaVoList){
         return shelfPtsService.setPtsTanaSize(ptsTanaVoList);
     }
+
+    /**
+     * pts关联pattern
+     *
+     */
+    @PostMapping("/ptsKeyRelation")
+    public Map<String,Object> ptsKeyRelation(@RequestBody List<PtsPatternRelationDto> ptsPatternRelationDtoList) {
+
+        return shelfPtsService.ptsKeyRelation(ptsPatternRelationDtoList);
+    }
+
+
+
+
 }

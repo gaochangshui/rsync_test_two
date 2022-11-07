@@ -1,7 +1,11 @@
 package com.trechina.planocycle.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Range;
 import com.google.gson.Gson;
 import com.trechina.planocycle.aspect.LogAspect;
 import com.trechina.planocycle.constant.MagicString;
@@ -17,6 +21,7 @@ import com.trechina.planocycle.service.*;
 import com.trechina.planocycle.utils.ResultMaps;
 import com.trechina.planocycle.utils.VehicleNumCache;
 import com.trechina.planocycle.utils.cgiUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -71,6 +77,8 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
     private LogAspect logAspect;
     @Autowired
     private cgiUtils cgiUtil;
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
 
     /**
      * 保存期間、表示項目、weightのすべてのパラメータ
@@ -87,16 +95,19 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         String companyCd = productPowerParam.getCompany();
         Integer productPowerCd = productPowerParam.getProductPowerNo();
         Integer newProductPowerCd = productPowerCd;
+        List<String> posHeader = productPowerDataMapper.getColHeader("pos");
+        List<String> customerHeader = productPowerDataMapper.getColHeader("customer");
+        List<String> intageHeader = productPowerDataMapper.getColHeader("intage");
 
         //テンポラリ・テーブルの最終テーブルへの保存
         //pos基本データ
             //物理削除挿入の保存の変更
             productPowerDataMapper.phyDeleteSyokika(companyCd,newProductPowerCd,authorCd);
-            productPowerDataMapper.endSyokikaForWK(companyCd, productPowerCd, authorCd,newProductPowerCd);
+            productPowerDataMapper.endSyokikaForWK(companyCd, productPowerCd, authorCd,newProductPowerCd,posHeader);
 
             //物理削除挿入の保存の変更
             productPowerDataMapper.phyDeleteGroup(companyCd,newProductPowerCd,authorCd);
-            productPowerDataMapper.endGroupForWK(companyCd, productPowerCd, authorCd,newProductPowerCd);
+            productPowerDataMapper.endGroupForWK(companyCd, productPowerCd, authorCd,newProductPowerCd,customerHeader);
 
             //物理削除挿入の保存の変更
             productPowerDataMapper.phyDeleteYobiiitern(companyCd,newProductPowerCd,authorCd);
@@ -105,16 +116,24 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
             productPowerDataMapper.endYobiiiternDataForWk(companyCd,productPowerCd,authorCd,newProductPowerCd);
             //物理削除挿入の保存の変更
             productPowerDataMapper.phyDeleteIntage(companyCd,newProductPowerCd,authorCd);
-            productPowerDataMapper.endIntageForWK(companyCd,productPowerCd,authorCd,newProductPowerCd);
+            productPowerDataMapper.endIntageForWK(companyCd,productPowerCd,authorCd,newProductPowerCd,intageHeader);
             //物理削除挿入の保存の変更
         
             productPowerDataMapper.deleteData(companyCd,newProductPowerCd);
             productPowerDataMapper.setData(productPowerCd,companyCd,newProductPowerCd);
+
+            productPowerDataMapper.deleteSyokikaPos(companyCd,newProductPowerCd);
+            productPowerDataMapper.endSyokikaPosForWK(companyCd,newProductPowerCd);
+
+            productPowerDataMapper.deleteStarFetchTable(companyCd,newProductPowerCd);
+            productPowerDataMapper.endStarFetchTableForWK(companyCd,newProductPowerCd);
+
             //期間パラメータ削除挿入きかんぱらめーた:さくじょそうにゅう
             String customerCondition = productPowerParam.getCustomerCondition().toJSONString();
-        String prodAttrData = productPowerParam.getProdAttrData().toString();
-        productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
-        String singleJan =new Gson().toJson(productPowerParam.getSingleJan());
+            String prodAttrData = new Gson().toJson(productPowerParam.getProdAttrData());
+            productPowerParamMstMapper.deleteParam(companyCd,newProductPowerCd);
+            String singleJan =new Gson().toJson(productPowerParam.getSingleJan());
+            String level =new Gson().toJson(productPowerParam.getLevel());
 
         String basketProdCd = productPowerParam.getBasketProdCd();
         if(!Strings.isNullOrEmpty(basketProdCd)){
@@ -125,7 +144,7 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         }
 
         productPowerParamMstMapper.insertParam(productPowerParam,customerCondition,authorCd,newProductPowerCd
-                ,prodAttrData, singleJan);
+                ,prodAttrData, singleJan,level);
 
         return ResultMaps.result(ResultEnum.SUCCESS);
     }
@@ -230,16 +249,27 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         String uuid = UUID.randomUUID().toString();
         Future<?> future = executor.submit(() -> {
         try {
+            List<String> posHeader = productPowerDataMapper.getColHeader("");
+            posHeader.remove("pos_store_item11");
+            posHeader.remove("pos_store_item12");
             productPowerDataMapper.deleteWKData(companyCd,authorCd,productPowerCd);
             List<Map<String, Object>> rankCalculate = productPowerDataMapper.getProductRankCalculate(map, companyCd, productPowerCd,authorCd);
             ProductPowerParam workParam = productPowerParamMstMapper.getWorkParam(companyCd, productPowerCd);
             List<String> storeCd = Arrays.asList(workParam.getStoreCd().split(","));
             List<Integer> shelfPts = shelfPatternMstMapper.getShelfPts(storeCd, companyCd);
                 shelfPts.add(0);
-            productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd,shelfPts,storeCd);
+            productPowerDataMapper.setWKData(authorCd,companyCd,productPowerCd,shelfPts,storeCd,posHeader);
             List<Map<String, Object>> list = new ArrayList<>();
+            //List<Map<String, Object>> levelMap = this.calcLevel(rankCalculate.size());
+            List<Map<String, Object>> levelMap = new ArrayList<>();
             for (int i = 0; i < rankCalculate.size(); i++) {
-                list.add(rankCalculate.get(i));
+                Map<String, Object> calMap = rankCalculate.get(i);
+                levelMap.forEach(itemLevel->{
+                    if (Range.closed(MapUtils.getInteger(itemLevel, "min"), MapUtils.getInteger(itemLevel, "max")).contains(MapUtils.getInteger(calMap, "rank_result"))) {
+                        calMap.put("level", itemLevel.get("level"));
+                    }
+                });
+                list.add(calMap);
                 if (i != 0 && i % 1000 == 0){
                     productPowerDataMapper.insertWkRank(list,authorCd,companyCd,productPowerCd);
                     list.clear();
@@ -266,6 +296,30 @@ public class CommodityScoreParaServiceImpl implements CommodityScoreParaService 
         } catch (CancellationException e) {
             return ResultMaps.result(202, "canceled");
         }
+    }
+
+    private List<Map<String, Object>> calcLevel(int totalNum){
+        String level = sysConfigMapper.selectSycConfig(MagicString.LEVEL);
+        List<Map<String, Object>> levelMap = new ArrayList<>();
+        if(Strings.isNullOrEmpty(level)){
+            return levelMap;
+        }
+        JSONObject levelJson = JSON.parseObject(level, Feature.OrderedField);
+        final int[] lastMax = {0};
+        for (Map.Entry<String, Object> entry : levelJson.entrySet()) {
+            Object value = entry.getValue();
+
+            BigDecimal percent = BigDecimal.valueOf((int)value).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+            BigDecimal maxBD = BigDecimal.valueOf(totalNum).multiply(percent).setScale(0, RoundingMode.HALF_UP);
+
+            Map<String, Object> itemMap = ImmutableMap.of("max", maxBD.intValue()+lastMax[0], "min", lastMax[0]+1,
+                    "level", entry.getKey());
+            levelMap.add(itemMap);
+
+            lastMax[0] += maxBD.intValue();
+        }
+
+        return levelMap;
     }
 
     @Transactional(rollbackFor = Exception.class)

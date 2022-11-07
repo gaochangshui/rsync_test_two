@@ -2,17 +2,159 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.trechina.planocycle.mapper.CompanyConfigMapper">
     <insert id="setCompanyConfig">
-
+    insert into planocycle.sku_name_config(company_cd,class,jan_name2col_num,jan_item2col_num,show_flag)
+        values
+            <foreach collection="resultProd" item="item" separator=",">
+                (#{item.companyCd},#{item.classCd},#{item.janName2colNum},#{item.janItem2colNum},1)
+            </foreach>
     </insert>
     <insert id="setCompany">
-    insert into masterdb.company_list (company_cd,company_name)
-        values (#{companyCd},#{companyName})
+    insert into planocycle.company_list (company_cd,company_name,is_use,update_time,updater,date_is_core,store_is_core,prod_is_core,kokyaku,intage,basket_price,is_id_pos)
+        values (#{companyCd},#{companyName},#{isUse},now(),#{updater},#{dateIsCore},#{storeIsCore},#{prodIsCore},#{kokyaku},#{intage},#{basketPrice},#{isIdPos})
         on conflict("company_cd")
         do update set
         company_cd = #{companyCd},
-        company_name= #{companyName}
+        company_name= #{companyName},
+        is_use= #{isUse},
+        update_time= now(),
+        updater= #{updater},
+        date_is_core= #{dateIsCore},
+        store_is_core= #{storeIsCore},
+        prod_is_core= #{prodIsCore},
+        kokyaku= #{kokyaku},
+        intage= #{intage},
+        basket_price= #{basketPrice},
+        is_id_pos= #{isIdPos}
     </insert>
-    <select id="getMstkigyocore" resultType="com.trechina.planocycle.entity.po.MstKiGyoCore">
-        select * from masterdb.mst_kigyocore where company_cd = #{companyCd}
+    <insert id="setProdClass">
+        insert into planocycle.company_attr_config(company_cd,class_cd,col_cd,col_name,is_number,is_show,is_range,number_unit)
+        values
+        <foreach collection="prodClass" item="item" separator=",">
+            (#{item.companyCd},#{item.classCd},#{item.colCd},#{item.colName},#{item.isNumber},#{item.isShow},#{item.isRange},#{item.numberUnit})
+        </foreach>
+    </insert>
+    <insert id="setMstKigyocore">
+        insert into masterdb.mst_kigyocore(company_cd,date_mst,tenpo_kaisou_mst,selected_tenpo,shouhin_kaisou_mst,selected_shouhin)
+        values (#{companyCd},'date_core_mst','tenpo_kaisou_core_mst','0000','shouhin_kaisou_core_mst','0000')
+    </insert>
+    <delete id="delStore">
+        delete from planocycle.company_ten_master where company_cd = #{companyCd}
+    </delete>
+    <delete id="delProdClass">
+        delete from planocycle.company_attr_config where company_cd = #{companyCd}
+    </delete>
+    <delete id="delcompanyConfig">
+        delete from planocycle.sku_name_config where company_cd = #{companyCd}
+    </delete>
+    <delete id="delMstKigyocore">
+        delete from masterdb.mst_kigyocore where company_cd = #{companyCd}
+    </delete>
+    <insert id="setStoreMstClass">
+        insert into planocycle.company_ten_master (company_cd,class,show_flag)
+        values
+                <foreach collection="storeMstClass" item="item" separator=",">
+                    (#{companyCd},#{item},'1')
+                </foreach>
+    </insert>
+    <insert id="setGroupCompany">
+        insert into masterdb.group_company(group_cd,group_name,company_cd,company_name)
+        values (#{groupCd},#{groupName},#{companyCd},#{companyName})
+            on conflict(group_cd,company_cd)
+        do update set
+                        group_cd = #{groupCd},
+                       group_name = #{groupName},
+                       company_cd = #{companyCd},
+                       company_name = #{companyName},
+    </insert>
+    <select id="getMstkigyocore" resultType="map">
+        select date_is_core as "dateIsCore",store_is_core as "storeIsCore",prod_is_core as "prodIsCore"
+             ,kokyaku,intage,basket_price as "basketPrice",is_id_pos as "isIdPos"
+        from planocycle.company_list
+        where company_cd = #{companyCd}
+    </select>
+    <select id="getCompanyConfig" resultType="map">
+        select jan_name2col_num,jan_item2col_num,kokyaku,intage,maker,basket_price,convert_numbers,jan_col_flag,show_flag
+        from planocycle.sku_name_config
+        where company_cd = #{companyCd} and class = #{classCd}
+    </select>
+    <select id="getCompanyList" resultType="com.trechina.planocycle.entity.po.Company">
+        select
+            name."1" as "companyCd",name."2" as "companyName",
+            case when groups.company_cd is not null then 'グループ利用'
+                 when list.is_use = '0' then '設定待ち'
+                 when list.is_use = '1' then '利用中'
+                 when list.is_use = '2' then 'グループ利用'
+                 else '設定待ち' end as "isUse",list.updater,list.update_time,
+            case when name."1" = '1000' then 1 else 2 end as sortFlag,
+            list.updater as "authorCd"
+        from
+            masterdb.kigyou_name name
+                left join masterdb.kigyou_company_sortid sortid
+                          on sortid."1" = name."1"
+                left join planocycle.company_list list
+                          on name."1" = list.company_cd
+                left join masterdb.group_company groups
+                          on groups.company_cd = name."1"
+        order by sortFlag,sortid."3" ::integer
+    </select>
+    <select id="getGroupList" resultType="com.trechina.planocycle.entity.po.Group">
+        select group_cd,group_name,
+               array_to_string(array_agg(company_cd),',') "companyCd",
+               array_to_string(array_agg(company_name),',') "companyName",
+               update_time,updater "authorCd"
+        from masterdb.group_company
+        group by group_cd,group_name,update_time,updater
+    </select>
+    <select id="getCompanyConfigForCompany" resultType="java.util.Map">
+        select class,jan_name2col_num,jan_item2col_num,show_flag
+        from planocycle.sku_name_config
+        where company_cd = #{companyCd}
+    </select>
+    <select id="getStoreList" resultType="java.lang.String">
+        select class from planocycle.company_ten_master where company_cd = #{companyCd}
+    </select>
+    <select id="getProdList" resultType="java.util.Map">
+        select  class_cd,col_cd,col_name,is_number,is_show,is_range,number_unit
+        from planocycle.company_attr_config
+        where company_cd = #{companyCd}
+    </select>
+    <select id="getCompanyList1" resultType="java.util.Map">
+        select
+            is_use,date_is_core,store_is_core,prod_is_core,kokyaku,basket_price,is_id_pos
+        from
+            planocycle.company_list
+        where company_cd = #{companyCd}
+    </select>
+    <select id="getInUseCompanyList" resultType="com.trechina.planocycle.entity.po.Company">
+        select company_cd from planocycle.company_list where is_use='1'
+    </select>
+    <select id="selectAttrTargetColumn" resultType="map">
+        select
+            <foreach collection="targetColumn" item="item" separator=",">${item}</foreach>
+        from planocycle.company_attr_config
+        <where>
+            <foreach collection="condition" index="colName" item="colVal" separator=" and ">
+                ${colName}=#{colVal}
+            </foreach>
+        </where>
+    </select>
+    <select id="getKokyakuShow" resultType="map">
+        select  COALESCE(kokyaku,0) as kokyaku ,COALESCE(basket_price,0) as "basketPrice"
+        from planocycle.company_list
+        where company_cd = #{companyCd}
+    </select>
+    <select id="getCompanyProdClass" resultType="java.lang.String">
+        select class_cd
+        from planocycle.company_attr_config
+        where company_cd = #{companyCd}
+        ORDER BY class_cd
+        limit 1
+    </select>
+    <select id="getCompanyStoreClass" resultType="java.lang.String">
+        select class
+        from planocycle.company_ten_master
+        where company_cd = #{companyCd}
+        ORDER BY class
+            limit 1
     </select>
 </mapper>
