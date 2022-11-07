@@ -2,6 +2,7 @@ package com.trechina.planocycle.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -188,27 +189,72 @@ public class CommodityScoreDataServiceImpl implements CommodityScoreDataService 
                         List<Map<String, Object>> posBranchIntersection = allData.stream().map(map -> {
                             Map<String, Object> posMap = new HashMap<>();
                             posMap.put("jan", map.get("jan"));
-                            posMap.put("productPowerCd", productPowerCd);
-                            posMap.put("branchIntersection", map.get("branchIntersection"));
+                            posMap.put("product_power_cd", productPowerCd);
+                            posMap.put("branch_num", map.get("branchIntersection"));
                             return posMap;
                         }).collect(Collectors.toList());
+                        JSONObject levelJson = JSON.parseObject(workParam.getLevel().toString(), Feature.OrderedField);
+
                         if (!posBranchIntersection.isEmpty()) {
+                         
                             List<Map<String, Object>> maps = productPowerDataMapper.selectSyokikaAccount(productPowerCd);
-                            maps.stream().forEach(map-> {
-                                posBranchIntersection.forEach(branch->{
-                                    if (branch.get("jan").equals(map.get("jan"))){
 
-                                        double posItem01 = Double.parseDouble(map.get("pos_item01").toString());
-                                        double posItem02 = Double.parseDouble(map.get("pos_item02").toString());
-                                        int branchNum = Integer.parseInt(branch.get("branchIntersection").toString());
-                                        branch.put("posStoreItem11",branchNum == 0?0:posItem01/branchNum);
-                                        branch.put("posStoreItem12",branchNum == 0?0:posItem02/branchNum);
+                            maps.stream().forEach(map-> posBranchIntersection.forEach(branch->{
+                                if (branch.get("jan").equals(map.get("jan"))){
 
+                                    double posItem01 = Double.parseDouble(map.get("pos_item01").toString());
+                                    double posItem02 = Double.parseDouble(map.get("pos_item02").toString());
+                                    int branchNum = Integer.parseInt(branch.get("branch_num").toString());
+                                    branch.put("pos_store_item11",branchNum == 0?0:posItem01/branchNum);
+                                    branch.put("pos_store_item12",branchNum == 0?0:posItem02/branchNum);
+                                    //pos
+                                    double posItem23 = Double.parseDouble(map.get("pos_item23").toString());
+                                    double posStoreItem13 = Double.parseDouble(map.get("pos_store_item13").toString());
+                                    Double customerItem23 =null;
+                                    Double customerStoreItem11 =null;
+                                    Double intageItem10 =null;
+                                    Double intageStoreItem03 =null;
+                                    if (map.containsKey("customer_item23")){
+                                        customerItem23 = Double.parseDouble(map.get("customer_item23").toString());
+                                    }
+                                    if (map.containsKey("customer_store_item11")){
+                                         customerStoreItem11 = Double.parseDouble(map.get("customer_store_item11").toString());
+                                    }
+                                    if (map.containsKey("intage_item10")){
+                                         intageItem10 = Double.parseDouble(map.get("intage_item10").toString());
+                                    }
+                                    if (map.containsKey("intage_store_item03")){
+                                         intageStoreItem03 = Double.parseDouble(map.get("intage_store_item03").toString());
+                                    }
+
+                                    int num = 0;
+                                    for (Map.Entry<String, Object> stringObjectEntry : levelJson.entrySet()) {
+                                        int value = (int)stringObjectEntry.getValue();
+                                        num += value;
+                                        if (posItem23 < num){
+                                            branch.putIfAbsent("pos_item24",stringObjectEntry.getKey());
+                                        }
+                                        if (posStoreItem13 < num){
+                                            branch.putIfAbsent("pos_store_item14",stringObjectEntry.getKey());
+                                        }
+                                        if (customerItem23 != null && customerItem23 < num){
+                                            branch.putIfAbsent("customer_item24",stringObjectEntry.getKey());
+                                        }
+                                        if (customerStoreItem11 != null && customerStoreItem11 < num){
+                                            branch.putIfAbsent("customer_store_item12",stringObjectEntry.getKey());
+                                        }
+                                        if (intageItem10 != null && intageItem10 < num){
+                                            branch.putIfAbsent("intage_item11",stringObjectEntry.getKey());
+                                        }
+                                        if (intageStoreItem03 != null && intageStoreItem03 < num){
+                                            branch.putIfAbsent("intage_store_item04",stringObjectEntry.getKey());
+                                        }
 
                                     }
-                                });
 
-                            });
+                                }
+                                branch.remove("");
+                            }));
                             int batchSize = 1000;
                             int janDataNum = (int) Math.ceil(posBranchIntersection.size() / 1000.0);
                             for (int i = 0; i < janDataNum; i++) {

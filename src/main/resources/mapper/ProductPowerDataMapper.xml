@@ -425,10 +425,17 @@
         where  product_power_cd = #{productPowerCd}
     </insert>
     <insert id="setSyokikaPos">
-        insert into planocycle.work_product_power_syokika_pos(product_power_cd,jan,branch_num,pos_store_item11,pos_store_item12)
+        insert into planocycle.work_product_power_syokika_pos(
+            <foreach collection="posBranchIntersection[0]" item="item" index="index" separator=",">
+               ${index}
+            </foreach>
+        )
         values
-            <foreach collection="posBranchIntersection" separator="," item="item">
-                (#{item.productPowerCd},#{item.jan},#{item.branchIntersection},#{item.posStoreItem11},#{item.posStoreItem12})
+            <foreach collection="posBranchIntersection" separator="," item="map">(
+                <foreach collection="map" item="item" separator=",">
+                   #{item}
+                </foreach>
+                )
             </foreach>
     </insert>
     <insert id="setIntageJanForSyokika">
@@ -912,11 +919,23 @@
     <select id="selectSyokikaAccount" resultType="map">
         select
             syokika.jan,
-            pos_item01,
-            pos_item02
-    from
-	    planocycle.work_product_power_syokika syokika
-    where
-	    syokika.product_power_cd = #{productPowerCd}
+            coalesce(pos_item01,'0') pos_item01,
+            coalesce(pos_item02,'0') pos_item02,
+            coalesce (pos_item23,'0') pos_item23,
+            coalesce(pos_store_item13,'0') pos_store_item13,
+            COALESCE(customer_item23,'0') customer_item23,
+            COALESCE(customer_store_item11,'0') customer_store_item11,
+            COALESCE(intage_item10,'0') intage_item10,
+            COALESCE(intage_store_item03,'0') intage_store_item03
+
+        from
+            planocycle.work_product_power_syokika syokika
+                left join planocycle.work_product_power_kokyaku kokyaku
+                          on syokika.product_power_cd = kokyaku.product_power_cd
+                              and kokyaku.jan = syokika.jan
+                left join planocycle.work_product_power_intage intage
+                          on syokika.product_power_cd = intage.product_power_cd
+                              and intage.jan = syokika.jan
+        where syokika.product_power_cd = #{productPowerCd}
     </select>
 </mapper>

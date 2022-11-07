@@ -229,9 +229,12 @@ public class CommodityScoreMasterServiceImpl implements CommodityScoreMasterServ
                     BigDecimal.valueOf((Double) val).setScale(0, RoundingMode.HALF_UP).toString() : String.valueOf(val)).collect(Collectors.toList());
             map.put("value",value);
         });
-        LinkedHashMap<String, Object> singleJan = new Gson().fromJson(param.getSingleJan().toString(), new com.google.common.reflect.TypeToken<LinkedHashMap<String, Object>>(){}.getType());
+        LinkedHashMap<String, Object> level = null;
+        if (param.getLevel() != null){
+            level = new Gson().fromJson(param.getLevel().toString(), new com.google.common.reflect.TypeToken<LinkedHashMap<String, Object>>(){}.getType());
+        }
+        LinkedHashMap<String, Object>  singleJan = new Gson().fromJson(param.getSingleJan().toString(), new com.google.common.reflect.TypeToken<LinkedHashMap<String, Object>>(){}.getType());
 
-        LinkedHashMap<String, Object> level = new Gson().fromJson(param.getLevel().toString(), new com.google.common.reflect.TypeToken<LinkedHashMap<String, Object>>(){}.getType());
         param.setProdAttrData(prodAttrData);
         param.setSingleJan(singleJan);
         param.setLevel(level);

@@ -54,7 +54,7 @@
     WHERE company_cd = #{companyCd} and product_power_cd = #{productPowerCd}
   </select>
   <select id="getWorkParam" resultType="com.trechina.planocycle.entity.po.ProductPowerParam">
-    select store_cd,show_item_check,prod_attr_data
+    select store_cd,show_item_check,prod_attr_data,level
     FROM planocycle.work_product_power_param_mst
     WHERE company_cd = #{companyCd} and product_power_cd = #{productPowerCd}
   </select>

@@ -235,7 +235,7 @@
     </select>
     <select id="getErrorMsgJan" resultType="java.util.Map">
         SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as "errMsg"
-        from priority.work_priority_order_result_data  where rank != -1
+        from priority.work_priority_order_result_data  where rank != -1 and priority_order_cd = #{priorityOrderCd}
         union
         SELECT jan_new as jan_new,'現状棚に並んでいる可能性がありますので削除してください。' as "errMsg"
         from priority.priority_order_jan_replace
